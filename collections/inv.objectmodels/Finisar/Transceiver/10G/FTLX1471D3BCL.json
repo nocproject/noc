@@ -1,0 +1,76 @@
+{
+    "name": "Finisar | Transceiver | 10G | FTLX1471D3BCL",
+    "$collection": "inv.objectmodels",
+    "uuid": "a0c3befd-6838-47a2-ba19-5a2a912378f9",
+    "vendor__code": "FINISAR",
+    "description": "10GBASE-LR, SFP+, SFM, 1310nm, 10km",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "rx",
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "10GBASELR"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "tx",
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "10GBASELR"
+            }],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FTLX1471D3BCL"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FTLX1471D3BCL-HW", "FTLX1471D3BCL-J1", "FTLX1471D3BCL-A5"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

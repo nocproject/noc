@@ -1,0 +1,9 @@
+{
+    "name": "XPON",
+    "$collection": "inv.technologies",
+    "uuid": "2904804b-8bd8-4de8-b727-2deacf48c5a9",
+    "description": "A passive optical network (PON) is a fiber-optic telecommunications technology for delivering broadband network access to end-customers",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

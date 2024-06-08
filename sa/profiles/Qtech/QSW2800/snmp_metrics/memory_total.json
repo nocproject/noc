@@ -1,0 +1,7 @@
+{
+    "$metric": "Memory | Total",
+    "$type": "enterprise",
+    "oid": "1.3.6.1.4.1.{{ enterprise }}.100.1.11.6.0",
+    "scale": 1,
+    "units": "byte"
+  }

@@ -1,0 +1,8 @@
+{
+    "name": "TelecomFXS | DeviceGateway",
+    "$collection": "inv.capabilities",
+    "uuid": "68dcb248-e4b1-480f-b137-6e48229df714",
+    "description": "WAN Gateway",
+    "type": "str",
+    "card_template": null
+}

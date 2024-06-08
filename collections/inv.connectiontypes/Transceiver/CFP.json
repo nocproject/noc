@@ -4,5 +4,11 @@
     "uuid": "1309fabf-af47-41f5-8b7f-61fc0ea0537d",
     "description": "CFP transceiver slot for 100-Gigabit Ethernet CFP transceivers",
     "c_group": [],
-    "genders": "mf"
+    "genders": "mf",
+    "matchers": [
+        {
+            "protocol": "TransEth100G",
+            "scope": "physical"
+        }
+    ]
 }

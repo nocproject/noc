@@ -9,55 +9,84 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | SCU"
         },
         {
+            "name": "eth",
             "description": "100M Base-T maintenance network port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "RS-232 serial port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "esc",
             "description": "RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "name": "esc",
-            "protocols": [">RS485"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS485"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "db1",
             "description": "daughter board port",
             "direction": "i",
             "gender": "f",
-            "name": "db1",
             "type__name": "Huawei | SmartAX | MA560xT | DB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801SCUL"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 26
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 396,
-            "width": 26
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
         },
-        "power": {
-            "power": 22.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 396
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 22.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801SCUL"]
         }
-    }
+    ]
 }

@@ -1,0 +1,12 @@
+{
+    "name": "DHCP | Pool | Leases | Free",
+    "$collection": "pm.metrictypes",
+    "uuid": "bb230e4b-089e-4e3c-9930-e729a5a5c46b",
+    "scope__name": "IPPool",
+    "field_name": "dhcp_pool_leases_free",
+    "field_type": "UInt64",
+    "description": "Number of free DHCP leases.",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}

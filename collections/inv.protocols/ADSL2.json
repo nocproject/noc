@@ -1,0 +1,10 @@
+{
+    "name": "ADSL2",
+    "code": "ADSL2",
+    "$collection": "inv.protocols",
+    "uuid": "2c8043e0-9628-4257-906e-f81db00dff6b",
+    "description": "ITU G.992.3 is an ITU (International Telecommunication Union) standard, also referred to as ADSL2 or G.dmt.bis. It optionally extends the capability of basic ADSL in data rates to 12 Mbit/s downstream and, depending on Annex version, up to 3.5 Mbit/s upstream (with a mandatory capability of ADSL2 transceivers of 8 Mbit/s downstream and 800 kbit/s upstream).[1] ADSL2 uses the same bandwidth as ADSL but achieves higher throughput via improved modulation techniques",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "XDSL"
+}

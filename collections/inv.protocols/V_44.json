@@ -1,0 +1,10 @@
+{
+    "name": "V.44",
+    "code": "V44",
+    "$collection": "inv.protocols",
+    "uuid": "ca2ef7ff-15f4-4685-aa79-b55ca4a0a8d4",
+    "description": "V.44 is based on LZJH (Lempel-Ziv-Jeff-Heath) adaptive data compression developed by Hughes Electronics for its DirecPC satellite Internet, and incorporated into the v.92 dial-up modem standard.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Modulator-Demodulator"
+}

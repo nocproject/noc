@@ -8,24 +8,35 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | C3750ME | PSU"
         },
         {
+            "name": "power",
             "description": "AC power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-ME3750-AC", "PWR-ME3750-AC-R"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-ME3750-AC", "PWR-ME3750-AC-R"]
         }
-    }
+    ]
 }

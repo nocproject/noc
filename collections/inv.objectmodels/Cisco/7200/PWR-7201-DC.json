@@ -8,24 +8,35 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "DC power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         },
         {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7200 | 7201 PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-7201-DC", "PWR-7201-DC="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-7201-DC", "PWR-7201-DC="]
         }
-    }
+    ]
 }

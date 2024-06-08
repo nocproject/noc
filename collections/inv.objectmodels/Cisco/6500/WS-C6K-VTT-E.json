@@ -7,16 +7,18 @@
     "cr_context": "VTT",
     "connections": [
         {
+            "name": "in",
             "description": "VTT connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 6500 | VTT-E"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C6K-VTT-E"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6K-VTT-E"]
         }
-    }
+    ]
 }

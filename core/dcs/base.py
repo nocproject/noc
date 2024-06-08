@@ -104,11 +104,23 @@ class DCSBase(object):
         self.logger.info("Shooting self with SIGTERM")
         os.kill(os.getpid(), signal.SIGTERM)
 
-    async def get_slot_limit(self, name) -> Optional[int]:
+    async def get_slot_limit(self, name: str) -> Optional[int]:
         """
         Return the current limit for given slot
         :param name:
         :return:
+        """
+        raise NotImplementedError()
+
+    async def set_slot_limit(self, name: str, limit: int) -> None:
+        """
+        Set limits for given slot.
+
+        Remove slot if limit is zero.
+
+        Args:
+            name: Slot name.
+            limit: New limit.
         """
         raise NotImplementedError()
 

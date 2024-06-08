@@ -1,0 +1,67 @@
+{
+    "name": "Raisecom | Transceiver | 100M | USFP-03/SS354-D-R",
+    "$collection": "inv.objectmodels",
+    "uuid": "9248d52a-ce40-4f49-80a3-34c0f7398408",
+    "vendor__code": "RAISECOM",
+    "description": "Wavelength: 1550TX nm DFB; RX sensitivity:<-33 dBm; TX power: -3 ~ 3 dBm; Distance:80km;DDMI; RoHS;Bitrate: 155M, LC",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "name": "in",
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100M"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "txrx",
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "1490",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["USFP-03/SS354"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

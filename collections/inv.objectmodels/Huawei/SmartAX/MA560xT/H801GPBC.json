@@ -9,53 +9,77 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | SB"
         },
         {
+            "name": "1",
             "description": "gpon 1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "2",
             "description": "gpon 2",
             "direction": "i",
             "gender": "f",
-            "name": "2",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "3",
             "description": "gpon 3",
             "direction": "i",
             "gender": "f",
-            "name": "3",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "4",
             "description": "gpon 4",
             "direction": "i",
             "gender": "f",
-            "name": "4",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801GPBC"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 23
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 396,
-            "width": 23
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 396
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801GPBC"]
         }
-    }
+    ]
 }

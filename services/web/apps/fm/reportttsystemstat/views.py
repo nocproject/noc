@@ -86,7 +86,7 @@ class ReportTTSystemStatApplication(SimpleReport):
                 _("Timestamp"),
                 _("Server"),
                 _("Service"),
-                _("Managed object"),
+                _("Managed Object"),
                 _("TT ID"),
                 _("Error code"),
                 _("Error text"),

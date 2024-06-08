@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: ICQ sender<br/>
       <strong>Long description</strong>: Sends alarms and messages to ICQ messenger.<br/>
       <strong>Scale Recommendations</strong>: One per system. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/icqsender/ target=_blank>icqsender</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/icqsender/ target=_blank>icqsender</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     power:
       default: 1

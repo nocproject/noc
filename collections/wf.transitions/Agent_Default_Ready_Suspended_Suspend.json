@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Agent Default",
+    "from_state__uuid": "8bed6920-347c-41b4-bfde-95242b150c47",
+    "to_state__uuid": "c80cdc40-dc8c-44df-bf35-c293623d4169",
+    "uuid": "b56b05e4-5c09-4878-89e2-2c460b882994",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "suspend",
+    "label": "Suspend",
+    "enable_manual": true
+}

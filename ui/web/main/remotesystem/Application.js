@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.remotesystem application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.remotesystem.Application");
@@ -134,6 +134,31 @@ Ext.define("NOC.main.remotesystem.Application", {
                             boxLabel: __("Service Profile")
                         },
                         {
+                            name: "enable_ipvrf",
+                            xtype: "checkbox",
+                            boxLabel: __("IP VRF")
+                        },
+                        {
+                            name: "enable_ipprefix",
+                            xtype: "checkbox",
+                            boxLabel: __("IP Prefix")
+                        },
+                        {
+                            name: "enable_ipprefixprofile",
+                            xtype: "checkbox",
+                            boxLabel: __("IP Prefix Profile")
+                        },
+                        {
+                            name: "enable_ipaddress",
+                            xtype: "checkbox",
+                            boxLabel: __("IP Address")
+                        },
+                        {
+                            name: "enable_ipaddressprofile",
+                            xtype: "checkbox",
+                            boxLabel: __("IP Address Profile")
+                        },
+                        {
                             name: "enable_street",
                             xtype: "checkbox",
                             boxLabel: __("Street")
@@ -172,6 +197,16 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "enable_label",
                             xtype: "checkbox",
                             boxLabel: __("Labels")
+                        },
+                        {
+                            name: "enable_discoveredobject",
+                            xtype: "checkbox",
+                            boxLabel: __("Enable Discovered")
+                        },
+                        {
+                            name: "enable_fmevent",
+                            xtype: "checkbox",
+                            boxLabel: __("Enable FM Event")
                         }
                     ]
                 },

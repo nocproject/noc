@@ -1,0 +1,29 @@
+---
+forms:
+  kafka:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Kafka is a streaming service <br/>
+      <strong>Long description</strong>: Apache Kafka is an open-source distributed event streaming platform
+      <strong>Scale Recommendations</strong>: At least one per system, or 3 like cluster. <br/>
+      <strong>docs</strong>: <a href=https://kafka.apache.org/documentation/ target=_blank>Apache Kafka docs</a> <br/>
+      <strong>Placement constraint</strong>: On node with classifiers/correlators <br/>
+    cluster_id:
+      description: "uuidgen --time | tr -d '-' | base64 | cut -b 1-22"
+      label: "Kafka Cluster Id"
+      default: ""
+      type: str
+      common: environment
+    memory_limit:
+      label: "JVM Heap limit in Gb"
+      type: int
+      default: 1
+    insecure_certs:
+      label: "don't check certificates"
+      type: bool
+      default: false
+services:
+  kafka:
+    level: system
+    category: external
+    port: 9292

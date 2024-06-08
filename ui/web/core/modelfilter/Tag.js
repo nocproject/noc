@@ -42,7 +42,7 @@ Ext.define("NOC.core.modelfilter.Tag", {
         });
         me.callParent();
         me.tags = me.getComponent(me.name);
-    },
+        },
 
     getFilter: function() {
         var me = this,
@@ -52,7 +52,7 @@ Ext.define("NOC.core.modelfilter.Tag", {
             r[me.name + "__tags"] = v;
         }
         return r;
-    },
+        },
 
     setFilter: function(filter) {
         var me = this,

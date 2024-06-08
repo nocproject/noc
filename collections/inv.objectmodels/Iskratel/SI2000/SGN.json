@@ -8,32 +8,40 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Iskratel | SI2000 | SB"
         },
         {
+            "name": "LINE",
             "description": "32-channel VDSL2 ",
             "direction": "s",
             "gender": "m",
-            "name": "LINE",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Electrical | CENC-64"
         },
         {
+            "name": "LINE",
             "description": "32-channel VDSL2 ",
             "direction": "s",
             "gender": "m",
-            "name": "LINE",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Electrical | CENC-64"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["UTA6044AD"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["UTA6044AD"]
         }
-    }
+    ]
 }

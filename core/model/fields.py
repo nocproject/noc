@@ -10,8 +10,7 @@ from pickle import loads, dumps, HIGHEST_PROTOCOL
 
 # Third-party modules
 import psycopg2
-import orjson
-from pydantic import BaseModel, ValidationError
+from pydantic import RootModel, ValidationError
 from psycopg2.extensions import adapt
 from django.db import models
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -373,28 +372,21 @@ class PydanticField(models.JSONField):
     def __init__(
         self, verbose_name=None, name=None, encoder=None, decoder=None, schema=None, **kwargs
     ):
-        if not schema.__custom_root_type__:
-            raise ValueError("Schema must __root__ attribute")
-        self.schema: BaseModel = schema
+        self.schema: RootModel = schema
         super().__init__(verbose_name, name, encoder, decoder, **kwargs)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         if not prepared:
             try:
-                self.schema.parse_obj(value)
+                self.schema.model_validate(value)
             except ValidationError as e:
                 raise ValueError(e)
         return super().get_db_prep_value(value, connection, prepared=prepared)
-
-    def get_prep_value(self, value):
-        if value is None:
-            return value
-        return orjson.dumps(value).decode("utf-8")
 
     def validate(self, value, model_instance):
         # Only form.full_clean execute
         super().validate(value, model_instance)
         try:
-            self.schema.parse_obj(value)
+            self.schema.model_validate(value)
         except ValidationError as e:
             raise DjangoValidationError(e)

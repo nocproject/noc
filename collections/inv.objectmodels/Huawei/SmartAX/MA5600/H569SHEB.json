@@ -8,32 +8,45 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | SB"
         },
         {
+            "name": "SHDSL",
             "description": "32-channel SHDSL.BIS port",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL",
-            "protocols": ["SHDSL.BIS"],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H569SHEB"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 26
         },
-        "dimensions": {
-            "depth": 372,
-            "height": 400,
-            "width": 26
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 372
         },
-        "power": {
-            "power": 34.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 400
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 34.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H569SHEB"]
         }
-    }
+    ]
 }

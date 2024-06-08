@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | Upstream Interface Board | H801GICD",
+    "name": "Huawei | SmartAX | MA560xT | Upstream Interface Board | H801GICD",
     "$collection": "inv.objectmodels",
     "uuid": "7c8fb8b1-617f-4272-9396-abb591adbfdb",
     "vendor__code": "HUAWEI",
@@ -8,59 +8,87 @@
     "cr_context": "BOARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | GIU"
         },
         {
-            "description": "GE upstream or cascaded port (SFP)",
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "GE upstream or cascaded port (SFP)",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "name": "1",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "GE upstream or cascaded port (SFP)",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "name": "2",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "GE upstream or cascaded port (SFP)",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "name": "3",
-            "protocols": ["TransEth1G"],
+            "description": "GE upstream or cascaded port (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801GICD", "H801GICD0"]
+    "data": [
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 197,
-            "width": 25
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801GICD", "H801GICD0"]
         },
-        "power": {
-            "power": 5.3
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 5.3
         },
-        "weight": {
-            "weight": 2.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 25
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 197
         }
-    }
+    ]
 }

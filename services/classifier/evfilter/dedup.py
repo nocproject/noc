@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.fm.models.activeevent import ActiveEvent
-from noc.core.hash import hash_int, dict_hash_int
+from noc.core.fm.event import Event
+from noc.core.hash import hash_int
 from .base import BaseEvFilter
 
 
@@ -17,10 +17,12 @@ class DedupFilter(BaseEvFilter):
     """
 
     @staticmethod
-    def event_hash(event: ActiveEvent) -> int:
-        var_hash = dict_hash_int(event.vars) if event.vars else 0
-        return hash_int(f"{event.managed_object.id}:{event.event_class.id}:{var_hash}")
+    def event_hash(event: Event, event_class) -> int:
+        var_hash = hash_int(sorted(f"{d.name}:{d.value}" for d in event.data)) if event.data else 0
+        return hash_int(f"{event.target.id}:{event_class.id if event_class else ''}:{var_hash}")
 
     @staticmethod
-    def get_window(event: ActiveEvent) -> int:
-        return event.event_class.deduplication_window or 0
+    def get_window(event_class) -> int:
+        if not event_class:
+            return 5
+        return event_class.deduplication_window or 0

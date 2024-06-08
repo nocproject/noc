@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "name": "Duplicated",
+    "uuid": "67330d44-089c-422f-b446-00ad095fea2a",
+    "$collection": "wf.states",
+    "description": "Address for Same object",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": true,
+    "x": 270,
+    "y": 110,
+    "disable_all_interaction": false
+}

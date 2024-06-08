@@ -16,7 +16,8 @@ Ext.define("Ext.ux.form.ColorField", {
         }
     },
     width: 190,
-    //vtype: "color",
+    regex: /^(#|0x)?[0-9A-Fa-f]+$/,
+    regexText: __("Enter integer number or hex value starting with # or 0x"),
 
     onTriggerClick: function() {
         var me = this;
@@ -79,6 +80,7 @@ Ext.define("Ext.ux.form.ColorField", {
     setColor: function(color) {
         var me = this;
         me.setFieldStyle({
+            color: this.getContrastColor(color),
             backgroundColor: this.toHexColor(color),
             backgroundImage: "none"
         });
@@ -89,12 +91,22 @@ Ext.define("Ext.ux.form.ColorField", {
         me.callParent([value]);
         me.setColor(value);
     },
-
+    //
     toHexColor: function(x) {
         let hex = Number(x).toString(16);
         while(hex.length < 6) {
             hex = "0" + hex;
         }
         return "#" + hex;
+    },
+    //
+    getValue: function() {
+        var me = this;
+        return me.toHexColor(me.callParent());
+    },
+    //
+    getContrastColor: function(color) {
+        var avgBrightness = ((color >> 16) & 255) * 0.299 + ((color >> 8) & 255) * 0.587 + (color & 255) * 0.114;
+        return contrastColor = (avgBrightness > 130) ? '#000000' : '#FFFFFF';
     }
 });

@@ -9,265 +9,289 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "LPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "2",
             "description": "LPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "3",
             "description": "LPU Slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "4",
             "description": "LPU Slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "5",
             "description": "LPU Slot #5",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "6",
             "description": "LPU Slot #6",
             "direction": "i",
             "gender": "f",
-            "name": "6",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "7",
             "description": "LPU Slot #7",
             "direction": "i",
             "gender": "f",
-            "name": "7",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
-            "description": "LPU Slot #8",
-            "direction": "i",
-            "gender": "f",
             "name": "8",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
             "name": "9",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
             "name": "10",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
             "name": "11",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
             "name": "12",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
             "name": "13",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
             "name": "14",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
             "name": "15",
-            "type__name": "Huawei | CX&NE | LPU"
-        },
-        {
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
-            "name": "16",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "16",
+            "description": "LPU Slot #8",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "name": "17",
             "description": "MPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "17",
             "type__name": "Huawei | CX&NE | MPU"
         },
         {
+            "name": "18",
             "description": "MPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "18",
             "type__name": "Huawei | CX&NE | MPU"
         },
         {
+            "name": "19",
             "description": "SFU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "19",
             "type__name": "Huawei | CX&NE | SFU"
         },
         {
+            "name": "20",
             "description": "SFU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "20",
             "type__name": "Huawei | CX&NE | SFU"
         },
         {
+            "name": "21",
             "description": "SFU Slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "21",
             "type__name": "Huawei | CX&NE | SFU"
         },
         {
+            "name": "22",
             "description": "SFU Slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "22",
             "type__name": "Huawei | CX&NE | SFU"
         },
         {
+            "name": "A1",
             "description": "Power Slot A1",
             "direction": "i",
             "gender": "f",
-            "name": "A1",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "A2",
             "description": "Power Slot A2",
             "direction": "i",
             "gender": "f",
-            "name": "A2",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "A3",
             "description": "Power Slot A3",
             "direction": "i",
             "gender": "f",
-            "name": "A3",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "A4",
             "description": "Power Slot A4",
             "direction": "i",
             "gender": "f",
-            "name": "A4",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "A5",
             "description": "Fan Slot A5",
             "direction": "i",
             "gender": "f",
-            "name": "A5",
             "type__name": "Huawei | CX&NE | CX600 FAN"
         },
         {
+            "name": "A6",
             "description": "Fan Slot A6",
             "direction": "i",
             "gender": "f",
-            "name": "A6",
             "type__name": "Huawei | CX&NE | CX600 FAN"
         },
         {
+            "name": "B1",
             "description": "Power Slot B1",
             "direction": "i",
             "gender": "f",
-            "name": "B1",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "B2",
             "description": "Power Slot B2",
             "direction": "i",
             "gender": "f",
-            "name": "B2",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "B3",
             "description": "Power Slot B3",
             "direction": "i",
             "gender": "f",
-            "name": "B3",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "B4",
             "description": "Power Slot B4",
             "direction": "i",
             "gender": "f",
-            "name": "B4",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "B5",
             "description": "Fan Slot B5",
             "direction": "i",
             "gender": "f",
-            "name": "B5",
             "type__name": "Huawei | CX&NE | CX600 FAN"
         },
         {
+            "name": "B6",
             "description": "Fan Slot B6",
             "direction": "i",
             "gender": "f",
-            "name": "B6",
             "type__name": "Huawei | CX&NE | CX600 FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02351933"],
-            "part_no": ["CX6Z1BKP16A"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 650,
-            "height": 1420,
-            "width": 442
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 650
         },
-        "power": {
-            "power": 8000.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 1420
         },
-        "rackmount": {
-            "units": 19.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 8000.0
         },
-        "weight": {
-            "weight": 69.6
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 69.6
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX6Z1BKP16A"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02351933"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 19.0
         }
-    }
+    ]
 }

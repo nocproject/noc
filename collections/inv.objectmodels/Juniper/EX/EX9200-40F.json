@@ -8,31 +8,37 @@
     "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
+            "name": "mic0",
             "description": "MIC0 slot",
             "direction": "i",
             "gender": "f",
-            "name": "mic0",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "mic1",
             "description": "MIC1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "mic1",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "in",
             "description": "Inner connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["EX9200-40F"],
-            "part_no": ["750-049766", "750-064570"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX9200-40F"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-049766", "750-064570"]
         }
-    }
+    ]
 }

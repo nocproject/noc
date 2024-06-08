@@ -1,0 +1,8 @@
+{
+    "name": "TelecomFXS | DeviceMask",
+    "$collection": "inv.capabilities",
+    "uuid": "71c33121-7826-4ced-ab5b-bb670ee04ea9",
+    "description": "WAN MASK",
+    "type": "str",
+    "card_template": null
+}

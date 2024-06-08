@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE-EX",
+    "code": "1000BASEEX",
+    "$collection": "inv.protocols",
+    "uuid": "9f2cbbda-87d1-403e-bf50-0802dcc57723",
+    "description": "1000BASE-EX is a non-standard but industry accepted term[31] to refer to Gigabit Ethernet transmission. It is very similar to 1000BASE-LX10 but achieves longer distances up to 40 km over a pair of single-mode fibers due to higher quality optics than a LX10, running on 1310 nm wavelength lasers.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

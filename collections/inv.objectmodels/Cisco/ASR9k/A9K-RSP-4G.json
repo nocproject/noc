@@ -7,48 +7,88 @@
     "cr_context": "RSP",
     "connections": [
         {
-            "description": "Ethernet management port",
-            "direction": "s",
-            "gender": "f",
             "name": "mgmtEth0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "Ethernet management port",
             "direction": "s",
             "gender": "f",
-            "name": "mgmtEth1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "mgmtEth1",
+            "description": "Ethernet management port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Aux",
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "name": "Aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ASR9k | RSP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["A9K-RSP-4G"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["A9K-RSP-4G"]
         }
-    }
+    ]
 }

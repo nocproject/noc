@@ -1,0 +1,6 @@
+{
+  "$metric": "Memory | Usage",
+  "$type": "oid",
+  "oid": "1.3.6.1.4.1.3320.9.48.1.0",
+  "units": "%"
+}

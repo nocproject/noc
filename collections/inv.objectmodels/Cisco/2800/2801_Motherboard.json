@@ -8,127 +8,230 @@
     "cr_context": "MOTHERBOARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 2800 | MOTHERBOARD"
         },
         {
+            "name": "disk0",
             "description": "Compact Flash slot",
             "direction": "i",
             "gender": "f",
-            "name": "disk0",
             "type__name": "Flash | CF"
         },
         {
+            "name": "Fa0",
             "description": "FastEthernet 0/0",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa1",
             "description": "FastEthernet 0/1",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "dcs0",
             "description": "DaughterCard Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "dcs0",
-            "protocols": ["VIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs1",
             "description": "DaughterCard Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "dcs1",
-            "protocols": ["WIC", "VIC", "VWIC", "HWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs2",
             "description": "DaughterCard Slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "dcs2",
-            "protocols": ["WIC", "VIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs3",
             "description": "DaughterCard Slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "dcs3",
-            "protocols": ["WIC", "VIC", "VWIC", "HWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "pvdm0",
             "description": "PVDM (DSP) Slots 0",
             "direction": "i",
             "gender": "f",
-            "name": "pvdm0",
-            "protocols": ["PVDM2"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PVDM2"
+            }],
             "type__name": "Cisco | ISR | PVDM2"
         },
         {
+            "name": "pvdm1",
             "description": "PVDM (DSP) Slots 1",
             "direction": "i",
             "gender": "f",
-            "name": "pvdm1",
-            "protocols": ["PVDM2"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PVDM2"
+            }],
             "type__name": "Cisco | ISR | PVDM2"
         },
         {
+            "name": "aim0",
             "description": "AIM Container Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "aim0",
             "type__name": "Cisco | ISR | AIM"
         },
         {
+            "name": "aim1",
             "description": "AIM Container Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "aim1",
             "type__name": "Cisco | ISR | AIM"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO2801-MB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO2801-MB"]
         }
-    }
+    ]
 }

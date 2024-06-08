@@ -1,0 +1,13 @@
+{
+    "name": "Transceiver | QSFP28",
+    "$collection": "inv.connectiontypes",
+    "uuid": "e7a1a8cc-c662-4760-9be3-d78c721c5ab6",
+    "description": "QSFP28 transceiver slot",
+    "c_group": [],
+    "female_facade__name": "Transceiver | QSFP (F)",
+    "genders": "mf",
+    "matchers": [{
+        "protocol": "TransEth100G",
+        "scope": "physical"
+    }]
+}

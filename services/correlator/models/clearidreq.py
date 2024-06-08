@@ -15,6 +15,6 @@ from pydantic import BaseModel, Field
 class ClearIdRequest(BaseModel):
     op: Literal["clearid"] = Field(None, alias="$op")
     id: str
-    timestamp: Optional[str]
-    message: Optional[str]
-    source: Optional[str]
+    timestamp: Optional[str] = None
+    message: Optional[str] = None
+    source: Optional[str] = None

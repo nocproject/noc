@@ -10,6 +10,7 @@ import itertools
 import logging
 import random
 from time import perf_counter
+from typing import Optional
 import asyncio
 import threading
 
@@ -18,7 +19,7 @@ import orjson
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.http.client import fetch
+from noc.core.http.async_client import HttpClient
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.span import Span, get_current_span
@@ -56,14 +57,20 @@ class RPCProxy(object):
         self._transactions = {}
         self._hints = hints
         self._sync = sync
+        self._client = HttpClient(
+            max_redirects=None,
+            headers={
+                "X-NOC-Calling-Service": self._service.name.encode(DEFAULT_ENCODING),
+                "Content-Type": b"application/json",
+            },
+            connect_timeout=CONNECT_TIMEOUT,
+            timeout=REQUEST_TIMEOUT,
+        )
 
     def __getattr__(self, item):
         async def _call(method, *args, **kwargs):
-            async def make_call(url, body, limit=3):
-                req_headers = {
-                    "X-NOC-Calling-Service": self._service.name,
-                    "Content-Type": "application/json",
-                }
+            async def make_call(url, body, limit=3) -> Optional[bytes]:
+                req_headers = {}
                 sample = 1 if span_ctx and span_id else 0
                 with Span(
                     server=self._service_name,
@@ -73,16 +80,11 @@ class RPCProxy(object):
                     parent=span_id,
                 ) as span:
                     if sample:
-                        req_headers["X-NOC-Span-Ctx"] = span.span_context
-                        req_headers["X-NOC-Span"] = span.span_id
-                    code, headers, data = await fetch(
-                        url,
-                        method="POST",
-                        headers=req_headers,
-                        body=body,
-                        connect_timeout=CONNECT_TIMEOUT,
-                        request_timeout=REQUEST_TIMEOUT,
-                    )
+                        req_headers["X-NOC-Span-Ctx"] = str(span.span_context).encode(
+                            DEFAULT_ENCODING
+                        )
+                        req_headers["X-NOC-Span"] = str(span.span_id).encode(DEFAULT_ENCODING)
+                    code, headers, data = await self._client.post(url, body, headers=req_headers)
                     # Process response
                     if code == 200:
                         return data
@@ -92,7 +94,7 @@ class RPCProxy(object):
                             raise RPCException("Redirects limit exceeded")
                         url = headers.get("location")
                         self._logger.debug("Redirecting to %s", url)
-                        r = await make_call(url, data, limit - 1)
+                        r = await make_call(url.decode(DEFAULT_ENCODING), data, limit - 1)
                         return r
                     elif code in (598, 599):
                         span.set_error(code)
@@ -117,7 +119,7 @@ class RPCProxy(object):
             is_notify = "_notify" in kwargs
             if not is_notify:
                 msg["id"] = tid
-            body = orjson.dumps(msg).decode(encoding=DEFAULT_ENCODING)
+            body = orjson.dumps(msg)
             # Get services
             response = None
             for t in self._service.iter_rpc_retry_timeout():

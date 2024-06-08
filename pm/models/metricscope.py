@@ -8,9 +8,11 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Any, Dict, Optional, List, Callable
+from dataclasses import dataclass
+from typing import Any, Dict, Optional, List, Callable, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -33,6 +35,14 @@ to_path_code = {}
 code_lock = Lock()
 
 OLD_PM_SCHEMA_TABLE = "noc_old"
+
+
+@dataclass
+class ExistingColumn:
+    name: str
+    type: str
+    default_kind: Optional[str] = None  # DEFAULT, MATERIALIZED
+    default_expression: Optional[str] = None
 
 
 class KeyField(EmbeddedDocument):
@@ -131,8 +141,8 @@ class MetricScope(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["MetricScope"]:
-        return MetricScope.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["MetricScope"]:
+        return MetricScope.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_table_cache"), lock=lambda _: id_lock)
@@ -143,6 +153,7 @@ class MetricScope(Document):
         for label in self.labels:
             Label.ensure_label(
                 label.label,
+                [],
                 description="Auto-created for PM scope",
                 is_protected=True,
                 expose_metric=True,
@@ -190,7 +201,10 @@ class MetricScope(Document):
             default_value = None
             if config.clickhouse.enable_default_value:
                 default_value = getattr(config.clickhouse, f"default_{t.field_type}", None)
-            yield t.field_name, t.field_type, "", default_value or ""
+            if default_value:
+                yield t.field_name, t.field_type, "DEFAULT", default_value or ""
+            else:
+                yield t.field_name, t.field_type, "", default_value or ""
 
     def iter_fields(self):
         """
@@ -288,9 +302,13 @@ class MetricScope(Document):
         f_expr = ""
         if config.clickhouse.enable_default_value:
             # field != default_value
-            r = []
+            r = ["date", "ts"]
+            if view_columns:
+                r += ["labels"]
+            for f in self.key_fields:
+                r += [f"{f.field_name}"]
             for n, t, me, de in self.iter_metrics_fields():
-                r += [f"{n} != {de}"]
+                r += [f"nullIf({n}, {de}) AS {n}"]
             f_expr = ",".join(r)
         return (
             f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}{f_expr or '*'} FROM {src}"
@@ -336,7 +354,7 @@ class MetricScope(Document):
             c = False
             # Alter when necessary
             existing = {}
-            for name, type, default_expression, default_kind in ch.execute(
+            for name, c_type, default_expression, default_kind in ch.execute(
                 """
                 SELECT name, type, default_expression, default_kind
                 FROM system.columns
@@ -346,7 +364,12 @@ class MetricScope(Document):
                 """,
                 [config.clickhouse.db, table_name],
             ):
-                existing[name] = (type, default_expression if default_kind == "DEFAULT" else None)
+                existing[name]: Dict[str, ExistingColumn] = ExistingColumn(
+                    name,
+                    c_type,
+                    default_kind,
+                    str(default_expression),
+                )
             after = None
             for f, t, me, de in self.iter_fields():
                 if f not in existing:
@@ -355,13 +378,14 @@ class MetricScope(Document):
                     )
                     c = True
                 after = f
-                if f in existing and existing[f][0] != t:
+                if f in existing and existing[f].type != t:
                     print(f"Warning! Type mismatch for column {f}: {existing[f]} <> {t}")
-                    print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
+                    # print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
+                    ch.execute(f"ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
             # Check default value
             for f, t, me, de in self.iter_metrics_fields():
-                if (
-                    f in existing and existing[f][1] and existing[f][1] != str(de).strip("0")
+                if f in existing and (existing[f].default_expression or "") != str(de).strip(
+                    "0"
                 ):  # Strip for float value xxx.
                     if de:
                         ch.execute(post=f"ALTER TABLE {table_name} MODIFY COLUMN {f} DEFAULT {de}")

@@ -9,6 +9,9 @@ omit = ['*tests*']
 [tool.coverage.report]
 ignore_errors = true
 
+[tool.coverage.html]
+directory = "build/coverage"
+
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
 exclude = [".git", "build", "dist", "var", "share", "collections"] 
@@ -58,7 +61,10 @@ ignore = [
   "PLR0915", # Too many statements
   "PLR2004", # Magic value used in comparison, consider replacing {v} with a constant variable
 ] 
-unfixable = ["F401"] 
+unfixable = [
+  "F401",
+  "F841", # unused-variable
+] 
 
 [tool.ruff.flake8-quotes]
 docstring-quotes = "double"

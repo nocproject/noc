@@ -1,0 +1,13 @@
+{
+    "name": "Telecom| CPE | CPE-WIFI-2G sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "d5aa84ef-4c9f-48fc-95dc-e67a56619938",
+    "description": "https://npotelecom.ru/catalog/abonentskaya-stancziya-cpe-wifi-2g/",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.8072.3.2.10",
+    "action": "match",
+    "profile__name": "Telecom.CPE"
+}

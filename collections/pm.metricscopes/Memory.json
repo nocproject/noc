@@ -25,6 +25,7 @@
             "view_column": "chassis"
         },
         {
+            "is_key_label": true,
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,

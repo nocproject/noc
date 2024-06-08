@@ -22,9 +22,9 @@
   yum_repository:
     name: grafana
     description: Grafana repository
-    baseurl: https://packages.grafana.com/oss/rpm
+    baseurl: "{{ grafana_rpm_repo }}"
     gpgcheck: "True"
-    gpgkey: https://packages.grafana.com/gpg.key
+    gpgkey: "{{ grafana_rpm_gpgkey }}"
     enabled: "True"
   environment:
     http_proxy: "{{ http_proxy }}"

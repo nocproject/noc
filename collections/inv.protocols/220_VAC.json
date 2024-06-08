@@ -1,0 +1,10 @@
+{
+    "name": "220 VAC",
+    "code": "220VAC",
+    "$collection": "inv.protocols",
+    "uuid": "177b3bcc-f07d-4d03-85fe-3a257ef2f74e",
+    "description": "220VAC",
+    "data": [],
+    "connection_schema": "U",
+    "technology__name": "Energetics"
+}

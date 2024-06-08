@@ -16,6 +16,23 @@ class CheckersLoader(BaseLoader):
     base_path = ("core", "checkers")
     ignored_names = {"loader", "base"}
 
+    def __init__(self):
+        super().__init__()
+        self.checkers = {}
+        self.load_checkers()
+
+    def load_checkers(self):
+        for checker in self:
+            checker = self.get_class(checker)
+            if not checker:
+                continue
+            for c in checker.CHECKS:
+                self.checkers[c] = checker.name
+
+    def get_class(self, name):
+        name = self.checkers.get(name, name)
+        return super().get_class(name)
+
 
 # Create singleton object
 loader = CheckersLoader()

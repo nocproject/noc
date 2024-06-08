@@ -1,0 +1,19 @@
+{
+    "name": "sensor::target::*",
+    "$collection": "main.labels",
+    "uuid": "8d70dfe8-cdbd-4418-a92d-403b1a359db5",
+    "description": "Wildcard label for scope sensor::target",
+    "bg_color1": 3447003,
+    "fg_color1": 16777215,
+    "bg_color2": 2600544,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Sensor"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

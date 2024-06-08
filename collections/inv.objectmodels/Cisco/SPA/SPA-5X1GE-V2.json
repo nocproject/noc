@@ -7,56 +7,73 @@
     "cr_context": "SPA",
     "connections": [
         {
+            "name": "in",
             "description": "SIP connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "Gi0_sfp",
             "description": "SFP port 0",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi1_sfp",
             "description": "SFP port 1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "SFP port 2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi3_sfp",
             "description": "SFP port 3",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi4_sfp",
             "description": "SFP port 4",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SPA-5X1GE-V2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SPA-5X1GE-V2"]
         }
-    }
+    ]
 }

@@ -1,0 +1,72 @@
+{
+    "name": "Cisco | ISR | Module | VWIC3-4MFT-T1/E1",
+    "$collection": "inv.objectmodels",
+    "uuid": "7c7e60af-80dd-48d6-ae5a-3d3347cb5eaa",
+    "vendor__code": "CISCO",
+    "description": "VWIC3-4MFT-T1/E1 - 4-Port RJ-48 Multiflex Trunk - T1/E1",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "Se0",
+            "description": "Serial N/X/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "Se1",
+            "description": "Serial N/X/1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "Se2",
+            "description": "Serial N/X/2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "Se3",
+            "description": "Serial N/X/3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "in",
+            "description": "Voice WAN Interface Card slot connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC3"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VWIC3-4MFT-T1/E1"]
+        }
+    ]
+}

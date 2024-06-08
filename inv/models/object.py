@@ -1,18 +1,19 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 import operator
+from dataclasses import dataclass
 from threading import Lock
-from collections import namedtuple
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
 
 # Third-party modules
+from bson import ObjectId
 from pymongo import ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -21,8 +22,11 @@ from mongoengine.fields import (
     PointField,
     LongField,
     EmbeddedDocumentField,
+    EmbeddedDocumentListField,
     DynamicField,
     ReferenceField,
+    BooleanField,
+    DateTimeField,
 )
 from mongoengine import signals
 import cachetools
@@ -38,20 +42,35 @@ from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.topology.types import TopologyNode
+from noc.core.discriminator import discriminator
+from noc.core.confdb.collator.typing import PortItem, PathItem
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.comp import smart_text
 from noc.config import config
 from noc.pm.models.agent import Agent
-from .objectmodel import ObjectModel
+from noc.cm.models.configurationscope import ConfigurationScope
+from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
+from noc.inv.models.technology import Technology
+from .objectmodel import ObjectModel, Crossing
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
-
-PathItem = namedtuple("PathItem", ["object", "connection"])
+from .protocol import ProtocolVariant
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+
+@dataclass(frozen=True)
+class ConnectionData(object):
+    name: str
+    protocols: List[ProtocolVariant]
+    data: Dict[str, Any]
+    cross: Optional[str] = None
+    group: Optional[str] = None
+    interface_name: Optional[str] = None
 
 
 class ObjectConnectionData(EmbeddedDocument):
@@ -74,6 +93,66 @@ class ObjectAttr(EmbeddedDocument):
         if self.scope:
             return "%s.%s@%s = %s" % (self.interface, self.attr, self.scope, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+
+class ObjectConfigurationScope(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    scope: "ConfigurationScope" = PlainReferenceField(ConfigurationScope, required=True)
+    value: str = StringField(required=False)
+
+    def __str__(self):
+        return f"@{self.code}"
+
+    @property
+    def code(self) -> str:
+        if not self.value:
+            return self.scope.name
+        return f"{self.scope.name}::{self.value}"
+
+    def __hash__(self):
+        return hash(self.code)
+
+    def __eq__(self, other) -> bool:
+        if self.scope.id != other.scope.id:
+            return False
+        if not self.value:
+            return True
+        return self.value == other.value
+
+    @classmethod
+    def from_code(cls, code: str) -> List["ObjectConfigurationScope"]:
+        """
+        Getting ObjectConfigurationScope from code.
+        :param code: Format @code1@code2...
+        """
+        r = []
+        for s in code[1:].split("@"):
+            sv = ScopeVariant.from_code(s)
+            r.append(ObjectConfigurationScope(scope=sv.scope, value=sv.value))
+        return r
+
+
+class ObjectConfigurationData(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    param: "ConfigurationParam" = PlainReferenceField(ConfigurationParam, required=True)
+    value = DynamicField()
+    is_dirty = BooleanField(default=False)
+    is_conflicted = BooleanField(default=False)
+    conflicted_value = DynamicField(required=False)
+    last_seen = DateTimeField()
+    # Scope Code
+    contexts: Optional[List["ObjectConfigurationScope"]] = EmbeddedDocumentListField(
+        ObjectConfigurationScope, required=False
+    )
+
+    def __str__(self):
+        if self.contexts:
+            return f"{self.param.code}{self.scope} = {self.value}"
+        return f"{self.param.code} = {self.value}"
+
+    @property
+    def scope(self) -> str:
+        return "".join(f"@{s.code}" for s in self.contexts)
 
 
 @Label.model
@@ -108,15 +187,23 @@ class Object(Document):
     }
 
     name = StringField()
-    model = PlainReferenceField(ObjectModel)
-    data = ListField(EmbeddedDocumentField(ObjectAttr))
-    container = PlainReferenceField("self", required=False)
+    model: "ObjectModel" = PlainReferenceField(ObjectModel)
+    data: List["ObjectAttr"] = ListField(EmbeddedDocumentField(ObjectAttr))
+    container: Optional["Object"] = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
+    # Configuration Param
+    cfg_data: List["ObjectConfigurationData"] = ListField(
+        EmbeddedDocumentField(ObjectConfigurationData)
+    )
     # Map
-    layer = PlainReferenceField(Layer)
+    layer: Optional["Layer"] = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
     # Additional connection data
-    connections = ListField(EmbeddedDocumentField(ObjectConnectionData))
+    connections: List["ObjectConnectionData"] = ListField(
+        EmbeddedDocumentField(ObjectConnectionData)
+    )
+    # Dynamic crossings
+    cross: List[Crossing] = ListField(EmbeddedDocumentField(Crossing))
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -138,13 +225,13 @@ class Object(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Object"]:
-        return Object.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Object"]:
+        return Object.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["Object"]:
-        return Object.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Object"]:
+        return Object.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
@@ -256,6 +343,22 @@ class Object(Document):
     def is_wire(self) -> bool:
         return bool(self.model.get_data("length", "length"))
 
+    @property
+    def is_generic_transceiver(self) -> bool:
+        """
+        Check object create by Template Model
+        """
+        return self.model.name.startswith("Generic | Transceiver") or self.model.name.startswith(
+            "NoName | Transceiver"
+        )
+
+    @property
+    def is_generic(self) -> bool:
+        """
+        Object is Generic
+        """
+        return self.model.vendor.name == "Generic" or self.model.vendor.name == "NoName"
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object
@@ -277,15 +380,29 @@ class Object(Document):
             seen |= wave
         return list(seen)
 
-    def get_data(self, interface: str, key: str, scope: Optional[str] = None) -> Any:
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+        scope: Optional[str] = None,
+        connection: Optional[str] = None,
+        protocol: Optional[str] = None,
+    ) -> Any:
         attr = ModelInterface.get_interface_attr(interface, key)
         if attr.is_const:
             # Lookup model
-            return self.model.get_data(interface, key)
+            v = self.model.get_data(interface, key)
+            if v is not None:
+                return v
         for item in self.data:
             if item.interface == interface and item.attr == key:
                 if not scope or item.scope == scope:
                     return item.value
+        if attr.is_const:
+            # Lookup model
+            v = self.model.get_data(interface, key)
+            if v is not None:
+                return v
         return None
 
     def get_data_dict(
@@ -338,13 +455,12 @@ class Object(Document):
             r += [item]
             seen.add(k)
         # Model attributes
-        for i in self.model.data:
-            for a in self.model.data[i]:
-                k = (i, a, "")
-                if k in seen:
-                    continue
-                r += [ObjectAttr(interface=i, attr=a, scope="", value=self.model.data[i][a])]
-                seen.add(k)
+        for item in self.model.data:
+            k = (item.interface, item.attr, "")
+            if k in seen:
+                continue
+            r += [ObjectAttr(interface=item.interface, attr=item.attr, scope="", value=item.value)]
+            seen.add(k)
         # Sort according to interface
         sorting_keys: Dict[str, str] = {}
         for ni, i in enumerate(sorted(set(x[0] for x in seen))):
@@ -396,6 +512,275 @@ class Object(Document):
             or item.attr not in kset
         ]
 
+    def has_cfg_scope(self, param: ConfigurationParam, scope: str) -> bool:
+        """
+        Check Configuration Scope exists on Object
+        """
+        return True
+
+    def get_cfg_data(self, param: "ConfigurationParam", scope: Optional[str] = None) -> Any:
+        """
+        Getting Configuration Param Data. Scope - scope string
+        """
+        # Check Required Slot
+        # if param.has_scopes(scope) and not scope:
+        #     raise ValueError("Required Scope")
+        scope = ConfigurationParam.clean_scope(param, scope)
+        for item in self.cfg_data:
+            if item.param == param:
+                if not scope or item.scope == scope:
+                    return item.value
+        return None
+
+    def set_cfg_data(
+        self,
+        param: "ConfigurationParam",
+        value: Any,
+        scope: Optional[str] = None,
+        is_conflicted: bool = False,
+        is_dirty: bool = False,
+    ) -> None:
+        """
+        Set ConfigurationParam value, and check is_dirty for provisioning
+        @todo check is_dirty provisioned, when reset (remove)?
+        @todo Catch lock for protect when provisioned, is_dirty ?
+        :param param: Changed Configured Param
+        :param value: Param Value
+        :param scope: Param scope
+        :param is_conflicted: Param conflicted with current
+        :param is_dirty: Param is dirty and needed provisioned
+        """
+        scope = ConfigurationParam.clean_scope(param, scope)
+        schema = param.get_schema(self)
+        # value = param.clean(value)
+        for item in self.cfg_data:
+            if item.param == param:
+                if not scope or item.scope == scope:
+                    item.value = schema.clean(value)
+                    break
+        else:
+            # Insert new item
+            self.cfg_data += [
+                ObjectConfigurationData(
+                    param=param,
+                    value=value,
+                    is_dirty=is_dirty,
+                    contexts=ObjectConfigurationScope.from_code(scope),
+                )
+            ]
+
+    def reset_cfg_data(
+        self, param: Union["ConfigurationParam", List["ConfigurationParam"]], scope: Optional[str]
+    ):
+        """
+        Remove Configuration Data for param from scope
+        :param param: List param for reset
+        :param scope: Configuration Scope from removed
+        """
+        if not isinstance(param, list):
+            param = [param]
+        r = []
+        for cd in self.cfg_data:
+            scope = ConfigurationParam.clean_scope(cd.param, scope)
+            if cd.param in param and cd.scope == scope:
+                continue
+            r.append(cd)
+        self.cfg_data = r
+
+    def reset_cfg_scopes(self, scopes: List[str]):
+        """
+        Remove all Configuration Param for scopes
+        :param: scopes list
+        """
+        self.cfg_data = [cd for cd in self.cfg_data if cd.scope not in scopes]
+
+    # def iter_model_configuration_params(self) -> Tuple["ConfigurationParam", "ParamSchema", "ScopeVariant"]:
+    #     """
+    #     Iterate over Available Configuration Param
+    #     """
+    #     # Processed configurations param
+    #     for pr in self.model.configuration_rule.param_rules:
+
+    def get_effective_cfg_params(self) -> List["ParamData"]:
+        """
+        Get all objects param with schema
+        """
+        # Getting param data
+        param_data: Dict[Tuple[str, str], Any] = {}
+        for d in self.cfg_data:
+            param_data[(d.param.code, d.scope)] = d.value
+        r: List["ParamData"] = []
+        seen: Set[Tuple[str, str]] = set()
+        if not self.model.configuration_rule:
+            return r
+        # Processed configurations param
+        for pr in self.model.configuration_rule.param_rules:
+            if not pr.param.has_required_scopes or pr.param.is_common:
+                if (
+                    pr.dependency_param
+                    and self.get_cfg_data(pr.dependency_param) not in pr.dependency_param_values
+                ):
+                    continue
+                schema = pr.param.get_schema(self)
+                if pr.choices:
+                    schema.choices = pr.choices
+                r += [
+                    ParamData(
+                        code=pr.param.code,
+                        scopes=[],
+                        schema=schema,
+                        value=param_data.pop((pr.param.code, ""), None),
+                    )
+                ]
+                continue
+            for scope in self.iter_configuration_scopes(pr.param):
+                if (pr.param.code, scope.code) in seen:
+                    continue
+                if (
+                    pr.dependency_param
+                    and self.get_cfg_data(pr.dependency_param, scope.code)
+                    not in pr.dependency_param_values
+                ):
+                    continue
+                if pr.scope and pr.scope != scope.scope:
+                    continue
+                schema = pr.param.get_schema(self)
+                # Getting param from connection model (for transceiver)
+                if pr.choices:
+                    schema.choices = pr.choices
+                r += [
+                    ParamData(
+                        code=pr.param.code,
+                        scopes=[scope],
+                        schema=schema,
+                        value=param_data.pop((pr.param.name, scope.code), None),
+                    )
+                ]
+                seen.add((pr.param.code, scope.code))
+        for key, value in param_data.items():
+            param, *scopes = key
+            param = ConfigurationParam.get_by_code(param)
+            r += [
+                ParamData(
+                    code=param.code,
+                    scopes=[ScopeVariant.from_code(s) for s in scopes if s],
+                    schema=param.get_schema(self),
+                    value=value,
+                )
+            ]
+        # Add from data
+        return r
+
+    def iter_configuration_scopes(self, param: "ConfigurationParam") -> Iterable["ScopeVariant"]:
+        for c in self.model.connections:
+            scope = self.model.configuration_rule.get_scope(param, c)
+            if not scope or not param.has_scope(scope.name) or scope.is_common:
+                continue
+            yield ScopeVariant(scope=scope, value=c.name)
+
+    def get_effective_connection_data(self, name) -> ConnectionData:
+        """
+        Return effective connection data
+        :return:
+        """
+        c = self.model.get_model_connection(name)
+        if c is None:
+            raise ConnectionError("Local connection not found: %s" % name)
+        return ConnectionData(
+            c.name,
+            protocols=[ProtocolVariant.get_by_code(p.code) for p in c.protocols],
+            data={},
+            cross=c.cross_direction,
+            group=c.group,
+        )
+
+    def get_crossing_proposals(
+        self, name: str, to_name: Optional[str] = None
+    ) -> List[Tuple[str, List[str]]]:
+        """
+        Return possible connections for connection name
+        as (connection name, discriminators)
+        * Getting proto (not compared proto because it's internal connect)
+        * Getting discriminators
+        * Iterable over compatible connections
+        * Return connections and discriminators
+        :param name: Connection name
+        :param to_name: Other side connection
+        :return:
+        """
+        lc = self.get_effective_connection_data(name)
+        r = []
+        # Exclude crossing
+        for c in self.model.connections:
+            if c.name == lc.name or (to_name and c.name != to_name) or c.composite:
+                # Same
+                continue
+            c = self.get_effective_connection_data(c.name)
+            if not c.cross or c.cross == lc.cross:
+                continue
+            elif lc.group != c.group:
+                continue
+            # Check protocols
+            protocols, discriminators = [], []
+            for lp in lc.protocols:
+                for p in c.protocols:
+                    pd = p.get_discriminator()
+                    lpd = lp.get_discriminator()
+                    if not pd and not lpd:
+                        # Not supported discriminators
+                        protocols.append(p)
+                        continue
+                    elif not pd or not lpd:
+                        # Not supported discriminators
+                        continue
+                    # remove discriminators from crossing
+                    if c.cross == "o":
+                        d = pd.get_crossing_proposals(lpd)
+                    else:
+                        d = lpd.get_crossing_proposals(pd)
+                    if not d:
+                        continue
+                    discriminators += d
+                    protocols.append(p)
+            if c.protocols and not protocols:
+                continue
+            # Check discriminators
+            r.append((c.name, discriminators))
+        return r
+
+    def get_connection_proposals(
+        self,
+        name,
+        ro: "ObjectModel",
+        remote_name: Optional[str] = None,
+        use_cable: bool = False,
+        only_first: bool = False,
+    ) -> List[Tuple[Optional["ObjectModel"], str]]:
+        """
+
+        :param name:
+        :param ro:
+        :param remote_name:
+        :param use_cable:
+        :param only_first:
+        :return:
+        """
+        r = []
+        for model_id, c_name in self.model.get_connection_proposals(name):
+            if use_cable:
+                model = ObjectModel.get_by_id(model_id)
+                if bool(model.get_data("length", "length")):
+                    # Wired, Multiple Cable?
+                    r.append((model, c_name))
+            elif remote_name and c_name != remote_name:
+                continue
+            elif ro and ro.id == model_id:
+                r.append((None, c_name))
+            if only_first and r:
+                return r
+            # Check connection
+        return r
+
     def has_connection(self, name):
         return self.model.has_connection(name)
 
@@ -434,14 +819,47 @@ class Object(Document):
                     r += [[c, x.object, x.name]]
         return r
 
+    def get_container(self) -> Optional["Object"]:
+        """
+        Get container for object.
+        """
+        # Direct container
+        if self.container:
+            return self.container
+        # Outer
+        for _, c, _ in self.iter_outer_connections():
+            return c.get_container()
+        return None
+
     def disconnect_p2p(self, name: str):
         """
         Remove connection *name*
         """
-        c = self.get_p2p_connection(name)[0]
-        if c:
-            self.log("'%s' disconnected" % name, system="CORE", op="DISCONNECT")
-            c.delete()
+        from .objectconnection import ObjectConnection
+
+        def move_to_container(obj: Object) -> None:
+            """
+            Move object to the nearest container.
+            """
+            c = obj.get_container()
+            obj.container = c
+            obj.log(f"Insert into {c}", system="CORE", op="INSERT")
+            obj.save()
+
+        c, o, _ = self.get_p2p_connection(name)
+        if not c:
+            return
+        mc = self.model.get_model_connection(name)
+        if mc:
+            if mc.is_outer:
+                move_to_container(self)
+            elif mc.is_inner:
+                move_to_container(o)
+        self.log(f"'{name}' disconnected", system="CORE", op="DISCONNECT")
+        c.delete()
+        if o.is_wire and not ObjectConnection.objects.filter(connection__object=o.id).first():
+            # Check wire connection and remove
+            o.delete()
 
     def connect_p2p(
         self,
@@ -467,7 +885,7 @@ class Object(Document):
         valid, cause = self.model.check_connection(lc, rc)
         if not valid:
             raise ConnectionError(cause)
-        # Check existing connecitons
+        # Check existing connections
         if lc.type.genders in ("s", "m", "f", "mf"):
             ec, r_object, r_name = self.get_p2p_connection(name)
             if ec is not None:
@@ -496,10 +914,11 @@ class Object(Document):
             "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
         # Disconnect from container on o-connection
-        if lc.direction == "o" and self.container:
-            self.log("Remove from %s" % self.container, system="CORE", op="REMOVE")
-            self.container = None
-            self.save()
+        for obj, conn in [(self, lc), (remote_object, rc)]:
+            if obj.container and conn.is_outer:
+                obj.log("Remove from %s" % obj.container, system="CORE", op="REMOVE")
+                obj.container = None
+                obj.save()
         return c
 
     def connect_genderless(
@@ -743,7 +1162,7 @@ class Object(Document):
         return None, None, None
 
     @classmethod
-    def get_managed(cls, mo) -> Optional["Object"]:
+    def get_managed(cls, mo) -> List["Object"]:
         """
         Get Object managed by managed object
         :param mo: Managed Object instance or id
@@ -753,6 +1172,17 @@ class Object(Document):
             mo = mo.id
         return cls.objects.filter(
             data__match={"interface": "management", "attr": "managed_object", "value": mo}
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED)
+
+    @classmethod
+    def get_cpe(cls, cpe) -> Optional["Object"]:
+        """
+        Get Object CPE by cpe
+        """
+        if hasattr(cpe, "id"):
+            cpe = str(cpe.id)
+        return cls.objects.filter(
+            data__match={"interface": "cpe", "attr": "cpe_id", "value": cpe}
         ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
     def iter_managed_object_id(self) -> Iterator[int]:
@@ -845,7 +1275,7 @@ class Object(Document):
 
     def get_object_serials(self, chassis_only: bool = True) -> List[str]:
         """
-        Gettint object serialNumber
+        Getting object serialNumber
         :param chassis_only: With serial numbers inner objects
         :return:
         """
@@ -855,23 +1285,38 @@ class Object(Document):
                 serials += oo.get_object_serials(chassis_only=False)
         return serials
 
-    def iter_scope(self, scope: str) -> Iterable[Tuple[PathItem, ...]]:
+    def iter_technology(self, technologies: List["Technology"]) -> Iterable[PortItem]:
         """
-        Yields Full physical path for all connections with given scopes
-        behind the object
-
-        :param scope: Scope name
+        Iter object ports for technologies
+        :param technologies: List for connection technologies
         :return:
         """
-        connections = {name: ro for name, ro, _ in self.iter_inner_connections()}
+
+        def is_protocol_match(protocols) -> bool:
+            for p in protocols:
+                if p.protocol.technology in technologies:
+                    return True
+            return False
+
+        connections = {
+            name: ro
+            for name, ro, _ in self.iter_inner_connections()
+            if ro.model.cr_context != "XCVR"
+        }
         for c in self.model.connections:
-            if c.type.is_matched_scope(scope, c.protocols):
-                # Yield connection
-                yield PathItem(object=self, connection=c),
+            if is_protocol_match(c.protocols):
+                yield PortItem(
+                    name=c.name,
+                    protocols=[str(p) for p in c.protocols],
+                    internal_name=c.internal_name,
+                    path=[PathItem.from_object(self, c)],
+                    combo=c.combo,
+                )
             elif c.name in connections:
                 ro = connections[c.name]
-                for part_path in ro.iter_scope(scope):
-                    yield (PathItem(object=self, connection=c),) + part_path
+                for part_path in ro.iter_technology(technologies):
+                    part_path.path = [PathItem.from_object(self, c)] + part_path.path
+                    yield part_path
 
     def set_connection_interface(self, name, if_name):
         for cdata in self.connections:
@@ -945,7 +1390,6 @@ class Object(Document):
         modbus = self.get_data("modbus", "type")
         if modbus and modbus in {"RTU", "ASCII"}:
             for name, remote_object, remote_name in self.iter_connections("s"):
-                print(name, remote_object, remote_name)
                 path = find_path(self, name, target_protocols=["<RS485-A", "<RS485-B"])
                 if not path:
                     continue
@@ -956,6 +1400,94 @@ class Object(Document):
         if agent:
             agent = Agent.get_by_id(agent)
         return agent
+
+    def get_topology_node(self) -> "TopologyNode":
+        return TopologyNode(
+            id=str(self.id),
+            type="container",
+            resource_id=str(self.id),
+            title=self.name,
+            title_metric_template="",
+            stencil="Juniper/cloud",
+            overlays=[],
+            level=10,
+            attrs={},
+        )
+
+    def iter_cross(
+        self, name: str, discriminators: Optional[Iterable[str]] = None
+    ) -> Iterable[str]:
+        """
+        Iterate crossed outputs.
+
+        Given the input name and the optional discriminators,
+        find and iterate all reachable outputs names.
+        Process using dynamic crossings from objects and
+        static crossings from models.
+        """
+
+        def is_passable(item: Crossing) -> bool:
+            if not item.input_discriminator:
+                return True
+            if not discriminators:
+                return False
+            item_desc = discriminator(item.input_discriminator)
+            return any(d in item_desc for d in discriminators)
+
+        def iter_merge(
+            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
+        ) -> Iterable[Crossing]:
+            if i1:
+                yield from i1
+            if i2:
+                yield from i2
+
+        seen: Set[str] = set()
+        discriminators = [discriminator(x) for x in discriminators or []]
+        # Dynamic crossings
+        if self.cross:
+            for item in iter_merge(self.cross, self.model.cross):
+                # @todo: Restrict to type `s`?
+                if item.input == name and item.output not in seen and is_passable(item):
+                    yield item.output
+                    seen.add(item.output)
+
+    def set_internal_connection(self, input: str, output: str, data: Dict[str, str] = None):
+        """ """
+        input = self.model.get_model_connection(input)
+        if not input:
+            raise ValueError("Not found connection: %s" % input)
+        output = self.model.get_model_connection(output)
+        for c in self.cross:
+            if c.input != input.name:
+                continue
+            # Update
+            c.update_params(**data)
+            break
+        else:
+            self.cross += [
+                Crossing(
+                    **{
+                        "input": input.name,
+                        "input_discriminator": data.get("input_discriminator"),
+                        "output": output.name,
+                        "output_discriminator": data.get("output_discriminator"),
+                        "gain_db": data.get("gain_db"),
+                    }
+                )
+            ]
+
+    def disconnect_internal(self, name: str, remote_name: Optional[str] = None):
+        """
+        Remove internal crossing
+        """
+        if not self.model.has_connection(name):
+            raise ValueError("Unknown input")
+        self.cross = [
+            c
+            for c in self.cross
+            if c.input != name and (not remote_name or remote_name == c.output)
+        ]
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

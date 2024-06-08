@@ -9,32 +9,52 @@
     "labels": ["noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Board connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | SubB"
         },
         {
+            "name": "0",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "0",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "1",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H531O2GS"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H531O2GS"]
         }
-    }
+    ]
 }

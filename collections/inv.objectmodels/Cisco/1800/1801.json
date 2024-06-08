@@ -8,129 +8,251 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "Bri0",
             "description": "Bri0",
             "direction": "s",
             "gender": "f",
-            "name": "Bri0",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Atm0",
             "description": "Atm0",
             "direction": "s",
             "gender": "f",
-            "name": "Atm0",
-            "protocols": ["ADSLoPOTS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa0",
             "description": "Fa0",
             "direction": "s",
             "gender": "f",
-            "name": "Fa0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa1",
             "description": "Fa1",
             "direction": "s",
             "gender": "f",
-            "name": "Fa1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa2",
             "description": "Fa2",
             "direction": "s",
             "gender": "f",
-            "name": "Fa2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa3",
             "description": "Fa3",
             "direction": "s",
             "gender": "f",
-            "name": "Fa3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa4",
             "description": "Fa4",
             "direction": "s",
             "gender": "f",
-            "name": "Fa4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa5",
             "description": "Fa5",
             "direction": "s",
             "gender": "f",
-            "name": "Fa5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa6",
             "description": "Fa6",
             "direction": "s",
             "gender": "f",
-            "name": "Fa6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa7",
             "description": "Fa7",
             "direction": "s",
             "gender": "f",
-            "name": "Fa7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa8",
             "description": "Fa8",
             "direction": "s",
             "gender": "f",
-            "name": "Fa8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO1801"],
-            "cpe_22": "cpe:/h:cisco:1801_integrated_service_router:-",
-            "cpe_23": "cpe:2.3:h:cisco:1801_integrated_service_router:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO1801"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:1801_integrated_service_router:-"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:1801_integrated_service_router:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

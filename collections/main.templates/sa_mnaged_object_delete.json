@@ -1,0 +1,9 @@
+{
+    "name": "sa.mnaged_object.delete",
+    "$collection": "main.templates",
+    "uuid": "d83e07a9-999e-4954-9340-aed936c9be2e",
+    "subject": "New managed object: {{ managed_object.name }}",
+    "body": "Managed object just has been deleted.\nName: {{ managed_object.name }}\nAddress: {{ managed_object.address }}\nProfile: {{ managed_object.profile.name }}\n",
+    "message_type": "OBJECT_DELETED",
+    "is_system": true
+}

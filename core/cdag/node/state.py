@@ -16,7 +16,7 @@ from .base import BaseCDAGNode, ValueType, Category
 
 
 class StateNodeState(BaseModel):
-    value: Optional[ValueType]
+    value: Optional[ValueType] = None
 
 
 class StateNode(BaseCDAGNode):

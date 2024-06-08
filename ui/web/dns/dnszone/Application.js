@@ -145,7 +145,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_dnszone": true
+                        "allow_models": ["dns.DNSZone"]
                     },
                 }
             ],

@@ -8,97 +8,164 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "0",
             "description": "ge-0/0/0",
             "direction": "s",
             "gender": "f",
-            "name": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "1",
             "description": "ge-0/0/1",
             "direction": "s",
             "gender": "f",
-            "name": "1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "2",
             "description": "ge-0/0/2",
             "direction": "s",
             "gender": "f",
-            "name": "2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "3",
             "description": "ge-0/0/3",
             "direction": "s",
             "gender": "f",
-            "name": "3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fpc1",
             "description": "PIM1",
             "direction": "i",
             "gender": "f",
-            "name": "fpc1",
             "type__name": "Juniper | J | PIM"
         },
         {
+            "name": "fpc2",
             "description": "PIM2",
             "direction": "i",
             "gender": "f",
-            "name": "fpc2",
             "type__name": "Juniper | J | PIM"
         },
         {
+            "name": "fpc3",
             "description": "PIM3",
             "direction": "i",
             "gender": "f",
-            "name": "fpc3",
             "type__name": "Juniper | J | PIM"
         },
         {
+            "name": "fpc4",
             "description": "PIM4",
             "direction": "i",
             "gender": "f",
-            "name": "fpc4",
             "type__name": "Juniper | J | PIM"
         },
         {
+            "name": "fpc5",
             "description": "PIM5",
             "direction": "i",
             "gender": "f",
-            "name": "fpc5",
             "type__name": "Juniper | J | UPIM"
         },
         {
+            "name": "fpc6",
             "description": "PIM6",
             "direction": "i",
             "gender": "f",
-            "name": "fpc6",
             "type__name": "Juniper | J | UPIM"
         },
         {
+            "name": "power",
             "description": "power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["J4350"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["J4350"]
         },
-        "rackmount": {
-            "units": 2
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2
         }
-    }
+    ]
 }

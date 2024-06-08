@@ -1,0 +1,18 @@
+{
+    "workflow__name": "Agent Default",
+    "name": "Approved",
+    "uuid": "d8b07951-55b0-4103-9d82-841f07c1f3f5",
+    "$collection": "wf.states",
+    "description": "Agent is approved for ready",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 260,
+    "y": 50,
+    "disable_all_interaction": false,
+    "labels": ["noc::agent::auth::pre"]
+}

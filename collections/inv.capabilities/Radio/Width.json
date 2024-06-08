@@ -1,0 +1,8 @@
+{
+    "name": "Radio | Width",
+    "$collection": "inv.capabilities",
+    "uuid": "1ec0ec24-ef9a-4e8c-9f39-59e4a9f922d0",
+    "description": "Width of radio object in MHz.",
+    "type": "int",
+    "card_template": null
+}

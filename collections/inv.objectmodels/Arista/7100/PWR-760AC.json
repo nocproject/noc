@@ -7,24 +7,29 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Arista | 7100 | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-760AC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-760AC"]
         }
-    }
+    ]
 }

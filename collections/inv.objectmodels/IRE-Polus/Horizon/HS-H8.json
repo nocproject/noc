@@ -1,0 +1,64 @@
+{
+    "name": "IRE-Polus | Horizon | HS-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "1fd48ae6-df10-4ba4-ba72-1150fadbe6fe",
+    "vendor__code": "IRE-POLUS",
+    "description": "Полуслотовый адаптер",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "1",
+            "description": "H4 Card slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "2",
+            "description": "H4 Card slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 210.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 351
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.7
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HS-H8"]
+        }
+    ]
+}

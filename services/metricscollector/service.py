@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # metricscollector service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -41,9 +41,7 @@ class CfgItem(object):
 class MetricsCollectorService(FastAPIService):
     name = "metricscollector"
     use_mongo = True
-    if config.features.traefik:
-        traefik_backend = "ui"
-        traefik_frontend_rule = "PathPrefix:/api/metricscollector"
+    traefik_routes_rule = "PathPrefix(`/api/metricscollector`)"
 
     def __init__(self):
         super().__init__()

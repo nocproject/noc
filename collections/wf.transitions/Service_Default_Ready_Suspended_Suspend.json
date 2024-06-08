@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__uuid": "b76321f4-7cc3-4f56-b92f-481078af2340",
+    "to_state__uuid": "82f4feda-10b5-4389-99ca-bb4e54ca7a3b",
+    "uuid": "092e5939-130c-4a48-97bc-a4abe300ea85",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "suspend",
+    "label": "Suspend",
+    "enable_manual": true
+}

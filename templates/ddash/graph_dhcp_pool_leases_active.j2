@@ -37,7 +37,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n    t,\n    groupArray((dhcp_pool, Leases_active)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n       name as dhcp_pool, \n        argMax(dhcp_pool_leases_active, t) as `Leases_active` \n    FROM \n        $table \n    WHERE \ntype = 'dhcp'\n        and        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY name, t ORDER BY t, name) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t,\n    groupArray((tuple(dhcp_pool, IP), Leases_active)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n       name as dhcp_pool, \n       prefix as IP, \n        argMax(dhcp_pool_leases_active, t) as `Leases_active` \n    FROM \n        $table \n    WHERE \ntype = 'dhcp'\n        and        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY name, prefix, t ORDER BY t, name) \nGROUP BY t \nORDER BY t ASC",
       "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "ippool",

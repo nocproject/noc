@@ -8,24 +8,29 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5105 | SB"
         },
         {
+            "name": "xDSL",
             "description": "16-channel ADSL2+",
             "direction": "s",
             "gender": "f",
-            "name": "xDSL",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H523ADCE"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H523ADCE"]
         }
-    }
+    ]
 }

@@ -11,7 +11,6 @@ import random
 
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
-from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.core.span import Span
 from noc.core.change.policy import change_tracker
 from .resolver import ResolverCheck
@@ -45,7 +44,7 @@ from .prefix import PrefixCheck
 from .address import AddressCheck
 from .segmentation import SegmentationCheck
 from .ifdesc import IfDescCheck
-from ..periodic.alarms import AlarmsCheck
+from .configparam import ConfigParamCheck
 from ..periodic.diagnostic import DiagnosticCheck
 
 
@@ -116,10 +115,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
             NRIServiceCheck(self).run()
         if self.object.object_profile.enable_box_discovery_cpe:
             CPECheck(self).run()
-        if self.object.object_profile.enable_box_discovery_alarms:
-            AlarmsCheck(self).run()
-        if self.object.object_profile.enable_box_discovery_mac:
-            MACCheck(self).run()
         if VPNCheck.is_enabled_for_object(self.object):
             VPNCheck(self).run()
         if PrefixCheck.is_enabled_for_object(self.object):
@@ -140,6 +135,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             SLACheck(self).run()
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_param_data:
+            ConfigParamCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
 
     def get_running_policy(self):

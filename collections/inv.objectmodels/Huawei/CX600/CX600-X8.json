@@ -9,146 +9,170 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "LPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "2",
             "description": "LPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "3",
             "description": "LPU Slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "4",
             "description": "LPU Slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "5",
             "description": "LPU Slot #5",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "6",
             "description": "LPU Slot #6",
             "direction": "i",
             "gender": "f",
-            "name": "6",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "7",
             "description": "LPU Slot #7",
             "direction": "i",
             "gender": "f",
-            "name": "7",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "8",
             "description": "LPU Slot #8",
             "direction": "i",
             "gender": "f",
-            "name": "8",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "9",
             "description": "SRU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "9",
             "type__name": "Huawei | CX&NE | SRU"
         },
         {
+            "name": "10",
             "description": "SRU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "10",
             "type__name": "Huawei | CX&NE | SRU"
         },
         {
+            "name": "11",
             "description": "SFU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "11",
             "type__name": "Huawei | CX&NE | SFU"
         },
         {
+            "name": "A1",
             "description": "Power Slot A1",
             "direction": "i",
             "gender": "f",
-            "name": "A1",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "A2",
             "description": "Power Slot A2",
             "direction": "i",
             "gender": "f",
-            "name": "A2",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "A3",
             "description": "Fan Slot A3",
             "direction": "i",
             "gender": "f",
-            "name": "A3",
             "type__name": "Huawei | CX&NE | CX600 FAN"
         },
         {
+            "name": "B1",
             "description": "Power Slot B1",
             "direction": "i",
             "gender": "f",
-            "name": "B1",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "B2",
             "description": "Power Slot B2",
             "direction": "i",
             "gender": "f",
-            "name": "B2",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         },
         {
+            "name": "B3",
             "description": "Fan Slot B3",
             "direction": "i",
             "gender": "f",
-            "name": "B3",
             "type__name": "Huawei | CX&NE | CX600 FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02351932"],
-            "part_no": ["CX6Z1BKP08A"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 650,
-            "height": 620,
-            "width": 442
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 650
         },
-        "power": {
-            "power": 3300.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 620
         },
-        "rackmount": {
-            "units": 14.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 3300.0
         },
-        "weight": {
-            "weight": 130.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 130.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX6Z1BKP08A"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02351932"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 14.0
         }
-    }
+    ]
 }

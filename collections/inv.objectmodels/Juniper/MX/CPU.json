@@ -7,16 +7,18 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "CPU connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | CPU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["711-029089", "711-038484", "711-045719", "711-035209", "711-062860"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["711-029089", "711-038484", "711-045719", "711-035209", "711-062860"]
         }
-    }
+    ]
 }

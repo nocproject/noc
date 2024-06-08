@@ -1,0 +1,15 @@
+{
+    "name": "Destination",
+    "$collection": "cm.configurationparams",
+    "uuid": "17220f07-61db-4720-876b-d4433a18b3ad",
+    "code": "port_destination",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "OpticalPort"
+    }],
+    "type": "string",
+    "schema": [{
+        "key": "max_length",
+        "value": "20"
+    }]
+}

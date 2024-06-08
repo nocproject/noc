@@ -1,0 +1,8 @@
+{
+    "name": "IRE-Polus | Horizon | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "12bed51c-3f86-4d6c-89a0-77e66422fbea",
+    "description": "K4-H8 and K10-H8 Fan Board",
+    "c_group": [],
+    "genders": "mf"
+}

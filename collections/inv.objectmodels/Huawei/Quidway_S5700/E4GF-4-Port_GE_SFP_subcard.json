@@ -6,59 +6,87 @@
     "description": "Interface card with 4 GE SFP ports",
     "connections": [
         {
+            "name": "in",
             "description": "Extension slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway S5700 | Extension slot"
         },
         {
+            "name": "sfp 1",
             "description": "SFP port 1",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp 2",
             "description": "SFP port 2",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 2",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp 3",
             "description": "SFP port 3",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp 4",
             "description": "SFP port 4",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 4",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LS5D00E4GF00"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LS5D00E4GF00"]
         },
-        "dimensions": {
-            "depth": "69",
-            "height": "22",
-            "width": "200"
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": "69"
         },
-        "power": {
-            "power": "6"
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": "22"
         },
-        "weight": {
-            "weight": "0.2"
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": "200"
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": "6"
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": "0.2"
         }
-    }
+    ]
 }

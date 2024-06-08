@@ -65,7 +65,6 @@ class Script(BaseScript):
 
         i = 0
         for s in range(int(len(lines) / step)):
-
             if i == portsnum * step:
                 break
 

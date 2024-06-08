@@ -82,18 +82,17 @@ class NOCLoader(object):
         # package (if any).
         if self.is_package(fullname):
             mod.__package__ = fullname
-        else:
-            mod.__package__ = ".".join(fullname.split(".")[:-1])
-
-        if self.is_package(fullname):
             # Set __path__ for packages
             # so we can find the sub-modules.
-            mod.__path__ = [self.path_entry]
+            # Strip __init__.py
+            mod.__path__ = [mod.__file__[:-12]]
+        else:
+            mod.__package__ = ".".join(fullname.split(".")[:-1])
 
         if isinstance(source, str):
             # Convert to UTF-8 to prevent
             # SyntaxError: encoding declaration in Unicode string
-            source = source.encode("utf-8")
+            source = source.encode()
         exec(source, mod.__dict__)
         return mod
 
@@ -198,8 +197,12 @@ def _get_loader():
     if not parts[0]:
         root = os.sep + root
     root = os.path.abspath(root)
-    alt_speedup = os.path.join(root, "nocspeedup")
-    if os.path.exists(alt_speedup):
+    alt_speedup = os.getenv("NOC_SPEEDUP_PATH")
+    if not alt_speedup:
+        alt = os.path.join(root, "nocspeedup")
+        if os.path.exists(alt):
+            alt_speedup = alt
+    if alt_speedup:
         NOCSpeedupLoader.ROOT = alt_speedup
         loader_map[NOCSpeedupLoader.PREFIX] = NOCSpeedupLoader
     return ImportRouter(loader_map)

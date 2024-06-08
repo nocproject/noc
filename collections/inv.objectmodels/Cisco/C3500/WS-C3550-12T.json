@@ -8,154 +8,330 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "Power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "name": "Power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "Gi1",
             "description": "GigabitEthernet 0/1",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi2",
             "description": "GigabitEthernet 0/2",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi3",
             "description": "GigabitEthernet 0/3",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi4",
             "description": "GigabitEthernet 0/4",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi5",
             "description": "GigabitEthernet 0/5",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi6",
             "description": "GigabitEthernet 0/6",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi7",
             "description": "GigabitEthernet 0/7",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi8",
             "description": "GigabitEthernet 0/8",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi9",
             "description": "GigabitEthernet 0/9",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi10",
             "description": "GigabitEthernet 0/10",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi1_gbic",
             "description": "Gi0/1 GBIC port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi1_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi2_gbic",
             "description": "Gi0/2 GBIC port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi2_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C3550-12T", "WS-C3550-12T-EMI"],
-            "cpe_22": "cpe:/h:cisco:catalyst_3550:-",
-            "cpe_23": "cpe:2.3:h:cisco:catalyst_3550:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C3550-12T", "WS-C3550-12T-EMI"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:catalyst_3550:-"
         },
-        "rackmount": {
-            "units": 1.5
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:catalyst_3550:-:*:*:*:*:*:*:*"
         },
-        "power": {
-            "power": 65.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "weight": {
-            "weight": 7.3
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.5
         },
-        "dimensions": {
-            "depth": 404,
-            "height": 67,
-            "width": 445
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 65.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 7.3
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 404
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 67
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 445
         }
-    }
+    ]
 }

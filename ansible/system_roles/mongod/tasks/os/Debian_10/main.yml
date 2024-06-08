@@ -1,25 +1,19 @@
 ---
-- name: Get MongoDB Key from remote server
+- name: Add MongoDB apt repository key
   get_url:
-    url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
-    dest: "/tmp/mongo_apt_key.gpg"
+    url: "{{ mongo_deb_gpgkey }}"
+    dest: /etc/apt/trusted.gpg.d/mongodb.asc
+    mode: '0644'
+    force: true
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
-- name: Add MongoDB apt key
-  apt_key:
-    file: "/tmp/mongo_apt_key.gpg"
-    id: "{{ mongo_apt_id[mongod_version] }}"
-    state: present
-  tags:
-    - repo
-
 - name: Add MongoDB repository
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} main"
+    repo: "{{ mongo_deb_repo }}"
     state: present
     update_cache: "True"
   register: mongo_repo_stat

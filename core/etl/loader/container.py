@@ -76,7 +76,7 @@ class ContainerLoader(BaseLoader):
         o.save()
         return o
 
-    def change_object(self, object_id, v, change_object=None):
+    def change_object(self, object_id, v, change_object=None, **kwargs):
         o = self.model.objects.get(pk=object_id)
         if v.get("name"):
             o.name = v.get("name")

@@ -2,7 +2,7 @@
     "name": "Huawei Technologies Co.",
     "uuid": "4d248e16-d835-4bac-8e01-a696d37c1761",
     "full_name": "Huawei Technologies Co.",
-    "code": ["HUAWEI", "HW_VRP"],
+    "code": ["HUAWEI", "HW_VRP", "HWTC"],
     "site": "http://huawei.com/",
     "$collection": "inv.vendors"
 }

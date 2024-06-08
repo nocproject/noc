@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from time import mktime
 
 # Third-party modules
@@ -18,6 +18,7 @@ from fastapi.exceptions import HTTPException
 from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
+from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmclass import AlarmClass
@@ -34,6 +35,31 @@ class ManagedObjectJsonDS(JsonDSAPI):
     api_name = "managedobject"
     query_payload = QueryPayloadItem
     variable_payload = VariablePayloadItem
+
+    def resolve_payload_options(
+        self,
+        metric,
+        name,
+        user,
+        payload: Optional[Dict[str, str]] = None,
+    ) -> List[Dict[str, str]]:
+        """ """
+        if name == "metric":
+            return super().get_metrics()
+        elif name == "managed_object":
+            return [
+                {"label": mo[0], "value": mo[1]}
+                for mo in ManagedObject.objects.filter(is_managed=True)
+                .values_list("name", "bi_id")
+                .order_by("id")[:10000]
+            ]
+        elif name == "interface":
+            mo = ManagedObject.get_by_bi_id(int(payload["managed_object"]))
+            return [
+                {"label": iface.name, "value": iface.name}
+                for iface in Interface.objects.filter(managed_object=mo, type="physical")
+            ]
+        return []
 
     @staticmethod
     def resolve_object_query(
@@ -97,7 +123,7 @@ class ManagedObjectJsonDS(JsonDSAPI):
                         "annotation": annotation,
                         "time": mktime(d["timestamp"].timetuple()) * 1000
                         + d["timestamp"].microsecond / 1000,
-                        "title": AlarmClass.get_by_id(d["alarm_class"]).name
+                        "title": AlarmClass.get_by_id(d["alarm_class"]).name,
                         # "tags": X,
                         # "text": X
                     }
@@ -106,7 +132,7 @@ class ManagedObjectJsonDS(JsonDSAPI):
                         "annotation": annotation,
                         "time": mktime(d["timestamp"].timetuple()) * 1000
                         + d["timestamp"].microsecond / 1000,
-                        "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name
+                        "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name,
                         # "tags": X,
                         # "text": X
                     }

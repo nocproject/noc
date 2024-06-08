@@ -1,0 +1,10 @@
+{
+    "name": "STM64",
+    "code": "STM64",
+    "$collection": "inv.protocols",
+    "uuid": "10bee0fb-b5ae-4309-b32a-84336ca9f7e6",
+    "description": "10 Gbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "SDH"
+}

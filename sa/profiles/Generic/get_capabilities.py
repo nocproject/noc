@@ -60,15 +60,14 @@ class Script(BaseScript):
         """
         Check SNMP GET response to oid
         """
-        if self.credentials.get("snmp_ro"):
-            try:
-                r = self.snmp.get(oid, version=version)
-                if r is not None and oid == mib["SNMPv2-MIB::sysObjectID", 0]:
-                    # For EnterpriseID Caps
-                    self._ent_id = r
-                return r is not None
-            except (self.snmp.TimeOutError, SNMPError):
-                pass
+        try:
+            r = self.snmp.get(oid, version=version)
+            if r is not None and oid == mib["SNMPv2-MIB::sysObjectID", 0]:
+                # For EnterpriseID Caps
+                self._ent_id = r
+            return r is not None
+        except (self.snmp.TimeOutError, SNMPError):
+            pass
         return False
 
     def check_snmp_getnext(self, oid, bulk=False, only_first=True, version=None):
@@ -309,7 +308,7 @@ class Script(BaseScript):
         :param version:
         :return:
         """
-        if self.credentials.get("snmp_ro"):
+        if self.has_snmp():
             try:
                 r = getattr(self, "_ent_id", None)
                 if r is None:
@@ -332,11 +331,36 @@ class Script(BaseScript):
         :param version
         :return:
         """
-        if self.credentials.get("snmp_ro"):
+        if self.has_snmp():
             r = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], version=version)
             if not r:
                 return None
             return filter_non_printable(r)
+
+    @false_on_snmp_error
+    def get_engine_id(self):
+        """
+        Return SNMPv3 EngineId
+        """
+        try:
+            engine_id = self.snmp.get_engine_id()
+        except NotImplementedError:
+            return None
+        self.logger.debug("EngineID: %s", engine_id)
+        if engine_id:
+            return engine_id.hex()
+        return None
+
+    @false_on_snmp_error
+    def has_ntpv4(self):
+        """
+        True if NTPv4-MIB supported
+        :return:
+        """
+        if self.has_snmp():
+            self.snmp.get(mib["NTPv4-MIB::ntpEntStatusActiveRefSourceId", 0])
+            return True
+        return False
 
     def execute_platform_cli(self, caps):
         """
@@ -382,7 +406,9 @@ class Script(BaseScript):
                     snmp_version = SNMP_v1
                 else:
                     caps["SNMP | v1"] = False
+                self.snmp.close()
             if self.is_requested("snmp_v2c"):
+                self.snmp.close()
                 if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v2c):
                     caps["SNMP | v2c"] = True
                     snmp_version = SNMP_v2c
@@ -390,6 +416,19 @@ class Script(BaseScript):
                         caps["SNMP | Bulk"] = True
                 else:
                     caps["SNMP | v2c"] = False
+                self.snmp.close()
+            if self.is_requested("snmp_v2c"):
+                if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v3):
+                    caps["SNMP | v3"] = True
+                    snmp_version = SNMP_v3
+                    engine_id = self.get_engine_id()
+                    if engine_id:
+                        caps["SNMP | EngineID"] = engine_id
+                    if self.has_snmp_bulk():
+                        caps["SNMP | Bulk"] = True
+                else:
+                    caps["SNMP | v3"] = False
+                self.snmp.close()
             if snmp_version is not None:
                 # SNMP is enabled
                 caps["SNMP"] = True
@@ -457,6 +496,8 @@ class Script(BaseScript):
             caps["Network | BFD"] = True
         if self.is_requested("rep") and self.has_rep():
             caps["Network | REP"] = True
+        if self.has_ntpv4():
+            caps["SNMP | MIB | NTPv4-MIB"] = True
         self.call_method(
             cli_handler="execute_platform_cli",
             snmp_handler="execute_platform_snmp",

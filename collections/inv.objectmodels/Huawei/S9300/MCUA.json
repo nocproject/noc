@@ -9,60 +9,98 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S9300 | MPU"
         },
         {
+            "name": "MEth0/1",
             "description": "Management port",
             "direction": "s",
             "gender": "f",
-            "name": "MEth0/1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Console for on-site system configuration",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "mon",
             "description": "MON port (reserved)",
             "direction": "s",
             "gender": "f",
-            "name": "mon",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "RS485",
             "description": "RS485 port (reserved)",
             "direction": "s",
             "gender": "f",
-            "name": "RS485",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03020NWR"],
-            "part_no": ["LE02MCUA"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 18.0
         },
-        "dimensions": {
-            "depth": 195,
-            "height": 20,
-            "width": 427
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LE02MCUA"]
         },
-        "power": {
-            "power": 18.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03020NWR"]
         },
-        "weight": {
-            "weight": 0.9
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.9
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 427
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 195
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 20
         }
-    }
+    ]
 }

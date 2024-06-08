@@ -51,7 +51,7 @@ class IGetCPE(BaseInterface):
     returns = DictListParameter(
         attrs={
             "id": StringParameter(),
-            "global_id": StringParameter(),
+            "global_id": MACAddressParameter(accept_bin=False) | StringParameter(),
             "name": StringParameter(required=False),
             "status": StringParameter(
                 choices=["active", "inactive", "approval", "firmware", "provisioning", "other"],

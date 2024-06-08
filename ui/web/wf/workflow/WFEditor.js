@@ -684,6 +684,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                         delete element.data["remote_id"];
                     }
                     delete element.data["bi_id"];
+                    delete element.data["uuid"];
                     delete element.data["remote_system__label"];
                     delete element.data["workflow__label"];
                     delete element.data["from_state__label"];
@@ -708,6 +709,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 delete element.data["remote_id"];
             }
             delete element.data["bi_id"];
+            delete element.data["uuid"];
             delete element.data["position"];
             delete element.data["type"];
             delete element.data["update_ttl"];
@@ -716,9 +718,18 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             return element.data;
         });
         var ret = Ext.merge(Ext.clone(me.workflow), {states: states, transitions: transitions});
+        delete ret["uuid"];
         delete ret["bi_id"];
         delete ret["type"];
         delete ret["id"];
+        if(ret["allowed_models"] != null && ret["allowed_models"].length != 0) {
+            var allowed_models = [];
+
+            ret["allowed_models"].forEach(function(key) {
+                    allowed_models.push(key.id);
+            });
+            ret["allowed_models"] = allowed_models;
+        }
         Ext.Ajax.request({
             url: "/wf/workflow/" + me.configId + "/config/",
             method: "POST",

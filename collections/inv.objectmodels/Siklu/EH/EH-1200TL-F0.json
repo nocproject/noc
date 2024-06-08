@@ -8,84 +8,155 @@
     "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port"],
     "connections": [
         {
+            "name": "eth0",
             "description": "RF Board 71-76Ghz TDD",
             "direction": "s",
             "gender": "f",
-            "name": "eth0",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
+            "name": "eth1",
             "description": "RJ1 eth1 POE",
             "direction": "s",
             "gender": "f",
-            "name": "eth1",
             "group": "1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth2",
             "description": "SFP1 eth2",
             "direction": "i",
             "gender": "f",
-            "name": "eth2",
             "group": "1",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "eth3",
             "description": "RJ2 eth3",
             "direction": "s",
             "gender": "f",
-            "name": "eth3",
             "group": "2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth4",
             "description": "SFP2 eth4",
             "direction": "i",
             "gender": "f",
-            "name": "eth4",
             "group": "2",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "GND",
             "description": "Ground connection",
             "direction": "i",
             "gender": "m",
-            "name": "GND",
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
+            "name": "DC1+",
             "description": "DC input Positive contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC1+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
+            "name": "DC1-",
             "description": "DC input Negative contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC1-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["EH-1200TL-ODU-1ft-F0"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EH-1200TL-ODU-1ft-F0"]
         },
-        "dimensions": {
-            "depth": 130,
-            "height": 310,
-            "width": 225
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 225
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 130
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 310
         }
-    }
+    ]
 }

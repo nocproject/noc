@@ -28,3 +28,20 @@ class Script(BaseScript):
         """
         r = self.cli("show spanning-tree")
         return "STP Enabled   : Yes" in r
+
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check box has lacp enabled
+        """
+        r = self.cli("show lacp")
+        return "Yes" in r
+
+    @false_on_cli_error
+    def has_display_cli(self):
+        self.cli("display interface brief", cached=True)
+        return True
+
+    def execute_platform_cli(self, caps):
+        if not self.has_display_cli():
+            caps["HP | ProCurve | CLI | Old"] = True

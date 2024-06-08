@@ -1,0 +1,12 @@
+{
+    "name": "OTU1",
+    "code": "OTU1",
+    "$collection": "inv.protocols",
+    "uuid": "fc28b3f1-d2b4-41bb-b691-38266ebb90d6",
+    "description": "255/238 × 2 488 320 kbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODU1",
+    "technology__name": "OTN"
+}

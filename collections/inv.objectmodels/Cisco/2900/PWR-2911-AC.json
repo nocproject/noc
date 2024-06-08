@@ -1,0 +1,32 @@
+{
+    "name": "Cisco | 2900 | PWR-2911-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "3c59ffa9-24b3-4b66-8514-2b745399f99c",
+    "vendor__code": "CISCO",
+    "description": "C2911 AC Power Supply",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 2911 | PSU"
+        },
+        {
+            "name": "power",
+            "description": "Power input",
+            "direction": "s",
+            "gender": "m",
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-2911-AC"]
+        }
+    ]
+}

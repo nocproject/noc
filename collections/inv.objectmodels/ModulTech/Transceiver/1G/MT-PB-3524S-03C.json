@@ -5,28 +5,68 @@
     "vendor__code": "MODULTECH",
     "description": "Modultech MT-SFP-G-WDM-35-03-CS (SFP BIDI 1.25G Tx1310/Rx1550nm, 3km, SMF, SC)",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "port",
             "description": "RxTx SC port",
             "direction": "s",
             "gender": "f",
-            "name": "port",
-            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MT-PB-3524S-03C"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MT-PB-3524S-03C"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 3000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

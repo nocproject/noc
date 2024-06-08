@@ -11,7 +11,7 @@ import time
 import sys
 
 # Third-party modules
-from motor import MotorClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # NOC modules
 from noc.config import config
@@ -49,7 +49,7 @@ def connect_async():
             connection_args = config.mongo_connection_args.copy()
             connection_args["authSource"] = connection_args.pop("authentication_source")
             connection_args.pop("db")
-            _async_connections[DEFAULT_CONNECTION_NAME] = MotorClient(**connection_args)
+            _async_connections[DEFAULT_CONNECTION_NAME] = AsyncIOMotorClient(**connection_args)
             break
         except Exception as e:
             logger.error("Cannot connect to mongodb: %s", e)

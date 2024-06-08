@@ -22,10 +22,12 @@ from noc.core.model.fields import INETField, MACField
 from noc.core.validators import ValidationError, check_fqdn, is_ipv4, is_ipv6
 from noc.main.models.textindex import full_text_search
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
 from noc.core.model.decorator import on_delete_check
+from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.translation import ugettext as _
 from .afi import AFI_CHOICES
@@ -35,6 +37,7 @@ from .addressprofile import AddressProfile
 
 @Label.model
 @on_init
+@bi_sync
 @change
 @full_text_search
 @workflow
@@ -129,6 +132,12 @@ class Address(NOCModel):
     last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
     first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
+    # Object id in remote system
+    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = models.BigIntegerField(unique=True)
 
     csv_ignored_fields = ["prefix"]
 
@@ -136,8 +145,8 @@ class Address(NOCModel):
         return f"{self.vrf.name}({self.afi}): {self.address}"
 
     @classmethod
-    def get_by_id(cls, oid) -> Optional["Address"]:
-        address = Address.objects.filter(id=oid)[:1]
+    def get_by_id(cls, id: int) -> Optional["Address"]:
+        address = Address.objects.filter(id=id)[:1]
         if address:
             return address[0]
         return None

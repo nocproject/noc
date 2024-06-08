@@ -8,44 +8,61 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Iskratel | SI3000 | SB"
         },
         {
+            "name": "POTS1",
             "description": "32-channel POTS",
             "direction": "s",
             "gender": "f",
-            "name": "POTS1",
-            "protocols": ["POTS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | CENC-64"
         },
         {
+            "name": "POTS2",
             "description": "32-channel POTS ",
             "direction": "s",
             "gender": "f",
-            "name": "POTS2",
-            "protocols": ["POTS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | CENC-64"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["SBB1043DA"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 210
         },
-        "dimensions": {
-            "height": 380,
-            "width": 210
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 380
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["SBB1043DA"]
         }
-    }
+    ]
 }

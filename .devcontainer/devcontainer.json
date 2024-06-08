@@ -13,28 +13,51 @@
 		// Dockerfile target
 		"target": "dev"
 	},
+	// Environment
+	"containerEnv": {
+		"PYTHONPATH": "/opt",
+		"ESLINT_USE_FLAT_CONFIG": "false"
+	},
 	// VSCode settings
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"python.formatting.blackPath": "/usr/local/bin/black",
-				"python.formatting.provider": "black",
 				"python.pythonPath": "/usr/local/bin/python",
 				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter",
+					"black-formatter.path": "/usr/local/bin/black",
 					"editor.formatOnSave": true,
 					"editor.codeActionsOnSave": {
 						"source.fixAll": true
-					}
+					},
+					"ruff.path": "/usr/local/bin/ruff"
+				},
+				"[yaml]": {
+					"editor.defaultFormatter": "redhat.vscode-yaml",
+					"editor.formatOnSave": true,
+					"editor.autoIndent": "advanced",
+					"editor.tabSize": 2,
+					"editor.detectIndentation": false
+				},
+				"[javascript]": {
+					"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+					"editor.formatOnSave": true,
+					"eslint.format.enable": true,
+					"eslint.validate": [
+						"javascript"
+					]
 				}
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
+				"ms-python.black-formatter",
 				"yzhang.markdown-all-in-one",
 				"ms-azuretools.vscode-docker",
 				"be5invis.toml",
 				"redhat.vscode-yaml",
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"dbaeumer.vscode-eslint"
 			]
 		}
 	},

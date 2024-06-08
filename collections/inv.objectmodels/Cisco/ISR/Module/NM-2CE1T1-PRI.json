@@ -7,48 +7,54 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         },
         {
+            "name": "voice-port0",
             "description": "CTRL 0",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ48"
         },
         {
+            "name": "voice-port1",
             "description": "CTRL 1",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port1",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ48"
         },
         {
+            "name": "rx_mon",
             "description": "RX mon port",
             "direction": "s",
             "gender": "f",
-            "name": "rx_mon",
-            "protocols": ["MON"],
             "type__name": "Electrical | 2.5mm-jack"
         },
         {
+            "name": "tx_mon",
             "description": "TX mon port",
             "direction": "s",
             "gender": "f",
-            "name": "tx_mon",
-            "protocols": ["MON"],
             "type__name": "Electrical | 2.5mm-jack"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NM-2CE1T1-PRI", "NM-2CE1T1-PRI="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NM-2CE1T1-PRI", "NM-2CE1T1-PRI="]
         }
-    }
+    ]
 }

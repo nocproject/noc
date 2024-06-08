@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Asset check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ import cachetools
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.main.models.label import Label
+from noc.inv.models.modelinterface import ModelInterface, ModelDataError
 from noc.inv.models.objectmodel import ObjectModel, ConnectionRule
 from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.vendor import Vendor
@@ -28,9 +29,10 @@ from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.sensor import Sensor
 from noc.inv.models.sensorprofile import SensorProfile
+from noc.inv.models.cpe import CPE
 from noc.pm.models.measurementunits import MeasurementUnits, DEFAULT_UNITS_NAME
 from noc.core.text import str_dict
-from noc.core.comp import smart_bytes, smart_text
+from noc.core.comp import smart_bytes
 
 
 class AssetCheck(DiscoveryCheck):
@@ -43,6 +45,7 @@ class AssetCheck(DiscoveryCheck):
 
     _serial_masks = {}
     _serial_masks_lock = Lock()
+    _builtin_interfaces = {"asset", "stack", "management"}
 
     fatal_errors = {}
 
@@ -52,14 +55,21 @@ class AssetCheck(DiscoveryCheck):
         self.pn_description: Dict[str, str] = {}  # part_no -> Description
         self.vendors: Dict[str, Vendor] = {}  # code -> Vendor instance
         self.objects: List[
-            Tuple[str, Union[Object, str], Dict[str, Union[int, str]], Optional[str]]
-        ] = []  # [(type, object, context, serial)]
-        self.sensors: Dict[
-            Tuple[Optional[Object], str] : Dict[str, Any]
-        ] = {}  # object, sensor -> sensor data
-        self.to_disconnect: Set[
-            Tuple[Object, str, Object, str]
-        ] = set()  # Save processed connection. [(in_connection, object, out_connection), ... ]
+            Tuple[
+                str,
+                Union[Object, str],
+                Dict[str, Union[int, str]],
+                Optional[str],
+                List[ObjectAttr],
+                List[ObjectAttr],
+            ]
+        ] = []  # [(type, object, context, serial, data)]
+        self.sensors: Dict[Tuple[Optional[Object], str] : Dict[str, Any]] = (
+            {}
+        )  # object, sensor -> sensor data
+        self.to_disconnect: Set[Tuple[Object, str, Object, str]] = (
+            set()
+        )  # Save processed connection. [(in_connection, object, out_connection), ... ]
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
             list
         )  # Connection rule. type -> [rule1, ruleN]
@@ -69,6 +79,13 @@ class AssetCheck(DiscoveryCheck):
         self.managed: Set[str] = set()  # Object ids
         self.unk_model: Dict[str, ObjectModel] = {}  # name -> model
         self.lost_and_found = self.get_lost_and_found(self.object)
+        self.generic_vendor = Vendor.get_by_code("GENERIC")
+        self.noname_vendor = Vendor.get_by_code("NONAME")
+        self.generic_models: List[str] = self.get_generic_models()
+        # CPEs
+        self.cpes: Dict[str, Tuple[str, str, str, str, str]] = self.load_cpe()
+        #
+        self.object_param_artifacts: Dict[str, List[Dict[str, Any]]] = {}  # oid: [Data]
 
     def handler(self):
         self.logger.info("Checking assets")
@@ -77,8 +94,9 @@ class AssetCheck(DiscoveryCheck):
         # Submit objects
         for o in result:
             self.logger.info("Submit %s", str_dict(o))
+            # Split data to Constant and ObjectData
             self.submit(
-                type=o["type"],
+                o_type=o["type"],
                 number=o.get("number"),
                 builtin=o["builtin"],
                 vendor=o.get("vendor"),
@@ -88,7 +106,11 @@ class AssetCheck(DiscoveryCheck):
                 mfg_date=o.get("mfg_date"),
                 description=o.get("description"),
                 sensors=o.get("sensors"),
+                sa_data=o.get("data"),
+                param_data=o.get("param_data"),
+                crossing=o.get("crossing"),
             )
+            # cpe_objects
         # Assign stack members
         self.submit_stack_members()
         #
@@ -99,10 +121,23 @@ class AssetCheck(DiscoveryCheck):
         self.disconnect_connections()
         #
         self.sync_sensors()
+        #
+        self.logger.info("CPE Processed: %s", len(self.cpes))
+        for cpe_id, (_, _, vendor, model, sn) in self.cpes.items():
+            self.submit(
+                o_type="CHASSIS",
+                number="0",
+                vendor=vendor,
+                part_no=[model],
+                serial=sn,
+                cpe_id=cpe_id,
+            )
+        #
+        self.set_artefact("object_param_artifacts", self.object_param_artifacts)
 
     def submit(
         self,
-        type: str,
+        o_type: str,
         part_no: List[str],
         number: Optional[str] = None,
         builtin: bool = False,
@@ -112,6 +147,10 @@ class AssetCheck(DiscoveryCheck):
         mfg_date: Optional[str] = None,
         description: Optional[str] = None,
         sensors: List[Dict[str, Any]] = None,
+        sa_data: List[Dict[str, Any]] = None,
+        param_data: List[Dict[str, Any]] = None,
+        cpe_id: Optional[str] = None,
+        crossing: List[Dict[str, str]] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -120,29 +159,30 @@ class AssetCheck(DiscoveryCheck):
             try:
                 vendor.encode("utf-8")
             except UnicodeDecodeError:
-                self.logger.info("Trash submited as vendor id: %s", vendor.encode("hex"))
+                self.logger.info("Trash submitted as vendor id: %s", vendor.encode("hex"))
                 return
         if serial:
             # Possible dead code
             try:
                 serial.encode("utf-8")
             except UnicodeDecodeError:
-                self.logger.info("Trash submited as serial: %s", serial.encode("hex"))
+                self.logger.info("Trash submitted as serial: %s", serial.encode("hex"))
                 return
         #
+        data, constant_data = self.clean_sa_data(sa_data)
         is_unknown_xcvr = not builtin and part_no[0].startswith("Unknown | Transceiver | ")
-        if not type and is_unknown_xcvr:
-            type = "XCVR"
+        if not o_type and is_unknown_xcvr:
+            o_type = "XCVR"
         # Skip builtin modules
         if builtin:
             # Adjust context anyway
-            self.prepare_context(type, number)
+            self.prepare_context(o_type, number)
             return  # Builtin must aways have type set
         #
         if is_unknown_xcvr:
             self.logger.info("%s S/N %s should be resolved later", part_no[0], serial)
-            self.prepare_context(type, number)
-            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial)]
+            self.prepare_context(o_type, number)
+            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)]
             return
         # Cache description
         if description:
@@ -150,10 +190,10 @@ class AssetCheck(DiscoveryCheck):
                 if p not in self.pn_description:
                     self.pn_description[p] = description
         # Find vendor
-        vnd = self.get_vendor(vendor)
+        vnd = self.get_vendor(vendor, o_type)
         if not vnd:
             # Try to resolve via model map
-            m = self.get_model_map(vendor, part_no, serial)
+            m = self.get_model_map(vendor, part_no, serial, cpe_id)
             if not m:
                 self.logger.error(
                     "Unknown vendor '%s' for S/N %s (%s)", vendor, serial, description
@@ -164,63 +204,95 @@ class AssetCheck(DiscoveryCheck):
             m = ObjectModel.get_model(vnd, part_no)
             if not m:
                 # Try to resolve via model map
-                m = self.get_model_map(vendor, part_no, serial)
+                m = self.get_model_map(vendor, part_no, serial, cpe_id)
                 if not m:
-                    self.logger.info(
-                        "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
-                        vnd.name,
-                        part_no,
-                        description,
-                    )
-                    self.register_unknown_part_no(vnd, part_no, description)
-                    return
+                    if o_type == "XCVR":
+                        self.logger.info(
+                            "Unknown model: vendor=%s, part_no=%s (%s). Try resolve later",
+                            vnd.name,
+                            part_no,
+                            description,
+                        )
+
+                        self.prepare_context(o_type, number)
+                        self.objects += [
+                            ("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)
+                        ]
+                        return
+                    else:
+                        self.logger.info(
+                            "Unknown model: vendor=%s, part_no=%s (%s). Skipping...",
+                            vnd.name,
+                            part_no,
+                            description,
+                        )
+                        self.register_unknown_part_no(vnd, part_no, description)
+                        return
+
         # Sanitize serial number against the model
         serial = self.clean_serial(m, number, serial)
         #
-        if m.cr_context and type != m.cr_context:
+        if m.cr_context and o_type != m.cr_context:
             # Override type with object mode's one
             self.logger.info("Model changes type to '%s'", m.cr_context)
-            type = m.cr_context
-        if not type:
+            o_type = m.cr_context
+        if not o_type:
             self.logger.info(
-                "Cannot resolve type for: vendor=%s, part_no=%s (%s). " "Skipping",
+                "Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping...",
                 vnd.name,
                 description,
                 part_no,
             )
             return
-        self.prepare_context(type, number)
+        self.prepare_context(o_type, number)
         # Get connection rule
         if not self.rule and m.connection_rule:
             self.set_rule(m.connection_rule)
             # Set initial context
-            if type in self.rule_context:
-                scope = self.rule_context[type][0]
+            if o_type in self.rule_context:
+                scope = self.rule_context[o_type][0]
                 if scope:
                     self.set_context(scope, number)
         # Find existing object or create new
         o: Optional["Object"] = Object.objects.filter(
-            model=m.id, data__match={"interface": "asset", "attr": "serial", "value": serial}
+            model__in=[m.id] + self.generic_models,
+            data__match={"interface": "asset", "attr": "serial", "value": serial},
         ).first()
         if not o:
             # Create new object
             self.logger.info("Creating new object. model='%s', serial='%s'", m.name, serial)
-            data = [ObjectAttr(scope="", interface="asset", attr="serial", value=serial)]
+            o_data = [
+                ObjectAttr(scope="", interface="asset", attr="part_no", value=[part_no]),
+                ObjectAttr(scope="", interface="asset", attr="serial", value=serial),
+            ]
             if revision:
-                data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
+                o_data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
             if mfg_date:
-                data += [ObjectAttr(scope="", interface="asset", attr="mfg_date", value=mfg_date)]
+                o_data += [ObjectAttr(scope="", interface="asset", attr="mfg_date", value=mfg_date)]
+            # if m_data:
+            #     o_data += m_data
             if self.object.container:
                 container = self.object.container.id
             else:
                 container = self.lost_and_found
-            o = Object(model=m, data=data, container=container)
+            o = Object(model=m, data=o_data, container=container)
             o.save()
             o.log(
                 "Created by asset_discovery",
                 system="DISCOVERY",
                 managed_object=self.object,
                 op="CREATE",
+            )
+        elif o.is_generic:
+            """
+            Generic Template
+            """
+            o.model = m
+            o.log(
+                f"Object Model changed: Generic -> {m.name}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
             )
         else:
             # Add all connection to disconnect list
@@ -264,7 +336,7 @@ class AssetCheck(DiscoveryCheck):
                 op="CHANGE",
             )
         # Check management
-        if o.get_data("management", "managed"):
+        if o.get_data("management", "managed") and not cpe_id:
             if o.get_data("management", "managed_object") != self.object.id:
                 self.logger.info("Changing object management to '%s'", self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
@@ -278,7 +350,20 @@ class AssetCheck(DiscoveryCheck):
             self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
-        self.objects += [(type, o, self.ctx.copy(), serial)]
+        # Check CPE
+        if o.get_data("cpe", "cpe"):
+            if o.get_data("cpe", "cpe_id") != cpe_id:
+                self.logger.info("Changing object CPE to '%s'", cpe_id)  # Global_id
+                o.set_data("cpe", "cpe_id", cpe_id)
+                o.save()
+                o.log(
+                    "CPE granted",
+                    system="DISCOVERY",
+                    managed_object=self.object,
+                    op="CHANGE",
+                )
+            self.update_name(o, cpe_id)
+        self.objects += [(o_type, o, self.ctx.copy(), serial, data, constant_data)]
         # Collect sensors
         if sensors:
             for s in sensors:
@@ -286,23 +371,121 @@ class AssetCheck(DiscoveryCheck):
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
+        self.sync_data(o, data)
+        if param_data:
+            self.object_param_artifacts[str(o.id)] = param_data
+        if not crossing:
+            return
+        for c in crossing:
+            if not o.has_connection(c["input"]):
+                self.logger.warning("[%s] Unkown crossing input: %s", o.model.name, c["input"])
+                continue
+            if not o.has_connection(c["output"]):
+                self.logger.warning("[%s] Unkown crossing output: %s", o.model.name, c["output"])
+                continue
+            o.set_internal_connection(
+                o.model.get_model_connection(c["input"]).name,
+                o.model.get_model_connection(c["output"]).name,
+                data={
+                    "gain_db": c["gain"] or 1.0,
+                    "input_discriminator": c.get("input_discriminator"),
+                    "output_discriminator": c.get("output_discriminator"),
+                },
+            )
+        o.save()
 
-    def prepare_context(self, type: str, number: Optional[str]):
+    def clean_sa_data(
+        self, data: List[Dict[str, str]]
+    ) -> Tuple[List[ObjectAttr], List[ObjectAttr]]:
+        """
+        Cleanup data from script, Split it to Object Data and Constant Data
+        """
+        o_data, c_data = [], []
+        if not data:
+            return [], []
+        for d in data:
+            interface, attr = d["interface"], d["attr"]
+            try:
+                attr = ModelInterface.get_interface_attr(interface, attr)
+            except ModelDataError as e:
+                self.logger.error("[%s|%s] Error on data: %s", interface, attr, e)
+                continue
+            try:
+                value = attr._clean(d["value"])
+            except ValueError:
+                self.logger.warning(
+                    "[%s|%s] Error when convert value: %s", interface, attr, d["value"]
+                )
+                continue
+            if attr.is_const:
+                c_data += [
+                    ObjectAttr(scope="discovery", interface=interface, attr=attr.name, value=value)
+                ]
+            else:
+                o_data += [
+                    ObjectAttr(scope="discovery", interface=interface, attr=attr.name, value=value)
+                ]
+        return o_data, c_data
+
+    def sync_data(self, obj: Object, data: List[ObjectAttr]):
+        """
+        Sync script data with object
+        """
+        o_data = {}
+        changed = False
+        for d in obj.data:
+            if d.interface in self._builtin_interfaces or d.scope != "discovery":
+                continue
+            attr = ModelInterface.get_interface_attr(d.interface, d.attr)
+            if attr.is_const:
+                continue
+            o_data[d.interface, d.attr] = d.value
+        # Create and Update
+        for d in data:
+            value = o_data.pop((d.interface, d.attr), None)
+            if value and value == d.value:
+                # Same value
+                continue
+            obj.set_data(d.interface, d.attr, d.value, "discovery")
+            obj.log(
+                f"Object data {d.interface}|{d.attr} changed: {value} -> {d.value}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
+            )
+            changed = True
+        for interface, attr in o_data:
+            obj.reset_data(interface, attr, scope="discovery")
+            obj.log(
+                f"Object data {interface}|{attr} reset",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
+            )
+            changed = True
+        # Reset data
+        if changed:
+            obj.save()
+
+    def prepare_context(self, o_type: str, number: Optional[str]):
         self.set_context("N", number)
-        if type and type in self.rule_context:
-            scope, reset_scopes = self.rule_context[type]
+        if o_type and o_type in self.rule_context:
+            scope, reset_scopes = self.rule_context[o_type]
             if scope:
                 self.set_context(scope, number)
             if reset_scopes:
                 self.reset_context(reset_scopes)
 
-    def update_name(self, object: Object):
-        n = self.get_name(object, self.object)
-        if n and n != object.name:
-            object.name = n
+    def update_name(self, obj: Object, cpe_id: Optional[str] = None):
+        cpe = None
+        if cpe_id:
+            cpe = self.cpes[cpe_id][0]
+        n = self.get_name(obj, self.object, cpe)
+        if n and n != obj.name:
+            obj.name = n
             self.logger.info("Changing name to '%s'", n)
-            object.save()
-            object.log(
+            obj.save()
+            obj.log(
                 "Change name to '%s'" % n,
                 system="DISCOVERY",
                 managed_object=self.object,
@@ -315,19 +498,19 @@ class AssetCheck(DiscoveryCheck):
         # Search backwards
         if not fwd:
             for j in range(i - 1, -1, -1):
-                type, object, ctx, _ = self.objects[j]
+                o_type, obj, ctx, _, _, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
-                    if target_type == type:
-                        yield type, object, ctx
+                    if target_type == o_type:
+                        yield o_type, obj, ctx
                 else:
                     break
         # Search forward
         if fwd:
             for j in range(i + 1, len(self.objects)):
-                type, object, ctx, _ = self.objects[j]
+                o_type, obj, ctx, _, _, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
-                    if target_type == type:
-                        yield type, object, ctx
+                    if target_type == o_type:
+                        yield o_type, obj, ctx
                 else:
                     return
 
@@ -345,7 +528,7 @@ class AssetCheck(DiscoveryCheck):
         if not self.rule:
             return
         for i, o in enumerate(self.objects):
-            type, object, context, serial = o
+            type, object, context, serial, data, m_data = o
             self.logger.info("Trying to connect #%d. %s (%s)", i, type, str_dict(context))
             if type not in self.rule:
                 continue
@@ -368,15 +551,23 @@ class AssetCheck(DiscoveryCheck):
                         # Check target object has proper connection
                         t_c = self.expand_context(r.target_connection, context)
                         if not t_object.has_connection(t_c):
+                            self.logger.debug(
+                                "[%s|%s|%s] Unknown connection %s",
+                                t_object,
+                                t_object.model,
+                                scope,
+                                t_c,
+                            )
                             continue
                         # Check source object has proper connection
                         m_c = self.expand_context(r.match_connection, context)
                         if isinstance(object, str):
                             # Resolving unknown object
-                            o = self.resolve_object(object, m_c, t_object, t_c, serial)
+                            o = self.resolve_object(object, m_c, t_object, t_c, serial, m_data)
                             if not o:
                                 continue
                             object = o
+                            self.sync_data(object, data)
                         if not object.has_connection(m_c):
                             continue
                         # Connect
@@ -420,6 +611,9 @@ class AssetCheck(DiscoveryCheck):
                     op="CONNECT",
                 )
             c_name = o2.model.get_model_connection(c2)  # If internal_name use
+            # self.logger.debug(
+            #    "[%s|%s]To disconnect object: %s", o2, c_name.name, self.to_disconnect
+            # )
             if (o2, c_name.name, o1, c1) in self.to_disconnect:
                 # Remove if connection on system
                 self.to_disconnect.remove((o2, c_name.name, o1, c1))
@@ -529,7 +723,7 @@ class AssetCheck(DiscoveryCheck):
             )
         if labels is not None:
             for ll in labels:
-                Label.ensure_label(ll)
+                Label.ensure_label(ll, ["inv.Sensor"])
             s.labels = [ll for ll in labels if Sensor.can_set_label(ll)]
             s.extra_labels = {"sa": s.labels}
         s.save()
@@ -568,7 +762,7 @@ class AssetCheck(DiscoveryCheck):
             if ll in sa_labels:
                 continue
             self.logger.info("[%s] Ensure Sensor label: %s", sensor.id, ll)
-            Label.ensure_label(ll, enable_sensor=True)
+            Label.ensure_label(ll, ["inv.Sensor"])
         if labels != sa_labels:
             remove_labels = set(sa_labels).difference(set(labels))
             if remove_labels:
@@ -643,9 +837,9 @@ class AssetCheck(DiscoveryCheck):
                 r += [n]
         return r
 
-    def get_vendor(self, v: Optional[str]) -> Optional["Vendor"]:
+    def get_vendor(self, v: Optional[str], o_type: Optional[str] = "") -> Optional["Vendor"]:
         """
-        Get vendor instance or None
+        Get vendor instance or None. Create vendor if object type is XCVR.
         """
         if v is None or v.startswith("OEM") or v == "None":
             v = "NONAME"
@@ -661,13 +855,14 @@ class AssetCheck(DiscoveryCheck):
             v = "INTEL"
         if "FINISAR" in v:
             v = "FINISAR"
-        o = Vendor.objects.filter(code=v).first()
-        if o:
-            self.vendors[v] = o
-            return o
-        else:
-            self.vendors[v] = None
-            return None
+        o = Vendor.get_by_code(v)
+        if not o and o_type == "XCVR":
+            try:
+                o = Vendor.ensure_vendor(v)
+            except ValueError:
+                self.logger.error("Vendor creating failed '%s'", v)
+        self.vendors[v] = o
+        return o
 
     def set_rule(self, rule: "ConnectionRule"):
         self.logger.debug("Setting connection rule '%s'", rule.name)
@@ -729,14 +924,36 @@ class AssetCheck(DiscoveryCheck):
                     op="CHANGE",
                 )
 
+    @staticmethod
+    def is_generic_transceiver(t_name: str) -> bool:
+        """
+        Checking transceiver part_no can be Generic or not
+        """
+        return t_name and not t_name.startswith("Unknown | Transceiver")
+
+    def get_unresolved_object_model_name(self, name: str, ff: str) -> str:
+        """
+        Generate unresolved object model name
+        """
+        if not self.is_generic_transceiver(name):
+            return f"NoName | Transceiver | {ff}"
+        return f"Generic | Transceiver | {ff}"
+
     def resolve_object(
-        self, name: str, m_c: str, t_object: Object, t_c: str, serial: str
+        self,
+        name: str,
+        m_c: str,
+        t_object: Object,
+        t_c: str,
+        serial: str,
+        data: List[ObjectAttr],
     ) -> Optional["Object"]:
         """
         Resolve object type
         """
         # Check object is already exists
         c, object, c_name = t_object.get_p2p_connection(t_c)
+        self.logger.debug("[%s] Resolve Object. Check already exists: %s", t_c, c)
         if c is not None:
             if c_name == m_c and object.get_data("asset", "serial") == serial:
                 # Object with same serial number exists
@@ -752,41 +969,34 @@ class AssetCheck(DiscoveryCheck):
         # Transceiver formfactor
         tp = c.type.name.split(" | ")
         ff = tp[1]
-        m = "NoName | Transceiver | Unknown %s" % ff
-        if name != "Unknown | Transceiver | Unknown":
-            mtype = name[24:].upper().replace("-", "")
-            if "BASE" in mtype:
-                speed, ot = mtype.split("BASE", 1)
-                spd = {"100": "100M", "1000": "1G", "10/100/1000": "1G", "10G": "10G"}.get(speed)
-                if spd:
-                    m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
-                else:
-                    self.logger.error("Unknown transceiver speed: %s", speed)
-                    m = name
-            else:
-                m = name
-        # Add vendor suffix when necessary
-        if len(tp) == 3:
-            m += " | %s" % tp[2]
-        #
+
+        m = self.get_unresolved_object_model_name(name, ff)
+
         if m in self.unk_model:
             model = self.unk_model[m]
         else:
             model = ObjectModel.objects.filter(name=m).first()
             self.unk_model[m] = model
+
         if not model:
-            self.logger.error("Unknown model '%s'", m)
-            self.register_unknown_part_no(self.get_vendor("NONAME"), m, "%s -> %s" % (name, m))
+            self.logger.info("Unknown model '%s' registering unknown model", m)
+            self.register_unknown_part_no(self.get_vendor("NONAME"), m, f"{name} -> {m}")
             return None
+        o = Object.objects.filter(
+            model=model, data__match={"interface": "asset", "attr": "serial", "value": serial}
+        ).first()
+        if o:
+            return o
         # Create object
         self.logger.info("Creating new object. model='%s', serial='%s'", m, serial)
         if self.object.container:
             container = self.object.container.id
         else:
             container = self.lost_and_found
+        data += [ObjectAttr(scope="discovery", interface="asset", attr="part_no", value=[name])]
         o = Object(
             model=model,
-            data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)],
+            data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)] + data,
             container=container,
         )
         o.save()
@@ -799,7 +1009,11 @@ class AssetCheck(DiscoveryCheck):
         return o
 
     def get_model_map(
-        self, vendor: str, part_no: Union[List[str], str], serial: Optional[str]
+        self,
+        vendor: str,
+        part_no: Union[List[str], str],
+        serial: Optional[str],
+        cpe_id: Optional[str] = None,
     ) -> Optional["ObjectModel"]:
         """
         Try to resolve using model map
@@ -807,7 +1021,7 @@ class AssetCheck(DiscoveryCheck):
         # Process list of part no
         if isinstance(part_no, list):
             for p in part_no:
-                m = self.get_model_map(vendor, p, serial)
+                m = self.get_model_map(vendor, p, serial, cpe_id)
                 if m:
                     return m
             return None
@@ -815,11 +1029,17 @@ class AssetCheck(DiscoveryCheck):
             if mm.part_no and mm.part_no != part_no:
                 continue
             if mm.from_serial and mm.to_serial:
-                if mm.from_serial <= serial and serial <= mm.to_serial:
+                # if mm.from_serial <= serial and serial <= mm.to_serial:
+                if mm.from_serial >= serial <= mm.to_serial:
                     return mm.model
             else:
                 self.logger.debug("Mapping %s %s %s to %s", vendor, part_no, serial, mm.model.name)
                 return mm.model
+        if cpe_id:
+            # Try Resolve by Generic Model
+            m = f"Generic | CPE | {self.cpes[cpe_id][1].upper()}"
+            self.logger.debug("Try Resolve by Generic CPE model: %s", m)
+            return ObjectModel.get_by_name(m)
         return None
 
     def get_lost_and_found(self, object):
@@ -833,6 +1053,36 @@ class AssetCheck(DiscoveryCheck):
             return None
         return lf.id
 
+    def get_generic_models(self) -> List[str]:
+        """ """
+        return [
+            om.id
+            for om in ObjectModel.objects.filter(
+                vendor__in=[self.generic_vendor, self.noname_vendor]
+            )
+        ]
+
+    def load_cpe(self) -> Dict[str, Tuple[str, str, str, str, str]]:
+        """
+        Load CPE from CPE Discovery Artefacts
+        """
+        r = {}
+        for cpe in CPE.objects.filter(
+            controllers__match={"managed_object": self.object.id, "is_active": True}
+        ):
+            # Sync Asset
+            caps = cpe.get_caps()
+            if not cpe.profile.sync_asset or not caps.get("CPE | Model"):
+                continue
+            r[str(cpe.id)] = (
+                str(cpe),
+                str(cpe.type),
+                caps.get("CPE | Vendor"),
+                caps.get("CPE | Model"),
+                caps.get("CPE | Serial Number") or cpe.global_id,
+            )
+        return r
+
     def generate_serial(self, model: ObjectModel, number: Optional[str]) -> str:
         """
         Generate virtual serial number
@@ -841,15 +1091,19 @@ class AssetCheck(DiscoveryCheck):
         for k in sorted(x for x in self.ctx if not x.startswith("N")):
             seed += [k, str(self.ctx[k])]
         h = hashlib.sha256(smart_bytes(":".join(seed)))
-        return "NOC%s" % smart_text(base64.b32encode(h.digest())[:7])
+        return f"NOC{base64.b32encode(h.digest())[:7].decode('utf-8')}"
 
     @staticmethod
-    def get_name(obj: Object, managed_object: Optional[Any] = None) -> str:
+    def get_name(
+        obj: Object, managed_object: Optional[Any] = None, cpe_name: Optional[str] = None
+    ) -> str:
         """
         Generate discovered object's name
         """
         name = None
-        if managed_object:
+        if cpe_name:
+            name = cpe_name
+        elif managed_object:
             name = managed_object.name
             sm = obj.get_data("stack", "member")
             if sm is not None:

@@ -7,177 +7,243 @@
     "cr_context": "MIC",
     "connections": [
         {
+            "name": "0/0",
             "description": "SFP 0/0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/1",
             "description": "SFP 0/1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/2",
             "description": "SFP 0/2",
             "direction": "i",
             "gender": "f",
-            "name": "0/2",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/3",
             "description": "SFP 0/3",
             "direction": "i",
             "gender": "f",
-            "name": "0/3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/4",
             "description": "SFP 0/4",
             "direction": "i",
             "gender": "f",
-            "name": "0/4",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/5",
             "description": "SFP 0/5",
             "direction": "i",
             "gender": "f",
-            "name": "0/5",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/6",
             "description": "SFP 0/6",
             "direction": "i",
             "gender": "f",
-            "name": "0/6",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/7",
             "description": "SFP 0/7",
             "direction": "i",
             "gender": "f",
-            "name": "0/7",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/8",
             "description": "SFP 0/8",
             "direction": "i",
             "gender": "f",
-            "name": "0/8",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/9",
             "description": "SFP 0/9",
             "direction": "i",
             "gender": "f",
-            "name": "0/9",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/0",
             "description": "SFP 1/0",
             "direction": "i",
             "gender": "f",
-            "name": "1/0",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/1",
             "description": "SFP 1/1",
             "direction": "i",
             "gender": "f",
-            "name": "1/1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/2",
             "description": "SFP 1/2",
             "direction": "i",
             "gender": "f",
-            "name": "1/2",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/3",
             "description": "SFP 1/3",
             "direction": "i",
             "gender": "f",
-            "name": "1/3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/4",
             "description": "SFP 1/4",
             "direction": "i",
             "gender": "f",
-            "name": "1/4",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/5",
             "description": "SFP 1/5",
             "direction": "i",
             "gender": "f",
-            "name": "1/5",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/6",
             "description": "SFP 1/6",
             "direction": "i",
             "gender": "f",
-            "name": "1/6",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/7",
             "description": "SFP 1/7",
             "direction": "i",
             "gender": "f",
-            "name": "1/7",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/8",
             "description": "SFP 1/8",
             "direction": "i",
             "gender": "f",
-            "name": "1/8",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/9",
             "description": "SFP 1/9",
             "direction": "i",
             "gender": "f",
-            "name": "1/9",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "in",
             "description": "MPC connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MIC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MIC-3D-20GE-SFP-E"],
-            "part_no": ["750-049846"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MIC-3D-20GE-SFP-E"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-049846"]
         }
-    }
+    ]
 }

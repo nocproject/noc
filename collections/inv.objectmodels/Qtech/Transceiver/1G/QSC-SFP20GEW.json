@@ -1,0 +1,63 @@
+{
+    "name": "Qtech | Transceiver | 1G | QSC-SFP20GEW",
+    "$collection": "inv.objectmodels",
+    "uuid": "f413026e-4b93-4417-9da7-2670f6733239",
+    "vendor__code": "QTECH",
+    "description": "Qtech SFP, 1550nm, LC, 20km, LX transceiver",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "txrx",
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data" : [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["QSC-SFP20GEW-1", "QSCSFP20GEW1", "QSC-SFP20GEW", "QSCSFP20GEW"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        }
+    ]
+}

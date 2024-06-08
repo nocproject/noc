@@ -8,34 +8,64 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">10GBASESR"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<10GBASESR"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["SFP+-10G-USR"],
-            "part_no": ["740-021310", "740-030658"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-021310", "740-030658"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["SFP+-10G-USR"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

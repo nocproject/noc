@@ -1,0 +1,10 @@
+{
+    "name": "E&M",
+    "code": "E&M",
+    "$collection": "inv.protocols",
+    "uuid": "41260f7f-717b-4cdf-bc9b-ec3458602b2a",
+    "description": "E and M signaling is a type of supervisory line signaling that uses DC signals on separate leads, called the \"E\" lead and \"M\" lead, traditionally used in the telecommunications industry between telephone switches.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Serial"
+}

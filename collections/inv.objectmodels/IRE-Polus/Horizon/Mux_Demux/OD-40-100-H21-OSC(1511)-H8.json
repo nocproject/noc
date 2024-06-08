@@ -1,0 +1,867 @@
+{
+    "name": "IRE-Polus | Horizon | Mux_Demux | OD-40-100-H21-OSC(1511)-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "cd60fe64-67da-4570-bac8-8a3dd4f5b23d",
+    "vendor__code": "IRE-POLUS",
+    "description": "Карта OD-40 предназначена для выведения из  одного  спектрально-уплотненного оптического сигнала отдельных DWDM каналов на выделенных длинах волн в соответствии с МСЭ-Т G.692, РД 45.286-2002 (ITU сетка частот).",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc"],
+    "configuration_rule__name": "OM/OD Rules",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "LINE_IN",
+            "description": "Вход со стороны оптической линии",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "P1",
+            "description": "Выход на предусилитель",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "P2",
+            "description": "Вход с предусилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_OUT",
+            "description": "Выход служебного канала OSC",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H21",
+            "description": "Выход канала H21",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H21",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H22",
+            "description": "Выход канала H22",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H22",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H23",
+            "description": "Выход канала H23",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H23",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H24",
+            "description": "Выход канала H24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H24",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H25",
+            "description": "Выход канала H25",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H25",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H26",
+            "description": "Выход канала H26",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H26",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H27",
+            "description": "Выход канала H27",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H27",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H28",
+            "description": "Выход канала H28",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H28",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H29",
+            "description": "Выход канала H29",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H29",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H30",
+            "description": "Выход канала H30",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H30",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H31",
+            "description": "Выход канала H31",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H31",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H32",
+            "description": "Выход канала H32",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H32",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H33",
+            "description": "Выход канала H33",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H33",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H34",
+            "description": "Выход канала H34",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H34",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H35",
+            "description": "Выход канала H35",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H35",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H36",
+            "description": "Выход канала H36",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H36",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H37",
+            "description": "Выход канала H37",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H37",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H38",
+            "description": "Выход канала H38",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H38",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H39",
+            "description": "Выход канала H39",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H39",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H40",
+            "description": "Выход канала H40",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H40",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H41",
+            "description": "Выход канала H41",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H41",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H42",
+            "description": "Выход канала H42",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H42",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H43",
+            "description": "Выход канала H43",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H43",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H44",
+            "description": "Выход канала H44",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H44",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H45",
+            "description": "Выход канала H45",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H45",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H46",
+            "description": "Выход канала H46",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H46",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H47",
+            "description": "Выход канала H47",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H47",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H48",
+            "description": "Выход канала H48",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H48",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H49",
+            "description": "Выход канала H49",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H49",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H50",
+            "description": "Выход канала H50",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H50",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H51",
+            "description": "Выход канала H51",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H51",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H52",
+            "description": "Выход канала H52",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H52",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H53",
+            "description": "Выход канала H53",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H53",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H54",
+            "description": "Выход канала H54",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H54",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H55",
+            "description": "Выход канала H55",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H55",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H56",
+            "description": "Выход канала H56",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H56",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H57",
+            "description": "Выход канала H57",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H57",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H58",
+            "description": "Выход канала H58",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H58",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H59",
+            "description": "Выход канала H59",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H59",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "H60",
+            "description": "Выход канала H60",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "H60",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "cross": [
+        {
+            "input": "LINE_IN",
+            "output": "P1"
+        },
+        {
+            "input": "P2",
+            "output": "OSC_OUT"
+        },
+        {
+            "input": "P2",
+            "output": "H21",
+            "output_discriminator": "lambda::192150-50"
+        },
+        {
+            "input": "P2",
+            "output": "H22",
+            "output_discriminator": "lambda::192250-50"
+        },
+        {
+            "input": "P2",
+            "output": "H23",
+            "output_discriminator": "lambda::192350-50"
+        },
+        {
+            "input": "P2",
+            "output": "H24",
+            "output_discriminator": "lambda::192450-50"
+        },
+        {
+            "input": "P2",
+            "output": "H25",
+            "output_discriminator": "lambda::192550-50"
+        },
+        {
+            "input": "P2",
+            "output": "H26",
+            "output_discriminator": "lambda::192650-50"
+        },
+        {
+            "input": "P2",
+            "output": "H27",
+            "output_discriminator": "lambda::192750-50"
+        },
+        {
+            "input": "P2",
+            "output": "H28",
+            "output_discriminator": "lambda::192850-50"
+        },
+        {
+            "input": "P2",
+            "output": "H29",
+            "output_discriminator": "lambda::192950-50"
+        },
+        {
+            "input": "P2",
+            "output": "H30",
+            "output_discriminator": "lambda::193050-50"
+        },
+        {
+            "input": "P2",
+            "output": "H31",
+            "output_discriminator": "lambda::193150-50"
+        },
+        {
+            "input": "P2",
+            "output": "H32",
+            "output_discriminator": "lambda::193250-50"
+        },
+        {
+            "input": "P2",
+            "output": "H33",
+            "output_discriminator": "lambda::193350-50"
+        },
+        {
+            "input": "P2",
+            "output": "H34",
+            "output_discriminator": "lambda::193450-50"
+        },
+        {
+            "input": "P2",
+            "output": "H35",
+            "output_discriminator": "lambda::193550-50"
+        },
+        {
+            "input": "P2",
+            "output": "H36",
+            "output_discriminator": "lambda::193650-50"
+        },
+        {
+            "input": "P2",
+            "output": "H37",
+            "output_discriminator": "lambda::193750-50"
+        },
+        {
+            "input": "P2",
+            "output": "H38",
+            "output_discriminator": "lambda::193850-50"
+        },
+        {
+            "input": "P2",
+            "output": "H39",
+            "output_discriminator": "lambda::193950-50"
+        },
+        {
+            "input": "P2",
+            "output": "H40",
+            "output_discriminator": "lambda::194050-50"
+        },
+        {
+            "input": "P2",
+            "output": "H41",
+            "output_discriminator": "lambda::194150-50"
+        },
+        {
+            "input": "P2",
+            "output": "H42",
+            "output_discriminator": "lambda::194250-50"
+        },
+        {
+            "input": "P2",
+            "output": "H43",
+            "output_discriminator": "lambda::194350-50"
+        },
+        {
+            "input": "P2",
+            "output": "H44",
+            "output_discriminator": "lambda::194450-50"
+        },
+        {
+            "input": "P2",
+            "output": "H45",
+            "output_discriminator": "lambda::194550-50"
+        },
+        {
+            "input": "P2",
+            "output": "H46",
+            "output_discriminator": "lambda::194650-50"
+        },
+        {
+            "input": "P2",
+            "output": "H47",
+            "output_discriminator": "lambda::194750-50"
+        },
+        {
+            "input": "P2",
+            "output": "H48",
+            "output_discriminator": "lambda::194850-50"
+        },
+        {
+            "input": "P2",
+            "output": "H49",
+            "output_discriminator": "lambda::194950-50"
+        },
+        {
+            "input": "P2",
+            "output": "H50",
+            "output_discriminator": "lambda::195050-50"
+        },
+        {
+            "input": "P2",
+            "output": "H51",
+            "output_discriminator": "lambda::195150-50"
+        },
+        {
+            "input": "P2",
+            "output": "H52",
+            "output_discriminator": "lambda::195250-50"
+        },
+        {
+            "input": "P2",
+            "output": "H53",
+            "output_discriminator": "lambda::195350-50"
+        },
+        {
+            "input": "P2",
+            "output": "H54",
+            "output_discriminator": "lambda::195450-50"
+        },
+        {
+            "input": "P2",
+            "output": "H55",
+            "output_discriminator": "lambda::195550-50"
+        },
+        {
+            "input": "P2",
+            "output": "H56",
+            "output_discriminator": "lambda::195650-50"
+        },
+        {
+            "input": "P2",
+            "output": "H57",
+            "output_discriminator": "lambda::195750-50"
+        },
+        {
+            "input": "P2",
+            "output": "H58",
+            "output_discriminator": "lambda::195850-50"
+        },
+        {
+            "input": "P2",
+            "output": "H59",
+            "output_discriminator": "lambda::195950-50"
+        },
+        {
+            "input": "P2",
+            "output": "H60",
+            "output_discriminator": "lambda::196050-50"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 7.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 351
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.7
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["OD-40-100-H21-OSC(1511)-H8"]
+        },
+        {
+            "attr": "min_rx_tx_frequency",
+            "interface": "dwdm",
+            "value": 192.1
+        },
+        {
+            "attr": "max_rx_tx_frequency",
+            "interface": "dwdm",
+            "value": 196.05
+        }
+    ]
+}

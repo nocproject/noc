@@ -7,48 +7,62 @@
     "cr_context": "GEM",
     "connections": [
         {
+            "name": "in",
             "description": "GEM connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | GEM | GEM2"
         },
         {
+            "name": "Eth2/1",
             "description": "Eth2/1 sfp+ port",
             "direction": "i",
             "gender": "f",
-            "name": "Eth2/1",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "Eth2/2",
             "description": "Eth2/2 sfp+ port",
             "direction": "i",
             "gender": "f",
-            "name": "Eth2/2",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "Eth2/3",
             "description": "Eth2/3 sfp+ port",
             "direction": "i",
             "gender": "f",
-            "name": "Eth2/3",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "Eth2/4",
             "description": "Eth2/4 sfp+ port",
             "direction": "i",
             "gender": "f",
-            "name": "Eth2/4",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["N6K-C6001-M4Q"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["N6K-C6001-M4Q"]
         }
-    }
+    ]
 }

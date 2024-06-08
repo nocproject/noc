@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.mac import MAC
 from noc.core.lldp import (
@@ -53,7 +53,7 @@ class Script(BaseScript):
     rx_port_descr = re.compile(r"^\s*PortDescr\s*:\s*(?P<port_descr>.+)\s*\n", re.MULTILINE)
     rx_cap = re.compile(r"^\s*System Capabilities Enabled\s*:(.*?)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         # HP.ProCurve advertises local(7) port sub-type, so local_interface_id parameter required
         # Collect data

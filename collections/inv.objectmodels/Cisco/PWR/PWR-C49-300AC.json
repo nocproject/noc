@@ -8,24 +8,26 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
             "group": "0",
-            "name": "in",
             "type__name": "Cisco | PWR-C49-300"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-C49-300AC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-C49-300AC"]
         }
-    }
+    ]
 }

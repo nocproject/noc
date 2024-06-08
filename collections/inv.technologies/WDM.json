@@ -1,0 +1,9 @@
+{
+    "name": "WDM",
+    "$collection": "inv.technologies",
+    "uuid": "10338c90-ba17-4cba-bcfb-6d4884d743fe",
+    "description": "In fiber-optic communications, wavelength-division multiplexing (WDM) is a technology which multiplexes a number of optical carrier signals onto a single optical fiber by using different wavelengths (i.e., colors) of laser light.[1] ",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

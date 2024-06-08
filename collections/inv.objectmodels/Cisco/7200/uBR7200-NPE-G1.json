@@ -8,93 +8,155 @@
     "cr_context": "SUP",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7200 | Supervisor"
         },
         {
+            "name": "Gi0/1",
             "description": "Gi 0/1 port",
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "name": "Gi0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0/1_gbic",
             "description": "Gi 0/1 port (GBIC)",
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "name": "Gi0/1_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi0/2",
             "description": "Gi 0/2 port",
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "name": "Gi0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0/2_gbic",
             "description": "Gi 0/2 port (GBIC)",
             "direction": "i",
             "gender": "f",
             "group": "2",
-            "name": "Gi0/2_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi0/3",
             "description": "Gi 0/3 port",
             "direction": "s",
             "gender": "f",
             "group": "3",
-            "name": "Gi0/3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0/3_gbic",
             "description": "Gi 0/3 port (GBIC)",
             "direction": "i",
             "gender": "f",
             "group": "3",
-            "name": "Gi0/3_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "disk0",
             "description": "Compact Flash slot",
             "direction": "i",
             "gender": "f",
-            "name": "disk0",
             "type__name": "Flash | CF"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "AUX port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["uBR7200-NPE-G1"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["uBR7200-NPE-G1"]
         }
-    }
+    ]
 }

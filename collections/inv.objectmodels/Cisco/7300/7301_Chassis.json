@@ -6,17 +6,31 @@
     "description": "Cisco 7301, 1-slot chassis",
     "cr_context": "CHASSIS",
     "connections": [],
-    "data": {
-        "asset": {
-            "part_no": ["Cisco7301", "CISCO7301"],
-            "cpe_22": "cpe:/h:cisco:7300_router:-",
-            "cpe_23": "cpe:2.3:h:cisco:7300_router:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["Cisco7301", "CISCO7301"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:7300_router:-"
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:7300_router:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
         }
-    }
+    ]
 }

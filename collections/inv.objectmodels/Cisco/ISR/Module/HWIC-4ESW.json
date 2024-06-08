@@ -1,0 +1,96 @@
+{
+    "name": "Cisco | ISR | Module | HWIC-4ESW",
+    "$collection": "inv.objectmodels",
+    "uuid": "c218816c-ce14-4ae2-ae3e-89fe9dff8e5b",
+    "vendor__code": "CISCO",
+    "description": "4-port Cisco EtherSwitch 10BASE-T/100BASE-TX autosensing WAN interface cards (HWICs)",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "Fa0",
+            "description": "FastEthernet X/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Fa1",
+            "description": "FastEthernet X/1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Fa2",
+            "description": "FastEthernet X/2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Fa3",
+            "description": "FastEthernet X/3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "in",
+            "description": "HWIC Card connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOHWIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HWIC-4ESW"]
+        }
+    ]
+}

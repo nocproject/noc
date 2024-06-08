@@ -8,34 +8,70 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<1000BASELX-1310"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["SFP-LX10"],
-            "part_no": ["740-011614", "740-009029", "740-011783", "740-031469", "740-031850" ]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-011614", "740-009029", "740-011783", "740-031469", "740-031850"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["SFP-LX10"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 5000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

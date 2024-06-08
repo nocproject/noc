@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | CX&NE | P40-2x10GBase LAN/WAN-XFP -A",
+    "name": "Huawei | CX&NE | P40-2x10GBase LAN/WAN-XFP-A",
     "$collection": "inv.objectmodels",
     "uuid": "fc5e2dff-8612-461f-8958-8a4d0d96ae86",
     "vendor__code": "HUAWEI",
@@ -9,46 +9,72 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX&NE | FPIC"
         },
         {
+            "name": "0",
             "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "name": "0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "1",
             "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "name": "1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03038466"],
-            "part_no": ["CR52L2XXNB0"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03038466"]
         },
-        "dimensions": {
-            "depth": 145,
-            "height": 40,
-            "width": 180
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR52L2XXNB0"]
         },
-        "power": {
-            "power": 12.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 145
         },
-        "weight": {
-            "weight": 0.6
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 40
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 180
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 12.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.6
         }
-    }
+    ]
 }

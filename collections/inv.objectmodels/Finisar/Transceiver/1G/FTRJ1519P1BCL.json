@@ -8,34 +8,70 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">1000BASEZX-1550"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<1000BASEZX-1550"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["FTRJ1519P1BCL-C1", "FTRJ1519P1BCL-CS", "FTRJ1519P1BCL-C"],
-            "part_no": ["FTRJ1519P1BCL"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FTRJ1519P1BCL"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FTRJ1519P1BCL-C1", "FTRJ1519P1BCL-CS", "FTRJ1519P1BCL-C"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

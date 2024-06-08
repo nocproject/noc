@@ -7,48 +7,62 @@
     "cr_context": "MODULE",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "DLink | DGS32-33 | Module"
         },
         {
+            "name": "Gi1_sfp",
             "description": "port 1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "port 2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi3_sfp",
             "description": "port 3",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi4_sfp",
             "description": "port 4",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DEM-340MG"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DEM-340MG"]
         }
-    }
+    ]
 }

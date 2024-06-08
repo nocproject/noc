@@ -1,0 +1,158 @@
+{
+    "name": "Rotek | Controller | RT-PWR-220-U,4250L",
+    "$collection": "inv.objectmodels",
+    "uuid": "b21dd341-9569-4853-a5db-fec21984df69",
+    "vendor__code": "ROTEK",
+    "description": "ЭПУ  предназначена  для  обеспечения  бесперебойного  питания оборудования общей потребляемой мощностью от 30 до 250 Вт напряжением питания от 42 до 56 В. \nПрименение  в  ЭПУ  контроллера  обеспечивает  непрерывный  мониторинг состояния, подключённого к нему оборудования, в том числе и аккумуляторных  батарей  (АКБ).  Связь  с  системой  мониторинга осуществляется по проводному каналу связи Ethernet по протоколу SNMP, а также посредством встроенного Web-интерфейса.",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "name": "eth0",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10BASET"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "pwr",
+            "description": "Подключение к промышленной сети питания 220 В",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "name": "1",
+            "description": "1-Wire  (для  подключения  датчика  температуры воздуха)",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "name": "2",
+            "description": "Общий провод (0) ",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "name": "3",
+            "description": "Vout + ",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "name": "4",
+            "description": "Дискретный вход (резервный)",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "name": "akb_1",
+            "description": "+B (Положительный полюс АКБ)",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "name": "akb_2",
+            "description": "-B (Отрицательный полюс АКБ) ",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "name": "load_1",
+            "description": "+V (Плюс источника питания)",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "name": "load_2",
+            "description": "+V (Плюс источника питания)",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "name": "load_3",
+            "description": "-V (Минус источника питания)",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "name": "load_4",
+            "description": "-V (Минус источника питания)",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["4250L", "RT-4250L", "RT-PWR-220-U", "RT-Pwr-220-U"]
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        }
+    ],
+    "sensors": [
+        {
+            "name": "in",
+            "description": "Дверь",
+            "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.1.0",
+            "units__code": "1"
+        },
+        {
+            "name": "v230_state",
+            "description": "Флаг наличия сетевого напряжения AC 230В",
+            "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.9.0",
+            "units__code": "1"
+        },
+        {
+            "name": "temp_out",
+            "description": "Температура в шкафу",
+            "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.2.0",
+            "units__code": "C"
+        },
+        {
+            "name": "current_load",
+            "description": "Ток потребления нагрузки",
+            "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.3.0",
+            "units__code": "A"
+        },
+        {
+            "name": "ups_battery_U",
+            "description": "ИБП. Напряжение  батареи  ИБП.",
+            "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.6.0",
+            "units__code": "VDC"
+        },
+        {
+            "name": "current_battery",
+            "description": "Ток заряда АКБ",
+            "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.5.0",
+            "units__code": "A"
+        }
+    ]
+}

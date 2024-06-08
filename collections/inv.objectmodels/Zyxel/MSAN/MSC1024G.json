@@ -9,127 +9,225 @@
     "labels": ["noc::inv::lc", "noc::inv::sup", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "sfp1",
             "description": "Port 1 (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "sfp1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp2",
             "description": "Port 2 (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "sfp2",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp3",
             "description": "Port 3 (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "sfp3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp4",
             "description": "Port 4 (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "sfp4",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "5",
             "description": "Port 5 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "5",
-            "name": "5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp5",
             "description": "Port 5 (SFP)",
             "direction": "i",
             "gender": "f",
             "group": "5",
-            "name": "sfp5",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "6",
             "description": "Port 6 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "6",
-            "name": "6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp6",
             "description": "Port 6 (SFP)",
             "direction": "i",
             "gender": "f",
             "group": "6",
-            "name": "sfp6",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "7",
             "description": "Port 7 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "8",
             "description": "Port 8 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "mgmt",
             "description": "mgmt port",
             "direction": "s",
             "gender": "f",
-            "name": "mgmt",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MSC1024G"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MSC1024G"]
         },
-        "dimensions": {
-            "depth": 231,
-            "height": 24,
-            "width": 390
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 231
         },
-        "power": {
-            "power": 20.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 24
         },
-        "weight": {
-            "weight": 0.6
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 390
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 20.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.6
         }
-    }
+    ]
 }

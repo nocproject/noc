@@ -21,7 +21,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.query_utils import Q as d_Q
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, RootModel, field_validator
 
 # NOC modules
 from noc.core.translation import ugettext as _
@@ -39,6 +39,7 @@ from noc.core.scheduler.job import Job
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later, defer
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
+from noc.core.script.scheme import SSH
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import (
     PROFILE_DIAG,
@@ -59,7 +60,6 @@ from noc.sa.interfaces.base import (
     BooleanParameter,
     IntParameter,
 )
-
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
 from noc.main.models.extstorage import ExtStorage
@@ -94,8 +94,7 @@ class ModelMetricConfigItem(BaseModel):
         return self.metric_type
 
 
-class MetricConfigItems(BaseModel):
-    __root__: List[ModelMetricConfigItem]
+MetricConfigItems = RootModel[List[ModelMetricConfigItem]]
 
 
 class MatchRule(BaseModel):
@@ -103,7 +102,7 @@ class MatchRule(BaseModel):
     labels: List[str] = []
     handler: Optional[str]
 
-    @validator("handler")
+    @field_validator("handler")
     def handler_must_handler(cls, v):  # pylint: disable=no-self-argument
         if not v:
             return v
@@ -115,8 +114,7 @@ class MatchRule(BaseModel):
         return str(h.id)
 
 
-class MatchRules(BaseModel):
-    __root__: List[Optional[MatchRule]] = []
+MatchRules = RootModel[List[Optional[MatchRule]]]
 
 
 m_valid = DictListParameter(
@@ -182,6 +180,9 @@ class ManagedObjectProfile(NOCModel):
         choices=[(x.value, x.value) for x in ShapeOverlayForm],
         null=True,
         blank=True,
+    )
+    shape_title_template = models.CharField(
+        _("Shape Title template"), max_length=256, blank=True, null=True
     )
     # Name restrictions
     # Regular expression to check name format
@@ -321,29 +322,20 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_sla = models.BooleanField(default=False)
     # Enable CPE discovery
     enable_box_discovery_cpe = models.BooleanField(default=False)
-    # Enable MAC discovery
-    enable_box_discovery_mac = models.BooleanField(default=False)
-    box_discovery_mac_filter_policy = models.CharField(
-        _("Box MAC Collect Policy"),
-        max_length=1,
-        choices=[("I", "Interface Profile"), ("A", "All")],
-        default="A",
-    )
-    mac_collect_vlanfilter = DocumentReferenceField(VLANFilter, null=True, blank=True)
     # Enable extended MAC discovery
     enable_box_discovery_xmac = models.BooleanField(default=False)
     # Enable interface description discovery
     enable_box_discovery_ifdesc = models.BooleanField(default=False)
     # Enable Housekeeping
     enable_box_discovery_hk = models.BooleanField(default=False)
-    # Enable Alarms
-    enable_box_discovery_alarms = models.BooleanField(default=False)
-    # Enable Box CPE status policy
-    box_discovery_cpestatus_policy = models.CharField(
-        _("CPE Status Policy"),
+    # Enable Config Param Data Discovery
+    enable_box_discovery_param_data = models.BooleanField(default=False)
+    # Resovle conflict when discovery diff value from object
+    box_discovery_param_data_conflict_resolve_policy = models.CharField(
+        _("Box ParamData Conflict Resolve Policy"),
         max_length=1,
-        choices=[("S", "Status Only"), ("F", "Full")],
-        default="S",
+        choices=[("M", "Manual"), ("D", "Prefer Discovery"), ("O", "Prefer Object")],
+        default="O",
     )
     # Enable periodic discovery.
     # Periodic discovery launched repeatedly
@@ -358,10 +350,13 @@ class ManagedObjectProfile(NOCModel):
     )
     # Collect uptime
     enable_periodic_discovery_uptime = models.BooleanField(default=False)
+    periodic_discovery_uptime_interval = models.IntegerField(default=0)
     # Collect interface status
     enable_periodic_discovery_interface_status = models.BooleanField(default=False)
+    periodic_discovery_interface_status_interval = models.IntegerField(default=300)
     # Collect mac address table
     enable_periodic_discovery_mac = models.BooleanField(default=False)
+    periodic_discovery_mac_interval = models.IntegerField(default=0)
     # A - Collect all MAC addresses, I - Collect MAC allowed by Interface Profile
     periodic_discovery_mac_filter_policy = models.CharField(
         _("Periodic MAC Collect Policy"),
@@ -369,12 +364,15 @@ class ManagedObjectProfile(NOCModel):
         choices=[("I", "Interface Profile"), ("A", "All")],
         default="A",
     )
+    mac_collect_vlanfilter = DocumentReferenceField(VLANFilter, null=True, blank=True)
     # Collect metrics
     enable_metrics = models.BooleanField(default=False)
     # Enable Alarms
     enable_periodic_discovery_alarms = models.BooleanField(default=False)
+    periodic_discovery_alarms_interval = models.IntegerField(default=0)
     # Enable CPE status
     enable_periodic_discovery_cpestatus = models.BooleanField(default=False)
+    periodic_discovery_cpestatus_interval = models.IntegerField(default=0)
     # CPE status discovery settings
     periodic_discovery_cpestatus_policy = models.CharField(
         _("CPE Status Policy"),
@@ -683,7 +681,7 @@ class ManagedObjectProfile(NOCModel):
     #
     metrics_default_interval = models.IntegerField(default=300, validators=[MinValueValidator(0)])
     #
-    metrics = PydanticField(
+    metrics: List[ModelMetricConfigItem] = PydanticField(
         "Metric Config Items",
         schema=MetricConfigItems,
         blank=True,
@@ -736,13 +734,13 @@ class ManagedObjectProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
+    def get_by_id(cls, id: int) -> Optional["ManagedObjectProfile"]:
         return ManagedObjectProfile.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
-        return ManagedObjectProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["ManagedObjectProfile"]:
+        return ManagedObjectProfile.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
@@ -764,7 +762,7 @@ class ManagedObjectProfile(NOCModel):
                 "id", flat=True
             ):
                 yield "managedobject", mo_id
-        if config.datastream.enable_cfgping and changed_fields.intersection(
+        if config.datastream.enable_cfgtarget and changed_fields.intersection(
             {
                 "enable_ping",
                 "ping_interval",
@@ -776,24 +774,13 @@ class ManagedObjectProfile(NOCModel):
                 "report_ping_rtt",
                 "report_ping_attempts",
                 "event_processing_policy",
+                "syslog_archive_policy",
             }
         ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
                 "id", flat=True
             ):
-                yield "cfgping", mo_id
-        if config.datastream.enable_cfgsyslog and changed_fields.intersection(
-            {"event_processing_policy", "syslog_archive_policy"}
-        ):
-            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
-                "id", flat=True
-            ):
-                yield "cfgsyslog", mo_id
-        if config.datastream.enable_cfgtrap and "event_processing_policy" in changed_fields:
-            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
-                "id", flat=True
-            ):
-                yield "cfgtrap", mo_id
+                yield "cfgtarget", mo_id
         if config.datastream.enable_cfgmetricsources and (
             "metrics" in changed_fields
             or "enable_metrics" in changed_fields
@@ -873,8 +860,7 @@ class ManagedObjectProfile(NOCModel):
         from .managedobject import CREDENTIAL_CACHE_VERSION, MANAGEDOBJECT_CACHE_VERSION
 
         box_changed = self.is_field_changed(["enable_box_discovery"])
-        periodic_changed = self.is_field_changed(["enable_periodic_discovery"])
-        interval_changed = self.is_field_changed(["enable_metrics"])
+        periodic_changed = self.is_field_changed(["enable_periodic_discovery", "enable_metrics"])
         alarm_box_changed = self.is_field_changed(["box_discovery_alarm_policy"])
         access_changed = self.is_field_changed(
             [
@@ -885,14 +871,13 @@ class ManagedObjectProfile(NOCModel):
                 "snmp_rate_limit",
             ]
         )
-        if box_changed or periodic_changed or interval_changed:
+        if box_changed or periodic_changed:
             defer(
                 "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
                 key=self.id,
                 profile_id=self.id,
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
-                interval_changed=interval_changed,
             )
         if box_changed or periodic_changed or alarm_box_changed:
             defer(
@@ -997,14 +982,29 @@ class ManagedObjectProfile(NOCModel):
         """
         if o:
             ac = o.get_access_preference()
+            snmp_cred = o.credentials.get_snmp_credential()
         else:
             ac = self.access_preference
+            snmp_cred = None
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
-                checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
+                checks=[
+                    Check(
+                        name="SNMPv1",
+                        credential=snmp_cred,
+                    ),
+                    Check(
+                        name="SNMPv2c",
+                        credential=snmp_cred,
+                    ),
+                    Check(
+                        name="SNMPv3",
+                        credential=snmp_cred,
+                    ),
+                ],
                 blocked=ac == "C",
                 run_policy="F",
                 run_order="S",
@@ -1017,7 +1017,9 @@ class ManagedObjectProfile(NOCModel):
                 PROFILE_DIAG,
                 display_description="Check device profile",
                 show_in_display=False,
-                checks=[Check(name="PROFILE")],
+                checks=[
+                    Check(name="PROFILE", credential=snmp_cred),
+                ],
                 alarm_class="Discovery | Guess | Profile",
                 blocked=not self.enable_box_discovery_profile,
                 run_policy="A",
@@ -1026,13 +1028,28 @@ class ManagedObjectProfile(NOCModel):
                 reason="Profile Discovery " if not self.enable_box_discovery_profile else None,
             )
             blocked = ac == "S"
+            # CLI Diagnostic
             if o:
                 blocked |= o.scheme not in {1, 2}
-            # CLI Diagnostic
+                cli_cred = o.credentials.get_cli_credential()
+            else:
+                cli_cred = None
+            checks = [
+                Check(
+                    name="TELNET",
+                    credential=cli_cred,
+                ),
+                Check(
+                    name="SSH",
+                    credential=cli_cred,
+                ),
+            ]
+            if o and o.scheme == SSH:
+                checks.reverse()
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
-                checks=[Check(name="TELNET"), Check(name="SSH")],
+                checks=checks,
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
@@ -1148,6 +1165,7 @@ class GenericObject(object):
     id: int
     object_profile: int
     diagnostics: Dict[str, Any]
+    effective_labels: List[str]
     pool: str = "default"
     access_preference = "S"
 
@@ -1167,14 +1185,20 @@ def update_diagnostics_alarms(profile_id, **kwargs):
     * if alarm_policy disabled - cleanup access alarms
     * if alarm_policy enabled - raise access alarms
     :param profile_id:
-    :param box_changed:
-    :param periodic_changed:
-    :param alarm_policy_changed:
     :return:
     """
     from noc.sa.models.managedobject import ManagedObject
 
-    for o_id, pool_id, fm_pool_id, diagnostics, enable_box_discovery, box_alarm, periodic_alarm in (
+    for (
+        o_id,
+        pool_id,
+        fm_pool_id,
+        diagnostics,
+        enable_box_discovery,
+        box_alarm,
+        periodic_alarm,
+        el,
+    ) in (
         ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
         .filter(
             d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
@@ -1189,19 +1213,23 @@ def update_diagnostics_alarms(profile_id, **kwargs):
             "object_profile__enable_box_discovery",
             "object_profile__box_discovery_alarm_policy",
             "object_profile__periodic_discovery_alarm_policy",
+            "effective_labels",
         )
     ):
         fm_pool = fm_pool_id or pool_id
         fm_pool = Pool.get_by_id(fm_pool)
         o = GenericObject(
-            id=o_id, object_profile=int(profile_id), diagnostics=diagnostics, pool=fm_pool.name
+            id=o_id,
+            object_profile=int(profile_id),
+            diagnostics=diagnostics,
+            pool=fm_pool.name,
+            effective_labels=list(el),
         )
-
         with DiagnosticHub(o, dry_run=False) as d:
             d.sync_alarms(alarm_disable=box_alarm == "D" or not enable_box_discovery)
 
 
-def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_changed=False):
+def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
     def iter_objects():
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
@@ -1213,11 +1241,13 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
     # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
     from .managedobject import ManagedObject  # noqa
 
-    try:
-        profile = ManagedObjectProfile.objects.get(id=profile_id)
-    except ManagedObjectProfile.DoesNotExist:
+    profile = ManagedObjectProfile.objects.filter(id=profile_id).first()
+    if not profile:
         return
     for mo_id, is_managed, pool in iter_objects():
+        shard, d_slots = None, config.get_slot_limits(f"discovery-{pool}")
+        if d_slots:
+            shard = mo_id % d_slots
         if box_changed:
             if profile.enable_box_discovery and is_managed:
                 Job.submit(
@@ -1225,6 +1255,7 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
                     "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
                     key=mo_id,
                     pool=pool,
+                    shard=shard,
                 )
             else:
                 Job.remove(
@@ -1240,26 +1271,12 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
                     "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
                     key=mo_id,
                     pool=pool,
+                    shard=shard,
                 )
             else:
                 Job.remove(
                     "discovery",
                     "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                )
-        if interval_changed:
-            if profile.enable_metrics and is_managed:
-                Job.submit(
-                    "discovery",
-                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                )
-            else:
-                Job.remove(
-                    "discovery",
-                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
                     key=mo_id,
                     pool=pool,
                 )

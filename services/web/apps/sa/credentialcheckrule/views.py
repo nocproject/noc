@@ -114,3 +114,23 @@ class CredentialCheckRuleApplication(ExtDocApplication):
             return
         q["id__in"] = self.get_affected_rules(mo["effective_labels"])
         return q
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
+        r["suggest_protocols"] = [
+            {"protocol": p, "protocol__label": p} for p in r.get("suggest_protocols", [])
+        ]
+        r["suggest_snmp_oids"] = [
+            {"oid": p, "oid__label": p} for p in r.get("suggest_snmp_oids", [])
+        ]
+        return r
+
+    def clean(self, data):
+        suggest_snmp_oids, suggest_protocols = [], []
+        for f in data.get("suggest_snmp_oids", []):
+            suggest_snmp_oids += [f["oid"]]
+        for f in data.get("suggest_protocols", []):
+            suggest_protocols += [f["protocol"]]
+        data["suggest_snmp_oids"] = suggest_snmp_oids
+        data["suggest_protocols"] = suggest_protocols
+        return super().clean(data)

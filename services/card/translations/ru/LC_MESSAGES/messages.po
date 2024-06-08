@@ -8,29 +8,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-25 10:24+0300\n"
-"PO-Revision-Date: 2021-02-25 13:05+0500\n"
+"POT-Creation-Date: 2024-05-07 15:42+0300\n"
+"PO-Revision-Date: 2024-05-07 18:47+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
-"Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.4\n"
-"X-Generator: Poedit 2.3\n"
-"X-Poedit-Basepath: ../../../../..\n"
-"X-Poedit-SearchPath-0: .\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Generated-By: Babel 2.13.1\n"
+"X-Generator: Poedit 3.4.2\n"
 
-#: services/card/cards/base.py:241 services/card/cards/base.py:256
+#: services/card/cards/base.py:245 services/card/cards/base.py:260
 msgid "N/A"
 msgstr "Н/Д"
 
 #: services/card/templates/address.html.j2:14
 #: services/card/templates/dialplan.html.j2:32
 #: services/card/templates/kbentry.html.j2:25
-#: services/card/templates/managedobject.html.j2:510
+#: services/card/templates/managedobject.html.j2:574
 #: services/card/templates/object.html.j2:28
 #: services/card/templates/object.html.j2:117
 #: services/card/templates/prefix.html.j2:14
@@ -52,8 +50,9 @@ msgid "Name"
 msgstr "Название"
 
 #: services/card/templates/address.html.j2:18
+#: services/card/templates/cpe.html.j2:9
 #: services/card/templates/firmware.html.j2:14
-#: services/card/templates/managedobject.html.j2:406
+#: services/card/templates/managedobject.html.j2:451
 #: services/card/templates/phonenumber.html.j2:47
 #: services/card/templates/phonerange.html.j2:49
 #: services/card/templates/prefix.html.j2:18
@@ -83,14 +82,15 @@ msgid "State"
 msgstr "Состояние"
 
 #: services/card/templates/address.html.j2:26
+#: services/card/templates/cpe.html.j2:14
 #: services/card/templates/dialplan.html.j2:11
 #: services/card/templates/dialplan.html.j2:41
 #: services/card/templates/firmware.html.j2:19
 #: services/card/templates/kbentry.html.j2:26
 #: services/card/templates/maintenance.html.j2:21
-#: services/card/templates/managedobject.html.j2:143
-#: services/card/templates/managedobject.html.j2:409
-#: services/card/templates/managedobject.html.j2:514
+#: services/card/templates/managedobject.html.j2:187
+#: services/card/templates/managedobject.html.j2:454
+#: services/card/templates/managedobject.html.j2:578
 #: services/card/templates/phonenumber.html.j2:64
 #: services/card/templates/phonerange.html.j2:66
 #: services/card/templates/phonerange.html.j2:133
@@ -120,7 +120,7 @@ msgstr "Авария"
 
 #: services/card/templates/alarm.html.j2:13
 #: services/card/templates/alarm.html.j2:118
-#: services/card/templates/managedobject.html.j2:367
+#: services/card/templates/managedobject.html.j2:411
 #: services/card/templates/sensor_controller.html.j2:261
 msgid "Class"
 msgstr "Класс"
@@ -132,7 +132,7 @@ msgstr "Серьезность"
 #: services/card/templates/alarm.html.j2:21
 #: services/card/templates/alarm.html.j2:116
 #: services/card/templates/maintenance.html.j2:49
-#: services/card/templates/managedobject.html.j2:365
+#: services/card/templates/managedobject.html.j2:409
 #: services/card/templates/project.html.j2:172
 #: services/card/templates/project.html.j2:194
 #: services/card/templates/project.html.j2:218
@@ -144,23 +144,22 @@ msgid "Object"
 msgstr "Объект"
 
 #: services/card/templates/alarm.html.j2:34
-#: services/card/templates/managedobject.html.j2:74
+#: services/card/templates/managedobject.html.j2:118
 #: services/card/templates/object.html.j2:50
 #: services/card/templates/sensor_controller.html.j2:74
 msgid "Location"
 msgstr "Расположение"
 
 #: services/card/templates/alarm.html.j2:43
-#: services/card/templates/managedobject.html.j2:94
+#: services/card/templates/managedobject.html.j2:138
 #: services/card/templates/project.html.j2:374
 #: services/card/templates/segment.html.j2:39
 #: services/card/templates/sensor_controller.html.j2:94
-#: services/card/templates/vlan.html.j2:13
 msgid "Segment"
 msgstr "Сегмент"
 
 #: services/card/templates/alarm.html.j2:49
-#: services/card/templates/managedobject.html.j2:117
+#: services/card/templates/managedobject.html.j2:161
 #: services/card/templates/sensor_controller.html.j2:120
 msgid "Administrative Domain"
 msgstr "Зона ответственности"
@@ -205,7 +204,7 @@ msgid "Recommended Actions"
 msgstr "Рекомендованные действия"
 
 #: services/card/templates/alarm.html.j2:107
-#: services/card/templates/managedobject.html.j2:356
+#: services/card/templates/managedobject.html.j2:400
 #: services/card/templates/object.html.j2:138
 #: services/card/templates/sensor_controller.html.j2:251
 #: services/card/templates/tt.html.j2:25
@@ -213,7 +212,7 @@ msgid "Alarms"
 msgstr "Аварии"
 
 #: services/card/templates/alarm.html.j2:113
-#: services/card/templates/managedobject.html.j2:362
+#: services/card/templates/managedobject.html.j2:406
 #: services/card/templates/object.html.j2:142
 #: services/card/templates/sensor_controller.html.j2:257
 #: services/card/templates/service.html.j2:133
@@ -224,14 +223,14 @@ msgstr "Время"
 #: services/card/templates/alarm.html.j2:114
 #: services/card/templates/maintenance.html.j2:17
 #: services/card/templates/maintenance.html.j2:52
-#: services/card/templates/managedobject.html.j2:363
+#: services/card/templates/managedobject.html.j2:407
 #: services/card/templates/service.html.j2:72
 #: services/card/templates/tt.html.j2:34
 msgid "Services"
 msgstr "Сервисы"
 
 #: services/card/templates/alarm.html.j2:115
-#: services/card/templates/managedobject.html.j2:364
+#: services/card/templates/managedobject.html.j2:408
 #: services/card/templates/object.html.j2:143
 #: services/card/templates/segmentalarm.html.j2:6
 #: services/card/templates/sensor_controller.html.j2:258
@@ -242,8 +241,8 @@ msgstr "Продолжительность"
 
 #: services/card/templates/alarm.html.j2:117
 #: services/card/templates/maintenance.html.j2:51
-#: services/card/templates/managedobject.html.j2:141
-#: services/card/templates/managedobject.html.j2:366
+#: services/card/templates/managedobject.html.j2:185
+#: services/card/templates/managedobject.html.j2:410
 #: services/card/templates/segmentalarm.html.j2:5
 #: services/card/templates/sensor_controller.html.j2:144
 #: services/card/templates/sensor_controller.html.j2:260
@@ -252,8 +251,8 @@ msgstr "IP"
 
 #: services/card/templates/alarm.html.j2:119
 #: services/card/templates/alarm.html.j2:185
-#: services/card/templates/managedobject.html.j2:39
-#: services/card/templates/managedobject.html.j2:368
+#: services/card/templates/managedobject.html.j2:83
+#: services/card/templates/managedobject.html.j2:412
 #: services/card/templates/object.html.j2:144
 #: services/card/templates/sensor_controller.html.j2:39
 #: services/card/templates/sensor_controller.html.j2:262
@@ -272,7 +271,7 @@ msgid "Log"
 msgstr "История"
 
 #: services/card/templates/alarm.html.j2:181
-#: services/card/templates/managedobject.html.j2:33
+#: services/card/templates/managedobject.html.j2:77
 #: services/card/templates/sensor_controller.html.j2:33
 #: services/card/templates/service.html.j2:48
 msgid "Maintenance"
@@ -280,8 +279,8 @@ msgstr "РНР"
 
 #: services/card/templates/alarm.html.j2:186
 #: services/card/templates/maintenance.html.j2:9
-#: services/card/templates/managedobject.html.j2:200
-#: services/card/templates/managedobject.html.j2:226
+#: services/card/templates/managedobject.html.j2:244
+#: services/card/templates/managedobject.html.j2:270
 #: services/card/templates/phonenumber.html.j2:88
 #: services/card/templates/phonenumber.html.j2:111
 #: services/card/templates/phonerange.html.j2:80
@@ -306,6 +305,10 @@ msgstr "Контакты"
 #: services/card/templates/path.html.j2:2
 msgid "Loading ..."
 msgstr "Загрузка ..."
+
+#: services/card/templates/cpe.html.j2:19
+msgid "Local Id"
+msgstr ""
 
 #: services/card/templates/dialplan.html.j2:19
 msgid "Mask"
@@ -365,12 +368,12 @@ msgid "Interface"
 msgstr "Интерфейс"
 
 #: services/card/templates/interfacepath.html.j2:246
-#: services/card/templates/managedobject.html.j2:399
+#: services/card/templates/managedobject.html.j2:444
 msgid "Speed"
 msgstr "Скорость"
 
 #: services/card/templates/interfacepath.html.j2:247
-#: services/card/templates/managedobject.html.j2:399
+#: services/card/templates/managedobject.html.j2:444
 msgid "Duplex"
 msgstr "Дуплекс"
 
@@ -395,7 +398,7 @@ msgid "Packets"
 msgstr "Пакеты"
 
 #: services/card/templates/interfacepath.html.j2:265
-#: services/card/templates/managedobject.html.j2:407
+#: services/card/templates/managedobject.html.j2:452
 msgid "Errors"
 msgstr "Ошибки"
 
@@ -412,7 +415,7 @@ msgid "Last Changed"
 msgstr "Последнее изменение"
 
 #: services/card/templates/maintenance.html.j2:26
-#: services/card/templates/managedobject.html.j2:127
+#: services/card/templates/managedobject.html.j2:171
 #: services/card/templates/sensor_controller.html.j2:130
 #: services/card/templates/timepattern.html.j2:5
 msgid "Time Pattern"
@@ -423,38 +426,38 @@ msgid "Affected objects"
 msgstr "Затронутое оборудование"
 
 #: services/card/templates/maintenance.html.j2:50
-#: services/card/templates/managedobject.html.j2:511
+#: services/card/templates/managedobject.html.j2:575
 #: services/card/templates/object.html.j2:39
 #: services/card/templates/segment.html.j2:73
 msgid "Model"
 msgstr "Модель"
 
-#: services/card/templates/managedobject.html.j2:40
+#: services/card/templates/managedobject.html.j2:84
 #: services/card/templates/sensor_controller.html.j2:40
 #: services/card/templates/service.html.j2:54
 msgid "Start"
 msgstr "Начало"
 
-#: services/card/templates/managedobject.html.j2:41
+#: services/card/templates/managedobject.html.j2:85
 #: services/card/templates/sensor_controller.html.j2:41
 #: services/card/templates/service.html.j2:55
 msgid "Stop"
 msgstr "Окончание"
 
-#: services/card/templates/managedobject.html.j2:61
+#: services/card/templates/managedobject.html.j2:105
 #: services/card/templates/sensor_controller.html.j2:61
 msgid "Container"
 msgstr "Контейнер"
 
-#: services/card/templates/managedobject.html.j2:84
+#: services/card/templates/managedobject.html.j2:128
 #: services/card/templates/phonenumber.html.j2:55
 #: services/card/templates/phonerange.html.j2:57
 #: services/card/templates/sensor_controller.html.j2:84
 msgid "Project"
 msgstr "Проект"
 
-#: services/card/templates/managedobject.html.j2:101
-#: services/card/templates/managedobject.html.j2:114
+#: services/card/templates/managedobject.html.j2:145
+#: services/card/templates/managedobject.html.j2:158
 #: services/card/templates/segment.html.j2:23
 #: services/card/templates/segment.html.j2:49
 #: services/card/templates/sensor_controller.html.j2:101
@@ -462,8 +465,8 @@ msgstr "Проект"
 msgid "Lost redundancy"
 msgstr "Потеря резерва"
 
-#: services/card/templates/managedobject.html.j2:103
-#: services/card/templates/managedobject.html.j2:114
+#: services/card/templates/managedobject.html.j2:147
+#: services/card/templates/managedobject.html.j2:158
 #: services/card/templates/segment.html.j2:25
 #: services/card/templates/segment.html.j2:51
 #: services/card/templates/sensor_controller.html.j2:103
@@ -471,8 +474,8 @@ msgstr "Потеря резерва"
 msgid "Redundant"
 msgstr "Есть резерв"
 
-#: services/card/templates/managedobject.html.j2:106
-#: services/card/templates/managedobject.html.j2:114
+#: services/card/templates/managedobject.html.j2:150
+#: services/card/templates/managedobject.html.j2:158
 #: services/card/templates/segment.html.j2:28
 #: services/card/templates/segment.html.j2:54
 #: services/card/templates/sensor_controller.html.j2:106
@@ -480,69 +483,69 @@ msgstr "Есть резерв"
 msgid "No redundancy"
 msgstr "Нет резерва"
 
-#: services/card/templates/managedobject.html.j2:142
+#: services/card/templates/managedobject.html.j2:186
 #: services/card/templates/object.html.j2:61
 #: services/card/templates/object.html.j2:108
 #: services/card/templates/sensor_controller.html.j2:145
 msgid "Dashboard"
 msgstr "График"
 
-#: services/card/templates/managedobject.html.j2:147
+#: services/card/templates/managedobject.html.j2:191
 #: services/card/templates/object.html.j2:64
 #: services/card/templates/object.html.j2:108
 #: services/card/templates/sensor_controller.html.j2:150
 msgid "Graphics"
 msgstr "Графики"
 
-#: services/card/templates/managedobject.html.j2:153
+#: services/card/templates/managedobject.html.j2:197
 #: services/card/templates/sensor_controller.html.j2:156
 msgid "Profile SA"
 msgstr "Профиль SA"
 
-#: services/card/templates/managedobject.html.j2:157
+#: services/card/templates/managedobject.html.j2:201
 #: services/card/templates/platform.html.j2:26
 #: services/card/templates/sensor_controller.html.j2:160
 msgid "End of Sale"
 msgstr "Конец продаж"
 
-#: services/card/templates/managedobject.html.j2:158
+#: services/card/templates/managedobject.html.j2:202
 #: services/card/templates/platform.html.j2:32
 #: services/card/templates/sensor_controller.html.j2:161
 msgid "End of Support"
 msgstr "Конец поддержки"
 
-#: services/card/templates/managedobject.html.j2:163
+#: services/card/templates/managedobject.html.j2:207
 #: services/card/templates/sensor_controller.html.j2:166
 msgid "Recommended"
 msgstr "Рекомендовано"
 
-#: services/card/templates/managedobject.html.j2:170
+#: services/card/templates/managedobject.html.j2:214
 msgid "Service Range"
 msgstr "Время обслуживания"
 
-#: services/card/templates/managedobject.html.j2:176
+#: services/card/templates/managedobject.html.j2:220
 #: services/card/templates/service.html.j2:78
 msgid "Service"
 msgstr "Сервисы"
 
-#: services/card/templates/managedobject.html.j2:180
+#: services/card/templates/managedobject.html.j2:224
 msgid "Hostname"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:184
-#: services/card/templates/managedobject.html.j2:404
+#: services/card/templates/managedobject.html.j2:228
+#: services/card/templates/managedobject.html.j2:449
 #: services/card/templates/subscribersession.html.j2:6
 msgid "MAC"
 msgstr "MAC"
 
-#: services/card/templates/managedobject.html.j2:193
+#: services/card/templates/managedobject.html.j2:237
 #: services/card/templates/phonenumber.html.j2:82
 #: services/card/templates/phonerange.html.j2:74
 msgid "Provides Resources"
 msgstr "Предоставляет ресурсы"
 
-#: services/card/templates/managedobject.html.j2:198
-#: services/card/templates/managedobject.html.j2:224
+#: services/card/templates/managedobject.html.j2:242
+#: services/card/templates/managedobject.html.j2:268
 #: services/card/templates/phonenumber.html.j2:86
 #: services/card/templates/phonenumber.html.j2:109
 #: services/card/templates/phonerange.html.j2:78
@@ -551,8 +554,8 @@ msgstr "Предоставляет ресурсы"
 msgid "Group"
 msgstr "Группа"
 
-#: services/card/templates/managedobject.html.j2:199
-#: services/card/templates/managedobject.html.j2:225
+#: services/card/templates/managedobject.html.j2:243
+#: services/card/templates/managedobject.html.j2:269
 #: services/card/templates/phonenumber.html.j2:87
 #: services/card/templates/phonenumber.html.j2:110
 #: services/card/templates/phonerange.html.j2:79
@@ -562,8 +565,8 @@ msgstr "Группа"
 msgid "Technology"
 msgstr "Технология"
 
-#: services/card/templates/managedobject.html.j2:207
-#: services/card/templates/managedobject.html.j2:233
+#: services/card/templates/managedobject.html.j2:251
+#: services/card/templates/managedobject.html.j2:277
 #: services/card/templates/phonenumber.html.j2:95
 #: services/card/templates/phonenumber.html.j2:118
 #: services/card/templates/phonerange.html.j2:87
@@ -571,8 +574,8 @@ msgstr "Технология"
 msgid "Static"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:207
-#: services/card/templates/managedobject.html.j2:233
+#: services/card/templates/managedobject.html.j2:251
+#: services/card/templates/managedobject.html.j2:277
 #: services/card/templates/phonenumber.html.j2:95
 #: services/card/templates/phonenumber.html.j2:118
 #: services/card/templates/phonerange.html.j2:87
@@ -580,53 +583,53 @@ msgstr ""
 msgid "Dynamic"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:219
+#: services/card/templates/managedobject.html.j2:263
 #: services/card/templates/phonenumber.html.j2:105
 #: services/card/templates/phonerange.html.j2:97
 msgid "Consumes Resources"
 msgstr "Потребляет ресурсы"
 
-#: services/card/templates/managedobject.html.j2:245
+#: services/card/templates/managedobject.html.j2:289
 #: services/card/templates/object.html.j2:113
 msgid "Metrics"
 msgstr "Метрики"
 
-#: services/card/templates/managedobject.html.j2:288
+#: services/card/templates/managedobject.html.j2:332
 #: services/card/templates/sensor_controller.html.j2:183
 msgid "Neighbors"
 msgstr "Соседи"
 
-#: services/card/templates/managedobject.html.j2:293
+#: services/card/templates/managedobject.html.j2:337
 #: services/card/templates/sensor_controller.html.j2:188
 msgid "Local port"
 msgstr "Локальный порт"
 
-#: services/card/templates/managedobject.html.j2:294
+#: services/card/templates/managedobject.html.j2:338
 #: services/card/templates/sensor_controller.html.j2:189
 msgid "Remote object"
 msgstr "Сосед"
 
-#: services/card/templates/managedobject.html.j2:295
+#: services/card/templates/managedobject.html.j2:339
 #: services/card/templates/sensor_controller.html.j2:190
 msgid "Remote port"
 msgstr "Порт соседа"
 
-#: services/card/templates/managedobject.html.j2:296
+#: services/card/templates/managedobject.html.j2:340
 #: services/card/templates/sensor_controller.html.j2:191
 msgid "Local description"
 msgstr "Описание порта"
 
-#: services/card/templates/managedobject.html.j2:297
+#: services/card/templates/managedobject.html.j2:341
 #: services/card/templates/sensor_controller.html.j2:192
 msgid "Remote description"
 msgstr "Описание порта соседа"
 
-#: services/card/templates/managedobject.html.j2:312
+#: services/card/templates/managedobject.html.j2:356
 #: services/card/templates/sensor_controller.html.j2:207
 msgid "LinkGraph"
 msgstr "График связи"
 
-#: services/card/templates/managedobject.html.j2:346
+#: services/card/templates/managedobject.html.j2:390
 #: services/card/templates/segmentalarm.html.j2:7
 #: services/card/templates/sensor_controller.html.j2:241
 #: services/card/templates/service.html.j2:178
@@ -634,39 +637,39 @@ msgstr "График связи"
 msgid "TT"
 msgstr "TT"
 
-#: services/card/templates/managedobject.html.j2:397
+#: services/card/templates/managedobject.html.j2:441
 #: services/card/templates/sensor_controller.html.j2:379
 #: services/card/templates/service.html.j2:152
 msgid "Port"
 msgstr "Порт"
 
-#: services/card/templates/managedobject.html.j2:398
+#: services/card/templates/managedobject.html.j2:443
 #: services/card/templates/sensor_controller.html.j2:380
 msgid "Admin"
 msgstr "Админ"
 
-#: services/card/templates/managedobject.html.j2:398
+#: services/card/templates/managedobject.html.j2:443
 #: services/card/templates/sensor_controller.html.j2:380
 msgid "Oper"
 msgstr "Опер"
 
-#: services/card/templates/managedobject.html.j2:400
+#: services/card/templates/managedobject.html.j2:445
 msgid "Load In"
 msgstr "Вх. загрузка"
 
-#: services/card/templates/managedobject.html.j2:401
+#: services/card/templates/managedobject.html.j2:446
 msgid "Load Out"
 msgstr "Исх. загрузка"
 
-#: services/card/templates/managedobject.html.j2:402
+#: services/card/templates/managedobject.html.j2:447
 msgid "Errors In"
 msgstr "Вх. ошибки"
 
-#: services/card/templates/managedobject.html.j2:403
+#: services/card/templates/managedobject.html.j2:448
 msgid "Errors Out"
 msgstr "Исх. ошибки"
 
-#: services/card/templates/managedobject.html.j2:405
+#: services/card/templates/managedobject.html.j2:450
 #: services/card/templates/project.html.j2:370
 #: services/card/templates/project.html.j2:376
 #: services/card/templates/segment.html.j2:128
@@ -674,25 +677,33 @@ msgstr "Исх. ошибки"
 msgid "VLAN"
 msgstr "VLAN"
 
-#: services/card/templates/managedobject.html.j2:408
+#: services/card/templates/managedobject.html.j2:453
 #: services/card/templates/phonerange.html.j2:163
 #: services/card/templates/service.html.j2:79
 msgid "Status"
 msgstr "Статус"
 
-#: services/card/templates/managedobject.html.j2:416
-msgid "trace vpn"
+#: services/card/templates/managedobject.html.j2:462
+msgid "Load Chart"
+msgstr "График загр."
+
+#: services/card/templates/managedobject.html.j2:470
+msgid "Open SFP"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:505
+#: services/card/templates/managedobject.html.j2:477
+msgid "Run VPN Trace"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:569
 msgid "Inventory"
 msgstr "Состав оборудования"
 
-#: services/card/templates/managedobject.html.j2:512
+#: services/card/templates/managedobject.html.j2:576
 msgid "Revision"
 msgstr "Ревизия"
 
-#: services/card/templates/managedobject.html.j2:513
+#: services/card/templates/managedobject.html.j2:577
 #: services/card/templates/project.html.j2:151
 msgid "Serial"
 msgstr "Серийный номер"
@@ -983,6 +994,10 @@ msgstr "Финальная диагностика"
 msgid "Comments"
 msgstr "Комментарии"
 
+#: services/card/templates/vlan.html.j2:13
+msgid "L2 Domain"
+msgstr "Домен L2"
+
 #: services/card/templates/vlan.html.j2:39
 #: services/card/templates/vlan.html.j2:45
 msgid "Interfaces"
@@ -1011,3 +1026,9 @@ msgstr ""
 #: services/card/templates/vrf.html.j2:27
 msgid "Prefixes"
 msgstr "Префиксы"
+
+#~ msgid "Errors In Delta"
+#~ msgstr "Вх. ошибки разница"
+
+#~ msgid "Errors Out Delta"
+#~ msgstr "Исх. ошибки разница"

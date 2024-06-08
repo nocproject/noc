@@ -8,25 +8,61 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rxtx",
             "description": "RxTx LC SFP",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["TBSF131012gSC3c", "TBSF131012GSC3C"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["TBSF131012gSC3c", "TBSF131012GSC3C"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

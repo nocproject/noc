@@ -12,7 +12,7 @@ import codecs
 
 # NOC modules
 from noc.core.script.http.middleware.base import BaseMiddleware
-from noc.core.http.client import fetch_sync
+from noc.core.http.sync_client import HttpClient
 from noc.core.comp import smart_bytes
 
 
@@ -75,50 +75,50 @@ class DahuaAuthMiddeware(BaseMiddleware):
             headers = {}
         # First query - /RPC2_Login
         auth_url = self.http.get_url("/RPC2_Login")
-        code, resp_headers, result = fetch_sync(
-            auth_url,
-            method="POST",
-            body={
-                "method": "global.login",
-                "params": {
-                    "userName": self.user,
-                    "password": "",
-                    "clientType": "Web3.0",
-                    "loginType": "Direct",
-                },
-                "id": self.http.request_id,
-            },
-            headers=headers,
-            request_timeout=60,
-            follow_redirects=True,
-            allow_proxy=False,
-            validate_cert=False,
-        )
-        r = orjson.loads(result)
-        session = r["session"]
-        self.http.set_session_id(session)
-        password = self.get_auth(r["params"])
 
-        code, resp_headers, result = fetch_sync(
-            auth_url,
-            method="POST",
-            body={
-                "method": "global.login",
-                "params": {
-                    "userName": self.user,
-                    "password": password,
-                    "clientType": "Web3.0",
-                    "loginType": "Direct",
-                },
-                "id": self.http.request_id,
-                "session": session,
-            },
+        with HttpClient(
+            url,
             headers=headers,
-            request_timeout=60,
-            follow_redirects=True,
+            timeout=60,
             allow_proxy=False,
             validate_cert=False,
-        )
-        self.http.request_id += 2
-        body["session"] = self.http.session_id
-        return url, body, headers
+        ) as client:
+            code, resp_headers, result = client.post(
+                auth_url,
+                orjson.dumps(
+                    {
+                        "method": "global.login",
+                        "params": {
+                            "userName": self.user,
+                            "password": "",
+                            "clientType": "Web3.0",
+                            "loginType": "Direct",
+                        },
+                        "id": self.http.request_id,
+                    },
+                ),
+            )
+            r = orjson.loads(result)
+            session = r["session"]
+            self.http.set_session_id(session)
+            password = self.get_auth(r["params"])
+
+            client.post(
+                auth_url,
+                orjson.dumps(
+                    {
+                        "method": "global.login",
+                        "params": {
+                            "userName": self.user,
+                            "password": password,
+                            "clientType": "Web3.0",
+                            "loginType": "Direct",
+                        },
+                        "id": self.http.request_id,
+                        "session": session,
+                    }
+                ),
+            )
+            self.http.request_id += 2
+            body["session"] = self.http.session_id
+            return url, body, headers

@@ -6,7 +6,7 @@
         {
             "name": "container",
             "type": "bool",
-            "description": "Is object a container?",
+            "description": "Object is container (can hold another objects)",
             "required": true,
             "is_const": true
         }

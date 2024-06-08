@@ -7,168 +7,199 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "eth0",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "eth0",
-            "protocols": ["10BASET"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10BASET"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "1",
             "description": "Датчик температуры +3.3(out)",
             "direction": "s",
             "gender": "f",
-            "name": "1",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "2",
             "description": "Датчик температуры",
             "direction": "s",
             "gender": "f",
-            "name": "2",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "3",
             "description": "Датчик температуры GND",
             "direction": "s",
             "gender": "f",
-            "name": "3",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "4(DI (+5V))",
             "description": "DI (+5V)",
             "direction": "s",
             "gender": "f",
-            "name": "4(DI (+5V))",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "5",
             "description": "GND",
             "direction": "s",
             "gender": "f",
-            "name": "5",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "6",
             "description": "Универсальные порт 1",
             "direction": "s",
             "gender": "f",
-            "name": "6",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "7",
             "description": "GND",
             "direction": "s",
             "gender": "f",
-            "name": "7",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "8",
             "description": "Универсальные порт 2",
             "direction": "s",
             "gender": "f",
-            "name": "8",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "9",
             "description": "GND",
             "direction": "s",
             "gender": "f",
-            "name": "9",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "10",
             "description": "Универсальные порт 3",
             "direction": "s",
             "gender": "f",
-            "name": "10",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "11",
             "description": "GND",
             "direction": "s",
             "gender": "f",
-            "name": "11",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "12",
             "description": "Универсальные порт 4",
             "direction": "s",
             "gender": "f",
-            "name": "12",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "GND",
-            "direction": "s",
-            "gender": "f",
             "name": "13",
-            "type__name": "Power | MSTB 2.5/16-ST-5.08"
-        },
-        {
-            "description": "B(RS485)",
-            "direction": "s",
-            "gender": "f",
-            "name": "14",
-            "protocols": ["<RS-485-B"],
-            "type__name": "Power | MSTB 2.5/16-ST-5.08"
-        },
-        {
-            "description": "B(RS485)",
-            "direction": "s",
-            "gender": "f",
-            "name": "15",
-            "protocols": ["<RS-485-A"],
-            "type__name": "Power | MSTB 2.5/16-ST-5.08"
-        },
-        {
             "description": "GND",
             "direction": "s",
             "gender": "f",
-            "name": "16",
-            "protocols": ["RS"],
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
+            "name": "14",
+            "description": "B(RS485)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "15",
+            "description": "B(RS485)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "16",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "+U",
             "description": "+U пит",
             "direction": "s",
             "gender": "f",
-            "name": "+U",
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
         {
+            "name": "GND",
             "description": "GND",
             "direction": "s",
             "gender": "f",
-            "name": "GND",
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
         {
+            "name": "rs232",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "rs232",
-            "protocols": ["<RS-232"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ11"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["BFC-PBIC-S"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["BFC-PBIC-S"]
         },
-        "dimensions": {
-            "depth": 26,
-            "height": 80,
-            "width": 80
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 26
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 80
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 80
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    },
+    ],
     "sensors": [
         {
-            "description": "Значение температуры с внутреннего датчика",
             "name": "temp_out",
+            "description": "Значение температуры с внутреннего датчика",
             "snmp_oid": "1.3.6.1.3.55.1.2.1.0",
             "units__code": "C"
         }

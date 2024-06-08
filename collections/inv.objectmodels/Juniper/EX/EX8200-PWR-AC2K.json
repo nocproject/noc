@@ -7,24 +7,35 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 8200 PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["740-021466"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-021466"]
         }
-    }
+    ]
 }

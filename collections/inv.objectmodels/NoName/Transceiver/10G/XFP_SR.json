@@ -8,29 +8,60 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "XFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "type__name": "Optical | LC",
-            "protocols": [">10GBASESR-850"]
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "850",
+                    "protocol__code": "10GBASESR"
+                }
+            ],
+            "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "type__name": "Optical | LC",
-            "protocols": ["<10GBASESR-850"]
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "850",
+                    "protocol__code": "10GBASESR"
+                }
+            ],
+            "type__name": "Optical | LC"
         }
     ],
-    "data": {}
+    "data": [
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }

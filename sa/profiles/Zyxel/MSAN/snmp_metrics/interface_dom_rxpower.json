@@ -1,0 +1,8 @@
+{
+  "$metric": "Interface | DOM | RxPower",
+  "$type": "ifindex",
+  "oid": "1.3.6.1.4.1.890.1.5.13.5.13.13.2.1.13.{{ ifIndex }}",
+  "type": "gauge",
+  "units": "dBm",
+  "scale": "scale(0.001)"
+}

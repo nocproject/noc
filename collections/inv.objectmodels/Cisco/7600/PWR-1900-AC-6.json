@@ -1,0 +1,42 @@
+{
+    "name": "Cisco | 7600 | PWR-1900-AC-6",
+    "$collection": "inv.objectmodels",
+    "uuid": "0fa108e4-4495-42f4-8c82-6143b03e8147",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7600 AC Power Supply",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "power",
+            "description": "AC power inlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "name": "in",
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 7600 | PSU"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-1900-AC/6", "PWR-1900-AC/6="]
+        }
+    ]
+}

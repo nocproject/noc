@@ -257,7 +257,7 @@ class ManagedObjectDS(BaseDataSource):
             r = await super().query(fields=None, *args, **kwargs)
             sql = pl.SQLContext()
             sql.register("mo", r.lazy())
-            return sql.query(kwargs["detail_query"]).select(fields or [])
+            return sql.execute(kwargs["detail_query"], eager=True).select(fields or [])
         return await super().query(fields=fields, *args, **kwargs)
 
     @classmethod
@@ -432,9 +432,9 @@ class ManagedObjectDS(BaseDataSource):
             if "links" in mo:
                 yield num, "link_count", len(mo["links"])
             if "profile" in mo:
-                yield num, "profile", Profile.get_by_id(mo["profile"]).name if mo[
-                    "profile"
-                ] else None
+                yield num, "profile", (
+                    Profile.get_by_id(mo["profile"]).name if mo["profile"] else None
+                )
             if "pool" in mo:
                 yield num, "pool", Pool.get_by_id(mo["pool"]).name if mo["pool"] else None
             if "platform" in mo:
@@ -442,9 +442,9 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "model", Platform.get_by_id(platform).name if platform else None
             if "version" in mo:
                 sw_version = mo["version"]
-                yield num, "sw_version", Firmware.get_by_id(
-                    sw_version
-                ).version if sw_version else None
+                yield num, "sw_version", (
+                    Firmware.get_by_id(sw_version).version if sw_version else None
+                )
             if "vendor" in mo:
                 yield num, "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
             if hostname_map:
@@ -462,9 +462,9 @@ class ManagedObjectDS(BaseDataSource):
             if "object_profile__name" in mo:
                 yield num, "object_profile", mo["object_profile__name"]
             if "project" in mo:
-                yield num, "project", Project.get_by_id(mo["project"]).name if mo[
-                    "project"
-                ] else None
+                yield num, "project", (
+                    Project.get_by_id(mo["project"]).name if mo["project"] else None
+                )
             if "labels" in mo:
                 yield num, "object_labels", ",".join(mo["labels"])
             if "container" in mo:

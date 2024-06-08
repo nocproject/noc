@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # BDCOM_xPON.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ class Script(BaseScript):
         "Giga-FX-SFP": "physical",  # GigabitEthernet
         "10Giga-FX": "physical",  # TGigaEthernet port
         "10Giga-FX-SFP": "physical",  # TGigaEthernet SFP port
+        "10Giga-DAC": "physical",  # TGigaEthernet SFP+ DAC
         "GigaEthernet-PON": "physical",  # EPON port
         "GigaEthernet-LLID": "other",  # EPON ONU port
         "Giga-PON": "physical",  # EPON port
@@ -51,6 +52,7 @@ class Script(BaseScript):
         "GPON": "physical",  # GPON port
         "GPON-ONUID": "other",  # GPON ONU port
         "EtherSVI": "SVI",
+        "PortAggregator": "aggregated",
         "Null": "null",
     }
 
@@ -97,6 +99,9 @@ class Script(BaseScript):
                 continue
             if i["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
+                # Do not remove this!
+                # Some BDCOM OLT closing connection without empty line
+                self.cli("")
                 c = self.cli("show vlan interface %s" % match.group("ifname"))
                 for r in parse_table(c, allow_wrap=True, n_row_delim=","):
                     if not is_int(r[2]):

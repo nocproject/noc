@@ -2,24 +2,30 @@
 # ----------------------------------------------------------------------
 # State Change Log
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Dict, List, Iterable
+from typing import Any, Dict
 import orjson
 import logging
 import asyncio
-
-# Third-party modules
-import lz4.frame
-from pymongo import InsertOne, DeleteMany, ASCENDING, DESCENDING
-from motor.core import AgnosticCollection
-from bson import ObjectId
+import datetime
 
 # NOC modules
-from noc.core.mongo.connection_async import get_db
+from noc.core.service.loader import get_service
+from noc.core.hash import hash_int
+from noc.core.clickhouse.connect import connection as ch_connection
+
+SQL_STATE = """
+    SELECT node_id, argMax(state, ts) as state
+    FROM metricstate
+    WHERE slot = %s
+    GROUP BY node_id
+    FORMAT JSONEachRow
+
+"""
 
 
 class ChangeLog(object):
@@ -32,64 +38,53 @@ class ChangeLog(object):
         self.state: Dict[str, Dict[str, Any]] = {}
         self.logger = logging.getLogger(__name__)
         self.lock = asyncio.Lock()
+        self.service = get_service()
 
     async def get_state(self) -> Dict[str, Dict[str, Any]]:
         """
         Retrieve current state snapshot
         """
         self.logger.info("Retrieving current state")
-        coll = self.get_collection()
         state = {}
+        ch = ch_connection()
         async with self.lock:
             self.logger.info("Lock acquired")
             n = 0
-            async for doc in coll.find({"slot": self.slot}).sort([("_id", ASCENDING)]):
-                d = doc.get("data")
-                if not d:
-                    continue
-                state.update(self.decode(doc["data"]))
+            result = ch.execute(SQL_STATE % self.slot, return_raw=True)
+            for row in result.splitlines():
+                row = orjson.loads(row)
+                state[row["node_id"]] = orjson.loads(row["state"])
                 n += 1
         self.logger.info("%d states are retrieved from %d log items", len(state), n)
         return state
-
-    @classmethod
-    def get_collection(cls) -> AgnosticCollection:
-        """
-        Get mongo collection instance
-        """
-        return get_db()[cls.COLL_NAME]
 
     async def flush(self) -> None:
         """
         Store all collected changes
         """
-        coll = self.get_collection()
+        states_count = 0
+        ts = datetime.datetime.now().replace(microsecond=0)
         async with self.lock:
             if not self.state:
                 return  # Nothing to flush
-            bulk = [
-                InsertOne({"_id": ObjectId(), "slot": self.slot, "data": c_data})
-                for c_data in self.iter_state_bulks(self.state)
-            ]
+            for (node_id, node_type), state in self.state.items():
+                self.service.register_metrics(
+                    "metricstate",
+                    [
+                        {
+                            "date": ts.date().isoformat(),
+                            "ts": ts.isoformat(),
+                            "node_id": node_id,
+                            "node_type": node_type,
+                            "slot": self.slot,
+                            "state": orjson.dumps(state).decode("utf-8"),
+                        }
+                    ],
+                    key=hash_int(node_id),
+                )
+                states_count += 1
             self.state = {}  # Reset
-        self.logger.debug("Flush State Record: %d", len(bulk))
-        await coll.bulk_write(bulk, ordered=True)
-
-    @staticmethod
-    def encode(data: Dict[str, Dict[str, Any]]) -> bytes:
-        """
-        Encode state to bytes
-        """
-        r = orjson.dumps(data)
-        return lz4.frame.compress(r)
-
-    @staticmethod
-    def decode(data: bytes) -> Dict[str, Dict[str, Any]]:
-        """
-        Decode bytes to state
-        """
-        r = lz4.frame.decompress(data)
-        return orjson.loads(r)
+        self.logger.debug("Flush State Record: %d", states_count)
 
     async def feed(self, state: Dict[str, Dict[str, Any]]) -> None:
         """
@@ -99,84 +94,3 @@ class ChangeLog(object):
             return
         async with self.lock:
             self.state.update(state)
-
-    @classmethod
-    def iter_state_bulks(cls, state: Dict[str, Dict[str, Any]]) -> Iterable[bytes]:
-        """
-        Compress state to binary chunks up to MAX_DATA size
-        """
-        c_data = cls.encode(state)
-        if len(c_data) < cls.MAX_DATA:
-            yield c_data  # Fit
-            return
-        # Too large, split in halves
-        parts: List[Dict[str, Dict[str, Any]]] = [{}, {}]
-        lp = len(parts)
-        for n, key in enumerate(state):
-            parts[n % lp][key] = state[key]
-        for p in parts:
-            if p:
-                yield from cls.iter_state_bulks(p)
-
-    async def compact(self) -> None:
-        """
-        Compact log
-        """
-        self.logger.info("Compacting log")
-        coll = self.get_collection()
-        state = {}
-        n = 0
-        nn = 0
-        prev_size = 0
-        next_size = 0
-        async with self.lock:
-            self.logger.info("Lock acquired")
-            # Get maximal id
-            max_id = await coll.find_one(
-                {"slot": self.slot}, {"_id": 1}, sort=[("_id", DESCENDING)]
-            )
-            if not max_id:
-                self.logger.info("Nothing to compact")
-                return
-            max_id = max_id["_id"]
-            self.logger.info("Compacted started to: %s", max_id)
-            # Read all states
-            async for doc in coll.find(
-                {"_id": {"$lte": max_id}, "slot": self.slot}, {"_id": 1, "data": 1}
-            ).sort([("_id", ASCENDING)]):
-                d = doc.get("data")
-                if not d:
-                    continue
-                cd = self.decode(d)
-                state.update(cd)
-                n += 1
-                prev_size += len(cd)
-            if not state:
-                self.logger.info("Nothing to compact")
-                return
-            self.logger.info("Compacting %d log items (%d bytes)", n, prev_size)
-            # Split to chunks when necessary
-            bulk = []
-            compacted = []
-            for c_data in self.iter_state_bulks(state):
-                # t_mark += datetime.timedelta(seconds=1)
-                # For more one slots raise condition with same t_mark
-                # For that create random ObjectId
-                oid = ObjectId()
-                bulk.append(InsertOne({"_id": oid, "slot": self.slot, "data": c_data}))
-                nn += 1
-                next_size += len(c_data)
-                compacted.append(oid)
-        bulk.append(DeleteMany({"_id": {"$lte": max_id}, "slot": self.slot}))
-        await coll.bulk_write(bulk, ordered=True)
-        records = [
-            o["_id"]
-            async for o in coll.find({"slot": self.slot}, {"_id": 1}, sort=[("_id", DESCENDING)])
-        ]
-        self.logger.info(
-            "Compacted to %d records (%d bytes). %.2f ratio",
-            nn,
-            next_size,
-            float(prev_size) / float(next_size),
-        )
-        self.logger.debug(" Compacted: %s, records: %s", compacted, records)

@@ -6,25 +6,35 @@
     "description": "60 cm stacking cable for S50-01-12G-2S",
     "connections": [
         {
-            "cross": "1",
+            "name": "0",
             "description": "12G stacking connector",
             "direction": "s",
             "gender": "m",
-            "name": "0",
             "type__name": "Force10 | S | Stacking 12G"
         },
         {
-            "cross": "0",
+            "name": "1",
             "description": "12G stacking connector",
             "direction": "s",
             "gender": "m",
-            "name": "1",
             "type__name": "Force10 | S | Stacking 12G"
         }
     ],
-    "data": {
-        "length": {
-            "length": "0.6"
+    "data": [
+        {
+            "attr": "length",
+            "interface": "length",
+            "value": "0.6"
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "0",
+            "output": "1"
+        },
+        {
+            "input": "1",
+            "output": "0"
+        }
+    ]
 }

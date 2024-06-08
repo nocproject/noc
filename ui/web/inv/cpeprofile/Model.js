@@ -28,6 +28,14 @@ Ext.define("NOC.inv.cpeprofile.Model", {
             type: "int"
         },
         {
+            name: "shape",
+            type: "string"
+        },
+        {
+            name: "shape_title_template",
+            type: "string"
+        },
+        {
             name: "workflow",
             type: "string"
         },

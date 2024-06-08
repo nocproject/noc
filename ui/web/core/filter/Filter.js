@@ -13,6 +13,7 @@ Ext.define('NOC.core.filter.Filter', {
         'Ext.ux.form.SearchField',
         'NOC.core.ComboBox',
         'NOC.core.combotree.ComboTree',
+        'NOC.core.label.LabelField',
         'NOC.core.filter.ViewModel',
         'NOC.core.filter.FilterController',
     ],
@@ -247,8 +248,9 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Labels:'),
             isLookupField: true,
             toBufferTrigger: false,
+            filterProtected: false,
             query: {
-                "enable_managedobject": true
+                "allow_models": ["sa.ManagedObject"]
             },
             listeners: {
                 change: 'setFilter'

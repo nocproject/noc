@@ -1,0 +1,81 @@
+{
+    "name": "Zyxel | MSAN | AAM1212-53",
+    "$collection": "inv.objectmodels",
+    "uuid": "a3f5aa1c-6b34-443e-9f4c-8235d4141112",
+    "vendor__code": "ZYXEL",
+    "description": "12-port Annex B ADSL2+ line card (over POTS) with splitters built-in",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "LINE",
+            "description": "USER 1-12 PSTN 1-12",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ9"
+        },
+        {
+            "name": "1",
+            "description": "Port 1 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2",
+            "description": "Port 2 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AAM1212-53"]
+        }
+    ]
+}

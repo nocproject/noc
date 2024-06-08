@@ -7,48 +7,62 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "Te1_xfp",
             "description": "TeX/1 XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te2_xfp",
             "description": "TeX/2 XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Te2_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te3_xfp",
             "description": "TeX/3 XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Te3_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te4_xfp",
             "description": "TeX/4 XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Te4_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["7600-ES+4TG3C"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["7600-ES+4TG3C"]
         }
-    }
+    ]
 }

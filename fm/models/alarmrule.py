@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List
+from typing import Optional, List, Union
 
 # Third-party modules
+from bson import ObjectId
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -29,7 +30,9 @@ from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
 from noc.core.bi.decorator import bi_sync
+from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
+from .escalationprofile import EscalationProfile
 
 
 id_lock = Lock()
@@ -38,7 +41,8 @@ id_lock = Lock()
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
-    alarm_class = ReferenceField(AlarmClass)
+    alarm_class: AlarmClass = ReferenceField(AlarmClass)
+    severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     reference_rx = StringField()
 
     def __str__(self):
@@ -86,8 +90,9 @@ class Action(EmbeddedDocument):
     )
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
-    severity_policy = StringField(choices=["set", "shift"])
-    severity = IntField()
+    severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
+    severity: AlarmSeverity = ReferenceField(AlarmSeverity)
+    escalation: EscalationProfile = ReferenceField(EscalationProfile)
     # Sync collection Default ?
     alarm_class = PlainReferenceField(AlarmClass)
 
@@ -113,6 +118,17 @@ class AlarmRule(Document):
     groups: List[Group] = ListField(EmbeddedDocumentField(Group))
     #
     actions: List[Action] = ListField(EmbeddedDocumentField(Action))
+    #
+    severity_policy = StringField(
+        choices=[
+            ("CB", "Class Based Policy"),
+            ("AB", "Affected Based Severity Preferred"),
+            ("AL", "Affected Limit"),
+            ("ST", "By Tokens"),
+        ],
+        default="AL",
+    )
+    stop_processing = BooleanField(default=False)
     # BI ID
     bi_id = LongField(unique=True)
 
@@ -127,8 +143,8 @@ class AlarmRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["AlarmRule"]:
-        return AlarmRule.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AlarmRule"]:
+        return AlarmRule.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -137,5 +153,5 @@ class AlarmRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["AlarmRule"]:
-        return AlarmRule.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["AlarmRule"]:
+        return AlarmRule.objects.filter(bi_id=bi_id).first()

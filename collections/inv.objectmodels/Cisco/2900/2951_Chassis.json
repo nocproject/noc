@@ -9,52 +9,66 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "mb",
             "description": "2921 Motherboard",
             "direction": "i",
             "gender": "f",
-            "name": "mb",
             "type__name": "Cisco | 2900 | MOTHERBOARD"
         },
         {
+            "name": "sm1",
             "description": "Service Module Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "sm1",
             "type__name": "Cisco | ISR | SM"
         },
         {
+            "name": "sm2",
             "description": "Service Module Slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "sm2",
             "type__name": "Cisco | ISR | SM"
         },
         {
+            "name": "psu",
             "description": "Power Supply slot",
             "direction": "i",
             "gender": "f",
-            "name": "psu",
             "type__name": "Cisco | 2921-2951 | PSU"
         },
         {
+            "name": "rsp",
             "description": "Redundant power supply connector",
             "direction": "s",
             "gender": "f",
-            "name": "rsp",
             "type__name": "Cisco | Electrical | RSP22"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO2951/K9"],
-            "cpe_22": "cpe:/h:cisco:2951_integrated_services_router:-",
-            "cpe_23": "cpe:2.3:h:cisco:2951_integrated_services_router:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO2951/K9"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:2951_integrated_services_router:-"
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:2951_integrated_services_router:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
         }
-    }
+    ]
 }

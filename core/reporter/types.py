@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Iterable, ForwardRef
 
 # Third-party modules
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 # NOC modules
 from noc.models import get_model, is_document
@@ -116,14 +116,19 @@ class BandFormat(BaseModel):
 
 
 class Template(BaseModel):
+    """
+    Attributes:
+        code: ReportTemplate.DEFAULT_TEMPLATE_CODE
+        formatter: Formatter name. Or Autodetect by content
+        bands_format: BandName -> BandFormat. For autoformat BandsData
+    """
+
     output_type: OutputType
-    code: str = "DEFAULT"  # ReportTemplate.DEFAULT_TEMPLATE_CODE;
+    code: str = "DEFAULT"
     # documentPath: str
     content: Optional[bytes] = None
-    formatter: Optional[str] = None  # Formatter name. Or Autodetect by content
-    bands_format: Optional[
-        Dict[str, BandFormat]
-    ] = None  # BandName -> BandFormat. For autoformat BandsData
+    formatter: Optional[str] = None
+    bands_format: Optional[Dict[str, BandFormat]] = None
     output_name_pattern: Optional[str] = "report.html"
     handler: Optional[str] = None  # For custom code
     custom: bool = False
@@ -140,6 +145,8 @@ class Parameter(BaseModel):
     required: bool = False
     default_value: Optional[str] = None
     model_id: Optional[str] = None
+
+    model_config = ConfigDict(protected_namespaces=())
 
     def clean_value(self, value):
         if self.type == "integer":
@@ -263,4 +270,4 @@ class OutputDocument(BaseModel):
         return self.content
 
 
-ReportBand.update_forward_refs()
+ReportBand.model_rebuild()

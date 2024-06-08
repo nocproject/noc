@@ -57,5 +57,5 @@ def test_deserialize():
     assert cfg.version == "1"
     assert cfg.config.zeroconf.interval == 300
     assert len(cfg.collectors) == 2
-    out = orjson.loads(cfg.json(by_alias=True))
+    out = orjson.loads(cfg.model_dump_json(by_alias=True))
     assert data == out

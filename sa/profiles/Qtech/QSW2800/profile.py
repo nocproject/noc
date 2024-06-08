@@ -37,7 +37,7 @@ class Profile(BaseProfile):
     password_submit = b"\r\n"
     command_submit = b"\r"
     pattern_prompt = (
-        rb"^(?P<hostname>[a-zA-Z0-9]\S{0,30})(?:\(sdiag\))?(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
+        rb"^(?P<hostname>[a-zA-Z0-9]\S{0,40})(?:\(sdiag\))?(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
     )
 
     config_tokenizer = "indent"
@@ -51,8 +51,6 @@ class Profile(BaseProfile):
         # ("hints", "protocols", "loop-detect", "status", False),
     ]
 
-    collators = ["noc.core.confdb.collator.ifpath.IfPathCollator"]
-
     matchers = {
         "is_new_metric": {"caps": {"$in": ["Qtech | OID | Memory Usage 11"]}},
         "is_support_mac_version": {
@@ -60,6 +58,8 @@ class Profile(BaseProfile):
         },
         "is_stack": {"caps": {"$in": ["Stack | Members"]}},
         "is_stackable": {"platform": {"$regex": r"QSW-8200-28F-AC-DC"}},
+        "is_qsw3750": {"platform": {"$regex": r"QSW-(?:3750|2850|4610|3470|3500)"}},
+        "is_old_version": {"version": {"$regex": r"8.1.1.(?:398|296|431|458|426|406)"}},
     }
 
     rx_date_format = re.compile(r"(\S+)\s*\((.+)\)")

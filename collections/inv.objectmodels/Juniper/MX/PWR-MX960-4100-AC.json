@@ -8,25 +8,40 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Internal power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MX960 PEM"
         },
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["PWR-MX960-4100-AC-R", "PWR-MX960-4100-AC-BB"],
-            "part_no": ["740-029344", "740-027760"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-029344", "740-027760"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["PWR-MX960-4100-AC-R", "PWR-MX960-4100-AC-BB"]
         }
-    }
+    ]
 }

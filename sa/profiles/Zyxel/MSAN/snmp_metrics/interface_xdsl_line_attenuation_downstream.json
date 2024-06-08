@@ -1,0 +1,12 @@
+{
+    "$metric": "Interface | xDSL | Line | Attenuation | Downstream",
+    "$type": "caps",
+    "oids": [[
+      "SNMP | MIB | ADSL-MIB", {
+        "$type": "ifindex",
+        "oid": "ADSL-LINE-MIB::adslAtucCurrAtn.{{ ifIndex }}",
+        "type": "gauge",
+        "units": "dB"
+      }
+    ]]
+  }

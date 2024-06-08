@@ -6,135 +6,309 @@
     "description": "Quidway S5300-10P-LI-AC,S5300-10P-LI-AC,S5300-10P-LI-AC Mainframe(8 GE RJ45,2 GE SFP,AC 110/220V)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::fan", "noc::inv::port"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::fan",
+        "noc::inv::port"
+    ],
     "connections": [
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "Console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["USB10", "USB11", "USB20"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | mini-USB"
         },
         {
+            "name": "GigabitEthernet0/0/1",
             "description": "GigabitEthernet 0/0/1 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/2",
             "description": "GigabitEthernet 0/0/2 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/3",
             "description": "GigabitEthernet 0/0/3 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/4",
             "description": "GigabitEthernet 0/0/4 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/5",
             "description": "GigabitEthernet 0/0/5 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/6",
             "description": "GigabitEthernet 0/0/6 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/7",
             "description": "GigabitEthernet 0/0/7 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/8",
             "description": "GigabitEthernet 0/0/8 port",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/9",
             "description": "GigabitEthernet 0/0/9 SFP port",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_GigabitEthernet0/0/9",
-            "name": "GigabitEthernet0/0/9",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "GigabitEthernet0/0/10",
             "description": "GigabitEthernet 0/0/10 SFP port",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_GigabitEthernet0/0/10",
-            "name": "GigabitEthernet0/0/10",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S5300-10P-LI-AC"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 180,
-            "height": 43,
-            "width": 250
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 250
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 180
         },
-        "power": {
-            "power": 10.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 43
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 10.0
         },
-        "weight": {
-            "weight": 1.4
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.4
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S5300-10P-LI-AC"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

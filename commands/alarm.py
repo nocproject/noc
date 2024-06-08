@@ -164,13 +164,13 @@ class Command(BaseCommand):
             "$op": "raise",
             "reference": reference or self.get_default_reference(mo, ac, a_vars),
             "timestamp": datetime.datetime.now().isoformat(),
-            "managed_object": mo.id,
+            "managed_object": str(mo.id),
             "alarm_class": ac.name,
-            "labels": labels.split(",") if a_vars else [],
+            "labels": labels.split(",") if labels else [],
         }
         # Render vars
         if a_vars:
-            msg["vars"] = orjson.loads(a_vars)
+            msg["vars"] = a_vars
         self.publish(mo, msg)
 
     def handle_run_test(self, *args, **options):

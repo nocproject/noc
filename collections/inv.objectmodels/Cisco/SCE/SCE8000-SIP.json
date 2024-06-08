@@ -7,44 +7,46 @@
     "cr_context": "SIP",
     "connections": [
         {
+            "name": "in",
             "description": "SIP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | SIP"
         },
         {
+            "name": "spa0",
             "description": "SPA 0 Slot",
             "direction": "i",
             "gender": "f",
-            "name": "spa0",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "spa1",
             "description": "SPA 1 Slot",
             "direction": "i",
             "gender": "f",
-            "name": "spa1",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "spa2",
             "description": "SPA 2 Slot",
             "direction": "i",
             "gender": "f",
-            "name": "spa2",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "spa3",
             "description": "SPA 3 Slot",
             "direction": "i",
             "gender": "f",
-            "name": "spa3",
             "type__name": "Cisco | SPA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SCE8000-SIP"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SCE8000-SIP"]
         }
-    }
+    ]
 }

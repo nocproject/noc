@@ -8,48 +8,62 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
-            "description": "XFP port",
-            "direction": "i",
-            "gender": "f",
             "name": "xfp1",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "XFP port",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
             "name": "xfp2",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "XFP port",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
             "name": "xfp3",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "xfp4",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "xfp4",
+            "description": "XFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "in",
             "description": "Line connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Ericsson | SE600 | CARD"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["10ge-4-port"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["10ge-4-port"]
         }
-    }
+    ]
 }

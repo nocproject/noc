@@ -108,7 +108,7 @@ class ReportByConfigApplication(Application):
     Report Config application
     """
 
-    CATEGORY_MAP = {"main", "fm", "sa", "inv"}
+    CATEGORY_MAP = {"main", "fm", "sa", "inv", "sla"}
 
     report_id: str = None
     report_config = None

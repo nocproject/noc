@@ -66,6 +66,11 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                             width: 100
                         },
                         {
+                            text: __("Metrics"),
+                            dataIndex: "metrics",
+                            width: 100
+                        },
+                        {
                             text: __("MAC"),
                             dataIndex: "mac",
                             width: 120
@@ -125,7 +130,8 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         {
                             text: __("ifIndex"),
                             dataIndex: "ifindex",
-                            hidden: true
+                            hidden: true,
+                            width: 50
                         },
                         {
                             xtype: 'glyphactioncolumn',

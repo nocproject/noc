@@ -7,33 +7,45 @@
     "cr_context": "MIC",
     "connections": [
         {
+            "name": "in",
             "description": "MPC connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "0/0",
             "description": "Port 0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "1/0",
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "1/0",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MIC3-3D-2X40GE-QSFPP"],
-            "part_no": ["750-036233"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-036233"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MIC3-3D-2X40GE-QSFPP"]
         }
-    }
+    ]
 }

@@ -24,21 +24,28 @@ Ext.define("NOC.main.label.Model", {
             type: "string"
         },
         {
+            name: "uuid",
+            type: "string",
+            persist: false
+        },
+        {
             name: "bg_color1",
-            type: "int"
+            type: "auto",
+            defaultValue: 0
         },
         {
             name: "fg_color1",
-            type: "int",
+            type: "auto",
             defaultValue: 16777215
         },
         {
             name: "bg_color2",
-            type: "int"
+            type: "auto",
+            defaultValue: 0
         },
         {
             name: "fg_color2",
-            type: "int",
+            type: "auto",
             defaultValue: 16777215
         },
         {
@@ -84,6 +91,10 @@ Ext.define("NOC.main.label.Model", {
             persist: false
         },
         {
+            name: "allow_auto_create",
+            type: "boolean",
+        },
+        {
             name: "enable_agent",
             type: "boolean"
         },
@@ -112,8 +123,8 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
-          name: "enable_alarm",
-          type: "boolean"
+            name: "enable_alarm",
+            type: "boolean"
         },
         {
             name: "enable_authprofile",
@@ -164,15 +175,7 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
-            name: "enable_subscriberprofile",
-            type: "boolean"
-        },
-        {
             name: "enable_supplier",
-            type: "boolean"
-        },
-        {
-            name: "enable_supplierprofile",
             type: "boolean"
         },
         {
@@ -229,10 +232,6 @@ Ext.define("NOC.main.label.Model", {
         },
         {
             name: "enable_peer",
-            type: "boolean"
-        },
-        {
-            name: "enable_vc",
             type: "boolean"
         },
         {

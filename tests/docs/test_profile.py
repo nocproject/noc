@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test profile docs
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ def all_profiles():
 def test_vendor_doc_exists(vendor):
     if vendor in XFAIL_VENDORS:
         pytest.xfail("Excluded")
-    path = os.path.join("docs", "en", "docs", "user", "reference", "profiles", vendor, "index.md")
+    path = os.path.join("docs", "profiles-reference", vendor, "index.md")
     assert os.path.exists(path), "Vendor '%s' must be documented in '%s'" % (vendor, path)
 
 
@@ -56,16 +56,14 @@ def test_vendor_doc_exists(vendor):
 def test_vendor_doc_toc(toc, vendor):
     if vendor in XFAIL_VENDORS:
         pytest.xfail("Excluded")
-    path = ["User's Guide", "Reference", "Profiles", vendor, "Overview"]
+    path = ["References", "Profiles", vendor, "Overview"]
     assert path in toc
     v = toc[path].split("/")
-    assert v == ["user", "reference", "profiles", vendor, "index.md"]
+    assert v == ["profiles-reference", vendor, "index.md"]
 
 
 @pytest.mark.parametrize("profile", all_profiles())
 def test_profile_doc_exists(profile):
-    vendor = profile.split(".")[0]
-    path = os.path.join(
-        "docs", "en", "docs", "user", "reference", "profiles", vendor, f"{profile}.md"
-    )
+    vendor, name = profile.split(".")
+    path = os.path.join("docs", "profiles-reference", vendor, f"{name}.md")
     assert os.path.exists(path), "Profile '%s' must be documented in '%s'" % (profile, path)

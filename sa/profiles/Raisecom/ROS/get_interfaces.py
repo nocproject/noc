@@ -37,6 +37,21 @@ class Script(BaseScript):
         r"^\s*Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)",
         re.MULTILINE,
     )
+    rx_vlans_2924 = re.compile(
+        r"^\s*(?:Interface: )?(?P<name>.*)\n"
+        r"(^\s*Reject frame type: \S+\n)?"
+        r"^\s*Administrative\sMode:\s*(?P<adm_mode>.*)\n"
+        r"^\s*Operational\sMode:\s*(?P<op_mode>.*)\n"
+        r"^\s*Access\sMode\sVLAN:\s*(?P<untagged_vlan>.*)\n"
+        r"^\s*Administrative\sAccess\sEgress\sVLANs:\s*(?P<mvr_vlan>.*)\n"
+        r"^\s*Operational\sAccess\sEgress\sVLANs:\s*(?P<op_eg_vlan>.*)\n"
+        r"^\s*Trunk(?:\sNative)?\sMode(?:\sNative)?\sVLAN:\s*(?P<trunk_native_vlan>.*)\n"
+        r"^\s*Administrative\sTrunk\sAllowed\sVLANs:\s*(?P<adm_trunk_allowed_vlan>.*)\n"
+        r"^\s*Operational\sTrunk\sAllowed\sVLANs:\s*(?P<op_trunk_allowed_vlan>.*)\n"
+        r"^\s*Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n"
+        r"^\s*Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)",
+        re.MULTILINE,
+    )
     rx_vlan2 = re.compile(
         r"^VLAN ID:\s+(?P<vlan_id>\d+)\s*\n"
         r"^Name:\s+\S+\s*\n"
@@ -59,6 +74,9 @@ class Script(BaseScript):
     )
     rx_lldp = re.compile(
         r"LLDP enable status:\s+enable.+\n" r"LLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE
+    )
+    rx_lldp_2924 = re.compile(
+        r"LLDP enable status:\s+enable.+\n" r"LLDP enable ports:\s+P:(?P<ports>\S+)\n", re.MULTILINE
     )
     rx_lldp_iscom2624g = re.compile(r"^(?P<ifname>\S+)\s+enable\s+\S+\s*\n", re.MULTILINE)
     rx_descr = re.compile(r"^\s*(?P<port>port\d+)\s+(?P<descr>.+)\n", re.MULTILINE)
@@ -91,7 +109,10 @@ class Script(BaseScript):
 
     def parse_vlans(self, section):
         r = {}
-        match = self.rx_vlans.search(section)
+        if self.is_iscom2924g:
+            match = self.rx_vlans_2924.search(section)
+        else:
+            match = self.rx_vlans.search(section)
         if match:
             r = match.groupdict()
         return r
@@ -117,7 +138,10 @@ class Script(BaseScript):
             v = self.cli("show lldp local config")
         except self.CLISyntaxError:
             return r
-        match = self.rx_lldp.search(v)
+        if self.is_iscom2924g:
+            match = self.rx_lldp_2924.search(v)
+        else:
+            match = self.rx_lldp.search(v)
         if match:
             r = {el for el in self.expand_rangelist(match.group("ports"))}
         return r
@@ -126,8 +150,13 @@ class Script(BaseScript):
         r = {}
         if self.is_rotek or self.is_gazelle:
             return r
-        v = self.cli("show interface port switchport")
-        for section in v.split("Port"):
+        if self.is_iscom2924g:
+            v = self.cli("show interface port-list 1-28 switchport")
+        else:
+            v = self.cli("show interface port switchport")
+
+        separator = "\n\n" if self.is_iscom2924g else "Port"
+        for section in v.split(separator):
             if not section:
                 continue
             port = self.parse_vlans(section)
@@ -137,16 +166,24 @@ class Script(BaseScript):
     def get_iface_statuses(self):
         r = []
         try:
-            v = self.cli("show interface port")
+            if self.is_iscom2924g:
+                v = self.cli("show interface port-list 1-28")
+            else:
+                v = self.cli("show interface port")
         except self.CLISyntaxError:
             return r
-        for line in v.splitlines()[5:]:
+        first_table_line = 2 if self.is_iscom2924g else 5
+        for line in v.splitlines()[first_table_line:]:
             # r[int(line[:6])] = {
             r += [
                 {
-                    "name": int(line[:6]),
-                    "admin_status": "enable" in line[7:14],
-                    "oper_status": "up" in line[14:29],
+                    "name": int(line[1:6]) if self.is_iscom2924g else int(line[:6]),
+                    "admin_status": (
+                        "enable" in line[6:13] if self.is_iscom2924g else "enable" in line[7:14]
+                    ),
+                    "oper_status": (
+                        "up" in line[13:28] if self.is_iscom2924g else "up" in line[14:29]
+                    ),
                 }
             ]
         return r
@@ -202,7 +239,7 @@ class Script(BaseScript):
             if match.group("mtu"):
                 sub["mtu"] = match.group("mtu")
             if match.group("ip"):
-                sub["ipv4_addresses"] = [match.group("ip")]
+                sub["ipv6_addresses"] = [match.group("ip")]
                 sub["enabled_afi"] += ["IPv4"]
             if match.group("ipv6"):
                 sub["ipv6_addresses"] = [match.group("ipv6")]
@@ -231,9 +268,83 @@ class Script(BaseScript):
             ifaces += [i]
         return [{"interfaces": ifaces}]
 
+    def execute_iscom2924g(self):
+        lldp_ifaces = self.get_lldp_config()
+        interfaces = {}
+        try:
+            v = self.cli("show interface port-list 1-28 description")
+        except self.CLISyntaxError:
+            raise NotImplementedError
+        for line in v.splitlines()[2:-1]:
+            ifname = int(line[1:8])
+
+            interfaces[ifname] = {
+                "name": ifname,
+                "type": "physical",
+                "snmp_ifindex": ifname,
+                "subinterfaces": [],
+            }
+            if str(line[8:]).strip() != ("-" and "--"):
+                interfaces[ifname]["description"] = str(line[8:]).strip()
+            if ifname in lldp_ifaces:
+                interfaces[ifname]["enabled_protocols"] = ["LLDP"]
+        for port in self.get_iface_statuses():
+            if port["name"] in interfaces:
+                interfaces[port["name"]].update(port)
+            else:
+                interfaces[port["name"]] = port
+        vlans = self.get_switchport_cli()
+        for ifname in interfaces:
+            port = interfaces[ifname]
+            name = str(f'port{port["name"]}')
+            port["subinterfaces"] = [
+                {
+                    "name": name,
+                    "enabled_afi": ["BRIDGE"],
+                    "admin_status": port["admin_status"],
+                    "oper_status": port["oper_status"],
+                    "tagged_vlans": [],
+                }
+            ]
+
+            if name in vlans:
+                port["subinterfaces"][0]["untagged_vlan"] = int(vlans[name]["untagged_vlan"])
+                if "n/a" not in vlans[name]["op_trunk_allowed_vlan"]:
+                    port["subinterfaces"][0]["tagged_vlans"] = ranges_to_list(
+                        vlans[name]["op_trunk_allowed_vlan"]
+                    )
+            if "description" in port:
+                port["subinterfaces"][0]["description"] = port["description"]
+
+        v = self.scripts.get_chassis_id()
+        mac = v[0]["first_chassis_mac"]
+        try:
+            v = self.cli("show interface ip")
+        except self.CLISyntaxError:
+            raise NotImplementedError
+        if v is not None:
+            for line in v.splitlines()[2:]:
+                ifname, addr, mask, *_ = line.split()
+                i = {
+                    "name": "ip%s" % ifname,
+                    "type": "SVI",
+                    "mac": mac,
+                    "enabled_protocols": [],
+                    "subinterfaces": [
+                        {"name": "ip%s" % ifname, "mac": mac, "enabled_afi": ["IPv4"]}
+                    ],
+                }
+                ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
+                i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
+                interfaces[i["name"]] = i
+
+        return [{"interfaces": list(interfaces.values())}]
+
     def execute_cli(self):
         if self.is_iscom2624g:
             return self.execute_iscom2624g()
+        if self.is_iscom2924g:
+            return self.execute_iscom2924g()
         lldp_ifaces = self.get_lldp_config()
         interfaces = {}
         if not self.is_rotek and not self.is_gazelle:

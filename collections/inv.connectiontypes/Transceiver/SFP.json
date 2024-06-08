@@ -5,6 +5,7 @@
     "description": "SFP transceiver slot",
     "c_group": [],
     "extend__name": "Transceiver | SFP+",
+    "female_facade__name": "Transceiver | SFP (F)",
     "genders": "mf",
     "matchers": [
         {

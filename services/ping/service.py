@@ -12,6 +12,7 @@ import time
 import datetime
 import os
 import asyncio
+from collections import defaultdict
 from typing import Dict, Any, Tuple, Optional, List
 
 # Third-party modules
@@ -33,12 +34,14 @@ class PingService(FastAPIService):
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
-    PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
+    PING_CLS = "NOC | Ping Failed"
 
     def __init__(self):
         super().__init__()
         self.mappings_callback = None
-        self.probes: Dict[int, ProbeSetting] = {}  # mo id -> ProbeSetting
+        self.probes: Dict[int, Tuple[ProbeSetting, ...]] = defaultdict(
+            tuple
+        )  # mo id -> ProbeSetting
         self.ping = None
         self.is_throttled = False
         self.slot_number = 0
@@ -86,7 +89,7 @@ class PingService(FastAPIService):
         Subscribe and track datastream changes
         """
         # Register RPC aliases
-        client = PingDataStreamClient("cfgping", service=self)
+        client = PingDataStreamClient("cfgtarget", service=self)
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
@@ -102,27 +105,74 @@ class PingService(FastAPIService):
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
-                await asyncio.sleep(1)
+                await asyncio.sleep(5)
 
     async def update_probe(self, data):
-        if data["id"] in self.probes:
-            await self._change_probe(data)
+        """
+        Update probe data
+        :param data:
+        :return:
+        """
+        addresses = data.pop("addresses", [])
+        if not addresses and "address" in data:
+            # Old format
+            addresses += [{"address": data.pop("address"), "interface": None, "is_fatal": True}]
+        elif not data["ping"]:
+            await self.delete_probe(data["id"])
         else:
-            await self._create_probe(data)
+            del data["trap"]
+            del data["syslog"]
+            data |= data.pop("ping")
 
-    async def delete_probe(self, id):
+        if data["id"] not in self.probes:
+            probes = set()
+        else:
+            probes = {p.address for p in self.probes[data["id"]]}
+        processed = set()
+        for d in addresses:
+            if not d["ping_check"]:
+                continue
+            d |= data
+            if d["address"] not in probes:
+                await self._create_probe(d)
+            else:
+                await self._change_probe(d)
+            processed.add(d["address"])
+        # Delete probes
+        for addr in probes - processed:
+            await self.delete_probe(data["id"], address=addr)
+
+    async def delete_probe(self, id, address: Optional[str] = None):
         if id not in self.probes:
             return
-        ps = self.probes[id]
-        ip = self.probes[id].address
-        self.logger.info("Delete probe: %s", ip)
-        ps.task.stop()
-        ps.task = None
-        del self.probes[id]
-        metrics["ping_probe_delete"] += 1
-        if ps.status is not None and not ps.status:
-            metrics["down_objects"] -= 1
-        metrics["ping_objects"] = len(self.probes)
+        for ps in self.probes[id]:
+            if address and ps.address != address:
+                continue
+            ip = ps.address
+            self.logger.info("Delete probe: %s", ip)
+            ps.task.stop()
+            ps.task = None
+            del self.probes[id]
+            metrics["ping_probe_delete"] += 1
+            if ps.status is not None and not ps.status:
+                metrics["down_objects"] -= 1
+            metrics["ping_objects"] = len(self.probes)
+            self.clear_alarm(ps)
+
+    def clear_alarm(self, ps, ts=None):
+        ts = ts or datetime.datetime.now().replace(microsecond=0).isoformat()
+        # Clear alarm
+        self.publish(
+            orjson.dumps(
+                {
+                    "$op": "clear",
+                    "reference": f"a:{ps.id}:{ps.address}",
+                    "timestamp": ts,
+                }
+            ),
+            stream=ps.stream,
+            partition=ps.partition,
+        )
 
     async def _create_probe(self, data):
         """
@@ -131,7 +181,7 @@ class PingService(FastAPIService):
         self.logger.info("Create probe: %s (%ds)", data["address"], data["interval"])
         ps = ProbeSetting(**data)
         ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
-        self.probes[data["id"]] = ps
+        self.probes[data["id"]] = self.probes[data["id"]] + (ps,)
         pt = PeriodicOffsetCallback(functools.partial(self.ping_check, ps), ps.interval * 1000)
         ps.task = pt
         pt.start()
@@ -140,19 +190,22 @@ class PingService(FastAPIService):
 
     async def _change_probe(self, data):
         self.logger.info("Update probe: %s (%ds)", data["address"], data["interval"])
-        ps = self.probes[data["id"]]
-        if ps.interval != data["interval"]:
-            ps.task.set_interval(data["interval"] * 1000)
-        if ps.address != data["address"]:
-            self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
-            ps.address = data["address"]
-        if ps.fm_pool != data["fm_pool"]:
-            ps.fm_pool = data["fm_pool"]
-            ps.set_stream()
-            ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
-        ps.update(**data)
-        metrics["ping_probe_update"] += 1
-        metrics["ping_objects"] = len(self.probes)
+        for ps in self.probes[data["id"]]:
+            if ps.address != data["address"]:
+                continue
+            # ps = self.probes[data["id"]]
+            if ps.interval != data["interval"]:
+                ps.task.set_interval(data["interval"] * 1000)
+            if ps.address != data["address"]:
+                self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
+                ps.address = data["address"]
+            if ps.fm_pool != data["fm_pool"]:
+                ps.fm_pool = data["fm_pool"]
+                ps.set_stream()
+                ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
+            ps.update(**data)
+            metrics["ping_probe_update"] += 1
+            metrics["ping_objects"] = len(self.probes)
 
     @classmethod
     def get_status_message(cls, status: bool) -> Dict[str, Any]:
@@ -204,7 +257,7 @@ class PingService(FastAPIService):
         address = ps.address
         t0 = time.time()
         metrics["ping_check_total"] += 1
-        disable_message = False  # Disabe sent Event message
+        disable_message = False  # Disable sent Event message
         if ps.time_cond:
             dt = datetime.datetime.fromtimestamp(t0)
             if not eval(ps.time_cond, {"T": dt}):
@@ -255,29 +308,46 @@ class PingService(FastAPIService):
         if ps and not self.is_throttled and not disable_message and s != ps.sent_status:
             # Build dispose message
             ts = datetime.datetime.fromtimestamp(t0).isoformat()
-            if s:
-                # Clear alarm
+            if ps.is_fatal:
+                # Set status
                 self.publish(
                     orjson.dumps(
                         {
                             "$op": "set_status",
                             "statuses": [
-                                {"timestamp": ts, "managed_object": ps.id, "status": True}
+                                {"timestamp": ts, "managed_object": ps.id, "status": bool(s)}
                             ],
                         }
                     ),
                     stream=ps.stream,
                     partition=ps.partition,
                 )
-            else:
-                # Raise alarm
+            elif not s:
+                # Raise Alarm
                 self.publish(
                     orjson.dumps(
                         {
-                            "$op": "set_status",
-                            "statuses": [
-                                {"timestamp": ts, "managed_object": ps.id, "status": False}
-                            ],
+                            "$op": "raise",
+                            # "reference": "areference or self.get_default_reference(mo, ac, a_vars),
+                            "timestamp": ts,
+                            "managed_object": str(ps.id),
+                            "alarm_class": self.PING_CLS,
+                            "reference": f"a:{ps.id}:{address}",
+                            "vars": {"address": address, "interface": ps.interface},
+                            # "labels": labels.split(",") if a_vars else [],
+                        }
+                    ),
+                    stream=ps.stream,
+                    partition=ps.partition,
+                )
+            else:
+                # Clear alarm
+                self.publish(
+                    orjson.dumps(
+                        {
+                            "$op": "clear",
+                            "reference": f"a:{ps.id}:{address}",
+                            "timestamp": ts,
                         }
                     ),
                     stream=ps.stream,
@@ -296,6 +366,8 @@ class PingService(FastAPIService):
                 data["rtt"] = int(rtt * 1000000)
             if ps.report_attempts:
                 data["attempts"] = attempts
+            if not ps.is_fatal:
+                data["labels"] = [f"noc::address::{address}"]
             self.register_metrics("ping", [data], key=ps.bi_id)
 
 

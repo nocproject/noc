@@ -1,0 +1,24 @@
+{
+    "name": "Cisco | ISR | Module | ISM-SRE-300-K9",
+    "$collection": "inv.objectmodels",
+    "uuid": "5d246b90-96b4-47f4-911f-9975b2567b3a",
+    "vendor__code": "CISCO",
+    "description": "Internal Services Module with Services Ready Engine",
+    "cr_context": "ISM",
+    "connections": [
+        {
+            "name": "in",
+            "description": "ISM Slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 2900-3900 | ISM"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ISM-SRE-300-K9"]
+        }
+    ]
+}

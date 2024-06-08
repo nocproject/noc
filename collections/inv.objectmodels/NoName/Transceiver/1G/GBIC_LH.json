@@ -8,33 +8,65 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "GBIC Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC | Cisco"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">1000BASELH-1310"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX10"
+                }
+            ],
             "type__name": "Optical | SC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<1000BASELH-1310"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX10"
+                }
+            ],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "min_serial_size": 5
+    "data": [
+        {
+            "attr": "min_serial_size",
+            "interface": "asset",
+            "value": 5
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

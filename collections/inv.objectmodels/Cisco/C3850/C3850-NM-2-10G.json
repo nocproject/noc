@@ -7,48 +7,94 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "Gi1_sfp",
             "description": "port 1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "port 2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Te3_sfp",
             "description": "port 3",
             "direction": "i",
             "gender": "f",
-            "name": "Te3_sfp",
-            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Te4_sfp",
             "description": "port 4",
             "direction": "i",
             "gender": "f",
-            "name": "Te4_sfp",
-            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 3850 | NM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C3850-NM-2-10G"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C3850-NM-2-10G"]
         }
-    }
+    ]
 }

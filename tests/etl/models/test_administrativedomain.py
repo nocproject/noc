@@ -10,6 +10,7 @@ import pytest
 
 # NOC modules
 from noc.core.etl.models.administrativedomain import AdministrativeDomain
+from noc.core.etl.models.typing import Reference
 
 
 @pytest.mark.parametrize(
@@ -18,18 +19,18 @@ from noc.core.etl.models.administrativedomain import AdministrativeDomain
         # Incomplete items
         ((1,), ValueError),
         #
-        ((1, "test"), {"id": "1", "name": "test", "parent": None, "default_pool": None}),
+        (("1", "test"), {"id": "1", "name": "test", "parent": None, "default_pool": None}),
         (
-            (2, "test children", 1),
+            ("2", "test children", "1"),
             {"id": "2", "name": "test children", "parent": "1", "default_pool": None},
         ),
         (
-            (2, "test children", 1, "DEFAULT"),
+            ("2", "test children", "1", "DEFAULT"),
             {"id": "2", "name": "test children", "parent": "1", "default_pool": "DEFAULT"},
         ),
         # Ignore excessive items
         (
-            (2, "test children", 1, "DEFAULT", "_"),
+            ("2", "test children", "1", "DEFAULT", "_"),
             {"id": "2", "name": "test children", "parent": "1", "default_pool": "DEFAULT"},
         ),
     ],
@@ -41,4 +42,8 @@ def test_from_iter(input, expected):
     else:
         item = AdministrativeDomain.from_iter(input)
         for k, v in expected.items():
-            assert getattr(item, k) == v
+            field = getattr(item, k)
+            if isinstance(field, Reference):
+                assert field.value == v
+            else:
+                assert field == v

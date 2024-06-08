@@ -130,7 +130,7 @@ class ReportProfileCheckSummary(ReportSource):
                 b.set_data({"name": "Summary"})
                 query = f"SELECT {condition} FROM mo"
             data.append(b)
-            for row in sql.query(query).transpose(include_header=True).to_dicts():
+            for row in sql.execute(query, eager=True).transpose(include_header=True).to_dicts():
                 if row["column"] == "1.2" and row["column_0"] == 0:
                     data.pop()
                     break
@@ -149,8 +149,7 @@ class ReportProfileCheckSummary(ReportSource):
                     }
                 )
                 if row["column"] == "1.2.1":
-                    b.data[
-                        "percent"
-                    ] = f'{round(row["column_0"] / data[-1].data["quantity"] * 100.0, 2)} %'
+                    p = round(row["column_0"] / data[-1].data["quantity"] * 100.0, 2)
+                    b.data["percent"] = f"{p} %"
                 data.append(b)
         return data

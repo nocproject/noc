@@ -8,52 +8,79 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | PWR"
         },
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
-            "description": "(lead-acid battery or Felithium battery) input for power backup",
-            "direction": "s",
-            "gender": "f",
             "name": " BAT-",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
-        },
-        {
             "description": "(lead-acid battery or Felithium battery) input for power backup",
             "direction": "s",
             "gender": "f",
-            "name": "BAT+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "BAT+",
+            "description": "(lead-acid battery or Felithium battery) input for power backup",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "name": "sensor",
             "description": "Detects the temperature of a lead-acid battery or activates a Fe-lithium battery",
             "direction": "s",
             "gender": "f",
-            "name": "sensor",
             "type__name": "Electrical | micro JST XH 2-pin "
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H831PAIB"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 88
         },
-        "dimensions": {
-            "depth": 442,
-            "height": 245,
-            "width": 88
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 442
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 245
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H831PAIB"]
         }
-    }
+    ]
 }

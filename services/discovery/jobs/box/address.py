@@ -30,14 +30,23 @@ SRC_INTERFACE = "i"
 SRC_DHCP = "d"
 SRC_NEIGHBOR = "n"
 SRC_MANUAL = "M"
+SRC_PING = "P"
 
-PREF_VALUE = {SRC_NEIGHBOR: 0, SRC_DHCP: 1, SRC_MANAGEMENT: 2, SRC_INTERFACE: 3, SRC_MANUAL: 4}
+PREF_VALUE = {
+    SRC_NEIGHBOR: 0,
+    SRC_DHCP: 1,
+    SRC_MANAGEMENT: 2,
+    SRC_INTERFACE: 3,
+    SRC_PING: 4,
+    SRC_MANUAL: 5,
+}
 
 LOCAL_SRC = {SRC_MANAGEMENT, SRC_INTERFACE}
 
 
 class AddressCheck(DiscoveryCheck):
     name = "address"
+    do_detaching = True  # False for ip ping discovery job
 
     def handler(self):
         self.propagated_prefixes = set()
@@ -103,6 +112,8 @@ class AddressCheck(DiscoveryCheck):
                 self.create_address(addresses[vpn_id, a])
         # Detaching hanging addresses
         self.logger.debug("Checking for hanging addresses")
+        if not self.do_detaching:
+            return
         for a in Address.objects.filter(managed_object=self.object):
             norm_address = IP.expand(a.address)
             address = addresses.get((a.vrf.vpn_id, norm_address))
@@ -449,7 +460,7 @@ class AddressCheck(DiscoveryCheck):
             if is_fqdn(fqdn):
                 return fqdn
             self.logger.error(
-                "Address %s renders to invalid FQDN '%s'. " "Ignoring FQDN", address.address, fqdn
+                "Address %s renders to invalid FQDN '%s'. Ignoring FQDN", address.address, fqdn
             )
         return None
 

@@ -7,144 +7,482 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "Se0",
             "description": "Serial0",
             "direction": "s",
             "gender": "f",
-            "name": "Se0",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se1",
             "description": "Serial1",
             "direction": "s",
             "gender": "f",
-            "name": "Se1",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se2",
             "description": "Serial2",
             "direction": "s",
             "gender": "f",
-            "name": "Se2",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se3",
             "description": "Serial3",
             "direction": "s",
             "gender": "f",
-            "name": "Se3",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se4",
             "description": "Serial4",
             "direction": "s",
             "gender": "f",
-            "name": "Se4",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se5",
             "description": "Serial5",
             "direction": "s",
             "gender": "f",
-            "name": "Se5",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se6",
             "description": "Serial6",
             "direction": "s",
             "gender": "f",
-            "name": "Se6",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se7",
             "description": "Serial7",
             "direction": "s",
             "gender": "f",
-            "name": "Se7",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se8",
             "description": "Serial8",
             "direction": "s",
             "gender": "f",
-            "name": "Se8",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se9",
             "description": "Serial9",
             "direction": "s",
             "gender": "f",
-            "name": "Se9",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se10",
             "description": "Serial10",
             "direction": "s",
             "gender": "f",
-            "name": "Se10",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se11",
             "description": "Serial11",
             "direction": "s",
             "gender": "f",
-            "name": "Se11",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se12",
             "description": "Serial12",
             "direction": "s",
             "gender": "f",
-            "name": "Se12",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se13",
             "description": "Serial13",
             "direction": "s",
             "gender": "f",
-            "name": "Se13",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se14",
             "description": "Serial14",
             "direction": "s",
             "gender": "f",
-            "name": "Se14",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "Se15",
             "description": "Serial15",
             "direction": "s",
             "gender": "f",
-            "name": "Se15",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | DB68"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NM-16A="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NM-16A="]
         }
-    }
+    ]
 }

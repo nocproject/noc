@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | ASR1000 | ASR1001 SPA",
+    "name": "Cisco | ASR1000 | ASR1001-SPA",
     "$collection": "inv.objectmodels",
     "uuid": "f0949d68-067d-4754-9075-5eafa7d08081",
     "vendor__code": "CISCO",
@@ -18,7 +18,10 @@
             "description": "SFP port 0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -26,7 +29,10 @@
             "description": "SFP port 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -34,7 +40,10 @@
             "description": "SFP port 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -42,13 +51,18 @@
             "description": "SFP port 3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ASR1001-SPA"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1001-SPA"]
         }
-    }
+    ]
 }

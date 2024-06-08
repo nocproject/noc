@@ -1,0 +1,18 @@
+{
+    "workflow__name": "Agent Default",
+    "name": "New",
+    "uuid": "d11f229f-e56e-47f4-a16d-2c095150b5aa",
+    "$collection": "wf.states",
+    "description": "New registered agent on System",
+    "is_default": true,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 50,
+    "y": 50,
+    "disable_all_interaction": false,
+    "labels": ["noc::agent::auth::none"]
+}

@@ -8,32 +8,40 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
-            "description": "3V3 power connector",
-            "direction": "i",
-            "gender": "m",
             "name": "DC1",
-            "protocols": [">48VDC"],
-            "type__name": "Huawei | SmartAX | Power 3V3"
-        },
-        {
             "description": "3V3 power connector",
             "direction": "i",
             "gender": "m",
-            "name": "DC2",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Huawei | SmartAX | Power 3V3"
         },
         {
+            "name": "DC2",
+            "description": "3V3 power connector",
+            "direction": "i",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Huawei | SmartAX | Power 3V3"
+        },
+        {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801MPWC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801MPWC"]
         }
-    }
+    ]
 }

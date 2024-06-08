@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import re
 from typing import Tuple
 
 # NOC modules
@@ -22,6 +23,8 @@ class Profile(BaseProfile):
     pattern_operation_error = rb"Internal processing error"
     command_save_config = "admin software-mngt shub database save"
     command_exit = "logout"
+    # exclude rotating dash
+    rogue_chars = [re.compile(rb"[\/\|\\\- ]\\x1b\[1D"), b"\r"]
 
     matchers = {
         "is_telnet_problem": {"version": {"$regex": r"32\.\d+$"}},

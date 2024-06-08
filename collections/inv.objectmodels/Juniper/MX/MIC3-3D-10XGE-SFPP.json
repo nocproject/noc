@@ -8,97 +8,133 @@
     "cr_context": "MIC",
     "connections": [
         {
+            "name": "in",
             "description": "FPC connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "0/0",
             "description": "Port 0/0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/1",
             "description": "Port 0/1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/2",
             "description": "Port 0/2",
             "direction": "i",
             "gender": "f",
-            "name": "0/2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/3",
             "description": "Port 0/3",
             "direction": "i",
             "gender": "f",
-            "name": "0/3",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/4",
             "description": "Port 0/4",
             "direction": "i",
             "gender": "f",
-            "name": "0/4",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/5",
             "description": "Port 0/5",
             "direction": "i",
             "gender": "f",
-            "name": "0/5",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/6",
             "description": "Port 0/6",
             "direction": "i",
             "gender": "f",
-            "name": "0/6",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/7",
             "description": "Port 0/7",
             "direction": "i",
             "gender": "f",
-            "name": "0/7",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/8",
             "description": "Port 0/8",
             "direction": "i",
             "gender": "f",
-            "name": "0/8",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/9",
             "description": "Port 0/9",
             "direction": "i",
             "gender": "f",
-            "name": "0/9",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MIC3-3D-10XGE-SFPP"],
-            "part_no": ["750-033307"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-033307"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MIC3-3D-10XGE-SFPP"]
         }
-    }
+    ]
 }

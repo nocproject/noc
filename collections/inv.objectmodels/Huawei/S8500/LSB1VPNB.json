@@ -8,20 +8,28 @@
     "labels": ["noc::inv::lc", "noc::inv::soft"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S8500 | LSB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LSB1VPNB0"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LSB1VPNB0"]
         },
-        "dimensions": {
-            "depth": 367,
-            "width": 340
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 340
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 367
         }
-    }
+    ]
 }

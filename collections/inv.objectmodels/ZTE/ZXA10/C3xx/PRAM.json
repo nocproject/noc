@@ -6,50 +6,66 @@
     "description": "PRAM is an AC power board (with power backup)",
     "connection_rule__name": "ZTE | ZXA10 | C3xx",
     "cr_context": "PWR",
-    "tags": ["psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "ZTE | ZXA10 | C3xx | PWR"
         },
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
-            "description": "(lead-acid battery or Felithium battery) input for power backup",
-            "direction": "s",
-            "gender": "f",
             "name": " BAT-",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
-        },
-        {
             "description": "(lead-acid battery or Felithium battery) input for power backup",
             "direction": "s",
             "gender": "f",
-            "name": "BAT+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "BAT+",
+            "description": "(lead-acid battery or Felithium battery) input for power backup",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "name": "sensor",
             "description": "Detects the temperature of a lead-acid battery or activates a Fe-lithium battery",
             "direction": "s",
             "gender": "f",
-            "name": "sensor",
             "type__name": "Electrical | micro JST XH 2-pin "
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PRAM"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PRAM"]
         }
-    }
+    ]
 }

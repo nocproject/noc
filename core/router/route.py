@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Route
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,12 +21,13 @@ from noc.core.mx import (
     MX_LABELS,
     MX_H_VALUE_SPLITTER,
     MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_RESOURCE_GROUPS,
     MX_NOTIFICATION_CHANNEL,
     MX_NOTIFICATION,
-    MX_MESSAGE_TYPE,
-    NOTIFICATION_METHODS,
+    MX_NOTIFICATION_GROUP_ID,
+    MessageType,
 )
-from .action import Action
+from .action import Action, NotificationAction, ActionCfg
 
 T_BODY = Union[bytes, Any]
 
@@ -80,6 +81,8 @@ class MatchItem(object):
     labels: Optional[List[str]] = None
     exclude_labels: Optional[List[str]] = None
     administrative_domain: Optional[int] = None
+    resource_groups: Optional[List[str]] = None
+    profile: Optional[str] = None
     headers: Optional[List[HeaderMatchItem]] = None
 
     @classmethod
@@ -91,6 +94,8 @@ class MatchItem(object):
                     labels=match["labels"],
                     exclude_labels=match["exclude_labels"],
                     administrative_domain=match.get("administrative_domain"),
+                    resource_groups=match.get("resource_groups"),
+                    profile=match.get("profile"),
                     headers=[
                         HeaderMatchItem(header=h["header"], op=h["op"], value=h["value"])
                         for h in match["headers"]
@@ -106,6 +111,8 @@ class Route(object):
     If condition is matched - do action
     """
 
+    MX_H_VALUE_SPLITTER = MX_H_VALUE_SPLITTER.encode(DEFAULT_ENCODING)
+
     def __init__(self, name: str, r_type: str, order: int, telemetry_sample: Optional[int] = None):
         self.name = name
         self.type = r_type
@@ -116,17 +123,20 @@ class Route(object):
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
         self.transmute_template: Optional[TransmuteTemplate] = None
 
-    def is_match(self, msg: Message) -> bool:
+    def is_match(self, msg: Message, message_type: bytes) -> bool:
         """
         Check if the route is applicable for messages
 
         :param msg:
+        :param message_type:
         :return:
         """
-        ctx = {"headers": msg.headers, "labels": set()}
+        ctx = {"headers": msg.headers, "labels": set(), "resource_groups": set()}
         if MX_LABELS in msg.headers and msg.headers[MX_LABELS]:
-            ctx["labels"] = set(
-                msg.headers[MX_LABELS].split(MX_H_VALUE_SPLITTER.encode(encoding=DEFAULT_ENCODING))
+            ctx["labels"] = set(msg.headers[MX_LABELS].split(self.MX_H_VALUE_SPLITTER))
+        if MX_RESOURCE_GROUPS in msg.headers and msg.headers[MX_RESOURCE_GROUPS]:
+            ctx["resource_groups"] = set(
+                msg.headers[MX_RESOURCE_GROUPS].split(self.MX_H_VALUE_SPLITTER)
             )
         return eval(self.match_co, ctx)
 
@@ -146,14 +156,16 @@ class Route(object):
             data = self.transmute_template.render_body(ctx)
         return data
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         """
         Iterate over available actions
 
         :return: Stream name or empty string, dict of headers
         """
         for a in self.actions:
-            yield from a.iter_action(msg)
+            yield from a.iter_action(msg, message_type)
 
     def set_type(self, r_type: str):
         self.type = r_type.encode(encoding=DEFAULT_ENCODING)
@@ -205,6 +217,10 @@ class Route(object):
                 expr += [
                     f"int(headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}]) in {set(match.administrative_domain)}"
                 ]
+            if match.resource_groups:
+                expr += [
+                    f"{set(rg.encode(encoding=DEFAULT_ENCODING) for rg in match.resource_groups)!r}.intersection(resource_groups)"
+                ]
             for h_match in match.headers:
                 if h_match.is_eq:
                     match_eq[h_match.header] += [h_match.value.encode(encoding=DEFAULT_ENCODING)]
@@ -254,25 +270,26 @@ class DefaultNotificationRoute(Route):
     Route by Notification-Channel message header
     """
 
-    MX_NOTIFICATION_EN = MX_NOTIFICATION.encode(DEFAULT_ENCODING)
+    MX_METRIC = MessageType.METRICS.value.encode()
 
     def __init__(self):
-        super().__init__(name="default", r_type=MX_NOTIFICATION, order=0)
+        super().__init__(name="default", r_type="*", order=999)
+        self.na = NotificationAction(ActionCfg("notification_group"))
 
-    def is_match(self, msg: Message) -> bool:
-        if (
-            MX_NOTIFICATION_CHANNEL in msg.headers
-            and msg.headers.get(MX_MESSAGE_TYPE) == self.MX_NOTIFICATION_EN
-        ):
+    def is_match(self, msg: Message, message_type: bytes) -> bool:
+        if message_type == self.MX_METRIC:
+            return False
+        elif message_type == MX_NOTIFICATION and MX_NOTIFICATION_CHANNEL in msg.headers:
             return True
-        return False
+        return MX_NOTIFICATION_GROUP_ID in msg.headers
 
     def transmute(self, headers: Dict[str, bytes], data: bytes) -> Union[bytes, Dict[str, Any]]:
         return data
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        method = msg.headers.get(MX_NOTIFICATION_CHANNEL).decode(DEFAULT_ENCODING)
-        if method not in NOTIFICATION_METHODS:
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+        if MX_NOTIFICATION_CHANNEL in msg.headers:
             # Check available channel for sender
-            return
-        yield NOTIFICATION_METHODS[method], {}, msg.value
+            yield msg.headers[MX_NOTIFICATION_CHANNEL].decode(DEFAULT_ENCODING), {}, msg.value
+        yield from self.na.iter_action(msg, message_type)

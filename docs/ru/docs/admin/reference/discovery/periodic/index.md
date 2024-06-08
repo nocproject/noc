@@ -1,1 +1,0 @@
-# Periodic Discovery

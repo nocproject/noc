@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | ISR | Module | VWIC2-2MFT-G703",
+    "$collection": "inv.objectmodels",
+    "uuid": "1fbea168-1158-4b42-971d-62efa3c1f9c3",
+    "vendor__code": "CISCO",
+    "description": "2-Port G.703 Multiflex Trunk Voice/WAN Interface Card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "Se0",
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "in",
+            "description": "Voice WAN Interface Card slot connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VWIC2-2MFT-G703"]
+        }
+    ]
+}

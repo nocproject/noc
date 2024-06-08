@@ -6,14 +6,27 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import orjson
 import psycopg2
 from django.db.backends.postgresql.base import DatabaseWrapper as PGDatabaseWrapper
+from django.db.backends.postgresql.operations import DatabaseOperations as PGDatabaseOperations
+from django.db.backends.postgresql.psycopg_any import Jsonb
 
 # NOC modules
 from .monitor import SpanCursor
 
 
+class DatabaseOperations(PGDatabaseOperations):
+    def adapt_json_value(self, value, encoder):
+        def dumps(obj):
+            return orjson.dumps(obj).decode("utf-8")
+
+        return Jsonb(value, dumps=dumps)
+
+
 class DatabaseWrapper(PGDatabaseWrapper):
+    ops_class = DatabaseOperations
+
     def _savepoint_allowed(self):
         return False
 
@@ -23,7 +36,8 @@ class DatabaseWrapper(PGDatabaseWrapper):
         :param conn_params:
         :return:
         """
-        connection = psycopg2.connect(cursor_factory=SpanCursor, **conn_params)
+        conn_params["cursor_factory"] = SpanCursor
+        connection = psycopg2.connect(**conn_params)
         # Register dummy loads() to avoid a round trip from psycopg2's decode
         # to json.dumps() to json.loads(), when using a custom decoder in
         # JSONField.

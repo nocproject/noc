@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 from threading import Lock
-from typing import Any, Optional
+from typing import Any, Optional, Union
 import time
 
 # Third-party modules
@@ -74,8 +74,8 @@ class ActiveEvent(Document):
 
     @classmethod
     @cachedmethod(key="activeevent-%s", lock=lambda _: id_lock, ttl=900)
-    def get_by_id(cls, event_id):
-        return ActiveEvent.objects.filter(id=event_id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ActiveEvent"]:
+        return ActiveEvent.objects.filter(id=oid).first()
 
     def mark_as_new(self, message=None):
         """

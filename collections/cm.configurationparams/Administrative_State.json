@@ -1,0 +1,11 @@
+{
+    "name": "Administrative State",
+    "$collection": "cm.configurationparams",
+    "uuid": "782fde87-8fc4-4ee1-842c-9434323fa1a7",
+    "code": "admin_state",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "EthernetPort"
+    }],
+    "type": "bool"
+}

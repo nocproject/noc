@@ -16,6 +16,8 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "HP.ProCurve"
 
+    pattern_username = rb"(Please Enter)?\s*(Login Name|Username):"
+    pattern_password = rb"(Please Enter)?\s*Password:"
     pattern_prompt = rb"^[a-zA-Z0-9- _/.]+?(\(\S+\))?# "
     pattern_unprivileged_prompt = rb"^[a-zA-Z0-9- _/.]+?> "
     pattern_more = [
@@ -23,12 +25,13 @@ class Profile(BaseProfile):
         (rb"-- MORE --, next page: Space, next line: Enter, quit: Control-C", b" "),
     ]
     pattern_syntax_error = rb"Invalid input: "
-    command_disable_pager = "terminal length 1000"
+    command_disable_pager = "no page"
     command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "write memory\n"
     command_exit = "exit"
+    matchers = {"is_old_cli": {"caps": {"$in": ["HP | ProCurve | CLI | Old"]}}}
 
     #
     # Compare versions
@@ -49,3 +52,16 @@ class Profile(BaseProfile):
         a = [int(z) for z in cls.rx_ver.findall(v1)]
         b = [int(z) for z in cls.rx_ver.findall(v2)]
         return (a > b) - (a < b)
+
+    @classmethod
+    def get_interface_type(cls, name):
+        if name.lower().startswith("trk"):
+            return "aggregated"
+        elif name.lower().startswith("vlan"):
+            return "SVI"
+        elif name.lower().startswith("switch loopback"):
+            return "loopback"
+        return "physical"
+
+    def convert_interface_name(self, s):
+        return s

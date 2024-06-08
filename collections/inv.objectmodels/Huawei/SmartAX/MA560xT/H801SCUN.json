@@ -9,90 +9,137 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | SCU"
         },
         {
+            "name": "eth",
             "description": "100M Base-T maintenance network port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Upstream transmission or cascading port",
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "name": "1",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "name": "2",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
-            "name": "3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "3",
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "console",
             "description": "RS-232 serial port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "esc",
             "description": "RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "name": "esc",
-            "protocols": [">RS485"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS485"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "db1",
             "description": "Daughter board port",
             "direction": "i",
             "gender": "f",
-            "name": "db1",
             "type__name": "Huawei | SmartAX | MA560xT | DB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801SCUN"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 50.0
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 396,
-            "width": 26
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 26
         },
-        "power": {
-            "power": 50.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
         },
-        "weight": {
-            "weight": 0.5
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 396
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.5
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801SCUN"]
         }
-    }
+    ]
 }

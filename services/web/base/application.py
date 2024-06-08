@@ -11,6 +11,7 @@ import os
 import datetime
 import functools
 from collections import OrderedDict
+from typing import TypeVar, Type
 
 # Third-party modules
 from django.http import (
@@ -37,8 +38,11 @@ from noc import settings
 from noc.sa.interfaces.base import DictParameter
 from noc.core.cache.base import cache
 from noc.core.comp import smart_text
+from noc.models import is_document
 from .access import HasPerm, Permit, Deny
 from .site import site
+
+T = TypeVar("T")
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None, api=False):
@@ -275,19 +279,19 @@ class Application(object, metaclass=ApplicationBase):
         return r
 
     @staticmethod
-    def get_object_or_404(*args, **kwargs):
+    def get_object_or_404(model: Type[T], *args, **kwargs) -> T:
         """
         Shortcut to get_object_or_404
         """
-        if hasattr(args[0], "_fields"):
+        if is_document(model):
             # Document
-            r = args[0].objects.filter(**kwargs).first()
-            if not r:
-                raise Http404("No %s matching given query" % args[0])
-            return r
-        else:
-            # Django model
-            return get_object_or_404(*args, **kwargs)
+            r = model.objects.filter(**kwargs).first()
+            if r:
+                return r
+            msg = f"No {model} matching given query"
+            raise Http404(msg)
+        # Django model
+        return get_object_or_404(model, *args, **kwargs)
 
     def get_environment(self):
         """
@@ -632,7 +636,7 @@ class Application(object, metaclass=ApplicationBase):
         if v is None:
             return None
         elif isinstance(v, datetime.datetime):
-            return self.TZ.localize(v).isoformat()
+            return v.astimezone(self.TZ).isoformat()
         else:
             raise Exception("Invalid to_json type")
 

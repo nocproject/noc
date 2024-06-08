@@ -7,30 +7,32 @@
     "cr_context": "MOD",
     "connections": [
         {
+            "name": "MPA0",
             "description": "MPA 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "MPA0",
             "type__name": "Cisco | ASR9k | MPA"
         },
         {
+            "name": "MPA1",
             "description": "MPA 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "MPA1",
             "type__name": "Cisco | ASR9k | MPA"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ASR9k | Linecard"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["A9K-MOD80-TR"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["A9K-MOD80-TR"]
         }
-    }
+    ]
 }

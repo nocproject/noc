@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Service Default",
+    "name": "Provisioning",
+    "uuid": "dc258f9d-6999-45d3-943b-c10a6f1bd41f",
+    "$collection": "wf.states",
+    "description": "The service is saved to the configuration.",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 240,
+    "y": 170,
+    "disable_all_interaction": false
+}

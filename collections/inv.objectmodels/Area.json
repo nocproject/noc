@@ -5,12 +5,16 @@
     "vendor__code": "NOC",
     "description": "Arbitraty map area",
     "connections": [],
-    "data": {
-        "container": {
-            "container": true
+    "data": [
+        {
+            "attr": "layer",
+            "interface": "geopoint",
+            "value": "areas"
         },
-        "geopoint": {
-            "layer": "areas"
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         }
-    }
+    ]
 }

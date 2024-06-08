@@ -8,79 +8,102 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7302 | LINECARD"
         },
         {
+            "name": "Craft",
             "description": "Craft port",
             "direction": "s",
             "gender": "f",
-            "name": "Craft",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "Alarm",
             "description": "Alarm port",
             "direction": "s",
             "gender": "f",
-            "name": "Alarm",
             "type__name": "Electrical | DB15"
         },
         {
+            "name": "Ethernet0/0",
             "description": "Up Stream port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0",
-            "protocols": ["100BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "100BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         },
-         {
+        {
+            "name": "Ethernet0/1",
             "description": "Down Stream port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/1",
-            "protocols": ["100BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "100BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "DC1+",
             "description": "BATRET A",
             "direction": "i",
             "gender": "f",
-            "name": "DC1+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
+            "name": "DC1-",
             "description": "-48V BAT A",
             "direction": "i",
             "gender": "f",
-            "name": "DC1-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
+            "name": "DC2+",
             "description": "BATRET B",
             "direction": "i",
             "gender": "f",
-            "name": "DC2+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
+            "name": "DC2-",
             "description": "-48V BAT B",
             "direction": "i",
             "gender": "f",
-            "name": "DC2-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWIO-B"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWIO-B"]
         }
-    }
+    ]
 }

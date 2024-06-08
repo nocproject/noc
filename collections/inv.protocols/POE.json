@@ -1,0 +1,10 @@
+{
+    "name": "POE",
+    "code": "POE",
+    "$collection": "inv.protocols",
+    "uuid": "8e561346-ff0a-4867-9722-4f2033d78f94",
+    "description": "Power Over Ethernet",
+    "data": [],
+    "connection_schema": "U",
+    "technology__name": "Energetics"
+}

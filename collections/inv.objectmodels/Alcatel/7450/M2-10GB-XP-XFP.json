@@ -4,36 +4,44 @@
     "uuid": "231088b8-598c-4bda-b29d-217efdce56b4",
     "vendor__code": "ALU",
     "description": "Alcatel 7450, 7750 2 port 10-Gigabit Ethernet",
-    "labels": ["noc::inv::lc", "noc::inv::port"],
     "cr_context": "MDA",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "MDA slot connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "Te1_xfp",
             "description": "TeX/1 XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "Te2_xfp",
             "description": "TeX/2 XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Te2_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["3HE03685AAAA01"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["3HE03685AAAA01"]
         }
-    }
+    ]
 }

@@ -5,28 +5,51 @@
     "vendor__code": "OPTRONIC",
     "description": "Optronic SFP WDM 20km transceiver 1550 with ddm",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rxtx",
             "description": "RxTx SC SFP",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": [">1000BASEER-1310", "<1000BASEER-1550"],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["TBSF15d2012gSC3c"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["TBSF15d2012gSC3c"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

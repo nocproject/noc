@@ -1,0 +1,10 @@
+{
+    "name": "USB 1.1",
+    "code": "USB11",
+    "$collection": "inv.protocols",
+    "uuid": "9a5b71d7-f2d6-4c50-97c5-6c820dc2774a",
+    "description": "USB 1.1",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "USB"
+}

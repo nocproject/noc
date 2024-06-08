@@ -8,152 +8,213 @@
     "cr_context": "MOTHERBOARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 3800 | MOTHERBOARD"
         },
         {
+            "name": "disk0",
             "description": "Compact Flash slot",
             "direction": "i",
             "gender": "f",
-            "name": "disk0",
             "type__name": "Flash | CF"
         },
         {
+            "name": "Gi0",
             "description": "GigabitEthernet 0/0 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0_sfp",
             "description": "GigabitEthernet 0/0 sfp port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi0_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi1",
             "description": "GigabitEthernet 0/1 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "dcs0",
             "description": "DaughterCard Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "dcs0",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "dcs1",
             "description": "DaughterCard Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "dcs1",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "dcs2",
             "description": "DaughterCard Slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "dcs2",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "dcs3",
             "description": "DaughterCard Slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "dcs3",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "dcs4",
             "description": "DaughterCard Slot 4",
             "direction": "i",
             "gender": "f",
-            "name": "dcs4",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "dcs5",
             "description": "DaughterCard Slot 5",
             "direction": "i",
             "gender": "f",
-            "name": "dcs5",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "dcs6",
             "description": "DaughterCard Slot 6",
             "direction": "i",
             "gender": "f",
-            "name": "dcs6",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "dcs7",
             "description": "DaughterCard Slot 7",
             "direction": "i",
             "gender": "f",
-            "name": "dcs7",
             "type__name": "Cisco | 3800 | DCS"
         },
         {
+            "name": "aim0",
             "description": "AIM Container Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "aim0",
             "type__name": "Cisco | 3800 | AIM"
         },
         {
+            "name": "aim1",
             "description": "AIM Container Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "aim1",
             "type__name": "Cisco | 3800 | AIM"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "usb1",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb1",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO3845-MB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO3845-MB"]
         }
-    }
+    ]
 }

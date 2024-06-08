@@ -6,170 +6,351 @@
     "description": "8 x Ethernet 10/100/1000BASE-T, 3xFXS,1xFXO",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
             "type__name": "Power | IEC 60320 C14"
         },
         {
-            "description": "USB Port",
-            "direction": "i",
-            "gender": "f",
             "name": "usb1",
-            "protocols": [">USB10", ">USB11", ">USB20"],
-            "type__name": "Electrical | USB"
-        },
-        {
             "description": "USB Port",
             "direction": "i",
             "gender": "f",
-            "name": "usb2",
-            "protocols": [">USB10", ">USB11", ">USB20"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "usb2",
+            "description": "USB Port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "name": "Console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "voice-port1",
             "description": "voice-port 1 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port1",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port2",
             "description": "voice-port 2 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port2",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port3",
             "description": "voice-port 3 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port3",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port1",
             "description": "voice-port fxo telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port1",
-            "protocols": ["FXO"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "gi1",
             "description": "gigabitethernet 1/0/1 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi2",
             "description": "gigabitethernet 1/0/2 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi3",
             "description": "gigabitethernet 1/0/3 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi4",
             "description": "gigabitethernet 1/0/4 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi5",
             "description": "gigabitethernet 1/0/5 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi6",
             "description": "gigabitethernet 1/0/6 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi7",
             "description": "gigabitethernet 1/0/7 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi8",
             "description": "gigabitethernet 1/0/8 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "gi8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ESR-12V"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 160,
-            "height": 44,
-            "width": 267
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 27.0
         },
-        "power": {
-            "power": 27.0
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-12V"]
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 1
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 267
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 160
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         }
-    }
+    ]
 }

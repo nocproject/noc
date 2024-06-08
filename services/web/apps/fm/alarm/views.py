@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.alarm application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import os
 import inspect
 import datetime
 import operator
-from typing import Tuple
+from typing import Tuple, List, Dict, Any
 import asyncio
 
 # Third-party modules
@@ -56,12 +56,12 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.comp import smart_text
 from noc.core.service.loader import get_service
 
-SQL_EVENTS = """select
+SQL_EVENTS = f"""select
     e.event_id, e.ts,
     e.event_class as event_class_bi_id, e.managed_object as managed_object_bi_id,
     e.start_ts, e.source, e.raw_vars, e.resolved_vars, e.vars
     from events e
-    where e.event_id in (select event_id from disposelog where alarm_id=%s)
+    where e.event_id in (select event_id from {config.clickhouse.db}.disposelog where alarm_id=%s)
     format JSONEachRow
 """
 
@@ -378,6 +378,7 @@ class AlarmApplication(ExtApplication):
                 for ll in o.log
                 if getattr(ll, "source", None)
             ][: config.web.api_alarm_comments_limit],
+            "__tmp_groups": o.groups[0] if o.groups else None,
         }
         if fields:
             d = {k: d[k] for k in fields}
@@ -406,10 +407,9 @@ class AlarmApplication(ExtApplication):
         model = self.model_map[status]
         if request.user.is_superuser:
             return model.objects.filter().read_preference(ReadPreference.SECONDARY_PREFERRED).all()
-        else:
-            return model.objects.filter(
-                adm_path__in=UserAccess.get_domains(request.user),
-            ).read_preference(ReadPreference.SECONDARY_PREFERRED)
+        return model.objects.filter(
+            adm_path__in=UserAccess.get_domains(request.user),
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
     @view(method=["GET", "POST"], url=r"^$", access="launch", api=True)
     def api_list(self, request):
@@ -588,12 +588,14 @@ class AlarmApplication(ExtApplication):
                         "managed_object": a.managed_object.id,
                         "managed_object__label": a.managed_object.name,
                         "timestamp": self.to_json(a.timestamp),
-                        "groups": ", ".join(
-                            ag.alarm_class.name
-                            for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
-                        )
-                        if a.groups
-                        else "",
+                        "groups": (
+                            ", ".join(
+                                ag.alarm_class.name
+                                for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
+                            )
+                            if a.groups
+                            else ""
+                        ),
                         "iconCls": "icon_error",
                         "row_class": s.style.css_class_name,
                     }
@@ -934,14 +936,17 @@ class AlarmApplication(ExtApplication):
         return r
 
     def bulk_field_total_grouped(self, data):
-        if not data:
+        if not data or data[0]["status"] != "A":
+            return data
+        refs = [x["reference"] for x in data if "reference" in x]
+        if not refs:
             return data
         coll = ActiveAlarm._get_collection()
         r = {
             c["_id"]: c["count"]
             for c in coll.aggregate(
                 [
-                    {"$match": {"groups": {"$ne": []}}},
+                    {"$match": {"groups": {"$in": refs}}},
                     {"$unwind": "$groups"},
                     {"$group": {"_id": "$groups", "count": {"$sum": 1}}},
                 ]
@@ -960,6 +965,32 @@ class AlarmApplication(ExtApplication):
             mtc = set(Maintenance.currently_affected())
             for x in data:
                 x["isInMaintenance"] = x["managed_object"] in mtc
+        return data
+
+    def bulk_field_group_subject(self, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        if not data or data[0]["status"] != "A":
+            return data
+        # Get existing refs
+        group_refs = {x["__tmp_groups"] for x in data if "__tmp_groups" in x}
+        if not group_refs:
+            return data
+        # Find subject
+        subj_map = {}
+        for x in ActiveAlarm._get_collection().find(
+            {"reference": {"$in": list(group_refs)}}, {"_id": 1, "reference": 1, "vars": 1}
+        ):
+            av = x.get("vars")
+            if not av:
+                continue
+            name = av.get("name")
+            if name:
+                subj_map[x["reference"]] = name
+        # Apply subjects
+        for x in data:
+            g = x.pop("__tmp_groups", None)
+            if not g or g not in subj_map:
+                continue
+            x["group_subject"] = subj_map[g]
         return data
 
     @view(url=r"profile_lookup/$", access="launch", method=["GET"], api=True)

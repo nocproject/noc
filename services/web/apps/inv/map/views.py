@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,8 @@ from typing import List, Set, Dict
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from jinja2.environment import Environment
+from jinja2.exceptions import TemplateError
 from bson import ObjectId
 
 # NOC modules
@@ -23,6 +25,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.cpe import CPE
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -35,7 +38,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.maintenance.models.maintenance import Maintenance
 from noc.core.text import alnum_key
 from noc.core.validators import is_objectid
-from noc.core.pm.utils import get_interface_metrics
+from noc.core.pm.utils import get_interface_metrics, MetricProxy
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
 from noc.core.topology.loader import loader
@@ -178,7 +181,6 @@ class MapApplication(ExtApplication):
         :param link_id:
         :return:
         """
-        self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
             "id": str(link.id),
@@ -212,8 +214,8 @@ class MapApplication(ExtApplication):
             for i in o[mo]:
                 if i.name not in metric_map[mo]:
                     continue
-                mo_in[mo] += metric_map[mo][i.name]["Interface | Load | In"]
-                mo_out[mo] += metric_map[mo][i.name]["Interface | Load | Out"]
+                mo_in[mo] += int(metric_map[mo][i.name]["load_in"])
+                mo_out[mo] += int(metric_map[mo][i.name]["load_out"])
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
@@ -252,6 +254,21 @@ class MapApplication(ExtApplication):
                     ],
                 }
             ]
+        return r
+
+    def inspector_cpe(self, request, id, cpe_id):
+        cpe: "CPE" = self.get_object_or_404(CPE, id=cpe_id)
+        caps = cpe.get_caps()
+        r = {
+            "id": str(cpe.id),
+            "name": str(cpe),
+            "description": cpe.description,
+            "address": cpe.address,
+            "platform": caps.get("CPE | Model"),
+            # "external": object.segment.id != segment.id,
+            # "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
+            "caps": caps,
+        }
         return r
 
     @view(
@@ -368,11 +385,17 @@ class MapApplication(ExtApplication):
         api=True,
         validate={
             "nodes": DictListParameter(
-                attrs={"id": StringParameter(), "node_type": StringParameter()}
+                attrs={
+                    "id": StringParameter(),
+                    "node_type": StringParameter(),
+                    "node_id": StringParameter(),
+                    "metrics_template": StringParameter(required=False),
+                    "object_filter": StringParameter(required=False),
+                }
             )
         },
     )
-    def api_objects_statuses(self, request, nodes: List[Dict[str, int]]):
+    def api_objects_statuses(self, request, nodes: List[Dict[str, str]]):
         def get_alarms(objects: List[int]) -> Set[int]:
             """
             Returns a set of objects with alarms
@@ -406,15 +429,21 @@ class MapApplication(ExtApplication):
             }
 
         nid = {}
+        metrics_template: Dict[str, str] = {}
         group_nodes = {}  # (segment, group)
+        cpes = set()
         # Build id -> object_id mapping
         for o in nodes:
             if o["node_type"] == "managedobject":
                 nid[o["node_id"]] = o["id"]
+                metrics_template[o["id"]] = o["metrics_template"]
             elif o["node_type"] == "objectgroup":
                 group_nodes[("", o["node_id"])] = o["id"]
             elif o["node_type"] == "objectsegment":
                 group_nodes[(o["node_id"], "")] = o["id"]
+            elif o["node_type"] == "cpe":
+                cpes.add(o["node_id"])
+                metrics_template[o["id"]] = o["metrics_template"]
             elif o["node_type"] == "other" and o.get("object_filter"):
                 group_nodes[
                     (
@@ -438,8 +467,31 @@ class MapApplication(ExtApplication):
             for mo_id in mos:
                 object_group[mo_id].add(n_id)
         # Mark all as unknown
-        objects = list(itertools.chain(nid, object_group))
-        r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values())}
+        objects = [int(x) for x in itertools.chain(nid, object_group)]
+        bi_id_map = {
+            str(mo_id): bi_id
+            for mo_id, bi_id in ManagedObject.objects.filter(id__in=objects).values_list(
+                "id", "bi_id"
+            )
+        }
+        env = Environment()
+        env.globals["metric"] = MetricProxy(
+            metric_keys=[{"managed_object": bi_id} for bi_id in bi_id_map.values()]
+        )
+        r = defaultdict(dict)
+        for o in itertools.chain(nid.values(), group_nodes.values()):
+            r[o]["status_code"] = self.ST_UNKNOWN
+            if o not in metrics_template:
+                continue
+            try:
+                r[o]["metrics_label"] = env.from_string(metrics_template[o]).render(
+                    {"managed_object": bi_id_map[o]}
+                )
+            except (ValueError, TemplateError) as e:
+                r[o]["metrics_label"] = "#ERROR#"
+                self.logger.error(
+                    "[%s] Error when processed MetricTemplate: %s", metrics_template[o], e
+                )
         sr = ManagedObject.get_statuses(objects)
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
@@ -449,29 +501,56 @@ class MapApplication(ExtApplication):
             if sr[o]:
                 # Check for alarms
                 if o in sa:
-                    r[o] = self.ST_ALARM
+                    r[str(o)]["status_code"] = self.ST_ALARM
                 else:
-                    r[o] = self.ST_OK
+                    r[str(o)]["status_code"] = self.ST_OK
             else:
-                r[o] = self.ST_DOWN
+                r[str(o)]["status_code"] = self.ST_DOWN
             if o in mo:
-                r[o] |= self.ST_MAINTENANCE
+                r[str(o)]["status_code"] |= self.ST_MAINTENANCE
             if o not in object_group:
                 continue
             for g in object_group[o]:
-                group_status[g].add(r[o])
+                group_status[g].add(r[o]["status_code"])
         for g, status in group_status.items():
             if self.ST_ALARM in status or self.ST_DOWN in status:
-                r[g] = self.ST_ALARM
+                r[str(o)]["status_code"] = self.ST_ALARM
             elif self.ST_OK in status:
-                r[g] = self.ST_OK
+                r[str(o)]["status_code"] = self.ST_OK
         segments = [s for s, g in group_nodes if not g]
         sa = get_alarms_segment(segments)
         for s in segments:
             if s in sa:
-                r[s] = self.ST_ALARM
+                r[str(o)]["status_code"] = self.ST_ALARM
             else:
-                r[s] = self.ST_OK
+                r[str(o)]["status_code"] = self.ST_OK
+        if not cpes:
+            return r
+        # CPE
+        cpe_map = {}
+        for cpe in CPE.objects.filter(id__in=list(cpes)):
+            o = str(cpe.id)
+            cpe_map[cpe.bi_id] = o
+            if cpe.oper_status is None:
+                r[o]["status_code"] = self.ST_UNKNOWN
+            elif not cpe.oper_status:
+                r[o]["status_code"] = self.ST_ALARM
+            else:
+                r[o]["status_code"] = self.ST_OK
+        env = Environment()
+        env.globals["metric"] = MetricProxy(metric_keys=[{"cpe": x} for x in cpe_map])
+        for cpe_bi_id, cpe_id in cpe_map.items():
+            if cpe_id not in metrics_template:
+                continue
+            try:
+                r[cpe_id]["metrics_label"] = env.from_string(metrics_template[cpe_id]).render(
+                    {"cpe": cpe_bi_id}
+                )
+            except (ValueError, TemplateError) as e:
+                r[cpe_id]["metrics_label"] = "#ERROR#"
+                self.logger.error(
+                    "[%s] Error when processed MetricTemplate: %s", metrics_template[cpe_id], e
+                )
         return r
 
     @classmethod
@@ -532,7 +611,7 @@ class MapApplication(ExtApplication):
                     mlst += [(m["metric"], object, m["tags"]["interface"])]
                 except KeyError:
                     pass
-        # @todo: Get last values from cache
+                # @todo: Get last values from cache
         if not mlst:
             return {}
 
@@ -557,9 +636,8 @@ class MapApplication(ExtApplication):
                 continue
             if rq_iface not in metric_map[rq_mo]:
                 continue
-            r[pid]["Interface | Load | In"] = metric_map[rq_mo][rq_iface]["Interface | Load | In"]
-            r[pid]["Interface | Load | Out"] = metric_map[rq_mo][rq_iface]["Interface | Load | Out"]
-
+            r[pid]["Interface | Load | In"] = int(metric_map[rq_mo][rq_iface]["load_in"])
+            r[pid]["Interface | Load | Out"] = int(metric_map[rq_mo][rq_iface]["load_out"])
         return r
 
     @view(

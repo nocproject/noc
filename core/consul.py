@@ -5,12 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
 import consul.base
 
 # NOC modules
 from noc.config import config
-from noc.core.http.client import fetch
+from noc.core.http.async_client import HttpClient
+from noc.core.comp import DEFAULT_ENCODING
 
 ConsulRepeatableCodes = {500, 598, 599}
 ConsulRepeatableErrors = consul.base.Timeout
@@ -21,18 +25,21 @@ class ConsulHTTPClient(consul.base.HTTPClient):
     asyncio version of consul http client
     """
 
-    async def _request(self, callback, url, method="GET", body=None):
-        code, headers, body = await fetch(
-            url,
-            method=method,
-            body=body,
+    async def _request(self, callback, url, method="GET", body: Optional[str] = None):
+        async with HttpClient(
             connect_timeout=config.consul.connect_timeout,
-            request_timeout=config.consul.request_timeout,
+            timeout=config.consul.request_timeout,
             validate_cert=self.verify,
-        )
-        if code in ConsulRepeatableCodes:
-            raise consul.base.Timeout
-        return callback(consul.base.Response(code=code, headers=headers, body=body))
+        ) as client:
+            code, headers, body = await client.request(
+                method,
+                url,
+                body=body.encode(DEFAULT_ENCODING) if body is not None else body,
+            )
+
+            if code in ConsulRepeatableCodes:
+                raise consul.base.Timeout
+            return callback(consul.base.Response(code=code, headers=headers, body=body))
 
     def get(self, callback, path, params=None):
         url = self.uri(path, params)

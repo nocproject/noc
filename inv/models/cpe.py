@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CPE
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,12 +10,13 @@ import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Iterable, List, Any, Dict
+from typing import Optional, Iterable, List, Any, Dict, Union
 
 # Third-party modules
+import bson
 import cachetools
 from pymongo import UpdateOne, ReadPreference
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     LongField,
@@ -25,6 +26,7 @@ from mongoengine.fields import (
     DictField,
     EmbeddedDocumentListField,
 )
+from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.wf.decorator import workflow
@@ -34,6 +36,8 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.validators import is_ipv4
 from noc.core.model.decorator import on_delete_check
+from noc.core.topology.types import ShapeOverlay, TopologyNode
+from noc.core.stencil import Stencil
 from noc.main.models.label import Label
 from noc.main.models.textindex import full_text_search
 from noc.sa.models.managedobject import ManagedObject
@@ -50,6 +54,26 @@ CPE_TYPES = IGetCPE.returns.element.attrs["type"].choices
 logger = logging.getLogger(__name__)
 
 
+def check_address(value):
+    if not is_ipv4(value):
+        raise ValidationError("Bad IPv4 Address: %s" % value)
+
+
+class ControllerItem(EmbeddedDocument):
+    managed_object: ManagedObject = ForeignKeyField(ManagedObject)
+    local_id: str = StringField()
+    interface = StringField()
+    is_active: bool = BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.managed_object.name}: {self.local_id}"
+
+    def get_interface(self):
+        if not self.interface:
+            return None
+        return self.managed_object.get_interface(self.interface)
+
+
 @full_text_search
 @Label.model
 @change
@@ -62,18 +86,20 @@ class CPE(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "controller",
+            "controllers",
             "global_id",
             "labels",
             "effective_labels",
-            {"fields": ["controller", "local_id"], "unique": True},
+            {
+                "fields": ["controllers.managed_object"],
+                "partialFilterExpression": {"controllers.active": True},
+            },
+            # {"fields": ("controllers.controller", "controllers.local_id"), "unique": True},
         ],
     }
 
-    controller: ManagedObject = ForeignKeyField(ManagedObject)
-    interface = StringField()
     # (<managed object>, <local_id>) Must be unique
-    local_id = StringField()
+    controllers: List[ControllerItem] = EmbeddedDocumentListField(ControllerItem)
     global_id = StringField(unique=True)
     # Probe profile
     profile: CPEProfile = PlainReferenceField(CPEProfile, default=CPEProfile.get_default_profile)
@@ -93,7 +119,9 @@ class CPE(Document):
     # Probe type
     type = StringField(choices=[(x, x) for x in CPE_TYPES], default="other")
     # IPv4 CPE address, used for ManagedObject sync
-    address = StringField(validation=is_ipv4)
+    address = StringField(validation=check_address)
+    #
+    label = StringField(required=False)
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     # Object id in BI
@@ -107,17 +135,27 @@ class CPE(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return f"{self.controller}: {self.local_id}"
+        return self.label or str(self.controller)
+
+    def __repr__(self):
+        return str(self.controller)
+
+    @property
+    def controller(self) -> Optional[ControllerItem]:
+        for c in self.controllers:
+            if c.is_active:
+                return c
+        return
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, cpe_id) -> Optional["CPE"]:
-        return CPE.objects.filter(id=cpe_id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["CPE"]:
+        return CPE.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, cpe_id) -> Optional["CPE"]:
-        return CPE.objects.filter(bi_id=cpe_id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["CPE"]:
+        return CPE.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:
@@ -134,7 +172,13 @@ class CPE(Document):
         yield list(instance.labels or [])
         if instance.profile.labels:
             yield list(instance.profile.labels)
-        yield [ll for ll in instance.controller.get_effective_labels() if ll != "noc::is_linked::="]
+        if not instance.controller:
+            return
+        yield [
+            ll
+            for ll in instance.controller.managed_object.get_effective_labels()
+            if ll != "noc::is_linked::="
+        ]
 
     @classmethod
     def can_set_label(cls, label):
@@ -143,11 +187,86 @@ class CPE(Document):
     @classmethod
     def _reset_caches(cls, cpe_id: int):
         try:
-            del cls._id_cache[
-                str(cpe_id),
-            ]
+            del cls._id_cache[str(cpe_id),]
         except KeyError:
             pass
+
+    def seen(
+        self,
+        controller: Optional[ManagedObject] = None,
+        local_id: Optional[str] = None,
+        interface: Optional[str] = None,
+        status: bool = True,
+    ):
+        """
+        Seen sensor
+        """
+        if not controller or not local_id:
+            self.fire_event("seen")
+            self.touch()  # Worflow expired
+            return
+        changes = {}
+        seen = False
+        for c in self.controllers:
+            if c.managed_object != controller:
+                continue
+            seen = True
+            if c.local_id != local_id:
+                c.local_id = local_id
+                changes["controllers.$.local_id"] = local_id
+            if c.interface != interface:
+                c.interface = interface
+                changes["controllers.$.interface"] = interface
+            if c.is_active != status:
+                c.is_active = status
+                changes["controllers.$.is_active"] = status
+        if not seen:
+            # New Controller
+            self.controllers += [
+                ControllerItem(
+                    managed_object=controller,
+                    local_id=local_id,
+                    interface=interface,
+                    is_active=status,
+                )
+            ]
+            self._get_collection().update_one(
+                {"_id": self.id},
+                {
+                    "$push": {
+                        "managed_object": controller.id,
+                        "local_id": local_id,
+                        "interface": interface,
+                        "is_active": status,
+                    }
+                },
+            )
+        elif changes:
+            self._get_collection().update_one(
+                {"_id": self.id, "controllers": {"$elemMatch": {"managed_object": controller.id}}},
+                {"$set": changes},
+            )
+        self.fire_event("seen")
+        self.touch()  # Worflow expired
+
+    def unseen(self, controller: Optional[str] = None):
+        """
+        Unseen sensor
+        """
+        logger.info("[%s] CPE is missed on '%s'", controller)
+        if controller:
+            self.controllers = [c for c in self.controllers if c.managed_object != controller]
+            self._get_collection().update_one(
+                {"_id": self.id}, {"$pull": {"controllers": {"managed_object": controller.id}}}
+            )
+        elif not controller:
+            # For empty source, clean sources
+            self.controllers = []
+            self._get_collection().update_one({"_id": self.id}, {"$set": {"controllers": []}})
+        if not self.controllers:
+            # source - None, set sensor to missed
+            self.fire_event("missed")
+            self.touch()
 
     @classmethod
     def get_component(
@@ -158,7 +277,9 @@ class CPE(Document):
         if global_id:
             return CPE.objects.filter(global_id=global_id).first()
         if local_id:
-            return CPE.objects.filter(controller=managed_object, local_id=local_id).first()
+            return CPE.objects.filter(
+                controllers__match={"managed_object": managed_object, "local_id": local_id}
+            ).first()
 
     @classmethod
     def iter_collected_metrics(
@@ -176,9 +297,9 @@ class CPE(Document):
             return
         d_interval = d_interval or mo.get_metric_discovery_interval()
         # logger.info("Sharding mode activated. Buckets: %d", buckets)
-        for cpe in CPE.objects.filter(controller=mo.id).read_preference(
-            ReadPreference.SECONDARY_PREFERRED
-        ):
+        for cpe in CPE.objects.filter(
+            controllers__match={"managed_object": mo.id, "is_active": True}
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED):
             if not cpe.state.is_productive:
                 continue
             buckets = cpe.profile.metrics_interval_buckets
@@ -206,10 +327,10 @@ class CPE(Document):
                 continue
             labels, hints = [f"noc::chassis::{cpe.global_id}"], [
                 f"cpe_type::{cpe.type}",
-                f"local_id::{cpe.local_id}",
+                f"local_id::{cpe.controller.local_id}",
             ]
-            if cpe.interface:
-                iface = cpe.get_cpe_interface()
+            if cpe.controller.interface:
+                iface = cpe.controller.get_cpe_interface()
                 if iface and iface.ifindex:
                     hints += [f"ifindex::{iface.ifindex}"]
             yield MetricCollectorConfig(
@@ -237,14 +358,14 @@ class CPE(Document):
         return {
             "type": "cpe",
             "bi_id": cpe.bi_id,
-            "fm_pool": cpe.controller.get_effective_fm_pool().name,
+            "fm_pool": cpe.controller.managed_object.get_effective_fm_pool().name,
             "labels": labels,
             "metrics": [
                 {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
                 for mc in cpe.profile.metrics
             ],
             "rules": [ma for ma in MetricRule.iter_rules_actions(cpe.effective_labels)],
-            "sharding_key": cpe.controller.bi_id if cpe.controller else None,
+            "sharding_key": cpe.controller.managed_object.bi_id if cpe.controller else None,
             "items": [],
         }
 
@@ -258,9 +379,7 @@ class CPE(Document):
         return config.get("metrics") or config.get("items")
 
     def get_cpe_interface(self):
-        if not self.interface:
-            return None
-        return self.controller.get_interface(self.interface)
+        return self.controller.get_interface()
 
     def update_caps(
         self, caps: Dict[str, Any], source: str, scope: Optional[str] = None
@@ -337,6 +456,9 @@ class CPE(Document):
                 caps[cn.name] = ci.value
         return caps
 
+    def get_caps(self) -> Dict[str, Any]:
+        return CapsItem.get_caps(self.caps)
+
     def set_oper_status(
         self,
         status: bool,
@@ -392,7 +514,11 @@ class CPE(Document):
         coll = cls._get_collection()
         r = coll.aggregate(
             [
-                {"$match": {"controller": mo.id}},
+                {
+                    "$match": {
+                        "controllers": {"$elemMatch": {"managed_object": mo.id, "is_active": True}}
+                    }
+                },
                 {
                     "$lookup": {
                         "from": "cpeprofiles",
@@ -418,3 +544,29 @@ class CPE(Document):
         )
         r = next(r, {})
         return r.get("interval", 0)
+
+    def get_stencil(self) -> Optional[Stencil]:
+        if self.profile.shape:
+            # Use profile's shape
+            return self.profile.shape
+        return
+
+    def get_shape_overlays(self) -> List[ShapeOverlay]:
+        return []
+
+    def get_topology_node(self) -> TopologyNode:
+        return TopologyNode(
+            id=str(self.id),
+            type="cpe",
+            resource_id=str(self.id),
+            title=str(self),
+            title_metric_template=self.profile.shape_title_template or "",
+            stencil=self.get_stencil(),
+            overlays=self.get_shape_overlays(),
+            level=10,
+            attrs={
+                "address": self.address,
+                "mo": self.controller.managed_object,
+                "caps": self.get_caps(),
+            },
+        )

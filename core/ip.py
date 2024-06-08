@@ -554,6 +554,10 @@ class IPv4(IP):
             sa.add(self.last.set_mask())
         return sa
 
+    @property
+    def is_internal(self) -> bool:
+        return self in IP.prefix("127.0.0.0/8")
+
 
 class IPv6(IP):
     """
@@ -993,6 +997,17 @@ class PrefixDB(object):
                 node.children[n] = c
             node = c
         node.key = key
+
+    def __contains__(self, prefix) -> bool:
+        if isinstance(prefix, str):
+            prefix = IPv4.prefix(prefix)
+        node = self
+        for n in prefix.iter_bits():
+            c = node.children[n]
+            if c is None:
+                break
+            node = c
+        return bool(node.key)
 
     def iter_free(self, root):
         """

@@ -1,0 +1,208 @@
+{
+    "name": "Zyxel | MSAN | IES-1248",
+    "$collection": "inv.objectmodels",
+    "uuid": "73babfc7-40f5-4c55-88b2-7c203f70beca",
+    "vendor__code": "ZYXEL",
+    "description": "IES-1248 enclosure with 48-port Annex A ADSL2+ line and splitter over POTS,",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "LINE1",
+            "description": "USER 1-24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "LINE2",
+            "description": "USER 25-48",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "PSTN1",
+            "description": "PSTN 1-24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "PSTN2",
+            "description": "PSTN 25-48",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "alarm",
+            "description": "Alarm port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "name": "1",
+            "description": "Port 1 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "sfp1",
+            "description": "Port 1 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "2",
+            "description": "Port 2 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "sfp2",
+            "description": "Port 2 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "power",
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 251
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 66
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 120.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 5.2
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-1248"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.5
+        }
+    ]
+}

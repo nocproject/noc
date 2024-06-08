@@ -1,0 +1,45 @@
+{
+    "name": "Cisco | ISR | Module | NME-RVPN-SEC1-G2",
+    "$collection": "inv.objectmodels",
+    "uuid": "a6822165-cb14-4840-817f-73ed72a0f127",
+    "vendor__code": "CISCO",
+    "description": "RVPN",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Network Module Connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "name": "Gi0",
+            "description": "GigabitEthernet 0 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NME-RVPN-SEC1-G2"]
+        }
+    ]
+}

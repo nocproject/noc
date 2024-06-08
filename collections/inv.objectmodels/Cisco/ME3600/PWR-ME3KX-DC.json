@@ -8,33 +8,41 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
             "group": "0",
-            "name": "in",
             "type__name": "Cisco | ME3600 | PSU"
         },
         {
+            "name": "DC+",
             "description": "DC input Positive contact",
             "direction": "i",
             "gender": "f",
-            "name": "DC+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "DC-",
             "description": "DC input Negative contact",
             "direction": "i",
             "gender": "f",
-            "name": "DC-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-ME3KX-DC", "PWR-ME3KX-DC="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-ME3KX-DC", "PWR-ME3KX-DC="]
         }
-    }
+    ]
 }

@@ -7,32 +7,40 @@
     "cr_context": "MODULE",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "DLink | DXS33 | Module"
         },
         {
+            "name": "cx4_1",
             "description": "CX4 port 1",
             "direction": "s",
             "gender": "f",
-            "name": "cx4_1",
-            "protocols": ["10GBASECX4"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10GBASECX4"
+            }],
             "type__name": "Electrical | SFF-8470"
         },
         {
+            "name": "cx4_2",
             "description": "CX4 port 2",
             "direction": "s",
             "gender": "f",
-            "name": "cx4_2",
-            "protocols": ["10GBASECX4"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10GBASECX4"
+            }],
             "type__name": "Electrical | SFF-8470"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DEM-420CX"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DEM-420CX"]
         }
-    }
+    ]
 }

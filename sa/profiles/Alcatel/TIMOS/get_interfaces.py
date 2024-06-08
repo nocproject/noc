@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  Alcatel.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.validators import is_int, is_ipv6
+from noc.core.validators import is_int, is_ipv6, is_vlan
 
 
 class Script(BaseScript):
@@ -26,7 +26,7 @@ class Script(BaseScript):
         .*?
         Admin\sState\s*?:\s(?P<admin_status>.*?)\s+?
         Oper\s\(v4/v6\)\s*?:\s(?P<oper_status>.*?)\n
-        (Down\sReason\sCode\s:\s.*?\n)*
+        (Down\sReason\s(?:Code|V4|V6)\s+:\s.*?\n)*
         Protocols\s*?:\s(?P<protocols>.*?)\n
         (?P<ipaddr_section>(IP\sAddr/mask|IPv6\sAddr).*?)?-{79}\n
         Details\n
@@ -181,7 +181,7 @@ class Script(BaseScript):
     re_lag_split = re.compile(
         r"""
         -{79}\n
-        (?P<lag>LAG\s\d+.+?)
+        (?P<lag>LAG\s\d+.+?|Lag-id\s:\s\d+\sLag-name\s:\s\S+.+?)
         Port-id\s+Adm
         """,
         re.VERBOSE | re.MULTILINE | re.DOTALL,
@@ -267,7 +267,10 @@ class Script(BaseScript):
                     my_dict = match_obj.groupdict()
                     if "mac" in my_dict and not my_dict["mac"]:
                         my_dict.pop("mac")
-                    my_dict["type"] = "other"
+                    if my_dict["name"].startswith("Vlan"):
+                        my_dict["type"] = "SVI"
+                    else:
+                        my_dict["type"] = "other"
                     my_dict["subinterfaces"] = []
             elif iftypeSubsc in iface:
                 match_obj = self.re_int_desc_subs.search(iface)
@@ -314,15 +317,16 @@ class Script(BaseScript):
                         if match:
                             parent_iface = match.group("iface")
                             if ":" in my_dict["subinterfaces"]:
+                                my_dict["vlan_ids"] = []
                                 vlans = my_dict["subinterfaces"].split(":")[1]
+                                if is_vlan(vlans):
+                                    my_dict["vlan_ids"] = [int(vlans)]
                                 if "." in vlans and "*" not in vlans:
                                     up_tag, down_tag = vlans.split(".")
-
-                                    my_dict["vlan_ids"] = [int(up_tag), int(down_tag)]
-                                elif "*" in vlans:
-                                    my_dict["vlan_ids"] = []
-                                elif vlans != "0":
-                                    my_dict["vlan_ids"] = [int(vlans)]
+                                    if is_vlan(up_tag):
+                                        my_dict["vlan_ids"] += [int(up_tag)]
+                                    if is_vlan(down_tag):
+                                        my_dict["vlan_ids"] += [int(down_tag)]
                         my_dict["subinterfaces"] = [{"name": my_dict["name"]}]
             else:
                 continue
@@ -417,10 +421,12 @@ class Script(BaseScript):
                             "oper_status": self.fix_status(raw_sap["oper_status"]),
                             "admin_status": self.fix_status(raw_sap["admin_status"]),
                             "mtu": raw_sap["mtu"],
-                            "vlan_ids": [raw_sap["uptag"], raw_sap["downtag"]],
+                            "vlan_ids": [raw_sap["uptag"]],
                         }
                     ],
                 }
+                if is_vlan(raw_sap["downtag"]):
+                    sap["subinterfaces"][0]["vlan_ids"] += [int(raw_sap["downtag"])]
                 if "*" in sap["subinterfaces"][0]["name"]:
                     sap["subinterfaces"][0].pop("vlan_ids")
                 if "lag" in sap["name"]:

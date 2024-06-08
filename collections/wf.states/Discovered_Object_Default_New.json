@@ -1,0 +1,16 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "name": "New",
+    "uuid": "50a6934f-e29c-4bae-a834-8bd6b97fbbdf",
+    "$collection": "wf.states",
+    "is_default": true,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": true,
+    "x": 270,
+    "y": 250,
+    "disable_all_interaction": false
+}

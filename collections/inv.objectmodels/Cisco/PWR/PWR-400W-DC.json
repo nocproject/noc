@@ -8,40 +8,51 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "GND",
             "description": "Ground Connection",
             "direction": "i",
             "gender": "m",
-            "name": "GND",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "DC+",
             "description": "DC input Positive contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "DC-",
             "description": "DC input Negative contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | C6500ME | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-400W-DC", "PWR-400W-DC="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-400W-DC", "PWR-400W-DC="]
         }
-    }
+    ]
 }

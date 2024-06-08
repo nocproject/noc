@@ -8,301 +8,529 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "Fa0",
             "description": "FastEthernet0/0 management port",
             "direction": "s",
             "gender": "f",
-            "name": "Fa0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0",
             "description": "GigabitEthernet0/0 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi0",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi1",
             "description": "GigabitEthernet0/1 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi1",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi2",
             "description": "GigabitEthernet0/2 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi2",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi3",
             "description": "GigabitEthernet0/3 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi3",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi4",
             "description": "GigabitEthernet0/4 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi4",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi5",
             "description": "GigabitEthernet0/5 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi5",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi6",
             "description": "GigabitEthernet0/6 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi6",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi7",
             "description": "GigabitEthernet0/7 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi7",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Alarm",
             "description": "Dry contacts",
             "direction": "s",
             "gender": "f",
-            "protocols": [">DryContact"],
-            "name": "Alarm",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | RJ48"
         },
         {
+            "name": "ToD",
             "description": "Time-of-Day interface",
             "direction": "s",
             "gender": "f",
-            "name": "ToD",
-            "protocols":["ToD"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ToD"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "BITS",
             "description": "BITS interface",
             "direction": "s",
             "gender": "f",
-            "name": "BITS",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "1PPS",
             "description": "1PPS mini-coax timing connector",
             "direction": "s",
             "gender": "f",
-            "name": "1PPS",
             "type__name": "Electrical | MINI-coax"
         },
         {
+            "name": "10MHz",
             "description": "10Mhz mini-coax timing connector",
             "direction": "s",
             "gender": "f",
-            "name": "10MHz",
             "type__name": "Electrical | MINI-coax"
         },
         {
+            "name": "DC PowerA",
             "description": "DC power input A",
             "direction": "s",
             "gender": "m",
-            "name": "DC PowerA",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
+            "name": "DC PowerB",
             "description": "DC power input B",
             "direction": "s",
             "gender": "m",
-            "name": "DC PowerB",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
+            "name": "Console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "AUX",
             "description": "AUX port",
             "direction": "s",
             "gender": "f",
-            "name": "AUX",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "E1/T1 port",
-            "direction": "s",
-            "gender": "f",
             "name": "Se0",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "E1/T1 port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "Se1",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "E1/T1 port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "Se2",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "E1/T1 port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "Se3",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "E1/T1 port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "Se4",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "E1/T1 port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "Se5",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "E1/T1 port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "Se6",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "E1/T1 port",
             "direction": "s",
             "gender": "f",
-            "name": "Se7",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Se7",
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi4_sfp",
             "description": "GigabitEthernet0/4 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi5_sfp",
             "description": "GigabitEthernet0/5 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi5_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi6_sfp",
             "description": "GigabitEthernet0/6 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi6_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi7_sfp",
             "description": "GigabitEthernet0/7 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi7_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi8_sfp",
             "description": "GigabitEthernet0/8 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi8_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi9_sfp",
             "description": "GigabitEthernet0/9 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi9_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi10_sfp",
             "description": "GigabitEthernet0/10 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi10_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi11_sfp",
             "description": "GigabitEthernet0/11 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi11_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Te0_sfp",
             "description": "TenGigabitEthernet0/0 SFP+ port",
             "direction": "i",
             "gender": "f",
-            "name": "Te0_sfp",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Te1_sfp",
             "description": "TenGigabitEthernet0/1 SFP+ port",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_sfp",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["A901-6CZ-FT-D"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["A901-6CZ-FT-D"]
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

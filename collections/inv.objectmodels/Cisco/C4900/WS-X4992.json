@@ -7,16 +7,18 @@
     "cr_context": "FAN",
     "connections": [
         {
+            "name": "in",
             "description": "Cisco WS-C4900M FAN tray",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | C4900 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-X4992"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-X4992"]
         }
-    }
+    ]
 }

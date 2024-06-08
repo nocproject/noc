@@ -1,0 +1,24 @@
+{
+    "name": "Cisco | ISR | Module | PVDM2-48",
+    "$collection": "inv.objectmodels",
+    "uuid": "b0834afb-9fec-4838-b3c5-11aa1eddcf9a",
+    "vendor__code": "CISCO",
+    "description": "48-channel  High-Density Packet Voice Digital Signal Processor (DSP) Module (PVDM2)",
+    "cr_context": "PVDM",
+    "connections": [
+        {
+            "name": "in",
+            "description": "PVDMII DSP SIMM",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ISR | PVDM2"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PVDM2-48"]
+        }
+    ]
+}

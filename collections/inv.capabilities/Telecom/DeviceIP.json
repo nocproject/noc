@@ -1,0 +1,8 @@
+{
+    "name": "TelecomFXS | DeviceWANIP",
+    "$collection": "inv.capabilities",
+    "uuid": "42c9a0b5-ba28-4d93-b6d2-f82b049acd9a",
+    "description": "WAN IP",
+    "type": "str",
+    "card_template": null
+}

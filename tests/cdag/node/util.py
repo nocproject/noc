@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 from contextlib import contextmanager
 from dataclasses import dataclass
 
@@ -51,7 +51,7 @@ class NodeCDAG(object):
         self.tx = self.cdag.begin()
         return self.tx
 
-    def get_changed_state(self) -> Dict[str, Any]:
+    def get_changed_state(self) -> Dict[Tuple[str, str], Any]:
         return self.tx.get_changed_state()
 
 

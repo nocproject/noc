@@ -34,10 +34,13 @@ from pymongo import UpdateOne
 import cachetools
 
 # NOC modules
+from noc.core.model.base import NOCModelBase
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_bytes
+from noc.models import is_document
+from django.db.utils import IntegrityError
 
 state_lock = threading.Lock()
 
@@ -75,7 +78,10 @@ class Collection(object):
 
         for c in COLLECTIONS:
             cm = get_model(c)
-            cn = cm._meta["json_collection"]
+            if is_document(cm):
+                cn = cm._meta["json_collection"]
+            else:
+                cn = cm._json_collection["json_collection"]
             cls._MODELS[cn] = cm
             yield Collection(cn)
 
@@ -93,9 +99,12 @@ class Collection(object):
             if hasattr(self.model, "name"):
                 self._name_field = "name"
                 return "name"
+            elif hasattr(self.model, "json_name"):
+                self._name_field = "json_name"
+                return "json_name"
             else:
                 for spec in self.model._meta["index_specs"]:
-                    if spec["unique"] and len(spec["fields"]) == 1:
+                    if spec.get("unique") and len(spec["fields"]) == 1:
                         nf = spec["fields"][0][0]
                         self._name_field = nf
                         return nf
@@ -188,7 +197,10 @@ class Collection(object):
 
         # Get current API version and select proper hashing function
         # And build proper hashing function
-        api_version = self.model._meta.get("json_api_version", self.DEFAULT_API_VERSION)
+        if is_document(self.model):
+            api_version = self.model._meta.get("json_api_version", self.DEFAULT_API_VERSION)
+        else:
+            api_version = self.DEFAULT_API_VERSION
         if api_version == self.DEFAULT_API_VERSION:
             item_hash = item_hash_default
         else:
@@ -214,9 +226,17 @@ class Collection(object):
                     )
         return items
 
+    def get_fields(self, model: None):
+        model = model or self.model
+        if not isinstance(model, NOCModelBase):
+            # Check Django Model
+            return model._fields
+        ls_field = model._meta.local_fields
+        dc_field = {field.name: field.__class__ for field in ls_field}
+        return dc_field
+
     def dereference(self, d, model=None):
         r = {}
-        model = model or self.model
         for k in d:
             v = d[k]
             if k.startswith("$"):
@@ -228,13 +248,13 @@ class Collection(object):
             if "__" in k:
                 # Lookup
                 k, f = k.split("__")
-                if k not in model._fields:
+                if k not in self.get_fields(model):
                     raise ValueError("Invalid lookup field: %s" % k)
-                ref = model._fields[k].document_type
+                ref = self.get_fields(model)[k].document_type
                 v = self.lookup(ref, f, v)
             # Get field
             try:
-                field = model._fields[k]
+                field = self.get_fields(model)[k]
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
@@ -301,13 +321,17 @@ class Collection(object):
             try:
                 o.save()
                 return True
-            except NotUniqueError:
+            except (NotUniqueError, IntegrityError):
+                if is_document(self.model):
+                    union_meta = self.model._meta
+                else:
+                    union_meta = self.model._json_collection
                 # Possible local alternative with different uuid
-                if not self.model._meta.get("json_unique_fields"):
+                if not union_meta.get("json_unique_fields"):
                     self.stdout.write("Not json_unique_fields on object\n")
                     raise
                 # Try to find conflicting item
-                for k in self.model._meta["json_unique_fields"]:
+                for k in union_meta["json_unique_fields"]:
                     if not isinstance(k, tuple):
                         k = (k,)
                     qs = {}
@@ -323,7 +347,10 @@ class Collection(object):
                             % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
                         )
                         o.uuid = data["uuid"]
-                        o.save(clean=bool(o.uuid))
+                        if is_document(self.model):
+                            o.save(clean=bool(o.uuid))
+                        else:
+                            o.save()
                         # Try again
                         return self.update_item(data)
                     self.stdout.write("Not find object by query: %s\n" % qs)
@@ -350,8 +377,8 @@ class Collection(object):
         new_uuids = set(cdata)
         changed = self.get_changed_status()
         #
-        self.fix_uuids()
-        # New items
+        if is_document(self.model):
+            self.fix_uuids()
         for u in new_uuids - current_uuids:
             self.update_item(cdata[u].data)
             changed = True

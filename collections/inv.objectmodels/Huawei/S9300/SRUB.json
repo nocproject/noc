@@ -9,67 +9,105 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S9300 | SRU"
         },
         {
+            "name": "sc",
             "description": "SubCard slot",
             "direction": "i",
             "gender": "f",
-            "name": "sc",
             "type__name": "Huawei | S9300 | SC"
         },
         {
+            "name": "MEth0/1",
             "description": "Management port",
             "direction": "s",
             "gender": "f",
-            "name": "MEth0/1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Console for on-site system configuration",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "BITS port",
-            "direction": "s",
-            "gender": "f",
             "name": "clk1",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "BITS port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "clk2",
-            "protocols": ["G.703"],
+            "description": "BITS port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03020MMJ"],
-            "part_no": ["LE02SRUB"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 105.0
         },
-        "dimensions": {
-            "depth": 427,
-            "height": 36,
-            "width": 395
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LE02SRUB"]
         },
-        "power": {
-            "power": 105.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03020MMJ"]
         },
-        "weight": {
-            "weight": 2.9
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.9
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 395
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 427
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 36
         }
-    }
+    ]
 }

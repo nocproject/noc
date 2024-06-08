@@ -1,0 +1,94 @@
+{
+    "name": "Zyxel | MSAN | IES-5005",
+    "$collection": "inv.objectmodels",
+    "uuid": "1a4f16c7-c00c-4f3f-9491-d23123f1a15f",
+    "vendor__code": "ZYXEL",
+    "description": "Модульный IP xDSL-коммутатор\n5 slots for management and  line termination cards ",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "1",
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "2",
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "3",
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "4",
+            "description": "Linecard 4 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "5",
+            "description": "Linecard 5 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 250
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 152
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 540.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 7.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-5005"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 4.0
+        }
+    ]
+}

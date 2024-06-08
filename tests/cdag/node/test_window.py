@@ -55,7 +55,7 @@ def test_window_node(op, config, measures, expected):
         else:
             assert value == exp
         state = cdag.get_changed_state()
-        assert state and "node" in state
+        assert state and ("node", op) in state
 
 
 def get_steps(start, step, n):

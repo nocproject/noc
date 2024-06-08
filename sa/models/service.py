@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,11 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Any, Dict, Optional, Iterable, List
+from typing import Any, Dict, Optional, Iterable, List, Union
 
 # Third-party modules
+import orjson
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -22,30 +24,38 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     LongField,
     ObjectIdField,
+    EnumField,
 )
+from mongoengine.queryset.visitor import Q as m_q
 import cachetools
 
 # NOC modules
-from .serviceprofile import ServiceProfile
-from noc.crm.models.subscriber import Subscriber
-from noc.crm.models.supplier import Supplier
-from noc.main.models.remotesystem import RemoteSystem
+from .serviceprofile import ServiceProfile, Status
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.resourcegroup.decorator import resourcegroup
-from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow
-from noc.inv.models.capsitem import CapsItem
-from noc.main.models.label import Label
-from noc.pm.models.agent import Agent
 from noc.core.change.decorator import change
+from noc.core.service.loader import get_service
+from noc.crm.models.subscriber import Subscriber
+from noc.crm.models.supplier import Supplier
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
+from noc.sa.models.managedobject import ManagedObject
+from noc.sla.models.slaprobe import SLAProbe
+from noc.wf.models.state import State
+from noc.inv.models.capsitem import CapsItem
+from noc.inv.models.capability import Capability
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.pm.models.agent import Agent
 
 logger = logging.getLogger(__name__)
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+SVC_REF_PREFIX = "svc"
+SVC_AC = "Service | Status | Change"
 
 
 @Label.model
@@ -59,9 +69,7 @@ _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     clean=[
         ("phone.PhoneNumber", "service"),
         ("inv.Interface", "service"),
-        ("inv.SubInterface", "service"),
         ("sa.Service", "parent"),
-        ("sla.SLAProbe", "service"),
     ]
 )
 class Service(Document):
@@ -72,29 +80,40 @@ class Service(Document):
         "indexes": [
             "subscriber",
             "supplier",
+            "profile",
             "managed_object",
+            ("managed_object", "effective_client_groups"),
+            ("caps.capability", "caps.value"),
+            "interface_id",
+            "subinterface_id",
+            "sla_probe",
             "parent",
             "order_id",
             "agent",
-            "static_service_groups",
             "effective_service_groups",
-            "static_client_groups",
             "effective_client_groups",
             "labels",
             "effective_labels",
+            "service_path",
         ],
     }
-    profile = ReferenceField(ServiceProfile, required=True)
+    profile: ServiceProfile = ReferenceField(ServiceProfile, required=True)
     # Creation timestamp
     ts = DateTimeField(default=datetime.datetime.now)
     # Logical state of service
-    state = PlainReferenceField(State)
+    state: "State" = PlainReferenceField(State)
     # Last state change
     state_changed = DateTimeField()
     # Parent service
     parent = ReferenceField("self", required=False)
     # Subscriber information
     subscriber = ReferenceField(Subscriber)
+    #
+    oper_status = EnumField(Status, default=Status.UNKNOWN)
+    oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
+    #
+    # maintenance
+    service_path = ListField(ObjectIdField())
     # Supplier information
     supplier = ReferenceField(Supplier)
     description = StringField()
@@ -111,8 +130,12 @@ class Service(Document):
     address = StringField()
     # For port services
     managed_object = ForeignKeyField(ManagedObject)
+    interface_id = ObjectIdField()  # Interface mapping
+    subinterface_id = ObjectIdField()  # Subinterface mapping cache
     # NRI port id, converted by portmapper to native name
     nri_port = StringField()
+    # SLAProbe
+    sla_probe = PlainReferenceField(SLAProbe)
     # CPE information
     cpe_serial = StringField()
     cpe_mac = StringField()
@@ -144,12 +167,12 @@ class Service(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Service"]:
-        return Service.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Service"]:
+        return Service.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id) -> Optional["Service"]:
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Service"]:
         return Service.objects.filter(bi_id=bi_id).first()
 
     @classmethod
@@ -169,6 +192,10 @@ class Service(Document):
             self.unbind_interface()
         if not hasattr(self, "_changed_fields") or "parent" in self._changed_fields:
             self._refresh_managed_object()
+            self.service_path = self.get_path()
+            Service.objects.filter(id=self.id).update(service_path=self.service_path)
+        # Register Final Outage
+        # Refresh Service Status
 
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
@@ -176,6 +203,215 @@ class Service(Document):
         mo = self.get_managed_object()
         if mo:
             ServiceSummary.refresh_object(mo)
+
+    def set_oper_status(self, status: Status, timestamp: Optional[datetime.datetime] = None):
+        """
+
+        :param status:
+        :param timestamp: Time when status changed
+        :return:
+        """
+        # Check state on is_productive
+        # if not self.state.is_productive:
+        #    return
+        if self.oper_status == status:
+            logger.debug("[%s] Status is same. Skipping", self.id, self.oper_status)
+            return
+        logger.info(
+            "[%s] Change service status: %s -> %s",
+            self.id,
+            self.oper_status,
+            status,
+        )
+        timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
+        if self.oper_status_change and self.oper_status_change > timestamp:
+            logger.warning(
+                "[%s] New status timestamp LESS then current: '%s'. Reset timestamp",
+                self.id,
+                timestamp,
+            )
+            timestamp = datetime.datetime.now().replace(microsecond=0)
+            return
+        # Register Outage, Register Maintenance
+        os, ots = self.oper_status, self.oper_status_change
+
+        self.oper_status = status
+        self.oper_status_change = timestamp
+        Service.objects.filter(id=self.id).update(
+            oper_status=self.oper_status, oper_status_change=self.oper_status_change
+        )
+        # Register outage
+        now = datetime.datetime.now().replace(microsecond=0)
+        svcs = get_service()
+        svcs.register_metrics(
+            "serviceoutages",
+            [
+                {
+                    "date": now.date().isoformat(),
+                    "ts": now.replace(microsecond=0).isoformat(sep=" "),
+                    "service": self.bi_id,
+                    "service_id": str(self.id),
+                    # Outage
+                    "start": ots.isoformat(sep=" "),
+                    "stop": self.oper_status_change.isoformat(sep=" "),
+                    "from_status": os,
+                    "to_status": self.oper_status,
+                    "in_maintenance": int(self.in_maintenance),
+                }
+            ],
+        )
+
+        # Run Service Status Refresh
+        # Set Outage
+        if len(self.service_path) != 1:
+            # Only Root service
+            return
+        self.register_alarm(os)
+
+    def register_alarm(self, old_status: Status):
+        """
+        Register Group alarm when changed Oper Status
+        :param old_status:
+        :return:
+        """
+        mo = self.get_managed_object()
+        if not mo:
+            logger.warning("[%s] Unknown ManagedObject for Raise alarm. Skipping", self.id)
+            return
+        # Raise alarm
+        if self.oper_status > Status.UP >= old_status:
+            msg = {
+                "$op": "raise",
+                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "timestamp": self.oper_status_change.isoformat(),
+                "managed_object": str(mo.id),
+                "alarm_class": SVC_AC,
+                "labels": list(self.labels),
+                "vars": {
+                    "title": self.description,
+                    "type": self.profile.name,
+                    "service": str(self.id),
+                    "status": self.oper_status.name,
+                    "message": f"Service status changed from {old_status.name} to {self.oper_status.name}",
+                },
+            }
+            caps = self.get_caps()
+            if caps and "Channel | Address" in caps:
+                msg["vars"]["address"] = caps["Channel | Address"]
+            if self.interface_id:
+                msg["vars"]["interface"] = self.interface.name
+        elif self.oper_status <= Status.UP < old_status:
+            msg = {
+                "$op": "clear",
+                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "timestamp": datetime.datetime.now().isoformat(),
+                "message": f"Service status to {self.oper_status.name}",
+            }
+        else:
+            return
+        svc = get_service()
+        stream, partition = mo.alarms_stream_and_partition
+        logger.info("[%s] Send alarm message: %s", self.id, msg)
+        svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
+
+    def refresh_status(self):
+        status = self.get_direct_status()
+        status = max(status, self.get_affected_status())
+        self.set_oper_status(status)
+
+    def get_direct_status(self) -> Status:
+        """
+        Getting oper_status from Alarm and Event by alarm_filter
+        :return:
+        """
+        from noc.fm.models.activealarm import ActiveAlarm
+
+        # if not self.state.is_productive:
+        #    return Status.UNKNOWN
+        # Max objects
+        max_object = None
+        if self.effective_client_groups:
+            max_object = sum(
+                rg.resource_count
+                for rg in ResourceGroup.objects.filter(id__in=self.effective_client_groups)
+            )
+        # Calculate Severity - group by object, max severity
+        r = ActiveAlarm.objects.filter(affected_services=self.id).scalar("severity")
+        return self.profile.calculate_alarm_status(r, max_object=max_object)
+
+    def get_affected_status(self) -> Status:
+        """
+        Getting oper_status from children services
+        :return:
+        """
+        r = []
+        if self.profile.status_transfer_policy == "D":
+            return Status.UNKNOWN
+        for svc in Service.objects.filter(parent=self):
+            if self.profile.status_transfer_policy == "T" or not self.profile.status_transfer_rule:
+                if svc.oper_status == Status.UNKNOWN:
+                    # Skip Unknown status
+                    continue
+                r.append((svc.oper_status, svc.profile.weight))
+                continue
+            for rule in self.profile.status_transfer_rule:
+                if rule.is_match(svc.profile, svc.oper_status, svc.profile.weight) and rule.ignore:
+                    break
+                elif rule.is_match(svc.profile, svc.oper_status, svc.profile.weight):
+                    r.append((rule.to_status, svc.profile.weight))
+        if not r:
+            return Status.UNKNOWN
+        return self.profile.calculate_status(r)
+
+    @classmethod
+    def get_services_by_alarm(cls, alarm) -> List["str"]:
+        profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
+        if not profiles:
+            return []
+        # q = m_q(managed_object=alarm.managed_object)
+        q = m_q()
+        if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
+            q |= m_q(sla_probe=alarm.components.slaprobe.id)
+        # Check is linked class
+        if hasattr(alarm.components, "interface") and getattr(alarm.components, "inteface", None):
+            # q |= m_q(managed_object=alarm.managed_object, interface=alarm.components.inteface)
+            # q |= m_q(id=alarm.components.inteface.serivce)
+            q |= m_q(interface_id=alarm.components.inteface.id)
+            q |= m_q(subinterface_id=alarm.components.inteface.id)
+        # For CPE component
+        address = None
+        if "address" in alarm.vars:
+            address = alarm.vars.get("address")
+        elif "peer" in alarm.vars:
+            # BGP alarms
+            address = alarm.vars.get("peer")
+        if address:
+            c = Capability.get_by_name("Channel | Address")
+            # managed_object=alarm.managed_object,
+            q |= m_q(caps__match={"capability": c.id, "value": address})
+        if alarm.managed_object.effective_service_groups:
+            q |= m_q(
+                managed_object=None,
+                effective_client_groups__in=alarm.managed_object.effective_service_groups,
+            )
+        if not q:
+            q = m_q(managed_object=alarm.managed_object.id)
+        q = m_q(profile__in=profiles) & q
+        logger.info("Get services by alarm: %s/%s", alarm, q)
+        return list(Service.objects.filter(q).scalar("id"))
+
+    def get_alarm_filter(self) -> m_q:
+        """
+        Getting queryset Alarm filter
+        :return:
+        """
+        q = m_q()
+        if self.managed_object:
+            q &= m_q(managed_object=self.managed_object)
+        if self.sla_probe:
+            q &= m_q(vars__slaprobe=self.sla_probe.id)
+        # Interfaceiface = I
+        return q
 
     def unbind_interface(self):
         from noc.inv.models.interface import Interface
@@ -243,3 +479,44 @@ class Service(Document):
 
     def get_message_context(self) -> Dict[str, Any]:
         return {"caps": self.get_caps()}
+
+    @property
+    def in_maintenance(self):
+        """
+        Check service in maintenance
+        :return:
+        """
+        return False
+
+    @property
+    def weight(self) -> int:
+        return self.profile.weight
+
+    @property
+    def label(self) -> str:
+        return self.description
+
+    @property
+    def interface(self):
+        from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
+
+        if self.subinterface_id:
+            return SubInterface.objects.filter(id=self.subinterface_id).first()
+        if self.interface_id:
+            Interface.objects.filter(id=self.interface_id).first()
+        return
+
+
+def refresh_service_status(svc_ids: List[str]):
+    logger.info("Refresh service status: %s", svc_ids)
+    affected_paths = set()
+    for svc in Service.objects.filter(id__in=svc_ids):
+        os = svc.oper_status
+        svc.refresh_status()
+        if svc.parent and svc.oper_status != os:
+            affected_paths.update(set(svc.parent.service_path))
+    # Check changed
+    # Update linked
+    for svc in Service.objects.filter(id__in=list(affected_paths)):
+        svc.refresh_status()

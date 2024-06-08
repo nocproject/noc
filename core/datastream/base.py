@@ -26,7 +26,7 @@ from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.models import get_model
 from noc.core.hash import hash_int
-from noc.core.mx import send_message, MX_CHANGE_ID, MX_DATA_ID
+from noc.core.mx import send_message, MessageType, MX_CHANGE_ID, MX_DATA_ID
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +54,7 @@ class DataStream(object):
     F_META = "meta"
     F_LABELS_META = "$meta_labels"
     F_ADM_DOMAIN_META = "$meta_adm_domain"
+    F_GROUPS_META = "$meta_resource_groups"
     F_DELETED = "$deleted"
     HASH_LEN = 16
 
@@ -724,10 +725,14 @@ class DataStream(object):
         }
         if additional_headers:
             headers.update(additional_headers)
+        if mtype:
+            message_type = MessageType.OTHER
+        else:
+            message_type = MessageType(cls.name)
         # Schedule to send
         send_message(
             data,
-            message_type=mtype or cls.name,
+            message_type=message_type,
             headers=headers,
             sharding_key=hash_int(data["id"]) & 0xFFFFFFFF,
         )
@@ -740,6 +745,8 @@ class DataStream(object):
             del data[cls.F_LABELS_META]
         if cls.F_ADM_DOMAIN_META in data:
             del data[cls.F_ADM_DOMAIN_META]
+        if cls.F_GROUPS_META in data:
+            del data[cls.F_GROUPS_META]
         return data
 
     @classmethod

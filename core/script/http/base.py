@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # HTTP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,10 +14,10 @@ from typing import Optional
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.http.client import fetch_sync
+from noc.core.http.sync_client import HttpClient
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
 from noc.core.handler import get_handler
-from noc.core.comp import smart_text
+from noc.core.comp import DEFAULT_ENCODING
 from .middleware.base import BaseMiddleware
 from .middleware.loader import loader
 
@@ -89,31 +89,30 @@ class HTTP(object):
         if self.request_middleware:
             for mw in self.request_middleware:
                 url, _, hdr = mw.process_get(url, "", hdr)
-        code, headers, result = fetch_sync(
-            url,
+
+        with HttpClient(
             headers=hdr,
-            request_timeout=60,
-            follow_redirects=True,
+            timeout=60,
             allow_proxy=False,
             validate_cert=False,
-            eof_mark=eof_mark,
             user=user,
             password=password,
-        )
-        if not 200 <= code <= 299:
-            raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
-        self._process_cookies(headers)
-        if json:
-            try:
-                result = orjson.loads(result)
-            except ValueError as e:
-                raise HTTPError("Failed to decode JSON: %s" % e)
-        elif not raw_result:
-            result = smart_text(result, errors="ignore")
-        self.logger.debug("Result: %r", result)
-        if cached:
-            self.script.root.http_cache[cache_key] = result
-        return result
+        ) as client:
+            code, headers, result = client.get(url, headers=hdr)
+            if not 200 <= code <= 299:
+                raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
+            self._process_cookies(headers)
+            if json:
+                try:
+                    result = orjson.loads(result)
+                except ValueError as e:
+                    raise HTTPError("Failed to decode JSON: %s" % e)
+            elif not raw_result:
+                result = result.decode(DEFAULT_ENCODING, errors="ignore")
+            self.logger.debug("Result: %r", result)
+            if cached:
+                self.script.root.http_cache[cache_key] = result
+            return result
 
     def post(
         self,
@@ -155,33 +154,29 @@ class HTTP(object):
         if self.request_middleware:
             for mw in self.request_middleware:
                 url, data, hdr = mw.process_post(url, data, hdr)
-        code, headers, result = fetch_sync(
-            url,
-            method="POST",
-            body=data,
+        with HttpClient(
             headers=hdr,
-            request_timeout=60,
-            follow_redirects=True,
+            timeout=60,
             allow_proxy=False,
             validate_cert=False,
-            eof_mark=eof_mark,
             user=user,
             password=password,
-        )
-        if not 200 <= code <= 299:
-            raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
-        self._process_cookies(headers)
-        if json:
-            try:
-                return orjson.loads(result)
-            except ValueError as e:
-                raise HTTPError(msg="Failed to decode JSON: %s" % e)
-        elif not raw_result:
-            result = smart_text(result, errors="ignore")
-        self.logger.debug("Result: %r", result)
-        if cached:
-            self.script.root.http_cache[cache_key] = result
-        return result
+        ) as client:
+            code, headers, result = client.post(url, data, headers=hdr)
+            if not 200 <= code <= 299:
+                raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
+            self._process_cookies(headers)
+            if json:
+                try:
+                    return orjson.loads(result)
+                except ValueError as e:
+                    raise HTTPError(msg="Failed to decode JSON: %s" % e)
+            elif not raw_result:
+                result = result.decode(DEFAULT_ENCODING, errors="ignore")
+            self.logger.debug("Result: %r", result)
+            if cached:
+                self.script.root.http_cache[cache_key] = result
+            return result
 
     def close(self):
         if self.session_started:
@@ -198,7 +193,13 @@ class HTTP(object):
             return
         if not self.cookies:
             self.cookies = SimpleCookie()
-        self.cookies.load(cdata)
+        # self.cookies.load(cdata)
+        if "," not in cdata:
+            self.cookies.load(cdata)
+            return
+        # Multiple cookies
+        for c in cdata.split(","):
+            self.cookies.load(c.strip())
 
     def get_cookie(self, name):
         """
@@ -225,7 +226,10 @@ class HTTP(object):
         elif not headers and self.cookies:
             headers = {}
         if self.cookies:
-            headers["Cookie"] = self.cookies.output(header="").lstrip()
+            # headers["Cookie"] = self.cookies.output(header="").lstrip()
+            headers["Cookie"] = (
+                self.cookies.output(header="", sep=";").lstrip().encode(DEFAULT_ENCODING)
+            )
         return headers
 
     def set_header(self, name, value):

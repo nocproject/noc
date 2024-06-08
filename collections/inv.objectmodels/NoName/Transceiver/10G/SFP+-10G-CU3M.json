@@ -5,36 +5,89 @@
     "vendor__code": "NONAME",
     "description": "SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 3m",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
-            "cross": "in2",
+            "name": "in1",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in1",
-            "protocols": ["TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
-            "cross": "in1",
+            "name": "in2",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in2",
-            "protocols": ["TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["SFP+-10G-CU3M"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": [
+                "SFP+-10G-CU3M"
+            ]
         },
-        "twinax": {
-            "alias": "in",
-            "connection1": "in1",
-            "connection2": "in2",
-            "twinax": true
+        {
+            "attr": "alias",
+            "interface": "twinax",
+            "value": "in"
+        },
+        {
+            "attr": "connection1",
+            "interface": "twinax",
+            "value": "in1"
+        },
+        {
+            "attr": "twinax",
+            "interface": "twinax",
+            "value": true
+        },
+        {
+            "attr": "connection2",
+            "interface": "twinax",
+            "value": "in2"
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 3
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
+        }
+    ]
 }

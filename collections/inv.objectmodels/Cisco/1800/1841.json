@@ -9,37 +9,70 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "mb",
             "description": "1841 Motherboard",
             "direction": "i",
             "gender": "f",
-            "name": "mb",
             "type__name": "Cisco | 1800 | MOTHERBOARD"
         },
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO1841"],
-            "cpe_22": "cpe:/h:cisco:1841_integrated_service_router:-",
-            "cpe_23": "cpe:2.3:h:cisco:1841_integrated_service_router:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO1841"]
         },
-        "dimensions": {
-            "depth": 274,
-            "height": 48,
-            "width": 343
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:1841_integrated_service_router:-"
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:1841_integrated_service_router:-:*:*:*:*:*:*:*"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 274
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 48
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 343
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

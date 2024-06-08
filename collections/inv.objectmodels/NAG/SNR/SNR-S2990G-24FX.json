@@ -1,0 +1,814 @@
+{
+    "name": "NAG | SNR | SNR-S2990G-24FX",
+    "$collection": "inv.objectmodels",
+    "uuid": "3573fd10-784c-4317-9530-d4c40e025052",
+    "vendor__code": "NAG",
+    "description": "Управляемый коммутатор уровня 2+, 20 портов 100/1000BaseX, 4 порта комбо 10/100/1000BaseT|100/1000BaseX SFP, 4 порта 1/10GE SFP+. Питание 100-240AC, 36-72VDC RPS",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "Ethernet1/0/1",
+            "description": "Fiber port 1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/1",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/2",
+            "description": "Fiber port 2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/2",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/3",
+            "description": "Fiber port 3",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/3",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/4",
+            "description": "Fiber port 4",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/4",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/5",
+            "description": "Fiber port 5",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/5",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/6",
+            "description": "Fiber port 6",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/6",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/7",
+            "description": "Fiber port 7",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/7",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/8",
+            "description": "Fiber port 8",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/8",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/9",
+            "description": "Fiber port 9",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/9",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/10",
+            "description": "Fiber port 10",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/10",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/11",
+            "description": "Fiber port 11",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/11",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/12",
+            "description": "Fiber port 12",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/12",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/13",
+            "description": "Fiber port 13",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/13",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/14",
+            "description": "Fiber port 14",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/14",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/15",
+            "description": "Fiber port 15",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/15",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/16",
+            "description": "Fiber port 16",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/16",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/17",
+            "description": "Fiber port 17",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/17",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/18",
+            "description": "Fiber port 18",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/18",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/19",
+            "description": "Fiber port 19",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/19",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/20",
+            "description": "Fiber port 20",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/20",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/21",
+            "description": "Ethernet1/0/21 combo-port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Ethernet1/0/21_rj",
+            "description": "Ethernet1/0/21 copper",
+            "combo": "Ethernet1/0/21",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Ethernet1/0/21_sfp",
+            "description": "Ethernet1/0/21 fiber",
+            "combo": "Ethernet1/0/21",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/21",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/22",
+            "description": "Ethernet1/0/22 combo-port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Ethernet1/0/22_rj",
+            "description": "Ethernet1/0/22 copper",
+            "combo": "Ethernet1/0/22",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Ethernet1/0/22_sfp",
+            "description": "Ethernet1/0/22 fiber",
+            "combo": "Ethernet1/0/22",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/22",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/23",
+            "description": "Ethernet1/0/23 combo-port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Ethernet1/0/23_rj",
+            "description": "Ethernet1/0/23 copper",
+            "combo": "Ethernet1/0/23",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Ethernet1/0/23_sfp",
+            "description": "Ethernet1/0/23 fiber",
+            "combo": "Ethernet1/0/23",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/23",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/24",
+            "description": "Ethernet1/0/24 combo-port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Ethernet1/0/24_rj",
+            "description": "Ethernet1/0/24 copper",
+            "combo": "Ethernet1/0/24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Ethernet1/0/24_sfp",
+            "description": "Ethernet1/0/24 fiber",
+            "combo": "Ethernet1/0/24",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/24",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Ethernet1/0/25",
+            "description": "Fiber port 25",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/25",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Ethernet1/0/26",
+            "description": "Fiber port 26",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/26",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Ethernet1/0/27",
+            "description": "Fiber port 27",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/27",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Ethernet1/0/28",
+            "description": "Fiber port 28",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpEthernet1/0/28",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "MGMT",
+            "description": "MGMT port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "power",
+            "description": "AC Power",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "power_48",
+            "description": "DC Power",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | 2CDGB-5.08-02P-14-00A(H)"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "SNR-S2990G-24FX"
+            ]
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}

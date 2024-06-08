@@ -9,65 +9,83 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "NPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | CX600-X1-X2 | NPU"
         },
         {
+            "name": "6",
             "description": "MPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "6",
             "type__name": "Huawei | CX600-X1-X2 | MPU"
         },
         {
+            "name": "7",
             "description": "MPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "7",
             "type__name": "Huawei | CX600-X1-X2 | MPU"
         },
         {
+            "name": "8",
             "description": "PSU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "8",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X1-M4 PSU"
         },
         {
+            "name": "9",
             "description": "PSU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "9",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X1-M4 PSU"
         },
         {
+            "name": "10",
             "description": "FAN Slot",
             "direction": "i",
             "gender": "f",
-            "name": "10",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X1-M4 FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CX6Z02BKP1"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 350.0
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 442,
-            "width": 132
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX6Z02BKP1"]
         },
-        "power": {
-            "power": 350.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 13.0
         },
-        "weight": {
-            "weight": 13.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 132
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 442
         }
-    }
+    ]
 }

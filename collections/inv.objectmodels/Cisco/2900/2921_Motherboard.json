@@ -8,166 +8,325 @@
     "cr_context": "MOTHERBOARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 2900 | MOTHERBOARD"
         },
         {
+            "name": "disk0",
             "description": "Compact Flash slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "disk0",
             "type__name": "Flash | CF"
         },
         {
+            "name": "disk1",
             "description": "Compact Flash slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "disk1",
             "type__name": "Flash | CF"
         },
         {
+            "name": "Gi0",
             "description": "GigabitEthernet 0/0 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi0",
-            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi1",
             "description": "GigabitEthernet 0/1 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi1",
-            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi1_sfp",
             "description": "GigabitEthernet 0/1 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2",
             "description": "GigabitEthernet 0/2 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi2",
-            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "dcs0",
             "description": "DaughterCard Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "dcs0",
-            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs1",
             "description": "DaughterCard Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "dcs1",
-            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs2",
             "description": "DaughterCard Slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "dcs2",
-            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs3",
             "description": "DaughterCard Slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "dcs3",
-            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "pvdm4",
             "description": "PVDM3 (DSP) Slots 0",
             "direction": "i",
             "gender": "f",
-            "name": "pvdm4",
             "type__name": "Cisco | ISR | PVDM3"
         },
         {
+            "name": "pvdm5",
             "description": "PVDM3 (DSP) Slots 1",
             "direction": "i",
             "gender": "f",
-            "name": "pvdm5",
             "type__name": "Cisco | ISR | PVDM3"
         },
         {
+            "name": "pvdm6",
             "description": "PVDM3 (DSP) Slots 2",
             "direction": "i",
             "gender": "f",
-            "name": "pvdm6",
             "type__name": "Cisco | ISR | PVDM3"
         },
         {
+            "name": "ism0",
             "description": "ISM Container Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "ism0",
             "type__name": "Cisco | 2900-3900 | ISM"
         },
         {
+            "name": "console0",
             "description": "Serial console port",
             "direction": "s",
             "gender": "f",
-            "name": "console0",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console1",
             "description": "USB console port",
             "direction": "s",
             "gender": "f",
-            "name": "console1",
-            "protocols": [">USB20"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB20"
+            }],
             "type__name": "Electrical | mini-USB"
         },
         {
+            "name": "aux",
             "description": "Serial Auxiliary Port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["USB10", "USB11", "USB20"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "usb1",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb1",
-            "protocols": ["USB10", "USB11", "USB20"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO2921-MB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO2921-MB"]
         }
-    }
+    ]
 }

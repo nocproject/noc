@@ -1,0 +1,17 @@
+{
+    "name": "Default Resource",
+    "uuid": "2d41c135-44db-4234-92eb-9ccbebbd9389",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Default resource workflow with external provisioning",
+    "allowed_models": [
+        "ip.Address",
+        "ip.Prefix",
+        "ip.VRF",
+        "vc.VLAN",
+        "vc.VPN",
+        "vc.L2Domain",
+        "crm.Subscriber",
+        "crm.Supplier"
+    ]
+}

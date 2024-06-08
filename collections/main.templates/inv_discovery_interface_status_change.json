@@ -1,0 +1,9 @@
+{
+    "name": "inv.discovery.interface_status_change",
+    "$collection": "main.templates",
+    "uuid": "13b53d1f-ef3f-4969-a068-3398c3a4e047",
+    "subject": "[{{managed_object.name}}] Interface {{name}}({{description}}) is {% if status %}\"up\"{% else %}\"down\" {% endif %}",
+    "body": "Interface {{name}} ({{description}}) is {% if status %}\"up\"{% else %}\"down\" {% endif %}",
+    "message_type": "INTERFACE_STATUS_CHANGE",
+    "is_system": true
+}

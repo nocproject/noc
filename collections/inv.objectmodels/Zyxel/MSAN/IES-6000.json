@@ -1,0 +1,178 @@
+{
+    "name": "Zyxel | MSAN | IES-6000",
+    "$collection": "inv.objectmodels",
+    "uuid": "ecd25d58-863e-40f3-a047-5cd01ef5a645",
+    "vendor__code": "ZYXEL",
+    "description": "Модульный IP xDSL-коммутатор\n17 slots for management and  line termination cards ",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "1",
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "2",
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "3",
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "4",
+            "description": "Linecard 4 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "5",
+            "description": "Linecard 5 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "6",
+            "description": "Linecard 6 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "7",
+            "description": "Linecard 7 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "8",
+            "description": "Linecard 8 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "9",
+            "description": "Linecard 9 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "10",
+            "description": "Linecard 10 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "11",
+            "description": "Linecard 11 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "12",
+            "description": "Linecard 12 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "13",
+            "description": "Linecard 13 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "14",
+            "description": "Linecard 14 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "15",
+            "description": "Linecard 15 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "16",
+            "description": "Linecard 16 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "17",
+            "description": "Linecard 17 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 280
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 484
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 2160.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 18.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-6000"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 12.0
+        }
+    ]
+}

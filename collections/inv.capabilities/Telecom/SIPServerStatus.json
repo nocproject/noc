@@ -1,0 +1,8 @@
+{
+    "name": "TelecomFXS | SIPServerStatus",
+    "$collection": "inv.capabilities",
+    "uuid": "22f99605-dea2-47eb-8387-217ecbcb635d",
+    "description": "SIP Server Status",
+    "type": "str",
+    "card_template": null
+}

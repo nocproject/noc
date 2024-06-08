@@ -8,25 +8,66 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "rxtx",
             "description": "RxTx SC Port",
             "direction": "i",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": [">1000BASELX-1270", "<1000BASELX-1330"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1270",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1330",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FH-SPB321TCDL20"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FH-SPB321TCDL20"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1270
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

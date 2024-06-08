@@ -8,39 +8,55 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S8500 | LSB"
         },
         {
+            "name": "GigabitEtherntX/1/1",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEtherntX/1/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "GigabitEtherntX/1/2",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEtherntX/1/2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LSB1XP2CA0"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LSB1XP2CA0"]
         },
-        "dimensions": {
-            "depth": 367,
-            "width": 340
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 45.0
         },
-        "power": {
-            "power": 45.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 340
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 367
         }
-    }
+    ]
 }

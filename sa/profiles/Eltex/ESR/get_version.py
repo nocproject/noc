@@ -21,7 +21,7 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"System type:\s+Eltex\s+(?P<platform>\S+)\s+.+\n"
         r"System name:\s+\S+\s*\n"
-        r"Software version:\s+(?P<version>\S+)\s+\(date.+\n"
+        r"Software version:\s+(?P<version>.+) \(date .+\n"
         r"Hardware version:\s+(?P<hardware>\S+)\s*\n"
         r"System uptime:.+\n"
         r"System MAC address:\s+\S+\s*\n"

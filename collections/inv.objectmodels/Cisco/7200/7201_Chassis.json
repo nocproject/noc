@@ -9,125 +9,207 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "sup",
             "description": "Supervisor slot",
             "direction": "i",
             "gender": "f",
-            "name": "sup",
             "type__name": "Cisco | 7200 | Supervisor"
         },
         {
+            "name": "Gi0/1",
             "description": "Gi 0/1 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0/1_sfp",
             "description": "Gi 0/1 port (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0/1_sfp",
-            "type__name": "Transceiver | SFP | Cisco",
-            "protocols": ["TransEth1G"]
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP | Cisco"
         },
         {
+            "name": "Gi0/2",
             "description": "Gi 0/2 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0/2_sfp",
             "description": "Gi 0/2 port (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0/2_sfp",
-            "type__name": "Transceiver | SFP | Cisco",
-            "protocols": ["TransEth1G"]
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP | Cisco"
         },
         {
+            "name": "Gi0/3_sfp",
             "description": "Gi 0/3 port (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0/3_sfp",
-            "type__name": "Transceiver | SFP | Cisco",
-            "protocols": ["TransEth1G"]
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP | Cisco"
         },
         {
+            "name": "Gi0/4_sfp",
             "description": "Gi 0/4 port (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0/4_sfp",
-            "type__name": "Transceiver | SFP | Cisco",
-            "protocols": ["TransEth1G"]
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP | Cisco"
         },
         {
+            "name": "usb",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "AUX port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS323"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa0/0",
             "description": "Management port",
             "direction": "s",
             "gender": "f",
-            "name": "Fa0/0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "disk0",
             "description": "Compact Flash slot",
             "direction": "i",
             "gender": "f",
-            "name": "disk0",
             "type__name": "Flash | CF"
         },
         {
+            "name": "psu0",
             "description": "PSU0",
             "direction": "i",
             "gender": "f",
-            "name": "psu0",
             "type__name": "Cisco | 7200 | 7201 PWR"
         },
         {
+            "name": "psu1",
             "description": "PSU1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | 7200 | 7201 PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO7201"],
-            "cpe_22": "cpe:/h:cisco:7200_router:-",
-            "cpe_23": "cpe:2.3:h:cisco:7200_router:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO7201"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:7200_router:-"
         },
-        "rackmount": {
-            "units": 1
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:7200_router:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1
         }
-    }
+    ]
 }

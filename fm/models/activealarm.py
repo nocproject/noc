@@ -10,9 +10,20 @@ import datetime
 import logging
 from collections import defaultdict
 from itertools import chain
-from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic
+from typing import (
+    Optional,
+    Set,
+    Any,
+    Dict,
+    Iterable,
+    Protocol,
+    runtime_checkable,
+    Generic,
+    Union,
+)
 
 # Third-party modules
+from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
 from mongoengine.document import Document
@@ -43,6 +54,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
+from noc.core.defer import defer
 from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
@@ -86,9 +98,10 @@ class ActiveAlarm(Document):
     last_update = DateTimeField(required=True)
     managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
     alarm_class: "AlarmClass" = PlainReferenceField(AlarmClass)
+    # Calculated Severity
     severity = IntField(required=True)
-    # Base for calculate severity
-    base_weight = IntField(default=0)
+    base_severity = IntField(required=False)
+    severity_policy = StringField(default="AS")
     vars = DictField()
     # Alarm reference is a hash of discriminator
     # for external systems
@@ -135,7 +148,7 @@ class ActiveAlarm(Document):
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
     direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
-    # Indirectly affected services summary, groupped by profiles
+    # Indirectly affected services summary, grouped by profiles
     # (covered by this and all inferred alarms)
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
@@ -168,8 +181,8 @@ class ActiveAlarm(Document):
         return str(self.id)
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["ActiveAlarm"]:
-        return ActiveAlarm.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ActiveAlarm"]:
+        return ActiveAlarm.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
@@ -189,19 +202,6 @@ class ActiveAlarm(Document):
         if not self.id:
             # Update effective labels
             self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
-            # Update affected_services
-            self.components._ComponentHub__refresh_all_components()
-            for component in self.components._ComponentHub__all_components:
-                component = self.components.get(component, None)
-                if not component:
-                    continue
-                # If Component is Service or assigned service to it
-                if isinstance(component, Service):
-                    svc = component
-                else:
-                    svc = getattr(component, "service", None)
-                if svc and svc.id and svc.id not in self.affected_services:
-                    self.affected_services += [svc.id]
 
     def safe_save(self, **kwargs):
         """
@@ -221,7 +221,11 @@ class ActiveAlarm(Document):
             self.save()
 
     def change_severity(
-        self, user="", delta=None, severity: Optional[AlarmSeverity] = None, to_save=True
+        self,
+        user="",
+        delta=None,
+        severity: Optional[Union[int, AlarmSeverity]] = None,
+        to_save=True,
     ):
         """
         Change alarm severity
@@ -229,17 +233,17 @@ class ActiveAlarm(Document):
         if isinstance(user, User):
             user = user.username
         if delta:
-            self.severity = max(0, self.base_weight + self.severity + delta)
+            self.severity = max(0, self.severity + delta)
             if delta > 0:
                 self.log_message(f"{user} has increased alarm severity by {delta}")
             else:
                 self.log_message(f"{user} has decreased alarm severity by {delta}")
         elif severity:
             if isinstance(severity, (float, int)):
-                self.severity = self.base_weight + int(severity)
+                self.severity = int(severity)
                 self.log_message(f"{user} has changed severity to {severity}")
             else:
-                self.severity = self.base_weight + severity.severity
+                self.severity = severity.severity
                 self.log_message(f"{user} has changed severity to {severity.name}")
         if to_save:
             self.safe_save()
@@ -336,7 +340,6 @@ class ActiveAlarm(Document):
             total_objects=self.total_objects,
             total_services=self.total_services,
             total_subscribers=self.total_subscribers,
-            affected_services=self.affected_services,
             adm_path=self.adm_path,
             segment_path=self.segment_path,
             container_path=self.container_path,
@@ -388,6 +391,12 @@ class ActiveAlarm(Document):
             )
         # Clear alarm
         self.delete()
+        # Refresh Services
+        if self.affected_services:
+            defer(
+                "noc.sa.models.service.refresh_service_status",
+                svc_ids=[str(x) for x in self.affected_services],
+            )
         # Close TT
         # MUST be after .delete() to prevent race conditions
         if a.escalation_tt or self.clear_template:
@@ -408,9 +417,9 @@ class ActiveAlarm(Document):
                 tt_id=self.escalation_tt,
                 subject=subject,
                 body=body,
-                notification_group_id=self.clear_notification_group.id
-                if self.clear_notification_group
-                else None,
+                notification_group_id=(
+                    self.clear_notification_group.id if self.clear_notification_group else None
+                ),
                 close_tt=self.close_tt,
                 login="correlator",
                 queue=a.managed_object.tt_queue,
@@ -544,6 +553,66 @@ class ActiveAlarm(Document):
             root = get_alarm(root.root)
         return root
 
+    def get_summary(self):
+        r = {
+            "service": SummaryItem.items_to_dict(self.total_services),
+            "subscriber": SummaryItem.items_to_dict(self.total_subscribers),
+            "objects": {self.managed_object.object_profile.id: 1},
+        }
+        if self.is_link_alarm and self.components.interface:
+            r["interface"] = {self.components.interface.profile.id: 1}
+        return r
+
+    def get_effective_severity(
+        self,
+        summary: Optional[Dict[str, Any]] = None,
+        severity: Optional[AlarmSeverity] = None,
+        policy: Optional[str] = None,
+    ) -> int:
+        """
+        Calculate Alarm Severities for policy
+
+        Args:
+            severity: Alarm Based Severity
+            summary: Alarm Affected Summary
+            policy:
+                * AS - Any Severity
+                * CB - Class Based Policy
+                * AB - Affected Based Severity Preferred
+                * AL - Affected Limit
+                * ST - By Tokens
+
+        """
+        if not policy and self.alarm_class.affected_service:
+            policy = "AB"
+        elif not policy:
+            policy = self.severity_policy
+
+        if severity:
+            severity = severity.severity
+        elif self.base_severity:
+            severity = self.base_severity
+        elif self.alarm_class.severity:
+            severity = self.alarm_class.severity.severity
+        else:
+            severity = 1000
+        summary = summary or self.get_summary()
+        match policy:
+            case "CB":
+                return severity
+            case "AB":
+                return ServiceSummary.get_severity(summary)
+            case "AL":
+                ss = ServiceSummary.get_severity(summary)
+                if severity and severity <= ss:
+                    return severity
+                return ss
+            case "ST":
+                sev = AlarmSeverity.get_from_labels(self.effective_labels)
+                if sev:
+                    return sev.severity
+        return severity
+
     def update_summary(self):
         """
         Recalculate all summaries for given alarm.
@@ -561,7 +630,10 @@ class ActiveAlarm(Document):
         services = SummaryItem.items_to_dict(self.direct_services)
         subscribers = SummaryItem.items_to_dict(self.direct_subscribers)
         objects = {self.managed_object.object_profile.id: 1}
-
+        if self.is_link_alarm and self.components.interface:
+            interface = {self.components.interface.profile.id: 1}
+        else:
+            interface = {}
         for a in ActiveAlarm.objects.filter(root=self.id):
             a.update_summary()
             update_dict(objects, SummaryItem.items_to_dict(a.total_objects))
@@ -578,12 +650,17 @@ class ActiveAlarm(Document):
             or sub_list != self.total_subscribers
             or obj_list != self.total_objects
         ):
-            ns = ServiceSummary.get_severity(
-                {"service": services, "subscriber": subscribers, "objects": objects}
-            )
             self.total_objects = obj_list
             self.total_services = svc_list
             self.total_subscribers = sub_list
+            ns = self.get_effective_severity(
+                {
+                    "service": services,
+                    "subscriber": subscribers,
+                    "objects": objects,
+                    "interface": interface,
+                },
+            )
             if ns != self.severity:
                 self.change_severity(severity=ns, to_save=False)
             self.safe_save()
@@ -618,8 +695,12 @@ class ActiveAlarm(Document):
             path = path or []
             if alarm_id in path:
                 raise ValueError("Loop detected: %s" % (str(x) for x in path))
+            alarm = alarms.get(alarm_id)
+            if not alarm:
+                # not in alarms - Alarm in the chain already closed
+                return path
             path = path + [alarm_id]
-            root = alarms[alarm_id].get("root")
+            root = alarm.get("root")
             if not root or root not in alarms:
                 # root not in alarms - Root alarm already closed
                 return path
@@ -918,8 +999,7 @@ class ActiveAlarm(Document):
 
 @runtime_checkable
 class AlarmComponent(Protocol):
-    def get_component(self, **kwargs) -> Optional["Generic"]:
-        ...
+    def get_component(self, **kwargs) -> Optional["Generic"]: ...
 
 
 class ComponentHub(object):
@@ -996,4 +1076,3 @@ class ComponentHub(object):
 # Avoid circular references
 from .archivedalarm import ArchivedAlarm
 from .utils import get_alarm
-from noc.sa.models.service import Service

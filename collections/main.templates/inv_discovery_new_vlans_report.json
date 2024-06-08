@@ -1,0 +1,7 @@
+{
+    "uuid": "319a0ea8-1ce6-45de-a36c-a6227828d862",
+    "$collection": "main.templates",
+    "name": "inv.discovery.new_vlans_report",
+    "subject": "{{ count }} new VLANs discovered",
+    "body": "{{ count }} new VLANs discovered\n\n{% for p in vcs %}{{p.vc_domain.name}}: VLAN {{p.l1}} ({{p.name}})\n{% endfor %}\n"
+}

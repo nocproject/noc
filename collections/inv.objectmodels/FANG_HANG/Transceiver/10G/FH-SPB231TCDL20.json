@@ -2,31 +2,72 @@
     "name": "FANG HANG | Transceiver | 10G | FH-SPB231TCDL20",
     "$collection": "inv.objectmodels",
     "uuid": "ff4bdfda-13ec-4a42-b983-dae64010ee6d",
-    "vendor__code": "FANGHANG",
+    "vendor__code": "FANG HANG",
     "description": "FANG HANG RX-1330/TX-1270 nm Singl-mode Bi-directional, 20 km, LC, 10G",
     "cr_context": "XCVR",
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "rxtx",
             "description": "RxTx SC Port",
             "direction": "i",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": [">1000BASELX-1330", "<1000BASELX-1270"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1330",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1270",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FH-SPB231TCDL20"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FH-SPB231TCDL20"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1270
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1330
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

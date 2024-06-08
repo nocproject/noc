@@ -8,34 +8,70 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">10GBASELR-1310"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1310",
+                    "protocol__code": "10GBASELR"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<10GBASELR-1310"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "10GBASELR"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["E10GSFPLR"],
-            "part_no": ["FTLX1471D3BCV-IT"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FTLX1471D3BCV-IT"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["E10GSFPLR"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

@@ -1,0 +1,21 @@
+port:
+  tcp:{{ kafka_bootstrap_port }}:
+    listening: true
+#  tcp:{{ kafka_controller_port }}:
+#    listening: true
+service:
+  kafka:
+    enabled: true
+    running: true
+user:
+  {{ kafka_user }}:
+    exists: true
+group:
+  {{ kafka_group }}:
+    exists: true
+file:
+  {{ kafka_server_conf }}:
+    exists: true
+    mode: "0777"
+    linked-to: /opt/kafka/config/kraft/server.properties
+    filetype: symlink

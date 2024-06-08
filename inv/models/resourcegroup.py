@@ -13,6 +13,7 @@ from typing import List, Union, Optional, Tuple
 
 # Third-party modules
 import bson
+from bson import ObjectId
 import cachetools
 import orjson
 from django.db import connection as pg_connection
@@ -120,7 +121,7 @@ class ResourceGroup(Document):
 
     # Group | Name
     name = StringField()
-    technology = PlainReferenceField(Technology)
+    technology: Technology = PlainReferenceField(Technology)
     parent = PlainReferenceField("inv.ResourceGroup", validation=check_rg_parent)
     description = StringField()
     dynamic_service_labels = ListField(EmbeddedDocumentField(MatchLabels))
@@ -147,20 +148,18 @@ class ResourceGroup(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return ResourceGroup.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ResourceGroup"]:
+        return ResourceGroup.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return ResourceGroup.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["ResourceGroup"]:
+        return ResourceGroup.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     def _reset_caches(cls, id):
         try:
-            del cls._id_cache[
-                str(id),
-            ]  # Tuple
+            del cls._id_cache[str(id),]  # Tuple
         except KeyError:
             pass
 
@@ -261,7 +260,7 @@ class ResourceGroup(Document):
         if is_document(model):
             return list(model.objects.filter(**{query: resource_group}).values_list("id"))
         return list(
-            model.objects.filter(**{f"{query}__contains": str(resource_group)}).values_list(
+            model.objects.filter(**{f"{query}__contains": [str(resource_group)]}).values_list(
                 "id", flat=True
             )
         )
@@ -663,14 +662,17 @@ class ResourceGroup(Document):
         table = model._meta.db_table
         where = ""
         if table_filter:
-            where = "WHERE " + " AND ".join(t[0] for t in table_filter)
+            where = "AND " + " AND ".join(f"update_t.{t[0]} = %s" for t in table_filter)
         SQL_SYNC = f"""
-            UPDATE {table} AS update_t SET effective_service_groups = update_t.static_service_groups || array_remove(sq.erg, NULL)
-             FROM (SELECT t.id as id, array_agg(rgs.rg) AS erg FROM {table} AS t
-             LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs
-             ON t.effective_labels::text[] @> rgs.ml {where} GROUP BY t.id
-             HAVING t.effective_service_groups != t.static_service_groups || array_remove(sq.erg, NULL)) AS sq
-             WHERE sq.id = update_t.id
+            UPDATE {table} AS update_t
+            SET effective_service_groups = update_t.static_service_groups || array_remove(sq.erg, NULL)
+            FROM (
+             SELECT t.id as id, array_agg(rgs.rg) AS erg FROM {table} AS t
+             LEFT JOIN (SELECT * FROM jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs
+             ON t.effective_labels::text[] @> rgs.ml GROUP BY t.id
+             HAVING t.effective_service_groups != t.static_service_groups || array_remove(array_agg(rgs.rg), NULL)
+             ) AS sq
+            WHERE sq.id = update_t.id {where}
             """
         r = []
         for rg_id, tech, dsl in ResourceGroup.objects.filter(
@@ -686,6 +688,14 @@ class ResourceGroup(Document):
             params += [v[1] for v in table_filter]
         with pg_connection.cursor() as cursor:
             cursor.execute(SQL_SYNC, params)
+
+    @property
+    def resource_count(self) -> int:
+        """
+        Calculate number of resources associated to group
+        :return:
+        """
+        return len(self.get_model_instance_ids(self.technology.service_model, self.id))
 
 
 def invalidate_instance_cache(model_id: str, ids: List[int]):

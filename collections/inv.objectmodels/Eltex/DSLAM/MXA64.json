@@ -6,118 +6,251 @@
     "description": "ADSL IP  DSLAM  MXA 64",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "1",
             "description": "1",
             "direction": "s",
             "gender": "f",
-            "name": "1",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "2",
             "description": "2",
             "direction": "s",
             "gender": "f",
-            "name": "2",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "3",
             "description": "3",
             "direction": "s",
             "gender": "f",
-            "name": "3",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp1",
             "description": "Fiber port 1",
             "direction": "i",
             "gender": "f",
-            "name": "sfp1",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp2",
             "description": "Fiber port 2",
             "direction": "i",
             "gender": "f",
-            "name": "sfp2",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         },
         {
-            "description": "adsl",
-            "direction": "s",
-            "gender": "m",
             "name": "adsl1",
-            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
-            "type__name": "Electrical | CENC-36M"
-        },
-        {
             "description": "adsl",
             "direction": "s",
             "gender": "m",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | CENC-36M"
+        },
+        {
             "name": "adsl2",
-            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
-            "type__name": "Electrical | CENC-36M"
-        },
-        {
             "description": "adsl",
             "direction": "s",
             "gender": "m",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | CENC-36M"
+        },
+        {
             "name": "adsl3",
-            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
-            "type__name": "Electrical | CENC-36M"
-        },
-        {
             "description": "adsl",
             "direction": "s",
             "gender": "m",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | CENC-36M"
+        },
+        {
             "name": "adsl4",
-            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
+            "description": "adsl",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | CENC-36M"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MXA64"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 240,
-            "height": 45,
-            "width": 420
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 420
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
         },
-        "power": {
-            "power": 48.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 45
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 48.0
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 3.5
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.5
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MXA64"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

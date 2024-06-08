@@ -1,0 +1,6 @@
+{
+    "$metric": "Memory | Total",
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.8886.1.1.3.1.0",
+    "units": "byte"
+}

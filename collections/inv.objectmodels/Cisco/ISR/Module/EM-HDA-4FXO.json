@@ -1,0 +1,68 @@
+{
+    "name": "Cisco | ISR | Module | EM-HDA-4FXO",
+    "$collection": "inv.objectmodels",
+    "uuid": "e4df8768-0199-4147-9d84-91e3dc50b5c9",
+    "vendor__code": "CISCO",
+    "description": "Four port FXO voice interface daughtercard",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "name": "voice-port0",
+            "description": "voice-portN/0 Analog PBX",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port1",
+            "description": "voice-portN/1 Analog PBX",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port2",
+            "description": "voice-portN/2 Analog PBX",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port3",
+            "description": "voice-portN/3 Analog PBX",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
+            "type__name": "Electrical | RJ21"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EM-HDA-4FXO="]
+        }
+    ]
+}

@@ -8,34 +8,75 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP | Cisco"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">1000BASEZX-1550"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<1000BASEZX-1550"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["FTRJ-1519-7D-CS", "FTRJ-1519-7D-CSC", "FTRJ-1519-7D-C"],
-            "part_no": ["FTRJ-1519-7D"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FTRJ-1519-7D"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FTRJ-1519-7D-CS", "FTRJ-1519-7D-CSC", "FTRJ-1519-7D-C"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 5000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

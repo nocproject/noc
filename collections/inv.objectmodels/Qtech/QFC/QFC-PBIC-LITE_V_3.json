@@ -7,126 +7,150 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "eth0",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "eth0",
-            "protocols": ["10BASET"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10BASET"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "rs232",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "rs232",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "group": "1",
             "name": "rs485_a",
-            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
-        },
-        {
             "description": null,
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "name": "rs485_b",
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
+            "name": "rs485_b",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
+        },
+        {
+            "name": "in",
             "description": "дискретные вход",
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "name": "in",
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
+            "name": "out",
             "description": "цифровой выход 0/3,3В для управления внешней розеткой",
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "name": "out",
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
+            "name": "temp",
             "description": "вход подключения датчика температуры",
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "name": "temp",
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
-            "description": "вход наличия сетевого напряжения",
-            "direction": "s",
-            "gender": "f",
-            "group": "3",
             "name": "L",
-            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
-        },
-        {
             "description": "вход наличия сетевого напряжения",
             "direction": "s",
             "gender": "f",
             "group": "3",
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
+        },
+        {
             "name": "N",
+            "description": "вход наличия сетевого напряжения",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["Q00011707"],
-            "part_no": ["QFC-PBIC-LITE V.3"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["Q00011707"]
         },
-        "dimensions": {
-            "depth": 90,
-            "height": 57,
-            "width": 71
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["QFC-PBIC-LITE V.3"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 90
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 57
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 71
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    },
+    ],
     "sensors": [
         {
-            "description": "Дискретные вход",
             "name": "in",
+            "description": "Дискретные вход",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.5.0",
             "units__code": "status"
         },
         {
-            "description": "Состояние реле",
             "name": "relay",
+            "description": "Состояние реле",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.6.0",
             "units__code": "status"
         },
         {
-            "description": "Вход наличия сетевого напряжения",
             "name": "v230_state",
+            "description": "Вход наличия сетевого напряжения",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.7.0",
             "units__code": "status"
         },
         {
-            "description": "Значение температуры с датчика №1",
             "name": "temp1",
+            "description": "Значение температуры с датчика №1",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.8.0",
             "units__code": "C"
         },
         {
-            "description": "Значение температуры с датчика №2",
             "name": "temp2",
+            "description": "Значение температуры с датчика №2",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.9.0",
             "units__code": "C"
         },
         {
-            "description": "Флаг наличия связи с ИБП по порту RS-232",
             "name": "ups_rs232",
+            "description": "Флаг наличия связи с ИБП по порту RS-232",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.13.0",
             "units__code": "status"
         }

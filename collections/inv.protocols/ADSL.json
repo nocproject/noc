@@ -1,0 +1,10 @@
+{
+    "name": "ADSL",
+    "code": "ADSL",
+    "$collection": "inv.protocols",
+    "uuid": "14fa7f57-e867-44ac-b268-9a348c0650da",
+    "description": "Asymmetric digital subscriber line (ADSL) is a type of digital subscriber line (DSL) technology, a data communications technology that enables faster data transmission over copper telephone lines than a conventional voiceband modem can provide.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "XDSL"
+}

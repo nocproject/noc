@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NSN.TIMOS.get_metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -133,32 +133,89 @@ class Script(GetMetricsScript):
 
     @metrics(
         ["DHCP | Pool | Leases | Active"],
-        has_capability="BRAS | PPPoE",
+        has_capability="Network | DHCP",
         volatile=False,
         access="S",
     )
     def get_dhcp_used_metrics_snmp(self, metrics):
-        for oid, v in self.snmp.getnext("1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21"):
-            if not oid.startswith("1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21.1."):
-                # Example - 1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21.4.
-                continue
-            _, key = oid.split(".21.1.")
-            key = key.split(".")
-            pool = "".join([chr(int(c)) for c in key[1:-7]])
-            pool = pool.replace("\t", ":")
-            pool = pool.replace("\n", ":")
-            pool_ip = ".".join([c for c in key[-5:-1]])
-            pool_mask = key[-1:][0]
-            self.set_metric(
-                id=("DHCP | Pool | Leases | Active", None),
-                labels=[
-                    f"noc::ippool::name::{pool}",
-                    f"noc::ippool::prefix::{pool_ip}/{pool_mask}",
-                    "noc::ippool::type::dhcp",
-                ],
-                value=v,
-                multi=True,
-            )
+        """
+        tmnxDhcpSvrSubnetStatsUsed 1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21 - IPV4
+        tmnxDhcpSvrSubnetStats6Stable 1.3.6.1.4.1.6527.3.1.2.47.1.24.1.2 - IPV6
+        """
+        for oid_ in ["1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21", "1.3.6.1.4.1.6527.3.1.2.47.1.24.1.2"]:
+            for oid, v in self.snmp.getnext(oid_):
+                if not oid.startswith(f"{oid_}.1."):
+                    # Example - 1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21.4.
+                    continue
+                _, key = oid.split(f"{oid_}.1.")
+                pool, pool_ip, pool_mask = self.profile.ascii_to_str(key)
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}/{pool_mask}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+
+    @metrics(
+        ["DHCP | Pool | Leases | Free"],
+        has_capability="Network | DHCP",
+        volatile=False,
+        access="S",
+    )
+    def get_dhcp_free_metrics_snmp(self, metrics):
+        """
+        tmnxDhcpSvrSubnetStatsFree 1.3.6.1.4.1.6527.3.1.2.47.1.17.1.1  - IPV4
+        tmnxDhcpSvrSubnetStats6FreeBlk 1.3.6.1.4.1.6527.3.1.2.47.1.24.1.14  - IPV6
+        """
+        for oid_ in ["1.3.6.1.4.1.6527.3.1.2.47.1.17.1.1", "1.3.6.1.4.1.6527.3.1.2.47.1.24.1.14"]:
+            for oid, v in self.snmp.getnext(oid_):
+                if not oid.startswith(f"{oid_}.1."):
+                    continue
+                _, key = oid.split(f"{oid_}.1.")
+                pool, pool_ip, pool_mask = self.profile.ascii_to_str(key)
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Free", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}/{pool_mask}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+
+    @metrics(
+        ["DHCP | Pool | Leases | Active | Percent"],
+        has_capability="Network | DHCP",
+        volatile=False,
+        access="S",
+    )
+    def get_dhcp_active_percent_metrics_snmp(self, metrics):
+        """
+        tmnxDhcpSvrSubnetStatsUsedPct 1.3.6.1.4.1.6527.3.1.2.47.1.17.1.31  - IPV4
+        tmnxDhcpSvrSubnetStats6UsedPct 1.3.6.1.4.1.6527.3.1.2.47.1.24.1.17  - IPV6
+        """
+        for oid_ in ["1.3.6.1.4.1.6527.3.1.2.47.1.17.1.31", "1.3.6.1.4.1.6527.3.1.2.47.1.24.1.17"]:
+            for oid, v in self.snmp.getnext(oid_):
+                if not oid.startswith(f"{oid_}.1."):
+                    continue
+                _, key = oid.split(f"{oid_}.1.")
+                pool, pool_ip, pool_mask = self.profile.ascii_to_str(key)
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active | Percent", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}/{pool_mask}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                    units="%",
+                )
 
     @metrics(
         ["Environment | Sensor Status"],

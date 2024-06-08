@@ -49,9 +49,11 @@ class Scheduler(object):
         filter=None,
         service=None,
         sample=0,
+        ignore_import_errors: bool = False,
     ):
         """
-        Create scheduler
+        Create scheduler.
+
         :param name: Unique scheduler name
         :param pool: Pool name, if run in pooled mode
         :param reset_running: Reset all running jobs to
@@ -64,9 +66,10 @@ class Scheduler(object):
             when submitting of next chunk is allowed
         :param filter: Additional filter to be applied to
             pending jobs
-        :param tracing_sample: Tracing sample rate. 0 - do not sample,
+        :param sample: Tracing sample rate. 0 - do not sample,
            1 - sample every job
            N > 1 - sample very Nth job
+        :param ignore_import_error: Do not remove job if caused import error.
         """
         self.logger = logging.getLogger("scheduler.%s" % name)
         self.name = name
@@ -109,6 +112,7 @@ class Scheduler(object):
         else:
             self.scheduler_id = "standalone scheduler"
         self.sample = sample
+        self.ignore_import_errors = ignore_import_errors
 
     def get_cache(self):
         with self.cache_lock:
@@ -124,8 +128,13 @@ class Scheduler(object):
 
         scheduler.run()
         """
+        reset_statuses = []
         if self.to_reset_running:
-            self.reset_running()
+            reset_statuses.append(Job.S_RUN)
+        if self.ignore_import_errors:
+            reset_statuses.append(Job.S_POSTPONED)
+        if reset_statuses:
+            self.reset_to_waiting(reset_statuses)
         self.ensure_indexes()
         self.logger.info("Running scheduler")
         asyncio.create_task(self.scheduler_loop())
@@ -149,13 +158,14 @@ class Scheduler(object):
             self.executor = ThreadPoolExecutor(self.max_threads, name=self.name)
         return self.executor
 
-    def reset_running(self):
+    def reset_to_waiting(self, statuses: List[str]) -> None:
         """
         Reset all running jobs to waiting status
         """
-        self.logger.debug("Reset running jobs")
+        self.logger.debug("Reset jobs")
         r = self.get_collection().update_many(
-            self.get_query({Job.ATTR_STATUS: Job.S_RUN}), {"$set": {Job.ATTR_STATUS: Job.S_WAIT}}
+            self.get_query({Job.ATTR_STATUS: {"$in": statuses}}),
+            {"$set": {Job.ATTR_STATUS: Job.S_WAIT}},
         )
         if r.acknowledged:
             if r.modified_count:
@@ -163,7 +173,7 @@ class Scheduler(object):
             else:
                 self.logger.info("Nothing to reset")
         else:
-            self.logger.info("Failed to reset running jobs")
+            self.logger.info("Failed to reset jobs")
 
     def suspend_keys(self, keys: List[int], suspend: bool = True):
         self.logger.debug("Suspend jobs")
@@ -265,7 +275,10 @@ class Scheduler(object):
                 except ImportError as e:
                     self.logger.error("Invalid job class %s", job[Job.ATTR_CLASS])
                     self.logger.error("Error: %s", e)
-                    self.remove_job_by_id(job[Job.ATTR_ID])
+                    if self.ignore_import_errors:
+                        self.postpone_job(job[job.ATTR_ID])
+                    else:
+                        self.remove_job_by_id(job[Job.ATTR_ID])
         except pymongo.errors.CursorNotFound:
             self.logger.info("Server cursor timed out. Waiting for next cycle")
         except pymongo.errors.OperationFailure as e:
@@ -394,9 +407,17 @@ class Scheduler(object):
         """
         Remove job from schedule
         """
-        self.logger.info("Remove job %s", jid)
+        self.logger.info("Remove job: %s", jid)
         with self.bulk_lock:
-            self.bulk += [DeleteOne({Job.ATTR_ID: jid})]
+            self.bulk.append(DeleteOne({Job.ATTR_ID: jid}))
+
+    def postpone_job(self, jid: str) -> None:
+        """
+        Postpone job execution until next restart.
+        """
+        self.logger.info("Postpoing job until restart: %s", jid)
+        with self.bulk_lock:
+            self.bulk.append(UpdateOne({Job.ATTR_ID: jid}, {Job.ATTR_STATUS: Job.S_POSTPONED}))
 
     def submit(
         self,

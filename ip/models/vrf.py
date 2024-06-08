@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional
 
 # Third-party modules
 from noc.core.translation import ugettext as _
@@ -23,12 +24,14 @@ from noc.core.validators import check_rd
 from noc.core.model.fields import DocumentReferenceField
 from noc.main.models.textindex import full_text_search
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.state import State
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
+from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 
 
@@ -40,6 +43,7 @@ id_lock = Lock()
 @full_text_search
 @on_init
 @workflow
+@bi_sync
 @change
 @on_delete_check(
     check=[
@@ -125,6 +129,12 @@ class VRF(NOCModel):
     last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
     first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
+    # Object id in remote system
+    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = models.BigIntegerField(unique=True)
 
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"
@@ -141,7 +151,7 @@ class VRF(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["VRF"]:
         vrf = VRF.objects.filter(id=id)[:1]
         if vrf:
             return vrf[0]

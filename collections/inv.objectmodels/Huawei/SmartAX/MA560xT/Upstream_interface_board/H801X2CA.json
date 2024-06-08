@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | Upstream Interface Board | H801X2CA",
+    "name": "Huawei | SmartAX | MA560xT | Upstream Interface Board | H801X2CA",
     "$collection": "inv.objectmodels",
     "uuid": "693e637f-eeef-46c5-ab88-6a81d20414cb",
     "vendor__code": "HUAWEI",
@@ -20,7 +20,10 @@
             "description": "Upstream or cascading optical port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -28,24 +31,43 @@
             "description": "Upstream or cascading optical port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801X2CA", "H801X2CA0"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801X2CA", "H801X2CA0"]
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 197,
-            "width": 25
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
         },
-        "power": {
-            "power": 18.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 197
         },
-        "weight": {
-            "weight": 2.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 25
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 18.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
         }
-    }
+    ]
 }

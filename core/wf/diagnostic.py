@@ -12,15 +12,15 @@ import logging
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
-from typing import Optional, List, Dict, Any, Iterable
+from typing import Optional, List, Dict, Any, Iterable, Tuple
 
 # Third-party modules
 import orjson
 from pydantic import BaseModel, PrivateAttr
 
 # NOC modules
-from noc.core.checkers.base import Check, CheckData
 from noc.core.ioloop.util import run_sync
+from noc.core.checkers.base import Check
 from noc.config import config
 from noc.models import is_document
 
@@ -51,10 +51,20 @@ DIAGNOCSTIC_LABEL_SCOPE = "diag"
 
 def json_default(obj):
     if isinstance(obj, BaseModel):
-        return obj.dict()
+        return obj.model_dump()
     elif isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
+
+
+@dataclass(frozen=True)
+class CheckData(object):
+    name: str
+    status: bool  # True - OK, False - Fail
+    skipped: bool = False  # Check was skipped (Example, no credential)
+    arg0: Optional[str] = None
+    error: Optional[str] = None  # Description if Fail
+    data: Optional[Dict[str, Any]] = None  # Collected check data
 
 
 class DiagnosticEvent(str, enum.Enum):
@@ -82,6 +92,10 @@ class DiagnosticState(str, enum.Enum):
     @property
     def is_blocked(self) -> bool:
         return self.value == "blocked"
+
+    @property
+    def is_active(self) -> bool:
+        return self.value != "blocked" and self.value != "unknown"
 
 
 @dataclass(frozen=True)
@@ -128,7 +142,7 @@ class CheckStatus(BaseModel):
 class DiagnosticItem(BaseModel):
     diagnostic: str
     state: DiagnosticState = DiagnosticState("unknown")
-    checks: Optional[List[CheckStatus]]
+    checks: Optional[List[CheckStatus]] = None
     # scope: Literal["access", "all", "discovery", "default"] = "default"
     # policy: str = "ANY
     reason: Optional[str] = None
@@ -146,10 +160,11 @@ class DiagnosticItem(BaseModel):
     def reset(self, reason="Reset by"):
         if self.config.blocked:
             self.state = DiagnosticState.blocked
+            self.reason = self.config.reason
         else:
             self.state = self.config.default_state
+            self.reason = reason
         self.checks = []
-        self.reason = reason
         self.changed = datetime.datetime.now()
 
 
@@ -183,9 +198,9 @@ class DiagnosticHub(object):
         logger=None,
     ):
         self.logger = logger or logging.getLogger(__name__)
-        self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None
-        self.__checks: Dict[Check, List[str]] = defaultdict(list)
-        self.__depended: Dict[str, str] = {}
+        self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None  # Actual diagnostic state
+        self.__checks: Dict[Tuple[str, str], List[str]] = defaultdict(list)
+        self.__depended: Dict[str, str] = {}  # Depended diagnostics
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
         self.__object = o
@@ -221,17 +236,37 @@ class DiagnosticHub(object):
         Bulk mode. Sync diagnostic after exit from context
         """
         self.bulk_mode = True
+        self.bulk_changes = 0
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.bulk_mode = False
+        if not self.bulk_changes:
+            self.bulk_changes = 0
+            return
         self.sync_diagnostics()
+        # Hack for refresh diagnostic Hub on object
+        # For fix it may be use set __diagnostics to object diagnostic
+        self.__object.diagnostic.__diagnostics = None
 
     def __iter__(self) -> Iterable[DiagnosticItem]:
         if self.__diagnostics is None:
             self.__diagnostics = self.__load_diagnostics()
         for d in self.__diagnostics.values():
             yield d
+
+    def has_active_diagnostic(self, name: str) -> bool:
+        """
+        Check diagnostic has worked: Enabled or Failed state
+        :param name:
+        :return:
+        """
+        d = self.get(name)
+        if d is None:
+            return False
+        if d.state == DiagnosticState.enabled or d.state == DiagnosticState.failed:
+            return True
+        return False
 
     def get_object_diagnostic(self, name: str) -> Optional[DiagnosticItem]:
         """
@@ -257,14 +292,16 @@ class DiagnosticHub(object):
             item = self.__object.diagnostics.get(dc.diagnostic) or {}
             if not item:
                 item = {"diagnostic": dc.diagnostic, "state": dc.default_state.value}
-            elif item["state"] == "blocked" and not dc.blocked:
-                item["state"] = dc.default_state.value
-            if dc.blocked:
-                item["state"] = "blocked"
-            # item["config"] = dc
             r[dc.diagnostic] = DiagnosticItem(config=dc, **item)
+            if r[dc.diagnostic].state == DiagnosticState.blocked and not dc.blocked:
+                r[dc.diagnostic].state = dc.default_state
+            elif dc.blocked:
+                r[dc.diagnostic].state = DiagnosticState.blocked
+                if dc.reason:
+                    r[dc.diagnostic].reason = dc.reason
+            # item["config"] = dc
             for c in dc.checks or []:
-                self.__checks[c] += [dc.diagnostic]
+                self.__checks[(c.name, c.arg0 or "")] += [dc.diagnostic]
             for dd in dc.dependent or []:
                 self.__depended[dd] = dc.diagnostic
         return r
@@ -326,10 +363,12 @@ class DiagnosticHub(object):
         now = datetime.datetime.now().replace(microsecond=0)
         affected_diagnostics: Dict[str, List[CheckStatus]] = defaultdict(list)
         for cr in checks:
-            c = Check(name=cr.name, arg0=cr.arg0)
-            if c not in self.__checks:
+            if (cr.name, cr.arg0 or "") not in self.__checks:
+                self.logger.debug(
+                    "[%s|%s] Diagnostic not enabled: %s", cr.name, cr.arg0, self.__checks
+                )
                 continue
-            for d in self.__checks[c]:
+            for d in self.__checks[(cr.name, cr.arg0 or "")]:
                 affected_diagnostics[d] += [
                     CheckStatus(
                         name=cr.name,
@@ -383,6 +422,7 @@ class DiagnosticHub(object):
         """
         if self.bulk_mode:
             self.logger.debug("Bulk mode. Sync blocked")
+            self.bulk_changes += 1
             return
         changed_state = set()
         updated = []
@@ -407,7 +447,7 @@ class DiagnosticHub(object):
                     reason=d_new.reason,
                     ts=d_new.changed,
                 )
-            self.__object.diagnostics[d_name] = d_new.dict()
+            self.__object.diagnostics[d_name] = d_new.model_dump()
             updated += [d_new]
         removed = set(self.__object.diagnostics) - set(self.__diagnostics)
         if changed_state:
@@ -524,7 +564,7 @@ class DiagnosticHub(object):
                 alarms[dc.diagnostic] = {
                     "timestamp": now,
                     "reference": f"dc:{self.__object.id}:{d.diagnostic}",
-                    "managed_object": self.__object.id,
+                    "managed_object": str(self.__object.id),
                     "$op": "raise",
                     "alarm_class": dc.alarm_class,
                     "labels": dc.alarm_labels or [],
@@ -547,7 +587,7 @@ class DiagnosticHub(object):
                         {
                             "reference": f'dc:{dd["diagnostic"]}:{self.__object.id}',
                             "alarm_class": alarm_config[dd["diagnostic"]]["alarm_class"],
-                            "managed_object": self.__object.id,
+                            "managed_object": str(self.__object.id),
                             "timestamp": now,
                             "labels": alarm_config[dd["diagnostic"]]["alarm_labels"],
                             "vars": {"reason": dd["reason"] or ""},
@@ -600,7 +640,7 @@ class DiagnosticHub(object):
         :return:
         """
         from noc.core.service.loader import get_service
-        from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, DEFAULT_ENCODING
+        from noc.core.mx import DEFAULT_ENCODING, MessageType
 
         if self.dry_run:
             self.logger.info(
@@ -639,14 +679,10 @@ class DiagnosticHub(object):
                         "state": state,
                         "from_state": from_state,
                         "reason": reason,
-                        "managed_object": self.get_message_context(),
+                        "managed_object": self.__object.get_message_context(),
                     },
-                    "diagnostic_change",
-                    {
-                        MX_LABELS: MX_H_VALUE_SPLITTER.join(self.__object.effective_labels).encode(
-                            encoding=DEFAULT_ENCODING
-                        ),
-                    },
+                    MessageType.DIAGNOSTIC_CHANGE,
+                    self.__object.get_mx_message_headers(),
                 )
             )
         # Send Notification

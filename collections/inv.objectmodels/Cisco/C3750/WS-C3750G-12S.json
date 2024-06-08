@@ -8,154 +8,302 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "Console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi1_sfp",
             "description": "GigabitEthernet 0/1 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "GigabitEthernet 0/2 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi3_sfp",
             "description": "GigabitEthernet 0/3 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi3_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi4_sfp",
             "description": "GigabitEthernet 0/4 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi5_sfp",
             "description": "GigabitEthernet 0/5 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi5_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi6_sfp",
             "description": "GigabitEthernet 0/6 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi6_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi7_sfp",
             "description": "GigabitEthernet 0/7 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi7_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi8_sfp",
             "description": "GigabitEthernet 0/8 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi8_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi9_sfp",
             "description": "GigabitEthernet 0/9 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi9_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi10_sfp",
             "description": "GigabitEthernet 0/10 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi10_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi11_sfp",
             "description": "GigabitEthernet 0/11 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi11_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi12_sfp",
             "description": "GigabitEthernet 0/12 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi12_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "name": "Power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C3750G-12S", "WS-C3750G-12S-S", "WS-C3750G-12S-E"],
-            "cpe_22": "cpe:/h:cisco:catalyst_3750g:-",
-            "cpe_23": "cpe:2.3:h:cisco:catalyst_3750g:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C3750G-12S", "WS-C3750G-12S-S", "WS-C3750G-12S-E"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:catalyst_3750g:-"
         },
-        "power": {
-            "power": 100.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:catalyst_3750g:-:*:*:*:*:*:*:*"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 326,
-            "height": 44,
-            "width": 445
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 100.0
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 326
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 445
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
         }
-    }
+    ]
 }

@@ -1,0 +1,8 @@
+{
+    "name": "SLAProbe Default",
+    "uuid": "076d98f4-6bae-43c4-963d-48446502b8f5",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "SLAProbe Default workflow",
+    "allowed_models": ["sla.SLAProbe"]
+}

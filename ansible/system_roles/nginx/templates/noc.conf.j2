@@ -8,7 +8,7 @@ http {
     include       mime.types;
     default_type  application/octet-stream;
 {% endif %}
-
+server_tokens off;
 include upstream.conf;
 
 {% if nginx_json_logging | bool%}
@@ -245,12 +245,27 @@ server {
 
     # UI files
     location ^~ /ui/ {
+    {% if custom_path is defined and custom_path %}
+        root {{ custom_path }};
+        try_files $uri @noc_ui;
+    {% elif custom_path is undefined %}
         alias {{ noc_root }}/ui/;
+    {% endif %}
         add_header Cache-Control public;
         add_header Pragma public;
         expires 1w;
         error_page 401 = @error401;
     }
+
+    {% if custom_path is defined and custom_path %}
+    location @noc_ui {
+        root {{ noc_root }};
+        add_header Cache-Control public;
+        add_header Pragma public;
+        expires 1w;
+        error_page 401 = @error401;
+    }
+    {% endif %}
 
 {% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
     location /ui/bi/editor/ {

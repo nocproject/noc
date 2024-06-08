@@ -1,0 +1,19 @@
+{
+    "name": "noc::managedobjectprofile::*",
+    "$collection": "main.labels",
+    "uuid": "ef7c91a9-ab44-44ca-bc7d-bea42519b5a8",
+    "description": "Auto assigned Labels for Managed Object Profile models.",
+    "bg_color1": 2719929,
+    "fg_color1": 16777215,
+    "bg_color2": 13849600,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["sa.ManagedObject"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

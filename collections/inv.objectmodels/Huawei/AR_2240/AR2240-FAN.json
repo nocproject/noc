@@ -8,22 +8,28 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | AR 2240 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["AR2240-FAN"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 12.0
         },
-        "power": {
-            "power": 12.0
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AR2240-FAN"]
         },
-        "weight": {
-            "weight": 0.27
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.27
         }
-    }
+    ]
 }

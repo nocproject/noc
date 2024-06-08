@@ -1,0 +1,19 @@
+{
+    "name": "technology::*",
+    "$collection": "main.labels",
+    "uuid": "d0655fb8-6585-4a7b-8e09-f9910a5deea8",
+    "description": "Wildcard label for scope technology",
+    "bg_color1": 15105570,
+    "fg_color1": 16777215,
+    "bg_color2": 9807270,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Interface"],
+    "allow_auto_create": false,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

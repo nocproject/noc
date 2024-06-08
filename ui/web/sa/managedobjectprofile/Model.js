@@ -54,6 +54,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "shape_title_template",
+            type: "string"
+        },
+        {
             name: "style__label",
             type: "string",
             persist: false
@@ -366,16 +370,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_mac",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
-            name: "box_discovery_mac_filter_policy",
-            type: "string",
-            defaultValue: "A"
-        },
-        {
             name: "mac_collect_vlanfilter",
             type: "string",
         },
@@ -388,16 +382,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "enable_box_discovery_hk",
             type: "boolean",
             defaultValue: false
-        },
-        {
-            name: "enable_box_discovery_alarms",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
-            name: "box_discovery_cpestatus_policy",
-            type: "string",
-            defaultValue: "S"
         },
         {
             name: "box_discovery_alarm_policy",
@@ -431,7 +415,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "periodic_discovery_interval",
             type: "integer",
-            defaultValue: 300
         },
         {
             name: "periodic_discovery_running_policy",
@@ -444,14 +427,29 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "periodic_discovery_uptime_interval",
+            type: "integer",
+            defaultValue: 0
+        },
+        {
             name: "enable_periodic_discovery_interface_status",
             type: "boolean",
             defaultValue: false
         },
         {
+            name: "periodic_discovery_interface_status_interval",
+            type: "integer",
+            defaultValue: 0
+        },
+        {
             name: "enable_periodic_discovery_mac",
             type: "boolean",
             defaultValue: false
+        },
+        {
+            name: "periodic_discovery_mac_interval",
+            type: "integer",
+            defaultValue: 0
         },
         {
             name: "periodic_discovery_mac_filter_policy",
@@ -464,9 +462,19 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "periodic_discovery_alarms_interval",
+            type: "integer",
+            defaultValue: 0
+        },
+        {
             name: "enable_periodic_discovery_cpestatus",
             type: "boolean",
             defaultValue: false
+        },
+        {
+            name: "periodic_discovery_cpestatus_interval",
+            type: "integer",
+            defaultValue: 0
         },
         {
             name: "periodic_discovery_cpestatus_policy",

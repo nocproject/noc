@@ -19,7 +19,9 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     ReferenceField,
     BinaryField,
+    DynamicField,
     GeoPointField,
+    EnumField,
     EmbeddedDocumentListField,
 )
 from mongoengine.errors import ValidationError, NotUniqueError
@@ -31,6 +33,7 @@ from noc.core.mongo.fields import (
     ForeignKeyField,
     PlainReferenceField,
     ForeignKeyListField,
+    PlainReferenceListField,
 )
 from noc.sa.interfaces.base import (
     BooleanParameter,
@@ -48,7 +51,6 @@ from noc.aaa.models.permission import Permission
 from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
-from noc.main.models.tag import Tag
 from noc.main.models.label import Label
 from noc.core.collection.base import Collection
 from noc.core.comp import smart_text
@@ -85,6 +87,8 @@ class ExtDocApplication(ExtApplication):
                 self.clean_fields[name] = GeoPointParameter()
             elif isinstance(f, ForeignKeyListField):
                 self.clean_fields[f.name] = ListOfParameter(element=ModelParameter(f.document_type))
+            # elif isinstance(f, PlainReferenceListField):
+            #     self.clean_fields[f.name] = ListOfParameter(element=ModelParameter(f.document_type))
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(f.document_type, required=f.required)
             elif isinstance(f, EmbeddedDocumentListField):
@@ -332,8 +336,13 @@ class ExtDocApplication(ExtApplication):
                     v = str(v)
                 elif isinstance(f, GeoPointField):
                     pass
+                elif isinstance(f, EnumField):
+                    r["%s__label" % f.name] = v.name
+                    v = smart_text(v.value)
                 elif isinstance(f, ForeignKeyListField):
                     v = [{"label": str(vv.name), "id": vv.id} for vv in v]
+                elif isinstance(f, PlainReferenceListField):
+                    v = [{"label": str(vv.name), "id": str(vv.id)} for vv in v]
                 elif isinstance(f, ForeignKeyField):
                     r["%s__label" % f.name] = smart_text(v)
                     v = v.id
@@ -355,15 +364,17 @@ class ExtDocApplication(ExtApplication):
                     and isinstance(f.field, StringField)
                 ):
                     # isinstance(f.field, StringField) for exclude pm.scope labels
-                    v = [
-                        self.format_label(ll)
-                        for ll in Label.objects.filter(name__in=v).order_by("display_order")
-                    ]
-                elif isinstance(f, ListField):
+                    v = sorted(
+                        [self.format_label(ll) for ll in Label.from_names(v)],
+                        key=lambda x: x["display_order"],
+                    )
+                elif isinstance(f, (ListField, EmbeddedDocumentListField)):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                     elif hasattr(f, "field") and isinstance(f.field, ReferenceField):
                         v = [{"label": str(vv), "id": str(vv.id)} for vv in v]
+                elif isinstance(f, PlainReferenceListField):
+                    v = [{"label": str(vv), "id": str(vv.id)} for vv in v]
                 elif isinstance(f, EmbeddedDocumentField):
                     v = self.instance_to_dict(v, nocustom=True)
                 elif isinstance(f, BinaryField):
@@ -373,6 +384,8 @@ class ExtDocApplication(ExtApplication):
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
+                elif isinstance(f, DynamicField) and isinstance(v, list):
+                    v = [str(x) for x in v]
                 elif not isinstance(v, (bool, dict, int, str)):
                     if hasattr(v, "id"):
                         v = v.id
@@ -505,7 +518,10 @@ class ExtDocApplication(ExtApplication):
             attrs = self.clean(self.deserialize(request.body))
         except ValueError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
-            return self.response(str(e), status=self.BAD_REQUEST)
+            return self.render_json(
+                {"status": False, "message": str(e), "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         qs = self.queryset(request).filter(**{self.pk: id})
         if self.exclude_fields:
             qs = qs.exclude(*self.exclude_fields)
@@ -514,15 +530,6 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
-        if hasattr(o, "tags") and attrs.get("tags"):
-            old_tags = set(o.tags) if o.tags else set()
-            new_tags = set(attrs["tags"]) if attrs["tags"] else set()
-            for t in old_tags - new_tags:
-                self.logger.info("Unregister Tag: %s" % t)
-                Tag.unregister_tag(t, repr(self.model))
-            for t in new_tags - old_tags:
-                self.logger.info("Register Tag: %s" % t)
-                Tag.register_tag(t, repr(self.model))
         # @todo: Check for duplicates
         for k in attrs:
             if not self.has_field_editable(k):

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Clickhouse models
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import operator
 import string
 from random import choices
+from typing import List
 from time import perf_counter
 
 # NOC modules
@@ -146,6 +147,14 @@ class Model(object, metaclass=ModelBase):
                 yield fn, db_type
 
     @classmethod
+    def get_materialized_columns(cls) -> List[str]:
+        r = []
+        for field in cls._meta.ordered_fields:
+            if isinstance(field, MaterializedField):
+                r.append(field.name)
+        return r
+
+    @classmethod
     def get_create_fields_sql(cls):
         """
         Fields creation statements
@@ -184,7 +193,8 @@ class Model(object, metaclass=ModelBase):
             src = cls._get_distributed_db_table()
         else:
             src = cls._get_raw_db_table()
-        return f"CREATE OR REPLACE VIEW {view} AS SELECT * FROM {src}"
+        q = ["*"] + cls.get_materialized_columns()
+        return f"CREATE OR REPLACE VIEW {view} AS SELECT {', '.join(q)} FROM {src}"
 
     @classmethod
     def to_json(cls, **kwargs):

@@ -1,0 +1,12 @@
+{
+    "name": "Interface | PoE | LineType",
+    "$collection": "pm.metrictypes",
+    "uuid": "d4f8fb73-1b95-4a24-8826-f378375406a0",
+    "scope__name": "Interface",
+    "field_name": "poe_line_type",
+    "field_type": "UInt8",
+    "description": "PoE line type",
+    "measure": "",
+    "units__code": "1",
+    "scale__code": "1"
+}

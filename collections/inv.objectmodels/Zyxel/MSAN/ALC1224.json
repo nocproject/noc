@@ -9,35 +9,51 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "adsl",
             "description": "ADSL ports",
             "direction": "s",
             "gender": "f",
-            "name": "adsl",
-            "protocols": ["ADSL", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ11"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["alc-71"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["alc-71"]
         },
-        "weight": {
-            "weight": 1.8
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.8
         }
-    }
+    ]
 }

@@ -7,16 +7,18 @@
     "cr_context": "RSP",
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ASR9k | RSP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ASR9001-RP"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR9001-RP"]
         }
-    }
+    ]
 }

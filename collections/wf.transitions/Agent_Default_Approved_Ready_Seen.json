@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Agent Default",
+    "from_state__uuid": "d8b07951-55b0-4103-9d82-841f07c1f3f5",
+    "to_state__uuid": "8bed6920-347c-41b4-bfde-95242b150c47",
+    "uuid": "cd89f4e2-fee2-4ad6-963a-b1b06789808e",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "seen",
+    "label": "Seen",
+    "enable_manual": true
+}

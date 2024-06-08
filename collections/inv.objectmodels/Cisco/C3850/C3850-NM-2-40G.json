@@ -7,32 +7,40 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "Fo1_sfp",
             "description": "FortyGigabitEthernet0/0/1",
             "direction": "i",
             "gender": "f",
-            "name": "Fo1_sfp",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "Fo2_sfp",
             "description": "FortyGigabitEthernet0/0/2",
             "direction": "i",
             "gender": "f",
-            "name": "Fo2_sfp",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 3850 | NM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C3850-NM-2-40G"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C3850-NM-2-40G"]
         }
-    }
+    ]
 }

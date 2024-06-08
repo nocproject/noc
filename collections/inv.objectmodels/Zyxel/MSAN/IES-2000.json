@@ -9,77 +9,104 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "3",
             "description": "Linecard 3 slot",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "4",
             "description": "Linecard 4 slot",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "5",
             "description": "Linecard 5 slot",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "6",
             "description": "Linecard 6 slot",
             "direction": "i",
             "gender": "f",
-            "name": "6",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
-            "protocols": [">-36VDC", ">-57VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["IES-2000"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 268,
-            "height": 178,
-            "width": 442
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 268
         },
-        "power": {
-            "power": 300.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 178
         },
-        "rackmount": {
-            "units": 4.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 300.0
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 8.4
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 8.4
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-2000"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 4.0
         }
-    }
+    ]
 }

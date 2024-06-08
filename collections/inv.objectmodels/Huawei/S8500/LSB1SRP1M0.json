@@ -8,62 +8,102 @@
     "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S8500 | SRPU"
         },
         {
+            "name": "cf",
             "description": "CF Card slot",
             "direction": "s",
             "gender": "f",
-            "name": "cf",
             "type__name": "Flash | CF"
         },
         {
+            "name": "console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "Aux EIA/TIA-232",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "rs232_485",
             "description": "monitoring and communication with the external subsystem",
             "direction": "s",
             "gender": "f",
-            "name": "rs232_485",
-            "protocols": [">RS232", ">RS485"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth",
             "description": "Console",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LSB1SRP1M0"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LSB1SRP1M0"]
         },
-        "dimensions": {
-            "depth": 367,
-            "width": 340
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 60.0
         },
-        "power": {
-            "power": 60.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 340
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 367
         }
-    }
+    ]
 }

@@ -1,0 +1,14 @@
+{
+    "name": "WMax",
+    "$collection": "cm.configurationparams",
+    "uuid": "3be5b092-5061-4d42-8b82-ca3bd395c93e",
+    "code": "threshold_w_max",
+    "description": "Sensor Warning Maximum Value",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "Sensor"
+    }],
+    "type": "number",
+    "metric_type__name": "Sensor | Value",
+    "threshold_type": "warning_max"
+}

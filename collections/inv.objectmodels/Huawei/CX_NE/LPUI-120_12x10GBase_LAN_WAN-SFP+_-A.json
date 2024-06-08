@@ -9,136 +9,264 @@
     "labels": ["noc::inv::lc", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "GigabitEthernetX/0/0",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "name": "GigabitEthernetX/0/0",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/1",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "name": "GigabitEthernetX/0/1",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/2",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_2",
-            "name": "GigabitEthernetX/0/2",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/3",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_3",
-            "name": "GigabitEthernetX/0/3",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/4",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_4",
-            "name": "GigabitEthernetX/0/4",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/5",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_5",
-            "name": "GigabitEthernetX/0/5",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/6",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_6",
-            "name": "GigabitEthernetX/0/6",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/7",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_7",
-            "name": "GigabitEthernetX/0/7",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/8",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_8",
-            "name": "GigabitEthernetX/0/8",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/9",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_9",
-            "name": "GigabitEthernetX/0/9",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/10",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_10",
-            "name": "GigabitEthernetX/0/10",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "GigabitEthernetX/0/11",
             "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_11",
-            "name": "GigabitEthernetX/0/11",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03054681"],
-            "part_no": ["CR57LBXF20"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 201.7
         },
-        "dimensions": {
-            "depth": 536,
-            "height": 41,
-            "width": 400
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR57LBXF20"]
         },
-        "power": {
-            "power": 201.7
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03054681"]
         },
-        "weight": {
-            "weight": 8.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 8.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 400
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 536
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 41
         }
-    }
+    ]
 }

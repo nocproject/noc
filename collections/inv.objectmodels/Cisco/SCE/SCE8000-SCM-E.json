@@ -8,62 +8,108 @@
     "cr_context": "SCM",
     "connections": [
         {
+            "name": "in",
             "description": "SCM Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | SCE | SCE8000 SCM"
         },
         {
+            "name": "Gi1",
             "description": "GBE1 Port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi2",
             "description": "GBE2 Port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Console",
             "description": "Console Port",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Aux",
             "description": "Aux Port",
             "direction": "s",
             "gender": "f",
-            "name": "Aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Bypass1",
             "description": "Bypass Port 1",
             "direction": "s",
             "gender": "f",
-            "name": "Bypass1",
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "Bypass2",
             "description": "Bypass Port 2",
             "direction": "s",
             "gender": "f",
-            "name": "Bypass2",
             "type__name": "Electrical | RJ11"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SCE8000-SCM-E"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SCE8000-SCM-E"]
         }
-    }
+    ]
 }

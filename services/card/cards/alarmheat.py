@@ -30,16 +30,32 @@ from noc.config import config
 class AlarmHeatCard(BaseCard):
     name = "alarmheat"
     card_css = ["/ui/pkg/leaflet/leaflet.css", "/ui/card/css/alarmheat.css"]
-    card_js = [
-        "/ui/pkg/leaflet/leaflet.js",
-        "/ui/pkg/leaflet.heat/leaflet-heat.js",
-        "/ui/card/js/alarmheat.js",
-    ]
 
     default_template_name = "alarmheat"
 
     _layer_cache = {}
     TOOLTIP_LIMIT = config.card.alarmheat_tooltip_limit
+
+    @property
+    def card_js(self) -> List[str]:
+        res = [
+            "/ui/pkg/leaflet/leaflet.js",
+            "/ui/pkg/leaflet.heat/leaflet-heat.js",
+        ]
+
+        if config.gis.yandex_supported:
+            res += [
+                "/ui/pkg/leaflet/yapi.js",
+                "/ui/pkg/leaflet/Yandex.js",
+            ]
+
+        res += [
+            "/ui/common/map_layer_creator.js",
+            "/ui/common/settings_loader.js",
+            "/ui/card/js/alarmheat.js",
+        ]
+
+        return res
 
     def get_data(self):
         return {

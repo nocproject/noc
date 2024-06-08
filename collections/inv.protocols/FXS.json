@@ -1,0 +1,10 @@
+{
+    "name": "FXS",
+    "code": "FXS",
+    "$collection": "inv.protocols",
+    "uuid": "95f6178c-e3f1-4815-8ca6-40ea9c7e6df9",
+    "description": "The foreign exchange station (FXS) interface is located at the wire center of the subscriber equipment, supplying battery power and dial tone, and generating ringing voltage toward the subscriber station of the foreign exchange service. ",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "PSTN"
+}

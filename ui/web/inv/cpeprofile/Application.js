@@ -12,8 +12,9 @@ Ext.define("NOC.inv.cpeprofile.Application", {
     "NOC.core.label.LabelField",
     "NOC.core.ListFormField",
     "NOC.main.handler.LookupField",
-    "NOC.inv.sensorprofile.Model",
+    "NOC.inv.cpeprofile.Model",
     "NOC.main.pool.LookupField",
+    "NOC.main.ref.stencil.LookupField",
     "NOC.sa.managedobject.LookupField",
     "NOC.sa.managedobjectprofile.LookupField",
     "NOC.wf.workflow.LookupField",
@@ -69,7 +70,7 @@ Ext.define("NOC.inv.cpeprofile.Application", {
           fieldLabel: __("Labels"),
           allowBlank: true,
           query: {
-            "enable_cpeprofile": true
+              "allow_models": ["inv.CPEProfile"]
           }
         },
         {
@@ -79,10 +80,30 @@ Ext.define("NOC.inv.cpeprofile.Application", {
           allowBlank: true
         },
         {
-          name: "style",
-          xtype: "main.style.LookupField",
-          fieldLabel: __("Style"),
-          allowBlank: true
+            xtype: "fieldset",
+            title: __("Display Settings"),
+            items: [
+                {
+                    name: "style",
+                    xtype: "main.style.LookupField",
+                    fieldLabel: __("Style"),
+                    allowBlank: true
+                },
+                {
+                    name: "shape",
+                    xtype: "main.ref.stencil.LookupField",
+                    fieldLabel: __("Shape"),
+                    allowBlank: true
+                },
+                {
+                    name: "shape_title_template",
+                    xtype: "textarea",
+                    maxLength: 250,
+                    fieldLabel: __("Shape Name template"),
+                    allowBlank: true,
+                    width: 650,
+                }
+            ]
         },
         {
             xtype: "fieldset",

@@ -7,49 +7,138 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "Se0",
             "description": "Serial0",
             "direction": "s",
             "gender": "f",
-            "name": "Se0",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | SmartSerial"
         },
         {
+            "name": "Se1",
             "description": "Serial1",
             "direction": "s",
             "gender": "f",
-            "name": "Se1",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | SmartSerial"
         },
         {
+            "name": "Se2",
             "description": "Serial2",
             "direction": "s",
             "gender": "f",
-            "name": "Se2",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | SmartSerial"
         },
         {
+            "name": "Se3",
             "description": "Serial3",
             "direction": "s",
             "gender": "f",
-            "name": "Se3",
-            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V35"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "RS449"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EIA530"
+                }
+            ],
             "type__name": "Electrical | SmartSerial"
         },
         {
+            "name": "in",
             "description": "WAN Interface Card slot connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["HWIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOHWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["HWIC-4A/S", "HWIC-4A/S="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HWIC-4A/S", "HWIC-4A/S="]
         }
-    }
+    ]
 }

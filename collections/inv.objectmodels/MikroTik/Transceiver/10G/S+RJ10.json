@@ -8,25 +8,48 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "port",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "port",
-            "protocols": ["10GBASET"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10GBASET"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S+RJ10"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S+RJ10"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 30
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

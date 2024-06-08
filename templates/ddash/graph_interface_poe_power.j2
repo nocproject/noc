@@ -1,0 +1,94 @@
+{% macro interface(interface) -%}
+
+{
+  "title": "PoE-port Power - {{interface.port.name}} Status: {{interface.port.status}}{% if interface.port.descr %} Descr: {{interface.port.descr}}{% endif %}",
+  "aliasColors": {},
+  "bars": false,
+  "internal_comment":"graph_interface_poe_power.j2",
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": 209216451734,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "minSpan": 6,
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "repeat": "{{interface.port.name}}",
+  "scopedVars": {
+    "{{interface.type}}": {
+      "selected": true,
+      "text": "{{interface.port.name}}({{interface.port.descr}})",
+      "value": "{{interface.port.name}}"
+    }
+  },
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(poe_power) as `PoE Power` FROM $table WHERE managed_object = $bi_id and interface=toString('{{interface.port.name}}') and $timeFilter GROUP BY t ORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "database": "{{ noc_db_metrics }}",
+      "tableLoading": false,
+      "table": "interface",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "xaxis": {
+    "show": true
+  },
+  "yaxes": [
+    {
+      "logBase": 1,
+      "show": true,
+      "max": null,
+      "format": "short",
+      "min": null,
+      "label": null
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "min": null,
+      "label": null,
+      "show": true
+    }
+  ]
+}
+{%- endmacro %}

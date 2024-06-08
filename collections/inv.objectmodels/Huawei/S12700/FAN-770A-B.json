@@ -15,22 +15,41 @@
             "type__name": "Huawei | S12700E | FAN-770A-B"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02122242"],
-            "part_no": ["FAN-770A-B"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02122242"]
         },
-        "dimensions": {
-            "depth": 65,
-            "height": 127,
-            "width": 324
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FAN-770A-B"]
         },
-        "power": {
-            "power": 395.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 65
         },
-        "weight": {
-            "weight": 2.5
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 127
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 324
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 395.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.5
         }
-    }
+    ]
 }
-

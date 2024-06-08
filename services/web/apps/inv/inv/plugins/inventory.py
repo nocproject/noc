@@ -51,7 +51,7 @@ class InventoryPlugin(InvPlugin):
                         "leaf": True,
                         "serial": None,
                         "description": n.description,
-                        "model": ", ".join(n.protocols),
+                        "model": ", ".join(str(p) for p in n.protocols),
                         "direction": "s",
                     }
                 ]

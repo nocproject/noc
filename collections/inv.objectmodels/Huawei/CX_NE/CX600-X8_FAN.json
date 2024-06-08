@@ -8,28 +8,48 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX&NE | CX600 FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02120562"],
-            "part_no": ["CR52FCBE", "CR52FCBH"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 100.0
         },
-        "dimensions": {
-            "depth": 100,
-            "height": 244,
-            "width": 211
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR52FCBE", "CR52FCBH"]
         },
-        "power": {
-            "power": 100.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02120562"]
         },
-        "weight": {
-            "weight": 2.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 211
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 100
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 244
         }
-    }
+    ]
 }

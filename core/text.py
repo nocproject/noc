@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Various text-processing utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -255,7 +255,7 @@ def ranges_to_list(s, splitter=","):
             raise SyntaxError
         for i in range(f, t + 1):
             r += [i]
-    return sorted(r)
+    return list(sorted(r))
 
 
 def replace_re_group(expr, group, pattern):
@@ -489,7 +489,7 @@ rx_safe_path = re.compile(r"[^a-z0-9\-\+]+", re.IGNORECASE)
 
 
 def quote_safe_path(d):
-    return rx_safe_path.sub("_", d)
+    return rx_safe_path.sub("_", cyr_to_lat(d))
 
 
 def to_seconds(v):
@@ -653,3 +653,86 @@ def split_text(text: str, max_chunk: int) -> Iterable[str]:
 
 def filter_non_printable(text: str) -> str:
     return "".join(filter(lambda x: x in string.printable, text))
+
+
+legend = {
+    "а": "a",
+    "б": "b",
+    "в": "v",
+    "г": "g",
+    "д": "d",
+    "е": "e",
+    "ё": "yo",
+    "ж": "zh",
+    "з": "z",
+    "и": "i",
+    "й": "y",
+    "к": "k",
+    "л": "l",
+    "м": "m",
+    "н": "n",
+    "о": "o",
+    "п": "p",
+    "р": "r",
+    "с": "s",
+    "т": "t",
+    "у": "u",
+    "ф": "f",
+    "х": "h",
+    "ц": "ts",
+    "ч": "ch",
+    "ш": "sh",
+    "щ": "shch",
+    "ъ": "y",
+    "ы": "y",
+    "ь": "'",
+    "э": "e",
+    "ю": "yu",
+    "я": "ya",
+    "А": "A",
+    "Б": "B",
+    "В": "V",
+    "Г": "G",
+    "Д": "D",
+    "Е": "E",
+    "Ё": "Yo",
+    "Ж": "Zh",
+    "З": "Z",
+    "И": "I",
+    "Й": "Y",
+    "К": "K",
+    "Л": "L",
+    "М": "M",
+    "Н": "N",
+    "О": "O",
+    "П": "P",
+    "Р": "R",
+    "С": "S",
+    "Т": "T",
+    "У": "U",
+    "Ф": "F",
+    "Х": "H",
+    "Ц": "Ts",
+    "Ч": "Ch",
+    "Ш": "Sh",
+    "Щ": "Shch",
+    "Ъ": "Y",
+    "Ы": "Y",
+    "Ь": "'",
+    "Э": "E",
+    "Ю": "Yu",
+    "Я": "Ya",
+}
+
+
+def cyr_to_lat(s: str) -> str:
+    r: List[str] = []
+    for c in s:
+        if c in legend:
+            r.append(legend[c])
+        elif c == " ":
+            r.append("_")
+        else:
+            r.append(c)
+
+    return "".join(r)

@@ -32,6 +32,7 @@ cv_policy_stack: ContextVar[Optional[List["BaseChangeTrackerPolicy"]]] = Context
 )
 
 CHANGE_HANDLERS: Dict[str, Set[str]] = defaultdict(set)
+CHUNK_SIZE = 1000
 
 
 class ChangeTracker(object):
@@ -158,16 +159,13 @@ class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
     Base class for change tracker policies
     """
 
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
     @abstractmethod
-    def register(self, item: ChangeItem) -> None:
-        ...
+    def register(self, item: ChangeItem) -> None: ...
 
     @abstractmethod
-    def register_ds(self, items: List[Tuple[str, str]]) -> None:
-        ...
+    def register_ds(self, items: List[Tuple[str, str]]) -> None: ...
 
 
 class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
@@ -192,13 +190,18 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
             defer(handler, key=hash(item), changes=[item])
 
     def register_ds(self, items: Optional[List[Tuple[str, str]]]):
-        ds_changes = defaultdict(set)
-        key = 0
+        defers: Dict[int, Dict[str, Set[str]]] = {}
         for ds_name, item_id in items:
-            ds_changes[ds_name].add(str(item_id))
-            if not key:
-                key = hash_int(item_id)
-        defer(DS_APPLY_HANDLER, key=key, ds_changes={k: list(v) for k, v in ds_changes.items()})
+            key = hash_int(item_id)
+            if key not in defers:
+                defers[key] = defaultdict(set)
+            defers[key][ds_name].add(str(item_id))
+        for key, ds_changes in defers.items():
+            for ds_name, changes in ds_changes.items():
+                changes = list(changes)
+                while changes:
+                    chunk, changes = changes[:CHUNK_SIZE], changes[CHUNK_SIZE:]
+                    defer(DS_APPLY_HANDLER, key=key, ds_changes={ds_name: list(chunk)})
 
 
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):

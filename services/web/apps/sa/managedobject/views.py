@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import zlib
 # Third-party modules
 import orjson
 import cachetools
+from jinja2 import Template as Jinja2Template
 from django.http import HttpResponse
 from django.db.models import Q as d_Q
 from mongoengine.queryset import Q as MQ
@@ -50,6 +51,7 @@ from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.core.mongo.connection import get_db
+from noc.core.wf.interaction import Interaction
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
@@ -57,8 +59,11 @@ from noc.core.validators import is_objectid
 from noc.core.debug import error_report
 from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
+from noc.core.pm.utils import get_interface_metrics
+from noc.pm.models.scale import Scale
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
+from noc.config import config
 
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
@@ -75,6 +80,7 @@ class ManagedObjectApplication(ExtModelApplication):
     query_condition = "icontains"
     query_fields = ["name", "description"]
     secret_fields = {"password", "super_password", "snmp_ro", "snmp_rw"}
+    ignored_fields = ExtModelApplication.ignored_fields | {"global_cpe_id", "local_cpe_id"}
     # Inlines
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config", access="config")
@@ -147,9 +153,24 @@ class ManagedObjectApplication(ExtModelApplication):
     DISCOVERY_JOBS = [
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
-        ("interval", "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob"),
     ]
     clean_fields = {"id": IntParameter(), "address": StringParameter(strip_value=True)}
+
+    x_map = {
+        "table_name": "interface",
+        "map": {
+            "load_in": "Interface | Load | In",
+            "load_out": "Interface | Load | Out",
+            "rx": "Interface | DOM | RxPower",
+            "tx": "Interface | DOM | TxPower",
+            "temp": "Interface | DOM | Temperature",
+            "bias": "Interface | DOM | Bias Current",
+        },
+    }
+
+    iface_metric_template = Jinja2Template(
+        "In: {{load_in}}/Out: {{load_out}}/Rx: {{rx}}dBm/Tx: {{tx}}dBm/Temp:{{temp}}C/Bias: {{bias}}mA",
+    )
 
     @staticmethod
     @cachetools.cached({})
@@ -207,27 +228,13 @@ class ManagedObjectApplication(ExtModelApplication):
                 {"managed_object": 1},
             )
         )
-        os = ManagedObject.get_statuses(mo_ids)
-        disabled = set(
-            ManagedObject.objects.filter(object_profile__enable_ping=False).values_list(
-                "id", flat=True
-            )
-        )
         # Apply oper_state
         for x in data:
-            if not x.get("is_managed") or x["id"] in disabled:
-                # possibly exclude degradated state
-                x["oper_state"] = "disabled"
-                x["oper_state__label"] = _("Disable")
-            elif not os.get(x["id"], True):
-                x["oper_state"] = "failed"
-                x["oper_state__label"] = _("Down")
-            elif x["id"] in alarms:
+            if "oper_state" not in x or x["oper_state"] in {"failed", "disabled"}:
+                continue
+            if x["id"] in alarms:
                 x["oper_state"] = "degraded"
                 x["oper_state__label"] = _("Warning")
-            else:
-                x["oper_state"] = "full"
-                x["oper_state__label"] = _("Up")
         return data
 
     # def bulk_field_link_count(self, data):
@@ -282,6 +289,7 @@ class ManagedObjectApplication(ExtModelApplication):
                             "error": c.error,
                         }
                         for c in d.checks or []
+                        if not c.skipped
                     ],
                     "reason": d.reason or "",
                 }
@@ -295,10 +303,21 @@ class ManagedObjectApplication(ExtModelApplication):
         :param fields:
         :return:
         """
+        if not o.is_managed or not o.object_profile.enable_ping:
+            ostate = "disabled"
+            ostate_label = _("Disable")
+        elif not o.get_status():
+            ostate = "failed"
+            ostate_label = _("Down")
+        else:
+            ostate = "full"
+            ostate_label = _("Up")
         return {
             "id": o.id,
             "name": o.name,
             "address": o.address,
+            "oper_state": ostate,
+            "oper_state__label": ostate_label,
             "is_managed": getattr(o, "is_managed", True),
             "administrative_domain": str(o.administrative_domain.name),
             "object_profile": str(o.object_profile.name),
@@ -313,10 +332,10 @@ class ManagedObjectApplication(ExtModelApplication):
             "description": o.description or "",
             "row_class": o.object_profile.style.css_class_name if o.object_profile.style else "",
             "link_count": len(o.links),
-            "labels": [
-                self.format_label(ll)
-                for ll in Label.objects.filter(name__in=o.labels).order_by("display_order")
-            ]
+            "labels": sorted(
+                [self.format_label(ll) for ll in Label.from_names(o.labels)],
+                key=lambda x: x["display_order"],
+            ),
             # "row_class": ""
         }
 
@@ -485,17 +504,17 @@ class ManagedObjectApplication(ExtModelApplication):
                         "local_interface__label": li.name,
                         "remote_object": ri.managed_object.id,
                         "remote_object__label": ri.managed_object.name,
-                        "remote_platform": ri.managed_object.platform.name
-                        if ri.managed_object.platform
-                        else "",
+                        "remote_platform": (
+                            ri.managed_object.platform.name if ri.managed_object.platform else ""
+                        ),
                         "remote_interface": str(ri.id),
                         "remote_interface__label": ri.name,
                         "discovery_method": link.discovery_method,
                         "local_description": li.description,
                         "remote_description": ri.description,
-                        "first_discovered": link.first_discovered.isoformat()
-                        if link.first_discovered
-                        else None,
+                        "first_discovered": (
+                            link.first_discovered.isoformat() if link.first_discovered else None
+                        ),
                         "last_seen": link.last_seen.isoformat() if link.last_seen else None,
                     }
                 ]
@@ -528,8 +547,13 @@ class ManagedObjectApplication(ExtModelApplication):
 
         for name, jcls in self.DISCOVERY_JOBS:
             job = Job.get_job_data("discovery", jcls=jcls, key=o.id, pool=o.pool.name) or {}
-            if name == "interval":
-                enable = getattr(o.object_profile, "enable_metrics")
+            if name == "box" and Interaction.BoxDiscovery not in o.interactions:
+                enable = False
+            elif name == "periodic":
+                enable = Interaction.BoxDiscovery in o.interactions and (
+                    getattr(o.object_profile, "enable_metrics")
+                    or getattr(o.object_profile, f"enable_{name}_discovery")
+                )
             else:
                 enable = getattr(o.object_profile, f"enable_{name}_discovery")
             d = {
@@ -580,16 +604,24 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = orjson.loads(request.body).get("names", [])
+        shard, d_slots = None, config.get_slot_limits(f"discovery-{o.pool.name}")
+        if d_slots:
+            shard = o.id % d_slots
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
+            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 continue
-            elif name != "interval" and not getattr(
-                o.object_profile, f"enable_{name}_discovery", None
+            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
+                continue
+            elif name == "periodic" and not (
+                getattr(o.object_profile, f"enable_{name}_discovery")
+                or getattr(o.object_profile, "enable_metrics")
             ):
+                continue
+            elif not getattr(o.object_profile, f"enable_{name}_discovery", None):
                 continue  # Disabled by profile
-            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name)
+            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name, shard=shard)
         return {"success": True}
 
     @view(
@@ -603,9 +635,16 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
+            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 continue
-            elif name != "interval" and not getattr(o.object_profile, f"enable_{name}_discovery"):
+            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
+                continue
+            elif name == "periodic" and not (
+                getattr(o.object_profile, f"enable_{name}_discovery")
+                or getattr(o.object_profile, "enable_metrics")
+            ):
+                continue
+            elif not getattr(o.object_profile, f"enable_{name}_discovery"):
                 continue  # Disabled by profile
             Job.remove("discovery", jcls, key=o.id, pool=o.pool.name)
         return {"success": True}
@@ -660,6 +699,15 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=int(id))
         if not o.has_access(request.user):
             return self.response_forbidden("Permission denied")
+        metrics = {}
+        if o.object_profile.enable_metrics:
+            r, _ = get_interface_metrics(managed_objects=[o.bi_id], metrics=self.x_map)
+            for iface in r[o.bi_id]:
+                ctx = {m: "--" for m in self.x_map}
+                ctx.update(r[o.bi_id][iface])
+                ctx["load_in"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_in"]))
+                ctx["load_out"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_out"]))
+                metrics[iface] = self.iface_metric_template.render(**ctx)
         # Physical interfaces
         # @todo: proper ordering
         style_cache = {}  # profile_id -> css_style
@@ -673,6 +721,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "ifindex": i.ifindex,
                 "lag": (i.aggregated_interface.name if i.aggregated_interface else ""),
                 "link": get_link(i),
+                "metrics": metrics.get(i.name, ""),
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": smart_text(i.profile) if i.profile else None,
                 "enabled_protocols": i.enabled_protocols,
@@ -689,6 +738,7 @@ class ManagedObjectApplication(ExtModelApplication):
             {
                 "id": str(i.id),
                 "name": i.name,
+                "status": i.status,
                 "description": i.description,
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": smart_text(i.profile) if i.profile else None,
@@ -825,7 +875,7 @@ class ManagedObjectApplication(ExtModelApplication):
             d += 1
         return "Discovery processes has been scheduled"
 
-    def get_nested_inventory(self, o):
+    def get_nested_inventory(self, o: "Object"):
         rev = o.get_data("asset", "revision")
         if rev == "None":
             rev = ""
@@ -836,6 +886,26 @@ class ManagedObjectApplication(ExtModelApplication):
             "description": o.model.description,
             "model": o.model.name,
         }
+        if o.is_generic_transceiver:
+            # Generate description by template
+            # 1000Base-BX SFP Transceiver (SMF, 1490nmTx/1550nmRx, 80km, LC, DOM)
+            optical_data = {
+                d.attr: d.value for d in o.get_effective_data() if d.interface == "optical"
+            }
+            if "tx_wavelength" in optical_data:
+                description = ["SMF"]
+                if optical_data["tx_wavelength"] != optical_data["rx_wavelength"]:
+                    description += [
+                        f'{optical_data["tx_wavelength"]}nmTx/{optical_data["rx_wavelength"]}nmRx'
+                    ]
+                else:
+                    description += [f'{optical_data["tx_wavelength"]}nmTx']
+                if "distance_max" in optical_data:
+                    description += [f'{optical_data["distance_max"]}km']
+                description += ["LC", "DOM"]
+                r["description"] = f"SFP Transceiver ({', '.join(description)})"
+                if "bit_rate" in optical_data:
+                    r["description"] = f"{optical_data['bit_rate']}Base " + r["description"]
         if_map = {c.name: c.interface_name for c in o.connections}
         children = []
         for n in o.model.connections:
@@ -856,6 +926,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 else:
                     cc = self.get_nested_inventory(r_object)
                     cc["name"] = n.name
+                    cc["interface"] = if_map.get(n.name) or ""
                     children += [cc]
             elif n.direction == "s":
                 children += [
@@ -865,7 +936,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "leaf": True,
                         "serial": None,
                         "description": n.description,
-                        "model": ", ".join(n.protocols),
+                        "model": ", ".join(str(p) for p in n.protocols),
                         "interface": if_map.get(n.name) or "",
                     }
                 ]
@@ -1153,7 +1224,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "version": c.version or "",
                 "mac": c.mac or "",
                 "location": c.location or "",
-                "distance": str(c.distance)
+                "distance": str(c.distance),
                 # "row_class": get_style(i)
             }
             for c in CPEStatus.objects.filter(managed_object=o.id)

@@ -12,8 +12,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
-class MeRequest(BaseModel):
-    ...
+class MeRequest(BaseModel): ...
 
 
 class GroupItem(BaseModel):

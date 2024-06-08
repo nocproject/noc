@@ -6,14 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import os
 from threading import Lock
 import operator
 import logging
-from typing import Optional
+from typing import Optional, Dict, Any, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, ReferenceField, LongField, ListField
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ReferenceField,
+    LongField,
+    ListField,
+    UUIDField,
+)
 import cachetools
 
 # NOC modules
@@ -22,6 +31,9 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.main.models.remotesystem import RemoteSystem
+
+from noc.core.text import quote_safe_path
+from noc.core.prettyjson import to_json
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -44,6 +56,7 @@ _wiping_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("pm.AgentProfile", "workflow"),
         ("sa.ServiceProfile", "workflow"),
         ("sa.ManagedObjectProfile", "workflow"),
+        ("sa.ObjectDiscoveryRule", "workflow"),
         ("sla.SLAProfile", "workflow"),
         ("inv.CPEProfile", "workflow"),
         ("inv.SensorProfile", "workflow"),
@@ -54,8 +67,15 @@ _wiping_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
     ]
 )
 class Workflow(Document):
-    meta = {"collection": "workflows", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "workflows",
+        "strict": False,
+        "auto_create_index": False,
+        "json_collection": "wf.workflows",
+        "json_unique_fields": ["name"],
+    }
     name = StringField(unique=True)
+    uuid = UUIDField(binary=True)
     is_active = BooleanField()
     description = StringField()
     #
@@ -78,15 +98,46 @@ class Workflow(Document):
     def __str__(self):
         return self.name
 
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "uuid": self.uuid,
+            "$collection": self._meta["json_collection"],
+            "description": self.description,
+        }
+        if self.is_active:
+            r["is_active"] = self.is_active
+        if self.allowed_models:
+            r["allowed_models"] = list(self.allowed_models)
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "uuid",
+                "$collection",
+                "is_active",
+                "description",
+                "allowed_models",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Workflow"]:
-        return Workflow.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Workflow"]:
+        return Workflow.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["Workflow"]:
-        return Workflow.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Workflow"]:
+        return Workflow.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -97,6 +148,9 @@ class Workflow(Document):
     def get_default_workflow(cls, model_id):
         from noc.models import get_model
 
+        workflow = Workflow.objects.filter(allowed_models__in=[model_id]).first()
+        if workflow:
+            return workflow
         model = get_model(model_id)
         workflow = getattr(model, "DEFAULT_WORKFLOW_NAME", cls.DEFAULT_WORKFLOW_NAME)
         return Workflow.get_by_name(workflow)

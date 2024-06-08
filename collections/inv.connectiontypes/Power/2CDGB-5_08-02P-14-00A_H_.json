@@ -1,0 +1,8 @@
+{
+    "name": "Power | 2CDGB-5.08-02P-14-00A(H)",
+    "$collection": "inv.connectiontypes",
+    "uuid": "46c3e9a3-0cfc-4b20-b1e0-f406ee1e5367",
+    "description": "Terminal block connector, 2 pins",
+    "c_group": [],
+    "genders": "m"
+}

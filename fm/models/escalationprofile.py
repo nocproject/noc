@@ -45,5 +45,5 @@ class EscalationProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(self, id: Union[str, ObjectId]) -> Optional["EscalationProfile"]:
-        return EscalationProfile.objects.filter(id=id).first()
+    def get_by_id(self, oid: Union[str, ObjectId]) -> Optional["EscalationProfile"]:
+        return EscalationProfile.objects.filter(id=oid).first()

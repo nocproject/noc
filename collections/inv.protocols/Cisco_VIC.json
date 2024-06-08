@@ -1,0 +1,10 @@
+{
+    "name": "Cisco VIC",
+    "code": "CISCOVIC",
+    "$collection": "inv.protocols",
+    "uuid": "5d581208-7106-4cce-a6b8-e547f5aad095",
+    "description": "Cisco Voice Interface Card",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Cisco | Interface Card"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "EIA-530",
+    "code": "EIA530",
+    "$collection": "inv.protocols",
+    "uuid": "e9d92951-ae17-404b-9981-1f0ffc8ef304",
+    "description": "Currently known as TIA-530-A, but often called EIA-530, or RS-530, is a balanced serial interface standard that generally uses a 25-pin connector, originally created by the Telecommunications Industry Association.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Serial"
+}

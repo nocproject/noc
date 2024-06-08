@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Default Resource",
+    "name": "Free",
+    "uuid": "44127fcb-c7c9-413e-b480-7fb5c8e92d35",
+    "$collection": "wf.states",
+    "description": "Resource is free and can be used",
+    "is_default": true,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 0,
+    "y": 0,
+    "disable_all_interaction": false
+}

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # mx service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import asyncio
 from noc.core.service.fastapi import FastAPIService
 from noc.core.mx import MX_STREAM
 from noc.core.router.base import Router
-from noc.config import config
 from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 
@@ -22,10 +21,7 @@ class MXService(FastAPIService):
     name = "mx"
     use_mongo = True
     use_router = False
-
-    if config.features.traefik:
-        traefik_backend = "mx"
-        traefik_frontend_rule = "PathPrefix:/api/mx"
+    traefik_routes_rule = "PathPrefix(`/api/mx`)"
 
     def __init__(self):
         super().__init__()

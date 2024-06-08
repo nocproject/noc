@@ -138,8 +138,10 @@ class DiscoverySummaryDS(BaseDataSource):
             yield row_num, "discovered_links", r["discovered_links"]
             yield row_num, "discovered_metrics", r["discovered_metrics"]
             yield row_num, "discovered_managed_object_box_per_second", (
-                float(mos_count) / mop.box_discovery_interval
-            ) if mop.enable_box_discovery else 0
+                (float(mos_count) / mop.box_discovery_interval) if mop.enable_box_discovery else 0
+            )
             yield row_num, "discovered_managed_object_periodic_per_second", (
-                float(mos_count) / mop.periodic_discovery_interval
-            ) if mop.enable_periodic_discovery else 0
+                (float(mos_count) / mop.periodic_discovery_interval)
+                if mop.enable_periodic_discovery
+                else 0
+            )

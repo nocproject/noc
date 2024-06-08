@@ -318,7 +318,7 @@ class ServiceSummary(Document):
         return kk
 
     @classmethod
-    def get_weight(cls, summary: Dict[str, Dict[str, int]]):
+    def get_weight(cls, summary: Dict[str, Dict[str, int]]) -> int:
         """
         Convert result of *get_object_summary* to alarm weight
         """
@@ -346,7 +346,7 @@ class ServiceSummary(Document):
         return w
 
     @classmethod
-    def get_severity(cls, summary):
+    def get_severity(cls, summary) -> int:
         """
         Convert result of *get_object_summary* to alarm severity
         """

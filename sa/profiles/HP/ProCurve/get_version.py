@@ -19,20 +19,21 @@ class Script(BaseScript):
     name = "HP.ProCurve.get_version"
     cache = True
     interface = IGetVersion
+    always_prefer = "S"
 
     rx_ver = re.compile(
-        r"^(?:HP|ProCurve)\s+(?:\w+)\s+(?:ProCurve\s+)?Switch\s+(?P<platform>\S+),"
+        r"^(?:HP|ProCurve|Aruba)\s+(?:\w+)\s+(?:ProCurve\s+)?Switch\s+(?P<platform>\S+),"
         r"\s+revision\s+(?P<version>\S+),\s+ROM\s+(?P<bootprom>\S+)",
         re.MULTILINE,
     )
     rx_ver_new = re.compile(
-        r"^HP\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
+        r"^(?:HP|ProCurve|Aruba)\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
         r"\s+revision\s+(?P<version>\S+),\s+ROM\s+(?P<bootprom>\S+)",
         re.MULTILINE,
     )
 
     def execute_snmp(self):
-        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
+        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver_new.search(v)
@@ -44,7 +45,10 @@ class Script(BaseScript):
         }
 
     def execute_cli(self):
-        v = self.cli("walkMIB sysDescr", cached=True).replace("sysDescr.0 = ", "")
+        try:
+            v = self.cli("walkMIB sysDescr", cached=True).replace("sysDescr.0 = ", "")
+        except self.CLISyntaxError:
+            raise NotImplementedError
         match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver_new.search(v)

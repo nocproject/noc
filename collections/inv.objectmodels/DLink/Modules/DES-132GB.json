@@ -7,32 +7,40 @@
     "cr_context": "MODULE",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "DLink | DES32-33 | Module"
         },
         {
+            "name": "Gi1_gbic",
             "description": "port 1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi2_gbic",
             "description": "port 2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DES-132GB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DES-132GB"]
         }
-    }
+    ]
 }

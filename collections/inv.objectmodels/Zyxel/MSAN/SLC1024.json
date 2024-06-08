@@ -9,27 +9,34 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "shdsl",
             "description": "SHDSL ports",
             "direction": "s",
             "gender": "f",
-            "name": "shdsl",
-            "protocols": ["SHDSL"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "SHDSL"
+            }],
             "type__name": "Electrical | Telco-50"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["slc"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["slc"]
         },
-        "weight": {
-            "weight": 1.9
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.9
         }
-    }
+    ]
 }

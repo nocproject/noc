@@ -8,16 +8,18 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "PSU",
             "description": null,
             "direction": "i",
             "gender": "m",
-            "name": "PSU",
             "type__name": "Cisco | 3750X | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C3KX-PWR-350WAC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C3KX-PWR-350WAC"]
         }
-    }
+    ]
 }

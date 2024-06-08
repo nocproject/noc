@@ -37,6 +37,7 @@ class Script(BaseScript):
         "ovpn-in": "tunnel",
         "sstp-out": "tunnel",
         "sstp-in": "tunnel",
+        "wg": "tunnel",
         "gre-tunnel": "tunnel",
         "ipip-tunnel": "tunnel",
         "ipip": "tunnel",
@@ -85,7 +86,7 @@ class Script(BaseScript):
         # Fill interfaces
         a = self.cli_detail("/interface print detail without-paging")
         for n, f, r in a:
-            if r["type"] in self.ignored_types:
+            if r["type"] in self.ignored_types or r["type"] not in self.type_map:
                 continue
             if not r["type"] in "vlan":  # TODO: Check other types
                 ifaces[r["name"]] = {
@@ -402,6 +403,8 @@ class Script(BaseScript):
             ospf_result = self.cli_detail("/routing ospf interface print detail without-paging")
             for n, f, r in ospf_result:
                 self.si = {}
+                if r.get("address") and "%" in r["address"]:
+                    r["interface"] = r["address"].split("%")[1]
                 if r["interface"] in ifaces:
                     i = ifaces[r["interface"]]
                     if not i["subinterfaces"]:

@@ -7,35 +7,47 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "name": "-48V",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "name": "RTN",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "in",
             "description": "PSU slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway S5300 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02310CNK"],
-            "part_no": ["LS5MPSD17"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LS5MPSD17"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02310CNK"]
         }
-    }
+    ]
 }

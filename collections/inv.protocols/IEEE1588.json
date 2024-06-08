@@ -1,0 +1,10 @@
+{
+    "name": "IEEE1588",
+    "code": "IEEE1588",
+    "$collection": "inv.protocols",
+    "uuid": "7adff4a0-804b-4722-8334-830e96aeddaf",
+    "description": "The Precision Time Protocol (PTP) is a protocol used to synchronize clocks throughout a computer network.",
+    "data": [],
+    "connection_schema": "U",
+    "technology__name": "Time Syncrinization"
+}

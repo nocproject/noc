@@ -11,16 +11,10 @@ import datetime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.fm.models.uptime import Uptime
-from noc.core.mx import (
-    send_message,
-    MX_LABELS,
-    MX_PROFILE_ID,
-    MX_ADMINISTRATIVE_DOMAIN_ID,
-    MX_H_VALUE_SPLITTER,
-)
+from noc.core.mx import send_message, MessageType
 from noc.config import config
 from noc.core.hash import hash_int
-from noc.core.comp import DEFAULT_ENCODING
+from noc.core.wf.diagnostic import SNMP_DIAG
 
 
 class UptimeCheck(DiscoveryCheck):
@@ -35,6 +29,13 @@ class UptimeCheck(DiscoveryCheck):
         self.logger.debug("Checking uptime")
         uptime = self.object.scripts.get_uptime()
         self.logger.debug("Received uptime: %s", uptime)
+
+        if uptime is None and self.object.diagnostic.has_active_diagnostic(SNMP_DIAG):
+            self.set_problem(
+                message="Failed getting uptime",
+                diagnostic=SNMP_DIAG,
+            )
+
         if not uptime:
             return
         reboot_ts = Uptime.register(self.object, uptime)
@@ -48,6 +49,7 @@ class UptimeCheck(DiscoveryCheck):
     def send_reboot_message(self, ts: datetime.datetime) -> None:
         mo = self.object
         data = {
+            "$version": 1,
             "ts": ts.isoformat(),
             "managed_object": {
                 "id": str(mo.id),
@@ -91,13 +93,7 @@ class UptimeCheck(DiscoveryCheck):
             data["managed_object"]["remote_id"] = str(mo.remote_id)
         send_message(
             data,
-            message_type="reboot",
-            headers={
-                MX_LABELS: MX_H_VALUE_SPLITTER.join(mo.effective_labels).encode(DEFAULT_ENCODING),
-                MX_ADMINISTRATIVE_DOMAIN_ID: str(mo.administrative_domain.id).encode(
-                    DEFAULT_ENCODING
-                ),
-                MX_PROFILE_ID: str(mo.object_profile.id).encode(DEFAULT_ENCODING),
-            },
+            message_type=MessageType.REBOOT,
+            headers=mo.get_mx_message_headers(),
             sharding_key=hash_int(mo.id) & 0xFFFFFFFF,
         )

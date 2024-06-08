@@ -7,24 +7,29 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         },
         {
+            "name": "Se0",
             "description": "CE1/PRI-B port",
             "direction": "s",
             "gender": "f",
-            "name": "Se0",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | DB15"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NM-1CE1B", "NM-1CE1B="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NM-1CE1B", "NM-1CE1B="]
         }
-    }
+    ]
 }

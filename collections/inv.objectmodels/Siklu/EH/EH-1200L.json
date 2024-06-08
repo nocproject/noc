@@ -5,67 +5,114 @@
     "vendor__code": "SIKLU",
     "description": "Siklu EH 1200L, 2 SFP slots, 71-76Ghz, TDD, Antenna 1ft 42dBi",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "eth0",
             "description": "RF Board 71-76Ghz TDD",
             "direction": "s",
             "gender": "f",
-            "name": "eth0",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
+            "name": "eth1",
             "description": "SFP1 eth1",
             "direction": "i",
             "gender": "f",
-            "name": "eth1",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "eth2",
             "description": "SFP2 eth2",
             "direction": "i",
             "gender": "f",
-            "name": "eth2",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "GND",
             "description": "Ground connection",
             "direction": "i",
             "gender": "m",
-            "name": "GND",
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
+            "name": "DC1+",
             "description": "DC input Positive contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC1+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
+            "name": "DC1-",
             "description": "DC input Negative contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC1-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["EH-1200L-ODU-1ft"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EH-1200L-ODU-1ft"]
         },
-        "dimensions": {
-            "depth": 130,
-            "height": 310,
-            "width": 225
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 225
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 130
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 310
         }
-    }
+    ]
 }

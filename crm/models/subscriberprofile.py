@@ -8,8 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, IntField, LongField, BooleanField
 import cachetools
@@ -63,8 +65,8 @@ class SubscriberProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return SubscriberProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["SubscriberProfile"]:
+        return SubscriberProfile.objects.filter(id=oid).first()
 
     @classmethod
     def can_set_label(cls, label):

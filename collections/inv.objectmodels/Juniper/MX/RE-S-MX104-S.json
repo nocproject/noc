@@ -7,57 +7,90 @@
     "cr_context": "RE",
     "connections": [
         {
+            "name": "usb0",
             "description": "USB Port #0",
             "direction": "i",
             "gender": "f",
-            "name": "usb0",
-            "protocols": [">USB1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB10"
+            }],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "usb1",
             "description": "USB Port #1",
             "direction": "i",
             "gender": "f",
-            "name": "usb1",
-            "protocols": [">USB1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB10"
+            }],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "aux",
             "description": "AUX serial port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "RJ45 Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ethernet",
             "description": "Ethernet port",
             "direction": "s",
             "gender": "f",
-            "name": "ethernet",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "in",
             "description": "RE connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MX104 RE"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["RE-S-MX104-S"],
-            "part_no": ["750-061985", "750-053342"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["RE-S-MX104-S"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-061985", "750-053342"]
         }
-    }
+    ]
 }

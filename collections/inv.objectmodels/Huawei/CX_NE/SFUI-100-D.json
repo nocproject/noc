@@ -9,28 +9,48 @@
     "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX&NE | SFU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03054231"],
-            "part_no": ["CX61SFU100D0"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 46.0
         },
-        "dimensions": {
-            "depth": 536,
-            "height": 36,
-            "width": 400
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX61SFU100D0"]
         },
-        "power": {
-            "power": 46.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03054231"]
         },
-        "weight": {
-            "weight": 3.8
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.8
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 400
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 536
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 36
         }
-    }
+    ]
 }

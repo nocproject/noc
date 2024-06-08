@@ -7,35 +7,45 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "in",
             "description": "Board connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | DB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801GICE0"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801GICE0"]
         },
-        "power": {
-            "power": 4.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 4.0
         }
-    }
+    ]
 }

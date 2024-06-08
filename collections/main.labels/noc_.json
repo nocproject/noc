@@ -1,0 +1,19 @@
+{
+    "name": "noc::*",
+    "$collection": "main.labels",
+    "uuid": "5bbc00fb-b882-4601-be87-4ccddc5225ea",
+    "description": "Builtin labels Scope",
+    "bg_color1": 0,
+    "fg_color1": 16777215,
+    "bg_color2": 0,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": [],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

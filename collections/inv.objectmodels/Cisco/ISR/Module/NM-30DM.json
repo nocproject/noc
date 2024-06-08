@@ -7,16 +7,18 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NM-30DM", "NM-30DM="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NM-30DM", "NM-30DM="]
         }
-    }
+    ]
 }

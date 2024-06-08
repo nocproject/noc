@@ -23,7 +23,7 @@ from noc.settings import LANGUAGE_CODE
 from noc.main.models.systemtemplate import SystemTemplate
 from noc.main.models.template import Template
 from noc.core.timepattern import TimePatternList
-from noc.core.mx import send_message, MX_TO, NOTIFICATION_METHODS, MX_NOTIFICATION_CHANNEL
+from noc.core.mx import send_notification, NOTIFICATION_METHODS, MX_TO
 from noc.core.model.decorator import on_delete_check
 from noc.core.comp import DEFAULT_ENCODING
 from .timepattern import TimePattern
@@ -54,7 +54,7 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
         ("fm.AlarmTrigger", "notification_group"),
         ("fm.EventTrigger", "notification_group"),
         ("fm.AlarmRule", "actions.notification_group"),
-        ("inv.InterfaceProfile", "status_change_notification"),
+        ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
         ("main.NotificationGroupOther", "notification_group"),
         ("main.NotificationGroupUser", "notification_group"),
@@ -87,7 +87,7 @@ class NotificationGroup(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["NotificationGroup"]:
         ng = NotificationGroup.objects.filter(id=id)[:1]
         if ng:
             return ng[0]
@@ -156,34 +156,28 @@ class NotificationGroup(NOCModel):
         method: str,
         address: str,
         subject: str,
-        body: str,
-        attachments: Optional[List[str]] = None,
+        body: Optional[str] = None,
+        attachments: Optional[List[Dict[str, Any]]] = None,
     ):
         """
         Send notification message to MX service for processing
-        :param method:
-        :param address:
-        :param subject:
-        :param body:
+        :param method: Method for sending message: mail, tg...
+        :param address: Address to message
+        :param subject: Notification Subject
+        :param body: Notification body
         :param attachments:
         :return:
         """
         if method not in NOTIFICATION_METHODS:
-            logging.error("Unknown notification method: %s", method)
+            logger.error("Unknown notification method: %s", method)
             return
-        logging.debug("Sending notification to %s via %s", address, method)
-        send_message(
-            {
-                "address": address,
-                "subject": subject,
-                "body": body,
-                "attachments": attachments or [],
-            },
-            message_type="notification",
-            headers={
-                MX_NOTIFICATION_CHANNEL: method.encode(encoding=DEFAULT_ENCODING),
-                MX_TO: address.encode(encoding=DEFAULT_ENCODING),
-            },
+        logger.debug("Sending notification to %s via %s", address, method)
+        send_notification(
+            subject=subject,
+            body=body,
+            to=address,
+            notification_method=method,
+            attachments=attachments or [],
         )
 
     def notify(self, subject, body, link=None, attachments=None):

@@ -1,0 +1,42 @@
+{
+    "name": "100BASE-LX10",
+    "code": "100BASELX10",
+    "$collection": "inv.protocols",
+    "uuid": "cd76a235-3f24-4b4c-9c14-04f147cff97b",
+    "description": "100BASE-LX10 is a version of Fast Ethernet over optical fiber standardized in 802.3ah-2004 clause 58. It has a 10 km reach over a pair of single-mode fibers.",
+    "data": [],
+    "connection_schema": "BD",
+    "discriminators": [
+        {
+            "code": "1310",
+            "data": [
+                {
+                    "attr": "tx_wavelength",
+                    "interface": "optical",
+                    "value": 1310
+                }
+            ]
+        },
+        {
+            "code": "1490",
+            "data": [
+                {
+                    "attr": "tx_wavelength",
+                    "interface": "optical",
+                    "value": 1490
+                }
+            ]
+        },
+        {
+            "code": "1550",
+            "data": [
+                {
+                    "attr": "tx_wavelength",
+                    "interface": "optical",
+                    "value": 1550
+                }
+            ]
+        }
+    ],
+    "technology__name": "Ethernet"
+}

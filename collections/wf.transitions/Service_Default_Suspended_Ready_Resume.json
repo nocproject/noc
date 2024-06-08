@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__uuid": "82f4feda-10b5-4389-99ca-bb4e54ca7a3b",
+    "to_state__uuid": "b76321f4-7cc3-4f56-b92f-481078af2340",
+    "uuid": "64107ff5-0380-4b8c-826f-b448aa781bcb",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "resume",
+    "label": "Resume",
+    "enable_manual": true
+}

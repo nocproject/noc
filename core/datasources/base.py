@@ -51,6 +51,11 @@ class BaseDataSource(object):
     row_index = "id"
 
     @classmethod
+    def iter_ds_fields(cls):
+        for f in cls.fields:
+            yield f
+
+    @classmethod
     def query_sync(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
         """
         Sync method for query report data
@@ -79,7 +84,7 @@ class BaseDataSource(object):
             "float": pl.Float32,
         }
         r = {}
-        for f in cls.fields:
+        for f in cls.iter_ds_fields():
             if fields and f.name not in fields:
                 continue
             r[f.name] = c_map[f.type]
@@ -87,7 +92,7 @@ class BaseDataSource(object):
 
     @classmethod
     def has_field(cls, name) -> bool:
-        for f in cls.fields:
+        for f in cls.iter_ds_fields():
             if f.name == name:
                 return True
         return False
@@ -124,12 +129,16 @@ class BaseDataSource(object):
         if not r:
             return pl.DataFrame(
                 [],
-                schema=[(c.name, c.type.value) for c in cls.fields if cls.is_out_field(c, fields)],
+                schema=[
+                    (c.name, c.type.value)
+                    for c in cls.iter_ds_fields()
+                    if cls.is_out_field(c, fields)
+                ],
             )
         return pl.DataFrame(
             [
                 pl.Series(c.name, r[c.name], dtype=c.type.value)
-                for c in cls.fields
+                for c in cls.iter_ds_fields()
                 if len(r[c.name]) and (cls.is_out_field(c, fields) or (c.is_vector and c.name in r))
             ]
         )

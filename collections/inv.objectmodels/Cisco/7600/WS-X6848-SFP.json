@@ -7,415 +7,564 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "dfc",
             "description": "Subcard slot",
             "direction": "i",
             "gender": "f",
-            "name": "dfc",
             "type__name": "Cisco | 7600 | DFC"
         },
         {
+            "name": "Gi1_sfp",
             "description": "GigabitEthernet X/1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "GigabitEthernet X/2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi3_sfp",
             "description": "GigabitEthernet X/3",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi4_sfp",
             "description": "GigabitEthernet X/4",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi5_sfp",
             "description": "GigabitEthernet X/5",
             "direction": "i",
             "gender": "f",
-            "name": "Gi5_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi6_sfp",
             "description": "GigabitEthernet X/6",
             "direction": "i",
             "gender": "f",
-            "name": "Gi6_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi7_sfp",
             "description": "GigabitEthernet X/7",
             "direction": "i",
             "gender": "f",
-            "name": "Gi7_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi8_sfp",
             "description": "GigabitEthernet X/8",
             "direction": "i",
             "gender": "f",
-            "name": "Gi8_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi9_sfp",
             "description": "GigabitEthernet X/9",
             "direction": "i",
             "gender": "f",
-            "name": "Gi9_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi10_sfp",
             "description": "GigabitEthernet X/10",
             "direction": "i",
             "gender": "f",
-            "name": "Gi10_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi11_sfp",
             "description": "GigabitEthernet X/11",
             "direction": "i",
             "gender": "f",
-            "name": "Gi11_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi12_sfp",
             "description": "GigabitEthernet X/12",
             "direction": "i",
             "gender": "f",
-            "name": "Gi12_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi13_sfp",
             "description": "GigabitEthernet X/13",
             "direction": "i",
             "gender": "f",
-            "name": "Gi13_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi14_sfp",
             "description": "GigabitEthernet X/14",
             "direction": "i",
             "gender": "f",
-            "name": "Gi14_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi15_sfp",
             "description": "GigabitEthernet X/15",
             "direction": "i",
             "gender": "f",
-            "name": "Gi15_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi16_sfp",
             "description": "GigabitEthernet X/16",
             "direction": "i",
             "gender": "f",
-            "name": "Gi16_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi17_sfp",
             "description": "GigabitEthernet X/17",
             "direction": "i",
             "gender": "f",
-            "name": "Gi17_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi18_sfp",
             "description": "GigabitEthernet X/18",
             "direction": "i",
             "gender": "f",
-            "name": "Gi18_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi19_sfp",
             "description": "GigabitEthernet X/19",
             "direction": "i",
             "gender": "f",
-            "name": "Gi19_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi20_sfp",
             "description": "GigabitEthernet X/20",
             "direction": "i",
             "gender": "f",
-            "name": "Gi20_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi21_sfp",
             "description": "GigabitEthernet X/21",
             "direction": "i",
             "gender": "f",
-            "name": "Gi21_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi22_sfp",
             "description": "GigabitEthernet X/22",
             "direction": "i",
             "gender": "f",
-            "name": "Gi22_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi23_sfp",
             "description": "GigabitEthernet X/23",
             "direction": "i",
             "gender": "f",
-            "name": "Gi23_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi24_sfp",
             "description": "GigabitEthernet X/24",
             "direction": "i",
             "gender": "f",
-            "name": "Gi24_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi25_sfp",
             "description": "GigabitEthernet X/25",
             "direction": "i",
             "gender": "f",
-            "name": "Gi25_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi27_sfp",
             "description": "GigabitEthernet X/27",
             "direction": "i",
             "gender": "f",
-            "name": "Gi27_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi26_sfp",
             "description": "GigabitEthernet X/26",
             "direction": "i",
             "gender": "f",
-            "name": "Gi26_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi27_sfp",
             "description": "GigabitEthernet X/27",
             "direction": "i",
             "gender": "f",
-            "name": "Gi27_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi28_sfp",
             "description": "GigabitEthernet X/28",
             "direction": "i",
             "gender": "f",
-            "name": "Gi28_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi29_sfp",
             "description": "GigabitEthernet X/29",
             "direction": "i",
             "gender": "f",
-            "name": "Gi29_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi30_sfp",
             "description": "GigabitEthernet X/30",
             "direction": "i",
             "gender": "f",
-            "name": "Gi30_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi31_sfp",
             "description": "GigabitEthernet X/31",
             "direction": "i",
             "gender": "f",
-            "name": "Gi31_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi32_sfp",
             "description": "GigabitEthernet X/32",
             "direction": "i",
             "gender": "f",
-            "name": "Gi32_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi33_sfp",
             "description": "GigabitEthernet X/33",
             "direction": "i",
             "gender": "f",
-            "name": "Gi33_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi34_sfp",
             "description": "GigabitEthernet X/34",
             "direction": "i",
             "gender": "f",
-            "name": "Gi34_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi35_sfp",
             "description": "GigabitEthernet X/35",
             "direction": "i",
             "gender": "f",
-            "name": "Gi35_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi36_sfp",
             "description": "GigabitEthernet X/36",
             "direction": "i",
             "gender": "f",
-            "name": "Gi36_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi37_sfp",
             "description": "GigabitEthernet X/37",
             "direction": "i",
             "gender": "f",
-            "name": "Gi37_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi38_sfp",
             "description": "GigabitEthernet X/38",
             "direction": "i",
             "gender": "f",
-            "name": "Gi38_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi39_sfp",
             "description": "GigabitEthernet X/39",
             "direction": "i",
             "gender": "f",
-            "name": "Gi39_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi40_sfp",
             "description": "GigabitEthernet X/40",
             "direction": "i",
             "gender": "f",
-            "name": "Gi40_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi41_sfp",
             "description": "GigabitEthernet X/41",
             "direction": "i",
             "gender": "f",
-            "name": "Gi41_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi42_sfp",
             "description": "GigabitEthernet X/42",
             "direction": "i",
             "gender": "f",
-            "name": "Gi42_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi43_sfp",
             "description": "GigabitEthernet X/43",
             "direction": "i",
             "gender": "f",
-            "name": "Gi43_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi44_sfp",
             "description": "GigabitEthernet X/44",
             "direction": "i",
             "gender": "f",
-            "name": "Gi44_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi45_sfp",
             "description": "GigabitEthernet X/45",
             "direction": "i",
             "gender": "f",
-            "name": "Gi45_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi46_sfp",
             "description": "GigabitEthernet X/46",
             "direction": "i",
             "gender": "f",
-            "name": "Gi46_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi47_sfp",
             "description": "GigabitEthernet X/47",
             "direction": "i",
             "gender": "f",
-            "name": "Gi47_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi48",
             "description": "GigabitEthernet X/48",
             "direction": "i",
             "gender": "f",
-            "name": "Gi48",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-X6848-SFP"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-X6848-SFP"]
         }
-    }
+    ]
 }

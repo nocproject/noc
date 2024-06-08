@@ -1,0 +1,10 @@
+{
+    "name": "10GBASE-ER",
+    "code": "10GBASEER",
+    "$collection": "inv.protocols",
+    "uuid": "adfd8be0-6df0-47cf-b733-2755c4e7a28d",
+    "description": "10GBASE-ER (extended reach) is a port type for single-mode fiber and uses 1550 nm lasers. Its 64b/66b PCS is defined in IEEE 802.3 Clause 49 and its PMD sublayer in Clause 52. It delivers serialized data at a line rate of 10.3125 GBd",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

@@ -11,6 +11,7 @@ from typing import Dict, Any
 # NOC modules
 from .base import BaseLoader
 from ..models.managedobject import ManagedObject
+from noc.core.purgatorium import register
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
 from noc.sa.models.profile import Profile
@@ -58,6 +59,16 @@ class ManagedObjectLoader(BaseLoader):
                     obj.set_state(ws)
                 obj.container = None
                 obj.save()
+                # Register deleted objects
+                if self.system.remote_system.enable_discoveredobject:
+                    register(
+                        address=obj.address,
+                        pool=obj.pool.bi_id,
+                        source="etl",
+                        remote_system=self.system.remote_system.bi_id,
+                        remote_id=obj.id,
+                        is_delete=True,
+                    )
             except self.model.DoesNotExist:
                 pass  # Already deleted
         self.pending_deletes = []

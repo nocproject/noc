@@ -1,0 +1,10 @@
+{
+    "name": "5GBASE-T",
+    "code": "5GBASET",
+    "$collection": "inv.protocols",
+    "uuid": "82997682-de63-4233-8ffe-4453060a1738",
+    "description": "5GBASE-T, 5Gbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

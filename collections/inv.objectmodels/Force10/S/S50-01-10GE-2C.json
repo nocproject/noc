@@ -7,32 +7,40 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "i",
             "gender": "m",
-            "name": "in",
             "type__name": "Force10 | S | Module"
         },
         {
+            "name": "port0",
             "description": "CX4 port 0",
             "direction": "s",
             "gender": "f",
-            "name": "port0",
-            "protocols": ["10GBASECX4"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10GBASECX4"
+            }],
             "type__name": "Electrical | SFF-8470"
         },
         {
+            "name": "port1",
             "description": "CX4 port 1",
             "direction": "s",
             "gender": "f",
-            "name": "port1",
-            "protocols": ["10GBASECX4"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10GBASECX4"
+            }],
             "type__name": "Electrical | SFF-8470"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S50-01-10GE-2C"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S50-01-10GE-2C"]
         }
-    }
+    ]
 }

@@ -28,10 +28,12 @@ from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, Validation
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.translation import ugettext as _
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_delete_check
 from noc.wf.models.state import State
+from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from .vrf import VRF
 from .afi import AFI_CHOICES
@@ -43,6 +45,7 @@ id_lock = Lock()
 @Label.model
 @full_text_search
 @workflow
+@bi_sync
 @change
 @on_delete_check(
     ignore=[
@@ -138,7 +141,13 @@ class Prefix(NOCModel):
     source = models.CharField(
         "Source",
         max_length=1,
-        choices=[("M", "Manual"), ("i", "Interface"), ("w", "Whois"), ("n", "Neighbor")],
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("w", "Whois"),
+            ("n", "Neighbor"),
+            ("P", "Ping"),
+        ],
         null=False,
         blank=False,
         default="M",
@@ -151,6 +160,12 @@ class Prefix(NOCModel):
     last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
     first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
+    # Object id in remote system
+    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = models.BigIntegerField(unique=True)
 
     csv_ignored_fields = ["parent"]
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -160,7 +175,7 @@ class Prefix(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Prefix"]:
+    def get_by_id(cls, id: int) -> Optional["Prefix"]:
         mo = Prefix.objects.filter(id=id)[:1]
         if mo:
             return mo[0]
@@ -226,8 +241,8 @@ class Prefix(NOCModel):
             check_ipv4_prefix(self.prefix)
         elif self.is_ipv6:
             check_ipv6_prefix(self.prefix)
-        # Set defaults
-        if not self.vrf:
+        # Set defaults, if check self.vrf - raise NotRelatedField
+        if not self.vrf_id:
             self.vrf = VRF.get_global()
         if not self.is_root:
             # Set proper parent

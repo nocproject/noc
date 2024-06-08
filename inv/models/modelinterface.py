@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ModelInterface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,9 +9,10 @@
 import os
 from threading import Lock
 import operator
-from typing import Optional
+from typing import Optional, List, Dict, Any, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -121,23 +122,24 @@ class ModelInterface(Document):
     attrs = ListField(EmbeddedDocumentField(ModelInterfaceAttr))
     uuid = UUIDField(binary=True)
 
-    _id_cache = cachetools.TTLCache(1000, 10)
-    _name_cache = cachetools.TTLCache(1000, 10)
+    _id_cache = cachetools.TTLCache(100, 10)
+    _name_cache = cachetools.TTLCache(100, 10)
+    _attr_cache = cachetools.TTLCache(1000, 10)
 
     def __str__(self):
         return self.name
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["ModelInterface"]:
-        return ModelInterface.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ModelInterface"]:
+        return ModelInterface.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["ModelInterface"]:
         return ModelInterface.objects.filter(name=name).first()
 
-    def get_attr(self, name):
+    def get_attr(self, name: str) -> Optional[ModelInterfaceAttr]:
         for a in self.attrs:
             if a.name == name:
                 return a
@@ -172,36 +174,37 @@ class ModelInterface(Document):
         return os.path.join(*p) + ".json"
 
     @classmethod
-    def clean_data(cls, data):
+    def clean_data(cls, data: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         """
-        Convert types accoding to interface
+        Convert types according to interface
         """
-        d = deep_copy(data)
-        for i_name in d:
-            mi = ModelInterface.objects.filter(name=i_name).first()
+        r = []
+        for item in data:
+            item = deep_copy(item)
+            interface = item["interface"]
+            mi = ModelInterface.get_by_name(interface)
             if not mi:
-                raise ModelDataError("Unknown interface '%s'" % i_name)
-            v = d[i_name]
-            for a in mi.attrs:
-                if a.name in v:
-                    vv = v[a.name]
-                    if a.type == "strlist":
-                        if isinstance(vv, str):
-                            vv = [vv]
-                        r = set()
-                        for x in vv:
-                            r.update(x.split(","))
-                        vv = [x.strip() for x in sorted(r) if x.strip()]
-                    v[a.name] = T_MAP[a.type].clean(vv)
-        return d
+                raise ModelDataError(f"Unknown interface '{interface}'")
+            a = mi.get_attr(item["attr"])
+            vv = item["value"]
+            if a.type == "strlist":
+                if isinstance(vv, str):
+                    vv = [vv]
+                y = set()
+                for x in vv:
+                    y.update(x.split(","))
+                vv = [x.strip() for x in sorted(y) if x.strip()]
+            item["value"] = T_MAP[a.type].clean(vv)
+            r += [item]
+        return r
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_interface_attr(cls, interface, key):
+    @cachetools.cachedmethod(operator.attrgetter("_attr_cache"), lock=lambda _: id_lock)
+    def get_interface_attr(cls, interface: str, key: str) -> "ModelInterfaceAttr":
         mi = ModelInterface.objects.filter(name=interface).first()
         if not mi:
-            raise ModelDataError("Invalid interface '%s'" % interface)
+            raise ModelDataError(f"Invalid interface '{interface}'")
         attr = mi.get_attr(key)
         if not attr:
-            raise ModelDataError("Invalid attribute '%s.%s'" % (interface, key))
+            raise ModelDataError(f"Invalid attribute '{interface}.{key}'")
         return attr

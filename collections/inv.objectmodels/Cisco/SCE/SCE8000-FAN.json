@@ -8,16 +8,18 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Fan slot 1",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | SCE | SCE8000 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SCE8000-FAN"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SCE8000-FAN"]
         }
-    }
+    ]
 }

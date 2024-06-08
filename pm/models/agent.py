@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List, Iterable
+from typing import Optional, List, Iterable, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, LongField, ListField, EmbeddedDocumentField
 import cachetools
@@ -62,7 +63,8 @@ def gen_key() -> str:
 @bi_sync
 @Label.model
 @on_delete_check(
-    check=[("sa.Service", "agent"), ("inv.Sensor", "agent"), ("sla.SLAProbe", "agent")]
+    check=[("sa.Service", "agent"), ("inv.Sensor", "agent"), ("sla.SLAProbe", "agent")],
+    clean=[("sa.DiscoveredObject", "agent")],
 )
 class Agent(Document):
     meta = {
@@ -99,13 +101,13 @@ class Agent(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["AgentProfile"]:
-        return Agent.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Agent"]:
+        return Agent.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> Optional["AgentProfile"]:
-        return Agent.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Agent"]:
+        return Agent.objects.filter(bi_id=bi_id).first()
 
     def get_effective_check_interval(self) -> int:
         if self.zk_check_interval:

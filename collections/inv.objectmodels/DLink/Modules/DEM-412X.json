@@ -7,24 +7,29 @@
     "cr_context": "MODULE",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "DLink | DGS3610 | Module"
         },
         {
+            "name": "Te1_xfp",
             "description": "TeX XFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DEM-412X"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DEM-412X"]
         }
-    }
+    ]
 }

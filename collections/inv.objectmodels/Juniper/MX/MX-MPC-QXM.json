@@ -8,16 +8,18 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "Inner connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | QXM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["711-028408"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["711-028408"]
         }
-    }
+    ]
 }

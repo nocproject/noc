@@ -10,7 +10,7 @@ import orjson
 import bson
 from collections import defaultdict
 import operator
-from csiphash import siphash24
+from siphash24 import siphash24
 
 # Third-party modules
 from django.db import models
@@ -46,7 +46,7 @@ class Migration(BaseMigration):
                 default=default,
                 option=orjson.OPT_SORT_KEYS,
             )
-            c_hash = siphash24(SIPHASH_SEED, oc)
+            c_hash = siphash24(oc, key=SIPHASH_SEED).digest()
             if c_hash not in caps_map:
                 caps_map[c_hash] = oc
             objects_map[c_hash].add(caps["_id"])

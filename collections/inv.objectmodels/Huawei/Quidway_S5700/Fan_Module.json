@@ -7,27 +7,43 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Fan Slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway S5700 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CX7E1FANA"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX7E1FANA"]
         },
-        "dimensions": {
-            "depth": "100",
-            "height": "40",
-            "width": "103"
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": "100"
         },
-        "power": {
-            "power": "12"
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": "40"
         },
-        "weight": {
-            "weight": "0.27"
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": "103"
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": "12"
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": "0.27"
         }
-    }
+    ]
 }

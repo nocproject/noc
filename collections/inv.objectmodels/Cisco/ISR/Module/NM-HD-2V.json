@@ -1,0 +1,46 @@
+{
+    "name": "Cisco | ISR | Module | NM-HD-2V",
+    "$collection": "inv.objectmodels",
+    "uuid": "6407867a-f68f-4434-9bdb-9f24fd88d0a5",
+    "vendor__code": "CISCO",
+    "description": "2-slot IP communications voice/fax network module. (No support for T1/E1 or data WAN)",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "name": "dcs0",
+            "description": "Daughter Card Slot0",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "name": "dcs1",
+            "description": "Daughter Card Slot1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NM-HD-2V", "NM-HD-2V="]
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Service Default",
+    "uuid": "87927629-6acf-426e-8787-071d7203b322",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Service Default workflow",
+    "allowed_models": ["sa.Service"]
+}

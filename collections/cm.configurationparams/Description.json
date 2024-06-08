@@ -1,0 +1,21 @@
+{
+    "name": "Description",
+    "$collection": "cm.configurationparams",
+    "uuid": "5a83d351-b97b-40bf-b7fa-b44c69abe7fe",
+    "code": "description",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "EthernetPort"
+        },
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        }
+    ],
+    "type": "string",
+    "schema": [{
+        "key": "max_length",
+        "value": "20"
+    }]
+}

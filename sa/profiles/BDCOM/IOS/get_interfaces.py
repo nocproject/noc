@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # BDCOM.IOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,10 +21,11 @@ class Script(BaseScript):
     rx_iface = re.compile(
         r"^(?P<ifname>\S+) is (?P<admin_status>up|down|administratively down), "
         r"line protocol is (?P<oper_status>up|down)\s*\n"
+        r"(^\s+protocolstatus.+\n)?"
         r"^\s+Ifindex is (?P<snmp_ifindex>\d+).*\n"
         r"(^\s+Description: (?P<description>.+)\n)?"
-        r"^\s+Hardware is (?P<iftype>\S+)"
-        r"(, [Aa]ddress is (?P<mac>\S+)\s*\(.+)?\s*\n"
+        r"^\s+Hardware is (?P<iftype>\S+),"
+        r"( [Aa]ddress is (?P<mac>\S+)\s*\(.+)?\s*\n"
         r"(^\s+Interface address is (?P<ip_address>\S+)\s*\n)?"
         r"^\s+MTU (?P<mtu>\d+).+\n",
         re.MULTILINE,
@@ -32,7 +33,18 @@ class Script(BaseScript):
     rx_iface_brief = re.compile(
         r"^(?P<ifname>\S+).+(?:up|down|shutdown)\s+(?P<vlan_id>\d+)", re.MULTILINE
     )
-    iftype = {"100BASE-TX": "physical", "Giga-FX": "physical", "EtherSVI": "SVI", "Null": "null"}
+    iftype = {
+        "100BASE-TX": "physical",
+        "Giga-FX": "physical",
+        "Giga-TX": "physical",
+        "Giga-Combo-TX": "physical",
+        "10Giga-FX": "physical",
+        "10Giga-FX-SFP": "physical",
+        "10G-BASE-DAC": "physical",
+        "EtherSVI": "SVI",
+        "Null": "null",
+        "PortAggregator": "aggregated",
+    }
 
     def execute(self):
         interfaces = []

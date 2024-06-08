@@ -7,27 +7,43 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Fan Slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CX7E1FANA"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 12.0
         },
-        "dimensions": {
-            "depth": 100,
-            "height": 40,
-            "width": 103
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX7E1FANA"]
         },
-        "power": {
-            "power": 12.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.27
         },
-        "weight": {
-            "weight": 0.27
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 103
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 100
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 40
         }
-    }
+    ]
 }

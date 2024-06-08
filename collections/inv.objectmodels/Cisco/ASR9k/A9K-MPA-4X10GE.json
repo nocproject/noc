@@ -7,53 +7,67 @@
     "cr_context": "MPA",
     "connections": [
         {
+            "name": "Te0_xfp",
             "description": "TeX/0 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te0_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te1_xfp",
             "description": "TeX/1 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te1_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te2_xfp",
             "description": "TeX/2 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te2_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te3_xfp",
             "description": "TeX/3 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te3_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
             "group": "0",
-            "name": "in",
             "type__name": "Cisco | ASR9k | MPA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["A9K-MPA-4X10GE"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["A9K-MPA-4X10GE"]
         }
-    }
+    ]
 }

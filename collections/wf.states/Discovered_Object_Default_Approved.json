@@ -1,0 +1,16 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "name": "Approved",
+    "uuid": "30f3f4ff-07a8-4edd-9b6d-b7252069d57c",
+    "$collection": "wf.states",
+    "is_default": false,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 560,
+    "y": 250,
+    "disable_all_interaction": false
+}

@@ -9,31 +9,45 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "mb",
             "description": "1921 Motherboard",
             "direction": "i",
             "gender": "f",
-            "name": "mb",
             "type__name": "Cisco | 1921 | MOTHERBOARD"
         },
         {
+            "name": "psu",
             "description": "Internal Power Supply slot",
             "direction": "i",
             "gender": "f",
-            "name": "psu",
             "type__name": "Cisco | 1941-2901 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO1921/K9"],
-            "cpe_22": "cpe:/h:cisco:1921_integrated_services_router:-",
-            "cpe_23": "cpe:2.3:h:cisco:1921_integrated_services_router:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO1921/K9"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:1921_integrated_services_router:-"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:1921_integrated_services_router:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

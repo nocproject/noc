@@ -8,16 +8,18 @@
     "labels": ["noc::inv::dsp"],
     "connections": [
         {
+            "name": "in",
             "description": "Interface Board connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | UDB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H831GE1A"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H831GE1A"]
         }
-    }
+    ]
 }

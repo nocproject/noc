@@ -1,4 +1,4 @@
-         {
+{
     "name": "Huawei | CX600-X1-X2 | MPUK",
     "$collection": "inv.objectmodels",
     "uuid": "820368a6-55f8-43d4-b17d-b6f3fe12f3b1",
@@ -9,76 +9,130 @@
     "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX600-X1-X2 | MPU"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "MEth0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "console",
             "description": "RS-232 serial port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "clk",
             "description": " input one channel or output one channel 2-Mbit/s clock signals, or one channel 2-MHz clock signals",
             "direction": "s",
             "gender": "f",
-            "name": "clk",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "tod",
             "description": "1 output of 1PPS+TOD time signals",
             "direction": "s",
             "gender": "f",
-            "name": "tod",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "RS-485",
             "description": "RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "name": "RS-485",
-            "protocols": [">RS485"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS485"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03030QAB"],
-            "part_no": ["CX67MPUK0"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03030QAB"]
         },
-        "dimensions": {
-            "depth": 226,
-            "height": 20,
-            "width": 194
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX67MPUK0"]
         },
-        "power": {
-            "power": 20.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 226
         },
-        "weight": {
-            "weight": 0.6
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 20
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 194
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 20.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.6
         }
-    }
+    ]
 }

@@ -8,81 +8,111 @@
     "labels": ["noc::inv::lc", "noc::inv::dsp"],
     "connections": [
         {
+            "name": "in",
             "description": null,
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX200-300 | SIC"
         },
         {
+            "name": "E1_0/1",
             "description": "controller E1 X/0/1",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/1",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "E1_0/2",
             "description": "controller E1 X/0/2",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/2",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "E1_0/3",
             "description": "controller E1 X/0/3",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/3",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "E1_0/4",
             "description": "controller E1 X/0/4",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/4",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "E1_0/5",
             "description": "controller E1 X/0/5",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/5",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "E1_0/6",
             "description": "controller E1 X/0/6",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/6",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "E1_0/7",
             "description": "controller E1 X/0/7",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/7",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "E1_0/8",
             "description": "controller E1 X/0/8",
             "direction": "s",
             "gender": "f",
-            "name": "E1_0/8",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03028947"],
-            "part_no": ["CX31T8CE1B"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03028947"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX31T8CE1B"]
         }
-    }
+    ]
 }

@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 
@@ -18,115 +18,159 @@ class Script(BaseScript):
     name = "HP.ProCurve.get_interfaces"
     interface = IGetInterfaces
 
-    iftypes = {
-        "6": "physical",
-        "161": "aggregated",
-        "54": "aggregated",
-        "53": "SVI",
-        "24": "loopback",
-    }
-
-    objstr = {
-        "ifName": "name",
-        "ifDescr": "description",
-        "ifPhysAddress": "mac",
-        "ifType": "type",
-        "ifAdminStatus": "admin_status",
-        "ifOperStatus": "oper_status",
-        "ifAlias": "description",
-    }
-
-    rx_ip = re.compile(
-        r"\s+(?P<name>\S+)\s+\|\s+(Manual|Disabled)\s"
-        r"+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"
-        r"+(?P<mask>\d{1,3}.\d{1,3}\.\d{1,3}\.\d{1,3})"
+    rx_mac = re.compile(r"Hardware Address:\s+(?P<mac>\S+)")
+    rx_description = re.compile(r"Description:\s+(?P<description>.+)")
+    rx_mtu = re.compile(r"The Maximum Frame Length is (?P<mtu>\d+)")
+    rx_pvid = re.compile(r"PVID\s*:\s+(?P<pvid>\d+)")
+    rx_iface = re.compile(
+        r"^\s*(?P<iface>\S+)\s+current\sstate:\s*(?P<state>UP|DOWN)\s+(?P<admin>\(\s*Administratively\s*\))?",
+    )
+    rx_trunk = re.compile(
+        r"^\s*(?P<iface>\S+)\s*\|\s*(?P<descr>.+?)\s(?P<type>\S+)\s+\|\s*(?P<agg>\S+)\s+(?P<proto>\S+)",
+        re.MULTILINE,
     )
 
-    def execute(self):
-        iface = {}
-        interfaces = []
-        step = len(self.objstr)
-        lines = self.cli("walkMIB " + " ".join(self.objstr)).split("\n")[:-1]
-        sh_ip = self.cli("show ip")
+    rx_ip = re.compile(
+        r"^\s*(?P<vlan_name>.+)\s*\|\s+(?P<config>Disabled|Manual|Auto)\s*(?P<address>\S+)?\s*(?P<mask>\S+)?$",
+        re.MULTILINE,
+    )
 
-        try:
-            sh_ospf = self.cli("show ip ospf interface")
-        except Exception:
-            sh_ospf = False
+    def get_switchport_cli(self):
+        """
+        VLAN ID: 2014
+        VLAN Type: static
+        Route Interface: n/a
+        Description: VLAN 2014
+        Name: YADRO
+        Tagged   Ports:
+           Trk1      Trk2      Trk3
+           Trk4      Trk5      Trk24
+        Untagged Ports:
+           13
+        """
 
-        portchannel_members = {}  # member -> (portchannel, type)
-
-        for pc in self.scripts.get_portchannel():
-            i = pc["interface"]
-            t = pc["type"] == "L"
-            for m in pc["members"]:
-                portchannel_members[m] = (i, t)
-
-        switchports = {}
-        vlans = self.scripts.get_vlans()
-        if vlans:
-            for sp in self.scripts.get_switchport():
-                switchports[sp["interface"]] = (
-                    sp["untagged"] if "untagged" in sp else None,
-                    sp["tagged"],
-                )
-
-        i = 0
-        for s in range(int(len(lines) / step)):
-            for str in lines[i : i + step]:
-                leaf = str.split(".")[0]
-                val = str.split("=")[1].lstrip()
-                if leaf == "ifPhysAddress":
-                    if not val:
+        v = self.cli("display vlan all")
+        vlans = []
+        for vlan_block in v.split("\n\n"):
+            params = {}
+            param = None
+            for ll in vlan_block.splitlines():
+                p1, *p2 = ll.split(":")
+                if not p2 and param:
+                    params[param] += [x.strip() for x in p1.split()]
+                    continue
+                param = p1.strip()
+                params[param] = [p2[0].strip()]
+            vlans += [params]
+        r = {}
+        vlan_address = {}
+        for vlan in vlans:
+            if "IP Address" in vlan:
+                vlan_address[vlan["VLAN ID"][0]] = {
+                    "vlan": vlan["VLAN ID"][0],
+                    "address": vlan["IP Address"][0],
+                    "mask": vlan["Subnet Mask"][0],
+                    "description": vlan["Description"][0],
+                }
+            for p1, p2 in [("Untagged Ports", "untagged_vlan"), ("Tagged   Ports", "tagged_vlans")]:
+                if p1 not in vlan:
+                    continue
+                for iface in vlan[p1]:
+                    if not iface or iface == "none":
                         continue
-                    iface[self.objstr[leaf]] = val.rstrip().replace(" ", ":")
-                elif leaf == "ifType":
-                    iface[self.objstr[leaf]] = self.iftypes[val]
-                elif leaf[-6:] == "Status":
-                    iface[self.objstr[leaf]] = val == "1"
-                elif leaf == "ifAlias":
-                    # IF-MIB::ifName.1 = STRING: A1
-                    # IF-MIB::ifName.2 = STRING: A2
-                    # IF-MIB::ifName.3 = STRING: A3
-                    #
-                    # IF-MIB::ifDescr.1 = STRING: A1
-                    # IF-MIB::ifDescr.2 = STRING: A2
-                    # IF-MIB::ifDescr.3 = STRING: A3
-                    if iface["name"] == iface["description"]:
-                        iface["description"] = val
-                else:
-                    iface[self.objstr[leaf]] = val
-            ifname = iface["name"]
-            sub = iface.copy()
-            ifindex = str.split("=")[0].split(".")[1].rstrip()
-            iface["snmp_ifindex"] = int(ifindex)
-            sub["snmp_ifindex"] = int(ifindex)
-            sub["enabled_afi"] = []
-            del sub["type"]
+                    iface = self.profile.convert_interface_name(iface)
+                    if iface not in r:
+                        r[iface] = {"untagged_vlan": None, "tagged_vlans": []}
+                    try:
+                        if p2 == "tagged_vlans":
+                            r[iface][p2] += [int(vlan["VLAN ID"][0])]
+                        else:
+                            r[iface][p2] = int(vlan["VLAN ID"][0])
+                    except ValueError:
+                        continue
+        return r, vlan_address
 
-            for line in sh_ip.split("\n"):
-                match = self.rx_ip.search(line)
+    def execute_cli(self):
+        if self.is_old_cli:
+            raise NotImplementedError("Old CLI with SNMP only access")
+        interfaces = {}
+        switchports, addresses = self.get_switchport_cli()
+        v = self.cli("show trunks")
+        portchannels = set()
+        for row in self.rx_trunk.finditer(v):
+            ifname, descr, _, agg, lacp = row.groups()
+            # ifname = self.profile.convert_interface_name(ifname)
+            agg = self.profile.convert_interface_name(agg)
+            if lacp == "LACP":
+                portchannels.add(agg)
+        v = self.cli("display interface brief")
+        for row in v.splitlines()[9:]:
+            ifname, status, _ = row.split(maxsplit=2)
+            iftype = self.profile.get_interface_type(ifname)
+            ifname, *aggregate = ifname.split("-")
+            si = None
+            iface = {
+                "name": ifname,
+                "type": iftype,
+                "admin_status": status != "ADM",
+                "oper_status": status == "UP",
+                "enabled_protocols": [],
+                "subinterfaces": [],
+            }
+            if aggregate:
+                iface["aggregated_interface"] = aggregate[0]
+                if aggregate[0] in portchannels:
+                    iface["enabled_protocols"] += ["LACP"]
+            if ifname in switchports:
+                si = {
+                    "name": ifname,
+                    "admin_status": status != "ADM",
+                    "oper_status": status == "UP",
+                    "enabled_afi": ["BRIDGE"],
+                    # "mac": mac,
+                    # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
+                }
+                si.update(switchports[ifname])
+            if si:
+                iface["subinterfaces"].append(si)
+            interfaces[ifname] = iface
+
+        v = self.cli("display interface")
+        for block in v.split("\n\n"):
+            match = self.rx_iface.search(block)
+            if not match:
+                continue
+            ifname, status, admin = match.groups()
+            ifname = self.profile.convert_interface_name(ifname)
+            for param, rx in [
+                ("mac", self.rx_mac),
+                ("mtu", self.rx_mtu),
+                ("description", self.rx_description),
+            ]:
+                match = rx.search(block)
                 if match:
-                    if match.group("name") == sub["name"]:
-                        sub["enabled_afi"] += ["IPv4"]
-                        sub["ipv4_addresses"] = [
-                            IPv4(match.group("ip"), netmask=match.group("mask")).prefix
-                        ]
-                        if sh_ospf:
-                            for o in sh_ospf.split("\n"):
-                                if o.split():
-                                    if o.split()[0] == match.group("ip"):
-                                        sub["is_ospf"] = True
-            if ifname in switchports and ifname not in portchannel_members:
-                sub["enabled_afi"] += ["BRIDGE"]
-                u, t = switchports[ifname]
-                if u:
-                    sub["untagged_vlan"] = u
-                if t:
-                    sub["tagged_vlans"] = t
-
-            iface["subinterfaces"] = [sub]
-            interfaces += [iface]
-            iface = {}
-            i = i + step
-        return [{"interfaces": interfaces}]
+                    interfaces[ifname][param] = match.groups()[0]
+        # VLAN Interfaces
+        for vlan in addresses.values():
+            ifname = self.profile.convert_interface_name(f'VLAN{vlan["vlan"]}')
+            interfaces[ifname] = {
+                "name": ifname,
+                "type": "SVI",
+                "description": vlan["description"],
+                "admin_status": True,
+                "oper_status": True,
+                "enabled_protocols": [],
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [IPv4(vlan["address"], netmask=vlan["mask"])],
+                        "vlan_ids": [int(vlan["vlan"])],
+                        # "mac": mac,
+                        # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
+                    }
+                ],
+            }
+        return [{"interfaces": interfaces.values()}]

@@ -9,44 +9,62 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | PWR"
         },
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "f",
-            "name": "-48V",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "f",
-            "name": "RTN",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "db1",
             "description": "Daughter board",
             "direction": "i",
             "gender": "f",
-            "name": "db1",
             "type__name": "Huawei | SmartAX | MA5616 | DBPWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H832PDVAA"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 88
         },
-        "dimensions": {
-            "depth": 442,
-            "height": 245,
-            "width": 88
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 442
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 245
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H832PDVAA"]
         }
-    }
+    ]
 }

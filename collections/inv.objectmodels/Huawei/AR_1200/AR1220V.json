@@ -7,159 +7,321 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "Console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": "USB port 0",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "usb0",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "usb1",
             "description": "USB port 1",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "usb1",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "Ethernet/0/0",
             "description": "Ethernet 0/0/0 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet/0/1",
             "description": "Ethernet 0/0/1 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet/0/2",
             "description": "Ethernet 0/0/2 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet/0/3",
             "description": "Ethernet 0/0/3 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet/0/4",
             "description": "Ethernet 0/0/4 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/4",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet/0/5",
             "description": "Ethernet 0/0/5 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/5",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet/0/6",
             "description": "Ethernet 0/0/6 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/6",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet/0/7",
             "description": "Ethernet 0/0/7 interface",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet/0/7",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/0",
             "description": "GigabitEthernet 0/0/0 interface",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/1",
             "description": "GigabitEthernet 0/0/1 interface",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "wsic",
             "description": "WSIC slot",
             "direction": "i",
             "gender": "f",
-            "name": "wsic",
             "type__name": "Huawei | AR 1200 | WSIC"
         },
         {
+            "name": "sic1",
             "description": "SIC slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "sic1",
             "type__name": "Huawei | AR 1200 | SIC"
         },
         {
+            "name": "sic2",
             "description": "SIC slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "sic2",
             "type__name": "Huawei | AR 1200 | SIC"
         },
         {
+            "name": "Power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "name": "Power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["AR1220V", "AR0M012VBA"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 390
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 44.5,
-            "width": 390
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44.5
         },
-        "power": {
-            "power": 160.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 160.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AR1220V", "AR0M012VBA"]
         }
-    }
+    ]
 }

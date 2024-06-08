@@ -16,21 +16,41 @@
             "type__name": "Huawei | S12700E | SFU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03033ERD"],
-            "part_no": ["LST7SFUHX100"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03033ERD"]
         },
-        "dimensions": {
-            "depth": 430,
-            "height": 35,
-            "width": 397
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LST7SFUHX100"]
         },
-        "power": {
-            "power": 256.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 430
         },
-        "weight": {
-            "weight": 3.65
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 35
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 397
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 256.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.65
         }
-    }
+    ]
 }

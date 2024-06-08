@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | ISR | Module | VIC2-2FXS",
+    "$collection": "inv.objectmodels",
+    "uuid": "915b0ba4-59b3-4e42-9c0c-39c4856d3eba",
+    "vendor__code": "CISCO",
+    "description": "2nd generation two port FXS voice interface daughtercard",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "voice-port0",
+            "description": "voice-port N/X/0 telephone",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "voice-port1",
+            "description": "voice-port N/X/1 telephone",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "in",
+            "description": "Voice Interface Card connector slot",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VIC2-2FXS", "VIC2-2FXS="]
+        }
+    ]
+}

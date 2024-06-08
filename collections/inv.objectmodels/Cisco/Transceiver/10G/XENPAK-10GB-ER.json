@@ -7,33 +7,65 @@
     "cr_context": "XCVR",
     "connections": [
         {
+            "name": "in",
             "description": "XENPAK Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">10GBASEER-1550"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "10GBASEER"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<10GBASEER-1550"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "10GBASEER"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["XENPAK-10GB-ER+", "XENPAK-10GB-ER"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["XENPAK-10GB-ER+", "XENPAK-10GB-ER"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 40000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

@@ -7,49 +7,66 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "voice-port0",
             "description": "voice-port N/X/0 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port0",
             "description": "voice-port N/X/1 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port0",
             "description": "voice-port N/X/2 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port0",
             "description": "voice-port N/X/3 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "in",
             "description": "Voice Interface Card connector slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["VIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["VIC3-4FXS/DID"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VIC3-4FXS/DID"]
         }
-    }
+    ]
 }

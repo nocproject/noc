@@ -7,12 +7,12 @@
 
 # Python modules
 import random
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 from urllib.parse import quote as urllib_quote
 
 # NOC modules
-from noc.core.http.client import fetch_sync
-from noc.core.comp import smart_text
+from noc.core.http.sync_client import HttpClient
+from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.config import config
 from .error import ClickhouseError
 
@@ -32,10 +32,33 @@ class ClickhouseClient(object):
             self.addresses = [str(x) for x in config.clickhouse.ro_addresses]
         else:
             self.addresses = [str(x) for x in config.clickhouse.rw_addresses]
+        self.http_client = HttpClient(
+            connect_timeout=config.clickhouse.connect_timeout,
+            timeout=config.clickhouse.request_timeout,
+            user=self.user,
+            password=self.password,
+        )
 
     def execute(
-        self, sql=None, args=None, nodb=False, post=None, extra=None, return_raw=False
+        self,
+        sql: Optional[str] = None,
+        args: Optional[List[str]] = None,
+        nodb: bool = False,
+        post: str = None,
+        extra: List[Tuple[str, str]] = None,
+        return_raw: bool = False,
     ) -> Union[List[str], str]:
+        """
+
+        :param sql: Query string
+        :param args: Query arguments
+        :param nodb: Not set config database to request
+        :param post: Request body
+        :param extra: Extra params to query
+        :param return_raw: Return raw binary result
+        :return:
+        """
+
         def q(v):
             # @todo: quote dates
             if isinstance(v, str):
@@ -54,17 +77,9 @@ class ClickhouseClient(object):
             if post:
                 qs += ["query=%s" % urllib_quote(sql.encode("utf8"))]
             else:
-                post = sql.encode("utf8")
+                post = sql
         url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))
-        code, headers, body = fetch_sync(
-            url,
-            method="POST",
-            body=post,
-            user=self.user,
-            password=self.password,
-            connect_timeout=config.clickhouse.connect_timeout,
-            request_timeout=config.clickhouse.request_timeout,
-        )
+        code, headers, body = self.http_client.post(url, post.encode(DEFAULT_ENCODING))
         if code != 200:
             raise ClickhouseError("%s: %s" % (code, body))
         if return_raw:

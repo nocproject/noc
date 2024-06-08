@@ -15,6 +15,7 @@ Ext.define("NOC.main.messageroute.Application", {
         "NOC.main.ref.messageheader.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.sa.administrativedomain.LookupField",
+        "NOC.core.tagfield.Tagfield",
         "NOC.core.label.LabelField",
         "NOC.main.template.LookupField",
         "NOC.main.handler.LookupField"
@@ -116,7 +117,7 @@ Ext.define("NOC.main.messageroute.Application", {
                             xtype: "numberfield",
                             fieldLabel: __("Telemetry Sample"),
                             uiStyle: "small",
-                            allowBlank: false
+                            allowBlank: true
                         }]
                 },
                 {
@@ -198,7 +199,10 @@ Ext.define("NOC.main.messageroute.Application", {
                             text: __("Value"),
                             dataIndex: "value",
                             flex: 1,
-                            editor: "textfield"
+                            editor: {
+                                xtype: "textfield",
+                                allowBlank: false // Это запретит изменение поля "value" на пустое значение
+                            }
                         }
                     ]
                 },
@@ -231,6 +235,12 @@ Ext.define("NOC.main.messageroute.Application", {
                             query: {
                                 "allow_matched": true
                             }
+                        },
+                        {
+                            xtype: "core.tagfield",
+                            url: "/inv/resourcegroup/lookup/",
+                            fieldLabel: __("Object Groups"),
+                            name: "resource_groups"
                         },
                         {
                             name: "administrative_domain",

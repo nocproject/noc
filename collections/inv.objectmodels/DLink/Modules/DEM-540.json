@@ -7,16 +7,18 @@
     "cr_context": "MODULE",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "DLink | DGS32-33 | Module"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DEM-540"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DEM-540"]
         }
-    }
+    ]
 }

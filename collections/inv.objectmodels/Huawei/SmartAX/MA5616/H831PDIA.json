@@ -1,0 +1,62 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H831PDIA",
+    "$collection": "inv.objectmodels",
+    "uuid": "c25ab8b6-4c47-4219-ae2d-7150f39e52ae",
+    "vendor__code": "HUAWEI",
+    "description": "MA5616  DC Power board",
+    "cr_context": "PWR",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA5616 | PWR"
+        },
+        {
+            "name": "-48V",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "name": "RTN",
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        }
+    ],
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 88
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 442
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 245
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H831PDIA", "H831PDIA1"]
+        }
+    ]
+}

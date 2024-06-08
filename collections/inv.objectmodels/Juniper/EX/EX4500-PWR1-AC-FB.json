@@ -8,28 +8,45 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4500 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["EX4500-PWR1-AC-FB"],
-            "part_no": ["740-044237", "740-029654"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX4500-PWR1-AC-FB"]
         },
-        "power": {
-            "power": 1000.0
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-044237", "740-029654"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1000.0
         }
-    }
+    ]
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | Upstream Interface Board | H801GICG",
+    "name": "Huawei | SmartAX | MA560xT | Upstream Interface Board | H801GICG",
     "$collection": "inv.objectmodels",
     "uuid": "58b0ab49-b475-45ad-b88c-bfd84076c4de",
     "vendor__code": "HUAWEI",
@@ -8,43 +8,65 @@
     "cr_context": "BOARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | GIU"
         },
         {
+            "name": "0",
             "description": "GE upstream or cascaded port (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "0",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1",
             "description": "GE upstream or cascaded port (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801GICG"]
+    "data": [
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 197,
-            "width": 25
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801GICG"]
         },
-        "power": {
-            "power": 5.3
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 5.3
         },
-        "weight": {
-            "weight": 2.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 25
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 197
         }
-    }
+    ]
 }

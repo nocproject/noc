@@ -8,92 +8,157 @@
     "cr_context": "MOTHERBOARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 1800 | MOTHERBOARD"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "disk0",
             "description": "Compact Flash slot",
             "direction": "i",
             "gender": "f",
-            "name": "disk0",
             "type__name": "Flash | CF"
         },
         {
+            "name": "aux",
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": [">USB1.1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB11"
+            }],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "Fa0/0",
             "description": "Fa0/0",
             "direction": "s",
             "gender": "f",
-            "name": "Fa0/0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa0/1",
             "description": "Fa0/1",
             "direction": "s",
             "gender": "f",
-            "name": "Fa0/1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "dcs0",
             "description": "DaughterCard Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "dcs0",
-            "protocols": ["HWIC", "WIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs1",
             "description": "DaughterCard Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "dcs1",
-            "protocols": ["HWIC", "WIC", "VWIC"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "aim0",
             "description": "AIM Container Slot",
             "direction": "i",
             "gender": "f",
-            "name": "aim0",
             "type__name": "Cisco | ISR | AIM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO1841-MB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO1841-MB"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

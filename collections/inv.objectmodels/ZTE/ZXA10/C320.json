@@ -8,43 +8,49 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "1",
-            "type__name": "ZTE | ZXA10 | C3xx | SB"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        },
+        {
             "name": "2",
-            "type__name": "ZTE | ZXA10 | C3xx | SB"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        },
+        {
             "name": "3",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
             "type__name": "ZTE | ZXA10 | C3xx | PWR"
         },
         {
+            "name": "4",
             "description": "",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "ZTE | ZXA10 | C3xx | SB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C320"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C320"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
         }
-    }
+    ]
 }

@@ -9,80 +9,149 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | SCU"
         },
         {
+            "name": "eth",
             "description": "100M Base-T maintenance network port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Upstream transmission or cascading port",
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "1",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "2",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
-            "name": "3",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "3",
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "console",
             "description": "RS-232 serial port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "esc",
             "description": "RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "name": "esc",
-            "protocols": [">RS485"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS485"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801SCUH", "H801SCUH0"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 26
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 396,
-            "width": 26
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
         },
-        "power": {
-            "power": 89.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 396
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 89.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801SCUH", "H801SCUH0"]
         }
-    }
+    ]
 }

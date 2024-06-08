@@ -1,0 +1,10 @@
+{
+    "name": "TL1",
+    "code": "TL1",
+    "$collection": "inv.protocols",
+    "uuid": "e59da519-1d46-449f-abd7-8365af718763",
+    "description": "TL1 is an ASCII-based management protocol mainly used for managing telecommunication networks.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Management"
+}

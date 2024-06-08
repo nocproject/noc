@@ -1,0 +1,47 @@
+{
+    "name": "Generic | Transceiver | QSFP+",
+    "$collection": "inv.objectmodels",
+    "uuid": "05fc1d64-d20b-44ed-af42-8c4aea74ef1a",
+    "vendor__code": "GENERIC",
+    "description": "Generic | Transceiver | QSFP+",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "rx",
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "tx",
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

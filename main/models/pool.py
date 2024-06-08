@@ -9,9 +9,10 @@
 import threading
 import time
 import operator
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, LongField
 import cachetools
@@ -31,6 +32,8 @@ id_lock = threading.Lock()
 @on_delete_check(
     check=[
         ("sa.AdministrativeDomain", "default_pool"),
+        ("sa.DiscoveredObject", "pool"),
+        ("sa.ObjectDiscoveryRule", "network_ranges__pool"),
         ("sa.ManagedObject", "pool"),
         ("sa.ManagedObject", "fm_pool"),
         ("inv.CPEProfile", "object_pool"),
@@ -58,13 +61,13 @@ class Pool(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Pool"]:
-        return Pool.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Pool"]:
+        return Pool.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["Pool"]:
-        return Pool.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Pool"]:
+        return Pool.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

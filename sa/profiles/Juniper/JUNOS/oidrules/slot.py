@@ -38,9 +38,11 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
                         f"noc::slot::{int(slotid.split('.')[2]) - 1}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::sensor::{desc}"
-                        if "Environment" in metric.metric
-                        else f"noc::cpu::{desc}",
+                        (
+                            f"noc::sensor::{desc}"
+                            if "Environment" in metric.metric
+                            else f"noc::cpu::{desc}"
+                        ),
                     ]
                 else:
                     # [0,"0","FPC: MPC BUILTIN @ 0/*/*"]
@@ -61,9 +63,11 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
                         f"noc::slot::{slotid.split('.')[2]}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::sensor::{desc}"
-                        if "Environment" in metric.metric
-                        else f"noc::cpu::{desc}",
+                        (
+                            f"noc::sensor::{desc}"
+                            if "Environment" in metric.metric
+                            else f"noc::cpu::{desc}"
+                        ),
                     ]
                 else:
                     labels = [
@@ -80,9 +84,11 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{slotid.split('.')[1]}",
                         f"noc::slot::{slotid.split('.')[2]}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::sensor::{desc}"
-                        if "Environment" in metric.metric
-                        else f"noc::cpu::{desc}",
+                        (
+                            f"noc::sensor::{desc}"
+                            if "Environment" in metric.metric
+                            else f"noc::cpu::{desc}"
+                        ),
                     ]
                 else:
                     labels = [
@@ -99,8 +105,10 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{slotid.split('.')[1]}",
                         f"noc::slot::{slotid.split('.')[2]}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::sensor::{desc}"
-                        if "Environment" in metric.metric
-                        else f"noc::cpu::{desc}",
+                        (
+                            f"noc::sensor::{desc}"
+                            if "Environment" in metric.metric
+                            else f"noc::cpu::{desc}"
+                        ),
                     ]
                     yield oid, self.type, self.scale, self.units, labels

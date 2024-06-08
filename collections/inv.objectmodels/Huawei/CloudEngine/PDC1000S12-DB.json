@@ -15,12 +15,16 @@
             "type__name": "Huawei | CloudEngine | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PDC1000S12-DB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PDC1000S12-DB"]
         },
-        "power": {
-            "power": 1000.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1000.0
         }
-    }
+    ]
 }

@@ -1,0 +1,8 @@
+{
+    "name": "IRE-Polus | Horizon | PEM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "90a86177-ce6f-404f-a654-3d69dee1df02",
+    "description": "K4-H8 and K10-H8 Power Unit",
+    "c_group": [],
+    "genders": "mf"
+}

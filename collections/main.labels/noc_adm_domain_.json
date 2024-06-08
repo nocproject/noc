@@ -1,0 +1,19 @@
+{
+    "name": "noc::adm_domain::*",
+    "$collection": "main.labels",
+    "uuid": "06af59f4-0b9c-48a9-a60e-1ba1e1293089",
+    "description": "Auto assigned Labels for AdminstrativeDomain models.",
+    "bg_color1": 12597547,
+    "fg_color1": 16777215,
+    "bg_color2": 2719929,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["sa.ManagedObject"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

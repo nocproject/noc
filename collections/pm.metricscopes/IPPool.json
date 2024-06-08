@@ -37,6 +37,7 @@
             "store_column": "type"
         },
         {
+            "is_key_label": true,
             "is_order_key": false,
             "is_path": false,
             "is_primary_key": false,

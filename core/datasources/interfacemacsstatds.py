@@ -32,7 +32,7 @@ class InterfaceMACsStatDS(BaseDataSource):
     name = "interfacemacsstatds"
 
     fields = [
-        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT64),
         FieldInfo(name="interface_name"),
         FieldInfo(name="mac_count", type=FieldType.UINT),
     ]
@@ -65,8 +65,9 @@ class InterfaceMACsStatDS(BaseDataSource):
         )
         for row_num, row in enumerate(result.splitlines(), start=1):
             row = orjson.loads(row)
-            yield row_num, "managed_object_id", int(
-                row["managed_object_id"]
-            ) if resolve_managedobject_id else int(row["managed_object"])
+            if resolve_managedobject_id:
+                yield row_num, "managed_object_id", int(row["managed_object_id"])
+            else:
+                yield row_num, "managed_object_id", int(row["managed_object"])
             yield row_num, "interface_name", row["interface"]
             yield row_num, "mac_count", int(row["mac_count"])

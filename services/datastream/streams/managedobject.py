@@ -29,8 +29,14 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.object import Object
 from noc.sa.models.service import Service
 from noc.core.text import alnum_key
-from noc.core.comp import smart_text, smart_bytes
-from noc.core.mx import MX_ADMINISTRATIVE_DOMAIN_ID, MX_LABELS, MX_PROFILE_ID, MX_H_VALUE_SPLITTER
+from noc.core.comp import smart_text
+from noc.core.mx import (
+    MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_LABELS,
+    MX_PROFILE_ID,
+    MX_H_VALUE_SPLITTER,
+    MX_RESOURCE_GROUPS,
+)
 
 
 def qs(s):
@@ -56,6 +62,7 @@ class ManagedObjectDataStream(DataStream):
             "$version": 1,
             cls.F_LABELS_META: mo.effective_labels,
             cls.F_ADM_DOMAIN_META: mo.administrative_domain.id,
+            cls.F_GROUPS_META: [str(rg) for rg in mo.effective_service_groups],
             "bi_id": mo.bi_id,
             "name": qs(mo.name),
             "profile": qs(mo.profile.name),
@@ -419,6 +426,7 @@ class ManagedObjectDataStream(DataStream):
             "model": {
                 "id": str(o.model.id),
                 "name": str(o.model.name),
+                "description": str(o.model.description) if o.model.description else None,
                 "vendor": {"id": str(o.model.vendor.id), "name": str(o.model.vendor.name)},
                 "labels": [str(t) for t in o.model.labels or []],
                 # Alias
@@ -534,7 +542,8 @@ class ManagedObjectDataStream(DataStream):
             # @@todo Meta fields for deleted object
             return
         return {
-            MX_ADMINISTRATIVE_DOMAIN_ID: smart_bytes(data[cls.F_ADM_DOMAIN_META]),
-            MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(data[cls.F_LABELS_META])),
-            MX_PROFILE_ID: smart_bytes(data["object_profile"]["id"]),
+            MX_ADMINISTRATIVE_DOMAIN_ID: str(data[cls.F_ADM_DOMAIN_META]).encode(),
+            MX_LABELS: str(MX_H_VALUE_SPLITTER.join(data[cls.F_LABELS_META])).encode(),
+            MX_PROFILE_ID: str(data["object_profile"]["id"]).encode(),
+            MX_RESOURCE_GROUPS: str(MX_H_VALUE_SPLITTER.join(data[cls.F_GROUPS_META])).encode(),
         }

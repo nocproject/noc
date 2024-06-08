@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemotePing checker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,20 +9,21 @@
 from typing import List, Iterable
 
 # NOC modules
+from .base import Checker, CheckResult, MetricValue, CheckError
+from noc.core.wf.diagnostic import CLI_DIAG
 from noc.core.validators import is_ipv4
-from .base import ObjectChecker, CheckResult, MetricValue
-from ..wf.diagnostic import CLI_DIAG
 
 RP_DIAG = "REMOTE_PING"
 
 
-class RemotePing(ObjectChecker):
+class RemotePing(Checker):
     """
-    Check ManagedObject profile by rules
+    Check address availability from remote device
     """
 
     name = "remoteping"
     CHECKS: List[str] = [RP_DIAG]
+    REQUIRED_DIAGS: List[str] = [CLI_DIAG]
 
     def iter_result(self, checks=None) -> Iterable[CheckResult]:
         if not checks:
@@ -30,31 +31,32 @@ class RemotePing(ObjectChecker):
         for c in checks:
             if c.name != RP_DIAG or not c.arg0:
                 continue
-            for address in c.arg0.split(";"):
-                if not is_ipv4(address):
-                    continue
-                if CLI_DIAG not in self.object.diagnostics:
-                    yield CheckResult(
-                        RP_DIAG, status=True, skipped=True, error="CLI Diagnostic Required"
-                    )
-                try:
-                    r = self.object.scripts.ping(address=address)
-                except AttributeError:
-                    yield CheckResult(RP_DIAG, status=True, skipped=True, error="Invalid script")
-                    continue
-                # Remote Ping metrics
+            if not is_ipv4(c.address):
+                continue
+            try:
+                ping = self.get_script("ping")
+                r = ping(address=c.address)
+            except AttributeError:
                 yield CheckResult(
                     RP_DIAG,
-                    status=bool(r["success"]),
-                    arg0=c.arg0,
-                    metrics=[
-                        MetricValue(
-                            "Check | Result",
-                            r["success"],
-                            labels=[
-                                f"noc::check::name::{c.name}",
-                                f"noc::check::arg0::{c.arg0}",
-                            ],
-                        )
-                    ],
+                    status=True,
+                    skipped=True,
+                    error=CheckError(code="0", message="Invalid script"),
                 )
+                continue
+            # Remote Ping metrics
+            yield CheckResult(
+                RP_DIAG,
+                status=bool(r["success"]),
+                address=c.address,
+                metrics=[
+                    MetricValue(
+                        "Check | Result",
+                        r["success"],
+                        labels=[
+                            f"noc::check::name::{c.name}",
+                            f"noc::check::arg0::{c.arg0}",
+                        ],
+                    )
+                ],
+            )

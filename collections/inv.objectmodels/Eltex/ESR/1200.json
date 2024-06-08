@@ -1,0 +1,658 @@
+{
+    "name": "Eltex | ESR | 1200",
+    "$collection": "inv.objectmodels",
+    "uuid": "fd75c29e-d543-433c-8248-4640686c2564",
+    "vendor__code": "ELTEX",
+    "description": "Router Eltex ESR-1200, 4 × Combo ports 10/100/1000BASE-T with 4 x SFP 1000BASE-X, 8 × 10GBASE-R SFP+, 12 × Ethernet ports 10/100/1000BASE-T, Console RS-232 (RJ-45), 2 × USB 2.0, slot SD-card, 4 GB RAM, 1 GB NAND-Flash, 2 x slots for Power Supply 100–240 VAC or 36–72 VDC.",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::psu",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::fan",
+        "noc::inv::port"
+    ],
+    "connections": [
+        {
+            "name": "Console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi1",
+            "description": "GigabitEthernet 1/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi10",
+            "description": "GigabitEthernet 1/0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi11",
+            "description": "GigabitEthernet 1/0/11 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi12",
+            "description": "GigabitEthernet 1/0/12 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi13",
+            "description": "GigabitEthernet 1/0/13 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi14",
+            "description": "GigabitEthernet 1/0/14 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi15",
+            "description": "GigabitEthernet 1/0/15 Combo port",
+            "direction": "s",
+            "gender": "s",
+            "group": "15",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Gi15_SFP",
+            "description": "GigabitEthernet 1/0/15 Combo port",
+            "direction": "i",
+            "gender": "f",
+            "group": "15",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Gi16",
+            "description": "GigabitEthernet 1/0/16 Combo port",
+            "direction": "s",
+            "gender": "s",
+            "group": "16",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Gi16_SFP",
+            "description": "GigabitEthernet 1/0/16 Combo port",
+            "direction": "i",
+            "gender": "f",
+            "group": "16",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Gi2",
+            "description": "GigabitEthernet 1/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi3",
+            "description": "GigabitEthernet 1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi4",
+            "description": "GigabitEthernet 1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi5",
+            "description": "GigabitEthernet 1/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi6",
+            "description": "GigabitEthernet 1/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Gi7",
+            "description": "GigabitEthernet 1/0/7 Combo port",
+            "direction": "s",
+            "gender": "s",
+            "group": "7",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Gi7_SFP",
+            "description": "GigabitEthernet 1/0/7 Combo port",
+            "direction": "i",
+            "gender": "f",
+            "group": "7",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Gi8",
+            "description": "GigabitEthernet 1/0/8 Combo port",
+            "direction": "s",
+            "gender": "s",
+            "group": "8",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "Gi8_SFP",
+            "description": "GigabitEthernet 1/0/8 Combo port",
+            "direction": "i",
+            "gender": "f",
+            "group": "8",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Gi9",
+            "description": "GigabitEthernet 1/0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "PS-1",
+            "description": "Power slot 1",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "name": "PS-2",
+            "description": "Power slot 2",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/1",
+            "description": "TenGigabitEthernet 1/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/2",
+            "description": "TenGigabitEthernet 1/0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/3",
+            "description": "TenGigabitEthernet 1/0/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/4",
+            "description": "TenGigabitEthernet 1/0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/5",
+            "description": "TenGigabitEthernet 1/0/5 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/6",
+            "description": "TenGigabitEthernet 1/0/6 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/7",
+            "description": "TenGigabitEthernet 1/0/7 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "TenGigabitEthernet 1/0/8",
+            "description": "TenGigabitEthernet 1/0/8 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "usb1",
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "name": "usb2",
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-1200"]
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 352
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 430
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        }
+    ]
+}

@@ -8,48 +8,62 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "DC1+",
             "description": "DC A input Positive contact",
             "direction": "i",
             "gender": "f",
-            "name": "DC1+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
+            "name": "DC1-",
             "description": "DC A input Negative contact",
             "direction": "i",
             "gender": "f",
-            "name": "DC1-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
+            "name": "DC2+",
             "description": "DC B input Positive contact",
             "direction": "i",
             "gender": "f",
-            "name": "DC2+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
+            "name": "DC2-",
             "description": "DC B input Negative contact",
             "direction": "i",
             "gender": "f",
-            "name": "DC2-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
+            "name": "PSU",
             "description": "Internal Power slot",
             "direction": "i",
             "gender": "m",
-            "name": "PSU",
             "type__name": "Cisco | C3560E-C3750E | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C3K-PWR-265WDC", "C3K-PWR-265WDC="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C3K-PWR-265WDC", "C3K-PWR-265WDC="]
         }
-    }
+    ]
 }

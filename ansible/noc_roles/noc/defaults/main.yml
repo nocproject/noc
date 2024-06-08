@@ -12,7 +12,7 @@ noc_reports_dir: "{{ noc_var_lib }}/reports"
 noc_crashinfo_dir: "{{ noc_var_lib }}/var/cp/crashinfo/new"
 noc_services_file: "{{ noc_etc }}/noc_services.conf"
 noc_python_interpreter: python3
-noc_py3_ver: "3.8"
+noc_py3_ver: "3.11"
 bi_export_dir: "{{ noc_var_lib }}/bi"
 supervisorctl_key: "{{ lookup('supervisorctl_key', tower_data + '/noc/supervisorctl.key') }}"
 supervisor_sock_path: /var/run/supervisor_noc.sock
@@ -20,16 +20,14 @@ noc_py3_force_updates: false
 host_mount_points: "{{ ansible_mounts|json_query('[].mount') }}"
 
 py_version:
-  py3.6: "3.6.10"
-  py3.7: "3.7.7"
   py3.8: "3.8.13"
   py3.9: "3.9.15"
-
-py_hashes:
-  py3.6: "986078f11b39074be22a199e56491d98"
-  py3.7: "172c650156f7bea68ce31b2fd01fa766"
-  py3.8: "3000cf50aaa413052aef82fd2122ca78"
-  py3.9: "a510cda4d0328843ea8b3e2cb20d9061a48eea31"
+  py3.10: "3.10.13"
+  py3.11: "3.11.5"
 
 py_rel_name: "{{ py_version['py' ~ noc_py3_ver] }}"
 noc_python_url: "https://cdn.getnoc.com/noc/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz"
+noc_python_openssl_url: "https://cdn.getnoc.com/noc/repo/RedHat/7/openssl.tar.gz"
+
+noc_sclo_yum_repo: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/"
+noc_sclo_yum_repo_gpgkey: "https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo"

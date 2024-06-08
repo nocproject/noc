@@ -7,34 +7,42 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "PSU slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway S5700 | POWER"
         },
         {
+            "name": "power +",
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
             "group": "dc_jack",
-            "name": "power +",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | M4 Pin"
         },
         {
+            "name": "power -",
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
             "group": "dc_jack",
-            "name": "power -",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | M4 Pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LS5M100PWD00"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LS5M100PWD00"]
         }
-    }
+    ]
 }

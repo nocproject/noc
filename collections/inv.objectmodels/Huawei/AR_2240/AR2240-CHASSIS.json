@@ -9,107 +9,125 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "sru",
             "description": "SRU slot",
             "direction": "i",
             "gender": "f",
-            "name": "sru",
             "type__name": "Huawei | AR 2240 | SRU"
         },
         {
+            "name": "sic1",
             "description": "SIC slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "sic1",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
+            "name": "sic2",
             "description": "SIC slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "sic2",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
+            "name": "sic3",
             "description": "SIC slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "sic3",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
+            "name": "sic4",
             "description": "SIC slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "sic4",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
+            "name": "wsic1",
             "description": "WSIC slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "wsic1",
             "type__name": "Huawei | AR 2240 | WSIC"
         },
         {
+            "name": "wsic2",
             "description": "WSIC slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "wsic2",
             "type__name": "Huawei | AR 2240 | WSIC"
         },
         {
+            "name": "xsic1",
             "description": "XSIC slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "xsic1",
             "type__name": "Huawei | AR 2240 | XSIC"
         },
         {
+            "name": "xsic2",
             "description": "XSIC slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "xsic2",
             "type__name": "Huawei | AR 2240 | XSIC"
         },
         {
+            "name": "power1",
             "description": "PSU slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "power1",
             "type__name": "Huawei | AR 2240 | POWER"
         },
         {
+            "name": "power2",
             "description": "PSU slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "power2",
             "type__name": "Huawei | AR 2240 | POWER"
         },
         {
+            "name": "fan",
             "description": "FAN slot",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
             "type__name": "Huawei | AR 2240 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["AR0B0024BA"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 470
         },
-        "dimensions": {
-            "depth": 470,
-            "height": 88,
-            "width": 442
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 88
         },
-        "power": {
-            "power": 350.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 350.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AR0B0024BA"]
         }
-    }
+    ]
 }

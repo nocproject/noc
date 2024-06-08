@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import os
-
 # Third-party modules
 import pytest
 import yaml
@@ -22,8 +19,12 @@ class ToC(object):
             self.add_item([], kv)
 
     def add_item(self, path, kv):
-        k = list(kv.keys())[0]
-        v = kv[k]
+        if isinstance(kv, str):
+            k = kv
+            v = kv
+        else:
+            k = list(kv.keys())[0]
+            v = kv[k]
         if isinstance(v, list):
             for lkv in v:
                 self.add_item(path + [k], lkv)
@@ -39,4 +40,4 @@ class ToC(object):
 
 @pytest.fixture(scope="session")
 def toc():
-    return ToC(os.path.join("docs", "en", "mkdocs.yml"))
+    return ToC("mkdocs.yml")

@@ -1,0 +1,15 @@
+{
+  "$metric": "Interface | xDSL | Line | Attenuation | Downstream",
+  "$type": "caps",
+  "oids": [
+    [
+      "SNMP | MIB | ASAM-MIB",
+      {
+        "$type": "ifindex",
+        "oid": "1.3.6.1.4.1.637.61.1.39.12.1.1.8.{{ ifIndex }}",
+        "type": "gauge",
+        "units": "dB"
+      }
+    ]
+  ]
+}

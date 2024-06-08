@@ -9,9 +9,10 @@
 import operator
 import cachetools
 from threading import Lock
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -239,13 +240,13 @@ class NetworkSegmentProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return NetworkSegmentProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["NetworkSegmentProfile"]:
+        return NetworkSegmentProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return NetworkSegmentProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["NetworkSegmentProfile"]:
+        return NetworkSegmentProfile.objects.filter(bi_id=bi_id).first()
 
     def on_save(self):
         if hasattr(self, "_changed_fields") and "discovery_interval" in self._changed_fields:

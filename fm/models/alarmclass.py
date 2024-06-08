@@ -9,9 +9,10 @@
 import os
 from threading import Lock
 import operator
-from typing import Any, Dict, Optional, List, Callable
+from typing import Any, Dict, Optional, List, Callable, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import (
@@ -40,6 +41,7 @@ from .datasource import DataSource
 from .alarmrootcausecondition import AlarmRootCauseCondition
 from .alarmclasscategory import AlarmClassCategory
 from .alarmplugin import AlarmPlugin
+from .alarmseverity import AlarmSeverity
 
 id_lock = Lock()
 handlers_lock = Lock()
@@ -203,18 +205,24 @@ class AlarmClass(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["AlarmClass"]:
-        return AlarmClass.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AlarmClass"]:
+        return AlarmClass.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> Optional["AlarmClass"]:
-        return AlarmClass.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["AlarmClass"]:
+        return AlarmClass.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["AlarmClass"]:
         return AlarmClass.objects.filter(name=name).first()
+
+    @property
+    def severity(self) -> Optional[AlarmSeverity]:
+        if self.labels and self.labels[0].startswith("noc::severity::"):
+            return AlarmSeverity.get_by_code(self.labels[0][15:].upper())
+        return None
 
     def get_handlers(self) -> List[Callable]:
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
@@ -299,7 +307,7 @@ class AlarmClass(Document):
         if self.topology_rca:
             r["topology_rca"] = True
         if self.affected_service:
-            r["affected_service"] = True
+            r["affected_service"] = self.affected_service
         if self.plugins:
             r["plugins"] = [p.json_data for p in self.plugins]
         if self.notification_delay:

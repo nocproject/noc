@@ -1,0 +1,39 @@
+{
+    "name": "Eltex | LTP16N",
+    "$collection": "inv.connectionrules",
+    "uuid": "6f5c359e-18bf-4dcf-9fc7-aff642397fdc",
+    "description": "Transceiver slots: PON_{N} or Front_{N}\nPower Supply: psuN",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "PON_{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Front_{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        }
+    ]
+}

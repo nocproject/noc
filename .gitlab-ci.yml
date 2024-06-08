@@ -49,30 +49,15 @@ py-lint:
     - pip install -r .requirements/lint.txt
     # Create directory for reports
     - mkdir -p build/reports
-    # Get list of changed files
-    # @todo: Deprecated, remove in future
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
     # Check formatting
-    - black --check --diff . 2>&1 | ./scripts/ci/black-junit.py --tee --output=build/reports/junit-black.xml
+    - black --target-version py310 --check --diff . 2>&1 | ./scripts/ci/black-junit.py --tee --output=build/reports/junit-black.xml
     - STATUS_BLACK=$?
     # Ruff linter
     - ruff --format grouped -q . # To see stdout in joblog
     - ruff -q --format=junit . > build/reports/junit-ruff.xml
     - STATUS_RUFF=$?
-    # flake8
-    # @todo: Will be replaced by ruff
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        flake8 --format junit-xml $FLIST > build/reports/junit-flake8.xml;
-        STATUS_FLAKE8=$?;
-      else
-        echo "No files to lint";
-        true;
-        STATUS_FLAKE8=$?;
-      fi
     # Final result
-    - test $STATUS_BLACK -a $STATUS_RUFF -a $STATUS_FLAKE8
+    - test $STATUS_BLACK -a $STATUS_RUFF
   only:
     refs:
       - merge_requests
@@ -114,6 +99,34 @@ mypy:
     - docker
   allow_failure: true
 
+eslint:
+  stage: Lint
+  image: node:22-bookworm
+  script:
+    - set -x
+    - export ESLINT_USE_FLAT_CONFIG=false
+    # Get list of changed files
+    # @todo: Deprecated, remove in future
+    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep "\.js$" | grep -v ".docker/"|| true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        npm install -g eslint
+        eslint $FLIST
+      else
+        echo "No files to lint"
+        true;
+      fi
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - "*.js"
+      - "**/*.js"
+  tags:
+    - docker
+  allow_failure: true
+
 prettier:
   stage: Lint
   image: registry.getnoc.com/infrastructure/prettier:master
@@ -132,12 +145,10 @@ prettier:
     refs:
       - merge_requests
     changes:
-      - "*.js"
       - "*.json"
       - "*.css"
       - "*.yml"
       - "*.md"
-      - "**/*.js"
       - "**/*.json"
       - "**/*.css"
       - "**/*.yml"
@@ -199,43 +210,29 @@ py:test:
     expire_in: 7 days
 
 # Build Docs section
-build:Docs:ru:
+build:Docs:
   stage: Build
   environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
+  image: python:3.11-bullseye
   script:
-    - set -x
-    - mkdocs build --strict --config-file=docs/ru/mkdocs.yml
+    - set -e -x
+    - pip3 install -r .requirements/docs.txt
+    - mkdocs build
+    - python3 scripts/docs/minify.py
   tags:
     - docker
   artifacts:
     paths:
-      - build/docs/ru
+      - build/docs
     expire_in: 2 hours
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-        - "docs/ru/*"
-        - "docs/ru/**/*"
-
-build:Docs:en:
-  stage: Build
-  environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
-  script:
-    - set -x
-    - mkdocs build --strict --config-file=docs/en/mkdocs.yml
-  tags:
-    - docker
-  artifacts:
-    paths:
-      - build/docs/en
-    expire_in: 2 hours
-  rules:
-    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
-      changes:
-        - "docs/en/*"
-        - "docs/en/**/*"
+        - "docs/*"
+        - "docs/**/*"
+        - "mkdocs.yml"
+        - "macros.py"
+        - ".requirements/docs.txt"
 
 #Build Image section
 build:Release Image:
@@ -319,24 +316,6 @@ build:web:
       - build/rust/release
     expire_in: 7 days
 
-Build dnssync:
-  stage: Build
-  extends: .build_rust
-  variables:
-    BUILD_TARGET: dnssync
-  artifacts:
-    paths:
-      - build/rust/release/noc-dns-sync
-
-Build agent:
-  stage: Build
-  extends: .build_rust
-  variables:
-    BUILD_TARGET: agent
-  artifacts:
-    paths:
-      - build/rust/release/noc-agent
-
 # Upload section
 upload docs:
   stage: Upload
@@ -344,7 +323,7 @@ upload docs:
   extends: .upload
   variables:
     SOURCE: build/docs/*
-    DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
+    DEST: cdn/$S3_BUCKET/
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
@@ -352,19 +331,6 @@ upload docs:
       changes:
         - "docs/*"
         - "docs/**/*"
-
-upload dnssync:
-  stage: Upload
-  environment: dnssync
-  extends: .upload
-  variables:
-    SOURCE: build/rust/release/noc-dns-sync
-    DEST: cdn/$S3_BUCKET/dnssync/
-    BUILD_TARGET: dnssync
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - rust/$BUILD_TARGET/*
-        - rust/$BUILD_TARGET/**/*
+        - "mkdocs.yml"
+        - "macros.py"
+        - ".requirements/docs.txt"

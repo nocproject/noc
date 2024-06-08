@@ -10,6 +10,7 @@ import pytest
 
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.protocol import ProtocolVariant
 from .utils import CollectionTestHelper
 
 helper = CollectionTestHelper(ObjectModel)
@@ -71,6 +72,11 @@ def check_protocols(c, protocols):
         )
 
 
+def test_data_format(model):
+    if model.data is not None:
+        assert isinstance(model.data, list), 'Object model field "data" must have type "list"'
+
+
 def test_connection_checklist(model):
     for c in model.connections:
         checklist = CONNECTION_CHECKLIST.get(c.type.name)
@@ -80,9 +86,10 @@ def test_connection_checklist(model):
             with pytest.assume:
                 check_direction(c, checklist["directions"])
         if "protocols" in checklist and not model.get_data("length", "length"):
+            p_checks = [ProtocolVariant.get_by_code(p) for p in checklist["protocols"]]
             # Empty protocols on Ware
             with pytest.assume:
-                check_protocols(c, checklist["protocols"])
+                check_protocols(c, p_checks)
 
 
 # dict must have one or more keys:
@@ -106,12 +113,12 @@ CONNECTION_CHECKLIST = {
             ">RS232",
             ">RS485",
             ">DryContact",
-            "G.703",
+            "G703",
             "ToD",
-            "EM",  # Telephony E&M over PBX
-            ">TL1",
+            "E&M",  # Telephony E&M over PBX
             "IEEE1588",
-            "ADSLoPOTS",
+            "TL1",
+            "ADSL",
         ],
     },
     "Electrical | SFF-8470": {"directions": "s", "protocols": ["10GBASECX4"]},
@@ -143,13 +150,21 @@ CONNECTION_CHECKLIST = {
     "Transceiver | GBIC": {"directions": ["i", "o"], "protocols": ["TransEth100M", "TransEth1G"]},
     "Transceiver | SFP": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth100M", "TransEth1G", "GPON", "OC3/STM1", "OC48/STM16"],
+        "protocols": ["TransEth100M", "TransEth1G", "GPON"],
     },
     "Transceiver | SFP | Cisco": {
         "directions": ["i", "o"],
         "protocols": ["TransEth100M", "TransEth1G", "GPON"],
     },
-    "Transceiver | SFP+": {"directions": ["i", "o"], "protocols": ["TransEth1G", "TransEth10G"]},
+    "Transceiver | SFP+": {
+        "directions": ["i", "o"],
+        "protocols": [
+            "TransEth1G",
+            "TransEth10G",
+            "OTU1",
+            "OTU2",
+        ],
+    },
     "Transceiver | SFP+ | Cisco": {
         "directions": ["i", "o"],
         "protocols": ["TransEth1G", "TransEth10G"],
@@ -198,24 +213,34 @@ CONNECTION_CHECKLIST = {
         "directions": ["i", "o"],
         "protocols": ["TransEth400G", "TransEth800G"],
     },
-    "Transceiver | XFP": {"directions": ["i", "o"], "protocols": ["TransEth10G", "OC192/STM64"]},
+    "Transceiver | XFP": {"directions": ["i", "o"], "protocols": ["TransEth10G"]},
     "Transceiver | XFP | Cisco": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth10G", "OC192/STM64"],
+        "protocols": ["TransEth10G"],
     },
     "Transceiver | XENPAK | Cisco": {"directions": ["i", "o"], "protocols": ["TransEth10G"]},
     "Transceiver | X2 | Cisco": {"directions": ["i", "o"], "protocols": ["TransEth10G"]},
     "Transceiver | CFP": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth40G", "TransEth100G", "OC768/STM256"],
+        "protocols": ["TransEth40G", "TransEth100G"],
     },
     "Transceiver | CFP2": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth40G", "TransEth100G", "TransEth200G", "OC768/STM256"],
+        "protocols": [
+            "TransEth40G",
+            "TransEth100G",
+            "TransEth200G",
+            "OTU1",
+            "OTU2",
+            "OTU2e",
+            "OTU3",
+            "OTU4",
+            "OTUCn",
+        ],
     },
     "Transceiver | CFP4": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth40G", "TransEth100G", "OC768/STM256"],
+        "protocols": ["TransEth40G", "TransEth100G"],
     },
     "Transceiver | CFP8": {
         "directions": ["i", "o"],
@@ -224,7 +249,6 @@ CONNECTION_CHECKLIST = {
             "TransEth100G",
             "TransEth200G",
             "TransEth400G",
-            "OC768/STM256",
         ],
     },
 }

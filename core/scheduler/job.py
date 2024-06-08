@@ -69,6 +69,7 @@ class Job(object):
     S_STOP = "S"  # Stopped by operator
     S_DISABLED = "D"  # Disabled by system
     S_SUSPEND = "s"  # Suspended by system
+    S_POSTPONED = "P"  # Postponed until next restart
 
     # Exit statuses
     E_SUCCESS = "S"  # Completed successfully

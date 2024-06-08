@@ -5,12 +5,16 @@
     "vendor__code": "NOC",
     "description": "Building's floor",
     "connections": [],
-    "data": {
-        "container": {
-            "container": true
+    "data": [
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         },
-        "contacts": {
-            "has_contacts": true
+        {
+            "attr": "has_contacts",
+            "interface": "contacts",
+            "value": true
         }
-    }
+    ]
 }

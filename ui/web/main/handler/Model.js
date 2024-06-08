@@ -28,6 +28,16 @@ Ext.define("NOC.main.handler.Model", {
             type: "string"
         },
         {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
+        },
+        {
             name: "allow_config_filter",
             type: "boolean"
         },

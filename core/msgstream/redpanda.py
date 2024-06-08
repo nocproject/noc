@@ -9,7 +9,7 @@
 import logging
 import asyncio
 import random
-from typing import Optional, Dict, AsyncIterable, List
+from typing import Optional, Dict, AsyncIterable, List, Union
 from collections import defaultdict
 
 # Third-party modules
@@ -52,6 +52,8 @@ class RedPandaClient(object):
         self.admin_client: Optional[KafkaAdminClient] = None
         self.loop = asyncio.get_running_loop()
         self.stub = None
+        kafka_logger = logging.getLogger("kafka")
+        kafka_logger.setLevel(logging.WARN)
 
     async def resolve_broker(self) -> str:
         # Getting addresses from config directly will block the loop on resolve() method.
@@ -88,12 +90,9 @@ class RedPandaClient(object):
     @classmethod
     def get_replication_factor(cls, meta) -> int:
         """
-        Only Odd number
+        Only Odd number, Max 3. Maybe config ?
         """
-        rf = len(meta.brokers)
-        if not rf % 2:
-            rf += 1
-        return rf
+        return min(len(meta.brokers), 3) or 1
 
     @staticmethod
     async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
@@ -224,16 +223,21 @@ class RedPandaClient(object):
         return self.admin_client
 
     @staticmethod
-    def get_topic_config(name) -> Dict[str, str]:
+    def get_topic_config(name, replication_factor: int = 1) -> Dict[str, str]:
         """
         Return topic retention settings
         :param name:
+        :param replication_factor: Cluster replicator factor
         :return:
         """
         if name.startswith("__"):
             return {}
         cfg = get_stream(name)
-        r = {}
+        # Replica not more 3
+        isr = min(cfg.config.replication_factor or 3, replication_factor or 1) - 1
+        r = {
+            "min.insync.replicas": max(isr, 1),
+        }
         if cfg.config.retention_bytes:
             r["retention.bytes"] = str(cfg.config.retention_bytes)
         if cfg.config.retention_ages:
@@ -242,7 +246,6 @@ class RedPandaClient(object):
             r["segment.bytes"] = str(cfg.config.segment_bytes)
         if cfg.config.segment_ages:
             r["segment.ms"] = str(cfg.config.segment_ages * 1000)
-        # "min.insync.replicas": 2,
         return r or None
 
     async def create_stream(
@@ -267,7 +270,7 @@ class RedPandaClient(object):
                     name=name,
                     num_partitions=partitions,
                     replication_factor=replication_factor,
-                    topic_configs=self.get_topic_config(name),
+                    topic_configs=self.get_topic_config(name, replication_factor),
                 )
             ],
             validate_only=False,
@@ -292,10 +295,10 @@ class RedPandaClient(object):
         partition: Optional[int] = None,
         start_offset: Optional[int] = None,
         start_timestamp: Optional[float] = None,
-        resume: bool = False,
+        resume: bool = True,
         cursor_id: Optional[str] = None,
         timeout: Optional[int] = None,
-    ) -> AsyncIterable[Message]:
+    ) -> None:
         """
 
         Client Example:
@@ -332,6 +335,8 @@ class RedPandaClient(object):
             )
         else:
             consumer.subscribe(topics=streams)
+        if not resume:
+            return
         for tp in consumer.assignment():
             if start_offset is not None:
                 consumer.seek(tp, start_offset)
@@ -341,27 +346,28 @@ class RedPandaClient(object):
                 )
                 consumer.seek(tp, offset[tp].offset)
             else:
-                logger.info("Getting stored offset for stream '%s'", tp)
+                logger.debug("Getting stored offset for stream '%s'", tp)
                 r = await consumer.seek_to_committed(tp)
                 if r[tp] is not None:
                     logger.info("Resuming from offset %d", r[tp])
                 else:
                     await consumer.seek_to_end(tp)
-        # async with consumer as c:
-        async for msg in consumer:
-            yield Message(
-                value=msg.value,
-                subject=msg.topic,
-                offset=msg.offset,
-                timestamp=msg.timestamp,
-                key=msg.key,
-                partition=msg.partition,
-                headers=dict(msg.headers),
-            )
-            # if cursor_id:
-            #     await consumer.commit(
-            #         {TopicPartition(msg.topic, partition=msg.partition): msg.offset + 1}
-            #     )
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        consumer = await self.get_consumer()
+        msg = await consumer.__anext__()
+        return Message(
+            value=msg.value,
+            subject=msg.topic,
+            offset=msg.offset,
+            timestamp=msg.timestamp,
+            key=msg.key,
+            partition=msg.partition,
+            headers=dict(msg.headers),
+        )
 
     async def subscribe(
         self,
@@ -374,7 +380,20 @@ class RedPandaClient(object):
         timeout: Optional[int] = None,
         allow_isr: bool = False,
     ) -> AsyncIterable[Message]:
-        async for msg in self._subscribe(
+        """
+        For compatible NOC Client method
+        :param stream:
+        :param partition:
+        :param start_offset:
+        :param start_timestamp:
+        :param resume:
+        :param cursor_id:
+        :param timeout:
+        :param allow_isr:
+        :return:
+        """
+        # async with consumer as c:
+        await self._subscribe(
             streams=[stream],
             group_id=stream,
             partition=partition,
@@ -383,7 +402,8 @@ class RedPandaClient(object):
             resume=resume,
             cursor_id=cursor_id,
             timeout=timeout,
-        ):
+        )
+        async for msg in self:
             yield msg
 
     async def publish(
@@ -447,7 +467,7 @@ class RedPandaClient(object):
 
     async def set_cursor(self, stream: str, partition: int, cursor_id: str, offset: int) -> None:
         """
-        Settint cursor offset for stream
+        Setting cursor offset for stream
         :param stream: Topic name
         :param partition: Partition number
         :param cursor_id:
@@ -459,3 +479,73 @@ class RedPandaClient(object):
         if TopicPartition(topic=stream, partition=partition) not in consumer.assignment():
             consumer.assign([TopicPartition(topic=stream, partition=partition)])
         await consumer.commit({TopicPartition(topic=stream, partition=partition): offset})
+
+    async def copy_topic_messages(
+        self,
+        from_topic,
+        to_topic,
+        partitions: Optional[Union[Dict[int, int], int]] = None,
+    ) -> Dict[int, int]:
+        """
+        Copy message from one topic to another
+        :param from_topic: From topic
+        :param to_topic: To topic
+        :param partitions: Number of from partition
+        :return:
+        """
+        n_msg: Dict[int, int] = {}  # partition -> copied messages
+        if not partitions:
+            partitions = {0: 0}
+        elif isinstance(partitions, int):
+            partitions = {p: p for p in range(0, partitions)}
+        elif not isinstance(partitions, dict):
+            raise AttributeError("Partitions must be Int or Dict")
+        consumer = AIOKafkaConsumer(
+            loop=self.loop,
+            bootstrap_servers=self.bootstrap,
+            client_id=CLIENT_ID,
+            enable_auto_commit=False,
+            group_id=from_topic,
+        )
+        consumer.subscribe(topics=[from_topic])
+        await consumer.start()
+        for from_p, to_p in partitions.items():
+            logger.info("Copying partition %s:%s to %s:%s", from_topic, from_p, to_topic, to_p)
+            n_msg[to_p] = 0
+            # Get current offset
+            p_meta = await self.fetch_partition_metadata(from_topic, from_p)
+            newest_offset = p_meta.newest_offset or 0
+            # Fetch cursor
+            tp = TopicPartition(topic=from_topic, partition=from_p)
+            r = await consumer.seek_to_committed(tp)
+            if r[tp] is not None:
+                logger.info("Resuming from offset %d", r[tp])
+            else:
+                continue
+            current_offset = r[tp]
+            # For -1 as nothing messages
+            current_offset = max(0, current_offset)
+            if current_offset > newest_offset:
+                # Fix if cursor not set properly
+                current_offset = newest_offset
+            logger.info(
+                "Start copying from current_offset: %s to newest offset: %s",
+                current_offset,
+                newest_offset,
+            )
+            if current_offset < newest_offset:
+                async for msg in consumer:
+                    await self.publish(
+                        msg.value,
+                        stream=to_topic,
+                        partition=to_p,
+                    )
+                    n_msg[to_p] += 1
+                    if msg.offset == newest_offset:
+                        break
+            if n_msg[to_p]:
+                logger.info("  %d messages has been copied", n_msg[to_p])
+            else:
+                logger.info("  nothing to copy")
+        await consumer.stop()
+        return n_msg

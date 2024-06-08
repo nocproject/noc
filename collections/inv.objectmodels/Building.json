@@ -5,15 +5,21 @@
     "vendor__code": "NOC",
     "description": "Building",
     "connections": [],
-    "data": {
-        "container": {
-            "container": true
+    "data": [
+        {
+            "attr": "layer",
+            "interface": "geopoint",
+            "value": "addresses"
         },
-        "geopoint": {
-            "layer": "addresses"
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         },
-        "contacts": {
-            "has_contacts": true
+        {
+            "attr": "has_contacts",
+            "interface": "contacts",
+            "value": true
         }
-    }
+    ]
 }

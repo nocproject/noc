@@ -1,0 +1,8 @@
+{
+    "name": "Telecom",
+    "uuid": "f6101a17-fc21-47ec-8bef-3edae3b65877",
+    "full_name": "Telecom",
+    "code": ["TELECOM"],
+    "site": "https://npotelecom.ru/",
+    "$collection": "inv.vendors"
+}

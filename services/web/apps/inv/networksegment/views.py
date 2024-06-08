@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.networksegment application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,8 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
 from noc.core.comp import smart_text
+from noc.core.middleware.tls import get_user
+from noc.core.validators import is_objectid
 from noc.core.translation import ugettext as _
 
 
@@ -29,6 +31,16 @@ class NetworkSegmentApplication(ExtDocApplication):
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile.style else ""
+
+    def clean(self, data):
+        is_create = not is_objectid(data["id"])
+        r = super().clean(data)
+        if is_create:
+            # Set user Permission whe create NetworkSegment
+            user = get_user()
+            if not user.is_superuser:
+                r["adm_domains"] = UserAccess.get_domains(user)
+        return r
 
     def queryset(self, request, query=None):
         qs = super().queryset(request, query)

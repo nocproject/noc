@@ -1,0 +1,12 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "from_state__uuid": "50a6934f-e29c-4bae-a834-8bd6b97fbbdf",
+    "to_state__uuid": "fc728920-9525-4fab-9c02-81c3c74320af",
+    "uuid": "15b624e5-d420-435d-bd98-c810d09f4c12",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "expired",
+    "label": "Expired",
+    "description": "Discovered Object is not seen",
+    "enable_manual": false
+}

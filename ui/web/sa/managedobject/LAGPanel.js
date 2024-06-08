@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject LAG Panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.LAGPanel");
@@ -29,6 +29,11 @@ Ext.define("NOC.sa.managedobject.LAGPanel", {
                         {
                             text: __("Name"),
                             dataIndex: "name"
+                        },
+                        {
+                            text: __("Status"),
+                            dataIndex: "status",
+                            width: 100
                         },
                         {
                             text: __("Count"),

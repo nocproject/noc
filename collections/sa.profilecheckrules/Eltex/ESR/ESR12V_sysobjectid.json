@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | ESR | ESR12V sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "dab31f87-8bb6-41cf-8703-f790e2355b7f",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.105",
+    "action": "match",
+    "profile__name": "Eltex.ESR"
+}

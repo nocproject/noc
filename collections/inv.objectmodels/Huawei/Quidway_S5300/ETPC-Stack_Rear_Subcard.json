@@ -7,42 +7,62 @@
     "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
+            "name": "in",
             "description": "Rear slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway S5300 | Rear slot"
         },
         {
+            "name": "Stack 1",
             "description": "Stacking interface 1",
             "direction": "s",
             "gender": "f",
-            "name": "Stack 1",
             "type__name": "Huawei | Quidway S5300 | Stack 12G"
         },
         {
+            "name": "Stack 2",
             "description": "Stacking interface 2",
             "direction": "s",
             "gender": "f",
-            "name": "Stack 2",
             "type__name": "Huawei | Quidway S5300 | Stack 12G"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03020NPW"],
-            "part_no": ["CX22ETPC", "LS5DSTACK200"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 0.5
         },
-        "dimensions": {
-            "depth": 69,
-            "height": 22,
-            "width": 200
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX22ETPC", "LS5DSTACK200"]
         },
-        "power": {
-            "power": 0.5
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03020NPW"]
         },
-        "weight": {
-            "weight": 0.2
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.2
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 200
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 69
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 22
         }
-    }
+    ]
 }

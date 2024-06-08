@@ -34,6 +34,11 @@ Ext.define("NOC.inv.cpe.Application", {
                     width: 160
                 },
                 {
+                    text: __("Label"),
+                    dataIndex: "label",
+                    width: 160
+                },
+                {
                     text: __("Profile"),
                     dataIndex: "profile",
                     width: 150,
@@ -83,7 +88,7 @@ Ext.define("NOC.inv.cpe.Application", {
                     xtype: "labelfield",
                     fieldLabel: __("Labels"),
                     query: {
-                        "enable_service": true
+                        "allow_models": ["inv.CPE"]
                     },
                 },
                 {
@@ -128,6 +133,13 @@ Ext.define("NOC.inv.cpe.Application", {
                             uiStyle: "medium"
                         }
                     ]
+                },
+                {
+                    name: "bi_id",
+                    xtype: "displayfield",
+                    fieldLabel: __("BI ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
                 },
                 //{
                 //    xtype: "fieldset",
@@ -204,6 +216,39 @@ Ext.define("NOC.inv.cpe.Application", {
                 //        }
                 //    ]
                 //},
+                {
+                    name: "controllers",
+                    xtype: "gridfield",
+                    fieldLabel: __("Controllers"),
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Name"),
+                            dataIndex: "managed_object",
+                            renderer: NOC.render.Lookup("managed_object"),
+                            width: 250,
+                            editor: "sa.managed_object.LookupField"
+                        },
+                        {
+                            text: __("LocalID"),
+                            dataIndex: "local_id",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Active"),
+                            dataIndex: "is_active",
+                            width: 25,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Interface"),
+                            dataIndex: "interface",
+                            width: 100,
+                            editor: "textfield"
+                        }
+                    ]
+                },
                 {
                     name: "caps",
                     xtype: "gridfield",

@@ -7,25 +7,33 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "in",
             "description": "WAN Interface Card connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["VWIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "shdsl",
             "description": "SHDSL ports",
             "direction": "s",
             "gender": "f",
-            "name": "shdsl",
-            "protocols": ["SHDSL"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "SHDSL"
+            }],
             "type__name": "Electrical | RJ11"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WIC-1SHDSL-V3", "WIC-1SHDSL-V3="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WIC-1SHDSL-V3", "WIC-1SHDSL-V3="]
         }
-    }
+    ]
 }

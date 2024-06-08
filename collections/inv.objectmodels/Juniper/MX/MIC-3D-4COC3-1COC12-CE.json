@@ -7,49 +7,67 @@
     "cr_context": "MIC",
     "connections": [
         {
+            "name": "in",
             "description": "MPC connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "0/0",
             "description": "Port 0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["OC3/STM1"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/1",
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
-            "protocols": ["OC3/STM1"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/0",
             "description": "Port 2",
             "direction": "i",
             "gender": "f",
-            "name": "1/0",
-            "protocols": ["OC3/STM1"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1/1",
             "description": "Port 3",
             "direction": "i",
             "gender": "f",
-            "name": "1/1",
-            "protocols": ["OC3/STM1"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MIC-3D-4COC3-1COC12-CE"],
-            "part_no": ["750-045104"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-045104"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MIC-3D-4COC3-1COC12-CE"]
         }
-    }
+    ]
 }

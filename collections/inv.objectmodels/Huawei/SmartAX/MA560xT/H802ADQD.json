@@ -9,40 +9,60 @@
     "labels": ["noc::inv::lc"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | SB"
         },
         {
+            "name": "xDSL0",
             "description": "ADSL 0-23",
             "direction": "s",
             "gender": "f",
-            "name": "xDSL0",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
+            "name": "xDSL1",
             "description": "ADSL 24-47",
             "direction": "s",
             "gender": "f",
-            "name": "xDSL1",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H802ADQD"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H802ADQD"]
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 396,
-            "width": 23
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 31.0
         },
-        "power": {
-            "power": 31.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 23
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 396
         }
-    }
+    ]
 }

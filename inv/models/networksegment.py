@@ -9,8 +9,10 @@
 import operator
 import cachetools
 from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -169,20 +171,18 @@ class NetworkSegment(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return NetworkSegment.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["NetworkSegment"]:
+        return NetworkSegment.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return NetworkSegment.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["NetworkSegment"]:
+        return NetworkSegment.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     def _reset_caches(cls, id):
         try:
-            del cls._id_cache[
-                str(id),
-            ]  # Tuple
+            del cls._id_cache[str(id),]  # Tuple
         except KeyError:
             pass
 

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,19 +13,21 @@ import re
 from typing import Any, Dict, Optional, List, Tuple, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     IntField,
     UUIDField,
-    DictField,
     ListField,
-    EmbeddedDocumentField,
+    DynamicField,
+    EmbeddedDocumentListField,
     ObjectIdField,
+    FloatField,
 )
 from mongoengine.errors import ValidationError
-import cachetools
 from pymongo import InsertOne, DeleteOne
+import cachetools
 
 # NOC modules
 from noc.main.models.doccategory import category
@@ -36,18 +38,152 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
+from noc.core.discriminator import discriminator
+from .objectconfigurationrule import ObjectConfigurationRule
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
 from .unknownmodel import UnknownModel
 from .vendor import Vendor
+from .protocol import Protocol
+from .facade import Facade
 
 id_lock = Lock()
 
 rx_composite_pins_validate = re.compile(r"\d+\-\d+")
 
 
-class ObjectModelConnection(EmbeddedDocument):
+class ModelAttr(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
+    interface = StringField()
+    attr = StringField()
+    value = DynamicField()
+
+    def __str__(self) -> str:
+        return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "interface": self.interface,
+            "attr": self.attr,
+            "value": self.value,
+        }
+        return r
+
+
+class ProtocolVariantItem(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    protocol: "Protocol" = PlainReferenceField(Protocol, required=True)
+    discriminator = StringField(required=False)
+    direction = StringField(choices=[">", "<", "*"], default="*")
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+
+    def __str__(self):
+        return self.code
+
+    def __hash__(self):
+        return hash(self.code)
+
+    @property
+    def code(self) -> str:
+        if not self.discriminator and self.direction == "*":
+            return self.protocol.code
+        elif not self.discriminator:
+            return f"{self.direction}::{self.protocol.code}"
+        return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "protocol__code": self.protocol.code,
+            "direction": self.direction,
+        }
+        if self.discriminator:
+            r["discriminator"] = self.discriminator
+        return r
+
+    def __eq__(self, other):
+        r = self.protocol.id == other.protocol.id and self.direction == other.direction
+        if not self.discriminator:
+            return r
+        return r and self.discriminator == other.discriminator
+
+    def __contains__(self, item) -> bool:
+        r = self.protocol.id == item.protocol.id and self.direction != item.direction
+        if not self.discriminator:
+            return r
+        return r and self.discriminator == item.discriminator
+
+
+class Crossing(EmbeddedDocument):
+    """
+    Dynamic/Static crossing.
+
+    Attributes:
+        input: Input slot name.
+        input_discriminator: Input filter.
+        output: Output slot name.
+        output_discriminator: When not-empty, input to output mapping.
+        gain_db: When non-empty, signal gain in dB.
+    """
+
+    input = StringField(required=True)
+    input_discriminator = StringField(required=False)
+    output = StringField(required=True)
+    output_discriminator = StringField(required=False)
+    gain_db = FloatField(required=False)
+
+    def __str__(self) -> str:
+        r = [self.input]
+        if self.input_discriminator:
+            r += [f": {self.input_discriminator}"]
+        r += [" -> ", self.output]
+        if self.output_discriminator:
+            r += [f": {self.output_discriminator}"]
+        return "".join(r)
+
+    def update_params(self, input_discriminator: str, output_discriminator: str, gain_db):
+        if self.input_discriminator != input_discriminator:
+            self.input_discriminator == input_discriminator
+        if self.output_discriminator != output_discriminator:
+            self.output_discriminator = input_discriminator
+        if self.gain_db != gain_db:
+            self.gain_db = gain_db
+        self.clean()
+
+    def clean(self) -> None:
+        if self.input_discriminator:
+            try:
+                discriminator(self.input_discriminator)
+            except ValueError as e:
+                msg = f"Invalid input_discriminator: {e}"
+                raise ValidationError(msg) from e
+        if self.output_discriminator:
+            try:
+                discriminator(self.output_discriminator)
+            except ValueError as e:
+                msg = f"Invalid output_discriminator: {e}"
+                raise ValidationError(msg) from e
+        super().clean()
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r: Dict[str, Any] = {
+            "input": self.input,
+            "output": self.output,
+        }
+        if self.input_discriminator:
+            r["input_discriminator"] = self.input_discriminator
+        if self.output_discriminator:
+            r["output_discriminator"] = self.output_discriminator
+        if self.gain_db:
+            r["gain_db"] = self.gain_db
+        return r
+
+
+class ObjectModelConnection(EmbeddedDocument):
+    _meta = {"strict": False, "auto_create_index": False}
+
     name = StringField()
     description = StringField()
     type = PlainReferenceField(ConnectionType)
@@ -55,16 +191,20 @@ class ObjectModelConnection(EmbeddedDocument):
     gender = StringField(choices=["s", "m", "f"])
     combo = StringField(required=False)
     group = StringField(required=False)
-    cross = StringField(required=False)
-    protocols = ListField(StringField(), required=False)
+    cross_direction: Optional[str] = StringField(
+        choices=["i", "o", "s"], required=False
+    )  # Inner  # Outer  # Any
+    protocols: List["ProtocolVariantItem"] = EmbeddedDocumentListField(ProtocolVariantItem)
+    cfg_context: str = StringField()
     internal_name = StringField(required=False)
     composite = StringField(required=False)
     composite_pins = StringField(required=False)
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
 
     def __str__(self):
         return self.name
 
-    def __eq__(self, other):
+    def __eq__(self, other: "ObjectModelConnection"):
         return (
             self.name == other.name
             and self.description == other.description
@@ -72,12 +212,14 @@ class ObjectModelConnection(EmbeddedDocument):
             and self.direction == other.direction
             and self.gender == other.gender
             and self.combo == other.combo
+            and self.cfg_context == other.cfg_context
             and self.group == other.group
-            and self.cross == other.cross
+            and self.cross_direction == other.cross_direction
             and self.protocols == other.protocols
             and self.internal_name == other.internal_name
             and self.composite == other.composite
             and self.composite_pins == other.composite_pins
+            and self.data != other.data
         )
 
     @property
@@ -91,18 +233,20 @@ class ObjectModelConnection(EmbeddedDocument):
         }
         if self.combo:
             r["combo"] = self.combo
-        if self.group:
-            r["group"] = self.group
-        if self.cross:
-            r["cross"] = self.cross
         if self.protocols:
-            r["protocols"] = self.protocols
+            r["protocols"] = [pv.json_data for pv in self.protocols]
         if self.internal_name:
             r["internal_name"] = self.internal_name
         if self.composite:
             r["composite"] = self.composite
         if self.composite_pins:
             r["composite_pins"] = self.composite_pins
+        if self.cross_direction:
+            r["cross_direction"] = self.cross_direction
+        if self.group:
+            r["group"] = self.group
+        if self.data:
+            r["data"] = [d.json_data for d in self.data]
         return r
 
     def clean(self):
@@ -115,6 +259,35 @@ class ObjectModelConnection(EmbeddedDocument):
         if self.composite_pins and not rx_composite_pins_validate.match(self.composite_pins):
             raise ValidationError("Composite pins not match format: N-N")
         super().clean()
+
+    def get_protocols(self, context: str) -> List["ProtocolVariantItem"]:
+        r = []
+        for p in self.protocols:
+            if context and p.cfg_context != context:
+                continue
+            r.append(p)
+        return r
+
+    @property
+    def is_inner(self) -> bool:
+        """
+        Check if connection is inner.
+        """
+        return self.direction == "i"
+
+    @property
+    def is_outer(self) -> bool:
+        """
+        Check if connection is outer.
+        """
+        return self.direction == "o"
+
+    @property
+    def is_same_level(self) -> bool:
+        """
+        Check if connection is on same level.
+        """
+        return self.direction == "s"
 
 
 class ObjectModelSensor(EmbeddedDocument):
@@ -160,8 +333,8 @@ class ObjectModel(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            ("vendor", "data.asset.part_no"),
-            ("vendor", "data.asset.order_part_no"),
+            ("vendor", "data.interface", "data.attr", "data.value"),
+            ("data.interface", "data.attr", "data.value"),
             "labels",
         ],
         "json_collection": "inv.objectmodels",
@@ -172,14 +345,24 @@ class ObjectModel(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
-    vendor = PlainReferenceField(Vendor)
-    connection_rule = PlainReferenceField(ConnectionRule, required=False)
+    vendor: "Vendor" = PlainReferenceField(Vendor)
+    connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
+    configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(
+        ObjectConfigurationRule, required=False
+    )
     # Connection rule context
     cr_context = StringField(required=False)
-    data = DictField()
-    connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
-    sensors = ListField(EmbeddedDocumentField(ObjectModelSensor))
+    # Configuration Context Param
+    # cfg_context_param = PlainReferenceField(ConfigurationParam, required=False)
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
+    # Static crossings
+    cross: List[Crossing] = EmbeddedDocumentListField(Crossing)
+    sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
+    # Facades
+    front_facade = PlainReferenceField(Facade, required=False)
+    rear_facade = PlainReferenceField(Facade, required=False)
     # Labels
     labels = ListField(StringField())
     category = ObjectIdField()
@@ -193,17 +376,42 @@ class ObjectModel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["ObjectModel"]:
-        return ObjectModel.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ObjectModel"]:
+        return ObjectModel.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
 
-    def get_data(self, interface: str, key: str):
-        v = self.data.get(interface, {})
-        return v.get(key)
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+        connection: Optional[str] = None,
+        **params,
+    ) -> Any:
+        """
+        Context ?
+        :param interface: Model Interface name for data
+        :param key: Data key on Model Interface
+        :param connection: Data For connection
+        :param context: Data Configuration Context
+        :param params:
+        :return:
+        """
+        # Getting default context from ObjectConfigurationRule
+        if connection:
+            c = self.get_model_connection(connection)
+            if not c:
+                raise ValueError("Unknown connection: %s" % c)
+            data = c.data
+        else:
+            data = self.data
+        for item in data:
+            if item.interface == interface and item.attr == key:
+                return item.value
+        return None
 
     def on_save(self):
         # Update connection cache
@@ -218,7 +426,15 @@ class ObjectModel(Document):
         else:
             return True
 
-    def get_connection_proposals(self, name: str) -> List[Tuple["ObjectModel", str]]:
+    def has_connection_cross(self, name: str) -> bool:
+        if self.get_model_connection(name).cross_direction:
+            return True
+        for c in self.cross:
+            if name == c.input or name == c.output:
+                return True
+        return False
+
+    def get_connection_proposals(self, name: str) -> List[Tuple["ObjectId", str]]:
         """
         Return possible connections for connection name
         as (model id, connection name)
@@ -239,10 +455,9 @@ class ObjectModel(Document):
                 return c
         return None
 
+    @classmethod
     def check_connection(
-        self,
-        lc: "ObjectModelConnection",
-        rc: "ObjectModelConnection",
+        cls, lc: "ObjectModelConnection", rc: "ObjectModelConnection"
     ) -> Tuple[bool, str]:
         """
 
@@ -301,19 +516,33 @@ class ObjectModel(Document):
             if m:
                 return m
         # Check for asset_part_no
-        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__part_no=part_no).first()
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__match={"interface": "asset", "attr": "part_no", "value": part_no},
+        ).first()
         if m:
             return m
-        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__order_part_no=part_no).first()
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__match={"interface": "asset", "attr": "order_part_no", "value": part_no},
+        ).first()
         if m:
             return m
         # Not found
         # Fallback and search by unique part no
-        oml = list(ObjectModel.objects.filter(data__asset__part_no=part_no))
+        oml = list(
+            ObjectModel.objects.filter(
+                data__match={"interface": "asset", "attr": "part_no", "value": part_no}
+            )
+        )
         if len(oml) == 1:
             # Unique match found
             return oml[0]
-        oml = list(ObjectModel.objects.filter(data__asset__order_part_no=part_no))
+        oml = list(
+            ObjectModel.objects.filter(
+                data__match={"interface": "asset", "attr": "order_part_no", "value": part_no}
+            )
+        )
         if len(oml) == 1:
             # Unique match found
             return oml[0]
@@ -328,17 +557,25 @@ class ObjectModel(Document):
             "uuid": self.uuid,
             "description": self.description,
             "vendor__code": self.vendor.code[0],
-            "data": self.data,
+            "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
+        if self.cross:
+            r["cross"] = [s.json_data for s in self.cross]
         if self.sensors:
             r["sensors"] = [s.json_data for s in self.sensors]
         if self.connection_rule:
             r["connection_rule__name"] = self.connection_rule.name
+        if self.configuration_rule:
+            r["configuration_rule__name"] = self.configuration_rule.name
         if self.cr_context:
             r["cr_context"] = self.cr_context
         if self.plugins:
             r["plugins"] = self.plugins
+        if self.front_facade:
+            r["front_facade__name"] = self.front_facade.name
+        if self.rear_facade:
+            r["rear_facade__name"] = self.rear_facade.name
         if self.labels:
             r["labels"] = self.labels
         return r
@@ -361,21 +598,21 @@ class ObjectModel(Document):
 
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        print(p)
         return os.path.join(*p) + ".json"
 
     def clear_unknown_models(self):
         """
         Exclude model's part numbers from unknown models
         """
-        if "asset" in self.data:
-            part_no = self.data["asset"].get("part_no", []) + self.data["asset"].get(
-                "order_part_no", []
-            )
-            if part_no:
-                vendor = self.vendor
-                if isinstance(vendor, str):
-                    vendor = Vendor.get_by_id(vendor)
-                UnknownModel.clear_unknown(vendor.code, part_no)
+        part_no = (self.get_data("asset", "part_no") or []) + (
+            self.get_data("asset", "order_part_no") or []
+        )
+        if part_no:
+            vendor = self.vendor
+            if isinstance(vendor, str):
+                vendor = Vendor.get_by_id(vendor)
+            UnknownModel.clear_unknown(vendor.code, part_no)
 
     def iter_effective_labels(self):
         return []

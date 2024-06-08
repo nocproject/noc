@@ -46,8 +46,10 @@ class Profile(BaseProfile):
     snmp_ifstatus_get_chunk = 30
     snmp_ifstatus_get_timeout = 3
 
+    config_normalizer = "DLinkDxSNormalizer"
+
     config_tokenizer = "line"
-    config_tokenizer_settings = {"line_comment": "#"}
+    config_tokenizer_settings = {"line_comment": "#", "string_quote": '"'}
 
     snmp_display_hints = {mib["LLDP-MIB::lldpLocPortId"]: render_mac}
 
@@ -66,6 +68,10 @@ class Profile(BaseProfile):
                     "DGS-3627",
                     "DGS-3627G",
                     "DGS-3650",
+                    "DES-1210",
+                    "DES-3010",
+                    "DES-3018",
+                    "DES-3026",
                 ]
             }
         },
@@ -75,6 +81,12 @@ class Profile(BaseProfile):
         "is_dgs": {"platform": {"$regex": r"^DGS-.+"}},
         "is_des_3200": {"platform": {"$regex": r"^DES-3200.+"}},
         "is_dgs_32_33": {"platform": {"$regex": r"^DGS-3[23]12SR.+"}},
+        "is_des_1210": {"platform": {"$regex": r"^DES-1210.+"}},
+        "is_des_1210_20": {"platform": {"$regex": r"^DES-1210-20.+"}},
+        "is_des_1210_28": {"platform": {"$regex": r"^DES-1210-28.+"}},
+        "is_des_3010": {"platform": {"$regex": r"^DES-3010.+"}},
+        "is_des_3018": {"platform": {"$regex": r"^DES-3018.+"}},
+        "is_des_3026": {"platform": {"$regex": r"^DES-3026.+"}},
     }
     #
     # Version comparison

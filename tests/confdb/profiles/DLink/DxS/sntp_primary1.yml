@@ -1,0 +1,5 @@
+config: |
+  config sntp primary 2.2.2.2 poll-interval 720
+result:
+  - ["protocols", "ntp", "2.2.2.2", "address", !IP 2.2.2.2, {"replace": True}]
+  - ["protocols", "ntp", "2.2.2.2", "prefer"]

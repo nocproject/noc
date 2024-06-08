@@ -150,6 +150,7 @@ class ExtApplication(Application):
             "name": ll.name,
             "value": ll.value,
             "badges": ll.badges,
+            "display_order": ll.display_order or 0,
             "bg_color1": f"#{ll.bg_color1:06x}",
             "fg_color1": f"#{ll.fg_color1:06x}",
             "bg_color2": f"#{ll.bg_color2:06x}",
@@ -167,6 +168,9 @@ class ExtApplication(Application):
         raise NotImplementedError
 
     def instance_to_dict(self, o):
+        raise NotImplementedError
+
+    def instance_to_dict_list(self, o, fields=None):
         raise NotImplementedError
 
     def parse_request_query(self, request) -> Dict[str, Any]:
@@ -290,7 +294,7 @@ class ExtApplication(Application):
                 "System records limit exceeded (%d records)" % self.row_limit, status=self.TOO_LARGE
             )
         # Set favorites
-        if not only and formatter == self.instance_to_dict:
+        if not only and formatter in (self.instance_to_dict, self.instance_to_dict_list):
             if fav_items is None:
                 fav_items = self.get_favorite_items(request.user)
             for r in out:

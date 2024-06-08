@@ -8,28 +8,48 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX&NE | CX600 PEM"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02120560"],
-            "part_no": ["CR52PEMB"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 2800.0
         },
-        "dimensions": {
-            "depth": 115,
-            "height": 220,
-            "width": 58
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR52PEMB"]
         },
-        "power": {
-            "power": 2800.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02120560"]
         },
-        "weight": {
-            "weight": 1.4
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.4
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 58
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 115
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 220
         }
-    }
+    ]
 }

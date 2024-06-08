@@ -1,0 +1,7 @@
+{
+    "uuid": "c79e5d79-6375-4999-94f0-f6f4dc693ba6",
+    "$collection": "main.templates",
+    "name": "inv.discovery.new_addresses_report",
+    "subject": "{{ count }} new addresses discovered",
+    "body": "{{ count }} new prefixes discovered\n\n{% for a in addresses %}{{a.vrf.name}}: {{a.address}}{% if a.description %}\n ({{a.description}}){% endif %} at {{a.object.name}}:{{a.interface}}\n{% endfor %}\n"
+}

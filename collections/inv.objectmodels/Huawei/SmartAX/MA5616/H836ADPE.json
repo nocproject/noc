@@ -8,56 +8,82 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | SB"
         },
         {
-            "description": "Delander 64-pin",
-            "direction": "s",
-            "gender": "f",
             "name": "PSTN0",
-            "protocols": ["PSTN"],
-            "type__name": "Huawei | Electrical | Delander 64-pin"
-        },
-        {
             "description": "Delander 64-pin",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
             "name": "PSTN1",
-            "protocols": ["PSTN"],
-            "type__name": "Huawei | Electrical | Delander 64-pin"
-        },
-        {
             "description": "Delander 64-pin",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
             "name": "LINE0",
-            "protocols": ["ADSL2+"],
-            "type__name": "Huawei | Electrical | Delander 64-pin"
-        },
-        {
             "description": "Delander 64-pin",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
             "name": "LINE1",
-            "protocols": ["ADSL2+"],
+            "description": "Delander 64-pin",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H836ADPE"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 220
         },
-        "dimensions": {
-            "depth": 21,
-            "height": 265,
-            "width": 220
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 21
         },
-        "power": {
-            "power": 51.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 265
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 51.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H836ADPE"]
         }
-    }
+    ]
 }

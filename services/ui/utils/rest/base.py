@@ -252,7 +252,7 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         :return:
         """
         r = {}
-        for name, value in data.dict().items():
+        for name, value in data.model_dump().items():
             for fn in self.cleaners[name]:
                 value = fn(value)
             r[name] = value

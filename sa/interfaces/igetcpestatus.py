@@ -10,6 +10,7 @@ from noc.core.interface.base import BaseInterface
 from .base import (
     DictListParameter,
     InterfaceNameParameter,
+    MACAddressParameter,
     BooleanParameter,
     IntParameter,
     StringParameter,
@@ -30,7 +31,7 @@ class IGetCPEStatus(BaseInterface):
             "interface": InterfaceNameParameter(required=False),
             # Identifier over interface
             "local_id": StringParameter(required=True),
-            "global_id": StringParameter(),
+            "global_id": MACAddressParameter(accept_bin=False) | StringParameter(),
             "oper_status": BooleanParameter(default=False),
         }
     )

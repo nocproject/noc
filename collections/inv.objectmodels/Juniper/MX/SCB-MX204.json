@@ -7,24 +7,30 @@
     "cr_context": "SCB",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | SCB"
         },
         {
+            "name": "re",
             "description": "Routing Engine slot",
             "direction": "i",
             "gender": "f",
-            "name": "re",
             "type__name": "Juniper | MX | RE"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["JNP204 [MX204]"],
-            "part_no": ["750-069579"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["JNP204 [MX204]"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-069579"]
         }
-    }
+    ]
 }

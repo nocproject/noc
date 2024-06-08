@@ -1,23 +1,19 @@
 # ----------------------------------------------------------------------
 # NOC Checker Base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
-from dataclasses import dataclass
-from typing import List, Optional, Dict, Any, Union, Iterable
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Any, Iterable, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-
-
-@dataclass(frozen=True)
-class ProfileSet(object):
-    profile: str
-    action: str = "set_sa_profile"
+from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
+from noc.core.script.caller import ScriptCaller
 
 
 @dataclass(frozen=True)
@@ -28,53 +24,96 @@ class MetricValue(object):
 
 
 @dataclass(frozen=True)
-class CLICredentialSet(object):
-    user: Optional[str] = None
-    password: Optional[str] = None
-    super_password: Optional[str] = None
-    delete: bool = False
-    action: str = "set_credential"
+class DataItem(object):
+    name: str
+    value: Any
+    scope: Optional[str] = None  # caps/attribute
+
+
+@dataclass(frozen=True, eq=True)
+class Check(object):
+    name: str  # Check name
+    args: Optional[Dict[str, str]] = None  #
+    # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
+    address: str = field(default=None, compare=False)  # IP Address
+    port: Optional[int] = None  # TCP/UDP port
+    credential: Optional[
+        Union[
+            SNMPCredential,
+            SNMPv3Credential,
+            CLICredential,
+            HTTPCredential,
+        ]
+    ] = field(default=None, compare=False, hash=False)
+
+    def __hash__(self):
+        if self.address or self.port:
+            return hash((self.name, self.address or "", self.port or 0, self.arg0 or ""))
+        return hash((self.name, self.arg0 or ""))
+
+    @property
+    def arg0(self):
+        if self.args:
+            return self.args.get("arg0")
+        return
+
+    def arg(self) -> str:
+        r = []
+        if self.address:
+            r.append(f"address={self.address}")
+        if self.port:
+            r.append(f"port={self.port}")
+        if self.arg0:
+            r.append(f"arg0={self.arg0}")
+        return "&".join(r)
+
+    @classmethod
+    def from_string(cls, url) -> "Check":
+        """
+        <check>://<cred>@<address>:<port>&arg0
+        :param url:
+        :return:
+        """
+
+    @property
+    def snmp_credential(self) -> Optional[SNMPCredential]:
+        if isinstance(self.credential, SNMPCredential):
+            return self.credential
+        return None
 
 
 @dataclass(frozen=True)
-class SNMPCredentialSet(object):
-    snmp_ro: Optional[str] = None
-    snmp_rw: Optional[str] = None
-    delete: bool = False
-    action: str = "set_credential"
+class CheckError(object):
+    code: str  # Error code
+    message: Optional[str] = None  # Description if Fail
+    is_access: Optional[bool] = None  # Access to resource for credential
+    is_available: Optional[bool] = None  # Port/Address is available
 
 
 @dataclass(frozen=True)
 class CheckResult(object):
     check: str
     status: bool  # True - OK, False - Fail
-    arg0: Optional[str] = None  # Checked Argument
+    args: Optional[Dict[str, Any]] = None  # Checked Argument
+    port: Optional[int] = None
+    address: Optional[str] = None
     skipped: bool = False  # Check was skipped (Example, no credential)
-    error: Optional[str] = None  # Description if Fail
-    data: Optional[Dict[str, Any]] = None  # Collected check data
+    error: Optional[CheckError] = None  # Set if fail
+    data: Optional[List[DataItem]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
-    action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
+    # caps: Optional[List[CapsItem]] = None
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
+    # Credentials List, Return if suggests flag is set
+    credential: Optional[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]] = (
+        None
+    )
 
-
-@dataclass(frozen=True)
-class CheckData(object):
-    name: str
-    status: bool  # True - OK, False - Fail
-    skipped: bool = False  # Check was skipped (Example, no credential)
-    arg0: Optional[str] = None
-    error: Optional[str] = None  # Description if Fail
-    data: Optional[Dict[str, Any]] = None  # Collected check data
-
-
-@dataclass(frozen=True)
-class Check(object):
-    name: str
-    arg0: Optional[str] = None
-
-    def __str__(self):
-        return f"{self.name}:{self.arg0 or ''}"
+    @property
+    def arg0(self):
+        if self.args:
+            return self.args.get("arg0")
+        return
 
 
 class Checker(object):
@@ -85,10 +124,37 @@ class Checker(object):
     name: str
     CHECKS: List[str]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
+    PARAMS: List[str] = ["address", "object"]  # List of checker params
 
-    def iter_result(
-        self, checks: Optional[List[Union[Check, str]]] = None
-    ) -> Iterable[CheckResult]:
+    def __init__(
+        self,
+        *,
+        logger=None,
+        calling_service: Optional[str] = None,
+        pool: Optional[str] = None,
+        **kwargs,
+    ):
+        self.logger = PrefixLoggerAdapter(
+            logger or logging.getLogger(self.name),
+            f"{calling_service or self.name}]",
+        )
+        self.calling_service = calling_service or self.name
+        # Set for pooled check, Default value
+        self.pool = pool
+        self.object = kwargs.get("object")
+        self.address = kwargs.get("address")
+        self._script_caller: Optional["ScriptCaller"] = None
+
+    def get_script(self, name: str) -> "ScriptCaller":
+        if not self._script_caller and not self.object:
+            raise NotImplementedError()
+        if not self._script_caller:
+            o = lambda: None  # noqa:E731
+            o.id = self.object
+            self._script_caller = ScriptCaller(o, name)
+        return self._script_caller
+
+    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """
         Iterate over result
         :param checks: List checks param for run
@@ -102,10 +168,12 @@ class ObjectChecker(Checker):
     Checkers supported ManagedObject
     """
 
-    def __init__(self, c_object, logger=None, calling_service: Optional[str] = None):
-        self.object = c_object
-        self.logger = PrefixLoggerAdapter(
-            logger or logging.getLogger(self.name),
-            f"{self.object.pool or ''}][{self.object or ''}",
-        )
-        self.calling_service = calling_service or self.name
+    def __init__(self, o, **kwargs):
+        self.object = o
+        super().__init__(**kwargs)
+        # super().__init__(
+        #     logger=PrefixLoggerAdapter(
+        #         logger or logging.getLogger(self.name),
+        #         f"{self.pool or ''}][{self.o_name or ''}",
+        #     ),
+        # )

@@ -10,17 +10,13 @@
 from noc.core.service.fastapi import FastAPIService
 from noc.config import config
 
-PREFIX_NBI = "/api/nbi/"
-
 
 class NBIService(FastAPIService):
     name = "nbi"
     use_mongo = True
     use_router = True
-
-    if config.features.traefik:
-        traefik_backend = "nbi"
-        traefik_frontend_rule = "PathPrefix:/api/nbi"
+    use_watchdog = config.watchdog.enable_watchdog
+    traefik_routes_rule = "PathPrefix(`/api/nbi`)"
 
     def __init__(self):
         super().__init__()

@@ -1,0 +1,86 @@
+{
+  "aliasColors": {},
+  "bars": false,
+  "dashLength": 10,
+  "dashes": false,
+  "datasource": null,
+  "editable": true,
+  "error": false,
+  "fill": 1,
+  "grid": {},
+  "id": 640128063100514,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "seriesOverrides": [],
+  "spaceLength": 10,
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "refId": "A",
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t,\n    groupArray((tuple(dhcp_pool, IP), Leases_total)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n       name as dhcp_pool, \n       prefix as IP, \n        argMax(dhcp_pool_leases_total, t) as `Leases_total` \n    FROM \n        $table \n    WHERE \ntype = 'dhcp'\n        and        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY name, prefix, t ORDER BY t, name) \nGROUP BY t \nORDER BY t ASC",
+      "database": "{{ noc_db_metrics }}",
+      "tableLoading": false,
+      "table": "ippool",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateTimeColDataType": "ts",
+      "dateColDataType": "date"
+    }
+  ],
+  "thresholds": [],
+  "timeFrom": null,
+  "timeShift": null,
+  "title": "DHCP Leases Total",
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "individual"
+  },
+  "type": "graph",
+  "xaxis": {
+    "buckets": null,
+    "mode": "time",
+    "name": null,
+    "show": true,
+    "values": []
+  },
+  "yaxes": [
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    }
+  ]
+}

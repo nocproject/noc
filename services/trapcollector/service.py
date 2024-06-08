@@ -22,9 +22,11 @@ from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.service.fastapi import FastAPIService
+from noc.core.fm.enum import EventSource
 from noc.core.mx import (
     MX_STREAM,
     get_mx_partitions,
+    MessageType,
     MX_MESSAGE_TYPE,
     MX_SHARDING_KEY,
     MX_LABELS,
@@ -38,6 +40,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_bytes
 
 TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control | SNMP"
+SNMP_TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
 
 
 class TrapCollectorService(FastAPIService):
@@ -122,11 +125,8 @@ class TrapCollectorService(FastAPIService):
             metrics["error", ("type", "object_not_found")] += 1
         return None
 
-    def register_message(
-        self,
-        cfg: SourceConfig,
-        timestamp: int,
-        data: Dict[str, Any],
+    def register_trap_message(
+        self, cfg: SourceConfig, timestamp: int, data: Dict[str, Any], address: str = None
     ):
         """
         Spool message to be sent
@@ -136,8 +136,15 @@ class TrapCollectorService(FastAPIService):
             orjson.dumps(
                 {
                     "ts": timestamp,
-                    "object": cfg.id,
-                    "data": data,
+                    "target": {
+                        "address": address,
+                        "name": cfg.name or "",
+                        "pool": config.pool,
+                        "id": cfg.id,
+                    },
+                    "type": {"source": EventSource.SNMP_TRAP.value, "id": data.get(SNMP_TRAP_OID)},
+                    "data": [{"name": k, "value": v, "snmp_raw": True} for k, v in data.items()],
+                    # + [{"name": "message_id", "value": message_id}]
                 }
             ),
             stream=cfg.stream,
@@ -153,7 +160,14 @@ class TrapCollectorService(FastAPIService):
         raw_pdu: Optional[bytes] = None,
         raw_varbinds: List[Tuple[str, Any, bytes]] = None,
     ):
-        metrics["events_message"] += 1
+        metrics["events_mx_message"] += 1
+        if not cfg.managed_object:
+            self.logger.warning(
+                "[%s] Cfg source not ManagedObject Meta."
+                " Please Reboot cfgtrap datastream and reboot collector. Skipping..",
+                source_address,
+            )
+            return
         n_partitions = get_mx_partitions()
         self.publish(
             value=orjson.dumps(
@@ -180,9 +194,9 @@ class TrapCollectorService(FastAPIService):
             stream=MX_STREAM,
             partition=int(cfg.id) % n_partitions,
             headers={
-                MX_MESSAGE_TYPE: b"snmptrap",
+                MX_MESSAGE_TYPE: MessageType.SNMPTRAP.value.encode(),
                 MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(cfg.effective_labels)),
-                MX_SHARDING_KEY: smart_bytes(cfg.id),
+                MX_SHARDING_KEY: str(cfg.id).encode(),
             },
         )
 
@@ -191,7 +205,7 @@ class TrapCollectorService(FastAPIService):
         Coroutine to request object mappings
         """
         self.logger.info("Starting to track object mappings")
-        client = TrapDataStreamClient("cfgtrap", service=self)
+        client = TrapDataStreamClient("cfgtarget", service=self)
         # Track stream changes
         while True:
             try:
@@ -226,23 +240,28 @@ class TrapCollectorService(FastAPIService):
             old_addresses = set(old_cfg.addresses)
         else:
             old_addresses = set()
+        cfg_trap = data.pop("trap", None)
         # Get pool and sharding information
         fm_pool = data.get("fm_pool", None) or config.pool
         num_partitions = await self.get_pool_partitions(fm_pool)
         # Build new config
         cfg = SourceConfig(
             id=data["id"],
+            name=data["name"],
             bi_id=data.get("bi_id"),
-            addresses=tuple(data["addresses"]),
+            addresses=tuple([a["address"] for a in data["addresses"] if a["trap_source"]]),
             stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
         )
-        if config.message.enable_snmptrap and "managed_object" in data:
-            cfg.managed_object = ManagedObjectData(**data["managed_object"])
-        if "storm_policy" in data:
-            cfg.storm_policy = data["storm_policy"]
-            cfg.storm_threshold = data["storm_threshold"]
+        if not cfg_trap or not cfg.addresses:
+            await self.delete_source(data["id"])
+            return
+        if config.message.enable_snmptrap and "opaque_data" in data:
+            cfg.managed_object = ManagedObjectData(**data["opaque_data"])
+        if "storm_policy" in cfg_trap:
+            cfg.storm_policy = cfg_trap["storm_policy"]
+            cfg.storm_threshold = cfg_trap["storm_threshold"]
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:

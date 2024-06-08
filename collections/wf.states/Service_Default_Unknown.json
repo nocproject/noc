@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Service Default",
+    "name": "Unknown",
+    "uuid": "4e13e22e-273b-4935-a66d-aa1a1c363e5b",
+    "$collection": "wf.states",
+    "description": "Undefined state of the service",
+    "is_default": true,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 50,
+    "y": 50,
+    "disable_all_interaction": false
+}

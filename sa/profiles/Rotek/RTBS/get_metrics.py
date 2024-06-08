@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Rotek.RTBS.get_metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -48,3 +48,40 @@ class Script(GetMetricsScript):
                         ),
                         value=result["avg"],
                     )
+
+    @metrics(["Object | MAC | TotalUsed"], volatile=False, access="S")  # SNMP version
+    def get_mac_totalused_snmp(self, metrics):
+        response = [mac for _, mac in self.snmp.getnext("1.3.6.1.4.1.41752.3.5.1.3.2.1.1.8.6")]
+        if response:
+            self.set_metric(
+                id=("Object | MAC | TotalUsed", None),
+                metric="Object | MAC | TotalUsed",
+                value=len(response),
+            )
+
+    @metrics(
+        [
+            "Radio | Frequency",
+            "Radio | Bandwidth",
+        ],
+        volatile=False,
+        access="S",
+    )  # SNMP version
+    def get_radio_metrics(self, metrics):
+
+        oid_index_map, base_oid = {
+            "Radio | Frequency": 7,
+            "Radio | Bandwidth": 9,
+        }, "1.3.6.1.4.1.41752.3.5.1.2.1.1"
+
+        iface = self.snmp.get(f"{base_oid}.4.8")
+        for key, value in oid_index_map.items():
+            response = self.snmp.get(f"{base_oid}.{str(value)}.8")
+            if response:
+                self.set_metric(
+                    id=(key, None),
+                    labels=[f"noc::interface::{iface}"],
+                    metric=key,
+                    value=response,
+                    units="M,hz",
+                )

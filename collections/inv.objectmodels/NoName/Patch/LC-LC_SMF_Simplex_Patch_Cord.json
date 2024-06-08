@@ -6,25 +6,33 @@
     "description": "1-fiber LC-LC SMF Patch",
     "connections": [
         {
-            "cross": "2",
+            "name": "1",
             "description": "1st connector",
             "direction": "s",
             "gender": "m",
-            "name": "1",
-            "type__name": "Optical | LC",
-            "protocols": [">1000BASEX"]
+            "type__name": "Optical | LC"
         },
         {
-            "cross": "1",
+            "name": "2",
             "description": "2nd connector",
             "direction": "s",
             "gender": "m",
-            "name": "2",
-            "type__name": "Optical | LC",
-            "protocols": ["<1000BASEX"]
+            "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "length": {}
-    }
+    "cross": [
+        {
+            "input": "1",
+            "output": "2"
+        },
+        {
+            "input": "2",
+            "output": "1"
+        }
+    ],
+    "data": [{
+        "attr": "length",
+        "interface": "length",
+        "value": 5.0
+    }]
 }

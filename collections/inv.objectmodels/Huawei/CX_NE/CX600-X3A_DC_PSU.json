@@ -8,28 +8,48 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX&NE | CX600-X3A PEM"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02121615"],
-            "part_no": ["CR5M0PWRDC70"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 3000.0
         },
-        "dimensions": {
-            "depth": 450,
-            "height": 127,
-            "width": 184
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR5M0PWRDC70"]
         },
-        "power": {
-            "power": 3000.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02121615"]
         },
-        "weight": {
-            "weight": 9.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 9.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 184
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 450
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 127
         }
-    }
+    ]
 }

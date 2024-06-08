@@ -1,0 +1,9 @@
+{
+    "name": "OTN",
+    "$collection": "inv.technologies",
+    "uuid": "fa92f217-a141-409b-9e0c-4ea3216cbfec",
+    "description": "Optical Transport Network",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

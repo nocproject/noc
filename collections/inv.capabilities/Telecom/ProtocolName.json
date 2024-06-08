@@ -1,0 +1,9 @@
+{
+    "name": "TelecomFXS | ProtocolName",
+    "$collection": "inv.capabilities",
+    "uuid": "fc4f687a-dae7-41df-b8c9-4829c8329797",
+    "description": "Config Protocol Name\nActive protokol: sip, h.248, fxo",
+    "type": "str",
+    "card_template": null
+}
+

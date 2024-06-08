@@ -1,0 +1,10 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "from_state__uuid": "50a6934f-e29c-4bae-a834-8bd6b97fbbdf",
+    "to_state__uuid": "67330d44-089c-422f-b446-00ad095fea2a",
+    "uuid": "b8bcc6f0-aab0-40be-be0f-4c2b028587c7",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Duplicate",
+    "enable_manual": true
+}

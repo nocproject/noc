@@ -5,35 +5,84 @@
     "vendor__code": "CISCO",
     "description": "Cisco QSFP+ 100 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 3m",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
-            "cross": "in2",
+            "name": "in1",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in1",
-            "protocols": ["TransEth100G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
-            "cross": "in1",
+            "name": "in2",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in2",
-            "protocols": ["TransEth100G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["QSFP-100G-CU3M"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "QSFP-100G-CU3M"
+            ]
         },
-        "twinax": {
-            "connection1": "in1",
-            "connection2": "in2",
-            "twinax": true
+        {
+            "attr": "connection1",
+            "interface": "twinax",
+            "value": "in1"
+        },
+        {
+            "attr": "connection2",
+            "interface": "twinax",
+            "value": "in2"
+        },
+        {
+            "attr": "twinax",
+            "interface": "twinax",
+            "value": true
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 3
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
+        }
+    ]
 }

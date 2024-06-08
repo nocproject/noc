@@ -30,6 +30,7 @@ class Migration(BaseMigration):
             "noc.objects",
             "noc.platforms",
             "noc.vendors",
+            "technologies",
         ]:
             coll = mdb[coll_name]
             updates = []

@@ -93,6 +93,13 @@ STREAMS: List[StreamConfig] = [
         segment_ages=config.msgstream.jobs.segment_max_age,
     ),
     StreamConfig(
+        name="submit",
+        retention_bytes=config.msgstream.submit.retention_max_bytes,
+        retention_ages=config.msgstream.submit.retention_max_age,
+        segment_bytes=config.msgstream.submit.segment_max_bytes,
+        segment_ages=config.msgstream.submit.segment_max_age,
+    ),
+    StreamConfig(
         name="metrics",
         slot="metrics",
         replication_factor=1,

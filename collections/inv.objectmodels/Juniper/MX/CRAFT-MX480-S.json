@@ -7,17 +7,23 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "FPM connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPM"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["CRAFT-MX480-S"],
-            "part_no": ["710-017254"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["710-017254"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["CRAFT-MX480-S"]
         }
-    }
+    ]
 }

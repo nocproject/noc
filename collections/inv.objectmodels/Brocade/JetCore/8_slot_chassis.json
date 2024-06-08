@@ -9,71 +9,77 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
-            "description": "Backplane connector",
-            "direction": "i",
-            "gender": "m",
             "name": "card1",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card2",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card3",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card4",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card5",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card6",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card7",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card8",
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
             "type__name": "Brocade | JetCore | Backplane Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FastIron 800 Router", "BigIron 8000 Router", "NetIron 800 Router"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FastIron 800 Router", "BigIron 8000 Router", "NetIron 800 Router"]
         },
-        "rackmount": {
-            "units": 12
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 12
         }
-    }
+    ]
 }

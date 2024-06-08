@@ -8,28 +8,48 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S9300 | S9300 FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02120554"],
-            "part_no": ["LE0E2FBX"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 43.0
         },
-        "dimensions": {
-            "depth": 75,
-            "height": 127,
-            "width": 324
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LE0E2FBX"]
         },
-        "power": {
-            "power": 43.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02120554"]
         },
-        "weight": {
-            "weight": 1.2
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.2
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 324
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 75
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 127
         }
-    }
+    ]
 }

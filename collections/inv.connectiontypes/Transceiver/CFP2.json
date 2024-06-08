@@ -1,0 +1,22 @@
+{
+    "name": "Transceiver | CFP2",
+    "$collection": "inv.connectiontypes",
+    "uuid": "7abb04a9-49e6-4ac6-81e4-73ae57683625",
+    "description": "CFP2 transceiver slot for more 100-Gigabit CFP2 transceivers",
+    "c_group": [],
+    "genders": "mf",
+    "matchers": [
+        {
+            "protocol": "TransEth100G",
+            "scope": "physical"
+        },
+        {
+            "protocol": "TransEth200G",
+            "scope": "physical"
+        },
+        {
+            "protocol": "TransEth400G",
+            "scope": "physical"
+        }
+    ]
+}

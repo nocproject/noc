@@ -1,0 +1,19 @@
+{
+    "name": "noc::is_member_interface::=",
+    "$collection": "main.labels",
+    "uuid": "4b770d98-b216-4302-bc60-2b71c3e5bed5",
+    "description": "Builtin Labels mark if Interface members on aggregation link",
+    "bg_color1": 2719929,
+    "fg_color1": 16777215,
+    "bg_color2": 13849600,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": [],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": true
+}

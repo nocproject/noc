@@ -8,10 +8,12 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional, Union
 import datetime
 import logging
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -86,8 +88,8 @@ class TTSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return TTSystem.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["TTSystem"]:
+        return TTSystem.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -98,23 +100,17 @@ class TTSystem(Document):
         from noc.core.cache.base import cache
         from noc.sa.models.managedobject import ManagedObject, MANAGEDOBJECT_CACHE_VERSION
 
-        invalidate_mo_cache = (
-            not hasattr(self, "_changed_fields")
-            or "alarm_consequence_policy" in self._changed_fields
-        )
-
         # After save changed_fields will be empty
         super().save(*args, **kwargs)
 
         # Invalidate ManagedObject cache
-        if invalidate_mo_cache:
-            deleted_cache_keys = [
-                "managedobject-id-%s" % mo_id
-                for mo_id in ManagedObject.objects.filter(tt_system=self.id).values_list(
-                    "id", flat=True
-                )
-            ]
-            cache.delete_many(deleted_cache_keys, version=MANAGEDOBJECT_CACHE_VERSION)
+        deleted_cache_keys = [
+            "managedobject-id-%s" % mo_id
+            for mo_id in ManagedObject.objects.filter(tt_system=self.id).values_list(
+                "id", flat=True
+            )
+        ]
+        cache.delete_many(deleted_cache_keys, version=MANAGEDOBJECT_CACHE_VERSION)
 
     def get_system(self) -> BaseTTSystem:
         """

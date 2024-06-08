@@ -1,0 +1,12 @@
+{
+    "name": "Interface | PoE | Voltage",
+    "$collection": "pm.metrictypes",
+    "uuid": "c0ade95e-1f73-402f-b1b6-31c6fbcc7163",
+    "scope__name": "Interface",
+    "field_name": "poe_voltage_v",
+    "field_type": "Int16",
+    "description": "PoE supply voltage",
+    "measure": "V",
+    "units__code": "VDC",
+    "scale__code": "1"
+}

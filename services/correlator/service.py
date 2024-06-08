@@ -22,7 +22,7 @@ import asyncio
 import orjson
 from bson import ObjectId
 from dateutil.parser import parse as parse_date
-from pydantic import parse_obj_as, ValidationError
+from pydantic import TypeAdapter, ValidationError
 import cachetools
 from pymongo import UpdateOne
 
@@ -33,6 +33,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.mongo.connection import connect
 from noc.core.change.policy import change_tracker
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service, SVC_REF_PREFIX
 from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
 from noc.services.correlator.rule import Rule
 from noc.services.correlator.rcacondition import RCACondition
@@ -45,7 +46,6 @@ from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
 from noc.services.correlator.models.setstatusreq import SetStatusRequest
 from noc.fm.models.eventclass import EventClass
-from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
 from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmclass import AlarmClass
@@ -54,19 +54,23 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.fm.models.alarmrule import AlarmRule
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from noc.services.correlator import utils
+from noc.core.defer import defer
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
 from noc.core.wf.interaction import Interaction
+from noc.core.fm.event import Event
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
+ta_DisposeRequest = TypeAdapter(DisposeRequest)
 
 
 class CorrelatorService(FastAPIService):
@@ -242,7 +246,7 @@ class CorrelatorService(FastAPIService):
         self.alarm_rule_set.compile()
         self.logger.info("%d Alam Rules have been loaded", n)
 
-    def mark_as_failed(self, event: "ActiveEvent"):
+    def mark_as_failed(self, event: "Event"):
         """
         Write error log and mark event as failed
         """
@@ -339,7 +343,7 @@ class CorrelatorService(FastAPIService):
         self,
         reference: bytes,
         timestamp: datetime.datetime,
-        event: ActiveEvent = None,
+        event: Event = None,
     ) -> Optional[ActiveAlarm]:
         """
         Try to reopen archived alarm
@@ -361,21 +365,27 @@ class CorrelatorService(FastAPIService):
                 event.id,
                 arch.managed_object.name,
                 arch.managed_object.address,
-                event.event_class.name,
+                event.type.event_class,
                 arch.alarm_class.name,
                 arch.id,
             )
-            reason = f"Reopened by {event.event_class.name}({event.id})"
+            reason = f"Reopened by {event.type.event_class}({event.id})"
         else:
             reason = "Reopened by alarm"
         alarm = arch.reopen(reason)
         metrics["alarm_reopen"] += 1
         return alarm
 
-    def refresh_alarm(self, alarm: ActiveAlarm, timestamp: datetime.datetime):
+    def refresh_alarm(
+        self,
+        alarm: ActiveAlarm,
+        timestamp: datetime.datetime,
+        severity: Optional[AlarmSeverity] = None,
+    ):
         """
         Refresh active alarm data
         """
+        self.logger.info("[%s] Refresh alarm: ts: %s, severity: %s", alarm.id, timestamp, severity)
         if timestamp < alarm.timestamp:
             # Set to earlier date
             alarm.timestamp = timestamp
@@ -384,6 +394,12 @@ class CorrelatorService(FastAPIService):
             # Refresh last update
             alarm.last_update = timestamp
             alarm.save()
+        if severity and alarm.base_severity != severity.severity:
+            alarm.base_severity = severity
+            severity = alarm.get_effective_severity()
+            if severity != alarm.severity:
+                alarm.last_update = datetime.datetime.now().replace(microsecond=0)
+                alarm.save()
 
     async def raise_alarm(
         self,
@@ -391,13 +407,14 @@ class CorrelatorService(FastAPIService):
         timestamp: datetime.datetime,
         alarm_class: AlarmClass,
         vars: Optional[Dict[str, Any]],
-        event: Optional[ActiveEvent] = None,
+        event: Optional[Event] = None,
         reference: Optional[str] = None,
         remote_system: Optional[RemoteSystem] = None,
         remote_id: Optional[str] = None,
         groups: Optional[List[GroupItem]] = None,
         labels: Optional[List[str]] = None,
         min_group_size: Optional[int] = None,
+        severity: Optional[AlarmSeverity] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -412,6 +429,7 @@ class CorrelatorService(FastAPIService):
         :param groups:
         :param labels:
         :param min_group_size: For Group alarm, minimal count alarm on it
+        :param severity: Alarm Severity source
         :returns: Alarm, if created, None otherwise
         """
 
@@ -440,19 +458,24 @@ class CorrelatorService(FastAPIService):
                     scope_label,
                     managed_object.name,
                     managed_object.address,
-                    f"event {event.event_class.name}" if event else "DIRECT",
+                    f"event {event.type.event_class}" if event else "DIRECT",
                     alarm.alarm_class.name,
                     alarm.id,
                 )
                 if event:
-                    event.contribute_to_alarm(alarm)
+                    # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
-                self.refresh_alarm(alarm, timestamp)
+                a_severity = None
+                for rule in self.alarm_rule_set.iter_rules(alarm):
+                    for aa in rule.iter_actions(alarm):
+                        if aa.severity:
+                            a_severity = aa.severity
+                self.refresh_alarm(alarm, timestamp, a_severity or severity)
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
                 return alarm
         if event:
-            msg = f"Alarm risen from event {event.id}({event.event_class.name})"
+            msg = f"Alarm risen from event {event.id}({event.type.event_class})"
         else:
             msg = "Alarm risen directly"
         # Create new alarm
@@ -471,9 +494,10 @@ class CorrelatorService(FastAPIService):
                     message=msg,
                 )
             ],
-            opening_event=event.id if event else None,
+            opening_event=ObjectId(event.id) if event else None,
             labels=labels,
             min_group_size=min_group_size,
+            base_severity=severity,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -487,8 +511,40 @@ class CorrelatorService(FastAPIService):
         summary["object"] = {managed_object.object_profile.id: 1}
         if a.is_link_alarm and a.components.interface:
             summary["interface"] = {a.components.interface.profile.id: 1}
-        #
-        a.severity = max(ServiceSummary.get_severity(summary), 1)
+        # Set alarm stat fields
+        a.direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
+        a.direct_services = SummaryItem.dict_to_items(summary["service"])
+        a.direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
+        a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
+        a.total_services = a.direct_services
+        a.total_subscribers = a.direct_subscribers
+        a.affected_services = Service.get_services_by_alarm(a)
+        # Static groups
+        alarm_groups: Dict[str, GroupItem] = {}
+        if groups:
+            for gi in groups:
+                if gi.reference and gi.reference not in alarm_groups:
+                    alarm_groups[gi.reference] = gi
+        # Apply rules
+        a_severity: Optional[int] = None
+        for rule in self.alarm_rule_set.iter_rules(a):
+            for gi in rule.iter_groups(a):
+                if gi.reference and gi.reference not in alarm_groups:
+                    alarm_groups[gi.reference] = gi
+            for ai in rule.iter_actions(a):
+                if ai.severity:
+                    a_severity = a.severity
+            if a.severity_policy != rule.severity_policy:
+                a.severity_policy = rule.severity_policy
+        all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
+        a.groups = [g.reference for g in all_groups]
+        a.deferred_groups = deferred_groups
+        # Calculate Alarm Severities
+        if a_severity:
+            a.severity = a_severity
+        else:
+            # If changed policy
+            a.severity = a.get_effective_severity(summary)
         # @todo: Fix
         self.logger.info(
             "[%s|%s|%s] Calculated alarm severity is: %s",
@@ -497,33 +553,11 @@ class CorrelatorService(FastAPIService):
             managed_object.address,
             a.severity,
         )
-        # Set alarm stat fields
-        a.direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
-        a.direct_services = SummaryItem.dict_to_items(summary["service"])
-        a.direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
-        a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
-        a.total_services = a.direct_services
-        a.total_subscribers = a.direct_subscribers
-        # Static groups
-        alarm_groups: Dict[str, GroupItem] = {}
-        if groups:
-            for gi in groups:
-                if gi.reference and gi.reference not in alarm_groups:
-                    alarm_groups[gi.reference] = gi
-        # Apply rules
-        for rule in self.alarm_rule_set.iter_rules(a):
-            for gi in rule.iter_groups(a):
-                if gi.reference and gi.reference not in alarm_groups:
-                    alarm_groups[gi.reference] = gi
-            for ai in rule.iter_actions(a):
-                if ai.severity:
-                    a.base_weight = ai.severity
-                    a.severity = max(a.severity + ai.severity, 0)
-        all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
-        a.groups = [g.reference for g in all_groups]
-        a.deferred_groups = deferred_groups
         # Save
         a.save()
+        # Update group if Service Group Alarm
+        if reference.startswith(SVC_REF_PREFIX):
+            self.resolve_deferred_groups(a.reference)
         # if event:
         #     event.contribute_to_alarm(a)
         self.logger.info(
@@ -559,28 +593,49 @@ class CorrelatorService(FastAPIService):
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
+        if a.affected_services:
+            defer(
+                "noc.sa.models.service.refresh_service_status",
+                svc_ids=[str(x) for x in a.affected_services],
+            )
         return a
 
-    async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent) -> Optional[ActiveAlarm]:
+    async def raise_alarm_from_rule(
+        self, rule: Rule, event: Event, managed_object
+    ) -> Optional[ActiveAlarm]:
         """
         Raise alarm from incoming event
         """
         # Find effective managed object
-        managed_object = self.eval_expression(rule.managed_object, event=event)
+        managed_object = self.eval_expression(
+            rule.managed_object, event=event, managed_object=managed_object
+        )
         if not managed_object:
             self.logger.info("Empty managed object, ignoring")
             return
-        if event.managed_object.id != managed_object.id:
+        if int(event.target.id) != managed_object.id:
             metrics["alarm_change_mo"] += 1
             self.logger.info("Changing managed object to %s", managed_object.name)
+        if event.type.severity:
+            severity = AlarmSeverity.get_by_code(event.type.severity.name)
+            self.logger.info("Try request severity %s -> %s", event.type.severity, severity)
+        else:
+            severity = None
+        if event.remote_system:
+            rs = RemoteSystem.get_by_name(event.remote_system)
+        else:
+            rs = None
         # Extract variables
-        vars = rule.get_vars(event)
+        vars = rule.get_vars(event, managed_object)
         return await self.raise_alarm(
             managed_object=managed_object,
             timestamp=event.timestamp,
             alarm_class=rule.alarm_class,
             vars=vars,
             event=event,
+            severity=severity,
+            remote_system=rs,
+            remote_id=event.remote_id,
         )
 
     async def correlate(self, a: ActiveAlarm):
@@ -628,9 +683,14 @@ class CorrelatorService(FastAPIService):
             return
 
     async def clear_alarm_from_rule(
-        self, rule: "Rule", event: "ActiveEvent"
+        self,
+        rule: "Rule",
+        event: "Event",
+        managed_object: ManagedObject,
     ) -> Optional["ActiveAlarm"]:
-        managed_object = self.eval_expression(rule.managed_object, event=event)
+        managed_object = self.eval_expression(
+            rule.managed_object, event=event, managed_object=managed_object
+        )
         if not managed_object:
             self.logger.info(
                 "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", event.id
@@ -639,7 +699,7 @@ class CorrelatorService(FastAPIService):
             return
         if not rule.unique:
             return
-        vars = rule.get_vars(event)
+        vars = rule.get_vars(event, managed_object)
         reference = self.get_default_reference(
             managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
         )
@@ -652,12 +712,12 @@ class CorrelatorService(FastAPIService):
             event.id,
             managed_object.name,
             managed_object.address,
-            event.event_class.name,
+            event.type.event_class,
             alarm.alarm_class.name,
             alarm.id,
         )
-        event.contribute_to_alarm(alarm)
-        alarm.closing_event = event.id
+        # event.contribute_to_alarm(alarm)
+        alarm.closing_event = ObjectId(event.id)
         alarm.last_update = max(alarm.last_update, event.timestamp)
         groups = alarm.groups
         alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
@@ -665,21 +725,22 @@ class CorrelatorService(FastAPIService):
         await self.clear_groups(groups, ts=event.timestamp)
         return alarm
 
-    def get_delayed_event(self, rule: Rule, event: ActiveEvent):
+    def get_delayed_event(self, rule: Rule, event: Event, managed_object: ManagedObject):
         """
-        Check wrether all delayed conditions are met
+        Check werever all delayed conditions are met
 
         :param rule: Delayed rule
         :param event: Event which can trigger delayed rule
+        :param managed_object: Managed Object on event
         """
         # @todo: Rewrite to scheduler
-        vars = rule.get_vars(event)
+        vars = rule.get_vars(event, managed_object)
         reference = self.get_default_reference(
-            managed_object=event.managed_object, alarm_class=rule.alarm_class, vars=vars
+            managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
         )
         ref_hash = self.get_reference_hash(reference)
         ws = event.timestamp - datetime.timedelta(seconds=rule.combo_window)
-        de = ActiveEvent.objects.filter(
+        de = Event.objects.filter(
             managed_object=event.managed_object_id,
             event_class=rule.event_class,
             reference=ref_hash,
@@ -691,7 +752,7 @@ class CorrelatorService(FastAPIService):
         # Probable starting event found, get all interesting following event classes
         fe = [
             ee.event_class.id
-            for ee in ActiveEvent.objects.filter(
+            for ee in Event.objects.filter(
                 managed_object=event.managed_object_id,
                 event_class__in=rule.combo_event_classes,
                 reference=ref_hash,
@@ -730,7 +791,7 @@ class CorrelatorService(FastAPIService):
             data["$op"] = "event"
         # Parse request
         try:
-            req = parse_obj_as(DisposeRequest, data)
+            req = ta_DisposeRequest.validate_python(data)
         except ValidationError as e:
             self.logger.error("Malformed message: %s", e)
             metrics["malformed_messages"] += 1
@@ -750,8 +811,8 @@ class CorrelatorService(FastAPIService):
         """
         self.logger.info("[event|%s] Receiving message", req.event_id)
         try:
-            event = ActiveEvent.from_json(req.event)
-            event.timestamp = event.timestamp.replace(tzinfo=None)
+            event = req.event
+            event.ts = event.timestamp.replace(tzinfo=None).timestamp()
             await self.dispose_event(event)
         except Exception:
             metrics["alarm_dispose_error"] += 1
@@ -802,6 +863,10 @@ class CorrelatorService(FastAPIService):
                 x = eval(v, {}, context)
                 if x:
                     r_vars[k] = str(x)
+        if req.severity:
+            severity = AlarmSeverity.get_severity(req.severity)
+        else:
+            severity = None
         try:
             await self.raise_alarm(
                 managed_object=managed_object,
@@ -811,6 +876,7 @@ class CorrelatorService(FastAPIService):
                 reference=req.reference,
                 groups=groups,
                 labels=req.labels or [],
+                severity=severity,
                 remote_system=remote_system,
                 remote_id=req.remote_id if remote_system else None,
             )
@@ -1067,7 +1133,7 @@ class CorrelatorService(FastAPIService):
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 
-    async def dispose_event(self, e: ActiveEvent):
+    async def dispose_event(self, e: Event):
         """
         Dispose event according to disposition rule
         """
@@ -1080,8 +1146,10 @@ class CorrelatorService(FastAPIService):
                 "event_id": str(e.id),
                 "alarm_id": str(a.id) if a else None,
                 "op": action,
-                "managed_object": e.managed_object.bi_id,
-                "event_class": e.event_class.bi_id,
+                "managed_object": managed_object.bi_id,
+                "target_reference": e.target.reference,
+                "target": e.target.model_dump(exclude={"is_agent"}),
+                "event_class": event_class.bi_id,
                 "alarm_class": a.alarm_class.bi_id if a else None,
                 "reopens": a.reopens if a else 0,
             }
@@ -1089,10 +1157,12 @@ class CorrelatorService(FastAPIService):
 
         event_id = str(e.id)
         self.logger.info("[%s] Disposing", event_id)
-        drc = self.rules.get(e.event_class.id)
+        event_class = EventClass.get_by_name(e.type.event_class)
+        drc = self.rules.get(event_class.id)
+        managed_object = ManagedObject.get_by_id(int(e.target.id))
         if not drc:
             self.logger.info(
-                "[%s] No disposition rules for class %s, skipping", event_id, e.event_class.name
+                "[%s] No disposition rules for class %s, skipping", event_id, event_class.name
             )
             return
         # Apply disposition rules
@@ -1102,7 +1172,7 @@ class CorrelatorService(FastAPIService):
             # Process action
             if rule.action == "drop":
                 self.logger.info("[%s] Dropped by action", event_id)
-                e.delete()
+                # e.delete()
                 save_to_disposelog("drop")
                 return
             elif rule.action == "ignore":
@@ -1110,36 +1180,36 @@ class CorrelatorService(FastAPIService):
                 save_to_disposelog("ignore")
                 return
             elif rule.action == "raise" and rule.combo_condition == "none":
-                alarm = await self.raise_alarm_from_rule(rule, e)
+                alarm = await self.raise_alarm_from_rule(rule, e, managed_object)
                 save_to_disposelog("raise", alarm)
             elif rule.action == "clear" and rule.combo_condition == "none":
-                alarm = await self.clear_alarm_from_rule(rule, e)
+                alarm = await self.clear_alarm_from_rule(rule, e, managed_object)
                 save_to_disposelog("clear", alarm)
             if rule.action in ("raise", "clear"):
                 # Write reference if can trigger delayed event
                 if rule.unique and rule.event_class.id in self.back_rules:
-                    vars = rule.get_vars(e)
+                    vars = rule.get_vars(e, managed_object)
                     reference = self.get_default_reference(
-                        managed_object=e.managed_object, alarm_class=rule.alarm_class, vars=vars
+                        managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
                     )
                     e.reference = self.get_reference_hash(reference)
-                    e.save()
+                    # e.save()
                 # Process delayed combo conditions
-                if e.event_class.id in self.back_rules:
-                    for br in self.back_rules[e.event_class.id]:
-                        de = self.get_delayed_event(br, e)
+                if event_class.id in self.back_rules:
+                    for br in self.back_rules[event_class.id]:
+                        de = self.get_delayed_event(br, e, managed_object)
                         if de:
                             if br.action == "raise":
-                                alarm = await self.raise_alarm_from_rule(br, de)
+                                alarm = await self.raise_alarm_from_rule(br, de, managed_object)
                                 save_to_disposelog("raise", alarm)
                             elif br.action == "clear":
-                                alarm = await self.clear_alarm_from_rule(br, de)
+                                alarm = await self.clear_alarm_from_rule(br, de, managed_object)
                                 save_to_disposelog("clear", alarm)
             if rule.stop_disposition:
                 break
         self.logger.info("[%s] Disposition complete", event_id)
 
-    async def topology_rca(self, alarm):
+    async def topology_rca(self, alarm: ActiveAlarm):
         """
         Topology-based RCA
         :param alarm:
@@ -1275,8 +1345,9 @@ class CorrelatorService(FastAPIService):
             correlate_uplinks(a)
         self.logger.debug("[%s] Correlation completed", alarm.id)
 
+    @classmethod
     def get_group_deferred_count(
-        self, h_ref: bytes, min_ts: datetime.datetime, max_ts: datetime.datetime
+        cls, h_ref: bytes, min_ts: datetime.datetime, max_ts: datetime.datetime
     ) -> int:
         """
         Get amount of waiting alarms for reference
@@ -1365,6 +1436,16 @@ class CorrelatorService(FastAPIService):
                 active.append(g_alarm)
                 if def_h_ref:
                     self.resolve_deferred_groups(def_h_ref)
+        # Service groups
+        for svc_id in alarm.affected_services:
+            ref = f"{SVC_REF_PREFIX}:{svc_id}"
+            sg_alarm = self.get_by_reference(ref)
+            if sg_alarm:
+                active.append(sg_alarm)
+                continue
+            # s_ref = self.get_reference_hash(ref)
+            if alarm.raw_reference != ref:
+                deferred.append(self.get_reference_hash(ref))
         return active, deferred
 
     async def clear_groups(self, groups: List[bytes], ts: Optional[datetime.datetime]) -> None:

@@ -9,64 +9,96 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX600-X1-X2 | PIC"
         },
         {
+            "name": "TenGigabitEthernet1/X/0",
             "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "name": "TenGigabitEthernet1/X/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "TenGigabitEthernet1/X/1",
             "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "name": "TenGigabitEthernet1/X/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "TenGigabitEthernet1/X/2",
             "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_2",
-            "name": "TenGigabitEthernet1/X/2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "TenGigabitEthernet1/X/3",
             "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_3",
-            "name": "TenGigabitEthernet1/X/3",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03031DJM"],
-            "part_no": ["CR51L4XFD0"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03031DJM"]
         },
-        "dimensions": {
-            "depth": 226,
-            "height": 20,
-            "width": 194
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR51L4XFD0"]
         },
-        "power": {
-            "power": 11.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 226
         },
-        "weight": {
-            "weight": 0.6
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 20
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 194
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 11.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.6
         }
-    }
+    ]
 }

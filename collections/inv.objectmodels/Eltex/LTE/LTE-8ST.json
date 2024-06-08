@@ -6,218 +6,423 @@
     "description": "Оптический станционный терминал LTE-8ST",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "MNG",
             "description": "MNG",
             "direction": "s",
             "gender": "f",
-            "name": "MNG",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "8",
             "description": "8 port",
             "direction": "s",
             "gender": "s",
-            "name": "8",
-            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Combined"
         },
         {
+            "name": "8_rj",
             "description": "8 port",
             "direction": "s",
             "gender": "f",
-            "name": "8_rj",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "8_sfp",
             "description": "8 port",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfp8",
-            "name": "8_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "9",
             "description": "9 port",
             "direction": "s",
             "gender": "s",
-            "name": "9",
-            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Combined"
         },
         {
+            "name": "9_rj",
             "description": "9 port",
             "direction": "s",
             "gender": "f",
-            "name": "9_rj",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "9_sfp",
             "description": "9 port",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfp9",
-            "name": "9_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "10",
             "description": "10 port",
             "direction": "s",
             "gender": "s",
-            "name": "10",
-            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Combined"
         },
         {
+            "name": "10_rj",
             "description": "10 port",
             "direction": "s",
             "gender": "f",
-            "name": "10_rj",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "9_sfp",
             "description": "10 port",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfp10",
-            "name": "9_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "11",
             "description": "11 port",
             "direction": "s",
             "gender": "s",
-            "name": "11",
-            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Combined"
         },
         {
+            "name": "11_rj",
             "description": "11 port",
             "direction": "s",
             "gender": "f",
-            "name": "11_rj",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "11_sfp",
             "description": "11 port",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfp11",
-            "name": "11_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon0",
             "description": "gpon 0",
             "direction": "i",
             "gender": "f",
-            "name": "pon0",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon1",
             "description": "gpon 1",
             "direction": "i",
             "gender": "f",
-            "name": "pon1",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon2",
             "description": "gpon 2",
             "direction": "i",
             "gender": "f",
-            "name": "pon2",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon3",
             "description": "gpon 3",
             "direction": "i",
             "gender": "f",
-            "name": "pon3",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon4",
             "description": "gpon 4",
             "direction": "i",
             "gender": "f",
-            "name": "pon4",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon5",
             "description": "gpon 5",
             "direction": "i",
             "gender": "f",
-            "name": "pon5",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon6",
             "description": "gpon 6",
             "direction": "i",
             "gender": "f",
-            "name": "pon6",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "pon7",
             "description": "gpon 7",
             "direction": "i",
             "gender": "f",
-            "name": "pon7",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "f",
-            "name": "-48V",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LTE-8ST"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LTE-8ST"]
         },
-        "dimensions": {
-            "depth": 240,
-            "height": 45,
-            "width": 420
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 45
         },
-        "power": {
-            "power": 60
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 420
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 2.5
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 60
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.5
         }
-    }
+    ]
 }

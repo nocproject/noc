@@ -7,16 +7,18 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Power Board connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | DBPWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H836VPBA"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H836VPBA"]
         }
-    }
+    ]
 }

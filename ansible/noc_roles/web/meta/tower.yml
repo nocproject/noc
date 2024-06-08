@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Web interface daemon<br/>
       <strong>Long description</strong>: Nginx upstream to show web interface<br/>
       <strong>Scale Recommendations</strong>: At least two per system. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/web/ target=_blank>Web</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/web/ target=_blank>Web</a><br/>
       <strong>Placement constraint</strong>: On node with service Nginx <br/>
     power:
       default: 2

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Interface Status check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             "timestamp": timestamp,
             "reference": f"e:{self.object.id}:{alarm_class.id}:{iface.name}",
         }
-        if iface.profile.status_discovery == "ca" and a_status is False:
+        if iface.profile.status_discovery in {"ca", "rc"} and a_status is False:
             msg["$op"] = "clear"
             self.logger.info(
                 f"Clear {alarm_class.name}: on interface {iface.name}. Reason: Admin Status Down"
@@ -62,7 +62,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             self.logger.info(f"Clear {alarm_class.name}: on interface {iface.name}")
         if iface.profile.status_discovery == "rc" and o_status is False and a_status is True:
             msg["$op"] = "raise"
-            msg["managed_object"] = self.object.id
+            msg["managed_object"] = str(self.object.id)
             msg["alarm_class"] = alarm_class.name
             msg["vars"] = {"interface": iface.name}
             self.logger.info(f"Raise {alarm_class.name}: on interface {iface.name}")
@@ -97,7 +97,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             i.name: i
             for i in Interface.objects.filter(
                 managed_object=self.object.id,
-                type="physical",
+                type__in=["physical", "aggregated"],
                 profile__in=InterfaceProfile.get_with_status_discovery(),
             ).read_preference(ReadPreference.SECONDARY_PREFERRED)
         }
@@ -117,6 +117,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             iface = get_interface(i["interface"])
             if not iface:
                 continue
+            old_adm_status = iface.admin_status
             kwargs = {
                 "admin_status": i.get("admin_status"),
                 "full_duplex": i.get("full_duplex"),
@@ -126,6 +127,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
             }
             changes = self.update_if_changed(iface, kwargs, ignore_empty=list(kwargs), bulk=bulk)
             self.log_changes(f"Interface {i['interface']} status has been changed", changes)
+            if iface.type == "aggregated":
+                continue
             ostatus = i.get("oper_status")
             astatus = i.get("admin_status")
             if iface.oper_status != ostatus and ostatus is not None:
@@ -133,8 +136,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 if iface.profile.status_discovery in {"c", "rc", "ca"}:
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 iface.set_oper_status(ostatus)
-            if iface.admin_status != astatus and astatus is not None:
-                if iface.profile.status_discovery == "ca":
+            if old_adm_status != astatus and astatus is not None:
+                if iface.profile.status_discovery in {"ca", "rc"}:
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 if astatus is False:
                     # If admin_down send expired signal

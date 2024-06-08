@@ -8,33 +8,45 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "m",
-            "name": "-48V",
-            "protocols": [">48DC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "m",
-            "name": "RTN",
-            "protocols": [">48DC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "in",
             "description": "Internal power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MX80 PEM"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["PWR-MX80-DC-S"],
-            "part_no": ["740-029712"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-029712"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["PWR-MX80-DC-S"]
         }
-    }
+    ]
 }

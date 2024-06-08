@@ -8,9 +8,10 @@
 # Python modules
 from collections import defaultdict
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, ListField, IntField, ObjectIdField
 
@@ -88,8 +89,8 @@ class Link(Document):
             return "Stale link (%s)" % self.id
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["Link"]:
-        return Link.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Link"]:
+        return Link.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
@@ -204,18 +205,18 @@ class Link(Document):
                 ["noc::is_linked::="],
                 instance_filters=[("_id", [i.id for i in self.interfaces])],
             )
-            Label.add_model_labels(
-                "sa.ManagedObject",
-                ["noc::is_linked::="],
-                instance_filters=[("id", self.linked_objects)],
-            )
             ManagedObject.update_links(self.linked_objects)
 
     def on_delete(self):
         from noc.sa.models.managedobject import ManagedObject
 
         self.update_topology()
-        self.reset_label()
+        # Assumption that Interface has only one Link :)
+        Label.remove_model_labels(
+            "inv.Interface",
+            ["noc::is_linked::="],
+            instance_filters=[("_id", [i.id for i in self.interfaces])],
+        )
         ManagedObject.update_links(self.linked_objects, exclude_link_ids=[self.id])
 
     @property

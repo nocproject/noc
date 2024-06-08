@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | EngineID",
+    "$collection": "inv.capabilities",
+    "uuid": "2c7bacae-ebd8-47eb-83f4-f8ce16a58d12",
+    "description": "The Engine ID is used by SNMPv3 entities to uniquely identify them. Hex String",
+    "type": "str",
+    "card_template": null
+}

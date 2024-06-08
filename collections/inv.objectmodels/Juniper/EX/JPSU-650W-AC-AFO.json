@@ -8,29 +8,50 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4550 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["JPSU-650W-AC-AFO"],
-            "order_part_no": ["JPSU-650W-AC-AFO"],
-            "part_no": ["740-041741", "740-070749"]
+    "data": [
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": ["JPSU-650W-AC-AFO"]
         },
-        "power": {
-            "power": 650.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["JPSU-650W-AC-AFO"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-041741", "740-070749"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 650.0
         }
-    }
+    ]
 }

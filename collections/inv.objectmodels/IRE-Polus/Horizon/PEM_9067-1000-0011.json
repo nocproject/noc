@@ -1,0 +1,57 @@
+{
+    "name": "IRE-Polus | Horizon | PEM 9067-1000-0011",
+    "$collection": "inv.objectmodels",
+    "uuid": "3fa8a713-cd74-40db-82f4-de3f9d9e03c5",
+    "vendor__code": "IRE-POLUS",
+    "description": "K4-H8 and K10-H8 Power Unit (48V DC, 100W) Power Supply",
+    "cr_context": "PEM",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | PEM"
+        },
+        {
+            "name": "-48V",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | M4 Pin"
+        },
+        {
+            "name": "RETURN",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | M4 Pin"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PEM 9067-1000-0011"]
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.4
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+config: |
+  user name admin privilege admin password 7 werwerwer
+  user name diagnost privilege user password 7 werwerwre
+result:
+  - ['system', 'user', 'admin', 'authentication', 'encrypted-password', 'werwerwer', {'replace': True}]
+  - ['system', 'user', 'admin', 'class', 'level-admin']
+  - ['system', 'user', 'diagnost', 'authentication', 'encrypted-password', 'werwerwre', {'replace': True}]
+  - ['system', 'user', 'diagnost', 'class', 'level-user']

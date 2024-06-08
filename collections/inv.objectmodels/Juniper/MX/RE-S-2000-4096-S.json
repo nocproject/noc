@@ -7,41 +7,72 @@
     "cr_context": "RE",
     "connections": [
         {
+            "name": "aux",
             "description": "AUX serial port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "RJ45 Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ethernet",
             "description": "Ethernet port",
             "direction": "s",
             "gender": "f",
-            "name": "ethernet",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "in",
             "description": "SCB connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | RE"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["RE-S-2000-4096-S", "RE-S-2000-4096-BB", "RE-S-1300-2048-WW-S"],
-            "part_no": ["740-013063"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-013063"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["RE-S-2000-4096-S", "RE-S-2000-4096-BB", "RE-S-1300-2048-WW-S"]
         }
-    }
+    ]
 }

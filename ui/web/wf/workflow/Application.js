@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // wf.workflow application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.wf.workflow.Application");
@@ -11,6 +11,7 @@ Ext.define("NOC.wf.workflow.Application", {
     requires: [
         "NOC.wf.workflow.Model",
         "NOC.wf.workflow.WFEditor",
+        "NOC.core.JSONPreview",
         "NOC.core.tagfield.Tagfield",
         "NOC.main.remotesystem.LookupField",
         "NOC.main.ref.modelid.LookupField"
@@ -22,6 +23,15 @@ Ext.define("NOC.wf.workflow.Application", {
     initComponent: function() {
         var me = this;
         me.WF_EDITOR = me.registerItem("NOC.wf.workflow.WFEditor");
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/wf/workflow/{id}/json/'),
+            previewName: new Ext.XTemplate('Workflow: {name}')
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
         Ext.apply(me, {
             columns: [
                 {
@@ -55,6 +65,11 @@ Ext.define("NOC.wf.workflow.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: __("UUID")
                 },
                 {
                     xtype: "core.tagfield",
@@ -96,6 +111,16 @@ Ext.define("NOC.wf.workflow.Application", {
                             uiStyle: "medium"
                         }
                     ]
+                }
+            ],
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
                 }
             ]
         });
@@ -151,5 +176,11 @@ Ext.define("NOC.wf.workflow.Application", {
         if(record) {
             me.setHistoryHash(record.get("id"));
         }
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
     }
 });

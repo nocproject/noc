@@ -250,14 +250,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 snmp_rate_limit = self.credentials.get("snmp_rate_limit", None) or None
                 if snmp_rate_limit is None:
                     snmp_rate_limit = self.profile.get_snmp_rate_limit(self)
-                if config.activator.snmp_backend == "native":
-                    self._snmp = SNMP(self, rate=snmp_rate_limit)
-                elif config.activator.snmp_backend == "gufo":
-                    from .snmp.gufosnmp import GufoSNMP
-
-                    self._snmp = GufoSNMP(self, rate=snmp_rate_limit)
-                else:
-                    raise ValueError(f"Invalid snmp_backend: {config.activator.snmp_backend}")
+                self._snmp = SNMP(self, rate=snmp_rate_limit)
         return self._snmp
 
     @property
@@ -1117,16 +1110,23 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     def has_snmp_only_access(self):
         return not self.has_cli_access() and self.has_snmp_access()
 
-    def has_snmp(self):
+    def has_snmp(self) -> bool:
         """
         Check whether equipment has SNMP enabled
         """
-        if self.has_capability("SNMP", allow_zero=True):
-            # If having SNMP caps - check it and credential
-            return bool(self.credentials.get("snmp_ro")) and self.has_capability("SNMP")
-        else:
-            # if SNMP caps not exist check credential
-            return bool(self.credentials.get("snmp_ro"))
+        # Check Credential
+        snmp_version = self.credentials.get("snmp_version") or "v2c"
+        if snmp_version != "v3" and not self.credentials.get("snmp_ro"):
+            # V1,V2 credential check
+            return False
+        elif snmp_version == "v3" and not self.credentials.get("snmp_username"):
+            # V3 credential check
+            return False
+        # Check Caps
+        if "SNMP" not in self.capabilities:
+            return True
+        # If having SNMP caps
+        return self.has_capability("SNMP")
 
     def has_snmp_v1(self):
         return self.has_capability("SNMP | v1")

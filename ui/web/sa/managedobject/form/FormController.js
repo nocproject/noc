@@ -55,6 +55,12 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             return;
         }
         var v = me.getFormData();
+        // normalize custom fields
+        Ext.each(me.up('[itemId=sa-managedobject]').noc.cust_form_fields, function(field) {
+            if(field.xtype === 'datefield' && !Ext.isEmpty(v[field.name])) {
+                v[field.name] = Ext.Date.format(v[field.name], field.altFormats);
+            }
+        })
         // ToDo remove id, when new record
         // if(!me.currentRecord && v[me.idField] !== undefined) {
         //     delete v[me.idField];
@@ -124,7 +130,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         var view = this.getView(),
             parentController = view.up('[itemId=sa-managedobject]').getController(),
             formPanel = this.getView().down('[itemId=managedobject-form-panel]');
-        parentController.setFormTitle(__("Clone") + " {0}", "CLONE");
+        parentController.setFormTitle(__("Clone") + " {0}", {id: "CLONE"});
         parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
         formPanel.getForm().setValues({bi_id: null});
         formPanel.recordId = undefined;
@@ -213,7 +219,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         Ext.Array.each(fieldsWithDefaultValue, function(field) {
             defaultValues[field.name] = field.defaultValue;
         });
-        parentController.setFormTitle(__("Create") + " {0}", "NEW");
+        parentController.setFormTitle(__("Create") + " {0}", {id: "NEW"});
         parentController.resetInlineStore(formPanel, defaults);
         parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
         formPanel.recordId = undefined;
@@ -221,9 +227,16 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         formPanel.getForm().setValues(defaultValues);
     },
     saveRecord: function(data) {
-        var me = this,
-            formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
-            record = Ext.create("NOC.sa.managedobject.Model");
+        var me = this, record,
+            view = this.getView(),
+            formPanel = view.down('[itemId=managedobject-form-panel]'),
+            cust_field_model = view.up('[itemId=sa-managedobject]').noc.cust_model_fields || [];
+
+        NOC.sa.managedobject.Model.addFields(cust_field_model.map(function(field) {
+            if(field.type === 'date') {field.type = "string"}
+            return field;
+        }));
+        record = NOC.sa.managedobject.Model.create(data);
 
         record.self.setProxy({type: "managedobject"});
         record.getProxy().getWriter().setWriteAllFields(true);
@@ -324,6 +337,16 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
                 html: element.tooltip
             });
         }
+    },
+    onChangeSNMP_SecurityLevel: function(field, value) {
+        this.getView().down('[name=snmp_ro]').setReadOnly(!["Community"].includes(value));
+        this.getView().down('[name=snmp_rw]').setReadOnly(!["Community"].includes(value));
+        this.getView().down('[name=snmp_username]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+        this.getView().down('[name=snmp_ctx_name]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+        this.getView().down('[itemId=snmp_auth_proto]').setHidden(["Community", "noAuthNoPriv"].includes(value));
+        this.getView().down('[name=snmp_auth_key]').setHidden(["Community", "noAuthNoPriv"].includes(value));
+        this.getView().down('[itemId=snmp_priv_proto]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+        this.getView().down('[name=snmp_priv_key]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
     },
     // Workaround labelField
     onChange: Ext.emptyFn,

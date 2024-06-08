@@ -8,97 +8,133 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "0/0",
             "description": "Port 0/0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/1",
             "description": "Port 0/1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/2",
             "description": "Port 0/2",
             "direction": "i",
             "gender": "f",
-            "name": "0/2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/3",
             "description": "Port 0/3",
             "direction": "i",
             "gender": "f",
-            "name": "0/3",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "1/0",
             "description": "Port 1/0",
             "direction": "i",
             "gender": "f",
-            "name": "1/0",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | CFP | Juniper"
         },
         {
+            "name": "2/0",
             "description": "Port 2/0",
             "direction": "i",
             "gender": "f",
-            "name": "2/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "2/1",
             "description": "Port 2/1",
             "direction": "i",
             "gender": "f",
-            "name": "2/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "2/2",
             "description": "Port 2/2",
             "direction": "i",
             "gender": "f",
-            "name": "2/2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "2/3",
             "description": "Port 2/3",
             "direction": "i",
             "gender": "f",
-            "name": "2/3",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "3/0",
             "description": "Port 3/0",
             "direction": "i",
             "gender": "f",
-            "name": "3/0",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | CFP | Juniper"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MPC4E-3D-2CGE-8XGE"],
-            "part_no": ["750-037355"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-037355"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MPC4E-3D-2CGE-8XGE"]
         }
-    }
+    ]
 }

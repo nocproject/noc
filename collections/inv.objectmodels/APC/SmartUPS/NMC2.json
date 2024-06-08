@@ -7,32 +7,46 @@
     "cr_context": "MGMT",
     "connections": [
         {
+            "name": "in",
             "description": "APC Smart Slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "APC | UPS | SS"
         },
         {
+            "name": "eth",
             "description": "Outband Management",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | 2.5mm-jack"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["AP9537SUM"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AP9537SUM"]
         }
-    }
+    ]
 }

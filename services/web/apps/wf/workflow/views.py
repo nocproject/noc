@@ -16,6 +16,7 @@ from noc.wf.models.workflow import Workflow
 from noc.wf.models.state import State
 from noc.wf.models.transition import Transition, TransitionVertex
 from noc.core.translation import ugettext as _
+from noc.models import get_model
 from noc.sa.interfaces.base import (
     StringParameter,
     IntParameter,
@@ -109,9 +110,7 @@ class WorkflowApplication(ExtDocApplication):
             "name": StringParameter(),
             "description": StringParameter(default=""),
             "is_active": BooleanParameter(default=False),
-            "allowed_models": DictListParameter(
-                attrs={"id": StringParameter(), "label": StringParameter()}
-            ),
+            "allowed_models": StringListParameter(),
             "states": DictListParameter(
                 attrs={
                     "id": StringParameter(default=""),
@@ -145,7 +144,8 @@ class WorkflowApplication(ExtDocApplication):
                         attrs={
                             "labels": StringListParameter(),
                             "exclude_labels": StringListParameter(),
-                        }
+                        },
+                        required=False,
                     ),
                     "handlers": StringListParameter(),
                     "vertices": DictListParameter(attrs={"x": IntParameter(), "y": IntParameter()}),
@@ -173,7 +173,13 @@ class WorkflowApplication(ExtDocApplication):
         wf.name = name
         wf.description = description
         wf.is_active = is_active
-        wf.allowed_models = [x["id"] for x in allowed_models or []]
+        wf.allowed_models = []
+        for am in allowed_models:
+            try:
+                get_model(am)
+            except ImportError:
+                raise ValueError("Bad Model: %s" % am)
+            wf.allowed_models += [am]
         wf.save()
         # Get current state
         current_states = {}  # str(id) -> state

@@ -35,8 +35,14 @@ PINHOLE_PATHS = {
 }
 
 
-@router.get("/api/auth/auth/", tags=["login"])
-@router.get("/api/login/auth/", tags=["login"])
+@router.get("/api/auth/auth/", tags=["auth"])
+@router.post("/api/auth/auth/", tags=["auth"])
+@router.put("/api/auth/auth/", tags=["auth"])
+@router.head("/api/auth/auth/", tags=["auth"])
+@router.delete("/api/auth/auth/", tags=["auth"])
+@router.options("/api/auth/auth/", tags=["auth"])
+@router.patch("/api/auth/auth/", tags=["auth"])
+@router.trace("/api/auth/auth/", tags=["auth"])
 async def auth(
     request: Request,
     jwt_cookie: Optional[str] = Cookie(None, alias=config.login.jwt_cookie_name),

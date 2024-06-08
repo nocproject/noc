@@ -15,6 +15,7 @@ Ext.define("NOC.inv.map.Application", {
         "NOC.inv.map.inspectors.ManagedObjectInspector",
         "NOC.inv.map.inspectors.LinkInspector",
         "NOC.inv.map.inspectors.CloudInspector",
+        "NOC.inv.map.inspectors.CPEInspector",
         "NOC.inv.map.Legend",
         "NOC.inv.map.MiniMap",
         "NOC.inv.map.Basket",
@@ -195,6 +196,11 @@ Ext.define("NOC.inv.map.Application", {
             readOnly: me.readOnly
         });
 
+        me.cpeInspector = Ext.create("NOC.inv.map.inspectors.CPEInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
+
         me.legendPanel = Ext.create("NOC.inv.map.Legend", {
             collapsed: true,
             region: 'south',
@@ -245,6 +251,7 @@ Ext.define("NOC.inv.map.Application", {
                 me.objectGroupInspector,
                 me.objectSegmentInspector,
                 me.objectPortalInspector,
+                me.cpeInspector,
             ]
         });
 
@@ -512,6 +519,14 @@ Ext.define("NOC.inv.map.Application", {
         );
         me.objectPortalInspector.preview(me.currentSegmentId, objectId);
     },
+
+    inspectCPE: function(objectId) {
+        var me = this;
+        me.inspectorPanel.getLayout().setActiveItem(
+            me.cpeInspector
+            );
+        me.cpeInspector.preview(me.currentSegmentId, objectId);
+        },
 
     onEdit: function() {
         var me = this;

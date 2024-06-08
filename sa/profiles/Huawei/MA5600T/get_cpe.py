@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
 
     cache = True
 
-    splitter = re.compile(r"\s*-+\n")
+    splitter = re.compile(r"\s*\n\s*-+\n")
 
     status_map = {"online": "active", "offline": "inactive"}  # associated  # disassociating
     INACTIVE_STATE = {"initial"}
@@ -58,7 +58,6 @@ class Script(BaseScript):
         for c in ("display ont info 0 all", "display ont version 0 all"):
             v = self.cli(c)
             for table in v.split("\n\n"):
-                tables_data = []
                 parts = self.splitter.split(table)
                 parts = parts[1:]
                 while len(parts) > 2:
@@ -75,57 +74,60 @@ class Script(BaseScript):
                         header[0] = header[0][len(header[0]) - len(str.lstrip(header[0])) - 2 :]
                     head = parse_table_header(header)
                     del head[2]  # remove empty header
-                    tables_data += self.profile.parse_table1(body, head)
-                for t in tables_data:
-                    if "Config state" in t and self.config_status_map.get(
-                        t["Config state"][0], "other"
-                    ):
-                        continue
-                    if "ONT-ID" in t:
-                        ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), t["ONT-ID"][0])
-                        if ont_id in r:
-                            r[ont_id]["description"] = t["Description"][0]
-                        continue
-                    if "F/S/P/ONT-ID" in t:
-                        ont_id = t["F/S/P/ONT-ID"][0].replace(" ", "")
-                        if ont_id in r:
-                            r[ont_id].update(
-                                {
-                                    "vendor": t["Vendor ID"][0],
-                                    "model": t["ONT"][0] + t["Model"][0] if t["Model"] else "",
-                                    "version": t["Software Version"][0]
-                                    if t["Software Version"]
-                                    else "",
-                                }
-                            )
-                        continue
-                    status = "other"
-                    if "ONT ID" in t:
-                        ont_id, serial = t["ONT ID"][0].split()
-                        status = self.status_map[t["Run state"][0]]
-                    elif "ONT" in t:
-                        #  -----------------------------------------------------------------------------
-                        #  F/S/P   ONT         SN         Control     Run      Config   Match    Protect
-                        #                       ID                     flag        state    state    state    side
-                        #  -----------------------------------------------------------------------------
-                        #
-                        self.logger.warning("Shift header row. %s" % header)
-                        ont_id, serial = t["ONT"][0].split()
-                        status = self.status_map[t["Run ID"][0]]
-                    # else:
-                    #    self.logger.warning("Unknown ID")
-                    #    continue
-                    ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), ont_id)
-                    r[ont_id] = {
-                        "interface": t["F/S/P"][0].replace(" ", ""),
-                        "status": status,
-                        "id": ont_id,
-                        "global_id": serial + t["SN"][0],
-                        "type": "ont",
-                        "serial": serial + t["SN"][0],
-                        "description": "",
-                        "location": "",
-                    }
+                    for t in self.profile.parse_table1(body, head):
+                        if (
+                            "Config state" in t
+                            and self.config_status_map.get(t["Config state"][0], "other")
+                            == "inactive"
+                        ):
+                            continue
+                        if "ONT-ID" in t:
+                            ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), t["ONT-ID"][0])
+                            if ont_id in r:
+                                r[ont_id]["description"] = t["Description"][0]
+                            continue
+                        if "F/S/P/ONT-ID" in t:
+                            ont_id = t["F/S/P/ONT-ID"][0].replace(" ", "")
+                            if ont_id in r:
+                                r[ont_id].update(
+                                    {
+                                        "vendor": t["Vendor ID"][0],
+                                        "model": t["ONT"][0] + t["Model"][0] if t["Model"] else "",
+                                        "version": (
+                                            t["Software Version"][0]
+                                            if t["Software Version"]
+                                            else ""
+                                        ),
+                                    }
+                                )
+                            continue
+                        status = "other"
+                        if "ONT ID" in t:
+                            ont_id, serial = t["ONT ID"][0].split()
+                            status = self.status_map[t["Run state"][0]]
+                        elif "ONT" in t:
+                            #  -----------------------------------------------------------------------------
+                            #  F/S/P   ONT         SN         Control     Run      Config   Match    Protect
+                            #                       ID                     flag        state    state    state    side
+                            #  -----------------------------------------------------------------------------
+                            #
+                            self.logger.warning("Shift header row. %s" % header)
+                            ont_id, serial = t["ONT"][0].split()
+                            status = self.status_map[t["Run ID"][0]]
+                        # else:
+                        #    self.logger.warning("Unknown ID")
+                        #    continue
+                        ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), ont_id)
+                        r[ont_id] = {
+                            "interface": t["F/S/P"][0].replace(" ", ""),
+                            "status": status,
+                            "id": ont_id,
+                            "global_id": serial + t["SN"][0],
+                            "type": "ont",
+                            "serial": serial + t["SN"][0],
+                            "description": "",
+                            "location": "",
+                        }
         for ont_id in r:
             # if r[ont_id]["status"] != "active":
             #     continue
@@ -141,7 +143,7 @@ class Script(BaseScript):
                 r[ont_id]["distance"] = float(parse_result.get("ont_distance", 0))
             except ValueError:
                 pass
-            address = parse_result.get("ont_address", "")
+            address = parse_result.get("ont_address", "").replace("-", "")
             if address:
                 r[ont_id]["ip"] = parse_result.get("ont_address", "").split("/")[0]
         return list(r.values())

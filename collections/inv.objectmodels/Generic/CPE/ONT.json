@@ -1,0 +1,57 @@
+{
+    "name": "Generic | CPE | ONT",
+    "$collection": "inv.objectmodels",
+    "uuid": "985e58c8-4ad0-4820-9898-e106d9198f2c",
+    "vendor__code": "GENERIC",
+    "description": "Gereric ONT user terminal",
+    "connections": [
+        {
+            "name": "eth0",
+            "description": "Etherne Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "line",
+            "description": "Optical line port",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "is_cpe",
+            "interface": "cpe",
+            "value": true
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["*"]
+        }
+    ]
+}

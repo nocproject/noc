@@ -1,0 +1,10 @@
+{
+    "name": "V.34",
+    "code": "V34",
+    "$collection": "inv.protocols",
+    "uuid": "04546556-5f63-4c3b-983f-cbc95f8928cf",
+    "description": "V.34 (09/94) is an ITU-T recommendation (superseded) for a modem, allowing up to 28.8 kbit/s bidirectional data transfer using TCM modulation. Other additional defined data transfer rates are 24.0 kbit/s and 19.2 kbit/s as well as all the permitted V.32 and V.32bis rates",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Modulator-Demodulator"
+}

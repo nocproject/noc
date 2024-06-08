@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,6 +29,9 @@ class Script(BaseScript):
     rx_bridge_port2 = re.compile(
         r"^port (?P<ifname>\S+)\s*\n(^\s+.+\n)+?^\s+pvid (?P<pvid>\d+)\s*\n^exit",
         re.MULTILINE,
+    )
+    rx_uplink_port = re.compile(
+        r"^(?P<port>\d+)\s+(?P<admin_status>up|down)\s+(?P<oper_status>up|down)", re.MULTILINE
     )
     rx_vlan_map = re.compile(r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_ifname = re.compile(r"port : (?P<ifname>\S+)")
@@ -154,19 +157,14 @@ class Script(BaseScript):
         )
         subifaces = self.get_subifaces_cli()
         tagged_vlans = {}
-        v = self.cli("show vlan shub-port-vlan-map")
-        network_0_found = False
+        v = self.cli("show vlan shub-port-vlan-map", cached=True)
         for match in self.rx_vlan_map.finditer(v):
             ifname = match.group("ifname")
             ifname = ifname.replace("lt:", "atm-if:")
             if ifname == "network:0":
-                ifname = "ethernet:1"
-                network_0_found = True
+                ifname = "ethernet:0"
             if ifname == "network:1":
-                if network_0_found:
-                    ifname = "ethernet:2"
-                else:
-                    ifname = "ethernet:1"
+                ifname = "ethernet:1"
             if ifname == "network:2":
                 ifname = "ethernet:2"
             if ifname == "network:3":
@@ -177,6 +175,8 @@ class Script(BaseScript):
                 ifname = "ethernet:5"
             if ifname == "network:6":
                 ifname = "ethernet:6"
+            if ifname == "network:7":
+                ifname = "ethernet:7"
             if ifname in tagged_vlans:
                 tagged_vlans[ifname] += [match.group("vlan_id")]
             else:
@@ -184,6 +184,7 @@ class Script(BaseScript):
         boards_status = self.get_boards_status_cli()
         self.logger.debug("Boards status: %s", boards_status)
         interfaces = {}
+        uplink_found = False
         v = self.cli("show interface port detail")
         for p in v.split("----\nport\n----"):
             match = self.rx_ifname.search(p)
@@ -192,6 +193,7 @@ class Script(BaseScript):
             ifname = match.group("ifname")
             hints = ["technology::dsl::adsl"]
             if ifname.startswith("ethernet"):
+                uplink_found = True
                 if ifname.startswith("ethernet:1/1/1:"):
                     port_id = "ethernet:" + ifname.split(":")[-1]
                 else:
@@ -238,6 +240,42 @@ class Script(BaseScript):
             if match and int(match.group("mtu")) > 0:
                 # interfaces["subinterfaces"][0]["mtu"] = match.group("mtu")
                 pass
+
+        if not uplink_found:
+            # re-read the list of vlans
+            # In this case interface name changed from `ethernet` to `network`
+            tagged_vlans = {}
+            v = self.cli("show vlan shub-port-vlan-map", cached=True)
+            for match in self.rx_vlan_map.finditer(v):
+                if int(match.group("vlan_id")) == 1:
+                    continue
+                ifname = match.group("ifname")
+                if ifname in tagged_vlans:
+                    tagged_vlans[ifname] += [match.group("vlan_id")]
+                else:
+                    tagged_vlans[ifname] = [match.group("vlan_id")]
+
+            hints = ["noc::topology::direction::nni", "technology::ethernet::1000base"]
+            v = self.cli("show interface shub port")
+            for match in self.rx_uplink_port.finditer(v):
+                port_id = "network:" + match.group("port")
+                interfaces[port_id] = {
+                    "name": port_id,
+                    "oper_status": match.group("oper_status") == "up",
+                    "admin_status": match.group("admin_status") == "up",
+                    "subinterfaces": [],
+                    "type": "physical",
+                    "hints": hints,
+                }
+                sub = {
+                    "name": port_id,
+                    "oper_status": match.group("oper_status") == "up",
+                    "admin_status": match.group("admin_status") == "up",
+                    "enabled_afi": ["BRIDGE"],
+                }
+                if tagged_vlans.get(port_id):
+                    sub["tagged_vlans"] = tagged_vlans[port_id]
+                interfaces[port_id]["subinterfaces"] += [sub]
 
         v = self.cli("show ip shub vrf")
         for match in self.rx_ip.finditer(v):

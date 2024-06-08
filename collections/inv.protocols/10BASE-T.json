@@ -1,0 +1,10 @@
+{
+    "name": "10BASE-T",
+    "code": "10BASET",
+    "$collection": "inv.protocols",
+    "uuid": "f93f1161-acc0-4f8e-b574-5cca89d76fec",
+    "description": "10BASE-T, 10Mbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

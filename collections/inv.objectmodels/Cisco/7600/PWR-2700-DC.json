@@ -8,55 +8,69 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "DC1+",
             "description": "DC 1 input Positive contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC1+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "DC1-",
             "description": "DC 1 input Negative contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC1-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "DC2+",
             "description": "DC 2 input Positive contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC2+",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "DC2-",
             "description": "DC 2 input Negative contact",
             "direction": "i",
             "gender": "m",
-            "name": "DC2-",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "GND",
             "description": "Ground connection",
             "direction": "i",
             "gender": "m",
-            "name": "GND",
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-2700-DC/4", "PWR-2700-DC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-2700-DC/4", "PWR-2700-DC"]
         }
-    }
+    ]
 }

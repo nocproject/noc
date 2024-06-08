@@ -84,23 +84,33 @@ class Script(BaseScript):
         ]
         if self.is_rotek:
             return r
-        v = self.cli("show interface port transceiver information")
-        for port in v.split("Port "):
+        if self.is_iscom2924g:
+            v = self.cli("show transceiver information port-list 1-28")
+        else:
+            v = self.cli("show interface port transceiver information")
+        for port in v.split("\nPort "):
             if not port or "Wait" in port or "Error" in port:
                 # Wait message after commands
                 continue
-            num = int(port.splitlines()[0].strip(":"))
-            d = dict(e.split(":") for e in port.splitlines() if e and len(e.split(":")) == 2)
+            if self.is_iscom2924g:
+                num = int(port.splitlines()[0].split()[0][4:])
+            else:
+                num = int(port.splitlines()[0].strip(":"))
+            d = dict(
+                [e.split(":")[0].strip().strip("*").lower(), e.split(":")[1].strip()]
+                for e in port.splitlines()
+                if e and len(e.split(":")) == 2
+            )
             # 1300Mb/sec-1310nm-LC-20.0km(0.009mm)
             description = "-".join(
                 [
-                    d["Transceiver Type"].strip(),
-                    d["Wavelength(nm)"].strip() + "nm",
-                    d["Connector Type"].strip(),
-                    d["Transfer Distance(meter)"].strip() + "m",
+                    d["transceiver type"].strip(),
+                    d["wavelength(nm)"].strip() + "nm",
+                    d["connector type"].strip(),
+                    d["transfer distance(meter)"].strip() + "m",
                 ]
             )
-            if d["Vendor Part Number"].strip() == "Unknown":
+            if d["vendor part number"].strip() == "Unknown":
                 # Port 28:
                 # Transceiver Type:
                 # Connector Type:
@@ -116,9 +126,9 @@ class Script(BaseScript):
                 {
                     "type": "XCVR",
                     "number": num,
-                    "vendor": d["Vendor Name"].strip(),
-                    "part_no": d["Vendor Part Number"].strip(),
-                    "serial": d["Vendor Serial Number"].strip(),
+                    "vendor": d["vendor name"].strip(),
+                    "part_no": d["vendor part number"].strip(),
+                    "serial": d["vendor serial number"].strip(),
                     "description": description,
                 }
             ]

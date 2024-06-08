@@ -5,49 +5,60 @@
     "vendor__code": "ALU",
     "description": "Alcatel 7450 Control Forwarding Module (CFM)",
     "connection_rule__name": "Alcatel | 7450",
-    "labels": ["noc::inv::chassis", "noc::inv::sup"],
     "cr_context": "CFM",
+    "labels": ["noc::inv::chassis", "noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7450 | CFM"
         },
         {
+            "name": "cf1",
             "description": "Compact flash slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "cf1",
             "type__name": "Flash | CF"
         },
         {
+            "name": "cf2",
             "description": "Compact flash slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "cf2",
             "type__name": "Flash | CF"
         },
         {
+            "name": "cf2",
             "description": "Compact flash slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "cf2",
             "type__name": "Flash | CF"
         },
         {
+            "name": "console",
             "description": "Management console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["3HE01172AAAA02"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["3HE01172AAAA02"]
         }
-    }
+    ]
 }

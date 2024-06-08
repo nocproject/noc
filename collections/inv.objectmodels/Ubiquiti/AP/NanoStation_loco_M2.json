@@ -7,28 +7,57 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "eth1",
             "description": "Main port",
             "direction": "s",
             "gender": "f",
-            "name": "eth1",
-            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NanoStation loco M2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NanoStation loco M2"]
         },
-        "dimensions": {
-            "depth": 80,
-            "height": 31,
-            "width": 163
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 80
         },
-        "power": {
-            "power": 5.5
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 31
         },
-        "weight": {
-            "weight": 0.18
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 163
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 5.5
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.18
         }
-    }
+    ]
 }

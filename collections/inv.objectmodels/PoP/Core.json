@@ -7,28 +7,38 @@
     "plugins": ["-inventory"],
     "connections": [
         {
+            "name": "links",
             "description": "Inter-PoP logical links",
             "direction": "s",
             "gender": "s",
-            "name": "links",
             "type__name": "Inter-PoP Logical Links"
         }
     ],
-    "data": {
-        "address": {
-            "has_address": true
+    "data": [
+        {
+            "attr": "has_address",
+            "interface": "address",
+            "value": true
         },
-        "container": {
-            "container": true
+        {
+            "attr": "layer",
+            "interface": "geopoint",
+            "value": "pop_core"
         },
-        "geopoint": {
-            "layer": "pop_core"
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         },
-        "pop": {
-            "level": 40
+        {
+            "attr": "level",
+            "interface": "pop",
+            "value": 40
         },
-        "contacts": {
-            "has_contacts": true
+        {
+            "attr": "has_contacts",
+            "interface": "contacts",
+            "value": true
         }
-    }
+    ]
 }

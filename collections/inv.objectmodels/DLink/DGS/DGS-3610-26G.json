@@ -6,387 +6,678 @@
     "description": "DGS-36210-26G L3 Managed Switch witch 24 1000M SFP ports and 12 multiplexing 10/100/1000M RJ-45 ports, 2 10G extention slots ",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "sfp1",
             "description": "GigabitEthernet 0/1 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp2",
             "description": "GigabitEthernet 0/2 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp2",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp3",
             "description": "GigabitEthernet 0/3 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp4",
             "description": "GigabitEthernet 0/4 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp4",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp5",
             "description": "GigabitEthernet 0/5 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp5",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp6",
             "description": "GigabitEthernet 0/6 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp6",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp7",
             "description": "GigabitEthernet 0/7 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp7",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp8",
             "description": "GigabitEthernet 0/8 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp8",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp9",
             "description": "GigabitEthernet 0/9 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp9",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp10",
             "description": "GigabitEthernet 0/10 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp10",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp11",
             "description": "GigabitEthernet 0/11 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp11",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp12",
             "description": "GigabitEthernet 0/12 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp12",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi13",
             "description": "GigabitEthernet 0/13 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi13",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp13",
             "description": "GigabitEthernet 0/13 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp13",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi14",
             "description": "GigabitEthernet 0/14 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi14",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp14",
             "description": "GigabitEthernet 0/14 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp14",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi15",
             "description": "GigabitEthernet 0/15 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi15",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp15",
             "description": "GigabitEthernet 0/15 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp15",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi16",
             "description": "GigabitEthernet 0/16 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi16",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp16",
             "description": "GigabitEthernet 0/16 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp16",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi17",
             "description": "GigabitEthernet 0/17 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi17",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp17",
             "description": "GigabitEthernet 0/17 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp17",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi18",
             "description": "GigabitEthernet 0/18 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi18",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp18",
             "description": "GigabitEthernet 0/18 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp18",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi19",
             "description": "GigabitEthernet 0/19 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi19",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp19",
             "description": "GigabitEthernet 0/19 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp19",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi20",
             "description": "GigabitEthernet 0/20 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi20",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp20",
             "description": "GigabitEthernet 0/20 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp20",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi21",
             "description": "GigabitEthernet 0/21 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi21",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp21",
             "description": "GigabitEthernet 0/21 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp21",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi22",
             "description": "GigabitEthernet 0/22 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi22",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp22",
             "description": "GigabitEthernet 0/22 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp22",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi23",
             "description": "GigabitEthernet 0/23 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi23",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp23",
             "description": "GigabitEthernet 0/23 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp23",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi24",
             "description": "GigabitEthernet 0/24 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi24",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp24",
             "description": "GigabitEthernet 0/24 SFP port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sfp24",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "module1",
             "description": "TenGigabitEthernet 1/1 XFP/CX4 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "module1",
             "type__name": "DLink | DGS3610 | Module"
         },
         {
+            "name": "module2",
             "description": "TenGigabitEthernet 2/1 XFP/CX4 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "module2",
             "type__name": "DLink | DGS3610 | Module"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "IPWR",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "name": "IPWR",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DGS-3610-26G"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 440,
-            "height": 44,
-            "width": 435
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "kg",
+            "interface": "weight",
+            "value": "8.5"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DGS-3610-26G"]
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
         },
-        "weight": {
-            "kg": "8.5"
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 435
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         }
-    }
+    ]
 }

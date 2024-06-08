@@ -9,78 +9,107 @@
     "labels": ["noc::inv::lc", "sum", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "output",
             "description": "OUTPUT ALARM",
             "direction": "s",
             "gender": "f",
-            "name": "output",
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
         {
+            "name": "input",
             "description": "INPUT ALARM",
             "direction": "s",
             "gender": "f",
-            "name": "input",
             "type__name": "Power | MSTB 2.5/2-ST-5.08"
         },
         {
-            "description": "Module Front Panel",
-            "direction": "o",
-            "gender": "m",
             "name": "subtending1",
-            "type__name": "Zyxel | MSAN | MFP"
-        },
-        {
             "description": "Module Front Panel",
             "direction": "o",
             "gender": "m",
+            "type__name": "Zyxel | MSAN | MFP"
+        },
+        {
             "name": "subtending2",
-            "type__name": "Zyxel | MSAN | MFP"
-        },
-        {
             "description": "Module Front Panel",
             "direction": "o",
             "gender": "m",
-            "name": "uplink1",
             "type__name": "Zyxel | MSAN | MFP"
         },
         {
+            "name": "uplink1",
+            "description": "Module Front Panel",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Zyxel | MSAN | MFP"
+        },
+        {
+            "name": "1",
             "description": "port 1",
             "direction": "s",
             "gender": "f",
-            "name": "1",
-            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "mgmt",
             "description": "mgmt port",
             "direction": "s",
             "gender": "f",
-            "name": "mgmt",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ11"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MSC1000", "msc"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MSC1000", "msc"]
         },
-        "weight": {
-            "weight": 1.8
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.8
         }
-    }
+    ]
 }

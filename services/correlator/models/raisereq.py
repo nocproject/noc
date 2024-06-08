@@ -14,8 +14,8 @@ from pydantic import BaseModel, Field
 
 class GroupItem(BaseModel):
     reference: str
-    alarm_class: Optional[str]
-    name: Optional[str]
+    alarm_class: Optional[str] = None
+    name: Optional[str] = None
 
 
 class RaiseRequest(BaseModel):
@@ -23,9 +23,10 @@ class RaiseRequest(BaseModel):
     reference: str
     managed_object: str
     alarm_class: str
-    timestamp: Optional[str]
-    groups: Optional[List[GroupItem]]
-    vars: Optional[Dict[str, Any]]
-    labels: Optional[List[str]]
-    remote_system: Optional[str]
-    remote_id: Optional[str]
+    severity: Optional[int] = None
+    timestamp: Optional[str] = None
+    groups: Optional[List[GroupItem]] = None
+    vars: Optional[Dict[str, Any]] = None
+    labels: Optional[List[str]] = None
+    remote_system: Optional[str] = None
+    remote_id: Optional[str] = None

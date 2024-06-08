@@ -15,7 +15,8 @@ from bson import ObjectId
 
 # NOC modules
 from noc.config import config
-from noc.fm.models.activeevent import ActiveEvent
+from noc.core.fm.event import Event
+from noc.fm.models.eventclass import EventClass
 
 
 class BaseEvFilter(object):
@@ -35,38 +36,40 @@ class BaseEvFilter(object):
         self.pq: List[Tuple[int, int]] = []
 
     @staticmethod
-    def event_hash(event: ActiveEvent) -> int:
+    def event_hash(event: Event, event_class: EventClass) -> int:
         """
         Collapse event to a hash
         :param event:
+        :param event_class:
         :return:
         """
         raise NotImplementedError
 
     @staticmethod
-    def get_window(event: ActiveEvent) -> int:
+    def get_window(event_class: EventClass) -> int:
         """
         Return filter window in seconds or 0, if disabled
-        :param event:
+        :param event_class:
         :return:
         """
         raise NotImplementedError
 
     @staticmethod
-    def _get_timestamp(event: ActiveEvent) -> int:
+    def _get_timestamp(event: Event) -> int:
         return int(event.timestamp.timestamp())
 
-    def register(self, event: ActiveEvent) -> None:
+    def register(self, event: Event, event_class: EventClass) -> None:
         """
         Register event to filter
         :param event:
+        :param event_class:
         :return:
         """
-        fw = self.get_window(event)
+        fw = self.get_window(event_class)
         if not fw:
             return  # No deduplication for event class
         now = self._get_timestamp(event)
-        eh = self.event_hash(event)
+        eh = self.event_hash(event, event_class)
         r = self.events.get(eh)
         if r and r[0] > now and not self.update_deadline:
             return  # deadline is not expired still
@@ -78,13 +81,14 @@ class BaseEvFilter(object):
             event_id = event.id
         self.events[eh] = (deadline, event_id)
 
-    def find(self, event: ActiveEvent) -> Optional[ObjectId]:
+    def find(self, event: Event, event_class: EventClass) -> Optional[ObjectId]:
         """
         Check if event is duplicated
         :param event:
+        :param event_class:
         :return: Duplicated event id
         """
-        eh = self.event_hash(event)
+        eh = self.event_hash(event, event_class)
         r = self.events.get(eh)
         ts = self._get_timestamp(event)
         if r and r[0] > ts:

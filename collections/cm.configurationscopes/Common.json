@@ -1,0 +1,6 @@
+{
+    "name": "Common",
+    "$collection": "cm.configurationscopes",
+    "uuid": "bbfed290-7f68-4c24-9bff-2f213375d659",
+    "description": "Scope for Common params"
+}

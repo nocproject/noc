@@ -9,76 +9,100 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "LPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "2",
             "description": "LPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "3",
             "description": "LPU Slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Huawei | CX&NE | LPU"
         },
         {
+            "name": "4",
             "description": "MPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | CX&NE | MPU"
         },
         {
+            "name": "5",
             "description": "MPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Huawei | CX&NE | MPU"
         },
         {
+            "name": "B1",
             "description": "Power Slot B1",
             "direction": "i",
             "gender": "f",
-            "name": "B1",
             "type__name": "Huawei | CX&NE | CX600-X3A PEM"
         },
         {
+            "name": "10",
             "description": "Fan Slot 10",
             "direction": "i",
             "gender": "f",
-            "name": "10",
             "type__name": "Huawei | CX&NE | CX600-X3A FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02350FMN"],
-            "part_no": ["CX6B0BKP0373"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 664,
-            "height": 442,
-            "width": 264
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 264
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 664
         },
-        "power": {
-            "power": 1120.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 442
         },
-        "rackmount": {
-            "units": 6.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1120.0
         },
-        "weight": {
-            "weight": 72.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 72.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX6B0BKP0373"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02350FMN"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 6.0
         }
-    }
+    ]
 }

@@ -8,25 +8,61 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rxtx",
             "description": "RxTx LC SFP",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": [">1000BASEZX-1510", "<1000BASEZX-1570"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1510",
+                    "protocol__code": "1000BASEZX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1570",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["GESM80KMBIDI5751", "GE80KMBIDI57/51"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["GESM80KMBIDI5751", "GE80KMBIDI57/51"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1570
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

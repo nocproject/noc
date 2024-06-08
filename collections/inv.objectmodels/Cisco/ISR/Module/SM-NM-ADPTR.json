@@ -1,0 +1,32 @@
+{
+    "name": "Cisco | ISR | Module | SM-NM-ADPTR",
+    "$collection": "inv.objectmodels",
+    "uuid": "b40b1380-281b-4fbf-afca-b8dad83b4863",
+    "vendor__code": "CISCO",
+    "description": "Network module adapter card",
+    "connection_rule__name": "Cisco | 3900",
+    "cr_context": "SM",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Service Module Chassis Connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "name": "nm1",
+            "description": "Network Module Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | ISR | NM"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SM-NM-ADPTR"]
+        }
+    ]
+}

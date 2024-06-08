@@ -1,0 +1,18 @@
+{
+    "workflow__name": "Agent Default",
+    "name": "Suspended",
+    "uuid": "c80cdc40-dc8c-44df-bf35-c293623d4169",
+    "$collection": "wf.states",
+    "description": "Agent is temporary suspended/blocked for organisational reasons",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 140,
+    "y": 300,
+    "disable_all_interaction": false,
+    "labels": ["noc::agent::auth::pre"]
+}

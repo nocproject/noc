@@ -8,25 +8,35 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Iskratel | SI3000 | SB"
         },
         {
+            "name": "LINE",
             "description": "32-channel VDSL2 ",
             "direction": "s",
             "gender": "f",
-            "name": "LINE",
-            "protocols": ["VDSL2", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | CENC-64"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["SBB1908AA"],
-            "part_no": [
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
                 "UTA6067EA",
                 "UTA6067EA010",
                 "UTA6067EA020",
@@ -47,6 +57,11 @@
                 "UTA6067EA06E",
                 "UTA6067EA06P"
             ]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["SBB1908AA"]
         }
-    }
+    ]
 }

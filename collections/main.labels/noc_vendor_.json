@@ -1,0 +1,19 @@
+{
+    "name": "noc::vendor::*",
+    "$collection": "main.labels",
+    "uuid": "13f7bdfe-d19b-4a17-a3b7-ede4f5c56daa",
+    "description": "Labels for Vendor models",
+    "bg_color1": 2719929,
+    "fg_color1": 16777215,
+    "bg_color2": 15965202,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["sa.ManagedObject"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

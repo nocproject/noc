@@ -1,0 +1,32 @@
+{
+    "name": "RS 485",
+    "code": "RS485",
+    "$collection": "inv.protocols",
+    "uuid": "1dc4e929-f4ec-481f-b2e9-f0c9eb103dd3",
+    "description": "RS485",
+    "data": [],
+    "connection_schema": "BD",
+    "discriminators": [
+        {
+            "code": "A",
+            "data": [
+                {
+                    "attr": "logic_0",
+                    "interface": "signal_level",
+                    "value": 1
+                }
+            ]
+        },
+        {
+            "code": "B",
+            "data": [
+                {
+                    "attr": "logic_0",
+                    "interface": "signal_level",
+                    "value": 0
+                }
+            ]
+        }
+    ],
+    "technology__name": "Serial"
+}

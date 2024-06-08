@@ -1,0 +1,10 @@
+{
+    "name": "802.11a",
+    "code": "802.11a",
+    "$collection": "inv.protocols",
+    "uuid": "ce940b1d-ea83-4dd3-bc21-31b06d958582",
+    "description": "IEEE802.11a is the first wireless standard to employ packet based OFDM, based on a proposal from Richard van Nee[7] from Lucent Technologies in Nieuwegein. OFDM was adopted as a draft 802.11a standard in July 1998 after merging with an NTT proposal.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "IEEE 802.11"
+}

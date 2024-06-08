@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import signal
 import uuid
 import argparse
 import threading
+import random
 from time import perf_counter
 import asyncio
 import cachetools
@@ -54,7 +55,7 @@ from noc.core.router.messagebuffer import MBuffer
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.error import NOCError
-from noc.core.mx import MX_STREAM, MX_SPAN_CTX, MX_SPAN_ID
+from noc.core.mx import MX_STREAM, MX_SPAN_CTX, MX_SPAN_ID, MessageType
 from noc.core.span import Span
 from .rpc import RPCProxy
 from .loader import set_service
@@ -91,11 +92,9 @@ class BaseService(object):
     use_jinja = False
     # Collect and send spans
     use_telemetry = False
-    # Register traefik backend if not None
-    traefik_backend = None
-    # Traefik frontend rule
-    # i.e. PathPrefix:/api/<name>
-    traefik_frontend_rule = None
+    # Traefik routing rule
+    # Requires config.features.traefik option
+    traefik_routes_rule: Optional[str] = None
     # Require DCS health status to be considered healthy
     # Usually means resolution error to required services
     # temporary leads service to unhealthy state
@@ -105,6 +104,8 @@ class BaseService(object):
     # Use service based consul check timeout
     dcs_check_interval: Optional[int] = None
     dcs_check_timeout: Optional[int] = None
+    # Use watchdog for check Service register in consul
+    use_watchdog = False
 
     LOG_FORMAT = config.log_format
 
@@ -152,6 +153,8 @@ class BaseService(object):
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
+        #
+        self.watchdog_waiter: Optional[asyncio.Event] = None
         # Metrics partitions
         self.n_metrics_partitions = len(config.clickhouse.cluster_topology.split(","))
         #
@@ -415,6 +418,7 @@ class BaseService(object):
 
     async def deactivate(self):
         if not self.is_active:
+            self.logger.info("Not Active")
             return
         self.is_active = False
         self.logger.info("Deactivating")
@@ -453,20 +457,25 @@ class BaseService(object):
 
     def get_register_tags(self):
         tags = ["noc"]
-        if config.features.traefik:
-            if self.traefik_backend and self.traefik_frontend_rule:
-                tags += [
-                    "traefik.tags=backend",
-                    "traefik.backend=%s" % self.traefik_backend,
-                    "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
-                    "traefik.backend.load-balancing=wrr",
-                ]
-                weight = self.get_backend_weight()
-                if weight:
-                    tags += ["traefik.backend.weight=%s" % weight]
-                limit = self.get_backend_limit()
-                if limit:
-                    tags += ["traefik.backend.maxconn.amount=%s" % limit]
+        if config.features.traefik and self.traefik_routes_rule and self.name:
+            tags += [
+                # Traefik used with exposeedByDefault=false
+                # So enable routing
+                "traefik.enable=true",
+                # Apply routing rule
+                f"traefik.http.routers.{self.name}.rule={self.traefik_routes_rule}",
+                # Set service name
+                f"traefik.http.routers.{self.name}.service={self.name}",
+                f"traefik.http.service.{self.name}",
+                # Set up healthchecks
+                f"traefik.http.services.{self.name}.loadbalancer.healthcheck.path=/health?{self.name}",
+            ]
+            # weight = self.get_backend_weight()
+            # if weight:
+            #     tags += [f"traefik.backend.weight={weight}"]
+            # limit = self.get_backend_limit()
+            # if limit:
+            #     tags += [f"traefik.backend.maxconn.amount={limit}"]
         return tags
 
     async def on_register(self):
@@ -485,6 +494,11 @@ class BaseService(object):
             # Finally call on_activate
             await self.on_activate()
             self.logger.info("Service is active (in %.2fms)", self.uptime() * 1000)
+            if self.use_watchdog and not hasattr(self, "slot_number") and not self.leader_lock_name:
+                # Run Watchdog, ignore service with slot
+                self.logger.info("Start Watchdog")
+                self.watchdog_waiter = asyncio.Event()
+                self.loop.create_task(self.watchdog())
         else:
             raise self.RegistrationError()
 
@@ -673,7 +687,7 @@ class BaseService(object):
             if self.publish_queue:
                 return  # Created in concurrent thread
             self.publish_queue = MessageStreamQueue(self.loop)
-            self.metrics_queue = QBuffer(max_size=config.msgstream.max_message_size)
+            self.metrics_queue = QBuffer(max_size=int(config.msgstream.max_message_size * 99 / 100))
             self.mx_queue = MBuffer()
             self.loop.create_task(self.publisher())
             self.loop.create_task(self.publish_metrics(self.metrics_queue))
@@ -864,7 +878,7 @@ class BaseService(object):
     async def send_message(
         self,
         data: Any,
-        message_type: str,
+        message_type: MessageType,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
         store: bool = False,
@@ -879,7 +893,7 @@ class BaseService(object):
         :param store: Append message to buffer for deliver
         :return:
         """
-        msg = Router.get_message(data, message_type, headers, sharding_key)
+        msg = Router.get_message(data, message_type.value, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
         if not config.message.embedded_router:
             self.publish(
@@ -897,7 +911,7 @@ class BaseService(object):
     def register_message(
         self,
         data: Any,
-        message_type: str,
+        message_type: MessageType,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
         group_key: Optional[str] = None,
@@ -913,7 +927,7 @@ class BaseService(object):
         """
         msg = Router.get_message(
             data,
-            message_type,
+            message_type.value,
             headers,
             sharding_key,
             raw_value=bool(group_key),
@@ -1007,3 +1021,22 @@ class BaseService(object):
         Called when all Router rules are ready.
         """
         return
+
+    async def watchdog(self):
+        """
+        WatchDog task. View watchdog_waiter event, by setting /health API.
+        If not set event - force reboot process
+        :return:
+        """
+        failed, delay, deviation = 0, config.watchdog.check_interval, 0.5
+        while True:
+            await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
+            self.logger.debug("WatchDog loop")
+            if not self.watchdog_waiter.is_set() and failed > config.watchdog.failed_count:
+                self.logger.warning("WatchDog is more %s failed. Deactivate process", failed)
+                self.stop()
+            elif not self.watchdog_waiter.is_set():
+                failed += 1
+                continue
+            self.watchdog_waiter.clear()
+            failed = 0

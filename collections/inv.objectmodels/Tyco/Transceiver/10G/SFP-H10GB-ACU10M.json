@@ -5,36 +5,90 @@
     "vendor__code": "TYCO",
     "description": "Tyco 10GBASE-CR twinax copper cable with SFP+ connectors on both ends (10m)\n",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
-            "cross": "in2",
+            "name": "in1",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in1",
-            "protocols": ["TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
-            "cross": "in1",
+            "name": "in2",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in2",
-            "protocols": ["TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["2163675-2", "SFP-H10GB-ACU10M"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "2163675-2",
+                "SFP-H10GB-ACU10M"
+            ]
         },
-        "twinax": {
-            "alias": "in",
-            "connection1": "in1",
-            "connection2": "in2",
-            "twinax": true
+        {
+            "attr": "alias",
+            "interface": "twinax",
+            "value": "in"
+        },
+        {
+            "attr": "connection1",
+            "interface": "twinax",
+            "value": "in1"
+        },
+        {
+            "attr": "twinax",
+            "interface": "twinax",
+            "value": true
+        },
+        {
+            "attr": "connection2",
+            "interface": "twinax",
+            "value": "in2"
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
+        }
+    ]
 }

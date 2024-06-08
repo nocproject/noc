@@ -8,29 +8,50 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "in",
             "description": "Inner slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4200 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["PS 320W AC"],
-            "order_part_no": ["EX-PWR-320-AC"],
-            "part_no": ["740-020957"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-020957"]
         },
-        "power": {
-            "power": 320.0
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": ["PS 320W AC"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX-PWR-320-AC"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 320.0
         }
-    }
+    ]
 }

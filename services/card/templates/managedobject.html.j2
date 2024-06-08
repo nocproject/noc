@@ -39,7 +39,24 @@
     .noc-state-enabled {
         background: lightgreen;
     }
+    .noc-port-link {
+        display: grid;
+        grid-template-columns: 16px 1fr;
+        gap: 0 5px;
+    }
+    .noc-port-link-label {
+        font-size: 10px;
+    }
+    .cell-by-center {
+        vertical-align: middle !important;
+        text-align: center;
+    }    
 </style>
+<script>
+    window.addEventListener("load", () => {
+      $("[data-toggle='tooltip']").tooltip();
+    });
+</script>
 <div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger', 'unmanaged': 'default'}[current_state] }}">
     <div class="panel-heading">
         <a target="_blank" href="/#sa.managedobject/{{ id  }}">{{ object | managed_object_title }}</a>
@@ -421,7 +438,8 @@
             <div class="col-sm-12">
                 <table class="table table-condensed table-hover">
                     <thead>
-                        <th class="col-sm-1">{{ _("Port") }}</th>
+                        <th class="col-sm-1/8">{{ _("Port") }}</th>
+                        <th class="col-sm-1/8"></th>
                         <th class="col-sm-1/12">{{ _("Admin") }}/<br/>{{ _("Oper") }}</th>
                         <th class="col-sm-1/8">{{ _("Speed") }}/<br/>{{ _("Duplex") }}</th>
                         <th class="col-sm-1/6">{{ _("Load In") }}</th>
@@ -438,9 +456,28 @@
                     <tbody>
                         {% for i in interfaces %}
                         <tr>
+                            <td><span>{{ i["name"] }}</span></td>
                             <td>
-                            <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'iface', 'name': '{{i["name"]}}'}"><i class="fa fa-dashboard"></i> - {{i["name"]}} </a>
-                            <a href="/api/card/view/interfacepath/{{ i["id"] }}/" target="_"><i class="fa fa-road" title="{{ _("trace vpn") }}"></i></a>
+                                <a target="_blank" class="noc-port-link"
+                                    data-toggle="tooltip" data-placement="right" title="{{ _("Load Chart") }}"
+                                    href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'iface', 'name': '{{i["name"]}}'}">
+                                    <i class="fa fa-dashboard"></i><span class="noc-port-link-label">Загрузка</span>
+                                </a>
+                                {% if inventory %}
+                                    {% for ii in inventory %}
+                                        {% if i["name"] == ii["name"] and ii["id"]%}
+                                            <a target="_blank" class="noc-port-link"
+                                                data-toggle="tooltip" data-placement="right" title="{{ _("Open SFP") }}"
+                                                href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'sfp', 'name': '{{i["name"]}}', 'data': {{ ii }}}">
+                                                <i class="fa fa-newspaper-o"></i><span class="noc-port-link-label">SFP</span></a>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                <a target="_" class="noc-port-link"
+                                    data-toggle="tooltip" data-placement="right" title="{{ _("Run VPN Trace") }}"
+                                    href="/api/card/view/interfacepath/{{ i["id"] }}/">
+                                    <i class="fa fa-road"></i><span style="font-size: 10px; padding-left: 3px">Trace</span>
+                                </a>
                             </td>
                             <td{% if not i["oper_status"] %} class="danger"{% endif %}>
                                 {{ {True: "<i class='text-success fa fa-circle' title='Admin Up'></i>", False: "<i class='text-danger fa fa-circle' title='Admin Down'></i>"}[i["admin_status"]] }}&nbsp;
@@ -468,22 +505,21 @@
                                 {% endif %}
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["errors_in"] %}
-                                    <span class="small">{{ i["errors_in"] }}</span>
+                                {% if i["metrics"]["errors_in"] %}
+                                    <span class="small">{{ i["metrics"]["errors_in"] }}</span>
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["errors_out"] %}
-                                    <span class="small">{{ i["errors_out"] }}</span>
+                                {% if i["metrics"]["errors_out"] %}
+                                    <span class="small">{{ i["metrics"]["errors_out"] }}</span>
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td>
                                 <span class="small">{{ i["mac"] }}</span>
-                                <a href="/api/card/view/interfacepath/{{ i["id"] }}/" target="_">TRACE</a>
                             </td>
                             <td>
                                 {% if i["untagged_vlan"] %}<span class="small">U: {{ i["untagged_vlan"] }}</span>{% endif %}

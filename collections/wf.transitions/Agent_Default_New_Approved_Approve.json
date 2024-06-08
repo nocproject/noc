@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Agent Default",
+    "from_state__uuid": "d11f229f-e56e-47f4-a16d-2c095150b5aa",
+    "to_state__uuid": "d8b07951-55b0-4103-9d82-841f07c1f3f5",
+    "uuid": "a9a57456-90f7-4f76-bc98-b2b4e7e824ba",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "approve",
+    "label": "Approve",
+    "enable_manual": true
+}

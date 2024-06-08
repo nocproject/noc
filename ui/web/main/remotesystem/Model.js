@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.remotesystem Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.remotesystem.Model");
@@ -117,7 +117,35 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
+            name: "enable_ipvrf",
+            type: "boolean"
+        },
+        {
+            name: "enable_ipprefix",
+            type: "boolean"
+        },
+        {
+            name: "enable_ipprefixprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_ipaddress",
+            type: "boolean"
+        },
+        {
+            name: "enable_ipaddressprofile",
+            type: "boolean"
+        },
+        {
             name: "enable_label",
+            type: "boolean"
+        },
+        {
+            name: "enable_discoveredobject",
+            type: "boolean"
+        },
+        {
+            name: "enable_fmevent",
             type: "boolean"
         },
         {

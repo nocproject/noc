@@ -328,13 +328,25 @@ class ConsulDCS(DCSBase):
                     await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         self.logger.info("Lock acquired")
 
-    async def get_slot_limit(self, name) -> Optional[int]:
+    def _get_manifest_path(self, name: str) -> str:
+        """
+        Get manifest path.
+
+        Args:
+            name: Service name.
+
+        Returns:
+            manifest path.
+        """
+        return f"{self.consul_prefix}/slots/{name}/manifest"
+
+    async def get_slot_limit(self, name: str) -> Optional[int]:
         """
         Return the current limit for given slot
         :param name:
         :return:
         """
-        manifest_path = "%s/slots/%s/manifest" % (self.consul_prefix, name)
+        manifest_path = self._get_manifest_path(name)
         while True:
             self.logger.info("Attempting to get slot")
             # Non-blocking for a first time
@@ -346,7 +358,23 @@ class ConsulDCS(DCSBase):
                 return int(orjson.loads(cv["Value"]).get("Limit", 0))
             except ConsulRepeatableErrors:
                 await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
-                continue
+
+    async def set_slot_limit(self, name: str, limit: int) -> None:
+        manifest_path = self._get_manifest_path(name)
+        while True:
+            try:
+                if limit > 0:
+                    self.logger.info("Setting slots for %s = %s", name, limit)
+                    await self.consul.kv.put(
+                        key=manifest_path, value=orjson.dumps({"Limit": limit}).decode()
+                    )
+                    return
+                else:
+                    self.logger.info("Deleting slots for %s", name)
+                    await self.consul.kv.delete(key=manifest_path)
+                    return
+            except ConsulRepeatableErrors:
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
 
     async def acquire_slot(self, name, limit):
         """
@@ -435,7 +463,7 @@ class ConsulDCS(DCSBase):
                     value=smart_text(
                         orjson.dumps(
                             {"Limit": total_slots, "Holders": holders}, option=orjson.OPT_INDENT_2
-                        )
+                        ).decode()
                     ),
                     cas=cas,
                 )

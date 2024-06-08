@@ -9,153 +9,177 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "linecard0",
             "description": "Linecard 0 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard0",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard1",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard2",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard3",
             "description": "Linecard 3 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard3",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard4",
             "description": "Linecard 4 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard4",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard5",
             "description": "Linecard 5 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard5",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard6",
             "description": "Linecard 6 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard6",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard7",
             "description": "Linecard 7 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard7",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "sup1",
             "description": "Switch 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "sup1",
             "type__name": "Eltex | MA4000 | SUP"
         },
         {
+            "name": "sup2",
             "description": "Switch 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "sup2",
             "type__name": "Eltex | MA4000 | SUP"
         },
         {
+            "name": "linecard8",
             "description": "Linecard 8 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard8",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard9",
             "description": "Linecard 9 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard9",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard10",
             "description": "Linecard 10 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard10",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard11",
             "description": "Linecard 11 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard11",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard12",
             "description": "Linecard 12 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard12",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard13",
             "description": "Linecard 13 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard13",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard14",
             "description": "Linecard 14 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard14",
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "name": "linecard15",
             "description": "Linecard 15 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard15",
             "type__name": "Eltex | MA4000 | Linecard"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MA4000"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 400,
-            "height": 350,
-            "width": 480
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 480
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 400
         },
-        "power": {
-            "power": 850.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 350
         },
-        "rackmount": {
-            "units": 9.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 850.0
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 25.0
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 25.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MA4000"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 9.0
         }
-    }
+    ]
 }

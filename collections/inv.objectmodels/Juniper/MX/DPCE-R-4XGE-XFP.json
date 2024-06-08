@@ -7,53 +7,71 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "0/0",
             "description": "xe-X/0/0 interface",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "1/0",
             "description": "xe-X/1/0 interface",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "1/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "2/0",
             "description": "xe-X/2/0 interface",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "2/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "3/0",
             "description": "xe-X/3/0 interface",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "3/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "in",
             "description": "Inner connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["DPCE-R-4XGE-XFP"],
-            "part_no": ["750-021566", "750-018124"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-021566", "750-018124"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["DPCE-R-4XGE-XFP"]
         }
-    }
+    ]
 }

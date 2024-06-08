@@ -1,0 +1,7 @@
+{
+    "uuid": "e1525101-e9c0-4b1d-baef-bd4e8bdc4f7e",
+    "$collection": "main.templates",
+    "name": "dns.zone.new",
+    "subject": "NOC: {{ name }} zone has been created",
+    "body": "New zone has been created: {{ name }}\n===========[Zone Data]===========\n{{ data }}\n==========[End of Zone]==========\n"
+}

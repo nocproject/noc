@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Default Resource",
+    "name": "Ready",
+    "uuid": "51934f7f-6159-4486-be6f-ecf2e490d4dd",
+    "$collection": "wf.states",
+    "description": "Resource is in productive usage",
+    "is_default": false,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 604800,
+    "update_expired": true,
+    "x": 0,
+    "y": 0,
+    "disable_all_interaction": false
+}

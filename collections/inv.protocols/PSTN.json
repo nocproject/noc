@@ -1,0 +1,10 @@
+{
+    "name": "PSTN",
+    "code": "PSTN",
+    "$collection": "inv.protocols",
+    "uuid": "50cc88ea-7ecd-43d7-9108-34d38d74bd06",
+    "description": "Generic PSTN protocol.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "PSTN"
+}

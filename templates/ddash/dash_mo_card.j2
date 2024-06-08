@@ -27,7 +27,22 @@
   "version": 33,
   "gnetId": null,
   "rows": [
+    {%if sfp_types %}
+    {
+      "collapse": false,
+      "editable": false,
+      "height": "250px",
+      "showTitle": true,
+      "internal_comment": "info_row",
+      "title": "{{ extra_vars.model }}",
+      "panels": [
+          {% include "panel_sfp.j2" with context -%}
+      ]
+    }
+    {% endif %}
+
     {%if port_types %}
+
         {
           "collapse": false,
           "editable": false,
@@ -60,6 +75,14 @@
                   {% from "graph_interface_card_discards.j2" import interface -%}
                 {{interface(port_types)}},
                 {% endif %}
+                {%if "poe_oper_status" in port_types.metrics %}
+                  {% from "graph_interface_poe_operstatus.j2" import interface -%}                  
+                {{interface(port_types)}},
+                {% endif %}
+                {%if "poe_power" in port_types.metrics %}
+                  {% from "graph_interface_poe_power.j2" import interface -%}                  
+                {{interface(port_types)}},
+                {% endif %}
               ]
             }
     {%endif%}
@@ -87,10 +110,39 @@
                   {% from "graph_interface_card_radio_level.j2" import interface -%}
                   {{interface(radio_types)}},
                 {% endif %}
-                
+
                 {%if "mcs" in radio_types.metrics %}
                   {% from "graph_radio_mcs.j2" import interface -%}
                   {{interface(radio_types)}},
+                {% endif %}
+              ]
+            }
+    {%endif%}
+    {%if sfp_types %}
+    ,
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "250px",
+          "showTitle": true,
+          "title": "Interface: {{sfp_types.port.name}} Profile: {{sfp_types.name}}",
+          "internal_comment": "sfp_row",
+          "panels": [
+                {%if "optical_tx_dbm" in sfp_types.port.metrics or "optical_rx_dbm" in sfp_types.port.metrics %}
+                  {% from "graph_interface_card_dom_txrx.j2" import interface -%}
+                  {{interface(sfp_types)}},
+                 {% endif %}
+                 {%if"voltage_v" in sfp_types.port.metrics %}
+                  {% from "graph_interface_card_dom_voltage.j2" import interface -%}
+                  {{interface(sfp_types)}},
+                 {% endif %}
+                 {%if"temp_c" in sfp_types.port.metrics %}
+                  {% from "graph_interface_card_dom_temp.j2" import interface -%}
+                  {{interface(sfp_types)}},
+                {% endif %}
+                {%if"current_ma" in sfp_types.port.metrics %}
+                  {% from "graph_interface_card_dom_current.j2" import interface -%}
+                  {{interface(sfp_types)}},
                 {% endif %}
               ]
             }

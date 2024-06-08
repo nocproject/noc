@@ -1,0 +1,8 @@
+config: |
+  interface vlan 4008
+    ip address 10.118.32.21 255.255.255.0
+    no ipv6 enable
+  #
+result:
+  - ['interfaces', 'vlan']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'vlan', 'unit', '4008', 'inet', 'address', !IP 10.118.32.21/24]

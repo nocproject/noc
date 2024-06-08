@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | ISR | Module | VWIC-1MFT-E1",
+    "$collection": "inv.objectmodels",
+    "uuid": "1d7c3c20-c630-4be1-be6c-dcaceb20b26a",
+    "vendor__code": "CISCO",
+    "description": "1-Port E1 Multiflex Trunk Voice/WAN Interface Card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Voice WAN Interface Card slot connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "name": "Se0",
+            "description": "Serial N/X/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "E1"
+            }],
+            "type__name": "Electrical | RJ48"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VWIC-1MFT-E1="]
+        }
+    ]
+}

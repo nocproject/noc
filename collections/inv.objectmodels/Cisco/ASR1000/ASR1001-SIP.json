@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | ASR1000 | ASR1001 SIP",
+    "name": "Cisco | ASR1000 | ASR1001-SIP",
     "$collection": "inv.objectmodels",
     "uuid": "37cd7040-008f-4a9b-944d-3a7057efd21a",
     "vendor__code": "CISCO",
@@ -21,9 +21,11 @@
             "type__name": "Cisco | SPA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ASR1001-SIP"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1001-SIP"]
         }
-    }
+    ]
 }

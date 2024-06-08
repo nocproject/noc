@@ -1,0 +1,8 @@
+{
+    "name": "Discovered Object Default",
+    "uuid": "b56e5f4d-9a2d-47d7-8f8d-681457e900cd",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Default Workflow for Discovered Object from net",
+    "allowed_models": ["sa.DiscoveredObject"]
+}

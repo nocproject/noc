@@ -1,0 +1,48 @@
+{
+    "name": "Generic | Transceiver | SFP+",
+    "$collection": "inv.objectmodels",
+    "uuid": "50b026a9-5933-40f5-8101-7667ef4eb956",
+    "vendor__code": "GENERIC",
+    "description": "Generic | Transceiver | SFP+",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "rx",
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "tx",
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ],
+    "front_facade__name": "Transceiver | SFP LC"
+}

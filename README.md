@@ -39,12 +39,8 @@ Contributions, issues and feature requests are welcome!
 Feel free to check [issues page](https://code.getnoc.com/noc/noc/issues/).
 
 ## Contact us:
-* Telegram group:  https://t.me/nocproject
-* Official site: https://getnoc.com
-
-## Documentation:
-* En: https://docs.getnoc.com/master/en/
-* Ru: https://docs.getnoc.com/master/ru/
+* Official site and documentation: https://getnoc.com
+* Community Guide: https://getnoc.com/community-guide/
 
 ##  License
 

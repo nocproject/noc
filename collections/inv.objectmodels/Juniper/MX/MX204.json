@@ -9,180 +9,293 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "0/0/0",
-            "protocols": ["TransEth10G", "TransEth40G", "TransEth100G"],
-            "type__name": "Transceiver | QSFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
             "name": "0/0/1",
-            "protocols": ["TransEth10G", "TransEth40G", "TransEth100G"],
-            "type__name": "Transceiver | QSFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
             "name": "0/0/2",
-            "protocols": ["TransEth10G", "TransEth40G", "TransEth100G"],
-            "type__name": "Transceiver | QSFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
             "name": "0/0/3",
-            "protocols": ["TransEth10G", "TransEth40G", "TransEth100G"],
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "0/1/0",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "0/1/1",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "0/1/2",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "0/1/3",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "0/1/4",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "0/1/5",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "0/1/6",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "0/1/7",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/1/7",
             "description": null,
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "console",
-            "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "ether",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ether",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "fan0",
             "description": "Fan Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "fan0",
             "type__name": "Juniper | MX | MX204 Fan"
         },
         {
+            "name": "fan1",
             "description": "Fan Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "fan1",
             "type__name": "Juniper | MX | MX204 Fan"
         },
         {
+            "name": "fan2",
             "description": "Fan Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "fan2",
             "type__name": "Juniper | MX | MX204 Fan"
         },
         {
+            "name": "pem0",
             "description": "PEM Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "pem0",
             "type__name": "Juniper | EX | 4550 PSU"
         },
         {
+            "name": "pem1",
             "description": "PEM Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "pem1",
             "type__name": "Juniper | EX | 4550 PSU"
         },
         {
+            "name": "scb0",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "scb0",
             "type__name": "Juniper | MX | SCB"
         },
         {
+            "name": "usb",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "usb",
-            "protocols": [">USB1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB10"
+            }],
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "cpe_22": "cpe:/h:juniper:mx204:-",
-            "cpe_23": "cpe:2.3:h:juniper:mx204:-:*:*:*:*:*:*:*",
-            "order_part_no": ["MX204"],
-            "part_no": ["JNP204"]
+    "data": [
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:juniper:mx204:-"
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:juniper:mx204:-:*:*:*:*:*:*:*"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MX204"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["JNP204"]
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

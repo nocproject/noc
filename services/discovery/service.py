@@ -46,6 +46,7 @@ class DiscoveryService(FastAPIService):
             filter=ifilter,
             service=self,
             sample=config.discovery.sample,
+            ignore_import_errors=True,
         )
         # Ensure shard
         if ifilter:

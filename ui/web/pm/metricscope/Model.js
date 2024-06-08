@@ -17,7 +17,8 @@ Ext.define("NOC.pm.metricscope.Model", {
         },
         {
             name: "uuid",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "key_fields",
@@ -41,7 +42,8 @@ Ext.define("NOC.pm.metricscope.Model", {
         },
         {
             name: "enable_timedelta",
-            type: "boolean"
+            type: "boolean",
+            persist: false
         }
     ]
 });

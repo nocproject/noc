@@ -8,34 +8,70 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">1000BASEZX-1610"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1610",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<1000BASEZX-1610"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1610",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["FWDM-16217D51CSC", "FWDM-16217D55CSC", "FWDM-1621-7D-55"],
-            "part_no": ["FWDM-1621-7D"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FWDM-1621-7D"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FWDM-16217D51CSC", "FWDM-16217D55CSC", "FWDM-1621-7D-55"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1610
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

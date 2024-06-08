@@ -8,16 +8,18 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 8208 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["760-020967"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["760-020967"]
         }
-    }
+    ]
 }

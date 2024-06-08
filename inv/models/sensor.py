@@ -10,9 +10,10 @@ import logging
 from threading import Lock
 import operator
 import datetime
-from typing import Dict, Optional, Iterable, List
+from typing import Dict, Optional, Iterable, List, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -101,7 +102,9 @@ class Sensor(Document):
     expired = DateTimeField()
     # Timestamp of first discovery
     first_discovered = DateTimeField(default=datetime.datetime.now)
-    protocol = StringField(choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi"])
+    protocol = StringField(
+        choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi", "other"]
+    )
     modbus_register = IntField()
     modbus_format = StringField(choices=MODBUS_FORMAT)
     snmp_oid = StringField()
@@ -129,13 +132,13 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, s_id):
-        return Sensor.objects.filter(id=s_id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Sensor"]:
+        return Sensor.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, s_id):
-        return Sensor.objects.filter(bi_id=s_id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Sensor"]:
+        return Sensor.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:
@@ -235,17 +238,16 @@ class Sensor(Document):
         Return metrics setting for collected by box or periodic
         :return:
         """
-        o: List[str] = Object.get_managed(mo).values_list("id")
         d_interval = d_interval or mo.get_metric_discovery_interval()
-        for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
+        for sensor in Sensor.objects.filter(managed_object=mo.id).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
-            if (
-                not sensor.state.is_productive
-                or not sensor.profile.enable_collect
-                or not sensor.snmp_oid
+            if not (
+                sensor.state.is_productive
+                or sensor.profile.enable_collect
+                or sensor.protocol in {"snmp", "other"}
             ):
-                return
+                continue
             metrics: List[MetricItem] = []
             for mt_name in ["Sensor | Value", "Sensor | Status"]:
                 mt = MetricType.get_by_name(mt_name)
@@ -259,12 +261,17 @@ class Sensor(Document):
                     metrics.append(mi)
             if not metrics:
                 # self.logger.info("SLA metrics are not configured. Skipping")
-                return
+                continue
+            hints = []
+            if sensor.snmp_oid:
+                hints.append(f"oid::{sensor.snmp_oid}")
+            if sensor.object and sensor.object.get_data("hw_path", "slot"):
+                hints.append(f'slot::{sensor.object.get_data("hw_path", "slot")}')
             yield MetricCollectorConfig(
                 collector="sensor",
                 metrics=tuple(metrics),
                 labels=(f"noc::sensor::{sensor.local_id}",),
-                hints=[f"oid::{sensor.snmp_oid}"],
+                hints=hints,
                 sensor=sensor.bi_id,
             )
 
@@ -284,9 +291,11 @@ class Sensor(Document):
         return {
             "type": "sensor",
             "bi_id": sensor.bi_id,
-            "fm_pool": sensor.managed_object.get_effective_fm_pool().name
-            if sensor.managed_object
-            else None,
+            "fm_pool": (
+                sensor.managed_object.get_effective_fm_pool().name
+                if sensor.managed_object
+                else None
+            ),
             "labels": labels,
             "metrics": [
                 {"name": "status", "is_stored": True},

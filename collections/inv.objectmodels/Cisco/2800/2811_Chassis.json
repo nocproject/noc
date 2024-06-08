@@ -9,44 +9,49 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "mb",
             "description": "2801 Motherboard",
             "direction": "i",
             "gender": "f",
-            "name": "mb",
             "type__name": "Cisco | 2800 | MOTHERBOARD"
         },
         {
+            "name": "nm0",
             "description": "NME 1",
             "direction": "i",
             "gender": "f",
-            "name": "nm0",
-            "protocols": ["NM"],
             "type__name": "Cisco | ISR | NM"
         },
         {
+            "name": "psu",
             "description": "Internal Power Supply",
             "direction": "i",
             "gender": "f",
-            "name": "psu",
             "type__name": "Cisco | 2800 | PSU"
         },
         {
+            "name": "rsp",
             "description": "Redundant power supply connector",
             "direction": "s",
             "gender": "f",
-            "name": "rsp",
             "type__name": "Cisco | Electrical | RSP14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO2811"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO2811"]
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

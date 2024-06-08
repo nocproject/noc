@@ -1,0 +1,28 @@
+{
+    "name": "SetPayload",
+    "$collection": "cm.configurationparams",
+    "uuid": "b0ad0fd4-8453-434c-93c7-03ecace02110",
+    "code": "otn_payload",
+    "description": "Set OPU4 line paylod",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        },
+        {
+            "is_required": false,
+            "scope__name": "OTN"
+        }
+    ],
+    "type": "string",
+    "choices": [
+        {
+            "name": "any",
+            "value": "Any"
+        },
+        {
+            "name": "GMP_10xODU2",
+            "value": "GMP_10xODU2"
+        }
+    ]
+}

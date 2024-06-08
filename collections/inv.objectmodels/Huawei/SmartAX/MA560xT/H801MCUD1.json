@@ -9,96 +9,161 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | MCU"
         },
         {
+            "name": "eth",
             "description": "100M Base-T maintenance network port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "name": "1",
-            "protocols": ["TransEth1G"],
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "2",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "3",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "3",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "console",
             "description": "RS-232 serial port,RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232", ">RS485"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "bits_tod",
             "description": "1 input and 1 output of BITS clock signals./1 input and 1 output of 1PPS+TOD time signals",
             "direction": "s",
             "gender": "f",
-            "name": "bits_tod",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "alarm_in",
             "description": "7 alarm digital inputs",
             "direction": "s",
             "gender": "f",
-            "name": "alarm_in",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "alarm_in_out",
             "description": "7 alarm digital inputs and 1 alarm digital output",
             "direction": "s",
             "gender": "f",
-            "name": "alarm_in_out",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801MCUD", "H801MCUD1"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 233
         },
-        "dimensions": {
-            "depth": 134,
-            "height": 34,
-            "width": 233
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 134
         },
-        "power": {
-            "power": 33.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 34
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 33.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801MCUD", "H801MCUD1"]
         }
-    }
+    ]
 }

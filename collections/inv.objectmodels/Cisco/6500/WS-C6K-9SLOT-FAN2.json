@@ -1,22 +1,24 @@
 {
-  "name": "Cisco | 6500 | WS-C6K-9SLOT-FAN2",
-  "$collection": "inv.objectmodels",
-  "uuid": "164c9b3e-da7f-49f5-92f2-6831e0e213b9",
-  "vendor__code": "CISCO",
-  "description": "High Speed Fan Module for Cisco 6509|7609",
-  "cr_context": "FAN",
-  "connections": [
-	{
-	  "description": "Fan connection",
-	  "direction": "o",
-	  "gender": "m",
-	  "name": "in",
-	  "type__name": "Cisco | 7600 | 7609 Fan"
-	}
-  ],
-  "data": {
-	"asset": {
-	  "part_no": ["WS-C6K-9SLOT-FAN2"]
-	}
-  }
+    "name": "Cisco | 6500 | WS-C6K-9SLOT-FAN2",
+    "$collection": "inv.objectmodels",
+    "uuid": "164c9b3e-da7f-49f5-92f2-6831e0e213b9",
+    "vendor__code": "CISCO",
+    "description": "High Speed Fan Module for Cisco 6509|7609",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 7600 | 7609 Fan"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6K-9SLOT-FAN2"]
+        }
+    ]
 }

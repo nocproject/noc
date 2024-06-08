@@ -1,0 +1,16 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "name": "Ignored",
+    "uuid": "dfc9adde-6802-433e-b1e0-67d33bc39e35",
+    "$collection": "wf.states",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": true,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 160,
+    "y": 330,
+    "disable_all_interaction": false
+}

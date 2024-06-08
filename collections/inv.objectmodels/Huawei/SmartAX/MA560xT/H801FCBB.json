@@ -8,24 +8,38 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Fan connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5600T | FAN-ETSI"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801FCBB"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 486
         },
-        "dimensions": {
-            "depth": 246,
-            "height": 44,
-            "width": 486
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 246
         },
-        "power": {
-            "power": 65.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 65.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801FCBB"]
         }
-    }
+    ]
 }

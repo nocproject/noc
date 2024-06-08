@@ -7,32 +7,40 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "port0",
             "description": "XFP Port 0",
             "direction": "i",
             "gender": "f",
-            "name": "port0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "port1",
             "description": "XFP Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "port1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Force10 | S | Module"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S50-01-10GE-2P"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S50-01-10GE-2P"]
         }
-    }
+    ]
 }

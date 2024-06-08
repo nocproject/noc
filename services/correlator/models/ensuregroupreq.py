@@ -16,17 +16,18 @@ class AlarmItem(BaseModel):
     reference: str
     managed_object: str
     alarm_class: str
-    timestamp: Optional[str]
-    vars: Optional[Dict[str, Any]]
-    labels: Optional[List[str]]
-    remote_system: Optional[str]
-    remote_id: Optional[str]
+    severity: Optional[int] = None
+    timestamp: Optional[str] = None
+    vars: Optional[Dict[str, Any]] = None
+    labels: Optional[List[str]] = None
+    remote_system: Optional[str] = None
+    remote_id: Optional[str] = None
 
 
 class EnsureGroupRequest(BaseModel):
     op: Literal["ensure_group"] = Field(None, alias="$op")
     reference: str
-    name: Optional[str]
-    alarm_class: Optional[str]
-    labels: Optional[List[str]]
+    name: Optional[str] = None
+    alarm_class: Optional[str] = None
+    labels: Optional[List[str]] = None
     alarms: List[AlarmItem]

@@ -1,0 +1,12 @@
+{
+    "name": "Location",
+    "$collection": "cm.configurationparams",
+    "uuid": "7299b2ea-00a5-4f0f-9e8d-71c6dbcb50a2",
+    "code": "location",
+    "description": "Device location",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "Common"
+    }],
+    "type": "string"
+}

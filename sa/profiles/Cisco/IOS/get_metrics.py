@@ -1,19 +1,20 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
     metrics,
     ProfileMetricConfig,
+    MetricConfig,
 )
 from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.core.mib import mib
@@ -65,63 +66,63 @@ class Script(GetMetricsScript):
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgSD",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | OneWayLatency | In | Max": ProfileMetricConfig(
             metric="SLA | OneWayLatency | In | Max",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgDS",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgJitter",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | Out | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Out | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgSDJ",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | In | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | In | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgDSJ",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | MOS": ProfileMetricConfig(
             metric="SLA | Jitter | MOS",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperMOS",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | ICPIF": ProfileMetricConfig(
             metric="SLA | Jitter | ICPIF",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | RTT | Min": ProfileMetricConfig(
             metric="SLA | RTT | Min",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMin",
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | RTT | Max": ProfileMetricConfig(
             metric="SLA | RTT | Max",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
     }
 
@@ -251,7 +252,11 @@ class Script(GetMetricsScript):
                 except ValueError:
                     pass
 
-    def get_cbqos_config_snmp(self):
+    def get_cbqos_config_snmp(self) -> Dict[str, Dict[str, Union[str, int]]]:
+        """
+        Return config for build metric index
+        :return:
+        """
         class_map = {}
         for oid, name in self.snmp.getnext(mib["CISCO-CLASS-BASED-QOS-MIB::cbQosCMName"]):
             class_map[oid.rsplit(".", 1)[-1]] = name
@@ -301,7 +306,7 @@ class Script(GetMetricsScript):
             config_cmap[object_index].update(policy_map[policy_index])
         return config_cmap
 
-    CBQOS_OIDS_MAP = {
+    CBQOS_OIDS_MAP: Dict[str, Dict[str, Tuple[str, str, int, str]]] = {
         # oid, type, scale
         "In": {
             "Interface | CBQOS | Drops | In | Delta": (
@@ -343,22 +348,24 @@ class Script(GetMetricsScript):
         volatile=False,
         access="S",  # CLI version
     )
-    def get_interface_cbqos_metrics_snmp(self, metrics):
-        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+    def get_interface_cbqos_metrics_snmp(self, metrics: List[MetricConfig]):
+        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         config = self.get_cbqos_config_snmp()
-        oids = {}
+        oids: Dict[str, Tuple[str, Tuple[str, str, int, str], MetricConfig, List[str]]] = {}
         for c, item in config.items():
             if item["ifindex"] in ifaces:
                 for metric, mc in self.CBQOS_OIDS_MAP[item["direction"]].items():
-                    labels = ifaces[item["ifindex"]] + [f'noc::traffic_class::{item["cmap_name"]}']
+                    labels = ifaces[item["ifindex"]].labels + [
+                        f'noc::traffic_class::{item["cmap_name"]}'
+                    ]
                     if "tos" in item:
                         labels.append(f'noc::tos::{item["tos"]}')
-                    oids[mib[mc[0], item["pmap_index"], c]] = [
+                    oids[mib[mc[0], item["pmap_index"], c]] = (
                         metric,
                         mc,
                         ifaces[item["ifindex"]],
                         labels,
-                    ]
+                    )
         results = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
@@ -368,10 +375,10 @@ class Script(GetMetricsScript):
         for r in results:
             # if not results[r]:
             #     continue
-            metric, mc, mlabesl, labels = oids[r]
+            metric, mc, s_cfg, labels = oids[r]
             _, mtype, scale, units = mc
             self.set_metric(
-                id=(metric, mlabesl),
+                id=(metric, s_cfg.labels),
                 metric=metric,
                 value=float(results[r]),
                 ts=ts,
@@ -380,7 +387,9 @@ class Script(GetMetricsScript):
                 type=mtype,
                 scale=scale,
                 units=units,
+                service=s_cfg.service,
             )
+
         # print(r)
         # "noc::traffic_class::*", "noc::interface::*"
 
@@ -405,7 +414,7 @@ class Script(GetMetricsScript):
         for probe in metrics:
             hints = probe.get_hints()
             name = hints.get("sla_name")
-            if not name:
+            if not name or name not in probe_status:
                 self.logger.warning("Unknown name for probe. Skipping")
                 continue
             # Set probe status

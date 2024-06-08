@@ -7,30 +7,32 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "i",
             "gender": "m",
-            "name": "in",
             "type__name": "Force10 | S | Module"
         },
         {
+            "name": "port0",
             "description": "Stack port 0",
             "direction": "s",
             "gender": "f",
-            "name": "port0",
             "type__name": "Force10 | S | Stacking 12G"
         },
         {
+            "name": "port1",
             "description": "Stack port 1",
             "direction": "s",
             "gender": "f",
-            "name": "port1",
             "type__name": "Force10 | S | Stacking 12G"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S50-01-12G-2S"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S50-01-12G-2S"]
         }
-    }
+    ]
 }

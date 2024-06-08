@@ -8,42 +8,65 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "2",
             "description": "Port 2 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "1",
             "description": "Port 1 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "name": "1",
-            "protocols": ["100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp1",
             "description": "Port 1 (SFP)",
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "name": "sfp1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zhone | GranDSLAM | card"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["8429-B2-000"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["8429-B2-000"]
         }
-    }
+    ]
 }

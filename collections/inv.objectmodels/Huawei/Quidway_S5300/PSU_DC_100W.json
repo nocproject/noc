@@ -1,0 +1,53 @@
+{
+    "name": "Huawei | Quidway S5300 | PSU DC 100W",
+    "$collection": "inv.objectmodels",
+    "uuid": "c64dee88-674b-4fd0-8df7-7746ac11033b",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei Quidway S5300 DC Power Supply Unit",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "-48V",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "name": "RTN",
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "name": "in",
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | Quidway S5300 | PSU"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX7M1PWD", "LS5M100PWD00"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02316784"]
+        }
+    ]
+}

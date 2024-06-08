@@ -6,110 +6,198 @@
     "description": null,
     "connections": [
         {
+            "name": "eth0",
             "description": "Ethernet 1",
             "direction": "s",
             "gender": "f",
-            "name": "eth0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth1",
             "description": "Ethernet 2",
             "direction": "s",
             "gender": "f",
-            "name": "eth1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["<USB11", "<USB20"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "GND",
             "description": "Shielded Ground",
             "direction": "s",
             "gender": "f",
-            "name": "GND",
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
         {
+            "name": "V+",
             "description": " power input",
             "direction": "s",
             "gender": "f",
-            "name": "V+",
-            "protocols": ["<+24VDC"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "+24VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
         {
+            "name": "V-",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "V-",
-            "protocols": ["<+24VDC"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "+24VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
         {
+            "name": "S0",
             "description": "RS-232/422/485",
             "direction": "s",
             "gender": "s",
-            "name": "S0",
-            "protocols": ["<RS232", "<RS485", "<RS485-A", "<RS485-B"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS485"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Combined"
         },
         {
+            "name": "S0_232",
             "description": "RS-232",
             "direction": "s",
             "gender": "f",
-            "name": "S0_232",
-            "protocols": ["<RS232"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
+            "name": "S0_485",
             "description": "RS-485, 4-wired",
             "direction": "s",
             "gender": "f",
-            "name": "S0_485",
-            "protocols": ["<RS485"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS485"
+            }],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
+            "name": "S0_485_A",
             "description": "RS-485, 2-wired A line",
             "direction": "s",
             "gender": "f",
-            "name": "S0_485_A",
-            "protocols": ["<RS485-A"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
+            "name": "S0_485_B",
             "description": "RS-485, 2-wired B line",
             "direction": "s",
             "gender": "f",
-            "name": "S0_485_B",
-            "protocols": ["<RS485-B"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         }
     ],
-    "data": {
-        "agent": {
-            "is_agent": true
+    "data": [
+        {
+            "attr": "is_agent",
+            "interface": "agent",
+            "value": true
         },
-        "dimensions": {
-            "depth": 128,
-            "height": 101,
-            "width": 27
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 128
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 101
         },
-        "power": {
-            "power": 5.4
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 27
         },
-        "weight": {
-            "weight": 2.24
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 5.4
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.24
         }
-    }
+    ]
 }

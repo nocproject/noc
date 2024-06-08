@@ -1,0 +1,32 @@
+{
+    "name": "Cisco | 3900 | PWR-3900-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "7961f26f-0fb6-4b3b-b7c5-15482d070543",
+    "vendor__code": "CISCO",
+    "description": "PWR-3900-AC AC Power Supply",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "power",
+            "description": "Power input",
+            "direction": "s",
+            "gender": "m",
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "in",
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 3900 | PSU"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-3900-AC"]
+        }
+    ]
+}

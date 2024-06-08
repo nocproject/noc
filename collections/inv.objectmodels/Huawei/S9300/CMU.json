@@ -7,44 +7,70 @@
     "labels": ["noc::inv::soft"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S9300 | CMU"
         },
         {
+            "name": "RS485",
             "description": "RS485 port (reserved)",
             "direction": "s",
             "gender": "f",
-            "name": "RS485",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "mon",
             "description": "MON port (reserved)",
             "direction": "s",
             "gender": "f",
-            "name": "mon",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03020LCU"],
-            "part_no": ["LE02CMUA"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 18.0
         },
-        "dimensions": {
-            "depth": 413,
-            "height": 1,
-            "width": 113
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LE02CMUA"]
         },
-        "power": {
-            "power": 18.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03020LCU"]
         },
-        "weight": {
-            "weight": 0.22
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.22
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 113
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 413
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 1
         }
-    }
+    ]
 }

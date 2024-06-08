@@ -1,0 +1,12 @@
+{
+    "name": "Interface | PoE | Powerlimit",
+    "$collection": "pm.metrictypes",
+    "uuid": "c54fedb5-3003-47a0-9c38-58d4e4eb72a4",
+    "scope__name": "Interface",
+    "field_name": "poe_power_limit",
+    "field_type": "UInt16",
+    "description": "The power inline port available power whitch cannot be exceeded by the connected PD (mW)",
+    "measure": "mW",
+    "units__code": "W",
+    "scale__code": "m"
+}

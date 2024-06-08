@@ -1,0 +1,13 @@
+{
+    "name": "Fortinet | Fortigate | FortiGate-600D sysObjectID 1",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "4ee59c01-0677-47e2-b959-8013b680c3e9",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.12356.101.1.6004",
+    "action": "match",
+    "profile__name": "Fortinet.Fortigate"
+}

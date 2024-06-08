@@ -58,6 +58,21 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "int"
         },
         {
+            name: "status_transfer_policy",
+            type: "string",
+            defaultValue: "T"
+        },
+        {
+            name: "status_transfer_function",
+            type: "string",
+            defaultValue: "MIN"
+        },
+        {
+            name: "alarm_affected_policy",
+            type: "string",
+            defaultValue: "D"
+        },
+        {
             name: "show_in_summary",
             type: "boolean"
         },
@@ -90,6 +105,22 @@ Ext.define("NOC.sa.serviceprofile.Model", {
         },
         {
             name: "caps",
+            type: "auto"
+        },
+        {
+            name: "status_transfer_rule",
+            type: "auto"
+        },
+        {
+            name: "status_transfer_map",
+            type: "auto"
+        },
+        {
+            name: "alarm_filter",
+            type: "auto"
+        },
+        {
+            name: "alarm_status_map",
             type: "auto"
         }
     ]

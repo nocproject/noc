@@ -8,175 +8,310 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "com",
             "description": "Serial COM",
             "direction": "s",
             "gender": "f",
-            "name": "com",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | 2.5mm-jack"
         },
         {
+            "name": "usb",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB-type-B"
         },
         {
+            "name": "uio",
             "description": "Universal I/O sensors port",
             "direction": "s",
             "gender": "f",
-            "name": "uio",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth",
             "description": "Outband Management",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": [">10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "epo",
             "description": "Emergency Power off switch connector",
             "direction": "s",
             "gender": "f",
-            "name": "epo",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "APC | UPS | EPO"
         },
         {
+            "name": "ebp",
             "description": "External Battary Pack Connector",
             "direction": "s",
             "gender": "f",
-            "name": "ebp",
             "type__name": "APC | UPS | BR1200G-JP"
         },
         {
+            "name": "in",
             "description": "APC Smart Slot",
             "direction": "i",
             "gender": "f",
-            "name": "in",
             "type__name": "APC | UPS | SS"
         },
         {
-            "description": "Power inlet (10 AMP Max)",
-            "direction": "s",
-            "gender": "f",
-            "group": "1",
             "name": "pwr_out1",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C13"
-        },
-        {
             "description": "Power inlet (10 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "1",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C13"
+        },
+        {
             "name": "pwr_out2",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C13"
-        },
-        {
             "description": "Power inlet (10 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "1",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C13"
+        },
+        {
             "name": "pwr_out3",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C13"
-        },
-        {
             "description": "Power inlet (10 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "1",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C13"
+        },
+        {
             "name": "pwr_out4",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C13"
-        },
-        {
             "description": "Power inlet (10 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "1",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C13"
+        },
+        {
             "name": "pwr_out5",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C13"
-        },
-        {
             "description": "Power inlet (10 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "name": "pwr_out6",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C13"
         },
         {
-            "description": "Power inlet (16 AMP Max)",
+            "name": "pwr_out6",
+            "description": "Power inlet (10 AMP Max)",
             "direction": "s",
             "gender": "f",
-            "group": "2",
+            "group": "1",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C13"
+        },
+        {
             "name": "pwr_out1",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C19"
-        },
-        {
             "description": "Power inlet (16 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "2",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C19"
+        },
+        {
             "name": "pwr_out2",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C19"
-        },
-        {
             "description": "Power inlet (16 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "2",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C19"
+        },
+        {
             "name": "pwr_out3",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C19"
-        },
-        {
             "description": "Power inlet (16 AMP Max)",
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "name": "pwr_out4",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C19"
         },
         {
+            "name": "pwr_out4",
+            "description": "Power inlet (16 AMP Max)",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C19"
+        },
+        {
+            "name": "pwr_in",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "pwr_in",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60309"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SRT5KRMXLI"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SRT5KRMXLI"]
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
         }
-    }
+    ]
 }

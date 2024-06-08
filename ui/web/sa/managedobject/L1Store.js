@@ -67,6 +67,10 @@ Ext.define("NOC.sa.managedobject.L1Store", {
             type: "string"
         },
         {
+            name: "metrics",
+            type: "string"
+        },
+        {
             name: "enabled_protocols",
             type: "auto"
         },

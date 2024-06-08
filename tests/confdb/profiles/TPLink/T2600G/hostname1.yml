@@ -1,0 +1,6 @@
+config: |
+  #
+  hostname "some-podval-sw01"
+  #
+result:
+  - ['system', 'hostname', 'some-podval-sw01', {'replace': True}]

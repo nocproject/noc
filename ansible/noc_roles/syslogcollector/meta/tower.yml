@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Syslog listener service<br/>
       <strong>Long description</strong>: Listen for syslog events from network equipment and adds them to Liftbridge queue<br/>
       <strong>Scale Recommendations</strong>: One per pool. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/syslogcollector/ target=_blank>Syslogcollector</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/syslogcollector/ target=_blank>Syslogcollector</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     power:
       default: 1
@@ -25,7 +25,7 @@ forms:
         - warning
         - error
         - critical
-    listen_syslog:
+    listen:
       default: "0.0.0.0:514"
       label: "Listen SYSLOG"
       type: str

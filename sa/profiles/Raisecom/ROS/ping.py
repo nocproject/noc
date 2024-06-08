@@ -25,12 +25,20 @@ class Script(BaseScript):
 
     def execute_cli(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping %s" % address
-        if count:
-            cmd += " count %d" % int(count)
+        if self.is_iscom2624g:
+            if count:
+                cmd += " c %d" % int(count)
+            else:
+                cmd += " c 5"
+            if size:
+                cmd += " s %d" % int(size)
         else:
-            cmd += " count 5"
-        if size:
-            cmd += " size %d" % int(size)
+            if count:
+                cmd += " count %d" % int(count)
+            else:
+                cmd += " count 5"
+            if size:
+                cmd += " size %d" % int(size)
         pr = self.cli(cmd)
         if " is alive" in pr:
             return {"success": 1, "count": 1, "min": 0, "avg": 0, "max": 0}

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_capabilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,10 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_o
 
 class Script(BaseScript):
     name = "Alcatel.7302.get_capabilities"
+
+    # checking caps "SNMP | MIB | ASAM-MIB" to collect "Interface | xDSL | Line..." metrics
+    # OID 1.3.6.1.4.1.637.61.1.39 is needed to collect xDSL metrics on the device
+    CHECK_SNMP_GETNEXT = {"SNMP | MIB | ASAM-MIB": "1.3.6.1.4.1.637.61.1.39"}
 
     @false_on_cli_error
     def has_stp_cli(self):

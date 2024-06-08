@@ -7,144 +7,194 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "Gi1_gbic",
             "description": "GigabitEthernet X/1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi2_gbic",
             "description": "GigabitEthernet X/2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi3_gbic",
             "description": "GigabitEthernet X/3",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi4_gbic",
             "description": "GigabitEthernet X/4",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi5_gbic",
             "description": "GigabitEthernet X/5",
             "direction": "i",
             "gender": "f",
-            "name": "Gi5_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi6_gbic",
             "description": "GigabitEthernet X/6",
             "direction": "i",
             "gender": "f",
-            "name": "Gi6_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi7_gbic",
             "description": "GigabitEthernet X/7",
             "direction": "i",
             "gender": "f",
-            "name": "Gi7_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi8_gbic",
             "description": "GigabitEthernet X/8",
             "direction": "i",
             "gender": "f",
-            "name": "Gi8_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi9_gbic",
             "description": "GigabitEthernet X/9",
             "direction": "i",
             "gender": "f",
-            "name": "Gi9_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi10_gbic",
             "description": "GigabitEthernet X/10",
             "direction": "i",
             "gender": "f",
-            "name": "Gi10_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi11_gbic",
             "description": "GigabitEthernet X/11",
             "direction": "i",
             "gender": "f",
-            "name": "Gi11_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi12_gbic",
             "description": "GigabitEthernet X/12",
             "direction": "i",
             "gender": "f",
-            "name": "Gi12_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi13_gbic",
             "description": "GigabitEthernet X/13",
             "direction": "i",
             "gender": "f",
-            "name": "Gi13_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi14_gbic",
             "description": "GigabitEthernet X/14",
             "direction": "i",
             "gender": "f",
-            "name": "Gi14_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi15_gbic",
             "description": "GigabitEthernet X/15",
             "direction": "i",
             "gender": "f",
-            "name": "Gi15_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi16_gbic",
             "description": "GigabitEthernet X/16",
             "direction": "i",
             "gender": "f",
-            "name": "Gi16_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-X6416-GBIC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-X6416-GBIC"]
         }
-    }
+    ]
 }

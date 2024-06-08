@@ -33,6 +33,13 @@ class Script(BaseScript):
         re.IGNORECASE,
     )
 
+    env_part = re.compile(
+        r"^(?P<type>(?:(?:Power|Temp|Fans))?\s+)?"
+        r"(?P<name>(?:FPC(?:.\S+)+)\s+)"
+        r"(?P<status>.\S+.)",
+        re.IGNORECASE,
+    )
+
     TYPE_MAP = {
         "CHASSIS": "CHASSIS",
         "PEM": "PEM",
@@ -54,6 +61,8 @@ class Script(BaseScript):
         "FTC": "FAN",
         "FAN TRAY": "FAN",
     }
+
+    ENV_TYPE_MAP = {"power": "supply", "temp": "temperature", "fans": "fan"}
 
     IGNORED = {
         "RE": {
@@ -96,13 +105,61 @@ class Script(BaseScript):
                     rev = match.group("revision")
                     yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
+    def parse_chassis_environment(self, response):
+        for line in response.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+
+            match = self.env_part.search(line)
+
+            if match:
+                yield match.groups()
+
+    def get_sensors(self):
+        res = {}
+        chassis_environment_response = self.cli("show chassis environment", cached=True)
+
+        p_chassis_environment = self.parse_chassis_environment(chassis_environment_response)
+
+        for env_type, env_name, env_status in p_chassis_environment:
+            if env_type:
+                insert_type = env_type.strip()
+            chassis_id = env_name.split(" ")[1]
+            env_status = env_status.strip().lower()
+            if env_status == "absent":
+                continue
+            env_status = True if env_status == "ok" else False
+            env_name = env_name.strip()
+
+            sensor = {
+                "name": f"{chassis_id}|{env_name}",
+                "status": env_status,
+                "description": f"State of {env_name} on Unit_{chassis_id}",
+                "measurement": "StatusEnum",
+                "labels": [
+                    "noc::sensor::placement::internal",
+                    "noc::sensor::mode::flag",
+                    f"noc::sensor::target::{self.ENV_TYPE_MAP.get(insert_type.lower())}",
+                    f"noc::chassis::{chassis_id}",
+                ],
+            }
+            if res.get(chassis_id):
+                res[chassis_id].append(sensor)
+            else:
+                res[chassis_id] = [sensor]
+
+        return res
+
     def execute_cli(self):
         self.chassis_no = None
         self.virtual_chassis = None
         v = self.cli("show chassis hardware", cached=True)
         objects = []
+        sensors = self.get_sensors()
         chassis_sn = set()
         p_hardware = self.parse_hardware(v)
+
         for name, revision, part_no, serial, description in p_hardware:
             builtin = False
             # Detect type
@@ -158,19 +215,25 @@ class Script(BaseScript):
                 number = self.chassis_no
             if t in ["QXM", "CPU", "PDM"]:
                 builtin = True
-            # Submit object
-            objects += [
-                {
-                    "type": t,
-                    "number": number,
-                    "vendor": vendor,
-                    "serial": serial,
-                    "description": description,
-                    "part_no": part_no,
-                    "revision": revision,
-                    "builtin": builtin,
-                }
-            ]
+
+            obj = {
+                "type": t,
+                "number": number,
+                "vendor": vendor,
+                "serial": serial,
+                "description": description,
+                "part_no": part_no,
+                "revision": revision,
+                "builtin": builtin,
+            }
+
+            if obj["type"] == "CHASSIS":
+                chassis_id = obj["number"] if obj.get("number") else "0"
+                if sensor := sensors.get(chassis_id):
+                    obj["sensors"] = sensor
+
+            objects.append(obj)
+
         return objects
 
     def get_type(self, name):

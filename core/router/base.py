@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # Router
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 import operator
+import itertools
 from time import time_ns
 from collections import defaultdict
 from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional, Any
@@ -31,10 +32,13 @@ logger = logging.getLogger(__name__)
 
 
 class Router(object):
+    DEFAULT_CHAIN = "default"
+
     def __init__(self):
         self.chains: DefaultDict[bytes, List[Route]] = defaultdict(list)
-        self.routes: Dict[str, Route] = {}
-        self.default_route: Optional[DefaultNotificationRoute] = DefaultNotificationRoute()
+        self.routes: Dict[str, Route] = {
+            self.DEFAULT_CHAIN: DefaultNotificationRoute(),  # Add default route for notification
+        }
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
         # self.out_queue: Optional[QBuffer] = None
@@ -50,10 +54,9 @@ class Router(object):
         for num, route in enumerate(
             MessageRoute.objects.filter(is_active=True).order_by("order"), start=1
         ):
-            self.chains[route.type.encode(encoding=DEFAULT_ENCODING)] += [
-                Route.from_data(route.get_route_config())
-            ]
+            self.chains[route.type] += [Route.from_data(route.get_route_config())]
         logger.info("Loading %s route", num)
+        self.rebuild_chains()
 
     def has_route(self, route_id: str) -> bool:
         """
@@ -132,8 +135,8 @@ class Router(object):
         :return:
         """
         chains = defaultdict(list)
-        for r in self.routes.values():
-            if r_types and r.type not in r_types:
+        for rid, r in self.routes.items():
+            if r_types and r.type not in r_types and rid != self.DEFAULT_CHAIN:
                 continue
             chains[r.type].append(r)
         if deleted:
@@ -149,16 +152,10 @@ class Router(object):
                 )
             )
 
-    def iter_route(self, msg: Message) -> Iterator[Route]:
-        mt = msg.headers.get(MX_MESSAGE_TYPE)
-        if not mt:
-            return
-        # Check default Route
-        if self.default_route and self.default_route.is_match(msg):
-            yield self.default_route
+    def iter_route(self, msg: Message, message_type: bytes) -> Iterator[Route]:
         # Iterate over routes
-        for route in self.chains[mt]:
-            if route.is_match(msg):
+        for route in itertools.chain(self.chains[message_type], self.chains[b"*"]):
+            if route.is_match(msg, message_type):
                 yield route
 
     async def publish(
@@ -222,8 +219,11 @@ class Router(object):
         :param msg_id:
         :return:
         """
+        mt = msg.headers.get(MX_MESSAGE_TYPE)
+        if not mt:
+            return
         # Apply routes
-        for route in self.iter_route(msg):
+        for route in self.iter_route(msg, mt):
             metrics["route_hits", ("type", route.type)] += 1
             logger.debug("[%s] Applying route %s", msg_id, route.name)
             # Apply actions
@@ -234,7 +234,7 @@ class Router(object):
                 service=route.name,
                 in_label=msg.key,
             ) as span:
-                for stream, action_headers, body in route.iter_action(msg):
+                for stream, action_headers, body in route.iter_action(msg, mt):
                     metrics["action_hits", ("stream", stream)] += 1
                     # Fameless drop
                     if stream == DROP:

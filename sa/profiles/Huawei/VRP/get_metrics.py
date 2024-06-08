@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,12 +13,14 @@ from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
     metrics,
     ProfileMetricConfig,
+    MetricConfig,
 )
 from noc.core.models.cfgmetrics import MetricCollectorConfig
 from .oidrules.slot import SlotRule
 from .oidrules.sslot import SSlotRule
 from noc.core.mib import mib
-
+from noc.core.ip import IPv4, IPv6
+from noc.core.snmp.render import render_IPV6
 
 SLA_ICMP_METRIC_MAP = {
     "SLA | Packets | Loss | Ratio": "NQA-MIB::nqaResultsLostPacketRatio",
@@ -40,10 +42,10 @@ class Script(GetMetricsScript):
         ),
         "SLA | Packets | Loss | Ratio": ProfileMetricConfig(
             metric="SLA | Packets | Loss | Ratio",
-            oid="NQA-MIB::nqaJitterCollectStatsPacketLossRatio",
+            oid="NQA-MIB::nqaJitterStatsPacketLossRatio",
             sla_types=["udp-jitter"],
             scale=1,
-            units="pkt",
+            units="%",
         ),
         "SLA | Packets | Loss | Out": ProfileMetricConfig(
             metric="SLA | Packets | Loss | Out",
@@ -210,9 +212,9 @@ class Script(GetMetricsScript):
         elif self.has_capability("Huawei | OID | hwCBQoSClassifierStatisticsTable"):
             self.get_interface_cbqos_metrics_classifier_snmp(metrics)
 
-    def get_interface_cbqos_metrics_classifier_snmp(self, metrics):
+    def get_interface_cbqos_metrics_classifier_snmp(self, metrics: List[MetricConfig]):
         self.logger.debug("Use hwCBQoSClassifierStatisticsTable for collected metrics")
-        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         direction_map = {1: "In", 2: "Out"}
         class_map = {}
         for oid, name in self.snmp.getnext(mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierName"]):
@@ -236,21 +238,23 @@ class Script(GetMetricsScript):
                 # (f"Interface | CBQOS | Packets | {direction_map[direction]}", packets),
             ]:
                 scale = 1
+                sc = ifaces[ifindex]
                 self.set_metric(
-                    id=(metric, ifaces[ifindex]),
+                    id=(metric, sc.labels),
                     metric=metric,
                     value=float(value),
                     ts=ts,
-                    labels=ifaces[ifindex] + [f"noc::traffic_class::{class_map[classifier]}"],
+                    labels=sc.labels + [f"noc::traffic_class::{class_map[classifier]}"],
                     multi=True,
                     type="delta" if metric.endswith("Delta") else "gauge",
                     scale=scale,
                     units="byte" if "Octets" in metric else "pkt",
+                    service=sc.service,
                 )
 
-    def get_interface_cbqos_metrics_policy_snmp(self, metrics):
+    def get_interface_cbqos_metrics_policy_snmp(self, metrics: List[MetricConfig]):
         self.logger.debug("Use hwCBQoSPolicyStatisticsClassifierTable for collected metrics")
-        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         direction_map = {"1": "In", "2": "Out"}
         class_tos_map = self.get_classifier_tos()
         self.logger.debug("Class TOS map: %s", class_tos_map)
@@ -286,16 +290,18 @@ class Script(GetMetricsScript):
                     ]
                 else:
                     labels = [f"noc::traffic_class::{traffic_class}"]
+                sc = ifaces[ifindex]
                 self.set_metric(
-                    id=(metric, ifaces[ifindex]),
+                    id=(metric, sc.labels),
                     metric=metric,
                     value=float(value),
                     ts=ts,
-                    labels=ifaces[ifindex] + labels,
+                    labels=sc.labels + labels,
                     multi=True,
                     type=mtype,
                     scale=scale,
                     units="pkt" if "Octets" in metric else "byte",
+                    service=sc.service,
                 )
 
     def collect_sla_metrics(self, metrics: List[MetricCollectorConfig]):
@@ -366,6 +372,8 @@ class Script(GetMetricsScript):
                 mc = self.SLA_METRICS_CONFIG[m]
                 if status_oid == "NQA-MIB::nqaResultsCompletions":
                     oid = mib[mc.oid, key, stat_index[key], 1]
+                elif mc.oid == "NQA-MIB::nqaJitterStatsPacketLossRatio":
+                    oid = mib[mc.oid, key, stat_index[key]]
                 else:
                     oid = mib[mc.oid, key, stat_index[key]]
                 oids[oid] = (probe, mc)
@@ -438,3 +446,239 @@ class Script(GetMetricsScript):
     #             self.set_metric(id=("Interface | Errors | CRC", ipath), value=int(data["CRC"]))
     #         if "Frames" in data:
     #             self.set_metric(id=("Interface | Errors | Frame", ipath), value=int(data["Frames"]))
+
+    def get_dict_dhcp_pool_name_IP_v4(self):
+        """
+        IPv4
+        Prepare dict for labels.
+        {snmp_index:
+            {
+                snmp_index: str,
+                pool_name: str,
+                ip: str,
+                ipv6: bool,
+                prefix: Option(str) # only for ipv6
+            }
+        }
+        """
+        result = {}
+        pool_name_oid = "1.3.6.1.4.1.2011.6.8.1.1.1.2"  # hwIPPoolName
+        for oid, v in self.snmp.getnext(pool_name_oid, bulk=False):
+            snmp_index = oid.split(pool_name_oid, 1)[-1][1:]
+            result[snmp_index] = {
+                "snmp_index": snmp_index,
+                "pool_name": str(v),
+            }
+
+        pool_ip_oid = "1.3.6.1.4.1.2011.6.8.1.1.1.3"  # hwIPPoolRouterIPAddr
+        for oid, v in self.snmp.getnext(pool_ip_oid, bulk=False):
+            snmp_index = oid.split(pool_ip_oid, 1)[-1][1:]
+            if result.get(snmp_index):
+                result[snmp_index].update({"ip": v})
+
+        pool_ip_prefix = "1.3.6.1.4.1.2011.6.8.1.1.1.4"  # hwIPPoolRouterIPMask
+        for oid, v in self.snmp.getnext(pool_ip_prefix, bulk=False):
+            snmp_index = oid.split(pool_ip_prefix, 1)[-1][1:]
+            result[snmp_index].update({"prefix": IPv4.netmask_to_len(v)})
+        return result
+
+    def get_dict_dhcp_pool_name_IP_v6(self):
+        """
+        IPv6
+        Prepare dict for labels.
+        {snmp_index:
+            {
+                snmp_index: str,
+                pool_name: str,
+                ip: str,
+                ipv6: bool,
+                prefix: Option(str) # only for ipv6
+            }
+        }
+        """
+        result = {}
+        pool_name_oid = "1.3.6.1.4.1.2011.6.8.1.16.1.2"  # hwIPv6PrefixName
+        for oid, v in self.snmp.getnext(pool_name_oid, bulk=False):
+            snmp_index = oid.split(pool_name_oid, 1)[-1][1:]
+            result[snmp_index] = {
+                "snmp_index": snmp_index,
+                "pool_name": str(v),
+            }
+
+        pool_ip_oid = "1.3.6.1.4.1.2011.6.8.1.16.1.4"  # hwIPv6Prefix
+        for oid, v in self.snmp.getnext(
+            pool_ip_oid, bulk=False, display_hints={pool_ip_oid: render_IPV6}
+        ):
+            snmp_index = oid.split(pool_ip_oid, 1)[-1][1:]
+            if result.get(snmp_index):
+                result[snmp_index].update({"ip": v})
+
+        pool_ip_prefix = "1.3.6.1.4.1.2011.6.8.1.16.1.5"  # hwIPv6PrefixLen
+        for oid, v in self.snmp.getnext(pool_ip_prefix, bulk=False):
+            snmp_index = oid.split(pool_ip_prefix, 1)[-1][1:]
+            result[snmp_index].update({"prefix": v})
+        return result
+
+    def get_metric_value(self, oid_in: str, dhcp_pool_param: dict, is_IPv6: bool = False):
+        for oid, v in self.snmp.getnext(oid_in, bulk=False):
+            snmp_index = oid.split(oid_in, 1)[-1][1:]
+            param = dhcp_pool_param.get(snmp_index)
+            if param:
+                pool = param["pool_name"]
+                pool_ip = param["ip"]
+                pool_ip += f"/{param['prefix']}"
+                if is_IPv6:
+                    pool_ip = str(IPv6(pool_ip).normalized)
+                pool_ip = pool_ip.replace("::", ";;")  # :: use in separate scope, dont show in card
+                yield pool, pool_ip, v, snmp_index
+            yield None, None, None, None
+
+    @metrics(
+        [
+            "DHCP | Pool | Leases | Active",
+            "DHCP | Pool | Leases | Free",
+            "DHCP | Pool | Leases | Total",
+            "DHCP | Pool | Leases | Active | Percent",
+        ],
+        has_capability="Network | DHCP",
+        volatile=False,
+        access="S",  # not CLI version
+    )
+    def get_lease_metrics(self, metrics):
+        # IPv4
+        dhcp_pool_param = self.get_dict_dhcp_pool_name_IP_v4()
+        # IPv4 Active hwIPPoolIPUsedNum  1.3.6.1.4.1.2011.6.8.1.1.1.16
+        for pool, pool_ip, v, _ in self.get_metric_value(
+            "1.3.6.1.4.1.2011.6.8.1.1.1.16", dhcp_pool_param
+        ):
+            if pool and pool_ip:
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+        # IPv4 Total  hwIPPoolIPTotalNum 1.3.6.1.4.1.2011.6.8.1.1.1.15
+        for pool, pool_ip, v, _ in self.get_metric_value(
+            "1.3.6.1.4.1.2011.6.8.1.1.1.15", dhcp_pool_param
+        ):
+            if pool and pool_ip:
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Total", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+        # IPv4 Free  hwIPPoolIPIdleNum 1.3.6.1.4.1.2011.6.8.1.1.1.19
+        for pool, pool_ip, v, _ in self.get_metric_value(
+            "1.3.6.1.4.1.2011.6.8.1.1.1.19", dhcp_pool_param
+        ):
+            if pool and pool_ip:
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Free", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+        # IPv4 Percent  hwIPPoolIPUsedPercent 1.3.6.1.4.1.2011.6.8.1.1.1.20
+        for pool, pool_ip, v, _ in self.get_metric_value(
+            "1.3.6.1.4.1.2011.6.8.1.1.1.20", dhcp_pool_param
+        ):
+            if pool and pool_ip:
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active | Percent", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                    units="%",
+                )
+
+        # IPv6
+        dhcp_pool_param = self.get_dict_dhcp_pool_name_IP_v6()
+        # IPv6 Active   hwIPv6UsedPrefixNum 1.3.6.1.4.1.2011.6.8.1.18.1.4
+        dhcp_pool_active_v6 = {}
+        for pool, pool_ip, v, snmp_index in self.get_metric_value(
+            "1.3.6.1.4.1.2011.6.8.1.18.1.4", dhcp_pool_param, is_IPv6=True
+        ):
+            if pool and pool_ip:
+                dhcp_pool_active_v6[snmp_index] = v
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+        # IPv6 Free  hwIPv6FreePrefixNum 1.3.6.1.4.1.2011.6.8.1.18.1.3
+        dhcp_pool_free_v6 = {}
+        for pool, pool_ip, v, snmp_index in self.get_metric_value(
+            "1.3.6.1.4.1.2011.6.8.1.18.1.3", dhcp_pool_param, is_IPv6=True
+        ):
+            if pool and pool_ip:
+                dhcp_pool_free_v6[snmp_index] = v
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Free", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+        # IPv6 Total, Percent
+        for k, active in dhcp_pool_active_v6.items():
+            free = dhcp_pool_free_v6[k]
+            total = active + free
+            param = dhcp_pool_param.get(k)
+            if param:
+                pool = param["pool_name"]
+                pool_ip = param["ip"]
+                pool_ip += f"/{param['prefix']}"
+                pool_ip = str(IPv6(pool_ip).normalized)
+                pool_ip = pool_ip.replace("::", ";;")  # :: use in separate scope, dont show in card
+                # Total
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Total", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=total,
+                    multi=True,
+                )
+                # Percent
+                percent = 0
+                if total > 0:
+                    percent = round((active / total) * 100)
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active | Percent", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=percent,
+                    multi=True,
+                    units="%",
+                )

@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Default Resource",
+    "from_state__uuid": "44127fcb-c7c9-413e-b480-7fb5c8e92d35",
+    "to_state__uuid": "a4b54358-52f7-4423-a0f1-8d518069c027",
+    "uuid": "48fed41c-97bb-4d06-8439-49f9e47ca676",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "reserve",
+    "label": "Reserve",
+    "enable_manual": true
+}

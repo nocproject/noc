@@ -1,0 +1,46 @@
+{
+    "name": "Generic | CPE | AP",
+    "$collection": "inv.objectmodels",
+    "uuid": "3366caba-da71-4617-8556-e79a3bc72765",
+    "vendor__code": "GENERIC",
+    "description": "Gereric WLAN Access Point Device",
+    "connections": [
+        {
+            "name": "eth0",
+            "description": "Etherne Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "is_cpe",
+            "interface": "cpe",
+            "value": true
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["*"]
+        }
+    ]
+}

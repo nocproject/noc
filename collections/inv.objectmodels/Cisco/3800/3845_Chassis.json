@@ -9,64 +9,70 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "mb",
             "description": "3845 Motherboard",
             "direction": "i",
             "gender": "f",
-            "name": "mb",
             "type__name": "Cisco | 3800 | MOTHERBOARD"
         },
         {
+            "name": "nm1",
             "description": "Network-module slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "nm1",
             "type__name": "Cisco | 3800 | NM"
         },
         {
+            "name": "nm2",
             "description": "Network-module slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "nm2",
             "type__name": "Cisco | 3800 | NM"
         },
         {
+            "name": "nm3",
             "description": "Network-module slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "nm3",
             "type__name": "Cisco | 3800 | NM"
         },
         {
+            "name": "nm4",
             "description": "Network-module slot 4",
             "direction": "i",
             "gender": "f",
-            "name": "nm4",
             "type__name": "Cisco | 3800 | NM"
         },
         {
+            "name": "psu1",
             "description": "Power Supply slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | 3800 | PSU"
         },
         {
+            "name": "psu2",
             "description": "Power Supply slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "psu2",
             "type__name": "Cisco | 3800 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO3845"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO3845"]
         },
-        "rackmount": {
-            "units": 3
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 3
         }
-    }
+    ]
 }

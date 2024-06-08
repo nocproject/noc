@@ -7,10 +7,11 @@
 
 # Python modules
 import os
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Union
 from collections import defaultdict
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -155,7 +156,7 @@ class ActivationConfig(EmbeddedDocument):
 
 
 @change
-@on_delete_check(check=[("pm.MetricRule", "items.metric_action")])
+@on_delete_check(check=[("pm.MetricRule", "actions.metric_action")])
 class MetricAction(Document):
     meta = {
         "collection": "metricactions",
@@ -184,7 +185,7 @@ class MetricAction(Document):
         return self.name
 
     @classmethod
-    def get_by_id(cls, oid) -> Optional["MetricAction"]:
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["MetricAction"]:
         return MetricAction.objects.filter(id=oid).first()
 
     def clean(self):
@@ -337,9 +338,11 @@ class MetricAction(Document):
                 name=f"{prefix}deactivation-function",
                 type=self.deactivation_config.activation_function,
                 config=self.deactivation_config.activation_config,
-                inputs=[g_input]
-                if not dkey_input
-                else [InputItem(name="x", node=f"{prefix}deactivation-window")],
+                inputs=(
+                    [g_input]
+                    if not dkey_input
+                    else [InputItem(name="x", node=f"{prefix}deactivation-window")]
+                ),
             )
             dkey_input = InputItem(name="deactivate_x", node=f"{prefix}deactivation-function")
         # Key function

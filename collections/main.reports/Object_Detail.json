@@ -28,6 +28,10 @@
                 {
                     "datasource": "managedobjectlabelsstatds",
                     "json": null
+                },
+                {
+                    "datasource": "managedobjectdpds",
+                    "json": null
                 }
             ]
         }
@@ -172,7 +176,7 @@
                     "format_type": "string"
                 },
                 {
-                    "name": "discovery_problem",
+                    "name": "managedobjectdpds.all",
                     "title": "Discovery Problem",
                     "format_type": "string"
                 },

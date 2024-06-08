@@ -7,24 +7,29 @@
     "cr_context": "SPA",
     "connections": [
         {
+            "name": "in",
             "description": "SPA connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "Te0_xfp",
             "description": "XFP Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "Te0_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SPA-1X10GE-L-V2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SPA-1X10GE-L-V2"]
         }
-    }
+    ]
 }

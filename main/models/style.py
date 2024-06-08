@@ -1,12 +1,13 @@
 # ---------------------------------------------------------------------
 # Style model model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from threading import Lock
+from typing import Optional
 import operator
 
 # Third-party modules
@@ -30,13 +31,10 @@ id_lock = Lock()
         ("inv.CPEProfile", "style"),
         ("inv.NetworkSegmentProfile", "style"),
         ("inv.SensorProfile", "style"),
-        ("ip.Address", "style"),
         ("ip.AddressProfile", "style"),
         ("ip.PrefixProfile", "style"),
-        ("ip.VRF", "style"),
         ("vc.VPNProfile", "style"),
         ("fm.AlarmSeverity", "style"),
-        ("fm.ActiveAlarm", "style"),
         ("peer.ASProfile", "style"),
         ("phone.PhoneNumberProfile", "style"),
         ("phone.PhoneRangeProfile", "style"),
@@ -73,7 +71,7 @@ class Style(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["Style"]:
         try:
             return Style.objects.get(id=id)
         except Style.DoesNotExist:

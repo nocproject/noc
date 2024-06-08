@@ -7,33 +7,88 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "voice-port0",
             "description": "Line 0 port",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
-            "protocols": ["V34bis", "V42", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port1",
             "description": "Line 1 port",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port1",
-            "protocols": ["V34bis", "V42", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "in",
             "description": "WAN Interface Card connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["WIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WIC-2AM-V2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WIC-2AM-V2"]
         }
-    }
+    ]
 }

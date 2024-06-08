@@ -149,7 +149,7 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_subscriberprofile": true
+                        "allow_models": ["crm.SubscriberProfile", "crl.Subscriber"]
                     },
                 }
             ]

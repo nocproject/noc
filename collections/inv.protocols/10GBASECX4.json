@@ -1,0 +1,10 @@
+{
+    "name": "10GBASECX4",
+    "code": "10GBASECX4",
+    "$collection": "inv.protocols",
+    "uuid": "20cd64ee-edee-46ab-878d-59b4d46519f4",
+    "description": "10GBASE-CX4, 10GBit/s, copper",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

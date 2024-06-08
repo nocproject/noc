@@ -5,12 +5,16 @@
     "vendor__code": "NOC",
     "description": "City",
     "connections": [],
-    "data": {
-        "container": {
-            "container": true
+    "data": [
+        {
+            "attr": "layer",
+            "interface": "geopoint",
+            "value": "cities"
         },
-        "geopoint": {
-            "layer": "cities"
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         }
-    }
+    ]
 }

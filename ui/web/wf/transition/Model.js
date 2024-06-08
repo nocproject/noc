@@ -16,6 +16,11 @@ Ext.define("NOC.wf.transition.Model", {
             type: "string"
         },
         {
+            name: "uuid",
+            type: "string",
+            persist: false
+        },
+        {
             name: "workflow",
             type: "string"
         },

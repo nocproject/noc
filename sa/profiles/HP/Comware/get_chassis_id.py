@@ -18,6 +18,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
+    always_prefer = "S"
+
     rx_id = re.compile(r"^\s*MAC_ADDRESS\s+:\s+(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
     def execute_cli(self, **kwargs):

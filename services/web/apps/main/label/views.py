@@ -10,6 +10,7 @@ import re
 from collections import defaultdict
 
 # NOC modules
+from noc.sa.interfaces.base import ColorParameter
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.label import Label
 from noc.core.translation import ugettext as _
@@ -26,11 +27,26 @@ class LabelApplication(ExtDocApplication):
     model = Label
     query_condition = "icontains"
 
+    clean_fields = {
+        "bg_color1": ColorParameter(),
+        "bg_color2": ColorParameter(),
+        "fg_color1": ColorParameter(),
+        "fg_color2": ColorParameter(),
+    }
+
     not_builtin_re = re.compile(r"^(?!noc\:\:)")
     builtin_re = re.compile(r"^noc\:\:")
 
     not_matched_re = re.compile(r"[^=<>&]$")
     matched_re = re.compile(r"[=<>&]$")
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
+        if not isinstance(o, Label):
+            return r
+        for s, model_id in Label.ENABLE_MODEL_ID_MAP.items():
+            r[s] = model_id in o.allow_models
+        return r
 
     def field_is_builtin(self, o: "Label"):
         return bool(o.is_builtin)
@@ -55,6 +71,14 @@ class LabelApplication(ExtDocApplication):
             q["name"] = self.matched_re if q["is_matched"] == "true" else self.not_matched_re
             del q["is_matched"]
         return q
+
+    def clean(self, data):
+        data["allow_models"] = []
+        for k in list(data):
+            if k in Label.ENABLE_MODEL_ID_MAP:
+                if data.pop(k):
+                    data["allow_models"].append(Label.ENABLE_MODEL_ID_MAP[k])
+        return super().clean(data)
 
     @view(url="^ac_lookup/", method=["GET"], access=True)
     def api_ac_lookup(self, request):

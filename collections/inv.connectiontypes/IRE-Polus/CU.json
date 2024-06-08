@@ -1,0 +1,8 @@
+{
+    "name": "IRE-Polus | Horizon | CU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "e556050e-a372-4810-9e10-cc68ff8d07c9",
+    "description": "K4-H8 and K10-H8 Control Board",
+    "c_group": [],
+    "genders": "mf"
+}

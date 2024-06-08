@@ -7,17 +7,32 @@
     "cr_context": "XCVR",
     "connections": [
         {
+            "name": "in",
             "description": "XENPAK Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["XENPAK-SFP+", "Xenpak-SFP+"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["XENPAK-SFP+", "Xenpak-SFP+"]
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

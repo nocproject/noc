@@ -1,0 +1,32 @@
+{
+    "name": "Cisco | 2900 | PWR-1941-2901-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "868d8573-52b0-4d47-9389-4dc4b408b22d",
+    "vendor__code": "CISCO",
+    "description": "C1941-C2901 AC Power Supply",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 1941-2901 | PSU"
+        },
+        {
+            "name": "power",
+            "description": "Power input",
+            "direction": "s",
+            "gender": "m",
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-1941-2901-AC"]
+        }
+    ]
+}

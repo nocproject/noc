@@ -7,55 +7,69 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "dfc",
             "description": "DFC slot",
             "direction": "i",
             "gender": "f",
-            "name": "dfc",
             "type__name": "Cisco | 7600 | DFC"
         },
         {
+            "name": "Te1_xenpak",
             "description": "TeX/1 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_xenpak",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         },
         {
+            "name": "Te2_xenpak",
             "description": "TeX/2 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "name": "Te2_xenpak",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         },
         {
+            "name": "Te3_xenpak",
             "description": "TeX/3 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "name": "Te3_xenpak",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         },
         {
+            "name": "Te4_xenpak",
             "description": "TeX/4 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "name": "Te4_xenpak",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-X6704-10GE"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-X6704-10GE"]
         }
-    }
+    ]
 }

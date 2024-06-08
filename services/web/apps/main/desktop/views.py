@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # main.desktop application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -142,11 +142,18 @@ class DesktopApplication(ExtApplication):
             "enable_search": enable_search,
             "collections": {"allow_sharing": config.collections.allow_sharing},
             "gis": {
+                "yandex_supported": config.gis.yandex_supported,
                 "base": {
                     "enable_osm": config.gis.enable_osm,
                     "enable_google_sat": config.gis.enable_google_sat,
                     "enable_google_roadmap": config.gis.enable_google_roadmap,
-                }
+                    "enable_google_hybrid": config.gis.enable_google_hybrid,
+                    "enable_google_terrain": config.gis.enable_google_terrain,
+                    "enable_yandex_sat": config.gis.enable_yandex_sat,
+                    "enable_yandex_hybrid": config.gis.enable_yandex_hybrid,
+                    "enable_yandex_roadmap": config.gis.enable_yandex_roadmap,
+                },
+                "default_layer": config.gis.default_layer,
             },
             "traceExtJSEvents": False,
             "helpUrl": config.help.base_url,
@@ -274,6 +281,7 @@ class DesktopApplication(ExtApplication):
         else:
             return self.render_json({"status": False, "error": _("Failed to change credentials")})
 
+    # @todo: Fix simplereport and remove endpoint
     @view(method=["POST"], url="^dlproxy/$", access=True, api=True)
     def api_dlproxy(self, request):
         """
@@ -349,21 +357,18 @@ class DesktopApplication(ExtApplication):
 
     @view(url="^about/", method=["GET"], access=True, api=True)
     def api_about(self, request):
+        current_year = datetime.date.today().year
+        logo_url = config.customization.logo_url
+        if logo_url == "/ui/web/img/logo_white.svg":
+            logo_url = "/ui/web/img/logo_black.svg"
+        data = {
+            "logo_url": logo_url,
+            "brand": config.brand,
+            "version": version.version,
+            "installation": config.installation_name,
+            "copyright": f"2007-{current_year}, {config.brand}",
+        }
         if config.features.cpclient:
             cp = CPClient()
-            return {
-                "logo_url": config.customization.logo_url,
-                "brand": config.brand,
-                "version": version.version,
-                "installation": config.installation_name,
-                "system_id": cp.system_uuid,
-                "copyright": "2007-%d, The NOC Project" % datetime.date.today().year,
-            }
-        else:
-            return {
-                "logo_url": config.customization.logo_url,
-                "brand": config.brand,
-                "version": version.version,
-                "installation": config.installation_name,
-                "copyright": "2007-%d, %s" % (datetime.date.today().year, config.brand),
-            }
+            data["system_id"] = cp.system_uuid
+        return data

@@ -1,0 +1,6 @@
+config: |
+  #
+  ip route 0.0.0.0 0.0.0.0 10.118.32.1
+  #
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'route', 'inet', 'static', !IP 0.0.0.0/0, 'next-hop', !IP 10.118.32.1]

@@ -1,0 +1,8 @@
+{
+    "name": "Serial",
+    "$collection": "inv.technologies",
+    "uuid": "1b36e203-e78a-4389-bbc9-ad1c59d034ac",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

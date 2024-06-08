@@ -1,0 +1,10 @@
+{
+    "name": "Cisco VWIC",
+    "code": "CISCOVWIC",
+    "$collection": "inv.protocols",
+    "uuid": "e2a8437a-3efa-4fdb-b6dc-daa27a6866f3",
+    "description": "Cisco Voice/WAN Interface Card.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Cisco | Interface Card"
+}

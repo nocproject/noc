@@ -16,6 +16,7 @@ from .base import (
     REStringParameter,
     OIDParameter,
     LabelListParameter,
+    DiscriminatorParameter,
 )
 
 
@@ -49,11 +50,15 @@ class IGetInventory(BaseInterface):
             "crossing": DictListParameter(
                 attrs={
                     # Input connection name, according to model
-                    "in": StringParameter(),
+                    "input": StringParameter(),
+                    # Input filter
+                    "input_discriminator": DiscriminatorParameter(required=False),
                     # Output connection name, according to model
-                    "out": StringParameter(),
+                    "output": StringParameter(),
+                    # Output signal mapping
+                    "output_discriminator": DiscriminatorParameter(required=False),
                     # Power gain, in dB
-                    "gain": FloatParameter(),
+                    "gain": FloatParameter(default=1),
                 },
                 required=False,
             ),
@@ -79,10 +84,38 @@ class IGetInventory(BaseInterface):
                     "snmp_oid": OIDParameter(required=False),
                     # ID for IPMI collected
                     "ipmi_id": StringParameter(required=False),
-                    # Optional internals Thresholds ?
                 },
                 required=False,
             ),
-        }
+            # Optional data
+            "data": DictListParameter(
+                attrs={
+                    # Model Interface name
+                    "interface": StringParameter(required=True),
+                    # Attribute
+                    "attr": StringParameter(required=True),
+                    # Value
+                    "value": StringParameter(required=True),
+                    # Slot name (if data for slot)
+                    "slot": StringParameter(required=False),
+                },
+                required=False,
+            ),
+            # Configured Param
+            "param_data": DictListParameter(
+                attrs={
+                    "param": StringParameter(required=True),
+                    "value": StringParameter(),
+                    "scopes": DictListParameter(
+                        attrs={
+                            "scope": StringParameter(required=True),
+                            "value": StringParameter(required=False),
+                        }
+                    ),
+                    "measurement": StringParameter(required=False),
+                },
+                required=False,
+            ),
+        },
     )
     preview = "NOC.sa.managedobject.scripts.ShowInventory"

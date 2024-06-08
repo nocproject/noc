@@ -41,12 +41,12 @@ forms:
       type: str
     py3_ver:
       label: Python3 version
-      default: "3.8"
+      default: "3.10"
       type: list
       description: Choose recommended version for your code version. Read https://getnoc.com/blog/
       options:
-        - "3.8"
-        - "3.9"
+        - "3.10"
+        - "3.11"
 
 services:
   noc:

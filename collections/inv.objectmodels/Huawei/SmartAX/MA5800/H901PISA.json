@@ -12,7 +12,10 @@
             "description": "3V3 power connector",
             "direction": "i",
             "gender": "m",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Huawei | SmartAX | Power 3V3"
         },
         {
@@ -20,7 +23,10 @@
             "description": "3V3 power connector",
             "direction": "i",
             "gender": "m",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Huawei | SmartAX | Power 3V3"
         },
         {
@@ -31,9 +37,11 @@
             "type__name": "Huawei | SmartAX | MA5800 | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H901PISA"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H901PISA"]
         }
-    }
+    ]
 }

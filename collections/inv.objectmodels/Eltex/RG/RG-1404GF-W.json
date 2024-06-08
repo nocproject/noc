@@ -6,119 +6,234 @@
     "description": "gateway with two FXS ports, a Wi-Fi module and an optical port for connecting to an external network",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
-            "description": "phone port",
-            "direction": "s",
-            "gender": "f",
             "name": "fxs0",
-            "protocols": ["PSTN"],
-            "type__name": "Electrical | RJ11"
-        },
-        {
             "description": "phone port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
             "name": "fxs1",
-            "protocols": ["PSTN"],
-            "type__name": "Electrical | RJ11"
-        },
-        {
             "description": "phone port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
             "name": "fxs2",
-            "protocols": ["PSTN"],
-            "type__name": "Electrical | RJ11"
-        },
-        {
             "description": "phone port",
             "direction": "s",
             "gender": "f",
-            "name": "fxs3",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "fxs3",
+            "description": "phone port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "wan",
             "description": "wan port",
             "direction": "i",
             "gender": "f",
-            "name": "wan",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "lan port",
-            "direction": "s",
-            "gender": "f",
             "name": "lan0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "lan port",
             "direction": "s",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "lan1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "lan port",
             "direction": "s",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "lan2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "lan port",
             "direction": "s",
             "gender": "f",
-            "name": "lan3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "lan3",
+            "description": "lan port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "rf1",
             "description": "2.4G antenna interface 1",
             "direction": "s",
             "gender": "f",
-            "name": "rf1",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
+            "name": "rf2",
             "description": "2.4G antenna interface 2",
             "direction": "s",
             "gender": "f",
-            "name": "rf2",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
+            "name": "usb",
             "description": "usb port",
             "direction": "s",
             "gender": "f",
-            "name": "usb",
-            "protocols": [">USB10", ">USB11", ">USB20"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["RG-1404GF-W"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RG-1404GF-W"]
         },
-        "dimensions": {
-            "depth": 120,
-            "height": 49,
-            "width": 218
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 120
         },
-        "power": {
-            "power": 18.5
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 49
         },
-        "weight": {
-            "weight": 0.3
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 218
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 18.5
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.3
         }
-    }
+    ]
 }

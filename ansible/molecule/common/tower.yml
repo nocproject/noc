@@ -1,14 +1,14 @@
 ---
-- import_playbook: ../../system_roles/goss/service.yml
 - import_playbook: ../../system_roles/consul/service.yml
 - import_playbook: ../../system_roles/postgres/service.yml
 - import_playbook: ../../system_roles/mongod/service.yml
 - import_playbook: ../../system_roles/consul-template/service.yml
-- import_playbook: ../../system_roles/nats/service.yml
-- import_playbook: ../../system_roles/liftbridge/service.yml
 - import_playbook: ../../system_roles/nginx/service.yml
 - import_playbook: ../../system_roles/grafana/service.yml
 - import_playbook: ../../system_roles/clickhouse/service.yml
-- import_playbook: ../../system_roles/redpanda/service.yml
+- import_playbook: ../../system_roles/kafka/service.yml
 - import_playbook: ../../noc_roles/noc/service.yml
+- import_playbook: ../../system_roles/liftbridge/service.yml
+- import_playbook: ../../system_roles/nats/service.yml
 - import_playbook: ../../noc_roles/migrate/service.yml
+- import_playbook: ../../system_roles/goss/service.yml

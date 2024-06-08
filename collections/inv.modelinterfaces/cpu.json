@@ -1,0 +1,63 @@
+{
+    "name": "cpu",
+    "uuid": "e1a2b4d0-cf3a-4628-89dc-209687da0896",
+    "description": "CPU capabilities",
+    "attrs": [
+        {
+            "name": "arch",
+            "type": "str",
+            "description": "CPU Architecture",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "cores",
+            "type": "int",
+            "description": "Effective number of cores. For bigLITTLE and similar, the maximal number of cores which may work similtaneously",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "ht",
+            "type": "bool",
+            "description": "Hyper-Threading support",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "freq",
+            "type": "int",
+            "description": "Nominal frequence in MHz",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "turbo_freq",
+            "type": "int",
+            "description": "Maximal frequence in MHz",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "l1_cache",
+            "type": "int",
+            "description": "L1 cache size in kb",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "l2_cache",
+            "type": "int",
+            "description": "L2 cache size in kb",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "l3_cache",
+            "type": "int",
+            "description": "L3 cache size in kb",
+            "required": false,
+            "is_const": true
+        }
+    ]
+}

@@ -9,66 +9,88 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "fan",
             "description": "Fan tray",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
             "type__name": "Huawei | SmartAX | MA5608T | FAN"
         },
         {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "type__name": "Huawei | SmartAX | MA560xT | SB"
-        },
-        {
             "description": "Service board",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | SmartAX | MA560xT | SB"
         },
         {
-            "description": "Mini Control board",
+            "name": "1",
+            "description": "Service board",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
             "name": "2",
-            "type__name": "Huawei | SmartAX | MA560xT | MCU"
-        },
-        {
             "description": "Mini Control board",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Huawei | SmartAX | MA560xT | MCU"
         },
         {
+            "name": "3",
+            "description": "Mini Control board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | MCU"
+        },
+        {
+            "name": "4",
             "description": "Power interface board",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | SmartAX | MA560xT | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801MABR", "MA5608T"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801MABR", "MA5608T"]
         },
-        "dimensions": {
-            "depth": 234,
-            "height": 88,
-            "width": 442
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "rackmount": {
-            "units": 6.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 234
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 30.53
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 88
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 30.53
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 6.0
         }
-    }
+    ]
 }

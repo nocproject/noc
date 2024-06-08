@@ -7,13 +7,10 @@ const apps = [
     '../../../ui/web/bi/dashboardlayout/Application.js',
     // cm
     '../../../ui/web/cm/confdbquery/Application.js',
-    '../../../ui/web/cm/errortype/Application.js',
+    '../../../ui/web/cm/configurationparam/Application.js',
     '../../../ui/web/cm/interfacevalidationpolicy/Application.js',
     '../../../ui/web/cm/objectnotify/Application.js',
     '../../../ui/web/cm/objectvalidationpolicy/Application.js',
-    '../../../ui/web/cm/validationpolicy/Application.js',
-    '../../../ui/web/cm/validationpolicysettings/Application.js',
-    '../../../ui/web/cm/validationrule/Application.js',
     // crm
     '../../../ui/web/crm/subscriber/Application.js',
     '../../../ui/web/crm/subscriberprofile/Application.js',
@@ -62,7 +59,6 @@ const apps = [
     '../../../ui/web/inv/firmware/Application.js',
     '../../../ui/web/inv/firmwarepolicy/Application.js',
     '../../../ui/web/inv/interface/Application.js',
-    '../../../ui/web/inv/interfaceclassificationrule/Application.js',
     '../../../ui/web/inv/interfaceprofile/Application.js',
     '../../../ui/web/inv/inv/Application.js',
     '../../../ui/web/inv/macdb/Application.js',
@@ -102,6 +98,7 @@ const apps = [
     '../../../ui/web/main/extstorage/Application.js',
     '../../../ui/web/main/handler/Application.js',
     '../../../ui/web/main/jsonimport/Application.js',
+    '../../../ui/web/main/label/Application.js',
     '../../../ui/web/main/language/Application.js',
     '../../../ui/web/main/mimetype/Application.js',
     '../../../ui/web/main/notificationgroup/Application.js',
@@ -118,7 +115,6 @@ const apps = [
     // '../../../ui/web/main/sync/Application.js', // not found in menu - deleted
     '../../../ui/web/main/systemnotification/Application.js',
     '../../../ui/web/main/systemtemplate/Application.js',
-    '../../../ui/web/main/tag/Application.js',
     '../../../ui/web/main/template/Application.js',
     '../../../ui/web/main/timepattern/Application.js',
     '../../../ui/web/main/userprofile/Application.js',
@@ -150,7 +146,12 @@ const apps = [
     // pm
     '../../../ui/web/pm/metricscope/Application.js',
     '../../../ui/web/pm/metrictype/Application.js',
-    '../../../ui/web/pm/thresholdprofile/Application.js',
+    '../../../ui/web/pm/scale/Application.js',
+    '../../../ui/web/pm/metricrule/Application.js',
+    '../../../ui/web/pm/metricaction/Application.js',
+    '../../../ui/web/pm/measurementunits/Application.js',
+    '../../../ui/web/pm/agentprofile/Application.js',
+    '../../../ui/web/pm/agent/Application.js',
     // project
     '../../../ui/web/project/project/Application.js',
     // sa
@@ -165,7 +166,6 @@ const apps = [
     '../../../ui/web/sa/managedobject/Application.js',
     '../../../ui/web/sa/monitor/Application.js',
     '../../../ui/web/sa/managedobjectprofile/Application.js',
-    '../../../ui/web/sa/managedobjectselector/Application.js',
     // '../../../ui/web/sa/mrt/Application.js', // not found in menu
     '../../../ui/web/sa/objectnotification/Application.js',
     '../../../ui/web/sa/profile/Application.js',
@@ -182,11 +182,9 @@ const apps = [
     '../../../ui/web/support/account/Application.js',
     '../../../ui/web/support/crashinfo/Application.js',
     // vc
-    '../../../ui/web/vc/vc/Application.js',
-    '../../../ui/web/vc/vcbindfilter/Application.js',
-    '../../../ui/web/vc/vcdomain/Application.js',
-    '../../../ui/web/vc/vcfilter/Application.js',
-    '../../../ui/web/vc/vctype/Application.js',
+    '../../../ui/web/vc/l2domain/Application.js',
+    '../../../ui/web/vc/l2domainprofile/Application.js',
+    '../../../ui/web/vc/vlanfilter/Application.js',
     '../../../ui/web/vc/vlan/Application.js',
     '../../../ui/web/vc/vlanprofile/Application.js',
     '../../../ui/web/vc/vpn/Application.js',

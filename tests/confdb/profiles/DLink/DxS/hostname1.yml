@@ -1,0 +1,5 @@
+config: |
+  config command_prompt some-hostname
+result:
+  - ['system', 'hostname', 'some-hostname', {'replace': True}]
+  - ['system', 'prompt', 'some-hostname', {'replace': True}]

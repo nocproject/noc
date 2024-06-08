@@ -1,0 +1,10 @@
+{
+    "name": "V.35",
+    "code": "V35",
+    "$collection": "inv.protocols",
+    "uuid": "377cd19b-c224-42cc-9bd2-6007be6a6c85",
+    "description": "V.35 is an ITU-T standard located on layer 1 on the OSI model. Max speed is 2 Mbit/s and synchronous only. Withdrawn ITU-T recommendation for 48 kbit/s data transmission over wideband circuits.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Modulator-Demodulator"
+}

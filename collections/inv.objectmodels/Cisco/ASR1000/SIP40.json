@@ -7,44 +7,46 @@
     "cr_context": "SIP",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ASR1000 | SIP"
         },
         {
+            "name": "spa0",
             "description": "SPA subslot x/0",
             "direction": "i",
             "gender": "f",
-            "name": "spa0",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "spa1",
             "description": "SPA subslot x/1",
             "direction": "i",
             "gender": "f",
-            "name": "spa1",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "spa2",
             "description": "SPA subslot x/2",
             "direction": "i",
             "gender": "f",
-            "name": "spa2",
             "type__name": "Cisco | SPA"
         },
         {
+            "name": "spa3",
             "description": "SPA subslot x/3",
             "direction": "i",
             "gender": "f",
-            "name": "spa3",
             "type__name": "Cisco | SPA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ASR1000-SIP40"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1000-SIP40"]
         }
-    }
+    ]
 }

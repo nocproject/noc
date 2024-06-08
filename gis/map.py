@@ -32,7 +32,7 @@ class Map(object):
             return srid
         ss = self.proj.get(srid)
         if not ss:
-            ss = pyproj.Proj(init=srid)
+            ss = pyproj.Proj(srid)
             self.proj[srid] = ss
         return ss
 
@@ -57,7 +57,7 @@ class Map(object):
             return self.layers[name]
         raise Exception("Layer not found: %s" % name)
 
-    def get_default_zoom(self, layer, object=None):
+    def get_default_zoom(self, layer: str, object=None):
         layer = Layer.objects.filter(code=layer).first()
         if not layer:
             return None
@@ -67,20 +67,23 @@ class Map(object):
                 return zl
         return layer.default_zoom
 
-    def get_bbox(self, x0, y0, x1, y1, srid):
+    def get_bbox(self, x0: float, y0: float, x1: float, y1: float, srid: str):
         src_proj = self.get_proj(srid)
         cx0, cy0 = pyproj.transform(src_proj, self.db_proj, x0, y0)
         cx1, cy1 = pyproj.transform(src_proj, self.db_proj, x1, y1)
         return get_bbox(cx0, cx1, cy0, cy1)
 
-    def get_layer_objects(self, layer, x0, y0, x1, y1, srid):
+    def get_layer_objects(self, layer: str, x0: float, y0: float, x1: float, y1: float, srid: str):
         """
         Extract GeoJSON from bounding box
         """
         lr = Layer.get_by_code(layer)
         if not lr:
             return {}
-        bbox = self.get_bbox(x0, y0, x1, y1, srid)
+        try:
+            bbox = self.get_bbox(x0, y0, x1, y1, srid)
+        except ValueError:
+            return {}
         features = [
             geojson.Feature(
                 id=str(d["_id"]),
@@ -117,11 +120,16 @@ class Map(object):
             data["coordinates"] = [pyproj.transform(src, dst, x, y) for x, y in data["coordinates"]]
         return data
 
-    def get_connection_layer(self, layer, x0, y0, x1, y1, srid):
+    def get_connection_layer(
+        self, layer: "Layer", x0: float, y0: float, x1: float, y1: float, srid: str
+    ):
         """
         Build line connections
         """
-        bbox = self.get_bbox(x0, y0, x1, y1, srid)
+        try:
+            bbox = self.get_bbox(x0, y0, x1, y1, srid)
+        except ValueError:
+            return {}
         features = [
             geojson.Feature(
                 id="-".join(str(c["object"]) for c in d["connection"]),

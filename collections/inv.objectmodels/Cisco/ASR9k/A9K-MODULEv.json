@@ -7,53 +7,67 @@
     "cr_context": "MPA",
     "connections": [
         {
+            "name": "Te0_sfp",
             "description": "Te2/0 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te0_sfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "Te1_sfp",
             "description": "Te2/1 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te1_sfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "Te2_sfp",
             "description": "Te2/2 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te2_sfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "Te3_sfp",
             "description": "Te2/3 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Te3_sfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
             "group": "0",
-            "name": "in",
             "type__name": "Cisco | ASR9k | MPA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["A9K-MODULEv"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["A9K-MODULEv"]
         }
-    }
+    ]
 }

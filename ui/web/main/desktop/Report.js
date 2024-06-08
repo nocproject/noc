@@ -12,6 +12,7 @@ Ext.define('NOC.main.desktop.Report', {
         "NOC.core.ComboBox",
         "NOC.core.ReportControl",
         "NOC.core.combotree.ComboTree",
+        "NOC.core.tagfield.Tagfield",
         "NOC.main.desktop.ReportColSelect",
     ],
     items: [],

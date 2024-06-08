@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE-T",
+    "code": "1000BASET",
+    "$collection": "inv.protocols",
+    "uuid": "65d9549b-ea6f-4043-9bc5-d99f06814be4",
+    "description": "1000BASE-T, 1Gbit/s 1000BASE-T (also known as IEEE 802.3ab) is a standard for Gigabit Ethernet over copper wiring.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

@@ -9,40 +9,60 @@
     "labels": ["noc::inv::lc", "noc::inv::dsp"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | SB"
         },
         {
+            "name": "LINE0",
             "description": "PSTN 0-31",
             "direction": "s",
             "gender": "f",
-            "name": "LINE0",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
+            "name": "LINE1",
             "description": "PSTN 32-63",
             "direction": "s",
             "gender": "f",
-            "name": "LINE1",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801ASPB"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 23
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 396,
-            "width": 23
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
         },
-        "power": {
-            "power": 64.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 396
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 64.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801ASPB"]
         }
-    }
+    ]
 }

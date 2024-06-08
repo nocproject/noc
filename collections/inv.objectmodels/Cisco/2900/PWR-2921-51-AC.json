@@ -1,0 +1,32 @@
+{
+    "name": "Cisco | 2900 | PWR-2921-51-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "0bc9e31d-5b56-4704-b39d-54a4f9980f9a",
+    "vendor__code": "CISCO",
+    "description": "C2921/C2951 AC Power Supply",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "power",
+            "description": "Power input",
+            "direction": "s",
+            "gender": "m",
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "in",
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 2921-2951 | PSU"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-2921-51-AC"]
+        }
+    ]
+}

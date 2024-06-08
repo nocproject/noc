@@ -1,0 +1,50 @@
+{
+    "name": "SetDataType",
+    "$collection": "cm.configurationparams",
+    "uuid": "9581d14b-62f9-4eb1-b7e6-d3a20180dd97",
+    "code": "otn_data_type",
+    "description": "Optical Line Data Type",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "OpticalPort"
+    }],
+    "type": "string",
+    "choices": [
+        {
+            "name": "OTU4",
+            "value": null
+        },
+        {
+            "name": "OTUCn",
+            "value": null
+        },
+        {
+            "name": "OTUC1",
+            "value": null
+        },
+        {
+            "name": "OTUC2",
+            "value": null
+        },
+        {
+            "name": "OTUC3",
+            "value": null
+        },
+        {
+            "name": "OTUC4",
+            "value": null
+        },
+        {
+            "name": "OTUC5",
+            "value": null
+        },
+        {
+            "name": "OTUC6",
+            "value": null
+        },
+        {
+            "name": "100GE",
+            "value": null
+        }
+    ]
+}

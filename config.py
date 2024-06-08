@@ -61,7 +61,6 @@ class Config(BaseConfig):
         http_connect_timeout = IntParameter(default=20)
         http_request_timeout = IntParameter(default=30)
         http_validate_cert = BooleanParameter(default=False)
-        snmp_backend = StringParameter(choices=["native", "gufo"], default="native")
 
     class audit(ConfigSection):
         command_ttl = SecondsParameter(default="1m")
@@ -319,8 +318,15 @@ class Config(BaseConfig):
     class gis(ConfigSection):
         ellipsoid = StringParameter(default="PZ-90")
         enable_osm = BooleanParameter(default=True)
-        enable_google_sat = BooleanParameter(default=False)
         enable_google_roadmap = BooleanParameter(default=False)
+        enable_google_hybrid = BooleanParameter(default=False)
+        enable_google_sat = BooleanParameter(default=False)
+        enable_google_terrain = BooleanParameter(default=False)
+        yandex_supported = BooleanParameter(default=False)
+        enable_yandex_roadmap = BooleanParameter(default=False)
+        enable_yandex_hybrid = BooleanParameter(default=False)
+        enable_yandex_sat = BooleanParameter(default=False)
+        default_layer = StringParameter(default="osm")
         tile_size = IntParameter(default=256, help="Tile size 256x256")
         tilecache_padding = IntParameter(default=0)
 
@@ -498,6 +504,7 @@ class Config(BaseConfig):
         pm_templates = StringParameter(default="templates/ddash/")
         custom_path = StringParameter()
         mib_path = StringParameter(default="/var/lib/noc/mibs/")
+        cdn_url = StringParameter()
 
     class pg(ConfigSection):
         addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
@@ -557,6 +564,9 @@ class Config(BaseConfig):
         sync_retries = IntParameter(default=5)
         async_connect_timeout = SecondsParameter(default="20s")
         async_request_timeout = SecondsParameter(default="1h")
+
+    class runner(ConfigSection):
+        max_running = IntParameter(default=10)
 
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
@@ -697,6 +707,13 @@ class Config(BaseConfig):
             segment_max_bytes = BytesParameter(default=0)
             auto_pause_time = SecondsParameter(default=0)
 
+        class submit(ConfigSection):
+            retention_max_age = SecondsParameter(default="24h")
+            retention_max_bytes = BytesParameter(default=0)
+            segment_max_age = SecondsParameter(default="1h")
+            segment_max_bytes = BytesParameter(default=0)
+            auto_pause_time = SecondsParameter(default=0)
+
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
         enable_reuseport = BooleanParameter(default=True)
@@ -738,6 +755,11 @@ class Config(BaseConfig):
         # time to live (rounds quantity) of records in storm protection addresses dictionary
         storm_record_ttl = IntParameter(default=10)
 
+    class watchdog(ConfigSection):
+        enable_watchdog = BooleanParameter(default=True)
+        check_interval = IntParameter(default=30, help="Run interval")
+        failed_count = IntParameter(default=6, help="Failed check for force reboot")
+
     class web(ConfigSection):
         theme = StringParameter(default="gray")
         api_row_limit = IntParameter(default=0)
@@ -755,6 +777,8 @@ class Config(BaseConfig):
         heatmap_lon = StringParameter(default="108.567849")
         heatmap_lat = StringParameter(default="66.050063")
         heatmap_zoom = StringParameter(default="4")
+        map_lon = StringParameter(default="108.567849")
+        map_lat = StringParameter(default="66.050063")
         max_image_size = BytesParameter(default="2M")
         topology_map_grid_size = IntParameter(min=5, default=25)
         report_csv_delimiter = StringParameter(choices=[";", ","], default=";")
@@ -829,32 +853,11 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream CfgMOMappingcollector records older days",
         )
-        enable_cfgping = BooleanParameter(default=True)
-        enable_cfgping_wait = BooleanParameter(
-            default=True,
-            help="Activate Wait Mode for CfgPing datastream (Mongo greater 3.6 needed)",
-        )
-        cfgping_ttl = SecondsParameter(
+        enable_cfgtarget = BooleanParameter(default=True)
+        enable_cfgtarget_wait = BooleanParameter(default=True)
+        cfgtarget_ttl = SecondsParameter(
             default="0",
-            help="Removing datastream cfgping records older days",
-        )
-        enable_cfgsyslog = BooleanParameter(default=True)
-        enable_cfgsyslog_wait = BooleanParameter(
-            default=True,
-            help="Activate Wait Mode for CfgSyslog datastream (Mongo greater 3.6 needed)",
-        )
-        cfgsyslog_ttl = SecondsParameter(
-            default="0",
-            help="Removing datastream cfgsyslog records older days",
-        )
-        enable_cfgtrap = BooleanParameter(default=True)
-        enable_cfgtrap_wait = BooleanParameter(
-            default=True,
-            help="Activate Wait Mode for CfgTrap datastream (Mongo greater 3.6 needed)",
-        )
-        cfgtrap_ttl = SecondsParameter(
-            default="0",
-            help="Removing datastream cfgtrap records older days",
+            help="Removing datastream cfgtarget records older days",
         )
         enable_dnszone = BooleanParameter(default=False)
         enable_dnszone_wait = BooleanParameter(

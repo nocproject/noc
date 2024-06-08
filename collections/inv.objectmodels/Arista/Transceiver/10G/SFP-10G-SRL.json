@@ -8,33 +8,65 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "tx",
             "description": "TX",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<10GBASESR-850"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "850",
+                    "protocol__code": "10GBASESR"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "rx",
             "description": "RX",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">10GBASESR-850"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "850",
+                    "protocol__code": "10GBASESR"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SFP-10G-SRL"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SFP-10G-SRL"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

@@ -1,0 +1,50 @@
+{
+    "name": "dwdm",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "d0dab1cc-f079-425a-90b4-0615e808489f",
+    "description": "Additional interface for describing optical part of DWDM transponders",
+    "attrs": [
+        {
+            "name": "min_rx_tx_frequency",
+            "type": "float",
+            "description": "Minimum supported Tx/Rx Frequency, THz",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "max_rx_tx_frequency",
+            "type": "float",
+            "description": "Maximum supported Tx/Rx Frequency, THz",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "min_frequency_step",
+            "type": "float",
+            "description": "Minimum frequency change step, GHz",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "tx_power",
+            "type": "float",
+            "description": "Transmit level, dBm",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "tx_frequency",
+            "type": "float",
+            "description": "Transmit frequency, THz",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "rx_frequency",
+            "type": "float",
+            "description": "Receive frequency, THz",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

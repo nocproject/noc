@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Web service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,8 +17,6 @@ from noc.config import config
 from noc.core.service.fastapi import FastAPIService
 from noc.main.models.customfield import CustomField
 
-# from noc.core.perf import metrics
-
 
 class WebService(FastAPIService):
     name = "web"
@@ -26,10 +24,8 @@ class WebService(FastAPIService):
     use_translation = True
     use_mongo = True
     use_router = True
-
-    if config.features.traefik:
-        traefik_backend = "web"
-        traefik_frontend_rule = "PathPrefix:/"
+    use_watchdog = config.watchdog.enable_watchdog
+    traefik_routes_rule = "!PathPrefix(`/api/`) && !PathPrefix(`/ui/`) && PathPrefix(`/`)"
 
     def __init__(self):
         super().__init__()

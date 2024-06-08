@@ -8,37 +8,55 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "m",
-            "name": "-48V",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "m",
-            "name": "RTN",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4550 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["JPSU-650W-DC-AFO"],
-            "order_part_no": ["JPSU-650W-DC-AFO"],
-            "part_no": ["740-043886"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-043886"]
         },
-        "power": {
-            "power": 650.0
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": ["JPSU-650W-DC-AFO"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["JPSU-650W-DC-AFO"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 650.0
         }
-    }
+    ]
 }

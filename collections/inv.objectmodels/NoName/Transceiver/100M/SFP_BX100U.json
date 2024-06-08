@@ -8,21 +8,56 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth100M"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100M"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "txrx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "txrx",
-            "protocols": ["<100BASELX-1310", ">100BASELX-1550"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "100BASELX10"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "100BASELX10"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {}
+    "data": [
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 5000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }

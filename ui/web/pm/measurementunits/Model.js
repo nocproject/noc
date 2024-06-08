@@ -50,7 +50,7 @@ Ext.define("NOC.pm.measurementunits.Model", {
         },
         {
             name: "dashboard_sr_color",
-            type: "int"
+            type: "auto"
         },
         {
             name: "convert_from",

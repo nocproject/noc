@@ -5,6 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import asyncio
+
+# Third-party modules
+from consul.base import Timeout
+
 # NOC modules
 from noc.core.consul import ConsulClient
 from noc.core.comp import smart_text
@@ -42,7 +48,12 @@ class ConsulProtocol(BaseProtocol):
             pl = len(self.path)
         else:
             pl = len(self.path) + 1
-        index, kv_data = await consul.kv.get(self.path, recurse=True, token=self.token)
+        while True:
+            try:
+                index, kv_data = await consul.kv.get(self.path, recurse=True, token=self.token)
+                break
+            except Timeout:
+                await asyncio.sleep(2)
         if not kv_data:
             return
         for i in kv_data:

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Classifier service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,100 +10,82 @@
 import time
 import datetime
 import os
-from collections import defaultdict
+import enum
 import operator
 import re
 import socket
 import struct
+from collections import defaultdict
 from time import perf_counter
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Callable, Tuple, Any
 
 # Third-party modules
 import cachetools
-from bson import ObjectId
 import orjson
+import bson
+
 
 # NOC modules
 from noc.config import config
 from noc.core.service.fastapi import FastAPIService
-from noc.fm.models.failedevent import FailedEvent
+from noc.core.perf import metrics
+from noc.core.version import version
+from noc.core.debug import error_report
+from noc.core.escape import fm_unescape
+from noc.core.handler import get_handler
+from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.comp import DEFAULT_ENCODING
+from noc.core.msgstream.message import Message
+from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
+from noc.core.fm.event import Event, EventSource, Target, Var, EventSeverity
+from noc.core.mx import MessageType
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.pool import Pool
 from noc.fm.models.eventclass import EventClass
-from noc.fm.models.eventlog import EventLog
-from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.main.models.label import Label
-import noc.inv.models.interface
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.version import version
-from noc.core.debug import error_report
-from noc.core.escape import fm_unescape
+from noc.sa.models.profile import GENERIC_PROFILE
 from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
-from noc.core.perf import metrics
-from noc.core.handler import get_handler
-from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.comp import smart_text, DEFAULT_ENCODING
-from noc.core.msgstream.message import Message
-from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
-from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
 
-# Patterns
-rx_oid = re.compile(r"^(\d+\.){6,}$")
 
-CR_FAILED = "events_failed"
-CR_DELETED = "events_deleted"
-CR_IGNORED = "events_ignored"
-CR_SUPPRESSED = "events_suppressed"
-CR_UNKNOWN = "events_unknown"
-CR_CLASSIFIED = "events_classified"
-CR_DISPOSED = "events_disposed"
-CR_DUPLICATED = "events_duplicated"
-CR_UDUPLICATED = "events_unk_duplicated"
-CR_UOBJECT = "events_unk_object"
-CR_PROCESSED = "events_processed"
-CR_PREPROCESSED = "events_preprocessed"
+class EventMetrics(enum.Enum):
+    CR_FAILED = "events_failed"
+    CR_DELETED = "events_deleted"
+    CR_IGNORED = "events_ignored"
+    CR_SUPPRESSED = "events_suppressed"
+    CR_UNKNOWN = "events_unknown"
+    CR_CLASSIFIED = "events_classified"
+    CR_DISPOSED = "events_disposed"
+    CR_DUPLICATED = "events_duplicated"
+    CR_UDUPLICATED = "events_unk_duplicated"
+    CR_UOBJECT = "events_unk_object"
+    CR_PROCESSED = "events_processed"
+    CR_PREPROCESSED = "events_preprocessed"
 
-CR = [
-    CR_FAILED,
-    CR_DELETED,
-    CR_SUPPRESSED,
-    CR_IGNORED,
-    CR_UNKNOWN,
-    CR_CLASSIFIED,
-    CR_PREPROCESSED,
-    CR_DISPOSED,
-    CR_DUPLICATED,
-    CR_UDUPLICATED,
-    CR_UOBJECT,
-]
-
-E_SRC_SYSLOG = "syslog"
-E_SRC_SNMP_TRAP = "SNMP Trap"
-E_SRC_SYSTEM = "system"
-E_SRC_OTHER = "other"
 
 E_SRC_MX_MESSAGE = {
-    E_SRC_SYSLOG: "syslog",
-    E_SRC_SNMP_TRAP: "snmptrap",
-    E_SRC_SYSTEM: "system",
-    E_SRC_OTHER: "other",
+    EventSource.SYSLOG: "syslog",
+    EventSource.SNMP_TRAP: "snmptrap",
+    EventSource.SYSTEM: "system",
+    EventSource.OTHER: "other",
 }
 
 E_SRC_METRICS = {
-    E_SRC_SYSLOG: "events_syslog",
-    E_SRC_SNMP_TRAP: "events_snmp_trap",
-    E_SRC_SYSTEM: "events_system",
-    E_SRC_OTHER: "events_other",
+    EventSource.SYSLOG: "events_syslog",
+    EventSource.SNMP_TRAP: "events_snmp_trap",
+    EventSource.SYSTEM: "events_system",
+    EventSource.OTHER: "events_other",
 }
 
-NS = 1000000000.0
+NS = 1_000_000_000.0
 
 CABLE_ABDUCT = "Security | Abduct | Cable Abduct"
 
@@ -128,24 +110,24 @@ class ClassifierService(FastAPIService):
 
     def __init__(self):
         super().__init__()
-        self.version = version.version
-        self.ruleset = RuleSet()
-        self.patternset = PatternSet()
-        self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
-        self.templates = {}  # event_class_id -> (body_template,subject_template)
-        self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
-        self.alter_handlers = []
+        self.version: str = version.version
+        self.ruleset: RuleSet = RuleSet()
+        self.pattern_set: PatternSet = PatternSet()
+        self.triggers: Dict[str, List[Trigger]] = defaultdict(
+            list
+        )  # event_class_id -> [trigger1, ..., triggerN]
+        self.alter_handlers: List[Tuple[str, bool, Callable]] = []
         self.unclassified_codebook_depth = 5
-        self.unclassified_codebook = {}  # object id -> [<codebook>]
-        self.handlers = {}  # event class id -> [<handler>]
-        self.dedup_filter = DedupFilter()
-        self.suppress_filter = SuppressFilter()
-        self.abduct_detector = AbductDetector()
+        self.unclassified_codebook: Dict[str, List[str]] = {}  # object id -> [<codebook>]
+        self.handlers: Dict[str, List[Callable]] = {}  # event class id -> [<handler>]
+        self.dedup_filter: DedupFilter = DedupFilter()
+        self.suppress_filter: SuppressFilter = SuppressFilter()
+        self.abduct_detector: AbductDetector = AbductDetector()
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         # Reporting
-        self.last_ts = None
-        self.stats = {}
+        self.last_ts: Optional[float] = None
+        self.stats: Dict[EventMetrics, int] = {}
         #
         self.slot_number = 0
         self.total_slots = 0
@@ -159,7 +141,7 @@ class ClassifierService(FastAPIService):
         """
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load()
-        self.patternset.load()
+        self.pattern_set.load()
         self.load_triggers()
         self.load_link_action()
         self.load_handlers()
@@ -263,384 +245,293 @@ class ClassifierService(FastAPIService):
                 self.handlers[ec.id] = hl
         self.logger.info("Handlers are loaded")
 
-    def retry_failed_events(self):
-        """
-        Return failed events to the unclassified queue if
-        failed on other version of classifier
-        """
-        if FailedEvent.objects.count() == 0:
-            return
-        self.logger.info("Recovering failed events")
-        wm = datetime.datetime.now() - datetime.timedelta(seconds=86400)  # @todo: use config
-        dc = FailedEvent.objects.filter(timestamp__lt=wm).count()
-        if dc > 0:
-            self.logger.info("%d failed events are deprecated and removed", dc)
-            FailedEvent.objects.filter(timestamp__lt=wm).delete()
-        for e in FailedEvent.objects.filter(version__ne=self.version):
-            e.mark_as_new("Reclassification has been requested by noc-classifer")
-            self.logger.debug("Failed event %s has been recovered", e.id)
-
-    @staticmethod
-    def get_managed_object_mx(o: "ManagedObject"):
-        r = {
-            "id": str(o.id),
-            "bi_id": str(o.bi_id),
-            "name": o.name,
-            "administrative_domain": {
-                "id": o.administrative_domain.id,
-                "name": o.administrative_domain.name,
-            },
-            "labels": [
-                ll
-                for ll in Label.objects.filter(
-                    name__in=o.labels, expose_datastream=True
-                ).values_list("name")
-            ],
-        }
-        if o.remote_system:
-            r["remote_system"] = {
-                "id": str(o.remote_system.id),
-                "name": o.remote_system.name,
-            }
-            r["remote_id"] = o.remote_id
-        if o.administrative_domain.remote_system:
-            r["administrative_domain"]["remote_system"] = {
-                "id": str(o.administrative_domain.remote_system.id),
-                "name": o.administrative_domain.remote_system.name,
-            }
-            r["administrative_domain"]["remote_id"] = o.administrative_domain.remote_id
-        return r
-
     async def register_mx_message(
-        self, event: "ActiveEvent", resolved_raws: Optional[List[Dict[str, str]]]
+        self,
+        event: "Event",
+        event_class: EventClass,
+        resolved_vars: Dict[str, Any],
+        mo: Optional[ManagedObject],
     ):
         """
         Send event message to MX service
         :param event:
-        :param resolved_raws: Raw variables for 'SNMP Trap' event
+        :param event_class: Resolved Event Class
+        :param resolved_vars: Raw variables for 'SNMP Trap' event
+        :param mo: Managed Object instance
         :return:
         """
         metrics["events_message"] += 1
         self.logger.debug(
             "[%s|%s|%s] Register MX message",
             event.id,
-            event.managed_object.name,
-            event.managed_object.address,
+            event.target.name,
+            event.target.address,
         )
         msg = {
             "timestamp": event.timestamp,
-            "message_id": event.raw_vars.get("message_id"),
-            "collector_type": E_SRC_MX_MESSAGE[event.source],
-            "collector": event.raw_vars.get("collector"),
-            "address": event.raw_vars.get("source_address"),
-            "managed_object": self.get_managed_object_mx(event.managed_object),
-            "event_class": {"id": str(event.event_class.id), "name": event.event_class.name},
+            "message_id": resolved_vars.get("message_id"),
+            "collector_type": E_SRC_MX_MESSAGE[event.type.source],
+            "collector": event.target.pool,
+            "address": event.target.address,
+            "managed_object": mo.get_message_context() if mo else None,
+            "event_class": {"id": str(event_class.id), "name": event_class.name},
             "event_vars": event.vars,
         }
-        if event.source == E_SRC_SYSLOG:
+        if event.type.source == EventSource.SYSLOG:
             msg["data"] = {
-                "facility": event.raw_vars.get("facility", ""),
-                "severity": event.raw_vars.get("severity", ""),
-                "message": event.raw_vars.get("message", ""),
+                "facility": event.type.facility or "",
+                "severity": event.type.severity or "",
+                "message": event.message or "",
             }
-        elif event.source == E_SRC_SNMP_TRAP:
-            msg["data"] = {"vars": resolved_raws}
+        elif event.type.source == EventSource.SNMP_TRAP:
+            msg["data"] = {"vars": resolved_vars.pop("raw")}
         else:
-            msg["data"] = event.raw_vars
+            msg["data"] = {d.name: d.value for d in event.data}
         # Register MX message
         await self.send_message(
-            message_type="event",
+            message_type=MessageType.EVENT,
             data=orjson.dumps(msg),
             sharding_key=int(event.managed_object.id),
-            headers={
-                MX_LABELS: MX_H_VALUE_SPLITTER.join(event.managed_object.effective_labels).encode(
-                    DEFAULT_ENCODING
-                ),
-                MX_ADMINISTRATIVE_DOMAIN_ID: str(
-                    event.managed_object.administrative_domain.id
-                ).encode(DEFAULT_ENCODING),
-            },
+            headers=event.managed_object.get_mx_message_headers(),
         )
 
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("interface_cache"))
-    def get_interface(cls, managed_object_id, name):
-        """
-        Get interface instance
-        """
-        return noc.inv.models.interface.Interface.objects.filter(
-            managed_object=managed_object_id, name=name
-        ).first()
-
-    async def classify_event(self, event, data):
+    async def classify_event(
+        self,
+        event: Event,
+        raw_vars: Dict[str, Any],
+        mo: Optional[ManagedObject] = None,
+    ) -> Tuple[Optional["EventClass"], Optional[Dict[str, Any]]]:
         """
         Perform event classification.
         Classification steps are:
 
-        1. Format SNMP values accordind to MIB definitions (for SNMP events only)
+        1. Format SNMP values according to MIB definitions (for SNMP events only)
         2. Find matching classification rule
         3. Calculate rule variables
 
         :param event: Event to classify
-        :type event: NewEvent
+        :type event: Event
+        :param raw_vars: Resolved vars
+        :param mo: Target ManagedObject
+        :type mo: ManagedObject
         :returns: Classification status (CR_*)
         """
-        metrics[E_SRC_METRICS.get(event.source, E_SRC_OTHER)] += 1
-        is_unknown = False
-        #
-        pre_event = data.pop("$event", None)
-        # Resolve MIB variables for SNMP Traps
-        resolved_vars = {"profile": event.managed_object.profile.name}
-        # Store event variables
-        event.raw_vars = data
-        resoved_raws = None
-        if config.message.enable_event and event.source == E_SRC_SNMP_TRAP:
-            resolved_vars.update(MIB.resolve_vars(event.raw_vars, include_raw=True))
-            resoved_raws = resolved_vars.pop("raw")
-        elif event.source == E_SRC_SNMP_TRAP:
-            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
-        event.resolved_vars = resolved_vars
+        metrics[E_SRC_METRICS.get(event.type.source)] += 1
         # Get matched event class
-        if pre_event:
-            # Event is preprocessed, get class and variables
-            event_class_name = pre_event.get("class")
-            event_class = EventClass.get_by_name(event_class_name)
+        if event.type.event_class:
+            event_class = EventClass.get_by_name(event.type.event_class)
             if not event_class:
                 self.logger.error(
                     "[%s|%s|%s] Failed to process event: Invalid event class '%s'",
                     event.id,
-                    event.managed_object.name,
-                    event.managed_object,
-                    event_class_name,
+                    event.target.name,
+                    event.target.name,
+                    event.type.event_class,
                 )
-                metrics[CR_FAILED] += 1
-                return  # Drop malformed message
-            event.event_class = event_class
-            event.vars = pre_event.get("vars", {})
-        else:
-            # Prevent unclassified events flood
-            if self.check_unclassified_syslog_flood(event):
-                return
-            # Find matched event class
-            c_vars = event.raw_vars.copy()
-            c_vars.update({k: smart_text(fm_unescape(resolved_vars[k])) for k in resolved_vars})
-            rule, vars = self.ruleset.find_rule(event, c_vars)
-            if rule is None:
-                # Something goes wrong.
-                # No default rule found. Exit immediately
-                self.logger.error("No default rule found. Exiting")
-                os._exit(1)
-            if rule.to_drop:
-                # Silently drop event if declared by action
-                self.logger.info(
-                    "[%s|%s|%s] Dropped by action",
-                    event.id,
-                    event.managed_object.name,
-                    event.managed_object.address,
-                )
-                metrics[CR_DELETED] += 1
-                return
-            if rule.is_unknown_syslog:
-                # Append to codebook
-                msg = event.raw_vars.get("message", "")
-                cb = self.get_msg_codebook(msg)
-                o_id = event.managed_object.id
-                if o_id not in self.unclassified_codebook:
-                    self.unclassified_codebook[o_id] = []
-                cbs = [cb] + self.unclassified_codebook[o_id]
-                cbs = cbs[: self.unclassified_codebook_depth]
-                self.unclassified_codebook[o_id] = cbs
-            self.logger.debug(
-                "[%s|%s|%s] Matching rule: %s",
+                metrics[EventMetrics.CR_FAILED] += 1
+                return None, None  # Drop malformed message
+            metrics[EventMetrics.CR_PREPROCESSED] += 1
+            if not event.vars:
+                return event_class, self.ruleset.eval_vars(event, event_class, raw_vars)
+            return event_class, event.vars
+        # Prevent unclassified events flood
+        if self.check_unclassified_syslog_flood(event):
+            return None, None
+        rule, r_vars = self.ruleset.find_rule(event, raw_vars, mo=mo)
+        if rule is None:
+            # Something goes wrong.
+            # No default rule found. Exit immediately
+            self.logger.error("No default rule found. Exiting")
+            os._exit(1)
+        if rule.to_drop:
+            # Silently drop event if declared by action
+            self.logger.info(
+                "[%s|%s|%s] Dropped by action",
                 event.id,
-                event.managed_object.name,
-                event.managed_object.address,
-                rule.name,
+                event.target.name,
+                event.target.address,
             )
-            event.event_class = rule.event_class
-            # Calculate rule variables
-            event.vars = self.ruleset.eval_vars(event, event.event_class, vars)
-            message = f"Classified as '{event.event_class.name}' by rule '{rule.name}'"
-            event.log += [
-                EventLog(
-                    timestamp=datetime.datetime.now(),
-                    from_status="N",
-                    to_status="A",
-                    message=message,
-                )
-            ]
-            is_unknown = rule.is_unknown
-        # Event class found, process according to rules
-        self.logger.info(
-            "[%s|%s|%s] Event class: %s (%s)",
+            metrics[EventMetrics.CR_DELETED] += 1
+            return None, None
+        if rule.is_unknown_syslog:
+            # Append to codebook
+            msg = event.raw_vars.get("message", "")
+            cb = self.get_msg_codebook(msg)
+            o_id = event.target.id
+            if o_id not in self.unclassified_codebook:
+                self.unclassified_codebook[o_id] = []
+            cbs = [cb] + self.unclassified_codebook[o_id]
+            cbs = cbs[: self.unclassified_codebook_depth]
+            self.unclassified_codebook[o_id] = cbs
+        self.logger.debug(
+            "[%s|%s|%s] Matching rule: %s",
             event.id,
-            event.managed_object.name,
-            event.managed_object.address,
-            event.event_class.name,
-            event.vars,
+            event.target.name,
+            event.target.address,
+            rule.name,
         )
-        # Deduplication
-        if self.deduplicate_event(event):
-            return
-        # Suppress repeats
-        if self.suppress_repeats(event):
-            return
-        # Activate event
-        event.expires = event.timestamp + datetime.timedelta(seconds=event.event_class.ttl)
 
-        # Send event to clickhouse
-        mo = event.managed_object
+        # event.event_class = rule.event_class
+        # Calculate rule variables
+        r_vars = self.ruleset.eval_vars(event, rule.event_class, r_vars)
+        # message = f"Classified as '{rule.event_class.name}' by rule '{rule.name}'"
+        self.register_log(
+            event,
+            rule.event_class,
+            f"Classified as '{rule.event_class.name}' by rule '{rule.name}'",
+        )
+        if rule.is_unknown:
+            metrics[EventMetrics.CR_UNKNOWN] += 1
+        else:
+            metrics[EventMetrics.CR_CLASSIFIED] += 1
+        return rule.event_class, r_vars
+
+    def register_log(
+        self,
+        event: Event,
+        event_class: EventClass,
+        message: str,
+        managed_object: Optional[ManagedObject] = None,
+    ):
+        """
+        Register Event log
+        :param event:
+        :param event_class:
+        :param message:
+        :return:
+        """
         data = {
             "date": event.timestamp.date(),
-            "ts": event.timestamp,
-            "start_ts": event.start_timestamp,
-            "event_id": str(event.id),
-            "event_class": event.event_class.bi_id,
-            "source": event.source or E_SRC_OTHER,
-            "raw_vars": {k: str(v) for k, v in event.raw_vars.items()},
-            "resolved_vars": {k: str(v) for k, v in event.resolved_vars.items()},
-            "vars": {k: str(v) for k, v in event.vars.items()},
-            "snmp_trap_oid": event.raw_vars.get(SNMP_TRAP_OID, ""),
-            "message": event.raw_vars.get("message", ""),
-            "managed_object": mo.bi_id,
-            "pool": mo.pool.bi_id,
-            "ip": struct.unpack("!I", socket.inet_aton(mo.address))[0],
-            "profile": mo.profile.bi_id,
-            "vendor": mo.vendor.bi_id if mo.vendor else None,
-            "platform": mo.platform.bi_id if mo.platform else None,
-            "version": mo.version.bi_id if mo.version else None,
-            "administrative_domain": mo.administrative_domain.bi_id,
+            "ts": event.timestamp.isoformat(),
+            "event_id": str(event.id or ""),
+            "op": "new",
+            "managed_object": managed_object.bi_id if managed_object else 0,
+            "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
+            "target_reference": event.target.reference,
+            "event_class": event_class.bi_id,
+            "message": message,
         }
-        self.register_metrics("events", [data])
+        self.register_metrics("disposelog", [data])
 
-        # Fill deduplication filter
-        self.dedup_filter.register(event)
-        # Fill suppress filter
-        self.suppress_filter.register(event)
-        if config.message.enable_event:
-            await self.register_mx_message(event, resoved_raws)
-        # Call handlers
-        if self.call_event_handlers(event):
-            return
-        # Additionally check link events
-        if await self.check_link_event(event):
-            return
-        # Call triggers
-        if self.call_event_triggers(event):
-            return
-        # Finally dispose event to further processing by correlator
-        if event.to_dispose:
-            await self.dispose_event(event)
-        if is_unknown:
-            metrics[CR_UNKNOWN] += 1
-        elif pre_event:
-            metrics[CR_PREPROCESSED] += 1
-        else:
-            metrics[CR_CLASSIFIED] += 1
-
-    async def dispose_event(self, event):
+    async def dispose_event(self, event: Event, mo: ManagedObject):
+        """
+        Register Alarm
+        :param event:
+        :param mo:
+        :return:
+        """
         self.logger.info(
             "[%s|%s|%s] Disposing",
             event.id,
-            event.managed_object.name,
-            event.managed_object.address,
+            event.target.name,
+            event.target.address,
         )
         # Calculate partition
-        fm_pool = event.managed_object.get_effective_fm_pool().name
+        fm_pool = mo.get_effective_fm_pool().name
         stream = f"dispose.{fm_pool}"
         num_partitions = self.pool_partitions.get(fm_pool)
         if not num_partitions:
             num_partitions = await self.get_stream_partitions(stream)
             self.pool_partitions[fm_pool] = num_partitions
-        partition = int(event.managed_object.id) % num_partitions
+        partition = int(mo.id) % num_partitions
+        event.target.id = str(mo.id)
         self.publish(
-            orjson.dumps({"$op": "event", "event_id": str(event.id), "event": event.to_json()}),
+            orjson.dumps({"$op": "event", "event_id": str(event.id), "event": event.model_dump()}),
+            # To dispose
             stream=stream,
             partition=partition,
         )
-        metrics[CR_DISPOSED] += 1
+        metrics[EventMetrics.CR_DISPOSED] += 1
 
-    def deduplicate_event(self, event: ActiveEvent) -> bool:
+    def deduplicate_event(self, event: Event, event_class: EventClass) -> bool:
         """
         Deduplicate event when necessary
         :param event:
-        :param vars:
+        :param event_class:
         :return: True, if event is duplication of existent one
         """
-        de_id = self.dedup_filter.find(event)
+        de_id = self.dedup_filter.find(event, event_class)
         if not de_id:
             return False
         self.logger.info(
             "[%s|%s|%s] Duplicates event %s. Discarding",
             event.id,
-            event.managed_object.name,
-            event.managed_object.address,
+            event.target.address,
+            event.target.name,
             de_id,
         )
         # de.log_message("Duplicated event %s has been discarded" % event.id)
-        metrics[CR_DUPLICATED] += 1
+        metrics[EventMetrics.CR_DUPLICATED] += 1
         return True
 
-    def suppress_repeats(self, event: ActiveEvent) -> bool:
+    def suppress_repeats(self, event: Event, event_class: EventClass) -> bool:
         """
         Suppress repeated events
         :param event:
-        :param vars:
+        :param event_class:
         :return:
         """
-        se_id = self.suppress_filter.find(event)
+        se_id = self.suppress_filter.find(event, event_class)
         if not se_id:
             return False
         self.logger.info(
             "[%s|%s|%s] Suppressed by event %s",
             event.id,
-            event.managed_object.name,
-            event.managed_object.address,
+            event.target.name,
+            event.target.address,
             se_id,
         )
-        # Update suppressing event
-        ActiveEvent.log_suppression(se_id, event.timestamp)
+        # Update suppressing event, event log
+        self.register_log(event, event_class, "Event suppression")
         # Delete suppressed event
-        metrics[CR_SUPPRESSED] += 1
+        metrics[EventMetrics.CR_SUPPRESSED] += 1
         return True
 
-    def call_event_handlers(self, event):
+    def call_event_handlers(
+        self,
+        event: Event,
+        event_class: EventClass,
+        managed_object: Optional[ManagedObject] = None,
+    ) -> bool:
         """
         Call handlers associated with event class
         :param event:
+        :param event_class: Event Class
+        :param managed_object: Managed Object event
         :return:
         """
-        if event.event_class.id not in self.handlers:
+        if event_class.id not in self.handlers:
             return False
         event_id = event.id  # Temporary store id
-        for h in self.handlers[event.event_class.id]:
+        for h in self.handlers[event_class.id]:
             try:
-                h(event)
+                h(event, managed_object)
             except Exception:
                 error_report()
-            if event.to_drop:
+            if event.id is None:
                 self.logger.info(
                     "[%s|%s|%s] Dropped by handler",
                     event.id,
-                    event.managed_object.name,
-                    event.managed_object.address,
+                    event.target.name,
+                    event.target.address,
                 )
                 event.id = event_id  # Restore event id
-                event.delete()
-                metrics[CR_DELETED] += 1
-                return True
+                # event.delete()
+                metrics[EventMetrics.CR_DELETED] += 1
+                return False
         return False
 
-    def call_event_triggers(self, event):
+    def call_event_triggers(self, event: Event, event_class: EventClass) -> bool:
         """
         Call triggers associated with event class
         :param event:
+        :param event_class:
         :return:
         """
-        if event.event_class.id not in self.triggers:
+        if event_class.id not in self.triggers:
             return False
         event_id = event.id
-        for t in self.triggers[event.event_class.id]:
+        for t in self.triggers[event_class.id]:
             try:
                 t.call(event)
             except Exception:
@@ -650,52 +541,71 @@ class ClassifierService(FastAPIService):
                 self.logger.info(
                     "[%s|%s|%s] Dropped by trigger %s",
                     event_id,
-                    event.managed_object.name,
-                    event.managed_object.address,
+                    event.target.name,
+                    event.target.address,
                     t.name,
                 )
                 event.id = event_id  # Restore event id
                 event.delete()
-                metrics[CR_DELETED] += 1
+                metrics[EventMetrics.CR_DELETED] += 1
                 return True
         return False
 
-    def check_unclassified_syslog_flood(self, event):
+    def check_unclassified_syslog_flood(self, event: Event) -> bool:
         """
         Check if incoming messages is in unclassified codebook
         :param event:
         :return:
         """
-        if event.source != E_SRC_SYSLOG or len(event.log):
+        if event.type.source != EventSource.SYSLOG:
             return False
-        pcbs = self.unclassified_codebook.get(event.managed_object.id)
+        pcbs = self.unclassified_codebook.get(event.target.id)
         if not pcbs:
             return False
-        msg = event.raw_vars.get("message", "")
+        msg = event.message
         cb = self.get_msg_codebook(msg)
         for pcb in pcbs:
             if self.is_codebook_match(cb, pcb):
                 # Signature is already seen, suppress
-                metrics[CR_UDUPLICATED] += 1
+                metrics[EventMetrics.CR_UDUPLICATED] += 1
                 return True
         return False
 
-    async def check_link_event(self, event):
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("interface_cache"))
+    def get_interface(cls, managed_object_id, name):
+        """
+        Get interface instance
+        """
+        from noc.inv.models.interface import Interface
+
+        return Interface.objects.filter(managed_object=managed_object_id, name=name).first()
+
+    async def check_link_event(
+        self, event: Event, event_class: EventClass, managed_object: ManagedObject
+    ):
         """
         Additional link events check
         :param event:
+        :param event_class:
+        :param managed_object:
         :return: True - stop processing, False - continue
         """
-        if not event.event_class.link_event or "interface" not in event.vars:
+        if (
+            not managed_object
+            or not event_class
+            or not event_class.link_event
+            or "interface" not in event.vars
+        ):
             return False
-        if_name = event.managed_object.get_profile().convert_interface_name(event.vars["interface"])
-        iface = self.get_interface(event.managed_object.id, if_name)
+        if_name = managed_object.get_profile().convert_interface_name(event.vars["interface"])
+        iface = self.get_interface(managed_object.id, if_name)
         if iface:
             self.logger.info(
                 "[%s|%s|%s] Found interface %s",
                 event.id,
-                event.managed_object.name,
-                event.managed_object.address,
+                managed_object.name,
+                managed_object.address,
                 iface.name,
             )
             action = iface.profile.link_events
@@ -703,26 +613,26 @@ class ClassifierService(FastAPIService):
             self.logger.info(
                 "[%s|%s|%s] Interface not found:%s",
                 event.id,
-                event.managed_object.name,
-                event.managed_object.address,
+                managed_object.name,
+                managed_object.address,
                 if_name,
             )
             action = self.default_link_action
         # Abduct detection
-        link_status = event.get_hint("link_status")
-        if (
-            link_status is not None
-            and iface
-            and iface.profile.enable_abduct_detection
-            and event.managed_object.object_profile.abduct_detection_window
-            and event.managed_object.object_profile.abduct_detection_threshold
-        ):
-            ts = int(event.timestamp.timestamp())
-            if link_status:
-                self.abduct_detector.register_up(ts, iface)
-            else:
-                if self.abduct_detector.register_down(ts, iface):
-                    await self.raise_abduct_event(event)
+        # link_status = event.get_hint("link_status")
+        # if (
+        #     link_status is not None
+        #     and iface
+        #     and iface.profile.enable_abduct_detection
+        #     and event.managed_object.object_profile.abduct_detection_window
+        #     and event.managed_object.object_profile.abduct_detection_threshold
+        # ):
+        #     ts = int(event.timestamp.timestamp())
+        #     if link_status:
+        #         self.abduct_detector.register_up(ts, iface)
+        #     else:
+        #         if self.abduct_detector.register_down(ts, iface):
+        #             await self.raise_abduct_event(event)
         # Link actions
         if action == "I":
             # Ignore
@@ -730,8 +640,8 @@ class ClassifierService(FastAPIService):
                 self.logger.info(
                     "[%s|%s|%s] Marked as ignored by interface profile '%s' (%s)",
                     event.id,
-                    event.managed_object.name,
-                    event.managed_object.address,
+                    managed_object.name,
+                    managed_object.address,
                     iface.profile.name,
                     iface.name,
                 )
@@ -739,10 +649,10 @@ class ClassifierService(FastAPIService):
                 self.logger.info(
                     "[%s|%s|%s] Marked as ignored by default interface profile",
                     event.id,
-                    event.managed_object.name,
-                    event.managed_object.address,
+                    managed_object.name,
+                    managed_object.address,
                 )
-            metrics[CR_DELETED] += 1
+            metrics[EventMetrics.CR_DELETED] += 1
             return True
         elif action == "L":
             # Do not dispose
@@ -750,8 +660,8 @@ class ClassifierService(FastAPIService):
                 self.logger.info(
                     "[%s|%s|%s] Marked as not disposable by interface profile '%s' (%s)",
                     event.id,
-                    event.managed_object.name,
-                    event.managed_object.address,
+                    managed_object.name,
+                    managed_object.address,
                     iface.profile.name,
                     iface.name,
                 )
@@ -759,96 +669,169 @@ class ClassifierService(FastAPIService):
                 self.logger.info(
                     "[%s|%s|%s] Marked as not disposable by default interface",
                     event.id,
-                    event.managed_object.name,
-                    event.managed_object.address,
+                    managed_object.name,
+                    managed_object.address,
                 )
-            event.do_not_dispose()
+            event.type.severity = EventSeverity.IGNORED  # do_not_dispose
         return False
 
+    def resolve_vars(self, event: Event) -> Dict[str, Any]:
+        """
+        Resolve Event vars
+        :param event:
+        :return:
+        """
+        # Store event variables, without snmp_raw
+        # Detect profile by rule (for SNMP message)
+        # Syslog - ignore profile
+        raw_vars, snmp_vars = {"profile": event.type.profile}, {}
+        for d in event.data:
+            if d.snmp_raw:
+                snmp_vars[d.name] = d.value
+            else:
+                raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
+        # Resolve MIB variables for SNMP Traps
+        if snmp_vars:
+            for k, v in MIB.resolve_vars(
+                snmp_vars, include_raw=config.message.enable_event
+            ).items():
+                v = fm_unescape(v).decode(DEFAULT_ENCODING)
+                event.data.append(Var(name=k, value=v))
+                raw_vars[k] = v
+            # Append resolved vars to data
+        return raw_vars
+
+    def resolve_object(self, target: Target) -> Optional[ManagedObject]:
+        """
+        Resolve Managed Object by target
+        :param target:
+        :return:
+        """
+        mo = None
+        if target.id and not target.is_agent:
+            mo = ManagedObject.get_by_id(int(target.id))
+        if not mo and target.remote_id:
+            mo = ManagedObject.objects.filter(remote_id=target.remote_id).first()
+        if not mo and target.pool:
+            mo = ManagedObject.objects.filter(pool=target.pool, address=target.address).first()
+        return mo
+
     async def on_event(self, msg: Message):
+        # Process Span (trace)
         # Decode message
-        event = orjson.loads(msg.value)
-        object = event.get("object")
-        data = event.get("data")
-        # Process event
-        event_ts = datetime.datetime.fromtimestamp(event.get("ts"))
+        try:
+            event = Event(**orjson.loads(msg.value))
+        except ValueError as e:
+            metrics[EventMetrics.CR_FAILED] += 1
+            # Convert Old
+            self.logger.error("Unknown message format: %s", e)
+            return
         # Generate or reuse existing object id
-        event_id = ObjectId(event.get("id"))
+        try:
+            event.id = str(bson.ObjectId(event.id))
+        except bson.errors.InvalidId:
+            self.logger.warning("Invalid event_id: %s", event.id)
+            event.id = str(bson.ObjectId())
         # Calculate message processing delay
         lag = (time.time() - float(msg.timestamp) / NS) * 1000
         metrics["lag_us"] = int(lag * 1000)
-        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event_id, data, lag)
-        metrics[CR_PROCESSED] += 1
+        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event.id, event.data, lag)
+        metrics[EventMetrics.CR_PROCESSED] += 1
         # Resolve managed object
-        mo = ManagedObject.get_by_id(object)
+        mo = self.resolve_object(event.target)
         if not mo:
-            self.logger.info("[%s] Unknown managed object id %s. Skipping", event_id, object)
-            metrics[CR_UOBJECT] += 1
-            return
-        self.logger.info("[%s|%s|%s] Managed object found", event_id, mo.name, mo.address)
-        # Process event
-        source = data.pop("source", "other")
-        # Check diagnostics
-        if source == E_SRC_SYSLOG and (
-            SYSLOG_DIAG not in mo.diagnostics
-            or mo.diagnostics[SYSLOG_DIAG]["state"] == DiagnosticState.unknown
-        ):
-            mo.diagnostic.set_state(
-                diagnostic=SYSLOG_DIAG,
-                state=DiagnosticState.enabled,
-                reason=f"Receive Syslog from address: {data.get('source_address')}",
-                changed_ts=event_ts,
-            )
-        if source == E_SRC_SNMP_TRAP and (
-            SNMPTRAP_DIAG not in mo.diagnostics
-            or mo.diagnostics[SNMPTRAP_DIAG]["state"] == DiagnosticState.unknown
-        ):
-            mo.diagnostic.set_state(
-                diagnostic=SNMPTRAP_DIAG,
-                state=DiagnosticState.enabled,
-                reason=f"Receive Syslog from address: {data.get('source_address')}",
-                changed_ts=event_ts,
-            )
-
-        event = ActiveEvent(
-            id=event_id,
-            timestamp=event_ts,
-            start_timestamp=event_ts,
-            managed_object=mo,
-            source=source,
-            repeats=1,
-        )  # raw_vars will be filled by classify_event()
+            self.logger.info("[%s] Unknown managed object id %s. Skipping", event.id, event.target)
+            event.type.profile = GENERIC_PROFILE
+            metrics[EventMetrics.CR_UOBJECT] += 1
+        else:
+            self.update_diagnostic(mo, event)
+            event.type.profile = mo.profile.name
+            self.logger.info("[%s|%s|%s] Managed object found", event.id, mo.name, mo.address)
         # Ignore event
-        if self.patternset.find_ignore_rule(event, data):
+        if self.pattern_set.find_ignore_rule(event):
             self.logger.debug(
-                "[%s|%s|%s] Ignored event %s vars %s", event_id, mo.name, mo.address, event, data
+                "[%s|%s|%s] Ignored event %s vars %s",
+                event.id,
+                event.target.name,
+                event.target.address,
+                event,
             )
-            metrics[CR_IGNORED] += 1
+            metrics[EventMetrics.CR_IGNORED] += 1
             return
-        # Classify event
+        # Process event
+        resolved_vars = self.resolve_vars(event)
         try:
-            await self.classify_event(event, data)
+            event_class, event_vars = await self.classify_event(event, resolved_vars, mo)
         except Exception as e:
             self.logger.error(
-                "[%s|%s|%s] Failed to process event: %s", event.id, mo.name, mo.address, e
+                "[%s|%s|%s] Failed to process event: %s",
+                event.id,
+                event.target.name,
+                event.target.address,
+                e,
             )
-            metrics[CR_FAILED] += 1
+            metrics[EventMetrics.CR_FAILED] += 1
+            error_report()
             return
-        self.logger.info("[%s|%s|%s] Event processed successfully", event.id, mo.name, mo.address)
+        if not event_class:
+            # Dropped message
+            # return  # Or drop flag
+            pass
+        else:
+            event.type.event_class = event_class.name
+        event.vars = event_vars
+        self.logger.info(
+            "[%s|%s|%s] Event processed successfully",
+            event.id,
+            event.target.name,
+            event.target.address,
+        )
+        # Deduplication
+        if self.deduplicate_event(event, event_class):
+            return
+        # Suppress repeats
+        if event_class and self.suppress_repeats(event, event_class):
+            return
+        # Additionally check link events
+        if await self.check_link_event(event, event_class, mo):
+            return
+        self.register_event(event, event_class, resolved_vars, mo)
+        # Fill deduplication filter
+        self.dedup_filter.register(event, event_class)
+        if config.message.enable_event:
+            await self.register_mx_message(event, event_class, resolved_vars, mo)
+        if event_class:
+            # Fill suppress filter
+            self.suppress_filter.register(event, event_class)
+            # Call handlers
+            if self.call_event_handlers(event, event_class, mo):
+                return
+            # Call triggers
+            if self.call_event_triggers(event, event_class):
+                return
+        if event.type.severity == EventSeverity.IGNORED:
+            # Severity ignored
+            return
+        if not event_class or not mo:
+            # Dispose only of detect ManagedObject
+            return
+        # Finally dispose event to further processing by correlator
+        if len(event_class.disposition) > 0:
+            await self.dispose_event(event, mo)
 
     async def report(self):
         t = perf_counter()
         if self.last_ts:
             r = []
-            for m in CR:
+            for m in EventMetrics:
                 ov = self.stats.get(m, 0)
                 nv = metrics[m].value
                 r += ["%s: %d" % (m[7:], nv - ov)]
                 self.stats[m] = nv
-            nt = metrics[CR_PROCESSED].value
-            ot = self.stats.get(CR_PROCESSED, 0)
+            nt = metrics[EventMetrics.CR_PROCESSED].value
+            ot = self.stats.get(EventMetrics.CR_PROCESSED, 0)
             total = nt - ot
-            self.stats[CR_PROCESSED] = nt
+            self.stats[EventMetrics.CR_PROCESSED] = nt
             dt = t - self.last_ts
             if total:
                 speed = total / dt
@@ -861,7 +844,7 @@ class ClassifierService(FastAPIService):
     rx_non_alpha = re.compile(r"[^a-z]+")
     rx_spaces = re.compile(r"\s+")
 
-    def get_msg_codebook(self, s):
+    def get_msg_codebook(self, s: str) -> str:
         """
         Generate message codebook vector
         """
@@ -869,30 +852,107 @@ class ClassifierService(FastAPIService):
         x = self.rx_spaces.sub(" ", x)
         return x.strip()
 
-    def is_codebook_match(self, cb1, cb2):
+    @classmethod
+    def is_codebook_match(cls, cb1: str, cb2: str):
         """
         Check codebooks for match
         """
         return cb1 == cb2
 
-    async def raise_abduct_event(self, event: ActiveEvent) -> None:
+    def update_diagnostic(self, mo: ManagedObject, event: Event):
         """
-        Create Cable Abduct Event and dispose it to correlator
+        Update ManagedObject diagnostic
+        :param mo:
         :param event:
         :return:
         """
-        if not self.cable_abduct_ecls:
-            self.cable_abduct_ecls = EventClass.get_by_name(CABLE_ABDUCT)
-        abd_event = ActiveEvent(
-            timestamp=event.timestamp,
-            start_timestamp=event.timestamp,
-            managed_object=event.managed_object,
-            source=event.source,
-            repeats=1,
-            event_class=self.cable_abduct_ecls,
-        )
-        abd_event.save()
-        await self.dispose_event(abd_event)
+        # Process event
+        event_ts = datetime.datetime.fromtimestamp(event.ts)
+
+        # Check diagnostics
+        if event.type.source == EventSource.SYSLOG and (
+            SYSLOG_DIAG not in mo.diagnostics
+            or mo.diagnostics[SYSLOG_DIAG]["state"] == DiagnosticState.unknown
+        ):
+            mo.diagnostic.set_state(
+                diagnostic=SYSLOG_DIAG,
+                state=DiagnosticState.enabled,
+                reason=f"Receive Syslog from address: {event.target.address}",
+                changed_ts=event_ts,
+            )
+        if event.type.source == EventSource.SNMP_TRAP and (
+            SNMPTRAP_DIAG not in mo.diagnostics
+            or mo.diagnostics[SNMPTRAP_DIAG]["state"] == DiagnosticState.unknown
+        ):
+            mo.diagnostic.set_state(
+                diagnostic=SNMPTRAP_DIAG,
+                state=DiagnosticState.enabled,
+                reason=f"Receive Syslog from address: {event.target.address}",
+                changed_ts=event_ts,
+            )
+
+    def register_event(
+        self,
+        event: Event,
+        event_class: EventClass,
+        resolved_vars: Dict[str, Any],
+        mo: Optional[ManagedObject] = None,
+    ):
+        """
+        Send Event to Clickhouse (Archive)
+        :param event: Event instance
+        :param event_class: Event Class
+        :param resolved_vars: Processed event data
+        :param mo: Managed Object mapping
+        :return:
+        """
+        timestamp = event.timestamp
+        data = {
+            "date": timestamp.date(),
+            "ts": timestamp.isoformat(),
+            "start_ts": timestamp.isoformat(),
+            #
+            "event_id": str(event.id),
+            "event_class": event_class.bi_id if event_class else None,
+            "source": event.type.source.value,
+            #
+            "labels": event.labels or [],
+            "data": orjson.dumps([d.to_json() for d in event.data]).decode(DEFAULT_ENCODING),
+            "message": event.message or "",
+            #
+            "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
+            "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
+            "vars": {k: str(v) for k, v in event.vars.items()} if event_class else {},
+            "snmp_trap_oid": event.type.id if event.type.source == EventSource.SNMP_TRAP else "",
+            #
+            "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
+            "target_reference": event.target.reference,
+            "target_name": event.target.name,
+            "managed_object": None,
+            "pool": None,
+            "ip": struct.unpack("!I", socket.inet_aton(event.target.address))[0],
+        }
+        if mo:
+            data.update(
+                {
+                    "managed_object": mo.bi_id,
+                    "pool": mo.pool.bi_id,
+                    "ip": struct.unpack("!I", socket.inet_aton(mo.address))[0],
+                    "profile": mo.profile.bi_id,
+                    "vendor": mo.vendor.bi_id if mo.vendor else None,
+                    "platform": mo.platform.bi_id if mo.platform else None,
+                    "version": mo.version.bi_id if mo.version else None,
+                    "administrative_domain": mo.administrative_domain.bi_id,
+                }
+            )
+        elif not mo and event.target.pool:
+            p = Pool.get_by_name(event.target.pool)
+            data["pool"] = p.bi_id
+        if event.remote_system:
+            rs = RemoteSystem.get_by_name(event.remote_system)
+            data["remote_system"] = rs.bi_id
+            data["remote_id"] = event.remote_id
+        self.register_metrics("events", [data])
 
 
 if __name__ == "__main__":

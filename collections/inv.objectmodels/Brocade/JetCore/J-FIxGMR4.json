@@ -9,80 +9,106 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "sfp1",
             "description": "sfp port 1",
             "direction": "i",
             "gender": "f",
-            "name": "sfp1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp2",
             "description": "sfp port 2",
             "direction": "i",
             "gender": "f",
-            "name": "sfp2",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp3",
             "description": "sfp port 3",
             "direction": "i",
             "gender": "f",
-            "name": "sfp3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp4",
             "description": "sfp port 4",
             "direction": "i",
             "gender": "f",
-            "name": "sfp4",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp5",
             "description": "sfp port 5",
             "direction": "i",
             "gender": "f",
-            "name": "sfp5",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp6",
             "description": "sfp port 6",
             "direction": "i",
             "gender": "f",
-            "name": "sfp6",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp7",
             "description": "sfp port 7",
             "direction": "i",
             "gender": "f",
-            "name": "sfp7",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "sfp8",
             "description": "sfp port 8",
             "direction": "i",
             "gender": "f",
-            "name": "sfp8",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "in",
             "description": "backplane",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Brocade | JetCore | Backplane Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["J-FIxGMR4"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["J-FIxGMR4"]
         }
-    }
+    ]
 }

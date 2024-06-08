@@ -13,14 +13,14 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.core.ListFormField",
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
+        "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
+        "Ext.ux.form.GridField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.main.ref.windowfunction.LookupField",
         "NOC.cm.interfacevalidationpolicy.LookupField",
         "NOC.inv.ifdescpatterns.LookupField",
         "NOC.main.handler.LookupField",
-        "Ext.ux.form.GridField",
         "NOC.wf.workflow.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
@@ -254,9 +254,16 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 defaultValue: "d",
                                 store: [
                                     ["d", __("Disabled")],
-                                    ["e", __("Enable")],
+                                    ["e", __("Enable Message")],
                                 ],
                                 uiStyle: "medium"
+                            },
+                            {
+                                name: "default_notification_group",
+                                xtype: "main.notificationgroup.LookupField",
+                                fieldLabel: __("Status Change Notification"),
+                                labelWidth: 200,
+                                allowBlank: true
                             },
                             {
                                 xtype: "checkbox",
@@ -524,16 +531,6 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 uiStyle: "extra",
                                 query: {
                                     "allow_matched": true
-                                }
-                            },
-                            {
-                                name: "handler",
-                                xtype: "main.handler.LookupField",
-                                fieldLabel: __("Match Handler"),
-                                allowBlank: true,
-                                uiStyle: "medium",
-                                query: {
-                                    "allow_match_rule": true
                                 }
                             }
                         ]

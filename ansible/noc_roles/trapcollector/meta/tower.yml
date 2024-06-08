@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: SNMP Trap listener service<br/>
       <strong>Long description</strong>: Listen for SNMP Traps from network equipment and adds them to queue<br/>
       <strong>Scale Recommendations</strong>: One per pool. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/trapcollector/ target=_blank>Trapcollector</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/trapcollector/ target=_blank>Trapcollector</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     power:
       default: 1

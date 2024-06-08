@@ -8,7 +8,7 @@
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
+from noc.inv.models.platform import Platform, MAX_PLATFORM_LENGTH
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.firmwarepolicy import FirmwarePolicy, FS_DENIED
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG
@@ -48,6 +48,13 @@ class VersionCheck(DiscoveryCheck):
                 )
             else:
                 self.job.set_fatal_error()
+            return
+        elif platform is None and len(result["platform"]) > MAX_PLATFORM_LENGTH:
+            self.logger.error(
+                "Platform name length over %s. Check 'get_version' script",
+                MAX_PLATFORM_LENGTH,
+            )
+            self.job.set_fatal_error()
             return
         if not self.object.platform or platform.id != self.object.platform.id:
             if self.object.platform:

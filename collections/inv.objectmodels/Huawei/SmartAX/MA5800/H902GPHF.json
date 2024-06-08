@@ -12,7 +12,10 @@
             "description": "gpon 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -20,7 +23,10 @@
             "description": "gpon 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -28,7 +34,10 @@
             "description": "gpon 3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -36,7 +45,10 @@
             "description": "gpon 4",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -44,7 +56,10 @@
             "description": "gpon 5",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -52,7 +67,10 @@
             "description": "gpon 6",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -60,7 +78,10 @@
             "description": "gpon 7",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -68,7 +89,10 @@
             "description": "gpon 8",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -76,7 +100,10 @@
             "description": "gpon 9",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -84,7 +111,10 @@
             "description": "gpon 10",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -92,7 +122,10 @@
             "description": "gpon 11",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -100,7 +133,10 @@
             "description": "gpon 12",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -108,7 +144,10 @@
             "description": "gpon 13",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -116,7 +155,10 @@
             "description": "gpon 14",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -124,7 +166,10 @@
             "description": "gpon 15",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -132,7 +177,10 @@
             "description": "gpon 16",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -143,14 +191,26 @@
             "type__name": "Huawei | SmartAX | MA5800 | SB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H902GPHF"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H902GPHF"]
         },
-        "dimensions": {
-            "depth": 257,
-            "height": 399,
-            "width": 23
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 257
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 399
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 23
         }
-    }
+    ]
 }

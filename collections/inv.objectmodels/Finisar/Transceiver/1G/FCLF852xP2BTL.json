@@ -8,25 +8,57 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "port",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "port",
-            "protocols": ["1000BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "1000BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FCLF8520P2BTL", "FCLF8520P2BTL-J1", "FCLF8521P2BTL", "FCLF8521P2BTL-A5", "FCLF-8521-3", "FCLF-8521-3-EI", "FCMJ-8521-3", "GE-GB-P1RC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "FCLF8520P2BTL",
+                "FCLF8520P2BTL-J1",
+                "FCLF8521P2BTL",
+                "FCLF8521P2BTL-A5",
+                "FCLF-8521-3",
+                "FCLF-8521-3-EI",
+                "FCMJ-8521-3",
+                "GE-GB-P1RC"
+            ]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

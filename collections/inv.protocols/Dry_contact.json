@@ -1,0 +1,10 @@
+{
+    "name": "Dry contact",
+    "code": "DryContact",
+    "$collection": "inv.protocols",
+    "uuid": "65d8c2c6-8d27-473d-84da-66250a1b5568",
+    "description": "A dry contact is the synonym of volt free — it is not \"wetted\" by a voltage source. Dry contact can refer to a secondary set of contacts of a relay circuit which does not make or break the primary current being controlled by the relay.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Energetics"
+}

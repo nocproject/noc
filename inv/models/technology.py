@@ -9,8 +9,10 @@
 import os
 import operator
 import threading
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, BooleanField, LongField
 import cachetools
@@ -25,7 +27,7 @@ id_lock = threading.Lock()
 
 
 @bi_sync
-@on_delete_check(check=[("inv.ResourceGroup", "technology")])
+@on_delete_check(check=[("inv.ResourceGroup", "technology"), ("inv.Protocol", "technology")])
 class Technology(Document):
     """
     Technology
@@ -62,13 +64,13 @@ class Technology(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return Technology.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Technology"]:
+        return Technology.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return Technology.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Technology"]:
+        return Technology.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

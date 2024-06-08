@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # CData.xPON.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,5 +20,5 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             with self.configure():
                 config = self.cli("show current-config")
-        config = self.strip_first_lines(config, 2)
+        config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)

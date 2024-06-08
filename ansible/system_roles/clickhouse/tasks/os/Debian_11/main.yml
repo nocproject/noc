@@ -1,25 +1,19 @@
 ---
-- name: Get CH Key from remote server
+- name: Add Clickhouse apt repository key
   get_url:
     url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{ ch_apt_key_id }}"
-    dest: "/tmp/ch_apt_key.gpg"
+    dest: /etc/apt/trusted.gpg.d/clickhouse.asc
+    mode: '0644'
+    force: true
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
-- name: Add CH apt key
-  apt_key:
-    id: "{{ ch_apt_key_id }}"
-    file: "/tmp/ch_apt_key.gpg"
-    state: present
-  tags:
-    - repo
-
 - name: Add CH repository
   apt_repository:
-    repo: "deb https://packages.clickhouse.com/deb stable main"
+    repo: "{{ clickhouse_deb_repo }}"
     state: present
     update_cache: "True"
   environment:

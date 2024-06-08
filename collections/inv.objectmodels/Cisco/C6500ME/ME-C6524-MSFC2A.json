@@ -7,16 +7,18 @@
     "cr_context": "MSFC",
     "connections": [
         {
+            "name": "in",
             "description": "MSFC2A Daughterboard",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | C6500ME | MSFC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ME-C6524-MSFC2A"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ME-C6524-MSFC2A"]
         }
-    }
+    ]
 }

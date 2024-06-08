@@ -1,0 +1,34 @@
+{
+    "name": "NoName | Transceiver | SFP+",
+    "$collection": "inv.objectmodels",
+    "uuid": "8fb03c8e-88eb-46b4-9dfa-3af1739dfef6",
+    "vendor__code": "NONAME",
+    "description": "Unknown SFP+ transceiver. Replace with real type manually",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

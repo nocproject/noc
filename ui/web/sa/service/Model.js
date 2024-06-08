@@ -101,8 +101,9 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
-            name: "tags",
-            type: "auto"
+            name: "label",
+            type: "string",
+            persist: false
         },
         {
             name: "order_id",
@@ -161,6 +162,11 @@ Ext.define("NOC.sa.service.Model", {
         {
             name: "effective_client_groups",
             type: "auto",
+            persist: false
+        },
+        {
+            name: "oper_status",
+            type: "bool",
             persist: false
         },
         {

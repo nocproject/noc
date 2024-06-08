@@ -1,0 +1,8 @@
+{
+    "name": "Energetics",
+    "$collection": "inv.technologies",
+    "uuid": "80a9c79c-3f43-4718-8d60-55815090cdc3",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

@@ -14,6 +14,7 @@ class Migration(BaseMigration):
 
     def migrate(self):
         mdb = self.mongo_db
+        mdb.noc.pools.insert_one({"name": "default", "description": "default"})
         for a_id, name in self.db.execute("SELECT id, name FROM sa_activator"):
             mdb.noc.pools.insert_one({"name": "P%04d" % a_id, "description": name})
 

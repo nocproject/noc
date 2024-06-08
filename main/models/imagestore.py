@@ -45,4 +45,6 @@ class ImageStore(Document):
         Return content-type string
         :return:
         """
+        if not self.content_type:
+            return ""
         return ContentType(self.content_type).content_type

@@ -5,36 +5,66 @@
     "vendor__code": "GIGALINK",
     "description": "10GBASE-SR  850nm MMF / 300m SFP+ transceiver",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
     "connections": [
         {
+            "name": "tx",
             "description": "TX",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<10GBASESR"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
+            "name": "rx",
             "description": "RX",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">10GBASESR"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["GL-OT-ST05LC2-08"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["GL-OT-ST05LC2-08"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 850
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

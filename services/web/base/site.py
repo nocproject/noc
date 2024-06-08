@@ -15,6 +15,8 @@ import types
 from collections import defaultdict
 import operator
 from urllib.parse import urlencode
+from typing import List, Dict
+from threading import Lock
 
 # Third-party modules
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, Http404
@@ -22,6 +24,8 @@ from django.urls import path, re_path, include, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
 import orjson
+import cachetools
+from dataclasses import dataclass
 
 # NOC modules
 from noc.config import config
@@ -70,6 +74,32 @@ class URL(object):
         return s
 
 
+@dataclass
+class AppPermission(object):
+    """
+    Application permission.
+
+    Arguments:
+        module: Module name
+        title: Application title
+        name: Permission name
+    """
+
+    module: str
+    title: str
+    name: str
+
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "module": self.module,
+            "title": self.title,
+            "name": self.name,
+        }
+
+
+_perms_lock = Lock()
+
+
 class Site(object):
     """
     Application site. Registers applications, builds menu and
@@ -78,6 +108,7 @@ class Site(object):
 
     folder_glyps = {"Setup": "wrench noc-edit", "Reports": "file-text noc-preview"}
     JSON_CONTENT_TYPES = {"text/json", "application/json"}
+    _perms_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __init__(self):
         self.apps = {}  # app_id -> app instance
@@ -517,6 +548,28 @@ class Site(object):
             ct, _ = content_type.rsplit(";", 1)
             return ct.strip() in cls.JSON_CONTENT_TYPES
         return False
+
+    @cachetools.cachedmethod(operator.attrgetter("_perms_cache"), lock=lambda _: _perms_lock)
+    def get_app_permissions_list(self) -> List[AppPermission]:
+        """
+        Get AppPermission for all installed apps.
+        """
+        from noc.aaa.models.permission import Permission
+
+        r = []
+        perms = Permission.objects.values_list("name", flat=True)
+        apps = list(self.apps)
+        for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
+            mod = module[4:]
+            m = __import__(f"noc.services.web.apps.{mod}", {}, {}, "MODULE_NAME")
+            module_name = m.MODULE_NAME
+            for app in [app for app in apps if app.startswith(mod + ".")]:
+                app_perms = sorted([p for p in perms if p.startswith(app.replace(".", ":") + ":")])
+                if app_perms:
+                    a = self.apps[app]
+                    for p in app_perms:
+                        r.append(AppPermission(module=module_name, title=str(a.title), name=p))
+        return r
 
 
 # Site singletone

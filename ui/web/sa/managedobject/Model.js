@@ -191,12 +191,12 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "trap_source_type",
             type: "string",
-            defaultValue: "d"
+            defaultValue: "m"
         },
         {
             name: "syslog_source_type",
             type: "string",
-            defaultValue: "d"
+            defaultValue: "m"
         },
         {
             name: "trap_community",
@@ -254,6 +254,10 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "shape_overlay_form",
+            type: "string"
+        },
+        {
+            name: "shape_title_template",
             type: "string"
         },
         {
@@ -532,6 +536,34 @@ Ext.define("NOC.sa.managedobject.Model", {
             name: "row_class",
             type: "string",
             persist: false
-        }
+        },
+        {
+            name: "snmp_security_level",
+            type: "string"
+        },
+        {
+            name: "snmp_username",
+            type: "string"
+        },
+        {
+            name: "snmp_ctx_name",
+            type: "string"
+        },
+        {
+            name: "snmp_auth_proto",
+            type: "string"
+        },
+        {
+            name: "snmp_auth_key",
+            type: "string"
+        },
+        {
+            name: "snmp_priv_proto",
+            type: "string"
+        },
+        {
+            name: "snmp_priv_key",
+            type: "string"
+        },
     ]
 });

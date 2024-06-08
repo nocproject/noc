@@ -1,0 +1,10 @@
+{
+    "name": "100BASE-TX",
+    "code": "100BASETX",
+    "$collection": "inv.protocols",
+    "uuid": "6699197d-7086-40b2-a6aa-7e6c6956e227",
+    "description": "100BASE-TX, 100Mbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

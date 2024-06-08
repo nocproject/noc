@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Label model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,12 +16,14 @@ from itertools import accumulate
 from functools import partial
 
 # Third-party modules
+import bson
 from pymongo import UpdateMany
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.queryset.visitor import Q as m_Q
 from mongoengine.fields import (
     StringField,
     IntField,
+    UUIDField,
     BooleanField,
     ReferenceField,
     ListField,
@@ -37,10 +39,12 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
 from noc.main.models.handler import Handler
 from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.prefixtable import PrefixTable
+from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
 from noc.models import get_model, is_document, get_model_id, LABEL_MODELS
 from noc.vc.models.vlanfilter import VLANFilter
 
+from noc.core.text import quote_safe_path
+from noc.core.prettyjson import to_json
 
 MATCH_OPS = {"=", "<", ">", "&"}
 
@@ -74,6 +78,7 @@ id_lock = Lock()
 re_lock = Lock()
 rx_labels_lock = Lock()
 setting_lock = Lock()
+allow_model_lock = Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -92,13 +97,13 @@ class RegexItem(EmbeddedDocument):
 
 
 class VLANFilterItem(EmbeddedDocument):
-    vlan_filter = PlainReferenceField(VLANFilter)
+    vlan_filter = PlainReferenceField(VLANFilter, required=True)
     condition = StringField(choices=["all", "any"])
     scope = StringField(choices=list(VLANFILTER_LABEL_SCOPES), required=True)
 
 
 class PrefixFilterItem(EmbeddedDocument):
-    prefix_table = ForeignKeyField(PrefixTable)
+    prefix_table = ForeignKeyField(PrefixTable, required=True)
     condition = StringField(choices=["all", "any"])
     scope = StringField(choices=list(PREFIXFILTER_LABEL_SCOPES), required=True)
 
@@ -147,7 +152,11 @@ class Label(Document):
         "collection": "labels",
         "strict": False,
         "auto_create_index": False,
+        "json_collection": "main.labels",
+        "json_unique_fields": ["name"],
         "indexes": [
+            "name",
+            "allow_models",
             ("is_matching", "match_regex.scope"),
             (
                 "match_vlanfilter.vlan_filter",
@@ -163,6 +172,7 @@ class Label(Document):
     }
 
     name = StringField(unique=True)
+    uuid = UUIDField(binary=True)
     description = StringField()
     bg_color1 = IntField(default=0x000000)
     fg_color1 = IntField(default=0xFFFFFF)
@@ -177,59 +187,8 @@ class Label(Document):
     # For scoped - to propagating settings on own labels
     propagate = BooleanField(default=False)
     # Label scope
-    enable_agent = BooleanField(default=False)
-    enable_service = BooleanField(default=False)
-    enable_serviceprofile = BooleanField(default=False)
-    enable_managedobject = BooleanField(default=False)
-    enable_managedobjectprofile = BooleanField(default=False)
-    enable_administrativedomain = BooleanField(default=False)
-    enable_authprofile = BooleanField(default=False)
-    enable_commandsnippet = BooleanField(default=False)
-    enable_firmwarepolicy = BooleanField(default=False)
-    #
-    enable_allocationgroup = BooleanField(default=False)
-    enable_networksegment = BooleanField(default=False)
-    enable_object = BooleanField(default=False)
-    enable_objectmodel = BooleanField(default=False)
-    enable_platform = BooleanField(default=False)
-    enable_resourcegroup = BooleanField(default=False)
-    enable_sensor = BooleanField(default=False)
-    enable_sensorprofile = BooleanField(default=False)
-    enable_interface = BooleanField(default=False)
-    #
-    enable_subscriber = BooleanField(default=False)
-    enable_supplier = BooleanField(default=False)
-    #
-    enable_dnszone = BooleanField(default=False)
-    enable_dnszonerecord = BooleanField(default=False)
-    #
-    enable_division = BooleanField(default=False)
-    #
-    enable_kbentry = BooleanField(default=False)
-    # IP
-    enable_ipaddress = BooleanField(default=False)
-    enable_addressprofile = BooleanField(default=False)
-    enable_ipaddressrange = BooleanField(default=False)
-    enable_ipprefix = BooleanField(default=False)
-    enable_prefixprofile = BooleanField(default=False)
-    enable_vrf = BooleanField(default=False)
-    enable_vrfgroup = BooleanField(default=False)
-    # Peer
-    enable_asn = BooleanField(default=False)
-    enable_assetpeer = BooleanField(default=False)
-    enable_peer = BooleanField(default=False)
-    # VC
-    enable_vlan = BooleanField(default=False)
-    enable_vlanprofile = BooleanField(default=False)
-    enable_vpn = BooleanField(default=False)
-    enable_vpnprofile = BooleanField(default=False)
-    # SLA
-    enable_slaprobe = BooleanField(default=False)
-    enable_slaprofile = BooleanField(default=False)
-    # FM
-    enable_alarm = BooleanField(default=False)
-    # Enable Workflow State
-    enable_workflowstate = BooleanField(default=False)
+    allow_models = ListField(StringField())
+    allow_auto_create = BooleanField(default=False)
     # Exposition scope
     expose_metric = BooleanField(default=False)
     expose_datastream = BooleanField(default=False)
@@ -249,13 +208,72 @@ class Label(Document):
     remote_id = StringField()
     # Caches
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=120)
-    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=120)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
     _setting_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
     _rx_labels_cache = cachetools.TTLCache(maxsize=100, ttl=120)
     _rx_cache = cachetools.TTLCache(maxsize=100, ttl=600)
+    # Enable -> Model_id map
+    ENABLE_MODEL_ID_MAP = {v: k for k, v in LABEL_MODELS.items()}
 
     def __str__(self):
         return self.name
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "$collection": self._meta["json_collection"],
+            "uuid": self.uuid,
+            "description": self.description,
+            "bg_color1": self.bg_color1,
+            "fg_color1": self.fg_color1,
+            "bg_color2": self.bg_color2,
+            "fg_color2": self.fg_color2,
+            # Order
+            "display_order": self.display_order,
+            #
+            "allow_models": list(self.allow_models),
+            "allow_auto_create": self.allow_auto_create,
+            # Restrict UI operations
+            "is_protected": self.is_protected,
+            "is_matching": self.is_matching,
+            # For scoped - to propagating settings on own labels
+            "propagate": self.propagate,
+            # Label scope
+            # Exposition scope
+            "expose_metric": self.expose_metric,
+            "expose_datastream": self.expose_datastream,
+            "expose_alarm": self.expose_alarm,
+            # Regex
+        }
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "description",
+                "bg_color1",
+                "fg_color1",
+                "bg_color2",
+                "fg_color2",
+                "display_order",
+                "allow_models",
+                "allow_auto_create",
+                "propagate",
+                "is_protected",
+                "is_matching",
+                "expose_metric",
+                "expose_datastream",
+                "expose_alarm",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        return quote_safe_path(self.name.strip("*")) + ".json"
 
     @property
     def scope(self):
@@ -305,8 +323,8 @@ class Label(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, lid: str) -> Optional["Label"]:
-        return Label.objects.filter(id=lid).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Label"]:
+        return Label.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -316,11 +334,30 @@ class Label(Document):
     @classmethod
     def _reset_caches(cls, name):
         try:
-            del cls._name_cache[
-                name,
-            ]  # Tuple
+            del cls._name_cache[name,]  # Tuple
         except KeyError:
             pass
+
+    @classmethod
+    def from_names(self, labels: List[str]) -> List["Label"]:
+        """
+        Conert list names to Labels list
+        """
+        r = []
+        for ll in labels:
+            ll = Label.get_by_name(ll)
+            if not ll:
+                continue
+            r.append(ll)
+        return r
+
+    # def __getattr__(self, item):
+    #     """
+    #     Check enable_XX settings for backward compatible
+    #     """
+    #     if item in self.ENABLE_MODEL_ID_MAP:
+    #         return self.ENABLE_MODEL_ID_MAP[item] in self.allow_models
+    #     raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, item))
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
@@ -349,12 +386,12 @@ class Label(Document):
         """
         if hasattr(self, "_changed_fields") and "name" in self._changed_fields:
             raise ValueError("Rename label is not allowed operation")
-        if hasattr(self, "_changed_fields") and self._changed_fields:
-            for model_id, setting in LABEL_MODELS.items():
-                if setting in self._changed_fields and not getattr(self, setting, None):
-                    r = self.check_label(model_id, self.name)
-                    if r:
-                        raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
+        if hasattr(self, "_changed_fields") and "allow_models" in self._changed_fields:
+            am = set(Label.objects.filter(name=self.name).scalar("allow_models").first())
+            for model_id in am - set(self.allow_models):
+                r = self.check_label(model_id, self.name)
+                if r:
+                    raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
         # Wildcard labels are protected
         if not self.is_wildcard and self.is_scoped:
             # Check propagate
@@ -367,14 +404,19 @@ class Label(Document):
             self._ensure_wildcards()
         Label._reset_caches(self.name)
         # Check if unset enable and label added to model
-        if self._created or getattr(self, "_changed_fields", None):
-            if self.is_matching and self.match_regex:
-                self._refresh_regex_labels()
-            # Propagate Wildcard Settings
-            if self.is_wildcard and self.propagate:
-                settings = self.effective_settings
-                coll = Label._get_collection()
-                coll.update_many({"name": re.compile(f"{self.scope}::[^*].+")}, {"$set": settings})
+        cf = getattr(self, "_changed_fields", None) or {}
+        if not cf or "match_regex" in cf or "is_matching" in cf:
+            self._refresh_regex_labels()
+        if not cf or "match_prefixfilter" in cf or "is_matching" in cf:
+            self._refresh_prefixfilter_labels()
+        # Propagate Wildcard Settings
+        if self.is_wildcard and self.propagate:
+            settings = self.effective_settings
+            if not settings:
+                # Nothing propagate
+                return
+            coll = Label._get_collection()
+            coll.update_many({"name": re.compile(f"{self.scope}::[^*].+")}, {"$set": settings})
 
     def on_delete(self):
         """
@@ -401,12 +443,35 @@ class Label(Document):
             f"{ll}::*" for ll in accumulate(label.split("::")[:-1], lambda acc, x: f"{acc}::{x}")
         ]
 
-    # has_effective_settings
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_setting_cache"), lock=lambda _: allow_model_lock)
+    def has_model(cls, label: str, model_id: str) -> bool:
+        coll = cls._get_collection()
+        wildcards = cls.get_wildcards(label)
+        return bool(
+            next(
+                coll.find(
+                    {
+                        "name": {"$in": [label] + wildcards},
+                        "allow_models": model_id,
+                    },
+                    {},
+                ),
+                None,
+            )
+        )
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_setting_cache"), lock=lambda _: setting_lock)
     def get_effective_setting(cls, label: str, setting: str) -> bool:
+        """
+        # has_effective_settings
+        """
         wildcards = cls.get_wildcards(label)
         coll = cls._get_collection()
+        if setting in cls.ENABLE_MODEL_ID_MAP:
+            # for backward compatible
+            return cls.has_model(label, cls.ENABLE_MODEL_ID_MAP[setting])
         r = next(
             coll.aggregate(
                 [
@@ -419,20 +484,22 @@ class Label(Document):
         return bool(r.get(setting))
 
     @classmethod
-    def get_effective_settings(cls, label: str, all_settings: bool = False) -> Dict[str, Any]:
+    def get_effective_settings(cls, label: str, include_current: bool = False) -> Dict[str, Any]:
         """
         Returns dict with effective settings
+        :param label: Checked label name
+        :param include_current: Include current label settings
         """
         # es = {ff: False for ff in cls._fields if ff[:2] in {"en", "bg", "fg"}}
         wildcards = cls.get_wildcards(label)
         if "noc::*" in wildcards:
             wildcards.remove("noc::*")
-        if all_settings:
+        if include_current:
             wildcards += [label]
         coll = cls._get_collection()
         match = {"$match": {"name": {"$in": wildcards}, "propagate": True}}
-        if all_settings:
-            match["$match"]["propagate"] = False
+        # if include_current:
+        #     match["$match"]["propagate"] = False
         r = next(
             coll.aggregate(
                 [
@@ -448,7 +515,7 @@ class Label(Document):
                                 }
                             }
                             for ff in cls._fields
-                            if ff[:2] in {"en", "ex", "bg", "fg"} or ff == "is_protected"
+                            if ff[:2] in {"al", "ex", "bg", "fg"} or ff == "is_protected"
                         }
                     },
                     {"$group": {"_id": None, "settings": {"$mergeObjects": "$$ROOT"}}},
@@ -512,13 +579,9 @@ class Label(Document):
     def ensure_label(
         cls,
         name,
+        model_ids: List[str],
         description=None,
         is_protected=False,
-        is_autogenerated=False,
-        enable_managedobject=False,
-        enable_slaprobe=False,
-        enable_interface=False,
-        enable_sensor=False,
         bg_color1=0xFFFFFF,
         fg_color1=0x000000,
         bg_color2=0xFFFFFF,
@@ -531,11 +594,7 @@ class Label(Document):
         :param name:
         :param description:
         :param is_protected:
-        :param is_autogenerated:
-        :param enable_managedobject:
-        :param enable_slaprobe:
-        :param enable_interface:
-        :param enable_sensor:
+        :param model_ids:
         :param bg_color1:
         :param fg_color1:
         :param bg_color2:
@@ -550,20 +609,15 @@ class Label(Document):
         if label:
             return  # Exists
         logger.info("[%s] Create label by ensure", name)
-        settings = cls.get_effective_settings(name)
+        settings = cls.get_effective_settings(name, include_current=True)
+        if not settings.get("allow_auto_create"):
+            logger.warning("[%s] Not allowed autocreate label", name)
+            return
         settings["name"] = name
         settings["description"] = description or "Auto-created"
         settings["is_protected"] = settings.get("is_protected") or is_protected
-        if is_autogenerated:
-            settings["is_autogenerated"] = is_autogenerated
-        if enable_managedobject:
-            settings["enable_managedobject"] = enable_managedobject
-        if enable_slaprobe:
-            settings["enable_slaprobe"] = enable_slaprobe
-        if enable_interface:
-            settings["enable_interface"] = enable_interface
-        if enable_sensor:
-            settings["enable_sensor"] = enable_sensor
+        settings["allow_models"] = list(set(model_ids) | set(settings["allow_models"] or []))
+        settings["is_autogenerated"] = True
         if bg_color1 and bg_color1 != 0xFFFFFF:
             settings["bg_color1"] = bg_color1
         if fg_color1:
@@ -580,7 +634,9 @@ class Label(Document):
 
     @classmethod
     def ensure_labels(
-        cls, labels: List[str], enable_managedobject=False, enable_interface=False
+        cls,
+        labels: List[str],
+        model_ids: List[str],
     ) -> List[str]:
         """
         Yields all scopes
@@ -589,10 +645,8 @@ class Label(Document):
         for ll in labels:
             cls.ensure_label(
                 name=ll,
-                is_autogenerated=True,
+                model_ids=model_ids,
                 is_protected=False,
-                enable_managedobject=enable_managedobject,
-                enable_interface=enable_interface,
             )
         return labels
 
@@ -605,6 +659,7 @@ class Label(Document):
             # Ensure wildcard
             Label.ensure_label(
                 f"{scope}::*",
+                [],
                 description=f"Wildcard label for scope {scope}",
                 is_protected=False,
                 bg_color1=self.bg_color1,
@@ -640,6 +695,45 @@ class Label(Document):
             r[REGEX_LABEL_SCOPES[ri.scope]] += [ri.regexp]
         return r
 
+    def _refresh_prefixfilter_labels(self):
+        """
+        Recalculate labels on model
+        :return:
+        """
+        c_map = {"all": " AND ", "any": " OR "}
+        logger.info("[%s] Refresh Prefix Filter", self.name)
+        if "sa.ManagedObject" in self.allow_models:
+            Label.remove_model_labels("sa.ManagedObject", [self.name])
+        if not self.is_matching:
+            return
+        for rule in self.match_prefixfilter:
+            model_id, field = PREFIXFILTER_LABEL_SCOPES[rule.scope]
+            if model_id not in self.allow_models:
+                continue
+            model = get_model(model_id)
+            prefixes = [
+                str(p)
+                for p in PrefixTablePrefix.objects.filter(table=rule.prefix_table.id).values_list(
+                    "prefix", flat=True
+                )
+            ]
+            if is_document(model):
+                ...
+            else:
+                condition = c_map[rule.condition].join(
+                    [f"cast_test_to_inet({field}) <<= %s"] * len(prefixes)
+                )
+                params = [[self.name]] + prefixes
+                sql = f"""
+                UPDATE {model._meta.db_table}
+                SET effective_labels=ARRAY (
+                SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e)
+                )
+                WHERE {condition}
+                """
+                with pg_connection.cursor() as cursor:
+                    cursor.execute(sql, params)
+
     def _refresh_regex_labels(self):
         """
         Recalculate labels on model
@@ -655,7 +749,7 @@ class Label(Document):
                 Label.remove_model_labels(model_id, [self.name])
         regxs = defaultdict(list)
         for model_id, field in r:
-            if not getattr(self, LABEL_MODELS[model_id], False):
+            if model_id not in self.allow_models:
                 continue
             model = get_model(model_id)
             regxs[model] += [(field, r[(model_id, field)])]
@@ -727,6 +821,7 @@ class Label(Document):
             # Clean up labels
             labels = Label.merge_labels(default_iter_effective_labels(instance))
             instance.labels = labels
+            model_id = get_model_id(instance)
             # Check Match labels
             match_labels = set()
             for ml in getattr(instance, "match_rules", []):
@@ -735,7 +830,11 @@ class Label(Document):
                 else:
                     match_labels |= set(ml.get("labels", []))
             # Validate instance labels
-            can_set_label = getattr(sender, "can_set_label", lambda x: False)
+            can_set_label = getattr(
+                sender,
+                "can_set_label",
+                partial(cls.has_model, model_id=model_id),
+            )
             for label in set(instance.labels):
                 if not can_set_label(label):
                     # Check can_set_label method
@@ -832,13 +931,13 @@ class Label(Document):
                         for pop in parent_op:
                             Label.ensure_label(
                                 f"noc::{category}::{instance.parent.name}::{matched_scope}{pop}",
+                                [get_model_id(instance)],
                                 is_protected=False,
-                                is_autogenerated=True,
                             )
                     Label.ensure_label(
                         f"noc::{category}::{instance.name}::{matched_scope}{op}",
+                        [get_model_id(instance)],
                         is_protected=False,
-                        is_autogenerated=True,
                     )
 
         def inner(m_cls):
@@ -1156,7 +1255,9 @@ class Label(Document):
                     instance_filters=[(f"{profile_field}_id", instance.id)],
                 )
             if "match_rules" in changed_fields and not document:
-                Label.sync_model_profile(instance_model_id, profile_model_id)
+                Label.sync_model_profile(
+                    instance_model_id, profile_model_id, profile_field=profile_field
+                )
 
         def inner(m_cls):
             # Install profile set handlers
@@ -1324,6 +1425,8 @@ class Label(Document):
                 where += [f"{field} = %s"]
             params += [ids]
         where = ("WHERE " + " AND ".join(where)) if where else ""
+        if not is_document(profile):
+            profile_field = f"{profile_field}_id"
         # Build query
         SQL = f"""
             UPDATE {table} AS update_t SET {profile_field} = sq.erg[1]

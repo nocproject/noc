@@ -1,0 +1,19 @@
+{
+    "name": "noc::is_aggregate_interface::=",
+    "$collection": "main.labels",
+    "uuid": "233fb412-e9e9-4be3-ab51-42c8ce29de81",
+    "description": "Builtin Labels mark if Interface has aggregate type",
+    "bg_color1": 16777215,
+    "fg_color1": 0,
+    "bg_color2": 16777215,
+    "fg_color2": 0,
+    "display_order": 0,
+    "allow_models": [],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": true
+}

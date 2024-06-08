@@ -7,24 +7,35 @@
     "cr_context": "PSU",
     "connections": [
         {
+            "name": "power",
             "description": "AC power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         },
         {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-CAC-4000W-INT"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-CAC-4000W-INT"]
         }
-    }
+    ]
 }

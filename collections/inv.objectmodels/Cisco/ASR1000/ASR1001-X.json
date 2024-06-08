@@ -8,118 +8,198 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "psu0",
             "description": "PSU slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "psu0",
             "type__name": "Cisco | ASR1000 | ASR1001 PSU"
         },
         {
+            "name": "psu1",
             "description": "PSU slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | ASR1000 | ASR1001 PSU"
         },
         {
+            "name": "Gi0_sfp",
             "description": "Gi0/0/0",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi1_sfp",
             "description": "Gi0/0/1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "Gi0/0/2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi3_sfp",
             "description": "Gi0/0/3",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi4_sfp",
             "description": "Gi0/0/4",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi5_sfp",
             "description": "Gi0/0/5",
             "direction": "i",
             "gender": "f",
-            "name": "Gi5_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Te0_sfp+",
             "description": "Te0/0/0",
             "direction": "i",
             "gender": "f",
-            "name": "Te0_sfp+",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "Te1_sfp+",
             "description": "Te0/0/1",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_sfp+",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "sip1",
             "description": "SPA Interface Processor slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "sip1",
             "type__name": "Cisco | ASR1000 | SIP"
         },
         {
+            "name": "RP",
             "description": "Route Processor slot",
             "direction": "i",
             "gender": "f",
-            "name": "RP",
             "type__name": "Cisco | ASR1000 | RP"
         }
     ],
-    "data": {
-        "airflow": {
-            "exhaust": "r"
+    "data": [
+        {
+            "attr": "exhaust",
+            "interface": "airflow",
+            "value": "r"
         },
-        "asset": {
-            "part_no": ["ASR1001-X"]
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1001-X"]
         },
-        "dimensions": {
-            "depth": 571,
-            "height": 43,
-            "width": 439
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 571
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 43
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 439
         },
-        "weight": {
-            "weight": 11.35
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 11.35
         }
-    }
+    ]
 }

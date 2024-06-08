@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.label application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.label.Application");
@@ -14,7 +14,8 @@ Ext.define("NOC.main.label.Application", {
         "Ext.ux.form.ColorField",
         "Ext.ux.form.GridField",
         "NOC.main.prefixtable.LookupField",
-        "NOC.vc.vlanfilter.LookupField"
+        "NOC.vc.vlanfilter.LookupField",
+        "NOC.core.JSONPreview"
     ],
     model: "NOC.main.label.Model",
     search: true,
@@ -36,6 +37,15 @@ Ext.define("NOC.main.label.Application", {
     },
     initComponent: function() {
         var me = this;
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/main/label/{id}/json/'),
+            previewName: new Ext.XTemplate('Label: {name}')
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
         Ext.apply(me, {
             columns: [
                 {
@@ -59,6 +69,13 @@ Ext.define("NOC.main.label.Application", {
                     dataIndex: "is_protected",
                     width: 50,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Builtin"),
+                    dataIndex: "is_builtin",
+                    width: 30,
+                    renderer: NOC.render.Bool,
+                    sortable: false
                 },
                 {
                     text: __("Allow"),
@@ -120,14 +137,8 @@ Ext.define("NOC.main.label.Application", {
                         if(item.data.enable_subscriber) {
                             r.push(__("Subscriber"));
                         }
-                        if(item.data.enable_subscriberprofile) {
-                            r.push(__("Subscriber Profile"));
-                        }
                         if(item.data.enable_supplier) {
                             r.push(__("Supplier"));
-                        }
-                        if(item.data.enable_supplierprofile) {
-                            r.push(__("Supplier Profile"));
                         }
                         if(item.data.enable_dnszone) {
                             r.push(__("DNS Zone"));
@@ -170,9 +181,6 @@ Ext.define("NOC.main.label.Application", {
                         }
                         if(item.data.enable_peer) {
                             r.push(__("Peer"));
-                        }
-                        if(item.data.enable_vc) {
-                            r.push(__("VC"));
                         }
                         if(item.data.enable_vlan) {
                             r.push(__("VLAN"));
@@ -229,6 +237,12 @@ Ext.define("NOC.main.label.Application", {
                     allowBlank: false
                 },
                 {
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: __("UUID"),
+                    allowBlank: true
+                },
+                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
@@ -272,6 +286,11 @@ Ext.define("NOC.main.label.Application", {
                     bind: {
                         value: "{is_builtin}"
                     },
+                },
+                {
+                    name: "allow_auto_create",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Auto Create"),
                 },
                 {
                     name: "is_matching",
@@ -769,11 +788,6 @@ Ext.define("NOC.main.label.Application", {
                             },
                             items: [
                                 {
-                                    name: "enable_vc",
-                                    xtype: "checkbox",
-                                    boxLabel: __("VC")
-                                },
-                                {
                                     name: "enable_vlan",
                                     xtype: "checkbox",
                                     boxLabel: __("VLAN")
@@ -828,19 +842,9 @@ Ext.define("NOC.main.label.Application", {
                                     boxLabel: __("Subscriber")
                                 },
                                 {
-                                    name: "enable_subscriberprofile",
-                                    xtype: "checkbox",
-                                    boxLabel: __("Subscriber Profile")
-                                },
-                                {
                                     name: "enable_supplier",
                                     xtype: "checkbox",
                                     boxLabel: __("Supplier")
-                                },
-                                {
-                                    name: "enable_supplierprofile",
-                                    xtype: "checkbox",
-                                    boxLabel: __("Supplier Profile")
                                 },
                                 {
                                     name: "enable_kbentry",
@@ -906,10 +910,29 @@ Ext.define("NOC.main.label.Application", {
                         }
                     ]
                 }
+            ],
+
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
+
         });
         me.callParent();
     },
+
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    },
+
     filters: [
         {
             title: __("Manual"),

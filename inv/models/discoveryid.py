@@ -9,9 +9,10 @@
 import operator
 import bisect
 from threading import Lock
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+import bson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, ListField, LongField, EmbeddedDocumentField
@@ -74,8 +75,8 @@ class DiscoveryID(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["DiscoveryID"]:
-        return DiscoveryID.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["DiscoveryID"]:
+        return DiscoveryID.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

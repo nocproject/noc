@@ -8,34 +8,69 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "tx",
             "description": "TX",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<10GBASESR"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
+            "name": "rx",
             "description": "RX",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">10GBASESR"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part": ["FTLX8511D3-HW"],
-            "part_no": ["FTLX8511D3"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FTLX8511D3"]
+        },
+        {
+            "attr": "order_part",
+            "interface": "asset",
+            "value": ["FTLX8511D3-HW"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 850
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

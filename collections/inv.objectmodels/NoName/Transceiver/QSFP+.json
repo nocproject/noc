@@ -1,0 +1,34 @@
+{
+    "name": "NoName | Transceiver | QSFP+",
+    "$collection": "inv.objectmodels",
+    "uuid": "546286ff-c17e-46d9-845d-44f2208ba2d1",
+    "vendor__code": "NONAME",
+    "description": "Unknown QSFP+ transceiver. Replace with real type manually",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "QSFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

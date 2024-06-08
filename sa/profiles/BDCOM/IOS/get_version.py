@@ -21,7 +21,11 @@ class Script(BaseScript):
     rx_serial = re.compile(r"Serial num\s*:\s*(?P<serial>\S+)")
     rx_hardware = re.compile(r"hardware version\s*:\s*(?P<hardware>\S+)")
 
-    platforms = {"347": "S2210PB"}
+    platforms = {
+        "347": "S2210PB",
+        "455": "S3900-48M6X",
+        "458": "S2928EF",
+    }
 
     def execute(self):
         c = self.cli("show version", cached=True)

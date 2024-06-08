@@ -8,172 +8,245 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "RSP0",
             "description": "RSP Card host",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "RSP0",
             "type__name": "Cisco | ASR9k | RSP"
         },
         {
+            "name": "1PPS",
             "description": "1PPS mini-coax timing connector",
             "direction": "s",
             "gender": "f",
-            "name": "1PPS",
             "type__name": "Electrical | MINI-coax"
         },
         {
+            "name": "10MHz",
             "description": "10MHz mini-coax timing connector",
             "direction": "s",
             "gender": "f",
-            "name": "10MHz",
             "type__name": "Electrical | MINI-coax"
         },
         {
+            "name": "USB",
             "description": "USB flash memory port",
             "direction": "s",
             "gender": "f",
-            "name": "USB",
-            "protocols": ["<USB20"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "USB20"
+            }],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "IEEE1588",
             "description": "IEEE1588 port",
             "direction": "s",
             "gender": "f",
-            "name": "IEEE1588",
-            "protocols": ["IEEE1588"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "IEEE1588"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "TOD",
             "description": "ToD port",
             "direction": "s",
             "gender": "f",
-            "name": "TOD",
-            "protocols": ["ToD"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ToD"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Sync0",
             "description": "SYNC 0 port",
             "direction": "s",
             "gender": "f",
-            "name": "Sync0",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Sync1",
             "description": "SYNC 1 port",
             "direction": "s",
             "gender": "f",
-            "name": "Sync1",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "AUX",
             "description": "AUX port",
             "direction": "s",
             "gender": "f",
-            "name": "AUX",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "MgmtLAN0",
             "description": "Management LAN 0 port",
             "direction": "s",
             "gender": "f",
-            "name": "MgmtLAN0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "MgmtLAN1",
             "description": "Management LAN 1 port",
             "direction": "s",
             "gender": "f",
-            "name": "MgmtLAN1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eobc0_sfp",
             "description": "EOBC 0 SFP+ port for nv cluster connection",
             "direction": "i",
             "gender": "f",
-            "name": "eobc0_sfp",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "eobc1_sfp",
             "description": "EOBC 1 SFP+ port for nv cluster connection",
             "direction": "i",
             "gender": "f",
-            "name": "eobc1_sfp",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "fan0",
             "description": "FAN slot",
             "direction": "i",
             "gender": "f",
-            "name": "fan0",
             "type__name": "Cisco | ASR9001 | FAN"
         },
         {
+            "name": "PEM0",
             "description": "Power supply 0 slot",
             "direction": "i",
             "gender": "f",
-            "name": "PEM0",
             "type__name": "Cisco | ASR9001 | PSU"
         },
         {
+            "name": "PEM1",
             "description": "Power supply 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "PEM1",
             "type__name": "Cisco | ASR9001 | PSU"
         },
         {
+            "name": "MPA0",
             "description": "MPA0 slot",
             "direction": "i",
             "gender": "f",
-            "name": "MPA0",
             "type__name": "Cisco | ASR9k | MPA"
         },
         {
+            "name": "MPA1",
             "description": "MPA1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "MPA1",
             "type__name": "Cisco | ASR9k | MPA"
         },
         {
+            "name": "MPA2",
             "description": "Virtual module for onboard ports",
             "direction": "i",
             "gender": "f",
-            "name": "MPA2",
             "type__name": "Cisco | ASR9k | MPA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ASR-9001", "ASR-9001-S"],
-            "cpe_22": "cpe:/h:cisco:asr_9001:-",
-            "cpe_23": "cpe:2.3:h:cisco:asr_9001:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR-9001", "ASR-9001-S"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:asr_9001:-"
         },
-        "power": {
-            "power": 425.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:asr_9001:-:*:*:*:*:*:*:*"
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 425.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
         }
-    }
+    ]
 }

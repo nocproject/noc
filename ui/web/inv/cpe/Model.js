@@ -17,7 +17,8 @@ Ext.define("NOC.inv.cpe.Model", {
         },
         {
             name: "controller",
-            type: "int"
+            type: "int",
+            persist: false
         },
         {
             name: "controller__label",
@@ -25,12 +26,19 @@ Ext.define("NOC.inv.cpe.Model", {
             persist: false
         },
         {
+            name: "label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "global_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "local_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "type",
@@ -57,6 +65,10 @@ Ext.define("NOC.inv.cpe.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "controllers",
+            type: "auto"
         },
         {
             name: "caps",

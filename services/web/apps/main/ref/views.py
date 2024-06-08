@@ -25,8 +25,9 @@ from noc.core.checkers.loader import loader as checker_loader
 from noc.core.window import wf_choices
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.topology.loader import loader as topo_loader
-from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
+from noc.core.mx import MessageType, MESSAGE_HEADERS
 from noc.core.datasources.loader import loader as ds_loader
+from noc.core.protodcsources.loader import loader as pds_loader
 from noc.main.reportsources.loader import loader as rds_loader
 from noc.models import iter_model_id
 from noc import settings
@@ -191,7 +192,10 @@ class RefAppplication(ExtApplication):
         return [{"id": x.value, "label": x.name} for x in ShapeOverlayForm]
 
     def build_messagetype(self):
-        return [{"id": x, "label": x} for x in sorted(MESSAGE_TYPES)]
+        return [
+            {"id": x.value, "label": x.name}
+            for x in sorted([m for m in MessageType], key=lambda x: x.name)
+        ]
 
     def build_messageheader(self):
         return [{"id": x, "label": x} for x in sorted(MESSAGE_HEADERS)]
@@ -208,7 +212,7 @@ class RefAppplication(ExtApplication):
                 # Filter System Only Checks
                 continue
             for check in checker.CHECKS:
-                r += [{"id": check, "label": check}]
+                r += [{"id": check, "label": check, "has_port": hasattr(checker, "SOCKET_TIMEOUT")}]
         return r  # list(sorted(r))
 
     def build_topologygen(self):
@@ -246,6 +250,19 @@ class RefAppplication(ExtApplication):
             if not repo_source:
                 continue
             r += [{"id": name, "label": repo_source.name}]
+        return r  # list(sorted(r))
+
+    def build_protocoldiscriminatorsource(self):
+        """
+        Protocol Discriminator Source name
+        :return:
+        """
+        r = []
+        for name in pds_loader:
+            ds = pds_loader[name]
+            if not ds:
+                continue
+            r += [{"id": name, "label": ds.name}]
         return r  # list(sorted(r))
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)

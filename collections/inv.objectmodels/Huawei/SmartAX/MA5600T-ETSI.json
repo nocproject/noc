@@ -1,0 +1,227 @@
+{
+    "name": "Huawei | SmartAX | MA5600T-ETSI",
+    "$collection": "inv.objectmodels",
+    "uuid": "21e8dff0-b4f2-4069-931b-651007ceef79",
+    "vendor__code": "HUAWEI",
+    "description": null,
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "fan",
+            "description": "Fan tray",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5600T | FAN-ETSI"
+        },
+        {
+            "name": "0",
+            "description": "Universal interface board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | GPIO"
+        },
+        {
+            "name": "1",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "2",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "3",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "4",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "5",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "6",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "7",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "8",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "9",
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SCU"
+        },
+        {
+            "name": "10",
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SCU"
+        },
+        {
+            "name": "11",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "12",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "13",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "14",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "15",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "16",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "17",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "18",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "name": "19",
+            "description": "Upstream interface board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        },
+        {
+            "name": "20",
+            "description": "Upstream interface board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        },
+        {
+            "name": "21",
+            "description": "Power interface board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | PWR"
+        },
+        {
+            "name": "22",
+            "description": "Power interface board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA560xT | PWR"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 10.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "power",
+            "value": true
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 33.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801MABC", "MA5600T-ETSI"]
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 530
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 275
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 447
+        }
+    ]
+}

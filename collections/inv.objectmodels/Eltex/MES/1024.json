@@ -6,250 +6,521 @@
     "description": "L3 switch with 24 10/100 Base-TX ports, 2 100/1000 Base-X SFP ports",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "Console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "fastethernet1/0/1",
             "description": "fastethernet 1/0/1 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/2",
             "description": "fastethernet 1/0/2 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/3",
             "description": "fastethernet 1/0/3 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/4",
             "description": "fastethernet 1/0/4 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/5",
             "description": "fastethernet 1/0/5 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/6",
             "description": "fastethernet 1/0/6 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/7",
             "description": "fastethernet 1/0/7 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/8",
             "description": "fastethernet 1/0/8 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/9",
             "description": "fastethernet 1/0/9 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/9",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/10",
             "description": "fastethernet 1/0/10 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/10",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/11",
             "description": "fastethernet 1/0/11 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/11",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/12",
             "description": "fastethernet 1/0/12 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/12",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/13",
             "description": "fastethernet 1/0/13 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/13",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/14",
             "description": "fastethernet 1/0/14 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/14",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/15",
             "description": "fastethernet 1/0/15 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/15",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/16",
             "description": "fastethernet 1/0/16 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/16",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/17",
             "description": "fastethernet 1/0/17 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/17",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/18",
             "description": "fastethernet 1/0/18 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/18",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/19",
             "description": "fastethernet 1/0/19 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/19",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/20",
             "description": "fastethernet 1/0/20 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/20",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/21",
             "description": "fastethernet 1/0/21 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/21",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/22",
             "description": "fastethernet 1/0/22 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/22",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/23",
             "description": "fastethernet 1/0/23 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/23",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "fastethernet1/0/24",
             "description": "fastethernet 1/0/24 interface",
             "direction": "s",
             "gender": "f",
-            "name": "fastethernet1/0/24",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gi1_sfp",
             "description": "GigabitEthernet 1/0/1 SFP interface",
             "direction": "i",
             "gender": "f",
-            "name": "gi1_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "gi2_sfp",
             "description": "GigabitEthernet 1/0/2 SFP interface",
             "direction": "i",
             "gender": "f",
-            "name": "gi2_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MES-1024"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MES-1024"]
         },
-        "dimensions": {
-            "depth": 138,
-            "height": 44,
-            "width": 430
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 430
         },
-        "power": {
-            "power": 25.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 138
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 25.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

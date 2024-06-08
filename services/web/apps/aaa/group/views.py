@@ -9,14 +9,12 @@ import threading
 
 # Third-party modules
 from django.http import HttpResponse
-from django.conf import settings
 
 # NOC modules
 from noc.services.web.base.site import site
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.aaa.models.group import Group
 from noc.aaa.models.permission import Permission
-from noc.core.cache.decorator import cachedmethod
 from noc.core.translation import ugettext as _
 
 apps_lock = threading.RLock()
@@ -36,30 +34,6 @@ class GroupsApplication(ExtModelApplication):
     default_ordering = ["name"]
     custom_m2m_fields = {"permissions": Permission}
 
-    @classmethod
-    @cachedmethod(key="apps_permissions_list", lock=lambda _: apps_lock)
-    def apps_permissions_list(cls):
-        r = []
-        apps = list(site.apps)
-        perms = Permission.objects.values_list("name", flat=True)
-        for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
-            mod = module[4:]
-            m = __import__("noc.services.web.apps.%s" % mod, {}, {}, "MODULE_NAME")
-            for app in [app for app in apps if app.startswith(mod + ".")]:
-                app_perms = sorted([p for p in perms if p.startswith(app.replace(".", ":") + ":")])
-                a = site.apps[app]
-                if app_perms:
-                    for p in app_perms:
-                        r += [
-                            {
-                                "module": m.MODULE_NAME,
-                                "title": str(a.title),
-                                "name": p,
-                                "status": False,
-                            }
-                        ]
-        return r
-
     @view(method=["GET"], url=r"^(?P<id>\d+)/?$", access="read", api=True)
     def api_read(self, request, id):
         """
@@ -76,12 +50,16 @@ class GroupsApplication(ExtModelApplication):
 
     def instance_to_dict_get(self, o, fields=None):
         r = super().instance_to_dict(o, fields)
-        r["permissions"] = self.apps_permissions_list()
         current_perms = Permission.get_group_permissions(o)
-        if current_perms:
-            for p in r["permissions"]:
-                if p["name"] in current_perms:
-                    p["status"] = True
+        r["permissions"] = [
+            {
+                "module": p.module,
+                "title": p.title,
+                "name": p.name,
+                "status": p.name in current_perms,
+            }
+            for p in site.get_app_permissions_list()
+        ]
         return r
 
     def update_m2m(self, o, name, values):
@@ -98,5 +76,18 @@ class GroupsApplication(ExtModelApplication):
         Returns dict available permissions
         """
         return self.response(
-            {"data": {"permissions": self.apps_permissions_list()}}, status=self.OK
+            {
+                "data": {
+                    "permissions": [
+                        {
+                            "module": p.module,
+                            "title": p.title,
+                            "name": p.name,
+                            "status": False,
+                        }
+                        for p in site.get_app_permissions_list()
+                    ]
+                }
+            },
+            status=self.OK,
         )

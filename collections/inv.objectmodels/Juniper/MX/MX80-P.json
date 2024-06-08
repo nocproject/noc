@@ -8,128 +8,170 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "qxm0",
             "description": "QXM #0",
             "direction": "i",
             "gender": "f",
-            "name": "qxm0",
             "type__name": "Juniper | MX | QXM"
         },
         {
+            "name": "mic0",
             "description": "MIC Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "mic0",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "mic1",
             "description": "MIC Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "mic1",
             "type__name": "Juniper | MX | MIC"
         },
         {
-            "description": "",
-            "direction": "i",
-            "gender": "f",
             "name": "0/0/0",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
             "name": "0/0/1",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
             "name": "0/0/2",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "",
             "direction": "i",
             "gender": "f",
-            "name": "0/0/3",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "0/0/3",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "pem0",
             "description": "PEM Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "pem0",
             "type__name": "Juniper | MX | MX80 PEM"
         },
         {
+            "name": "pem1",
             "description": "PEM Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "pem1",
             "type__name": "Juniper | MX | MX80 PEM"
         },
         {
+            "name": "ether",
             "description": "Management",
             "direction": "s",
             "gender": "f",
-            "name": "ether",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "AUX serial port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb",
             "description": "USB Port",
             "direction": "i",
             "gender": "f",
-            "name": "usb",
-            "protocols": [">USB1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB10"
+            }],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "clk",
             "description": "CLK",
             "direction": "s",
             "gender": "m",
-            "name": "clk",
             "type__name": "Electrical | F"
         },
         {
+            "name": "sync",
             "description": "SYNC",
             "direction": "s",
             "gender": "m",
-            "name": "sync",
             "type__name": "Electrical | F"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MX80-P"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MX80-P"]
         },
-        "rackmount": {
-            "units": 2
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2
         }
-    }
+    ]
 }

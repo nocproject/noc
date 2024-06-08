@@ -1,0 +1,73 @@
+{
+    "name": "Opticin | Transceiver | 1G | SFP-WDM1490.80",
+    "$collection": "inv.objectmodels",
+    "uuid": "462e17af-dfa6-44cd-b419-cc0fd096a7d6",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin SFP WDM transceiver, 1490 tx, 1550 rx, SC, sm, 80km without ddm",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "rxtx",
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASEZX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1490",
+                    "protocol__code": "1000BASEZX"
+                }
+            ],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SFP-WDM1490.80"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1490
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

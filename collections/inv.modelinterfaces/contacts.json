@@ -7,28 +7,28 @@
         {
             "name": "has_contacts",
             "type": "bool",
-            "description": "Has contacts",
+            "description": "Object can hold contact information",
             "required": true,
             "is_const": true
         },
         {
             "name": "administrative",
             "type": "str",
-            "description": "Administrative contacts",
+            "description": "Administrative contacts, including access and passes",
             "required": false,
             "is_const": false
         },
         {
             "name": "billing",
             "type": "str",
-            "description": "Billing/accounting contacts",
+            "description": "Billing contacts, including agreement negotiations, bills, and payments",
             "required": false,
             "is_const": false
         },
         {
             "name": "technical",
             "type": "str",
-            "description": "Technical contacts",
+            "description": "Technical contacts, including on-site engineering",
             "required": false,
             "is_const": false
         }

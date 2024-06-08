@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# Alarms Model
+# Events Model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,12 +12,15 @@ from noc.core.clickhouse.fields import (
     DateTimeField,
     StringField,
     ReferenceField,
+    UInt64Field,
     IPv4Field,
     MapField,
+    ArrayField,
 )
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.connect import ClickhouseClient
 from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.remotesystem import RemoteSystem
 from noc.core.bi.dictionaries.vendor import Vendor
 from noc.core.bi.dictionaries.platform import Platform
 from noc.core.bi.dictionaries.version import Version
@@ -44,19 +47,31 @@ class Events(Model):
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Register"))
     start_ts = DateTimeField(description=_("Created"))
-    event_id = StringField(description=_("Id"))
+    # Event Classification
+    event_id = StringField(description=_("Id"))  #
+    source = StringField(description=_("Event Source"), low_cardinality=True)
     event_class = ReferenceField(EventClass, description=_("Event Class"))
-    source = StringField(description=_("Id"), low_cardinality=True)
-    raw_vars = MapField(StringField(), description=_("Raw Variables"))
+    # Data
+    labels = ArrayField(StringField(), description=_("Labels"))
+    data = StringField(description="All data on JSON")
+    message = StringField(description=_("Syslog Message"))
+    # Calculated data
+    raw_vars = MapField(StringField(), description=_("Raw Variables"))  # For old query
     resolved_vars = MapField(StringField(), description=_("Resolved Variables"))
     vars = MapField(StringField(), description=_("Vars"))
-    #
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
-    message = StringField(description=_("Syslog Message"))
     #
-    managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
+    remote_system = ReferenceField(RemoteSystem, description="Remote System")
+    remote_id = StringField(description="Event Id on Remote System")
+    # Target data
+    target = MapField(StringField(), description=_("Target"))
+    target_name = StringField(description=_("Target Name"))
+    target_reference = UInt64Field(description=_("Target Reference"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
     ip = IPv4Field(description=_("IP Address"))
+    # Resolver target
+    managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
+    # Agent
     profile = ReferenceField(Profile, description=_("Profile"))
     vendor = ReferenceField(Vendor, description=_("Vendor Name"))
     platform = ReferenceField(Platform, description=_("Platform"))

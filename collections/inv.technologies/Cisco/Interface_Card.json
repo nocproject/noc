@@ -1,0 +1,9 @@
+{
+    "name": "Cisco | Interface Card",
+    "$collection": "inv.technologies",
+    "uuid": "29426285-f1e7-4251-ad5f-a32cbc35709a",
+    "description": "Technology connect interface card (IC) to integrated router.",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

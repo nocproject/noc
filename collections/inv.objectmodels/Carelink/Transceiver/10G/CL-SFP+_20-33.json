@@ -8,25 +8,66 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "rxtx",
             "description": "RxTx SC Port",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": ["<10GBASELR-1330", ">10GBASELR-1270"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1330",
+                    "protocol__code": "10GBASELR"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "1270",
+                    "protocol__code": "10GBASELR"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CL-SFP+_20-33", "CL-SFP+-20-33"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CL-SFP+_20-33", "CL-SFP+-20-33"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1330
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1270
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

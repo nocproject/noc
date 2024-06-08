@@ -1,0 +1,55 @@
+{
+    "name": "Huawei | CX&NE | CX600-X3A FAN",
+    "$collection": "inv.objectmodels",
+    "uuid": "b980bb55-076a-4b97-80c5-fc2a09958c8e",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X3A fan module ",
+    "cr_context": "FAN",
+    "labels": ["noc::inv::fan"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | CX&NE | CX600-X3A FAN"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 100.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR5M000FBX70"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02121143"]
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.5
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 184
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 450
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 127
+        }
+    ]
+}

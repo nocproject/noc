@@ -8,31 +8,37 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "mic0",
             "description": "MIC connection",
             "direction": "i",
             "gender": "f",
-            "name": "mic0",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "mic1",
             "description": "MIC connection",
             "direction": "i",
             "gender": "f",
-            "name": "mic1",
             "type__name": "Juniper | MX | MIC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MPC3E-3D-NG"],
-            "part_no": ["750-063181"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-063181"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MPC3E-3D-NG"]
         }
-    }
+    ]
 }

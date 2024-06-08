@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: NBI service <br/>
       <strong>Long description</strong>: Service for integration in external systems<br/>
       <strong>Scale Recommendations</strong>: Two per HA installation <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/nbi/ target=_blank>NBI</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/nbi/ target=_blank>NBI</a><br/>
       <strong>Placement constraint</strong>: On nginx <br/>
     power:
       default: 1

@@ -7,47 +7,58 @@
     "cr_context": "SUP",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Supervisor"
         },
         {
+            "name": "disk1",
             "description": "Compact flash slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "disk1",
             "type__name": "Flash | CF"
         },
         {
+            "name": "Gi1_gbic",
             "description": "GigabitEthernet X/1 Gbic port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "Gi2_gbic",
             "description": "GigabitEthernet X/2 Gbic port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
+            "name": "console",
             "description": "Management console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-X6K-S2U-MSFC2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-X6K-S2U-MSFC2"]
         }
-    }
+    ]
 }

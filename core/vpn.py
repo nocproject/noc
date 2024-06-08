@@ -10,7 +10,7 @@ import struct
 from typing import Any, Dict
 
 # Third-party modules
-from csiphash import siphash24
+from siphash24 import siphash24
 
 # NOC modules
 from noc.core.comp import smart_bytes
@@ -51,5 +51,5 @@ def get_vpn_id(vpn: Dict[str, Any]) -> str:
     # Use reserved OUI range 00 00 00 - 00 00 FF to generate
     # So we have 5 octets to fill vpn id
     # Use last 5 octets of siphash 2-4
-    i_hash = siphash24(SIPHASH_SEED, smart_bytes(identity))
+    i_hash = siphash24(smart_bytes(identity), key=SIPHASH_SEED).digest()
     return "%x:%x" % struct.unpack("!BI", i_hash[3:])

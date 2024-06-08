@@ -9,6 +9,9 @@
 from typing import Optional, List, Union
 from datetime import datetime
 
+# Third-party modules
+from pydantic import ConfigDict
+
 # NOC modules
 from .base import BaseModel, _BaseModel
 from .typing import Reference
@@ -52,9 +55,7 @@ class Service(BaseModel):
     capabilities: Optional[List[CapsItem]] = None
     checkpoint: Optional[str] = None
 
-    class Config:
-        fields = {"state_changed": "logical_status_start", "state": "logical_status"}
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
     _csv_fields = [
         "id",

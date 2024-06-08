@@ -1,0 +1,70 @@
+{
+    "name": "ADM-10",
+    "$collection": "inv.objectconfigurationrules",
+    "uuid": "f974ee40-4145-4944-abfa-24331ad73e23",
+    "description": null,
+    "param_rules": [
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "location"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "optical_state"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "enable_tx"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "tx_power"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "tx_frequency"
+        },
+        {
+            "choices": ["OTU2"],
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "otn_data_type"
+        },
+        {
+            "choices": ["STM1", "STM4", "STM16", "1GE"],
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "otn_data_type"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "otn_payload"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "optical_als_mode"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "optical_loopback_detect"
+        }
+    ],
+    "slot_rules": [
+        {
+            "match_slot": "LINE\\d+$",
+            "scope__name": "OTN"
+        },
+        {
+            "match_slot": "CLIENT\\d+$",
+            "scope__name": "OpticalPort"
+        }
+    ]
+}

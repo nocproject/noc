@@ -7,137 +7,482 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         },
         {
+            "name": "voice-port0",
             "description": "voice-port 0",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port1",
             "description": "voice-port 1",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port1",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
-        },{
+        },
+        {
+            "name": "voice-port2",
             "description": "voice-port 2",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port2",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port3",
             "description": "voice-port 3",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port3",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
-        },{
+        },
+        {
+            "name": "voice-port4",
             "description": "voice-port 4",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port4",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port5",
             "description": "voice-port 5",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port5",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
-        },{
+        },
+        {
+            "name": "voice-port6",
             "description": "voice-port 6",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port6",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port7",
             "description": "voice-port 7",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port7",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
-        },{
+        },
+        {
+            "name": "voice-port8",
             "description": "voice-port 8",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port8",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port9",
             "description": "voice-port 9",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port9",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
-        },{
+        },
+        {
+            "name": "voice-port10",
             "description": "voice-port 10",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port10",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port11",
             "description": "voice-port 11",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port11",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
-        },{
+        },
+        {
+            "name": "voice-port12",
             "description": "voice-port 12",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port12",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port13",
             "description": "voice-port 13",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port13",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
-            "type__name": "Electrical | RJ11"
-        },{
-            "description": "voice-port 14",
-            "direction": "s",
-            "gender": "f",
-            "name": "voice-port14",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port14",
+            "description": "voice-port 14",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "voice-port15",
             "description": "voice-port 15",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port15",
-            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NM-16AM-V2", "NM-16AM-V2="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NM-16AM-V2", "NM-16AM-V2="]
         }
-    }
+    ]
 }

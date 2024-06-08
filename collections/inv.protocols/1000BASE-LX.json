@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE-LX",
+    "code": "1000BASELX",
+    "$collection": "inv.protocols",
+    "uuid": "1b27a92f-b568-4f2c-b68c-f307bdb09d2b",
+    "description": "1000BASE-LX is an optical fiber Gigabit Ethernet standard specified in IEEE 802.3 Clause 38 which uses a long wavelength laser (1,270–1,355 nm), and a maximum RMS spectral width of 4 nm.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

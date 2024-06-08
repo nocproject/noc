@@ -7,16 +7,18 @@
     "cr_context": "CLK",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | CLK"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CLK-7600"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CLK-7600"]
         }
-    }
+    ]
 }

@@ -233,9 +233,10 @@ class MODiscoveryJob(PeriodicJob):
         discovery_diagnostics = self.load_diagnostic(
             is_box=self.is_box, is_periodic=self.is_periodic
         )
+        self.logger.debug("Updating diagnostics statuses: %s", problems)
         if not discovery_diagnostics:
+            self.logger.info("Discovered diagnostics not found")
             return None
-        self.logger.info("Updating diagnostics statuses")
         now = datetime.datetime.now()
         processed = set()
         # Processed failed diagnostics
@@ -306,7 +307,7 @@ class MODiscoveryJob(PeriodicJob):
                 {
                     "reference": f"d:{p.alarm_class}:{self.object.id}:{' | '.join(p.path)}",
                     "alarm_class": p.alarm_class,
-                    "managed_object": self.object.id,
+                    "managed_object": str(self.object.id),
                     "timestamp": now,
                     "labels": labels,
                     "vars": d_vars,
@@ -534,7 +535,7 @@ class DiscoveryCheck(object):
         """
         return [
             ll
-            for ll in Label.merge_labels(obj.iter_effective_labels(obj))
+            for ll in sorted(Label.merge_labels(obj.iter_effective_labels(obj), add_wildcard=True))
             if obj.can_set_label(ll) or ll[-1] in MATCH_OPS or ll[-1] == "*"
         ]
 

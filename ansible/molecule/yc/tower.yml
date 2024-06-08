@@ -6,7 +6,7 @@
 - import_playbook: ../../system_roles/nginx/service.yml
 - import_playbook: ../../system_roles/grafana/service.yml
 - import_playbook: ../../system_roles/clickhouse/service.yml
-- import_playbook: ../../system_roles/redpanda/service.yml
+- import_playbook: ../../system_roles/kafka/service.yml
 - import_playbook: ../../noc_roles/noc/service.yml
 - import_playbook: ../../system_roles/liftbridge/service.yml
 - import_playbook: ../../system_roles/nats/service.yml

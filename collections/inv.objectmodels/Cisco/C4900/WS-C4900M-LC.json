@@ -7,80 +7,106 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | C4900 | LINECARD"
         },
         {
+            "name": "Te1_x2",
             "description": "TenGigabitEthernet X/1",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te2_x2",
             "description": "TenGigabitEthernet X/2",
             "direction": "i",
             "gender": "f",
-            "name": "Te2_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te3_x2",
             "description": "TenGigabitEthernet X/3",
             "direction": "i",
             "gender": "f",
-            "name": "Te3_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te4_x2",
             "description": "TenGigabitEthernet X/4",
             "direction": "i",
             "gender": "f",
-            "name": "Te4_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te5_x2",
             "description": "TenGigabitEthernet X/5",
             "direction": "i",
             "gender": "f",
-            "name": "Te5_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te6_x2",
             "description": "TenGigabitEthernet X/6",
             "direction": "i",
             "gender": "f",
-            "name": "Te6_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te7_x2",
             "description": "TenGigabitEthernet X/7",
             "direction": "i",
             "gender": "f",
-            "name": "Te7_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te8_x2",
             "description": "TenGigabitEthernet X/8",
             "direction": "i",
             "gender": "f",
-            "name": "Te8_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C4900M-LC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C4900M-LC"]
         }
-    }
+    ]
 }

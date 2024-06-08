@@ -1,0 +1,105 @@
+{
+    "name": "IRE-Polus | Horizon | CU-H5",
+    "$collection": "inv.objectmodels",
+    "uuid": "1cde0558-d43d-4485-9be2-89f08d85ed61",
+    "vendor__code": "IRE-POLUS",
+    "description": "Модуль управления и контроля CU-H5 является частью сетевого элемента, основанного на шасси платформы IPG Horizon. Основное назначение блока CU – это предоставление функции управления шасси: прием и обработка команд от системы управления, управление картами, установленными в слоты шасси, и блоками общего назначения (блоки ввода питания PEM, блоки вентиляторов FAN, блок воздушного фильтра), обработка аварийных сообщений от карт и устранение аварий в рамках сетевой системы управления.",
+    "cr_context": "CU",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | CU"
+        },
+        {
+            "name": "mgmt1",
+            "description": "Management port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "mgmt2",
+            "description": "Management port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "com",
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "USB20"
+            }],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "name": "usb",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "USB20"
+            }],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CU-H5"]
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 217
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 280
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 15.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.2
+        }
+    ]
+}

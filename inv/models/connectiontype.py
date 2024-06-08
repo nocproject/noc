@@ -7,18 +7,23 @@
 
 # Python modules
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Union
+from threading import Lock
+import operator
 
 # Third-party modules
+from bson import ObjectId
+import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     BooleanField,
-    DictField,
+    EmbeddedDocumentListField,
     ListField,
     UUIDField,
     ObjectIdField,
     EmbeddedDocumentField,
+    DynamicField,
 )
 
 # NOC modules
@@ -27,6 +32,9 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.main.models.doccategory import category
 from noc.core.model.decorator import on_delete_check
+from .facade import Facade
+
+id_lock = Lock()
 
 
 class ConnectionMatcher(EmbeddedDocument):
@@ -44,6 +52,25 @@ class ConnectionMatcher(EmbeddedDocument):
             "scope": self.scope,
             "protocol": self.protocol,
         }
+
+
+class ModelAttr(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    interface = StringField()
+    attr = StringField()
+    value = DynamicField()
+
+    def __str__(self) -> str:
+        return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "interface": self.interface,
+            "attr": self.attr,
+            "value": self.value,
+        }
+        return r
 
 
 @category
@@ -81,7 +108,7 @@ class ConnectionType(Document):
         default="mf",
     )
     # ModelData
-    data = DictField(default={})
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
     # Compatible group
     # Connection compatible with opposite gender of same type
     # and all types having any c_group
@@ -89,27 +116,46 @@ class ConnectionType(Document):
     uuid = UUIDField(binary=True)
     # Connection matchers
     matchers = ListField(EmbeddedDocumentField(ConnectionMatcher))
+    # Facade
+    male_facade = PlainReferenceField(Facade, required=False)
+    female_facade = PlainReferenceField(Facade, required=False)
 
     OPPOSITE_GENDER = {"s": "s", "m": "f", "f": "m"}
     category = ObjectIdField()
 
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
     def __str__(self):
         return self.name
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ConnectionType"]:
+        return ConnectionType.objects.filter(id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name: str) -> Optional["ConnectionType"]:
+        return ConnectionType.objects.filter(name=name).first()
+
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
-            "name": self.name,
-            "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
-            "description": self.description,
-            "genders": self.genders,
-            "c_group": self.c_group,
-        }
+        r = {"name": self.name, "$collection": self._meta["json_collection"], "uuid": self.uuid}
+        if self.description:
+            r["description"] = self.description
+        r["genders"] = self.genders
+        r["c_group"] = self.c_group
         if self.extend:
             r["extend__name"] = self.extend.name
         if self.matchers:
             r["matchers"] = [m.json_data for m in self.matchers]
+        if self.male_facade:
+            r["male_facade__name"] = self.male_facade.name
+        if self.female_facade:
+            r["female_facade__name"] = self.female_facade.name
+        if self.data:
+            r["data"] = [c.json_data for c in self.data]
         return r
 
     def to_json(self) -> str:
@@ -118,6 +164,26 @@ class ConnectionType(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+    ) -> Any:
+        """
+        Get connnection type data.
+
+        Args:
+            interface: Interface name
+            key: attribute name
+
+        Returns:
+            Data or None
+        """
+        for item in self.data:
+            if item.interface == interface and item.attr == key:
+                return item.value
+        return None
 
     def get_effective_data(self):
         """

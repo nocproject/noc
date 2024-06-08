@@ -5,37 +5,97 @@
     "vendor__code": "FINISAR",
     "description": "Finisar QSFP+ 40 Gigabit Ethernet Active Optical Cable (AOC) 7m",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
-            "cross": "in2",
+            "name": "in1",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in1",
-            "protocols": ["TransEth40G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
-            "cross": "in1",
+            "name": "in2",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in2",
-            "protocols": ["TransEth40G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["QSFP-H40G-AOC7M"],
-            "part_no": ["QSFP-H40G-AOC7M", "FCBN410QE2C07-C2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "QSFP-H40G-AOC7M",
+                "FCBN410QE2C07-C2"
+            ]
         },
-        "twinax": {
-            "alias": "in",
-            "connection1": "in1",
-            "connection2": "in2",
-            "twinax": true
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": [
+                "QSFP-H40G-AOC7M"
+            ]
+        },
+        {
+            "attr": "alias",
+            "interface": "twinax",
+            "value": "in"
+        },
+        {
+            "attr": "connection1",
+            "interface": "twinax",
+            "value": "in1"
+        },
+        {
+            "attr": "twinax",
+            "interface": "twinax",
+            "value": true
+        },
+        {
+            "attr": "connection2",
+            "interface": "twinax",
+            "value": "in2"
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 7
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
+        }
+    ]
 }

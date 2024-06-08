@@ -1,0 +1,8 @@
+{
+  "$metric": "Interface | DOM | Bias Current",
+  "$type": "ifindex",
+  "oid": "1.3.6.1.4.1.8886.1.18.2.3.1.1.3.{{ ifIndex }}.1.2",
+  "type": "gauge",
+  "units": "A",
+  "scale": "scale(0.000001)"
+}

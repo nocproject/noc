@@ -8,24 +8,25 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "DSL",
             "description": "USER 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "DSL",
-            "protocols": ["ReachDSL+"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zhone | GranDSLAM | card"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["8975-B1-000"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["8975-B1-000"]
         }
-    }
+    ]
 }

@@ -8,66 +8,80 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "spe0",
             "description": "3945 SPE",
             "direction": "i",
             "gender": "f",
-            "name": "spe0",
             "type__name": "Cisco | 3900 | SPE"
         },
         {
+            "name": "sm1",
             "description": "Service Module Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "sm1",
             "type__name": "Cisco | ISR | SM"
         },
         {
+            "name": "sm2",
             "description": "Service Module Slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "sm2",
             "type__name": "Cisco | ISR | SM"
         },
         {
+            "name": "sm3",
             "description": "Service Module Slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "sm3",
             "type__name": "Cisco | ISR | SM"
         },
         {
+            "name": "sm4",
             "description": "Service Module Slot 4",
             "direction": "i",
             "gender": "f",
-            "name": "sm4",
             "type__name": "Cisco | ISR | SM"
         },
         {
+            "name": "psu1",
             "description": "Internal Power Supply 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | 3900 | PSU"
         },
         {
+            "name": "psu2",
             "description": "Internal Power Supply 2",
             "direction": "i",
             "gender": "f",
-            "name": "psu2",
             "type__name": "Cisco | 3900 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO3945-CHASSIS"],
-            "cpe_22": "cpe:/h:cisco:3945_integrated_services_router:-",
-            "cpe_23": "cpe:2.3:h:cisco:3945_integrated_services_router:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO3945-CHASSIS"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:3945_integrated_services_router:-"
         },
-        "rackmount": {
-            "units": 3.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:3945_integrated_services_router:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 3.0
         }
-    }
+    ]
 }

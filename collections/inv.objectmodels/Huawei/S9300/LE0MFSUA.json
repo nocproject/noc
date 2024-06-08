@@ -9,28 +9,48 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S9300 | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03020NTU"],
-            "part_no": ["LE02FSUA", "LE0MFSUA"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 20.0
         },
-        "dimensions": {
-            "depth": 244,
-            "height": 36,
-            "width": 170
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LE02FSUA", "LE0MFSUA"]
         },
-        "power": {
-            "power": 20.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03020NTU"]
         },
-        "weight": {
-            "weight": 0.42
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.42
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 170
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 244
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 36
         }
-    }
+    ]
 }

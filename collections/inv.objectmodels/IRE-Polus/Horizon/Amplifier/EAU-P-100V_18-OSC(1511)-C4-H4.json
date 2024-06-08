@@ -1,0 +1,154 @@
+{
+    "name": "IRE-Polus | Horizon | EAU | EAU-P-100V/18-OSC(1511)-C4-H4",
+    "$collection": "inv.objectmodels",
+    "uuid": "cda71cad-8470-4a53-832d-2ee6527dae32",
+    "vendor__code": "IRE-POLUS",
+    "description": "Карта EAU является эрбиевым волоконным оптическим усилителем и предназначена для усиления оптических DWDM-сигналов в C-диапазоне (версия С3 для диапазона – 1528.77 -1564 нм  и версия С4 для диапазона –1527.22 – 1566.72 ). Рекомендуется к применению в многоканальных системах. Предназначен для усиления оптического сигнала в усилительном узле волоконно-оптического тракта.",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "OSC_RX",
+            "description": "Вход служебного канала",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_TX",
+            "description": "Выход служебного канала",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON1",
+            "description": "Контрольный выход предусилителя 1",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON2",
+            "description": "Контрольный выход предусилителя 2",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN1",
+            "description": "Вход предусилителя 1",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT1",
+            "description": "Выход предусилителя 1",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN2",
+            "description": "Вход предусилителя 2",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT2",
+            "description": "Выход предусилителя 2",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "cross": [
+        {
+            "input": "IN1",
+            "output": "OUT1"
+        },
+        {
+            "input": "IN1",
+            "output": "OSC_TX"
+        },
+        {
+            "input": "IN1",
+            "output": "MON1"
+        },
+        {
+            "input": "IN2",
+            "output": "OUT2"
+        },
+        {
+            "input": "IN2",
+            "output": "MON2"
+        },
+        {
+            "input": "OSC_RX",
+            "output": "OUT2"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EAU-P-100V/18-OSC(1511)-C4-H4"]
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 149
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 278
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.7
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 50.0
+        },
+        {
+            "attr": "min_rx_power",
+            "interface": "optical",
+            "value": -35.0
+        },
+        {
+            "attr": "max_rx_power",
+            "interface": "optical",
+            "value": 10.0
+        },
+        {
+            "attr": "max_tx_power",
+            "interface": "optical",
+            "value": 20.0
+        }
+    ]
+}

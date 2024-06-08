@@ -68,6 +68,6 @@ class TrapServer(UDPServer):
         }
         body.update(varbinds)
         body = {k: fm_escape(body[k]) for k in body}
-        self.service.register_message(cfg, ts, body)
+        self.service.register_trap_message(cfg, ts, body, address=address[0])
         if config.message.enable_snmptrap:
             self.service.register_mx_message(cfg, ts, address[0], message_id, raw_pdu, raw_varbinds)

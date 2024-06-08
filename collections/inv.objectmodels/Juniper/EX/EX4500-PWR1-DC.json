@@ -8,36 +8,50 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "m",
-            "name": "-48V",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "m",
-            "name": "RTN",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4500 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["EX4500-PWR1-DC"],
-            "part_no": ["740-034590"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-034590"]
         },
-        "power": {
-            "power": 1000.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX4500-PWR1-DC"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1000.0
         }
-    }
+    ]
 }

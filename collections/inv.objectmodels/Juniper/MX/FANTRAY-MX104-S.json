@@ -9,17 +9,23 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MX104 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["FANTRAY-MX104-S"],
-            "part_no": ["711-049570"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["711-049570"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FANTRAY-MX104-S"]
         }
-    }
+    ]
 }

@@ -1,8 +1,0 @@
----
-- name: Copy mongod-arbiter service file
-  template:
-    src: "os/Ubuntu_16/etc/systemd/system/mongod-arbiter.service.j2"
-    dest: "/etc/systemd/system/mongod-arbiter.service"
-  notify:
-    - restart mongod-arbiter
-    - reload systemd

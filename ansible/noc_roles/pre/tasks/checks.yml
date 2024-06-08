@@ -49,7 +49,7 @@
         msg: |
           {{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role
       when:
-        - ansible_distribution_version is version("16.04", '<')
+        - ansible_distribution_version is version("20.04", '<')
   when:
     - ansible_distribution == "Ubuntu"
   tags:

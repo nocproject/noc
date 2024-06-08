@@ -7,85 +7,115 @@
     "cr_context": "SUP",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Supervisor"
         },
         {
+            "name": "disk1",
             "description": "Compact flash slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "disk1",
             "type__name": "Flash | CF"
         },
         {
+            "name": "msfc",
             "description": "MSFC slot",
             "direction": "i",
             "gender": "f",
-            "name": "msfc",
             "type__name": "Cisco | 6500-7600 | MSFC"
         },
         {
+            "name": "pfc",
             "description": "PFC slot",
             "direction": "i",
             "gender": "f",
-            "name": "pfc",
             "type__name": "Cisco | 6500-7600 | PFC"
         },
         {
+            "name": "Gi1_sfp",
             "description": "GigabitEthernet X/1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "GigabitEthernet X/2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi3",
             "description": "GigabitEthernet X/3",
             "direction": "s",
             "gender": "f",
-            "name": "Gi3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Te4_x2",
             "description": "TenGigabitEthernet X/4",
             "direction": "i",
             "gender": "f",
-            "name": "Te4_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "Te5_x2",
             "description": "TenGigabitEthernet X/5",
             "direction": "i",
             "gender": "f",
-            "name": "Te5_x2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
+            "name": "console",
             "description": "Management console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["VS-S720-10G-3C", "VS-S720-10G", "VS-SUP2T-10G", "VS-S720-10G-3CXL"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VS-S720-10G-3C", "VS-S720-10G", "VS-SUP2T-10G", "VS-S720-10G-3CXL"]
         }
-    }
+    ]
 }

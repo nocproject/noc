@@ -9,7 +9,7 @@
 from typing import Any, Optional, Dict, List, Set
 
 # NOC modules
-from noc.fm.models.activeevent import ActiveEvent
+from noc.core.fm.event import Event
 from noc.fm.models.eventclass import EventClass, EventDispositionRule
 from noc.fm.models.activealarm import ComponentHub
 from noc.fm.models.alarmclass import AlarmClass
@@ -21,7 +21,7 @@ class Rule(object):
         self.event_class: "EventClass" = ec
         self.u_name: str = "%s: %s" % (self.event_class.name, self.name)
         self.condition = compile(dr.condition, "<string>", "eval")
-        mo_exp = dr.managed_object or "event.managed_object"
+        mo_exp = dr.managed_object or "managed_object"
         self.managed_object = compile(mo_exp, "<string>", "eval")
         self.action: str = dr.action
         self.alarm_class: "AlarmClass" = dr.alarm_class
@@ -59,11 +59,12 @@ class Rule(object):
                         # Constant
                         self.c_defaults[v.name] = v.default
 
-    def get_vars(self, event: "ActiveEvent") -> Optional[Dict[str, Any]]:
+    def get_vars(self, event: "Event", managed_object=None) -> Optional[Dict[str, Any]]:
         """
         Get alarm variables from event.
 
-        :param event: ActiveEvent
+        :param event: Event
+        :param managed_object:
         :returns: Dict of variables or None
         """
         if not self.var_mapping:
@@ -78,7 +79,7 @@ class Rule(object):
         if not self.d_defaults:
             return vars
         # Calculate dynamic defaults
-        context = {"components": ComponentHub(self.alarm_class, event.managed_object, vars.copy())}
+        context = {"components": ComponentHub(self.alarm_class, managed_object, vars.copy())}
         for k, v in self.d_defaults.items():
             x = eval(v, {}, context)
             if x:

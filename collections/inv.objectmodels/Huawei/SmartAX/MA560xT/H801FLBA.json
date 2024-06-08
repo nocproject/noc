@@ -6,19 +6,23 @@
     "description": "MA5600T,H801FLBA,Forwarding Logic Board,1*2\nSupports the VoIP logic forwarding function.\nSupports BFD.",
     "connections": [
         {
+            "name": "in",
             "description": "Board connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | DB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801FLBA"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801FLBA"]
         },
-        "power": {
-            "power": 4.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 4.0
         }
-    }
+    ]
 }

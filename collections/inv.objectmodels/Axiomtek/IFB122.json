@@ -6,231 +6,346 @@
     "description": "Robust RISC-based DIN-rail Fanless Embedded System with i.MX 6UL Processor, 2 COM, 2 LANs and DIO (2-in/1-out)",
     "connections": [
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "V+",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | MSTB 2.5/3-ST-5.08"
-        },
-        {
             "description": null,
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
             "name": "GND",
-            "protocols": ["GND"],
-            "type__name": "Power | MSTB 2.5/3-ST-5.08"
-        },
-        {
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "V-",
-            "protocols": [">-48VDC"],
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
         {
+            "name": "V-",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "name": "usb0",
             "description": "USB Port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["<USB11", "<USB20"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "eth0",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "eth1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Serial Port",
+            "name": "eth1",
+            "description": null,
             "direction": "s",
             "gender": "f",
-            "group": "S0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "name": "1",
-            "protocols": ["<RS232"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S0",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "2",
-            "protocols": ["<RS232"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S0",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "3",
-            "protocols": ["<RS232", "<RS485-B"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S0",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "4",
-            "protocols": ["<RS232", "<RS485-A"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S0",
-            "name": "5",
-            "protocols": ["<RS232"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "5",
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
-            "group": "S1",
+            "group": "S0",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "1",
-            "protocols": ["<RS232"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S1",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "2",
-            "protocols": ["<RS232"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S1",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "3",
-            "protocols": ["<RS232", "<RS485-B"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S1",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "4",
-            "protocols": ["<RS232", "<RS485-A"],
-            "type__name": "Electrical | DB9"
-        },
-        {
             "description": "Serial Port",
             "direction": "s",
             "gender": "f",
             "group": "S1",
-            "name": "5",
-            "protocols": ["<RS232"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Electrical | DB9"
         },
         {
-            "description": "Console port",
+            "name": "5",
+            "description": "Serial Port",
             "direction": "s",
             "gender": "f",
+            "group": "S1",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | DB9"
+        },
+        {
             "name": "TX",
-            "protocols": [">RS232"],
-            "type__name": "Power | MSTB 2.5/10-ST-5.08"
-        },
-        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Power | MSTB 2.5/10-ST-5.08"
+        },
+        {
             "name": "RX",
-            "protocols": [">RS232"],
-            "type__name": "Power | MSTB 2.5/10-ST-5.08"
-        },
-        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Power | MSTB 2.5/10-ST-5.08"
+        },
+        {
             "name": "GND",
-            "protocols": [">RS232"],
-            "type__name": "Power | MSTB 2.5/10-ST-5.08"
-        },
-        {
-            "description": "Relay port",
-            "direction": "s",
-            "gender": "f",
-            "name": "relay",
-            "type__name": "Power | MSTB 2.5/10-ST-5.08"
-        },
-        {
-            "description": "Relay port",
-            "direction": "s",
-            "gender": "f",
-            "name": "relay",
-            "type__name": "Power | MSTB 2.5/10-ST-5.08"
-        },
-        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "-",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Power | MSTB 2.5/10-ST-5.08"
         },
         {
+            "name": "relay",
+            "description": "Relay port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/10-ST-5.08"
+        },
+        {
+            "name": "relay",
+            "description": "Relay port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/10-ST-5.08"
+        },
+        {
+            "name": "-",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/10-ST-5.08"
+        },
+        {
+            "name": "DO",
             "description": "Digital Output",
             "direction": "s",
             "gender": "f",
-            "name": "DO",
             "type__name": "Power | MSTB 2.5/10-ST-5.08"
         },
         {
-            "description": "Digital input",
-            "direction": "s",
-            "gender": "f",
             "name": "DI1",
-            "type__name": "Power | MSTB 2.5/10-ST-5.08"
-        },
-        {
             "description": "Digital input",
             "direction": "s",
             "gender": "f",
-            "name": "DI0",
             "type__name": "Power | MSTB 2.5/10-ST-5.08"
         },
         {
+            "name": "DI0",
+            "description": "Digital input",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/10-ST-5.08"
+        },
+        {
+            "name": "+",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "+",
             "type__name": "Power | MSTB 2.5/10-ST-5.08"
         }
     ],
-    "data": {
-        "dimensions": {
-            "depth": 100,
-            "height": 125,
-            "width": 31
+    "data": [
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 100
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 125
         },
-        "power": {
-            "power": 5.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 31
         },
-        "weight": {
-            "weight": 0.3
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 5.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.3
         }
-    }
+    ]
 }

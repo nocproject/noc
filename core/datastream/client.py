@@ -14,9 +14,10 @@ from typing import Optional
 import orjson
 
 # NOC modules
-from noc.core.http.client import fetch, ERR_READ_TIMEOUT, ERR_TIMEOUT
+from noc.core.http.async_client import HttpClient, ERR_TIMEOUT, ERR_READ_TIMEOUT
 from noc.core.error import NOCError, ERR_DS_BAD_CODE, ERR_DS_PARSE_ERROR
 from noc.core.dcs.error import ResolutionError
+from noc.core.comp import DEFAULT_ENCODING
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,10 @@ class DataStreamClient(object):
         self.name = name
         self.service = service
         self._is_ready = False
+        self.client = HttpClient(
+            headers={"X-NOC-API-Access": f"datastream:{self.name}".encode(DEFAULT_ENCODING)},
+            resolver=self.resolve,
+        )
 
     async def on_change(self, data):
         """
@@ -90,7 +95,6 @@ class DataStreamClient(object):
             base_qs += [f"format={ds_format}"]
         if filter_policy:
             base_qs += [f"filter_policy={filter_policy}"]
-        req_headers = {"X-NOC-API-Access": f"datastream:{self.name}"}
         loop = asyncio.get_running_loop()
         # Continue until finish
         while True:
@@ -107,7 +111,8 @@ class DataStreamClient(object):
             # Get data
             logger.debug("Request: %s", url)
             t0 = loop.time()
-            code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
+            code, headers, data = await self.client.get(url)
+            # code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
             dt = loop.time() - t0
             logger.debug("Response: %s %s [%.2fms]", code, headers, dt * 1000)
             if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
@@ -137,7 +142,7 @@ class DataStreamClient(object):
                 self._is_ready = True
             # Continue from last change
             if "X-NOC-DataStream-Last-Change" in headers:
-                change_id = headers["X-NOC-DataStream-Last-Change"]
+                change_id = headers["X-NOC-DataStream-Last-Change"].decode(DEFAULT_ENCODING)
                 continue
             if block and self._is_ready:
                 # Do not set block=1 before is_ready, otherwise

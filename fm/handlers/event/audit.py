@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Audit handlers
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,98 +45,98 @@ TTL_REBOOT = config.audit.reboot_ttl
 TTL_CONFIG = config.audit.config_changed_ttl
 
 
-def log_cmd(event):
+def log_cmd(event, managed_object):
     """
     Log CLI command
     """
     InteractionLog(
         timestamp=event.timestamp,
         expire=event.timestamp + datetime.timedelta(seconds=TTL_COMMAND),
-        object=event.managed_object.id,
+        object=managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_COMMAND,
         text=event.vars.get("command"),
     ).save()
 
 
-def log_login(event):
+def log_login(event, managed_object):
     """
     Log login event
     """
     InteractionLog(
         timestamp=event.timestamp,
         expire=event.timestamp + datetime.timedelta(seconds=TTL_LOGIN),
-        object=event.managed_object.id,
+        object=managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGIN,
         text="User logged in",
     ).save()
 
 
-def log_logout(event):
+def log_logout(event, managed_object):
     """
     Log logout event
     """
     InteractionLog(
         timestamp=event.timestamp,
         expire=event.timestamp + datetime.timedelta(seconds=TTL_LOGIN),
-        object=event.managed_object.id,
+        object=managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGOUT,
         text="User logged out",
     ).save()
 
 
-def log_reboot(event):
+def log_reboot(event, managed_object):
     """
     Log reboot event
     """
     InteractionLog(
         timestamp=event.timestamp,
         expire=event.timestamp + datetime.timedelta(seconds=TTL_REBOOT),
-        object=event.managed_object.id,
+        object=managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_REBOOT,
         text="System rebooted",
     ).save()
 
 
-def log_started(event):
+def log_started(event, managed_object):
     """
     Log system started event
     """
     InteractionLog(
         timestamp=event.timestamp,
         expire=event.timestamp + datetime.timedelta(seconds=TTL_REBOOT),
-        object=event.managed_object.id,
+        object=managed_object.id,
         user=None,
         op=InteractionLog.OP_STARTED,
         text="System started",
     ).save()
 
 
-def log_halted(event):
+def log_halted(event, managed_object):
     """
     Log system halted event
     """
     InteractionLog(
         timestamp=event.timestamp,
         expire=event.timestamp + datetime.timedelta(seconds=TTL_REBOOT),
-        object=event.managed_object.id,
+        object=managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_HALTED,
         text="System halted",
     ).save()
 
 
-def log_config_changed(event):
+def log_config_changed(event, managed_object):
     """
     Log config changed event
     """
     InteractionLog(
         timestamp=event.timestamp,
         expire=event.timestamp + datetime.timedelta(seconds=TTL_CONFIG),
-        object=event.managed_object.id,
+        object=managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_CONFIG_CHANGED,
         text="Config changed",

@@ -1,12 +1,13 @@
 # ---------------------------------------------------------------------
 # inv.connectiontype application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
+from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.connectiontype import ConnectionType
 from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _
@@ -23,6 +24,11 @@ class ConnectionTypeApplication(ExtDocApplication):
     parent_model = DocCategory
     parent_field = "parent"
     query_fields = ["name__icontains", "description__icontains"]
+
+    def clean(self, data):
+        if "data" in data:
+            data["data"] = ModelInterface.clean_data(data["data"])
+        return super().clean(data)
 
     @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"], access="read", api=True)
     def api_compatible(self, request, id):

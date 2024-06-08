@@ -5,36 +5,89 @@
     "vendor__code": "TIMEINTERCONNECT",
     "description": "40GE QSFP+ DAC 1m",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
-            "cross": "in2",
+            "name": "in1",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in1",
-            "protocols": ["TransEth40G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
-            "cross": "in1",
+            "name": "in2",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in2",
-            "protocols": ["TransEth40G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["D10045-02-1m-06"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "D10045-02-1m-06"
+            ]
         },
-        "twinax": {
-            "alias": "in",
-            "connection1": "in1",
-            "connection2": "in2",
-            "twinax": true
+        {
+            "attr": "alias",
+            "interface": "twinax",
+            "value": "in"
+        },
+        {
+            "attr": "connection1",
+            "interface": "twinax",
+            "value": "in1"
+        },
+        {
+            "attr": "connection2",
+            "interface": "twinax",
+            "value": "in2"
+        },
+        {
+            "attr": "twinax",
+            "interface": "twinax",
+            "value": true
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 1
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
+        }
+    ]
 }

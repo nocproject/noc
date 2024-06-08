@@ -1,8 +1,18 @@
 #!/bin/sh
+# Perform all migrations
 set -e
-./noc migrate
-./noc sync-perm
-if [ ! -z "$(getent hosts clickhouse)" ]; then
-     ./noc migrate-ch
+if [ -n "$NOC_MIGRATE_SLOTS_PATH" ]; then
+    if [ -d "$NOC_MIGRATE_SLOTS_PATH" ]; then
+        ./noc dcs set-slots -f $NOC_MIGRATE_SLOTS_PATH/*
+    else 
+        ./noc dcs set-slots -f $NOC_MIGRATE_SLOTS_PATH
+    fi
 fi
-python ./scripts/deploy/install-packages requirements/collections.json && ./noc collection sync
+./noc migrate
+./noc ensure-indexes
+./noc migrate-liftbridge
+./noc collection sync
+./noc migrate-liftbridge
+./noc migrate-ch
+./noc sync-perm
+./noc sync-mibs

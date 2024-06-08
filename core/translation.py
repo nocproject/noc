@@ -28,7 +28,7 @@ def set_translation(service, lang):
         if os.path.exists(mo_path):
             logger.info("Setting '%s' translation", mo_path)
             with open(mo_path, mode="rb") as f:
-                _ugettext = gettext.GNUTranslations(f).lgettext
+                _ugettext = gettext.GNUTranslations(f).gettext
         else:
             logger.info("No translation for language '%s'. Using 'en' instead", lang)
 

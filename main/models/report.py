@@ -9,9 +9,10 @@
 import operator
 from threading import Lock
 from collections import defaultdict
-from typing import Dict, Any, Optional, List, Set
+from typing import Dict, Any, Optional, List, Set, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import (
@@ -45,7 +46,16 @@ class ReportParam(EmbeddedDocument):
     description = StringField(required=False)
     label = StringField()
     type = StringField(
-        choices=["integer", "string", "date", "model", "choice", "bool", "fields_selector"],
+        choices=[
+            "integer",
+            "string",
+            "date",
+            "model",
+            "model_multi",
+            "choice",
+            "bool",
+            "fields_selector",
+        ],
         required=True,
     )
     model_id = StringField()
@@ -215,8 +225,8 @@ class Report(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Report"]:
-        return Report.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Report"]:
+        return Report.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -372,10 +382,10 @@ class Report(Document):
                 if not q.datasource:
                     continue
                 ds = loader[q.datasource]
-                r[q.datasource] = [f.name for f in ds.fields]
+                r[q.datasource] = [f.name for f in ds.iter_ds_fields()]
                 if not num:
                     # default
-                    r[""] = [f.name for f in ds.fields]
+                    r[""] = [f.name for f in ds.iter_ds_fields()]
             break
         return r
 

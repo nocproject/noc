@@ -8,17 +8,19 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
             "group": "0",
-            "name": "in",
             "type__name": "Cisco | PWR-C49-300"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-C49-300DC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-C49-300DC"]
         }
-    }
+    ]
 }

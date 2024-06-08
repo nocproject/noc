@@ -1,0 +1,73 @@
+{
+    "name": "WTD | Transceiver | GPON | RTXM167-522",
+    "$collection": "inv.objectmodels",
+    "uuid": "427ca08c-f07a-405b-9c03-e276c2286b1d",
+    "vendor__code": "WTD",
+    "description": "RTXM167-522 GPON OLT Class B+ 40km DDM SFP optical module",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "rxtx",
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1260_1360",
+                    "protocol__code": "GPON"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1490",
+                    "protocol__code": "GPON"
+                }
+            ],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RTXM167-522"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1490
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 40000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

@@ -4,105 +4,152 @@
     "uuid": "457eece4-4d51-41d2-bf60-c12d40ec841f",
     "vendor__code": "ALU",
     "description": "Alcatel 7324 RU IP-based DSLAM",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "User1-24",
             "description": "ADLS User ports 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "User1-24",
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "User25-48",
             "description": "ADLS User ports 25-48",
             "direction": "s",
             "gender": "f",
-            "name": "User25-48",
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "CO1-24",
             "description": "POTS ports 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "CO1-24",
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "CO25-48",
             "description": "POTS ports 25-48",
             "direction": "s",
             "gender": "f",
-            "name": "CO25-48",
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "Alarm",
             "description": "Dry contacts",
             "direction": "s",
             "gender": "f",
-            "name": "Alarm",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "enet1",
             "description": "RJ45 Uplink port #1",
             "direction": "s",
             "gender": "f",
-            "name": "enet1",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "enet1_sfp",
             "description": "SFP Uplink port #1",
             "direction": "i",
             "gender": "f",
-            "name": "enet1_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "enet2",
             "description": "RJ45 Uplink port #2",
             "direction": "s",
             "gender": "f",
-            "name": "enet2",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "enet2_sfp",
             "description": "SFP Uplink port #2",
             "direction": "i",
             "gender": "f",
-            "name": "enet2_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "Power",
             "description": "DC Power input",
             "direction": "s",
             "gender": "m",
-            "name": "Power",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/4-G-5.08"
         }
     ],
-    "data": {
-        "airflow": {
-            "exhaust": "l"
+    "data": [
+        {
+            "attr": "exhaust",
+            "interface": "airflow",
+            "value": "l"
         },
-        "asset": {
-            "part_no": ["7324RU"]
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["7324RU"]
         }
-    }
+    ]
 }

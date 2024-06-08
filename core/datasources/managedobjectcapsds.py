@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Managed Object Capabilities Datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -34,10 +34,13 @@ class ManagedObjectCapsDS(BaseDataSource):
     name = "managedobjectcapsds"
     row_index = "managed_object_id"
 
-    fields = [FieldInfo(name="managed_object_id", type=FieldType.UINT)] + [
-        FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
-        for c_id, c_type, c_name in get_capabilities()
-    ]
+    fields = [FieldInfo(name="managed_object_id", type=FieldType.UINT)]
+
+    @classmethod
+    def iter_ds_fields(cls):
+        yield from super().iter_ds_fields()
+        for c_id, c_type, c_name in get_capabilities():
+            yield FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
 
     @classmethod
     async def iter_caps(
@@ -76,7 +79,7 @@ class ManagedObjectCapsDS(BaseDataSource):
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> Iterable[Dict[str, Any]]:
         q_caps = {}
-        for f in cls.fields:
+        for f in cls.iter_ds_fields():
             c = (
                 Capability.get_by_id(f.internal_name)
                 if is_objectid(f.internal_name)

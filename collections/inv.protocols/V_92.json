@@ -1,0 +1,10 @@
+{
+    "name": "V.92",
+    "code": "V92",
+    "$collection": "inv.protocols",
+    "uuid": "03cba33b-52e6-4705-8672-9f73c673930b",
+    "description": "V.92 is an ITU-T recommendation, titled Enhancements to Recommendation V.90, that establishes a modem standard allowing near 56 kb/s download and 48 kb/s upload rates",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Modulator-Demodulator"
+}

@@ -9,48 +9,62 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
-            "description": "xfp port",
-            "direction": "i",
-            "gender": "f",
             "name": "xfp1",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "xfp port",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
             "name": "xfp2",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "xfp port",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
             "name": "xfp3",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": "xfp port",
             "direction": "i",
             "gender": "f",
-            "name": "xfp4",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "xfp4",
+            "description": "xfp port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "in",
             "description": "mgmt connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Brocade | BigIron RX | Line Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["35519-004B", "35519-005A", "35519-004D"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["35519-004B", "35519-005A", "35519-004D"]
         }
-    }
+    ]
 }

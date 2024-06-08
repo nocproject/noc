@@ -22,7 +22,9 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.debug import error_report
 from noc.core.etl.compression import compressor
+from noc.models import get_model_id, LABEL_MODELS
 from ..models.base import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -143,7 +145,7 @@ class BaseLoader(object):
         self.has_remote_system: bool = hasattr(self.model, "remote_system")
         if self.workflow_state_sync:
             self.load_wf_state_mappings()
-        if self.label_enable_setting:
+        if self.enable_labels:
             self.load_ensured_labels()
 
     @property
@@ -181,8 +183,8 @@ class BaseLoader(object):
     def load_ensured_labels(self):
         from noc.main.models.label import Label
 
-        self.logger.info("Loading Labels: %s", self.label_enable_setting)
-        for ll in Label.objects.filter(**{self.label_enable_setting: True}):
+        self.logger.info("Loading Labels: %s", self.enable_labels)
+        for ll in Label.objects.filter(allow_models__in=[get_model_id(self.model)]):
             if ll.is_wildcard or ll.is_matched:
                 continue
             self.ensured_labels.add(ll.name)
@@ -232,7 +234,7 @@ class BaseLoader(object):
         """
         dm = data_model or self.data_model
         for line in f:
-            yield dm.parse_raw(line.replace("\\r", ""))
+            yield dm.model_validate_json(line.replace("\\r", ""))
 
     def diff(
         self, old: Iterable[BaseModel], new: Iterable[BaseModel], include_fields: Set = None
@@ -363,15 +365,21 @@ class BaseLoader(object):
             self.logger.debug("Object not found")
             return None
 
-    def create_object(self, v):
+    def create_object(self, v, state: Optional[str] = None):
         """
         Create object with attributes. Override to save complex
         data structures
         """
         self.logger.debug("Create object")
-        if self.label_enable_setting and "labels" in v:
+        if self.enable_labels and "labels" in v:
             self.ensure_labels(v["labels"])
         o = self.model(**v)
+        if not self.workflow_state_sync or not state:
+            pass
+        elif hasattr(o, "object_profile"):
+            o.state = self.clean_wf_state(o.object_profile.workflow, state)
+        else:
+            o.state = self.clean_wf_state(o.profile.workflow, state)
         try:
             o.save()
         except self.integrity_exception as e:
@@ -386,10 +394,18 @@ class BaseLoader(object):
             for k, nv in v.items():
                 setattr(o, k, nv)
             o.save()
+        except Exception as e:
+            error_report()
+            raise e
         return o
 
     def change_object(
-        self, object_id: str, v: Dict[str, Any], inc_changes: Dict[str, Dict[str, List]] = None
+        self,
+        object_id: str,
+        v: Dict[str, Any],
+        inc_changes: Dict[str, Dict[str, List]] = None,
+        state: Optional[str] = None,
+        state_changed: Optional[datetime.datetime] = None,
     ):
         """
         Change object with attributes
@@ -404,14 +420,22 @@ class BaseLoader(object):
         for k, nv in v.items():
             if k == self.checkpoint_field:
                 continue
-            if self.label_enable_setting and k == "labels":
+            if self.enable_labels and k == "labels":
                 self.ensure_labels(nv)
             if inc_changes and k in inc_changes:
                 ov = getattr(o, k, [])
                 nv = list(set(ov).union(set(inc_changes[k]["add"])) - set(inc_changes[k]["remove"]))
             setattr(o, k, nv)
+        if self.workflow_state_sync and state:
+            self.change_workflow(o, state, state_changed)
         o.save()
         return o
+
+    @property
+    def enable_labels(self) -> bool:
+        if not self.model:
+            return False
+        return get_model_id(self.model) in LABEL_MODELS
 
     def on_add(self, item: BaseModel) -> None:
         """
@@ -441,16 +465,17 @@ class BaseLoader(object):
                     continue
                 if getattr(o, fn) != nv:
                     vv[fn] = nv
-            o = self.change_object(o.id, vv)
+            o = self.change_object(
+                o.id,
+                vv,
+                state=getattr(item, "state", None),
+                state_changed=getattr(item, "state_changed", None),
+            )
         else:
             self.c_add += 1
-            o = self.create_object(v)
+            o = self.create_object(v, state=getattr(item, "state", None))
             if self.workflow_event_model:
                 o.fire_event(self.workflow_add_event)
-        if self.workflow_state_sync:
-            self.change_workflow(
-                o, getattr(item, "state", None), getattr(item, "state_changed", None)
-            )
         if o and psf:
             self.post_save(o, psf)
         self.set_mappings(item.id, o.id)
@@ -467,7 +492,7 @@ class BaseLoader(object):
         ov = self.clean(o)
         # Post save update fields (example capabilities)
         psf: Dict[str, Any] = {}
-        for fn in self.data_model.__fields__:
+        for fn in self.data_model.model_fields:
             if fn == "id" or fn in self.workflow_fields:
                 continue
             if self.post_save_fields and fn in self.post_save_fields:
@@ -484,9 +509,13 @@ class BaseLoader(object):
         if n.id not in self.mappings:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)
             return
-        o = self.change_object(self.mappings[n.id], changes, inc_changes=incremental_changes)
-        if self.workflow_state_sync:
-            self.change_workflow(o, getattr(n, "state", None), getattr(n, "state_changed", None))
+        o = self.change_object(
+            self.mappings[n.id],
+            changes,
+            inc_changes=incremental_changes,
+            state=getattr(n, "state", None),
+            state_changed=getattr(n, "state_changed", None),
+        )
         if o and psf:
             self.post_save(o, psf)
 
@@ -497,6 +526,7 @@ class BaseLoader(object):
         self.pending_deletes += [(item.id, item)]
 
     def change_workflow(self, o, state: str, changed_date: Optional[datetime.datetime] = None):
+        self.logger.debug("Change Workflow state: %s -> %s", o.state, state)
         if not o:
             return
         if hasattr(o, "object_profile"):
@@ -513,7 +543,7 @@ class BaseLoader(object):
         if not labels:
             return
         for ll in set(labels or []) - self.ensured_labels:
-            Label.ensure_label(**{"name": ll, self.label_enable_setting: True})
+            Label.ensure_label(ll, [get_model_id(self.model)])
 
     def purge(self):
         """
@@ -582,7 +612,7 @@ class BaseLoader(object):
         """
         Cleanup row and return a dict of field name -> value
         """
-        r = {k: self.clean_map.get(k, self.clean_any)(v) for k, v in item.dict().items()}
+        r = {k: self.clean_map.get(k, self.clean_any)(v) for k, v in item.model_dump().items()}
         # Fill integration fields
         r["remote_system"] = self.system.remote_system
         r["remote_id"] = self.clean_str(item.id)
@@ -671,7 +701,7 @@ class BaseLoader(object):
 
         self.logger.debug("Update Document clean map")
         for fn, ft in self.model._fields.items():
-            if fn not in self.data_model.__fields__:
+            if fn not in self.data_model.model_fields:
                 continue
             if isinstance(ft, BooleanField):
                 self.clean_map[fn] = self.clean_bool
@@ -700,7 +730,7 @@ class BaseLoader(object):
 
         self.logger.debug("Update Model clean map")
         for f in self.model._meta.fields:
-            if f.name not in self.data_model.__fields__:
+            if f.name not in self.data_model.model_fields:
                 continue
             if isinstance(f, BooleanField):
                 self.clean_map[f.name] = self.clean_bool
@@ -761,15 +791,15 @@ class BaseLoader(object):
             if not ls:
                 ls = line.get_current_state()
             ms = self.iter_jsonl(ls, data_model=line.data_model)
-            m_data[self.data_model.__fields__[f].name] = set(row.id for row in ms)
+            m_data[f] = set(row.id for row in ms)
         # Process data
         n_errors = 0
         for row in new_state:
-            row = row.dict()
+            row = row.model_dump()
             lr = len(row)
             # Check required fields
             for f in required_fields:
-                if f not in self.data_model.__fields__:
+                if f not in self.data_model.model_fields:
                     continue
                 if f not in row:
                     self.logger.error(

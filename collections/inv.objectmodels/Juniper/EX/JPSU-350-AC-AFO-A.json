@@ -8,29 +8,50 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4300 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["JPSU-350-AC-AFO-A"],
-            "order_part_no": ["JPSU-350-AC-AFO"],
-            "part_no": ["740-046873"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-046873"]
         },
-        "power": {
-            "power": 350.0
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": ["JPSU-350-AC-AFO-A"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["JPSU-350-AC-AFO"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 350.0
         }
-    }
+    ]
 }

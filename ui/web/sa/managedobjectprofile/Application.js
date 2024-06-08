@@ -229,7 +229,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     allowBlank: true,
                                     uiStyle: "extra",
                                     query: {
-                                        "enable_managedobjectprofile": true
+                                        "allow_models": ["sa.ManagedObjectProfile"]
                                     },
                                 },
                                 {
@@ -266,6 +266,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "main.ref.stencil.LookupField",
                                                     fieldLabel: __("Shape"),
                                                     allowBlank: true
+                                                },
+                                                {
+                                                    name: "shape_title_template",
+                                                    xtype: "textfield",
+                                                    fieldLabel: __("Shape Name template"),
+                                                    allowBlank: true,
+                                                    uiStyle: "large"
                                                 }
                                             ]
                                         }
@@ -1176,42 +1183,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             colspan: 3
                                         },
                                         {
-                                            name: "enable_box_discovery_mac",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("MAC"),
-                                            reference: "enableBoxDiscoveryMAC",
-                                            colspan: 2
-                                        },
-                                        {
-                                            name: "box_discovery_mac_filter_policy",
-                                            xtype: "combobox",
-                                            fieldLabel: __("Collect Filter Policy"),
-                                            store: [
-                                                ["A", __("All")],
-                                                ["I", __("Interface Profile")]
-                                            ],
-                                            tooltip: __("I - Collect MACs only for allowed interfaces. <br/>" +
-                                        "(MAC Discovery Policy on Inventory -> Setup -> Interface Profile) <br/>") +
-                                            "A - Collect All MACs",
-                                            allowBlank: false,
-                                            bind: {
-                                                disabled: "{!enableBoxDiscoveryMAC.checked}"
-                                            },
-                                            listeners: {
-                                                render: me.addTooltip
-                                            },
-                                            uiStyle: "medium"
-                                        },
-                                        {
                                             name: "enable_box_discovery_cpe",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE"),
-                                            colspan: 3
-                                        },
-                                        {
-                                            name: "enable_box_discovery_alarms",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Alarms"),
                                             colspan: 3
                                         }
                                     ]
@@ -2004,19 +1978,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_periodic_discovery_uptime",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Uptime"),
-                                            colspan: 3
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_uptime_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval, sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "enable_periodic_discovery_interface_status",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Interface status"),
-                                            colspan: 3
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_interface_status_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval, sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
-                                            reference: "enablePeriodicDiscoveryMAC"
+                                            reference: "enablePeriodicDiscoveryMAC",
+                                            colspan: 3
+                                        },
+                                        {
+                                            name: "periodic_discovery_mac_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval, sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "periodic_discovery_mac_filter_policy",
@@ -2056,15 +2052,29 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_periodic_discovery_alarms",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Alarms"),
-                                            colspan: 3
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_alarms_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval,sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "enable_periodic_discovery_cpestatus",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE status"),
                                             reference: "enablePeriodicDiscoveryCPEStatus",
-                                            colspan: 3
-                                        }
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_cpestatus_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval,sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
+                                        },
                                     ]
                                 },
                                 {
@@ -2586,7 +2596,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     {field_name: "enable_box_discovery_config", label: __("Config")},
                     {field_name: "enable_box_discovery_asset", label: __("Asset")},
                     {field_name: "enable_box_discovery_vlan", label: __("VLAN")},
-                    {field_name: "enable_box_discovery_mac", label: __("MAC")},
                     {field_name: "enable_box_discovery_metrics", label: __("Metrics")}
                 ]
             },

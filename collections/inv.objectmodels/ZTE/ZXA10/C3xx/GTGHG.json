@@ -6,147 +6,196 @@
     "description": "16-port GPON OLT interface board",
     "connection_rule__name": "ZTE | ZXA10 | C3xx",
     "cr_context": "LINECARD",
-    "tags": ["lc", "port"],
     "connections": [
         {
+            "name": "1",
             "description": "gpon 1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "2",
             "description": "gpon 2",
             "direction": "i",
             "gender": "f",
-            "name": "2",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "3",
             "description": "gpon 3",
             "direction": "i",
             "gender": "f",
-            "name": "3",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "4",
             "description": "gpon 4",
             "direction": "i",
             "gender": "f",
-            "name": "4",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "5",
             "description": "gpon 5",
             "direction": "i",
             "gender": "f",
-            "name": "5",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "6",
             "description": "gpon 6",
             "direction": "i",
             "gender": "f",
-            "name": "6",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "7",
             "description": "gpon 7",
             "direction": "i",
             "gender": "f",
-            "name": "7",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "8",
             "description": "gpon 8",
             "direction": "i",
             "gender": "f",
-            "name": "8",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "9",
             "description": "gpon 9",
             "direction": "i",
             "gender": "f",
-            "name": "9",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "10",
             "description": "gpon 10",
             "direction": "i",
             "gender": "f",
-            "name": "10",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "11",
             "description": "gpon 11",
             "direction": "i",
             "gender": "f",
-            "name": "11",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "12",
             "description": "gpon 12",
             "direction": "i",
             "gender": "f",
-            "name": "12",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "13",
             "description": "gpon 13",
             "direction": "i",
             "gender": "f",
-            "name": "13",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "14",
             "description": "gpon 14",
             "direction": "i",
             "gender": "f",
-            "name": "14",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "15",
             "description": "gpon 15",
             "direction": "i",
             "gender": "f",
-            "name": "15",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "16",
             "description": "gpon 16",
             "direction": "i",
             "gender": "f",
-            "name": "16",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "ZTE | ZXA10 | C3xx | SB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["GTGHG"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["GTGHG"]
         }
-    }
+    ]
 }

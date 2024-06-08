@@ -7,16 +7,18 @@
     "cr_context": "AIM",
     "connections": [
         {
+            "name": "in",
             "description": "AIM Slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | AIM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["AIM-COMPR4"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AIM-COMPR4"]
         }
-    }
+    ]
 }

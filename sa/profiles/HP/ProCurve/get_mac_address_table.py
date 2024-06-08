@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 import re
 
 # NOC Modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
@@ -22,29 +22,17 @@ class Script(BaseScript):
     rx_line = re.compile(r"dot1qTpFdbPort\.(\d+)\.(\S+)\s*=\s*(\d+)")
     rx_if = re.compile(r"ifName\.(\d+)\s*=\s*(\S+)")
 
-    def execute(self, interface=None, vlan=None, mac=None):
-        # Build FDB VLAN ID-> VLAN ID mapping
-        fdb_vmap = {}
-        for match in self.rx_fdb_vlan.finditer(self.cli("walkMIB dot1qVlanFdbId")):
-            fdb_vmap[match.group(2)] = int(match.group(1))
-        # Build ifIndex -> port name mapping
-        ifindex = {}
-        for match in self.rx_if.finditer(self.cli("walkMIB ifName")):
-            ifindex[match.group(1)] = match.group(2)
-        # Get through vlans
+    def execute_cli(self, **kwargs):
+        if self.is_old_cli:
+            raise NotImplementedError("Old CLI with SNMP only access")
         r = []
-        for match in self.rx_line.finditer(self.cli("walkMIB dot1qTpFdbPort")):
-            port = match.group(3)
-            if port == "0" or port not in ifindex:
+        v = self.cli("display mac-address")
+        for row in v.split("\n\n")[0].splitlines()[1:]:
+            if not row.strip():
                 continue
-            port = ifindex[port]
-            vlan_id = fdb_vmap[match.group(1)]
-            m = ":".join(["%02X" % int(x) for x in match.group(2).split(".")])
-            if (
-                (interface and interface != port)
-                or (vlan and vlan != vlan_id)
-                or (mac and mac != m)
-            ):
+            mac, vlan_id, state, port, _ = row.split(maxsplit=4)
+            if mac == "000000-000008":
                 continue
-            r += [{"vlan_id": vlan_id, "mac": m, "interfaces": [port], "type": "D"}]
+            port = self.profile.convert_interface_name(port)
+            r += [{"vlan_id": vlan_id, "mac": mac, "interfaces": [port], "type": "D"}]
         return r

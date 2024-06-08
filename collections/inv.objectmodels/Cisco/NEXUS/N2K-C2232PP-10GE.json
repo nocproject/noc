@@ -8,52 +8,68 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "psu1",
             "description": "PSU 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "psu1",
             "type__name": "Cisco | Nexus 2k | 2200 PSU"
         },
         {
+            "name": "psu2",
             "description": "PSU 2 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "psu2",
             "type__name": "Cisco | Nexus 2k | 2200 PSU"
         },
         {
+            "name": "fan1",
             "description": "FAN 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "fan1",
             "type__name": "Cisco | Nexus 2k | 2232PP/TM FAN"
         },
         {
+            "name": "sup1",
             "description": "SUP 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sup1",
             "type__name": "Cisco | Nexus 2k | C2232PP SUP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["N2K-C2232PP-10GE"],
-            "cpe_22": "cpe:/h:cisco:nexus_2232pp_fex_switch:-",
-            "cpe_23": "cpe:2.3:h:cisco:nexus_2232pp_fex_switch:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["N2K-C2232PP-10GE"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:nexus_2232pp_fex_switch:-"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:nexus_2232pp_fex_switch:-:*:*:*:*:*:*:*"
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
         }
-    }
+    ]
 }

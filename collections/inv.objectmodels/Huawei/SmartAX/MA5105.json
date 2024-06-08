@@ -9,53 +9,78 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "power",
             "description": "DC Power",
             "direction": "s",
             "gender": "f",
-            "name": "power",
-            "protocols": ["48V DC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Electrical | MRJ21"
         },
         {
+            "name": "0",
             "description": "Control board",
             "direction": "i",
             "gender": "f",
-            "name": "0",
             "type__name": "Huawei | SmartAX | MA5105 | CB"
         },
         {
+            "name": "1",
             "description": "Service board",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | SmartAX | MA5105 | SB"
         },
         {
+            "name": "2",
             "description": "Service board",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Huawei | SmartAX | MA5105 | SB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MA5105"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MA5105"]
         },
-        "dimensions": {
-            "depth": 300,
-            "height": 46,
-            "width": 436
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 4.8
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 4.8
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 436
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 300
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 46
         }
-    }
+    ]
 }

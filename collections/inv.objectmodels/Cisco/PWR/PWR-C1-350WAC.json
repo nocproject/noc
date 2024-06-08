@@ -8,16 +8,18 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "PSU",
             "description": null,
             "direction": "i",
             "gender": "m",
-            "name": "PSU",
             "type__name": "Cisco | 3850 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-C1-350WAC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-C1-350WAC"]
         }
-    }
+    ]
 }

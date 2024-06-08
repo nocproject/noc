@@ -8,16 +8,18 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7302 | LINECARD"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["EBLT-C"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EBLT-C"]
         }
-    }
+    ]
 }

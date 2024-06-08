@@ -8,7 +8,7 @@
     packages:
       - postgresql{{ postgres_version|replace(".","") }}-server
       - postgresql{{ postgres_version|replace(".","") }}-contrib
-      - python-psycopg2
+      - python3-psycopg2
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

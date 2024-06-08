@@ -1,0 +1,17 @@
+{
+    "workflow__name": "SLAProbe Default",
+    "name": "Missed",
+    "uuid": "d82fa12b-141b-4500-8699-cbae069cfe2a",
+    "$collection": "wf.states",
+    "description": "Sensor is missed",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 3600,
+    "update_expired": false,
+    "x": 250,
+    "y": 60,
+    "disable_all_interaction": false
+}

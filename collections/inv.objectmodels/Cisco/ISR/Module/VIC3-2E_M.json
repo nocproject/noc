@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | ISR | Module | VIC3-2E/M",
+    "$collection": "inv.objectmodels",
+    "uuid": "a9572374-05e5-4773-b0c0-025b8d3c18bf",
+    "vendor__code": "CISCO",
+    "description": "3nd generation two port EM voice interface daughtercard",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "voice-port0",
+            "description": "voice-port N/X/0 analog PBX",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "E&M"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "voice-port1",
+            "description": "voice-port N/X/1 analog PBX",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "E&M"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "in",
+            "description": "VIC3 Card connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC3"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VIC3-2E/M"]
+        }
+    ]
+}

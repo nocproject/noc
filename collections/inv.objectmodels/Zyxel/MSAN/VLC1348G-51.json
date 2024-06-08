@@ -1,0 +1,112 @@
+{
+    "name": "Zyxel | MSAN | VLC1348G-51",
+    "$collection": "inv.objectmodels",
+    "uuid": "115215a0-5856-40a4-a8e2-3606afebcad8",
+    "vendor__code": "ZYXEL",
+    "description": "ZYXEL VLC1348G-51 48-Port VDSL2 over POTS Line Card with ADSL2+",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "xDSL1",
+            "description": "xDSL ports 1-24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL2"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "xDSL2",
+            "description": "xDSL ports 25-48",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL2"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ9"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 93.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VLC1348G-51"]
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.3
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 390
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 14
+        }
+    ]
+}

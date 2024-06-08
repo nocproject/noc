@@ -1,0 +1,12 @@
+{
+    "name": "DWDM",
+    "code": "DWDM",
+    "$collection": "inv.protocols",
+    "uuid": "91954b3b-7144-4ed6-a1fb-0374cd6df9d7",
+    "description": null,
+    "data": [],
+    "connection_schema": "BD",
+    "discriminator": "loader",
+    "discriminator_loader": "optical_dwdm",
+    "technology__name": "WDM"
+}

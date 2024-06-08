@@ -10,6 +10,7 @@ import argparse
 import os
 import datetime
 import re
+from pathlib import Path
 
 # Third-party modules
 from django.db.models.fields import NOT_PROVIDED
@@ -18,7 +19,6 @@ from jinja2 import Template
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
-from noc.settings import INSTALLED_APPS
 from noc.core.comp import smart_text
 
 
@@ -70,6 +70,7 @@ class Command(BaseCommand):
         "DictField": "auto",
         "RawDictField": "auto",
         "ListField": "auto",
+        "EmbeddedDocumentListField": "auto",
         "ObjectIdField": "string",
         "UUIDField": "string",
         "BinaryField": "string",
@@ -88,6 +89,7 @@ class Command(BaseCommand):
         "DictField": "textfield",
         "RawDictField": "textfield",
         "ListField": "textfield",
+        "EmbeddedDocumentListField": "textfield",
         "ObjectIdField": "textfield",
         "UUIDField": "displayfield",
     }
@@ -178,15 +180,13 @@ class Command(BaseCommand):
         ts_root = os.path.join("templates", "newapp", templateset)
         if not os.path.isdir(ts_root):
             raise CommandError("Inconsistent template set %s" % templateset)
-        # Get installed modules
-        modules = {a[4:] for a in INSTALLED_APPS if a.startswith("noc.")}
         # Fill templates
         for app in args:
             self.print("Creating skeleton for %s" % app)
             m, a = app.split(".", 1)
             if "." in a:
                 raise CommandError("Application name must be in form <module>.<app>")
-            if m not in modules:
+            if not os.path.isdir(Path("services", "web", "apps", m)):
                 raise CommandError("Invalid module: %s" % m)
             # Fill template variables
             tv = vars.copy()

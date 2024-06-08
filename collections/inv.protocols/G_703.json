@@ -1,0 +1,10 @@
+{
+    "name": "G.703",
+    "code": "G703",
+    "$collection": "inv.protocols",
+    "uuid": "f0d7a7ba-aa61-4b61-8a1c-0211bfd668d7",
+    "description": null,
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Serial"
+}

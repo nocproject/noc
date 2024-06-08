@@ -211,9 +211,21 @@ class Command(BaseCommand):
             "access_preference": obj.get_access_preference(),
             "snmp_rate_limit": obj.snmp_rate_limit or None,
         }
-        if creds.snmp_ro:
+        if (
+            not creds.snmp_security_level or creds.snmp_security_level == "Community"
+        ) and creds.snmp_ro:
             credentials["snmp_version"] = "v2c"
             credentials["snmp_ro"] = creds.snmp_ro
+        elif creds.snmp_security_level in {"noAuthNoPriv", "authNoPriv", "authPriv"}:
+            credentials["snmp_version"] = "v3"
+            credentials["snmp_username"] = creds.snmp_username
+            credentials["snmp_ctx_name"] = creds.snmp_ctx_name
+            if creds.snmp_security_level in {"authNoPriv", "authPriv"}:
+                credentials["snmp_auth_key"] = creds.snmp_auth_key
+                credentials["snmp_auth_proto"] = creds.snmp_auth_proto
+            if creds.snmp_security_level == "authPriv":
+                credentials["snmp_priv_key"] = creds.snmp_priv_key
+                credentials["snmp_priv_proto"] = creds.snmp_priv_proto
         if obj.scheme in CLI_PROTOCOLS:
             credentials["cli_protocol"] = PROTOCOLS[obj.scheme]
             if obj.port:
@@ -473,6 +485,13 @@ class JSONObject(object):
                     "snmp_ro",
                     "snmp_rw",
                     "snmp_rate_limit",
+                    "snmp_security_level",
+                    "snmp_username",
+                    "snmp_ctx_name",
+                    "snmp_auth_proto",
+                    "snmp_auth_key",
+                    "snmp_priv_proto",
+                    "snmp_priv_key",
                 )
             }
         )

@@ -8,44 +8,79 @@
     "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port"],
     "connections": [
         {
+            "name": "eth",
             "description": "Uplink port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "2.4G-1",
             "description": "2.4G antenna interface 1",
             "direction": "s",
             "gender": "f",
-            "name": "2.4G-1",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
+            "name": "2.4G-2",
             "description": "2.4G antenna interface 2",
             "direction": "s",
             "gender": "f",
-            "name": "2.4G-2",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["RT-BS24-WFN2E"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 7.0
         },
-        "dimensions": {
-            "depth": 150,
-            "height": 40,
-            "width": 430
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 430
         },
-        "power": {
-            "power": 7.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 150
         },
-        "weight": {
-            "weight": 1.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 40
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RT-BS24-WFN2E"]
         }
-    }
+    ]
 }

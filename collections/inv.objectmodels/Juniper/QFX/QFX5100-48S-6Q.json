@@ -6,557 +6,1081 @@
     "description": "48-port 1000BASE/10000BASE-F and 4 port 40G",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ethernet0",
             "description": "Management ethernet port #0",
             "direction": "s",
             "gender": "f",
-            "name": "ethernet0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ethernet1",
             "description": "Management ethernet port #1",
             "direction": "s",
             "gender": "f",
-            "name": "ethernet1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "0/0",
             "description": "xe-X/0/0 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/0",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/1",
             "description": "xe-X/0/1 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/1",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/2",
             "description": "xe-X/0/2 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/2",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/3",
             "description": "xe-X/0/3 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/3",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/4",
             "description": "xe-X/0/4 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/4",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/5",
             "description": "xe-X/0/5 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/5",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/6",
             "description": "xe-X/0/6 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/6",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/7",
             "description": "xe-X/0/7 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/7",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/8",
             "description": "xe-X/0/8 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/8",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/9",
             "description": "xe-X/0/9 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/9",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/10",
             "description": "xe-X/0/10 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/10",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/11",
             "description": "xe-X/0/11 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/11",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/12",
             "description": "xe-X/0/12 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/12",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/13",
             "description": "xe-X/0/13 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/13",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/14",
             "description": "xe-X/0/14 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/14",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/15",
             "description": "xe-X/0/15 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/15",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/16",
             "description": "xe-X/0/16 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/16",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/17",
             "description": "xe-X/0/17 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/17",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/18",
             "description": "xe-X/0/18 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/18",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/19",
             "description": "xe-X/0/19 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/19",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/20",
             "description": "xe-X/0/20 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/20",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/21",
             "description": "xe-X/0/21 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/21",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/22",
             "description": "xe-X/0/22 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/22",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/23",
             "description": "xe-X/0/23 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/23",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/24",
             "description": "xe-X/0/24 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/24",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/25",
             "description": "xe-X/0/25 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/25",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/26",
             "description": "xe-X/0/26 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/26",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/27",
             "description": "xe-X/0/27 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/27",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/28",
             "description": "xe-X/0/28 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/28",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/29",
             "description": "xe-X/0/29 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/29",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/30",
             "description": "xe-X/0/30 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/30",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/31",
             "description": "xe-X/0/31 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/31",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/32",
             "description": "xe-X/0/32 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/32",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/33",
             "description": "xe-X/0/33 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/33",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/34",
             "description": "xe-X/0/34 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/34",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/35",
             "description": "xe-X/0/35 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/35",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/36",
             "description": "xe-X/0/36 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/36",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/37",
             "description": "xe-X/0/37 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/37",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/38",
             "description": "xe-X/0/38 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/38",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/39",
             "description": "xe-X/0/39 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/39",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/40",
             "description": "xe-X/0/40 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/40",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/41",
             "description": "xe-X/0/41 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/41",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/42",
             "description": "xe-X/0/42 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/42",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/43",
             "description": "xe-X/0/43 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/43",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/44",
             "description": "xe-X/0/44 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/44",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/45",
             "description": "xe-X/0/45 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/45",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/46",
             "description": "xe-X/0/46 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/46",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/47",
             "description": "xe-X/0/47 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/47",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "0/48",
             "description": "et-X/0/48 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/48",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "0/49",
             "description": "et-X/0/49 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/49",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "0/50",
             "description": "et-X/0/50 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/50",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "0/51",
             "description": "et-X/0/51 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/51",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "0/52",
             "description": "et-X/0/52 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/52",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "0/53",
             "description": "et-X/0/53 port",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/53",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
+            "name": "pem0",
             "description": "Power Supply 0",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "pem0",
             "type__name": "Juniper | EX | 4550 PSU"
         },
         {
+            "name": "pem1",
             "description": "Power Supply 1",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "pem1",
             "type__name": "Juniper | EX | 4550 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["QFX5100-48S-6Q"],
-            "order_part_no": ["QFX5100-48S-AFI", "QFX5100-48S-AFO", "QFX5100-48S-DC-AFI", "QFX5100-48S-DC-AFO"],
-            "part_no": ["QFX5100-48S-6Q", "650-064377"],
-            "cpe_22": "cpe:/h:juniper:qfx5100:-",
-            "cpe_23": "cpe:2.3:h:juniper:qfx5100:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": ["QFX5100-48S-6Q"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": [
+                "QFX5100-48S-AFI",
+                "QFX5100-48S-AFO",
+                "QFX5100-48S-DC-AFI",
+                "QFX5100-48S-DC-AFO"
+            ]
         },
-        "dimensions": {
-            "depth": 520,
-            "height": 43,
-            "width": 441
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["QFX5100-48S-6Q", "650-064377"]
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:juniper:qfx5100:-"
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:juniper:qfx5100:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 520
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 43
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 441
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
         }
-    }
+    ]
 }

@@ -1,0 +1,22 @@
+---
+- name: Install and configure Kafka
+  hosts: svc-kafka-exec
+  become: "True"
+  serial: 30%
+  any_errors_fatal: "True"
+  tags:
+    - kafka
+    - external
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  roles:
+    - role: kafka
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: kafka
+  post_tasks:
+    - name: set kafka complete
+      set_fact:
+        kafka_complete: "True"

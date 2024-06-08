@@ -5,9 +5,11 @@
     "vendor__code": "NOC",
     "description": "Lost&Found Storage",
     "connections": [],
-    "data": {
-        "container": {
-            "container": true
+    "data": [
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         }
-    }
+    ]
 }

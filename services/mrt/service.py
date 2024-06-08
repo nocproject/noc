@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MRT service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,10 +15,7 @@ class MRTService(FastAPIService):
     name = "mrt"
     use_telemetry = config.mrt.enable_command_logging
     use_mongo = True
-
-    if config.features.traefik:
-        traefik_backend = "mrt"
-        traefik_frontend_rule = "PathPrefix:/api/mrt"
+    traefik_routes_rule = "PathPrefix(`/api/mrt`)"
 
     async def on_activate(self):
         self.sae = self.open_rpc("sae")

@@ -712,7 +712,7 @@ all:
               name: scheduler
               pool: null
             - config:
-                listen_syslog: 0.0.0.0:514
+                listen: 0.0.0.0:514
                 loglevel: info
                 power: 1
               config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,yaml:///opt/noc/etc/pool-default.yml,env:///NOC
@@ -734,7 +734,7 @@ all:
               name: syslogcollector
               pool: default
             - config:
-                listen_traps: 0.0.0.0:162
+                listen: 0.0.0.0:162
                 loglevel: info
                 power: 1
               config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,yaml:///opt/noc/etc/pool-default.yml,env:///NOC
@@ -875,13 +875,13 @@ all:
           scheduler_loglevel: info
           scheduler_max_threads: 10
           scheduler_power: 1
-          syslogcollector_listen_syslog: 0.0.0.0:514
+          syslogcollector_listen: 0.0.0.0:514
           syslogcollector_loglevel: info
           syslogcollector_power: 1
           syslogcollector_permit_firewall: 1
           tower_data: /tmp/dist
           tower_ssh_keys: /opt/tower/var/tower/ssh/NOC
-          trapcollector_listen_traps: "0.0.0.0:162"
+          trapcollector_listen: "0.0.0.0:162"
           trapcollector_loglevel: info
           trapcollector_power: 1
           trapcollector_permit_firewall: 1
@@ -1057,9 +1057,7 @@ all:
     svc-liftbridge-exec:
       hosts:
         noc-node-freebsd12: {}
-    svc-redpanda-exec:
-      hosts:
-        noc-node-freebsd12: {}
+
     svc-login:
       children:
         cfg-login-noc-node-freebsd12:

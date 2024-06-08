@@ -7,80 +7,106 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "Te0_xfp",
             "description": "TeX/0 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te0_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te1_xfp",
             "description": "TeX/1 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te1_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te2_xfp",
             "description": "TeX/2 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te2_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te3_xfp",
             "description": "TeX/3 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te3_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te4_xfp",
             "description": "TeX/4 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te4_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te5_xfp",
             "description": "TeX/5 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te5_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te6_xfp",
             "description": "TeX/6 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te6_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "Te7_xfp",
             "description": "TeX/7 port",
             "direction": "i",
             "gender": "f",
-            "name": "Te7_xfp",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ASR9k | Linecard"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["A9K-8T-L"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["A9K-8T-L"]
         }
-    }
+    ]
 }

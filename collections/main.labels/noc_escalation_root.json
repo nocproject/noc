@@ -1,0 +1,19 @@
+{
+    "name": "noc::escalation::root",
+    "$collection": "main.labels",
+    "uuid": "d66ea78b-509b-4358-9da9-6cbe1b76d4a8",
+    "description": "Builtin Labels mark for Alarm Escalation policy set",
+    "bg_color1": 16777215,
+    "fg_color1": 0,
+    "bg_color2": 16777215,
+    "fg_color2": 0,
+    "display_order": 0,
+    "allow_models": ["fm.ActiveAlarm"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

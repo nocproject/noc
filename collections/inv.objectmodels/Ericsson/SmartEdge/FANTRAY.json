@@ -9,16 +9,18 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Line connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Ericsson | SE600 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SE600-FAN"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SE600-FAN"]
         }
-    }
+    ]
 }

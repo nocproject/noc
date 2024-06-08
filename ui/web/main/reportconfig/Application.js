@@ -123,7 +123,8 @@ Ext.define('NOC.main.reportconfig.Application', {
                                         ["main", __("Main")],
                                         ["fm", __("Fault Management")],
                                         ["sa", __("Service Activation")],
-                                        ["inv", __("Inventory")]
+                                        ["inv", __("Inventory")],
+                                        ["sla", __("SLA")]
                                     ]
                                 },
                                 {

@@ -6,12 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import os
 import operator
 import logging
 from threading import Lock
-from typing import Optional, Union, Iterable
+from typing import Optional, Union, Iterable, Dict, Any
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -22,6 +24,7 @@ from mongoengine.fields import (
     IntField,
     MapField,
     EmbeddedDocumentField,
+    UUIDField,
 )
 import cachetools
 
@@ -37,9 +40,12 @@ from noc.core.change.decorator import change
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import DiagnosticConfig, DiagnosticState, SA_DIAG, ALARM_DIAG
 from noc.config import config
-from noc.models import get_model_id, LABEL_MODELS, get_model, is_document
+from noc.models import get_model_id, get_model, is_document
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
+
+from noc.core.text import quote_safe_path
+from noc.core.prettyjson import to_json
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -51,6 +57,9 @@ class InteractionSetting(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     enable = BooleanField(default=True)
     # raise_alarm = BooleanField(default=True)
+
+    def json_data(self) -> Dict[str, Any]:
+        return {"enable": self.enable}
 
 
 @bi_sync
@@ -73,6 +82,7 @@ class InteractionSetting(EmbeddedDocument):
         ("pm.Agent", "state"),
         ("sa.Service", "state"),
         ("sa.ManagedObject", "state"),
+        ("sa.DiscoveredObject", "state"),
         ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),
         ("vc.VPN", "state"),
@@ -86,9 +96,13 @@ class State(Document):
         "indexes": [{"fields": ["workflow", "name"], "unique": True}, "labels"],
         "strict": False,
         "auto_create_index": False,
+        "json_collection": "wf.states",
+        "json_depends_on": ["wf.workflows"],
+        "json_unique_fields": [("workflow", "name")],
     }
     workflow: "Workflow" = PlainReferenceField(Workflow)
     name = StringField()
+    uuid = UUIDField(binary=True)
     description = StringField()
     # State properties
     # Default state for workflow (starting state if not set explicitly)
@@ -139,15 +153,79 @@ class State(Document):
     def __str__(self):
         return f"{self.workflow.name}: {self.name}"
 
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "workflow__name": self.workflow.name,
+            "name": self.name,
+            "uuid": self.uuid,
+            "$collection": self._meta["json_collection"],
+            "is_default": self.is_default,
+            "is_productive": self.is_productive,
+            "is_wiping": self.is_wiping,
+            "hide_with_state": self.hide_with_state,
+            "update_last_seen": self.update_last_seen,
+            "ttl": self.ttl,
+            "update_expired": self.update_expired,
+            "x": self.x,
+            "y": self.y,
+            "disable_all_interaction": self.disable_all_interaction,
+        }
+        if self.description:
+            r["description"] = self.description
+        if self.interaction_settings:
+            r["interaction_settings"] = {
+                key: val.json_data() for key, val in self.interaction_settings.items()
+            }
+        if self.on_enter_handlers:
+            r["on_enter_handlers"] = [h for h in self.on_enter_handlers]
+        if self.job_handler:
+            r["job_handler"] = self.job_handler
+        if self.on_leave_handlers:
+            r["on_leave_handlers"] = [h for h in self.on_leave_handlers]
+        if self.labels:
+            r["labels"] = list(self.labels)
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "workflow__name",
+                "name",
+                "uuid",
+                "$collection",
+                "description",
+                "is_default",
+                "is_productive",
+                "is_wiping",
+                "hide_with_state",
+                "update_last_seen",
+                "ttl",
+                "update_expired",
+                "on_enter_handlers",
+                "job_handler",
+                "on_leave_handlers",
+                "x",
+                "y",
+                "disable_all_interaction",
+                "interaction_settings",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        name_coll = quote_safe_path(self.workflow.name + " " + self.name)
+        return os.path.join(name_coll) + ".json"
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["State"]:
-        return State.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["State"]:
+        return State.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["State"]:
-        return State.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["State"]:
+        return State.objects.filter(bi_id=bi_id).first()
 
     def on_save(self):
         chenged_fields = getattr(self, "_changed_fields", None)
@@ -162,7 +240,7 @@ class State(Document):
             # New default
             self.workflow.set_wiping_state(self)
         if (chenged_fields and "labels" in chenged_fields) or (not chenged_fields and self.labels):
-            self.sync_reffered_labels()
+            self.sync_referred_labels()
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
@@ -332,9 +410,11 @@ class State(Document):
             blocked=not self.is_enabled_interaction(Interaction.ServiceActivation),
             default_state=DiagnosticState.enabled,
             run_policy="D",
-            reason="Deny by Allowed interaction by State"
-            if not self.is_enabled_interaction(Interaction.ServiceActivation)
-            else "",
+            reason=(
+                "Deny by Allowed interaction by State"
+                if not self.is_enabled_interaction(Interaction.ServiceActivation)
+                else ""
+            ),
         )
         yield DiagnosticConfig(
             ALARM_DIAG,
@@ -342,14 +422,16 @@ class State(Document):
             blocked=not self.is_enabled_interaction(Interaction.Alarm),
             default_state=DiagnosticState.enabled,
             run_policy="D",
-            reason="Deny by Allowed interaction by State"
-            if not self.is_enabled_interaction(Interaction.Alarm)
-            else "",
+            reason=(
+                "Deny by Allowed interaction by State"
+                if not self.is_enabled_interaction(Interaction.Alarm)
+                else ""
+            ),
         )
 
-    def sync_reffered_labels(self):
+    def sync_referred_labels(self):
         """
-        Update labels on reffered models
+        Update labels on referred models
         * filter - state=state_id
         * sync resource_group
         :return:
@@ -360,17 +442,16 @@ class State(Document):
             model = get_model(model_id)
             state_id = self.id
             if not is_document(model):
-                state_id = set(self.id)
+                # For DjangoModel, on DB save string ObjectId
+                state_id = str(self.id)
             removed, add_labels = [], []
-            for ll in Label.objects.filter(
-                **{"enable_workflowstate": True, LABEL_MODELS[model_id]: True}
-            ):
+            for ll in Label.objects.filter(allow_models__all=["wf.State", model_id]):
                 # @todo more precisely
                 if ll.name not in self.labels:
                     removed.append(ll.name)
             for ll in self.labels:
-                if model.can_set_label(ll.name):
-                    add_labels.append(ll.name)
+                if model.can_set_label(ll):
+                    add_labels.append(ll)
             if removed:
                 Label.remove_model_labels(model_id, removed, instance_filters=[("state", state_id)])
             if add_labels:

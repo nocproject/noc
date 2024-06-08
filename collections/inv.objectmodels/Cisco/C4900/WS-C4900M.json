@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | C4900 | C4900M",
+    "name": "Cisco | C4900 | WS-C4900M",
     "$collection": "inv.objectmodels",
     "uuid": "340cd488-5dbe-4433-a572-bbefdf5ffb11",
     "vendor__code": "CISCO",
@@ -9,96 +9,136 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
-            "description": "Linecard slot",
-            "direction": "i",
-            "gender": "f",
             "name": "linecard1",
-            "type__name": "Cisco | C4900 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Cisco | C4900 | LINECARD"
+        },
+        {
             "name": "linecard2",
-            "type__name": "Cisco | C4900 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard3",
             "type__name": "Cisco | C4900 | LINECARD"
         },
         {
+            "name": "linecard3",
+            "description": "Linecard slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | C4900 | LINECARD"
+        },
+        {
+            "name": "usb0",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "usb1",
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "name": "usb1",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB-type-B"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Fa0/0",
             "description": "Management port",
             "direction": "s",
             "gender": "f",
-            "name": "Fa0/0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "disk0",
             "description": "Compact Flash slot",
             "direction": "i",
             "gender": "f",
-            "name": "disk0",
             "type__name": "Flash | CF"
         },
         {
+            "name": "psu0",
             "description": "PSU0",
             "direction": "i",
             "gender": "f",
-            "name": "psu0",
             "type__name": "Cisco | C4900 | PSU"
         },
         {
+            "name": "psu1",
             "description": "PSU1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | C4900 | PSU"
         },
         {
+            "name": "fan",
             "description": "Fan module slot",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
             "type__name": "Cisco | C4900 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C4900M"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C4900M"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 2
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2
         }
-    }
+    ]
 }

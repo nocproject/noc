@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.MSAN.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -49,6 +49,85 @@ class Script(BaseScript):
         "IES-3000M": "MSC1000A",
     }
 
+    def get_sensors(self, slot_index):
+        r = []
+
+        if slot_index == 1:  # Fan sensors on chassis only
+            # Fan state
+            for oid, name in self.snmp.getnext("1.3.6.1.4.1.890.1.5.13.1.2.1.1.6.0"):
+                sindex = oid.split(".")[-1]
+                cur_value = self.snmp.get(f"1.3.6.1.4.1.890.1.5.13.1.2.1.1.2.0.{sindex}")
+                try:
+                    cur_value = int(cur_value)
+                    status = bool(cur_value)
+                except:
+                    status = False
+
+                r += [
+                    {
+                        "name": f"{slot_index}|{name}",
+                        "status": status,
+                        "description": f"Скорость вращения {name} устройства",
+                        "measurement": "rpm",
+                        "labels": [
+                            "noc::sensor::placement::internal",
+                            "noc::sensor::mode::flag",
+                            "noc::sensor::target::fan",
+                        ],
+                        "snmp_oid": f"1.3.6.1.4.1.890.1.5.13.1.2.1.1.2.0.{sindex}",
+                    }
+                ]
+
+        # Voltage state
+        for oid, name in self.snmp.getnext(f"1.3.6.1.4.1.890.1.5.13.1.2.2.1.7.0.{slot_index}"):
+            sindex = oid.split(".")[-1]
+            cur_value = self.snmp.get(f"1.3.6.1.4.1.890.1.5.13.1.2.2.1.2.0.{slot_index}.{sindex}")
+            try:
+                cur_value = int(cur_value)
+                status = bool(cur_value)
+            except:
+                status = False
+            r += [
+                {
+                    "name": f"{slot_index}|{name}",
+                    "status": status,
+                    "description": "Напряжение питания устройства",
+                    "measurement": "Volt AC",
+                    "labels": [
+                        "noc::sensor::placement::internal",
+                        "noc::sensor::mode::voltage",
+                        "noc::sensor::target::supply",
+                    ],
+                    "snmp_oid": f"1.3.6.1.4.1.890.1.5.13.1.2.2.1.2.0.{slot_index}.{sindex}",
+                }
+            ]
+        # Temperature state
+        for oid, name in self.snmp.getnext(f"1.3.6.1.4.1.890.1.5.13.5.11.3.3.1.6.0.{slot_index}"):
+            sindex = oid.split(".")[-1]
+            cur_value = self.snmp.get(
+                f"1.3.6.1.4.1.890.1.5.13.5.11.3.3.1.2.0.{slot_index}.{sindex}"
+            )
+            try:
+                cur_value = int(cur_value)
+                status = bool(cur_value)
+            except:
+                status = False
+            r += [
+                {
+                    "name": f"{slot_index}|{name}",
+                    "status": status,
+                    "description": "Значение температуры с внутреннего датчика",
+                    "measurement": "Celsius",
+                    "labels": [
+                        "noc::sensor::placement::internal",
+                        "noc::sensor::mode::temperature",
+                    ],
+                    "snmp_oid": f"1.3.6.1.4.1.890.1.5.13.5.11.3.3.1.2.0.{slot_index}.{sindex}",
+                }
+            ]
+
+        return r
+
     def execute(self):
         r = []
         slots = self.profile.get_slots_n(self)
@@ -84,6 +163,11 @@ class Script(BaseScript):
                     r += [
                         {"type": "LINECARD", "number": i[0], "vendor": "ZYXEL", "part_no": part_no}
                     ]
+            for i in r:
+                if i["type"] == "CHASSIS" and self.has_snmp():
+                    i.update({"sensors": self.get_sensors(1)})
+                if i["type"] == "LINECARD" and self.has_snmp():
+                    i.update({"sensors": self.get_sensors(i["number"])})
         else:
             module = None
             match = self.rx_hw.search(self.cli("sys info show", cached=True))
@@ -108,4 +192,9 @@ class Script(BaseScript):
                 r[0]["revision"] = match.group("revision")
             if module:
                 r += [{"type": "LINECARD", "number": 1, "vendor": "ZYXEL", "part_no": module}]
+            for i in r:
+                if i["type"] == "CHASSIS" and self.has_snmp():
+                    i.update({"sensors": self.get_sensors(1)})
+                if i["type"] == "LINECARD" and self.has_snmp():
+                    i.update({"sensors": self.get_sensors(i["number"])})
         return r

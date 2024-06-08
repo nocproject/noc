@@ -8,40 +8,60 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | SB"
         },
         {
+            "name": "LINE",
             "description": "24 channels of VDSL2 over POTS",
             "direction": "s",
             "gender": "f",
-            "name": "LINE",
-            "protocols": ["VDSL2"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "VDSL2"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
+            "name": "PSTN",
             "description": "24 channels of the POTS signals",
             "direction": "s",
             "gender": "f",
-            "name": "PSTN",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H835VDSE"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H835VDSE"]
         },
-        "dimensions": {
-            "depth": 21,
-            "height": 265,
-            "width": 220
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 32.0
         },
-        "power": {
-            "power": 32.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 21
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 265
         }
-    }
+    ]
 }

@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, ListField, EmbeddedDocumentField, IntField
 from mongoengine.queryset.visitor import Q
@@ -102,8 +103,8 @@ class FirmwarePolicy(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["FirmwarePolicy"]:
-        return FirmwarePolicy.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["FirmwarePolicy"]:
+        return FirmwarePolicy.objects.filter(id=oid).first()
 
     @classmethod
     def get_status(
@@ -171,13 +172,13 @@ class FirmwarePolicy(Document):
             return None
         fp = FirmwarePolicy.objects.filter(platform=platform.id, status=FS_RECOMMENDED).first()
         if fp:
-            return fp.firmware.version
+            return fp.firmware
         versions = []
         for fp in FirmwarePolicy.objects.filter(platform=platform.id, status=FS_ACCEPTABLE):
-            versions += [fp.firmware.version]
+            versions += [fp.firmware]
         if versions:
             # Get latest acceptable version
-            return list(sorted(versions))[-1]
+            return sorted(versions, key=operator.attrgetter("version"))[-1]
         return None
 
     def is_fw_match(self, firmware: "Firmware"):

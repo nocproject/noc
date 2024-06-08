@@ -1,0 +1,9 @@
+{
+    "name": "SDH",
+    "$collection": "inv.technologies",
+    "uuid": "aabf83e3-11c7-40a6-b629-90e981064205",
+    "description": "Synchronous Digital Hierarchy",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

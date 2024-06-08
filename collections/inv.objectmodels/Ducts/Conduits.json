@@ -7,12 +7,12 @@
     "plugins": ["-inventory"],
     "connections": [
         {
+            "name": "conduits",
             "description": "Conduits",
             "direction": "s",
             "gender": "s",
-            "name": "conduits",
             "type__name": "Conduits"
         }
     ],
-    "data": {}
+    "data": []
 }

@@ -35,6 +35,8 @@ class ObjectLog(Document):
     # * DISCONNECT - Object disconnected
     # * INSERT - Object moved into container
     # * REMOVE - Object removed from container
+    # * PARAM_CHANGED - Object param changed
+    # * PARAM_RESET - Object param deleted
     op = StringField()
     # Message
     message = StringField()

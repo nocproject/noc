@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Abstract script interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ from noc.core.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 from noc.core.interface.parameter import ORParameter  # noqa
+from noc.core.discriminator import discriminator
 from noc.core.comp import smart_text
 
 
@@ -586,7 +587,9 @@ class IPv4Parameter(StringParameter):
             return value
         except ValueError:
             pass
-        if len(value) == 4:
+        if len(value) == 4 and isinstance(value, bytes):
+            value = ".".join(str(c) for c in value)
+        elif len(value) == 4:
             # IP address in binary form
             value = ".".join(["%02X" % ord(c) for c in value])
         v = super().clean(value)
@@ -640,6 +643,8 @@ class IPv6Parameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+        if len(value) == 16 and isinstance(value, bytes):
+            value = ":".join("%02X%02X" % (x, y) for x, y in zip(value[0::2], value[1::2]))
         v = super().clean(value)
         if not is_ipv6(v):
             self.raise_error(value)
@@ -674,10 +679,11 @@ class IPParameter(StringParameter):
     """
 
     def clean(self, value):
-        if ":" in value:
+        if (len(value) == 16 and isinstance(value, bytes)) or (
+            not isinstance(value, bytes) and ":" in value
+        ):
             return IPv6Parameter().clean(value)
-        else:
-            return IPv4Parameter().clean(value)
+        return IPv4Parameter().clean(value)
 
 
 #
@@ -765,6 +771,18 @@ class MACAddressParameter(StringParameter):
             return str(MAC(value))
         except ValueError:
             self.raise_error(value)
+
+
+class DiscriminatorParameter(StringParameter):
+    """
+    Check value is Cross Discriminator
+    """
+
+    def clean(self, value):
+        try:
+            return discriminator(value)
+        except ValueError as e:
+            self.raise_error("Bad discriminator: %s" % str(e))
 
 
 class InterfaceNameParameter(StringParameter):
@@ -1003,11 +1021,15 @@ class ColorParameter(Parameter):
         if isinstance(value, str):
             if value.startswith("#"):
                 value = value[1:]
-            if len(value) == 6:
-                try:
-                    return int(value, 16)
-                except ValueError:
-                    self.raise_error(value)
+                if len(value) == 6:
+                    try:
+                        return int(value, 16)
+                    except ValueError:
+                        self.raise_error(value)
+            try:
+                return int(value, 10)
+            except ValueError:
+                self.raise_error(value)
         self.raise_error(value)
 
 

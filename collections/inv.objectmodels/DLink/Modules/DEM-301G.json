@@ -7,24 +7,29 @@
     "cr_context": "MODULE",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "DLink | DES30 | Module"
         },
         {
+            "name": "Gi1_gbic",
             "description": "port 1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_gbic",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DEM-301G"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DEM-301G"]
         }
-    }
+    ]
 }

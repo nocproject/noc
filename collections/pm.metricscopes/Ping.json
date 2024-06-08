@@ -4,10 +4,26 @@
     "uuid": "b74189ad-3b8d-43d3-9d84-06d46f379674",
     "table_name": "ping",
     "description": "Ping-related metrics",
-    "key_fields": [{
-        "field_name": "managed_object",
-        "model": "sa.ManagedObject"
-    }],
+    "key_fields": [
+        {
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
+        },
+        {
+            "field_name": "service",
+            "model": "sa.Service"
+        }
+    ],
     "enable_timedelta": false,
-    "labels": []
+    "labels": [
+        {
+            "is_key_label": true,
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::address",
+            "store_column": "address"
+        }
+    ]
 }

@@ -400,6 +400,12 @@ class CustomField(NOCModel):
             }
             if self.type == "str" and self.regexp:
                 f["regex"] = self.regexp
+            if self.type == "date":
+                f["format"] = "Y-m-d"
+                f["altFormats"] = "Y-m-d"
+            if self.type == "datetime":
+                f["format"] = "Y-m-d H:i:s"
+                f["altFormats"] = "Y-m-d\\TH:i:s"
         else:
             raise ValueError("Invalid field type '%s'" % self.type)
         return f

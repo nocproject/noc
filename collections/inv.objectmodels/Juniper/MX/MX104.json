@@ -8,98 +8,124 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "re0",
             "description": "RE Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "re0",
             "type__name": "Juniper | MX | MX104 RE"
         },
         {
+            "name": "re1",
             "description": "RE Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "re1",
             "type__name": "Juniper | MX | MX104 RE"
         },
         {
+            "name": "fpc0",
             "description": "FPC Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "fpc0",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "fpc1",
             "description": "FPC Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "fpc1",
             "type__name": "Juniper | MX | FPC"
         },
         {
-            "description": "",
-            "direction": "i",
-            "gender": "f",
             "name": "2/0/0",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": "",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "2/0/1",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": "",
             "direction": "i",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
             "name": "2/0/2",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
             "description": "",
             "direction": "i",
             "gender": "f",
-            "name": "2/0/3",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
+            "name": "2/0/3",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "pem0",
             "description": "PEM Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "pem0",
             "type__name": "Juniper | MX | MX104 PEM"
         },
         {
+            "name": "pem1",
             "description": "PEM Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "pem1",
             "type__name": "Juniper | MX | MX104 PEM"
         },
         {
+            "name": "fan0",
             "description": "Fan Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "fan0",
             "type__name": "Juniper | MX | MX104 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MX104"],
-            "cpe_22": "cpe:/h:juniper:mx104:-",
-            "cpe_23": "cpe:2.3:h:juniper:mx104:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MX104"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:juniper:mx104:-"
         },
-        "rackmount": {
-            "units": 3.6
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:juniper:mx104:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 3.6
         }
-    }
+    ]
 }

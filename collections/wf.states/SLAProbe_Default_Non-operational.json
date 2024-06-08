@@ -1,0 +1,17 @@
+{
+    "workflow__name": "SLAProbe Default",
+    "name": "Non-operational",
+    "uuid": "8c87ccf2-e833-42c0-be9a-93436c0f545f",
+    "$collection": "wf.states",
+    "description": "Sensor is broken or non-operational",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 520,
+    "y": 210,
+    "disable_all_interaction": false
+}

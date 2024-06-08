@@ -43,4 +43,4 @@
     msg: |
       PLease choose recommended Python version instead of {{ noc_py3_ver }},
       we recommend to use last supported for that release: https://getnoc.com/blog/
-  when: noc_py3_ver is version('3.7', '<=')
+  when: noc_py3_ver is version('3.9', '<=')

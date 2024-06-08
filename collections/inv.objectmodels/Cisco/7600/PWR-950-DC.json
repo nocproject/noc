@@ -1,0 +1,32 @@
+{
+    "name": "Cisco | 7600 | PWR-950-DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "1e163a7f-90c3-442f-b515-40a9632366e9",
+    "vendor__code": "CISCO",
+    "description": "950 Watt DC Power Supply for Cisco 7603/6503",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "PEM version 1",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 7600 | 7603-PEM1"
+        },
+        {
+            "name": "in",
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 7603 | PSU"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-950-DC", "PWR-950-DC="]
+        }
+    ]
+}

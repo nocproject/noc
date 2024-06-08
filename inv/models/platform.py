@@ -8,11 +8,13 @@
 # Python modules
 import os
 import threading
+from typing import Optional, Union
 import operator
 import uuid
 import datetime
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField, ListField
 from mongoengine.queryset import Q
@@ -32,6 +34,8 @@ from noc.main.models.label import Label
 from .vendor import Vendor
 
 id_lock = threading.Lock()
+
+MAX_PLATFORM_LENGTH = 200
 
 
 @Label.model
@@ -58,7 +62,7 @@ class Platform(Document):
         ],
     }
     vendor = PlainReferenceField(Vendor)
-    name = StringField()
+    name = StringField(max_length=MAX_PLATFORM_LENGTH)
     description = StringField(required=False)
     # Full name, combined from vendor platform
     full_name = StringField(unique=True)
@@ -106,13 +110,13 @@ class Platform(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return Platform.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Platform"]:
+        return Platform.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return Platform.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Platform"]:
+        return Platform.objects.filter(bi_id=bi_id).first()
 
     def to_json(self) -> str:
         r = {
@@ -176,6 +180,8 @@ class Platform(Document):
         if platform or strict:
             return platform
         # Try to create
+        if len(name) > MAX_PLATFORM_LENGTH:
+            return
         labels = labels or []
         pu = uuid.uuid4()
         d = Platform._get_collection().find_one_and_update(

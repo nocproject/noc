@@ -1,0 +1,10 @@
+{
+    "name": "TransEth400G",
+    "code": "TransEth400G",
+    "$collection": "inv.protocols",
+    "uuid": "5470678d-d357-485b-8a43-4f37b0e8e309",
+    "description": "Interface for device transievers module",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Trasceiver"
+}

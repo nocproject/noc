@@ -184,9 +184,9 @@ class ReportMetricsDetailApplication(ExtApplication):
                 "object_adm_domain": row[4],
                 "object_segment": NetworkSegment.get_by_id(row[5]).name if row[5] else "",
                 # "object_segment": "",
-                "object_container": containers_address.get(row[6], "")
-                if containers_address and row[6]
-                else "",
+                "object_container": (
+                    containers_address.get(row[6], "") if containers_address and row[6] else ""
+                ),
                 # "object_container": "",
             }
         datasource = self.report_map[reporttype]["datasource"]
@@ -223,8 +223,11 @@ class ReportMetricsDetailApplication(ExtApplication):
         mac_counters = {}
         if "mac_counter" in columns_filter:
             mac_ds = ds_loader["interfacemacsstatds"]
-            data = mac_ds.query_sync(resolve_managedobject_id=False)
-            mac_counters = data.to_dict()
+            data = mac_ds.query_sync(resolve_managedobject_id=False, start=from_date, end=to_date)
+            mac_counters = {
+                (r["managed_object_id"], r["interface_name"]): r["mac_count"]
+                for r in data.to_dicts()
+            }
         if reporttype == "load_interfaces" and interface_profile:
             interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
             filters += [{"name": "interface_profile", "value": [interface_profile.name]}]
@@ -257,7 +260,7 @@ class ReportMetricsDetailApplication(ExtApplication):
                 d_url["oname"] = row["object_name"]
                 row["interface_load_url"] = url % d_url
             if "mac_counter" in columns_filter:
-                row["mac_counter"] = mac_counters["mac_count"].get(
+                row["mac_counter"] = mac_counters.get(
                     (int(row["managed_object"]), row["iface_name"]), ""
                 )
             res = []

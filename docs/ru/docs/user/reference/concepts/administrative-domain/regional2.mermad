@@ -1,7 +1,0 @@
-graph TD
-    HQ --> West
-    HQ --> East
-    West --> Branch1
-    West --> Branch2
-    East --> Branch3
-    East --> Branch4

@@ -9,50 +9,56 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "mb",
             "description": "3825 Motherboard",
             "direction": "i",
             "gender": "f",
-            "name": "mb",
             "type__name": "Cisco | 3800 | MOTHERBOARD"
         },
         {
+            "name": "nm1",
             "description": "NME 1",
             "direction": "i",
             "gender": "f",
-            "name": "nm1",
             "type__name": "Cisco | 3800 | NM"
         },
         {
+            "name": "nm2",
             "description": "NME 2",
             "direction": "i",
             "gender": "f",
-            "name": "nm2",
             "type__name": "Cisco | 3800 | NM"
         },
         {
+            "name": "psu1",
             "description": "Power Supply slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | 3800 | PSU"
         },
         {
+            "name": "psu2",
             "description": "Power Supply slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "psu2",
             "type__name": "Cisco | 3800 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCO3825"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCO3825"]
         },
-        "rackmount": {
-            "units": 2
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2
         }
-    }
+    ]
 }

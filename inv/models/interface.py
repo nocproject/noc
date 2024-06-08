@@ -8,8 +8,10 @@
 # Python modules
 import datetime
 import logging
+from typing import Optional, Iterable, List, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -22,13 +24,12 @@ from mongoengine.fields import (
     DictField,
 )
 from pymongo import ReadPreference
-from typing import Optional, Iterable, List
 
 # NOC Modules
 from noc.config import config
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.resourcegroup.decorator import resourcegroup
-from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
+from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID, MX_PROFILE_ID
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
@@ -38,8 +39,8 @@ from noc.project.models.project import Project
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
-from noc.core.comp import DEFAULT_ENCODING
 from noc.core.wf.decorator import workflow
+from noc.core.wf.diagnostic import DIAGNOCSTIC_LABEL_SCOPE
 from noc.core.bi.decorator import bi_hash
 from noc.wf.models.state import State
 from .interfaceprofile import InterfaceProfile
@@ -147,8 +148,8 @@ class Interface(Document):
         return "%s: %s" % (self.managed_object.name, self.name)
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["Interface"]:
-        return Interface.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Interface"]:
+        return Interface.objects.filter(id=oid).first()
 
     def clean(self):
         if self.extra_labels:
@@ -435,6 +436,12 @@ class Interface(Document):
             self.update(oper_status=status, oper_status_change=now)
             if self.profile.is_enabled_notification:
                 logger.debug("Sending status change notification")
+                headers = self.managed_object.get_mx_message_headers(self.effective_labels)
+                if self.profile.default_notification_group:
+                    headers[MX_NOTIFICATION_GROUP_ID] = str(
+                        self.profile.default_notification_group.id
+                    ).encode()
+                headers[MX_PROFILE_ID] = str(self.profile.id).encode()
                 send_message(
                     data={
                         "name": self.name,
@@ -443,14 +450,12 @@ class Interface(Document):
                         "profile": {"id": str(self.profile.id), "name": self.profile.name},
                         "status": status,
                         "full_duplex": self.full_duplex,
+                        "in_speed": self.in_speed,
+                        "bandwidth": self.bandwidth,
                         "managed_object": self.managed_object.get_message_context(),
                     },
-                    message_type="interface_status_change",
-                    headers={
-                        MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
-                            encoding=DEFAULT_ENCODING
-                        ),
-                    },
+                    message_type=MessageType.INTERFACE_STATUS_CHANGE,
+                    headers=headers,
                 )
 
     @property
@@ -480,7 +485,7 @@ class Interface(Document):
         yield list(instance.labels or [])
         # if instance.hints:
         #     # Migrate to labels
-        #     yield Label.ensure_labels(instance.hints, enable_interface=True)
+        #     yield Label.ensure_labels(instance.hints, ["inv.Interface"])
         if instance.profile.labels:
             yield list(instance.profile.labels)
         yield list(InterfaceProfile.iter_lazy_labels(instance.profile))
@@ -490,7 +495,7 @@ class Interface(Document):
             yield [
                 ll
                 for ll in instance.managed_object.get_effective_labels()
-                if ll != "noc::is_linked::="
+                if ll != "noc::is_linked::=" and not ll.startswith(f"{DIAGNOCSTIC_LABEL_SCOPE}::")
             ]
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
@@ -608,8 +613,8 @@ class Interface(Document):
             ):
                 ifindex = si.get("ifindex")
                 service = None
-                if config.discovery.interface_metric_service and i.get("service"):
-                    service = Service.get_bi_id_by_id(str(i["service"]))
+                if config.discovery.interface_metric_service and si.get("service"):
+                    service = Service.get_bi_id_by_id(str(si["service"]))
                 yield MetricCollectorConfig(
                     collector="managed_object",
                     metrics=tuple(metrics),

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CLI Command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ class BaseCommand(object):
                 for k in d:
                     self.print("%40s : %s" % (k, d[k]))
 
-    def create_parser(self):
+    def create_parser(self) -> argparse.ArgumentParser:
         cmd = os.path.basename(sys.argv[0])
         if cmd.endswith(".py"):
             cmd = "noc %s" % cmd[:-3]
@@ -134,7 +134,7 @@ class BaseCommand(object):
         Execute command
         """
 
-    def add_default_arguments(self, parser):
+    def add_default_arguments(self, parser: argparse.ArgumentParser) -> None:
         """
         Apply default parser arguments
         """
@@ -162,7 +162,7 @@ class BaseCommand(object):
             "--show-usage", action="store_true", help="Dump resource usage statistics"
         )
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         """
         Apply additional parser arguments
         """
@@ -170,7 +170,7 @@ class BaseCommand(object):
     def die(self, msg: str) -> NoReturn:
         raise CommandError(msg)
 
-    def setup_logging(self, loglevel):
+    def setup_logging(self, loglevel: str) -> None:
         """
         Set loglevel
         """

@@ -8,16 +8,18 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "in",
             "description": "Line connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Ericsson | SE600 | MGMT"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["xcrp4-base"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["xcrp4-base"]
         }
-    }
+    ]
 }

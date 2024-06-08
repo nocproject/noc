@@ -99,7 +99,7 @@ class AdministrativeDomain(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["AdministrativeDomain"]:
         ad = AdministrativeDomain.objects.filter(id=id)[:1]
         if ad:
             return ad[0]
@@ -107,8 +107,8 @@ class AdministrativeDomain(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        ad = AdministrativeDomain.objects.filter(bi_id=id)[:1]
+    def get_by_bi_id(cls, bi_id: int) -> Optional["AdministrativeDomain"]:
+        ad = AdministrativeDomain.objects.filter(bi_id=bi_id)[:1]
         if ad:
             return ad[0]
         return None

@@ -7,9 +7,11 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union, List
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, UUIDField
 import cachetools
@@ -32,7 +34,7 @@ class AlarmSeverity(Document):
         "collection": "noc.alarmseverities",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["severity"],
+        "indexes": ["severity", "code"],
         "json_collection": "fm.alarmseverities",
         "json_unique_fields": ["name"],
     }
@@ -40,6 +42,7 @@ class AlarmSeverity(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     severity = IntField(required=True)
+    code = StringField(required=False)
     style = ForeignKeyField(Style)
     # Minimal alarm weight to reach severity
     min_weight = IntField(required=False)
@@ -47,6 +50,7 @@ class AlarmSeverity(Document):
     volume = IntField(default=100)
 
     _id_cache = cachetools.TTLCache(maxsize=50, ttl=60)
+    _code_cache = cachetools.TTLCache(maxsize=50, ttl=60)
     _css_cache = cachetools.TTLCache(maxsize=1000, ttl=600)
     _order_cache = {}
     _weight_cache = {}
@@ -54,14 +58,38 @@ class AlarmSeverity(Document):
     def __str__(self):
         return self.name
 
+    def __gt__(self, other):
+        return self.severity > other.severity
+
+    def __ge__(self, other):
+        return self.severity >= other.severity
+
+    def __eq__(self, other):
+        return self.severity == other.severity
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return AlarmSeverity.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AlarmSeverity"]:
+        return AlarmSeverity.objects.filter(id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
+    def get_by_code(cls, code: str) -> Optional["AlarmSeverity"]:
+        return AlarmSeverity.objects.filter(code=code).first()
+
+    @classmethod
+    def get_from_labels(cls, labels: List[str]) -> Optional["AlarmSeverity"]:
+        """
+
+        Args
+            labels:
+
+        """
+        return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_order_cache"), lock=lambda _: id_lock)
-    def get_ordered(cls):
+    def get_ordered(cls) -> List["AlarmSeverity"]:
         """
         Returns list of severities ordered in acvending order
         :return:
@@ -85,7 +113,7 @@ class AlarmSeverity(Document):
         return severities, weights, alpha
 
     @classmethod
-    def get_severity(cls, severity):
+    def get_severity(cls, severity) -> Optional["AlarmSeverity"]:
         """
         Returns Alarm Severity instance corresponding to numeric value
         """
@@ -110,6 +138,8 @@ class AlarmSeverity(Document):
                 "uuid": self.uuid,
                 "description": self.description,
                 "severity": self.severity,
+                "min_weight": self.min_weight,
+                "code": self.code,
                 "style__name": self.style.name,
             },
             order=["name", "$collection", "uuid", "description", "severity", "style"],

@@ -7,33 +7,63 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "eth1",
             "description": "Uplink port",
             "direction": "s",
             "gender": "f",
-            "name": "eth1",
-            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ath0",
             "description": "2.4G antenna interface 1",
             "direction": "s",
             "gender": "f",
-            "name": "ath0",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["Bullet M2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["Bullet M2"]
         },
-        "dimensions": {
-            "depth": 31,
-            "height": 37,
-            "width": 152
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 31
         },
-        "weight": {
-            "weight": 0.18
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 37
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 152
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.18
         }
-    }
+    ]
 }

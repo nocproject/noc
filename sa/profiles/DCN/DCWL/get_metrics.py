@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # DCN.DCWL.get_metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,6 +26,17 @@ class Script(GetMetricsScript):
             if c:
                 cpu = c.split(" ")[1].strip()
                 self.set_metric(id=("CPU | Usage", None), value=round(float(cpu) + 0.5), units="%")
+
+    @metrics(["Memory | Total"], volatile=False, access="C")  # CLI version
+    def get_memory_total(self, metrics):
+        with self.profile.shell(self):
+            memory_info = self.cli("cat /proc/meminfo")
+            for line in memory_info.splitlines():
+                line = line.split(":", 1)
+                if line[0] == "MemTotal":
+                    memory_total = line[1].strip().split(" ")[0]
+                    break
+            self.set_metric(id=("Memory | Total", None), value=int(memory_total), units="byte")
 
     @metrics(["Memory | Usage"], volatile=False, access="C")  # CLI version
     def get_memory_metrics(self, metrics):
@@ -103,14 +114,21 @@ class Script(GetMetricsScript):
             "Interface | Packets | Out",
             "Interface | Errors | In",
             "Interface | Errors | Out",
+            "Interface | Speed",
+            "Interface | Status | Admin",
+            "Interface | Status | Oper",
         ],
         has_capability="DB | Interfaces",
         volatile=False,
         access="C",  # CLI version
     )
     def get_interface_metrics(self, metrics):
+        """
+        get interface metrics
+        """
         ifaces = []
         radio_metrics = self.get_radio_metrics(metrics)
+        bss_metrics = self.get_bss_metrics(metrics)
         iface_metric_map = {
             "rx-bytes": "Interface | Load | In",
             "tx-bytes": "Interface | Load | Out",
@@ -118,6 +136,9 @@ class Script(GetMetricsScript):
             "tx-packets": "Interface | Packets | Out",
             "rx-errors": "Interface | Errors | In",
             "tx-errors": "Interface | Errors | Out",
+            "iface-speed": "Interface | Speed",
+            "admin-status": "Interface | Status | Admin",
+            "oper-status": "Interface | Status | Oper",
         }
         c = self.cli("get interface all detail")
         for block in c.split("\n\n"):
@@ -141,14 +162,48 @@ class Script(GetMetricsScript):
                 iface = f'{data["name"]}.{ssid}'
             else:
                 iface = data["name"]
+            if "radio" in data and data["radio"] in radio_metrics:
+                iface_speed = radio_metrics[data["radio"]]["interface-speed"]
+            elif data["name"].startswith("eth"):
+                iface_speed = 100000
+            else:
+                iface_speed = None
+            if bss_metrics:
+                if data["name"].startswith("eth"):
+                    admin_status, oper_status = True, True
+                elif data["name"].startswith("wlan"):
+                    admin_status = bss_metrics[data["name"]]["admin"]
+                    oper_status = bss_metrics[data["name"]]["oper"]
+                else:
+                    admin_status, oper_status = None, None
             for field, metric in iface_metric_map.items():
                 if field.endswith("bytes") and metric in self.scale_x8:
                     units = "bit"
                 elif field.endswith("bytes"):
                     units = "byte"
-                else:
+                elif field.endswith("errors") or field.endswith("packets"):
                     units = "pkt"
-                if data.get(field) is not None:
+                else:
+                    units = ""
+                if metric == "Interface | Speed":
+                    self.set_metric(
+                        id=(metric, [f"noc::interface::{iface}"]),
+                        value=iface_speed,
+                        units=units,
+                    )
+                elif metric == "Interface | Status | Admin":
+                    self.set_metric(
+                        id=(metric, [f"noc::interface::{iface}"]),
+                        value=admin_status,
+                        units=units,
+                    )
+                elif metric == "Interface | Status | Oper":
+                    self.set_metric(
+                        id=(metric, [f"noc::interface::{iface}"]),
+                        value=oper_status,
+                        units=units,
+                    )
+                elif data.get(field) is not None:
                     self.set_metric(
                         id=(metric, [f"noc::interface::{iface}"]),
                         value=float(data[field]),
@@ -174,6 +229,23 @@ class Script(GetMetricsScript):
                     units="dBm",
                 )
 
+    def get_bss_metrics(self, metrics):
+        """
+        get wlan status info
+        """
+        b_metrics = defaultdict(dict)
+        responce = self.cli("get bss all detail")
+        for block in responce.split("\n\n"):
+            data = dict(
+                line.split(None, 1) for line in block.splitlines() if len(line.split(None, 1)) == 2
+            )
+            if not data:
+                continue
+            iface = data["radio"]  # iface names for example: wlan0, wlan1, wlan2, ...
+            b_metrics[iface]["admin"] = data["global-radius"] == "on"
+            b_metrics[iface]["oper"] = data["status"] == "up"
+        return b_metrics
+
     @metrics(
         [
             "Radio | TxPower",
@@ -189,7 +261,21 @@ class Script(GetMetricsScript):
         access="C",  # CLI version
     )
     def get_radio_metrics(self, metrics):
+        """
+        get radio interfaces data
+        """
         r_metrics = defaultdict(dict)
+        speed_dict = {
+            "bg-n": "300000",
+            "a-n": "300000",
+            "a-c": "1300000",
+            "b-g": "54000",
+            "bg": "54000",
+            "a": "54000",
+            "b": "11000",
+            "g": "54000",
+            "n": "300000",
+        }
         w = self.cli("get radio all detail")
         for block in w.split("\n\n"):
             data = dict(
@@ -212,4 +298,6 @@ class Script(GetMetricsScript):
                     value=data["channel-util"],
                 )
                 r_metrics[iface]["channel-util"] = (27 / 100) * int(data["channel-util"].strip())
+            if data.get("mode") is not None:
+                r_metrics[iface]["interface-speed"] = int(speed_dict.get(data["mode"].strip()))
         return r_metrics

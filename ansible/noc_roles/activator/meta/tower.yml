@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Activator service <br/>
       <strong>Long description</strong>: Responsible for the collecting and processing data from network equipment.<br/>
       <strong>Scale Recommendations</strong>: At least two per core on node. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/activator/ target=_blank>Activator</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/activator/ target=_blank>Activator</a><br/>
       <strong>Placement constraint</strong>: On separate node<br/>
     power:
       default: 2

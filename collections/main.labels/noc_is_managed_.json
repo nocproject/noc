@@ -1,0 +1,19 @@
+{
+    "name": "noc::is_managed::=",
+    "$collection": "main.labels",
+    "uuid": "3ffd3915-bab1-4ea6-95bf-11767d07a4f0",
+    "description": "Label for backward compatible ManagedObject is_managed",
+    "bg_color1": 2719929,
+    "fg_color1": 16777215,
+    "bg_color2": 13849600,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["sa.ManagedObject", "wf.State"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

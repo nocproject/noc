@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ class KBEntry(NOCModel):
         """
         Callable for KBEntryAttachment.file.upload_to
         """
-        return "/kb/%d/%s" % (instance.kb_entry.id, filename)
+        return "kb/%d/%s" % (instance.kb_entry.id, filename)
 
     @property
     def visible_attachments(self):

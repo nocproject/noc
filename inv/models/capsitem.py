@@ -28,20 +28,21 @@ class CapsItem(EmbeddedDocument):
         return self.capability.name
 
     @classmethod
-    def get_caps(cls, *args: List["CapsItem"]) -> Dict[str, Any]:
+    def get_caps(cls, *args: List["CapsItem"], scope: Optional[str] = None) -> Dict[str, Any]:
         """
         Consolidate capabilities list and return resulting dict of
         caps name -> caps value. First appearance of capability
         overrides later ones.
 
         :param args:
+        :param scope: Scope Name
         :return:
         """
         r: Dict[str, Any] = {}
         for caps in args:
             for ci in caps:
                 cn = ci.capability.name
-                if cn in r:
+                if cn in r and (not scope or ci.scope != scope):
                     continue
                 r[cn] = ci.value
         return r

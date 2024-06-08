@@ -8,40 +8,60 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | SB"
         },
         {
+            "name": "PSTN0",
             "description": "32 channels of POTS",
             "direction": "s",
             "gender": "f",
-            "name": "PSTN0",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
+            "name": "PSTN1",
             "description": "32 channels of POTS",
             "direction": "s",
             "gender": "f",
-            "name": "PSTN1",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H837ASPB"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 220
         },
-        "dimensions": {
-            "depth": 21,
-            "height": 265,
-            "width": 220
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 21
         },
-        "power": {
-            "power": 41.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 265
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 41.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H837ASPB"]
         }
-    }
+    ]
 }

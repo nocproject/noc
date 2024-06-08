@@ -9,7 +9,7 @@
 import struct
 
 # Third-party modules
-from csiphash import siphash24
+from siphash24 import siphash24
 from typing import Dict, Any
 
 # NOC modules
@@ -26,7 +26,7 @@ def hash_str(value: Any) -> str:
     :param value: String
     :return: Hashed string
     """
-    return siphash24(SIPHASH_SEED, smart_bytes(smart_text(value)))
+    return siphash24(smart_bytes(smart_text(value)), key=SIPHASH_SEED).digest()
 
 
 def hash_int(value: Any) -> int:

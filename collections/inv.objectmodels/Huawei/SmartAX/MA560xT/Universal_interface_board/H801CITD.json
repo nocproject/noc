@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | Universal interface board | H801CITD",
+    "name": "Huawei | SmartAX | MA560xT | Universal interface board | H801CITD",
     "$collection": "inv.objectmodels",
     "uuid": "31d0e5c3-8a54-43c7-8a71-018d8a56056b",
     "vendor__code": "HUAWEI",
@@ -7,83 +7,130 @@
     "cr_context": "BOARD",
     "connections": [
         {
+            "name": "in",
             "description": null,
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA560xT | GPIO"
         },
         {
-            "description": "BITS/TOD In port",
-            "direction": "s",
-            "gender": "f",
             "name": "IN0",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "BITS/TOD In port",
             "direction": "s",
             "gender": "f",
-            "name": "IN1",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "IN1",
+            "description": "BITS/TOD In port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "OUT",
             "description": "BITS/TOD Out port",
             "direction": "s",
             "gender": "f",
-            "name": "OUT",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth",
             "description": "ETH port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "con",
             "description": "COM port",
             "direction": "s",
             "gender": "f",
-            "name": "con",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ALM_upper",
             "description": "DIgital alarm  interface (upper)",
             "direction": "s",
             "gender": "f",
-            "name": "ALM_upper",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ALM_lower",
             "description": "DIgital alarm  interface (lower)",
             "direction": "s",
             "gender": "f",
-            "name": "ALM_lower",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H801CITD"]
+    "data": [
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 197,
-            "width": 25
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H801CITD"]
         },
-        "power": {
-            "power": 4.55
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 4.55
         },
-        "weight": {
-            "weight": 2.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 25
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 197
         }
-    }
+    ]
 }

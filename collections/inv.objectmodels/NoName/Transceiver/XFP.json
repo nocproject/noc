@@ -1,0 +1,34 @@
+{
+    "name": "NoName | Transceiver | XFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "4f86f557-3fff-4417-8ee4-1f3eda639263",
+    "vendor__code": "NONAME",
+    "description": "Unknown XFP transceiver. Replace with real type manually",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

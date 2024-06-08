@@ -1,0 +1,68 @@
+{
+    "name": "Superxon | Transceiver | GPON | SOGP4321-PSGA",
+    "$collection": "inv.objectmodels",
+    "uuid": "40c2d0f9-89c2-4f8a-a099-da757d913924",
+    "vendor__code": "SUPERXON LTD.",
+    "description": "Neophotonics SOGP4321-PSGA, GPON OLT CLASS B + SFP 40k",
+    "cr_context": "XCVR",
+    "labels": ["noc::inv::xcvr"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "rxtx",
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1260_1360",
+                    "protocol__code": "GPON"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1490",
+                    "protocol__code": "GPON"
+                }
+            ],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SOGP4321-PSGA"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1490
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}

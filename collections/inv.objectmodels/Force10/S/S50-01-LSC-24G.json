@@ -6,25 +6,35 @@
     "description": "4m stacking cable for S50-01-24G-1S",
     "connections": [
         {
-            "cross": "1",
+            "name": "0",
             "description": "12G stacking connector",
             "direction": "s",
             "gender": "m",
-            "name": "0",
             "type__name": "Force10 | S | Stacking 24G"
         },
         {
-            "cross": "0",
+            "name": "1",
             "description": "12G stacking connector",
             "direction": "s",
             "gender": "m",
-            "name": "1",
             "type__name": "Force10 | S | Stacking 24G"
         }
     ],
-    "data": {
-        "length": {
-            "length": "4"
+    "data": [
+        {
+            "attr": "length",
+            "interface": "length",
+            "value": "4"
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "0",
+            "output": "1"
+        },
+        {
+            "input": "1",
+            "output": "0"
+        }
+    ]
 }

@@ -9,6 +9,7 @@
 import operator
 import itertools
 from collections import defaultdict
+from typing import List
 
 # Third-party modules
 import cachetools
@@ -35,13 +36,6 @@ class MonMapCard(BaseCard):
         "/ui/pkg/leaflet.markercluster/MarkerCluster.css",
         "/ui/card/css/monmap.css",
     ]
-    card_js = [
-        "/ui/pkg/leaflet/leaflet.js",
-        "/ui/pkg/leaflet.heat/leaflet-heat.js",
-        "/ui/pkg/leaflet.markercluster/leaflet.markercluster.js",
-        "/ui/pkg/leaflet.featuregroup.subgroup/leaflet.featuregroup.subgroup.js",
-        "/ui/card/js/monmap.js",
-    ]
 
     default_template_name = "monmap"
     o_default_name = "Root"
@@ -58,6 +52,29 @@ class MonMapCard(BaseCard):
 
     _layer_cache = {}
     TOOLTIP_LIMIT = config.card.alarmheat_tooltip_limit
+
+    @property
+    def card_js(self) -> List[str]:
+        res = [
+            "/ui/pkg/leaflet/leaflet.js",
+            "/ui/pkg/leaflet.heat/leaflet-heat.js",
+            "/ui/pkg/leaflet.markercluster/leaflet.markercluster.js",
+            "/ui/pkg/leaflet.featuregroup.subgroup/leaflet.featuregroup.subgroup.js",
+        ]
+
+        if config.gis.yandex_supported:
+            res += [
+                "/ui/pkg/leaflet/yapi.js",
+                "/ui/pkg/leaflet/Yandex.js",
+            ]
+
+        res += [
+            "/ui/common/map_layer_creator.js",
+            "/ui/common/settings_loader.js",
+            "/ui/card/js/monmap.js",
+        ]
+
+        return res
 
     def get_object(self, id=None):
         if id:
@@ -258,7 +275,7 @@ class MonMapCard(BaseCard):
                 if pv and show_in_summary(pv):
                     if isinstance(c, list):
                         badge = []
-                        for (color, count) in c:
+                        for color, count in c:
                             if count is None:
                                 badge += ["<td style='padding-right: 15px;'>&nbsp;</td>"]
                             else:

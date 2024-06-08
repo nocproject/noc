@@ -1,0 +1,112 @@
+{
+    "name": "Cisco | ISR | Module | EM-HDA-8FXS",
+    "$collection": "inv.objectmodels",
+    "uuid": "74b4ccd2-99aa-4521-b604-fe2c0ff55d4d",
+    "vendor__code": "CISCO",
+    "description": "Eight port FXS voice interface daughtercard",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "name": "voice-port0",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port1",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port2",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port3",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port4",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port5",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port6",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "name": "voice-port7",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
+            "type__name": "Electrical | RJ21"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EM-HDA-8FXS="]
+        }
+    ]
+}

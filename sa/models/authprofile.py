@@ -14,7 +14,7 @@ from threading import Lock
 import cachetools
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, RootModel, field_validator
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -36,7 +36,7 @@ class MatchRule(BaseModel):
     labels: List[str] = []
     handler: Optional[str]
 
-    @validator("handler")
+    @field_validator("handler")
     def handler_must_handler(cls, v):  # pylint: disable=no-self-argument
         if not v:
             return v
@@ -48,8 +48,7 @@ class MatchRule(BaseModel):
         return str(h.id)
 
 
-class MatchRules(BaseModel):
-    __root__: List[Optional[MatchRule]] = []
+MatchRules = RootModel[List[Optional[MatchRule]]]
 
 
 @Label.model
@@ -120,6 +119,34 @@ class AuthProfile(NOCModel):
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
 
+    snmp_security_level = models.CharField(
+        _("SNMP protocol security"),
+        max_length=12,
+        choices=[
+            ("Community", "Community"),
+            ("noAuthNoPriv", "noAuthNoPriv"),
+            ("authNoPriv", "authNoPriv"),
+            ("authPriv", "authPriv"),
+        ],
+        default="Community",
+    )
+    snmp_username = models.CharField("SNMP user name", max_length=32, null=True, blank=True)
+    snmp_auth_proto = models.CharField(
+        _("Authentication protocol"),
+        max_length=3,
+        choices=[("MD5", "MD5"), ("SHA", "SHA")],
+        default="MD5",
+    )
+    snmp_auth_key = models.CharField("Authentication key", max_length=32, null=True, blank=True)
+    snmp_priv_proto = models.CharField(
+        _("Privacy protocol"),
+        max_length=3,
+        choices=[("DES", "DES"), ("AES", "AES")],
+        default="DES",
+    )
+    snmp_priv_key = models.CharField("Privacy key", max_length=32, null=True, blank=True)
+    snmp_ctx_name = models.CharField("Context name", max_length=32, null=True, blank=True)
+
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
@@ -127,8 +154,8 @@ class AuthProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, aid) -> Optional["AuthProfile"]:
-        return AuthProfile.objects.filter(id=aid).first()
+    def get_by_id(cls, id: int) -> Optional["AuthProfile"]:
+        return AuthProfile.objects.filter(id=id).first()
 
     def on_save(self):
         from .managedobject import CREDENTIAL_CACHE_VERSION

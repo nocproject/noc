@@ -7,50 +7,88 @@
     "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
+            "name": "mgmt",
             "description": "Managemen Ethernet",
             "direction": "s",
             "gender": "f",
-            "name": "mgmt",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Console Port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "usb0",
             "description": "USB Port",
             "direction": "s",
             "gender": "f",
-            "name": "usb0",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "aux",
             "description": "AUX Port",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 9200 RE"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["RE-S-EX9200-2X00x6"],
-            "order_part_no": ["EX9200-RE2"],
-            "part_no": ["750-063458"]
+    "data": [
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": ["RE-S-EX9200-2X00x6"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX9200-RE2"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-063458"]
         }
-    }
+    ]
 }

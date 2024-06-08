@@ -9,89 +9,146 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | CCU"
         },
         {
+            "name": "eth",
             "description": "100M Base-T maintenance network port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "RS-232 serial port,RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232", ">RS485"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "clk_tod",
             "description": "Clock or time signal receiving and output port",
             "direction": "s",
             "gender": "f",
-            "name": "clk_tod",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "alarm_in",
             "description": "7 alarm digital inputs",
             "direction": "s",
             "gender": "f",
-            "name": "alarm_in",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "ge",
             "description": "Uplink or cascading network port",
             "direction": "s",
             "gender": "f",
-            "name": "ge",
-            "protocols": ["1000BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "1000BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Upstream transmission or cascading ports",
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "protocols": ["TransEth1G", "GPON", "EPON"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "Upstream transmission or cascading ports",
             "direction": "i",
             "gender": "f",
-            "name": "1",
-            "protocols": ["TransEth1G", "GPON", "EPON"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "GPON"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EPON"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "1",
+            "description": "Upstream transmission or cascading ports",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "GPON"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "EPON"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "db1",
             "description": "Upstream Daughter board",
             "direction": "i",
             "gender": "f",
-            "name": "db1",
             "type__name": "Huawei | SmartAX | MA5616 | UDB"
         },
         {
+            "name": "db2",
             "description": "Voice Daughter board",
             "direction": "i",
             "gender": "f",
-            "name": "db2",
             "type__name": "Huawei | SmartAX | MA5616 | VDB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H831CCUC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H831CCUC"]
         },
-        "power": {
-            "power": 13.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 13.0
         }
-    }
+    ]
 }

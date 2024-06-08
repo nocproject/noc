@@ -22,6 +22,7 @@ from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.technology import Technology
 from noc.main.models.label import Label
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -80,7 +81,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.interface_assigned_vlans: Set[int] = set()  # @todo l2domain
         self.is_confdb_source = False  # Set True if Interface source is ConfDB
         self.allowed_labels = set(
-            Label.objects.filter(enable_interface=True)
+            Label.objects.filter(allow_models=["inv.Interface"])
             .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .values_list("name")
         )
@@ -266,7 +267,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         for ll in labels:
             if Interface.can_set_label(ll):
                 if ll not in self.allowed_labels:
-                    Label.ensure_label(ll, enable_interface=True)
+                    Label.ensure_label(ll, ["inv.Interface"])
                 extra_labels.append(ll)
         if iface:
             ignore_empty = ["ifindex"]
@@ -655,9 +656,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                                     "name": vrf["instance"],
                                     "rd": vrf.get("rd"),
                                     "rt_export": vrf.get("rt_export", []),
-                                    "type": vrf["type"].upper()
-                                    if vrf["type"] in ["vrf", "vpls", "vll"]
-                                    else vrf["type"],
+                                    "type": (
+                                        vrf["type"].upper()
+                                        if vrf["type"] in ["vrf", "vpls", "vll"]
+                                        else vrf["type"]
+                                    ),
                                 }
                             )
                     except ValueError:
@@ -753,14 +756,16 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         seen_objects = set()  # {object}
         obj_combined = {}  # object -> connection name -> parent name
         obj_ifnames = {}  # object -> connection name -> interface name
-        for path in self.object.iter_scope("physical"):
+        ethernet_t = Technology.get_by_name("Ethernet")
+        xcvr_t = Technology.get_by_name("Transceiver")
+        for port in self.object.iter_technology([ethernet_t, xcvr_t]):
             if_name = None
-            obj = path[-1].object
+            obj = port.path[-1].object
             if obj not in seen_objects:
                 obj_combined[obj] = {c.name: c.combo for c in obj.model.connections if c.combo}
                 obj_ifnames[obj] = {}
                 seen_objects.add(obj)
-            cn = path[-1].connection.name
+            cn = port.path[-1].connection.name
             parent = obj_combined[obj].get(cn)
             if parent:
                 # Combined port, try to resolve against parent
@@ -768,23 +773,25 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 if if_name:
                     # Parent is already bound
                     obj_ifnames[obj][cn] = if_name
-                    mappings[obj] += [(path, if_name)]
+                    mappings[obj] += [(port.path, if_name)]
                     self.logger.info(
                         "%s mapped to interface %s via parent %s",
-                        path_to_str(path),
+                        path_to_str(port.path),
                         if_name,
                         parent,
                     )
             if not if_name:
                 for collator in chain:
-                    if_name = collator.collate(path, if_map)
+                    if_name = collator.collate(port, if_map)
                     if if_name:
                         obj_ifnames[obj][cn] = if_name
-                        mappings[obj] += [(path, if_name)]
-                        self.logger.info("%s mapped to interface %s", path_to_str(path), if_name)
+                        mappings[obj] += [(port.path, if_name)]
+                        self.logger.info(
+                            "%s mapped to interface %s", path_to_str(port.path), if_name
+                        )
                         break
             if not if_name:
-                self.logger.info("Unable to map %s to interface", path_to_str(path))
+                self.logger.info("Unable to map %s to interface", path_to_str(port.path))
         # Bulk update data
         for obj in seen_objects:
             old_if_map = {c.name: c.interface_name for c in obj.connections if c.interface_name}

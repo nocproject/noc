@@ -1,0 +1,9 @@
+config: |
+  #
+  spanning-tree
+  spanning-tree mode rstp
+  spanning-tree hold-count 6
+  #
+result:
+  - ['hints', 'protocols', 'spanning-tree', 'status', True, {'replace': True}]
+  - ['protocols', 'spanning-tree', 'mode', 'rstp', {'replace': True}]

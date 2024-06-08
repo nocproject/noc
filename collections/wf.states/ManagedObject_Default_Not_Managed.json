@@ -1,0 +1,16 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "name": "Not Managed",
+    "uuid": "d349d91d-1f32-4514-9307-88bcc4c7556a",
+    "$collection": "wf.states",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 3600,
+    "update_expired": false,
+    "x": 410,
+    "y": 200,
+    "disable_all_interaction": true
+}

@@ -8,50 +8,96 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | Uplink"
         },
         {
+            "name": "0/0",
             "description": "Port 0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/1",
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/2",
             "description": "Port 2",
             "direction": "i",
             "gender": "f",
-            "name": "0/2",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "0/3",
             "description": "Port 3",
             "direction": "i",
             "gender": "f",
-            "name": "0/3",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "description": ["4x 1G/10G SFP/SFP+"],
-            "order_part_no": ["EX4500-UM-4XSFP"],
-            "part_no": ["711-028852"]
+    "data": [
+        {
+            "attr": "description",
+            "interface": "asset",
+            "value": ["4x 1G/10G SFP/SFP+"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX4500-UM-4XSFP"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["711-028852"]
         }
-    }
+    ]
 }

@@ -368,12 +368,15 @@ def test_datetime_parameter():
     assert DateTimeParameter().clean(now) == now.isoformat()
 
 
-@pytest.mark.parametrize("raw,config,expected", [("192.168.0.1", {}, "192.168.0.1")])
+@pytest.mark.parametrize(
+    "raw,config,expected",
+    [("192.168.0.1", {}, "192.168.0.1"), (b"\xc0\xa8\x8f\x82", {}, "192.168.143.130")],
+)
 def test_ipv4_parameter(raw, config, expected):
     assert IPv4Parameter(**config).clean(raw) == expected
 
 
-@pytest.mark.parametrize("raw,config", [("192.168.0.256", {})])
+@pytest.mark.parametrize("raw,config", [("192.168.0.256", {}), (b"\xc0\xa8\x8f\x82\x44", {})])
 def test_ipv4_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
         assert IPv4Parameter(**config).clean(raw)
@@ -431,7 +434,12 @@ def test_ipv6prefix_parameter_error(raw, config):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected", [("192.168.0.1", {}, "192.168.0.1"), ("2001:db8::", {}, "2001:db8::")]
+    "raw,config,expected",
+    [
+        ("192.168.0.1", {}, "192.168.0.1"),
+        ("2001:db8::", {}, "2001:db8::"),
+        (b"\xc0\xa8\x8f\x82", {}, "192.168.143.130"),
+    ],
 )
 def test_ip_parameter(raw, config, expected):
     assert IPParameter(**config).clean(raw) == expected

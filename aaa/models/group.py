@@ -7,6 +7,7 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional
 import operator
 
 # Third-party modules
@@ -20,7 +21,7 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@on_delete_check(check=[("sa.GroupAccess", "group")])
+@on_delete_check(check=[("sa.GroupAccess", "group"), ("main.AuthLDAPDomain", "groups__group")])
 class Group(NOCModel):
     class Meta(object):
         verbose_name = "Group"
@@ -39,5 +40,5 @@ class Group(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["Group"]:
         return Group.objects.filter(id=id).first()

@@ -8,10 +8,12 @@
 # NOC modules
 import operator
 from threading import Lock, RLock
+from typing import Optional, Union
 from functools import partial
 from dataclasses import dataclass
 
 # Third-party modules
+import bson
 import cachetools
 from pymongo import ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
@@ -27,6 +29,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
+from noc.core.stencil import stencil_registry
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
@@ -94,6 +97,9 @@ class CPEProfile(Document):
         Workflow, default=partial(Workflow.get_default_workflow, "inv.SensorProfile")
     )
     style = ForeignKeyField(Style)
+    # Stencils
+    shape = StringField(required=False, null=True, choices=stencil_registry.choices, max_length=128)
+    shape_title_template = StringField(max_length=256, required=False, null=True)
     # Sync CPE with Inventory Object
     sync_asset = BooleanField(default=False)
     # Sync CPE with ManagedObject
@@ -133,13 +139,13 @@ class CPEProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> "CPEProfile":
-        return CPEProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["CPEProfile"]:
+        return CPEProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> "CPEProfile":
-        return CPEProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["CPEProfile"]:
+        return CPEProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
@@ -176,9 +182,7 @@ class CPEProfile(Document):
     @classmethod
     def _reset_caches(cls, id):
         try:
-            del cls._id_cache[
-                str(id),
-            ]  # Tuple
+            del cls._id_cache[str(id),]  # Tuple
         except KeyError:
             pass
 

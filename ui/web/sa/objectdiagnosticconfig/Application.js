@@ -239,7 +239,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                             },
                             uiStyle: "large",
                             query: {
-                                "enable_alarm": true
+                                "allow_models": ["fm.Alarm"]
                             }
                         }
                     ]

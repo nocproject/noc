@@ -1,0 +1,10 @@
+{
+    "name": "RS-232",
+    "code": "RS232",
+    "$collection": "inv.protocols",
+    "uuid": "5e156067-efc3-4b82-a57e-bd2d6cdfd2a9",
+    "description": "RS 232",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Serial"
+}

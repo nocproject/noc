@@ -1,0 +1,27 @@
+{
+    "name": "OM/OD Rules",
+    "$collection": "inv.objectconfigurationrules",
+    "uuid": "929972c1-09f0-4c40-97b6-d6c06804452d",
+    "description": null,
+    "param_rules": [
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "location"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "port_destination"
+        },
+        {
+            "is_hide": false,
+            "is_readonly": false,
+            "param__code": "port_category"
+        }
+    ],
+    "slot_rules": [{
+        "match_slot": "[CH]\\d+|LINE\\S+",
+        "scope__name": "OTN"
+    }]
+}

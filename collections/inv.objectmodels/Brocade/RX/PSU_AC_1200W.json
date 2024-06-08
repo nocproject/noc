@@ -9,16 +9,18 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "PSU connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Brocade | BigIron RX | PS Connector AC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["32005000", "32006000", "30351200"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["32005000", "32006000", "30351200"]
         }
-    }
+    ]
 }

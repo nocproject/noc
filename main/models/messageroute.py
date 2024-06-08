@@ -1,26 +1,35 @@
 # ----------------------------------------------------------------------
 # MessageRoute
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Optional
+from typing import List, Optional, Union
 import threading
 import operator
 
 # Third-party modules
+import bson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    IntField,
+    ListField,
+    EmbeddedDocumentListField,
+    EnumField,
+)
 from mongoengine.errors import ValidationError
 
 # NOC modules
-from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.mx import MessageType, MESSAGE_HEADERS
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField, PlainReferenceListField
 from noc.core.change.decorator import change
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.config import config
 from .handler import Handler
 from .template import Template
@@ -54,8 +63,9 @@ class HeaderMatch(EmbeddedDocument):
 class MRMatch(EmbeddedDocument):
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
+    resource_groups = PlainReferenceListField(ResourceGroup)
     administrative_domain = ForeignKeyField(AdministrativeDomain)
-    headers_match = ListField(EmbeddedDocumentField(HeaderMatch))
+    headers_match = EmbeddedDocumentListField(HeaderMatch)
 
     def __str__(self):
         return f'{", ".join(self.labels)}, {self.administrative_domain or ""}'
@@ -66,7 +76,8 @@ class MRMatch(EmbeddedDocument):
 
 class MRAHeader(EmbeddedDocument):
     header = StringField(choices=list(sorted(MESSAGE_HEADERS)))
-    value = StringField()
+    value = StringField(required=False)
+    transparent = BooleanField(default=False)  # For set - headers translate to Consumer
 
     def __str__(self):
         return self.header
@@ -81,9 +92,9 @@ class MessageRoute(Document):
     description = StringField()
     order = IntField(default=0)
     # Message-Type header value
-    type = StringField(choices=list(sorted(MESSAGE_TYPES)))
+    type: MessageType = EnumField(MessageType, required=True)
     # Match message headers
-    match: List[MRMatch] = ListField(EmbeddedDocumentField(MRMatch))
+    match: List[MRMatch] = EmbeddedDocumentListField(MRMatch)
     #
     telemetry_sample = IntField()
     # Message transmuting handler
@@ -94,14 +105,14 @@ class MessageRoute(Document):
     stream = StringField()
     notification_group = ForeignKeyField(NotificationGroup)
     render_template = ForeignKeyField(Template)
-    headers = ListField(EmbeddedDocumentField(MRAHeader))
+    headers = EmbeddedDocumentListField(MRAHeader)
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["MessageRoute"]:
-        return MessageRoute.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["MessageRoute"]:
+        return MessageRoute.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmxroute:
@@ -153,11 +164,11 @@ class MessageRoute(Document):
                 {
                     "labels": match.labels,
                     "exclude_labels": match.exclude_labels,
-                    "administrative_domain": AdministrativeDomain.get_nested_ids(
-                        match.administrative_domain
-                    )
-                    if match.administrative_domain
-                    else None,
+                    "administrative_domain": (
+                        AdministrativeDomain.get_nested_ids(match.administrative_domain)
+                        if match.administrative_domain
+                        else None
+                    ),
                     "headers": [
                         {"header": m.header, "op": m.op, "value": m.value}
                         for m in match.headers_match

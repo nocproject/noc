@@ -1,0 +1,199 @@
+{
+    "name": "IRE-Polus | Horizon | Transponders | ATP-2x200",
+    "$collection": "inv.objectmodels",
+    "uuid": "1b1a0816-2dcb-4b4d-b333-9a655ed560c8",
+    "vendor__code": "IRE-POLUS",
+    "description": "Карта ATP-2x200 предназначена для агрегации клиентского трафика класса 100G (100GE/OTU4) в линейный кадр OTUC2 (200G). На лицевой панели карты ATP-2x200 размещаются 4 клиентских порта QSFP28 и два линейных порта  CFP2, что позволяет агрегировать до 4-x клиентов в линейный сигнал с общей полосой 400G.",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "CLIENT1",
+            "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "LINE1",
+            "description": "Линейный порт 1",
+            "cross_direction": "o",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUCn"
+                }
+            ],
+            "type__name": "Transceiver | CFP2"
+        },
+        {
+            "name": "CLIENT2",
+            "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "CLIENT3",
+            "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "LINE2",
+            "description": "Линейный порт 1",
+            "cross_direction": "o",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUCn"
+                }
+            ],
+            "type__name": "Transceiver | CFP2"
+        },
+        {
+            "name": "CLIENT4",
+            "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "SC1",
+            "description": "Выходы для канала служебной связи",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "SC2",
+            "description": "Выходы для канала служебной связи",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 76.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.1
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AТP-2X200-QSFP28/CFP2-H8"]
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 350
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        }
+    ]
+}

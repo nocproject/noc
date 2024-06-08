@@ -1,0 +1,12 @@
+{
+    "name": "OTUCn",
+    "code": "OTUCn",
+    "$collection": "inv.protocols",
+    "uuid": "27edf556-f574-4d13-af63-8ea47b4456b2",
+    "description": "200Gbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODUC2",
+    "technology__name": "OTN"
+}

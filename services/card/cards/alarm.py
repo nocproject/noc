@@ -103,9 +103,11 @@ class AlarmCard(BaseCard):
             "lon": mo.x,
             "lat": mo.y,
             "zoom": mo.default_zoom,
-            "tt_system": self.object.managed_object.tt_system.name
-            if self.object.managed_object.tt_system
-            else None,
+            "tt_system": (
+                self.object.managed_object.tt_system.name
+                if self.object.managed_object.tt_system
+                else None
+            ),
             "tt_system_failed": (
                 self.object.status == "A"
                 and not self.object.escalation_tt

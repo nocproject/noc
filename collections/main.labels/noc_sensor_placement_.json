@@ -1,0 +1,19 @@
+{
+    "name": "noc::sensor::placement::*",
+    "$collection": "main.labels",
+    "uuid": "de3cb94d-7d59-41a0-a697-4582ba2c0e90",
+    "description": "Builtin Labels Scope for Sensor placement hints: internal, external, ups",
+    "bg_color1": 2719929,
+    "fg_color1": 16777215,
+    "bg_color2": 9323693,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Sensor"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

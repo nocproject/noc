@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # @workflow decorator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 import datetime
+from typing import Optional, List
 
 # Third-party modules
 from pymongo import UpdateOne
@@ -19,6 +20,7 @@ from noc.core.defer import call_later
 from noc.core.wf.interaction import Interaction
 from noc.core.change.policy import change_tracker
 from noc.core.change.decorator import get_datastreams
+from noc.core.change.model import ChangeField
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +66,7 @@ def document_set_state(
     """
     # Direct update arguments
     set_op = {"state": state.id}
+    cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
     prev_labels = self.state.labels if self.state else []
     # Set state field
     self.state = state
@@ -113,17 +116,19 @@ def document_set_state(
             "update",
             get_model_id(self),
             str(self.id),
-            fields=["state"],
-            datastreams=get_datastreams(self, {"state"}),
+            fields=[cf],
+            datastreams=get_datastreams(self, {cf.field: cf.old}),
         )
 
 
-def document_touch(self, bulk=None):
+def document_touch(
+    self, bulk: Optional[List["UpdateOne"]] = None, ts: Optional[datetime.datetime] = None
+):
     if not self.state:
         logger.info("[%s] No default state. Skipping", self)
         return
     opset = {}
-    ts = datetime.datetime.now()
+    ts = (ts or datetime.datetime.now()).replace(microsecond=0)
     if self.state.update_last_seen:
         opset["last_seen"] = ts
         self.last_seen = ts
@@ -161,7 +166,9 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     :return:
     """
     # Direct update arguments
+    logger.debug("[%s] Set state: %s", self.name, state)
     set_op = {"state": str(state.id)}
+    cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
     prev_labels = self.state.labels if self.state else []
     # Set state field
     self.state = state
@@ -217,25 +224,28 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             oid=self.id,
         )
     if self._has_diagnostics:
-        self.diagnostic.reset_diagnostics(
-            [d.diagnostic for d in state.iter_diagnostic_configs(self)]
-        )
+        self.diagnostic.refresh_diagnostics()
+        # self.diagnostic.reset_diagnostics(
+        #    [d.diagnostic for d in state.iter_diagnostic_configs(self)]
+        # )
     if not create:
         change_tracker.register(
             "update",
             get_model_id(self),
             str(self.id),
-            fields=["state"],
-            datastreams=get_datastreams(self, {"state"}),
+            fields=[cf],
+            datastreams=get_datastreams(self, {cf.field: cf.old}),
         )
 
 
-def model_touch(self, bulk=None):
+def model_touch(
+    self, bulk: Optional[List["UpdateOne"]] = None, ts: Optional[datetime.datetime] = None
+):
     if not self.state:
         logger.info("[%s] No default state. Skipping", self)
         return
     opset = {}
-    ts = datetime.datetime.now()
+    ts = (ts or datetime.datetime.now()).replace(microsecond=0)
     if self.state.update_last_seen:
         opset["last_seen"] = ts
         self.last_seen = ts

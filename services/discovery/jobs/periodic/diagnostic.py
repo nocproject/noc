@@ -1,33 +1,32 @@
 # ---------------------------------------------------------------------
 # Diagnostics check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any, Union
+from typing import Dict, List, Optional, Literal, Iterable, Any, Union, Tuple
 from collections import defaultdict
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.checkers.base import (
-    ObjectChecker,
     Check,
     CheckResult,
-    CheckData,
-    ProfileSet,
-    CLICredentialSet,
-    SNMPCredentialSet,
+    DataItem,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, CheckData, PROFILE_DIAG
 from noc.core.debug import error_report
+from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, SNMPv3Credential
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
+from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.pm.models.metrictype import MetricType
 from noc.config import config
 
@@ -38,28 +37,14 @@ class DiagnosticCheck(DiscoveryCheck):
     """
 
     name = "diagnostic"
-    CHECKERS: Dict[str, ObjectChecker] = {}  # Checkers Instance
-    CHECK_MAP: Dict[str, str] = {}  # CheckName -> CheckerName mapping
-
-    CHECK_CACHE = {}  # Cache check result
 
     def __init__(self, job, run_order: Optional[Literal["S", "E"]] = None):
         super().__init__(job)
         self.run_order = run_order
-
-    def load_checkers(self):
-        """
-        Load available checkers
-        :return:
-        """
-        for checker in loader:
-            self.CHECKERS[checker] = loader[checker]
-            for c in self.CHECKERS[checker].CHECKS:
-                self.CHECK_MAP[c] = self.CHECKERS[checker].name
+        self.suggest_rules = CredentialCheckRule.get_suggests(self.object)
 
     def handler(self):
         # Loading checkers
-        self.load_checkers()
         metrics: List[MetricValue] = []
         # Diagnostic Data
         d_data: Dict[str, Any] = defaultdict(dict)  # Diagnostic -> Data
@@ -90,30 +75,41 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 # Get checker
                 checks: List[CheckResult] = []
-                actions: List[CLICredentialSet] = []
+                credentials: List[
+                    Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
+                ] = []
+                data: List[DataItem] = []
                 for cr in self.iter_checks(dc.checks):
-                    if cr.action and not hasattr(self, f"action_{cr.action.action}"):
-                        self.logger.warning(
-                            "[%s|%s] Unknown action: %s", d.diagnostic, cr.check, cr.action.action
-                        )
-                    elif cr.action:
-                        actions.append(cr.action)
+                    if cr.credential:
+                        credentials += [(Protocol[cr.check], cr.credential)]
+                    if cr.data:
+                        data += cr.data
                     checks.append(cr)
                     m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{d.diagnostic}"]
                     if cr.arg0:
                         m_labels += [f"noc::check::arg0::{cr.arg0}"]
+                    if cr.address:
+                        m_labels += [f"noc::check::address::{cr.address}"]
                     if not cr.skipped:
                         metrics += [
                             MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
                         ]
                     if cr.metrics:
                         metrics += cr.metrics
-                    if cr.data:
-                        d_data[d.diagnostic].update(cr.data)
-                # Apply actions
-                for a in actions:
-                    h = getattr(self, f"action_{a.action}")
-                    h(a)
+                    # if cr.data:
+                    #    d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
+                dd = self.apply_data(data)
+                if dd:
+                    d_data[d.diagnostic].update(dd)
+                # Apply Profile
+                if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
+                    self.set_profile(d_data[d.diagnostic]["profile"])
+                # Apply credentials
+                if credentials and (
+                    not self.object.auth_profile or self.object.auth_profile.enable_suggest
+                ):
+                    self.logger.debug("Apply credentials: %s", credentials)
+                    self.apply_credentials(credentials)
                 # Update diagnostics
                 d_hub.update_checks(
                     [
@@ -122,30 +118,34 @@ class DiagnosticCheck(DiscoveryCheck):
                             arg0=cr.arg0,
                             status=cr.status,
                             skipped=cr.skipped,
-                            error=cr.error,
-                            data=cr.data,
+                            error=cr.error.message if cr.error else None,
+                            data=dd,  # Apply data
                         )
                         for cr in checks
                     ],
                 )
         if metrics:
             self.register_diagnostic_metrics(metrics)
+        # self.object.diagnostic.refresh_diagnostics()
+        self.logger.debug("Object Diagnostics: %s", self.object.diagnostics)
         # Fire workflow event diagnostic ?
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
-        # r = []
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
-        for c in checks:
-            if c.name not in self.CHECK_MAP:
-                self.logger.warning("[%s] Unknown check. Skipping", c.name)
+        for check in checks:
+            checker = loader[check.name]
+            if not checker:
+                self.logger.warning("[%s] Unknown check. Skipping", check.name)
                 continue
-            if self.CHECK_MAP[c.name] not in self.CHECKERS:
-                self.logger.warning("[%s] Unknown checker. Skipping", c.name)
-                continue
-            do_checks[self.CHECK_MAP[c.name]] += [c]
+            if check.name == "PROFILE":
+                cred = self.object.credentials.get_snmp_credential()
+                if cred:
+                    check = Check(check.name, credential=cred)
+            do_checks[checker.name] += [check]
         for checker, d_checks in do_checks.items():
-            checker = self.CHECKERS[checker](self.object, self.logger, "discovery")
+            params = self.get_checker_param(checker)
+            checker = loader[checker](**params)
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
                 for check in checker.iter_result(d_checks):
@@ -155,61 +155,85 @@ class DiagnosticCheck(DiscoveryCheck):
                     error_report()
                 self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
 
-    def action_set_sa_profile(self, data: ProfileSet):
+    def get_checker_param(self, checker: str) -> Dict[str, str]:
+        r = {
+            "logger": self.logger,
+            "calling_service": "discovery",
+            "pool": self.object.pool.name,
+            "object": self.object.id,
+            "address": self.object.address,
+        }
+        if checker == "profile":
+            r["rules"] = ProfileCheckRule.get_profile_check_rules()
+        elif checker in ["snmp", "cli"] and (
+            not self.object.auth_profile or self.object.auth_profile.enable_suggest
+        ):
+            r["rules"] = self.suggest_rules
+        if checker == "cli":
+            r["profile"] = self.object.profile
+        return r
+
+    def apply_data(self, data: List[DataItem]) -> Dict[str, Any]:
         """
-        Setting Object Profile Check result
+        Apply data to ManagedObject
         :param data:
         :return:
         """
-        # if "profile" not in data:
-        #     return  # Cannot detect
-        profile = Profile.get_by_name(data.profile)
-        if profile.id == self.object.profile.id:
-            self.logger.info("Profile is correct: %s", profile)
-            return
-        self.logger.info(
-            "Profile change detected: %s -> %s. Fixing database, resetting platform info",
-            self.object.profile.name,
-            profile.name,
-        )
+        r = {}
+        for d in data:
+            r[d.name] = d.value
+            # caps = Capability.get_by_name(d.name)
+            # if caps:
+            #     value = Capability.clean_value(d.value)
+        return r
+
+    def set_profile(self, profile: str) -> bool:
+        profile = Profile.get_by_name(profile)
+        if self.object.profile.id == profile.id:
+            return False
+        self.logger.info("Changed profile: %s -> %s", self.object.profile.name, profile.name)
         self.invalidate_neighbor_cache()
         self.object.profile = profile
         self.object.vendor = None
         self.object.platform = None
         self.object.version = None
-        ManagedObject.objects.filter(id=self.object.id).update(
-            profile=profile,
-            vendor=None,
-            platform=None,
-            version=None,
-        )
-        self.object._reset_caches(self.object.id, credential=True)
-        self.object.update_init()
+        self.object.save()
+        return True
 
-    def action_set_credential(self, data: Union[CLICredentialSet, SNMPCredentialSet]):
-        """
-        :param data:
-        :return:
-        """
+    def apply_credentials(
+        self,
+        credentials: List[Tuple[Protocol, Union[CLICredential, SNMPCredential, SNMPv3Credential]]],
+    ):
         changed = {}
         object_credentials = self.object.credentials
-        # Iter available cred
-        for cred in object_credentials._fields:
-            if not hasattr(data, cred):
-                continue
-            oc = getattr(object_credentials, cred)
-            nc = getattr(data, cred)
-            if nc != oc:
-                changed[cred] = nc
-                setattr(self.object, cred, nc)
-        # Reset auth profile to continue operations with new credentials
-        if changed:
-            self.logger.info("Setting credentials")
+        for protocol, cred in credentials:
+            if (
+                isinstance(cred, (SNMPCredential, SNMPv3Credential))
+                and object_credentials.snmp_security_level != cred.security_level
+            ):
+                self.object.snmp_security_level = cred.security_level
+                changed["snmp_security_level"] = cred.security_level
+            elif isinstance(cred, CLICredential) and self.object.scheme != protocol.value:
+                changed["scheme"] = protocol.value
+            for f in object_credentials.__dataclass_fields__:
+                if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
+                    continue
+                changed[f] = getattr(cred, f)
+        if not changed:
+            self.logger.info("Nothing credential changed")
+            return
+        if self.object.auth_profile:
             self.object.auth_profile = None
             changed["auth_profile"] = None
-            ManagedObject.objects.filter(id=self.object.id).update(**changed)
-            self.object._reset_caches(self.object.id, credential=True)
-            self.object.update_init()
+        for f, v in changed.items():
+            self.logger.info("Update field: %s", f)
+            setattr(self.object, f, v)
+        ManagedObject.objects.filter(id=self.object.id).update(**changed)
+        if "auth_profile" in changed:
+            self.apply_credentials(credentials)
+            return
+        self.object._reset_caches(self.object.id, credential=True)
+        self.object.update_init()
 
     def register_diagnostic_metrics(self, metrics: List[MetricValue]):
         """

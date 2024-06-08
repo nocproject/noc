@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE-TX",
+    "code": "1000BASETX",
+    "$collection": "inv.protocols",
+    "uuid": "04a1dff7-0b12-4df0-a1de-f353626ebc84",
+    "description": "1000BASE-TX, 1Gbit/s. This standard has never been implemented on commercially available equipment; do not use it.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

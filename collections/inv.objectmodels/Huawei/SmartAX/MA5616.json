@@ -9,73 +9,95 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "fan",
             "description": "Fan tray",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
             "type__name": "Huawei | SmartAX | MA5616 | FAN"
         },
         {
+            "name": "0",
             "description": "Control board",
             "direction": "i",
             "gender": "f",
-            "name": "0",
             "type__name": "Huawei | SmartAX | MA5616 | CCU"
         },
         {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
             "name": "1",
-            "type__name": "Huawei | SmartAX | MA5616 | SB"
-        },
-        {
             "description": "Service board",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
             "name": "2",
-            "type__name": "Huawei | SmartAX | MA5616 | SB"
-        },
-        {
             "description": "Service board",
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
             "name": "3",
-            "type__name": "Huawei | SmartAX | MA5616 | SB"
-        },
-        {
             "description": "Service board",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | SmartAX | MA5616 | SB"
         },
         {
+            "name": "4",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "name": "5",
             "description": "Power board",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Huawei | SmartAX | MA5616 | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H831MABB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H831MABB"]
         },
-        "dimensions": {
-            "depth": 245,
-            "height": 88,
-            "width": 442
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 245
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 88
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 4.8
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 4.8
         }
-    }
+    ]
 }

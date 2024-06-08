@@ -30,3 +30,7 @@ class RemovedInNOC2301Warning(PendingDeprecationWarning):
     """
     Features to be removed in NOC 23.1
     """
+
+
+class RemovedInNOC2402Warning(PendingDeprecationWarning):
+    """Features to be removed in NOC 24.2."""

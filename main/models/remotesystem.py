@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemoteSystem model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,9 +9,10 @@
 from threading import Lock
 import operator
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -19,12 +20,14 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     BooleanField,
     DateTimeField,
+    LongField,
 )
 import cachetools
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
+from noc.core.bi.decorator import bi_sync
 from noc.core.debug import error_report
 
 id_lock = Lock()
@@ -42,6 +45,7 @@ class EnvItem(EmbeddedDocument):
         return self.key
 
 
+@bi_sync
 @on_delete_check(
     check=[
         ("crm.Subscriber", "remote_system"),
@@ -63,8 +67,11 @@ class EnvItem(EmbeddedDocument):
         ("inv.ResourceGroup", "remote_system"),
         ("inv.Sensor", "remote_system"),
         ("inv.Object", "remote_system"),
+        ("ip.VRF", "remote_system"),
         ("ip.AddressProfile", "remote_system"),
+        ("ip.Address", "remote_system"),
         ("ip.PrefixProfile", "remote_system"),
+        ("ip.Prefix", "remote_system"),
         ("main.Label", "remote_system"),
         ("sa.ManagedObject", "remote_system"),
         ("sa.AdministrativeDomain", "remote_system"),
@@ -116,14 +123,24 @@ class RemoteSystem(Document):
     enable_ttsystem = BooleanField()
     enable_project = BooleanField()
     enable_l2domain = BooleanField()
+    enable_ipvrf = BooleanField()
+    enable_ipprefix = BooleanField()
+    enable_ipprefixprofile = BooleanField()
+    enable_ipaddress = BooleanField()
+    enable_ipaddressprofile = BooleanField()
     enable_label = BooleanField()
+    enable_discoveredobject = BooleanField()
+    enable_fmevent = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
     extract_error = StringField()
     last_load = DateTimeField()
     last_successful_load = DateTimeField()
+    last_extract_event = DateTimeField()
     load_error = StringField()
+    # Object id in BI
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -133,8 +150,8 @@ class RemoteSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["RemoteSystem"]:
-        return RemoteSystem.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["RemoteSystem"]:
+        return RemoteSystem.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

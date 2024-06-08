@@ -8,31 +8,37 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "mic0",
             "description": "MIC Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "mic0",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "mic1",
             "description": "MIC Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "mic1",
             "type__name": "Juniper | MX | MIC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MX-MPC2-3D-EQ"],
-            "part_no": ["750-031090"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-031090"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MX-MPC2-3D-EQ"]
         }
-    }
+    ]
 }

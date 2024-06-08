@@ -1,0 +1,16 @@
+{
+    "workflow__name": "Sensor Default",
+    "name": "Ok",
+    "uuid": "0608c350-e183-44c3-8b5e-abfea6ad89e7",
+    "$collection": "wf.states",
+    "is_default": true,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 290,
+    "y": 40,
+    "disable_all_interaction": false
+}

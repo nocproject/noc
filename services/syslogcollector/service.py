@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.perf import metrics
 from noc.core.mx import (
     MX_STREAM,
+    MessageType,
     get_mx_partitions,
     MX_MESSAGE_TYPE,
     MX_SHARDING_KEY,
@@ -31,6 +32,7 @@ from noc.core.mx import (
     MX_H_VALUE_SPLITTER,
 )
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.fm.enum import EventSource, SyslogSeverity
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData
@@ -90,7 +92,7 @@ class SyslogCollectorService(FastAPIService):
         metrics["error", ("type", "object_not_found")] += 1
         return None
 
-    def register_message(
+    def register_syslog_message(
         self,
         cfg: SourceConfig,
         timestamp: int,
@@ -112,15 +114,23 @@ class SyslogCollectorService(FastAPIService):
                 orjson.dumps(
                     {
                         "ts": timestamp,
-                        "object": cfg.id,
-                        "data": {
-                            "source": "syslog",
-                            "collector": config.pool,
-                            "message": message,
-                            "facility": facility,
-                            "severity": severity,
-                            "message_id": message_id,
+                        "target": {
+                            "address": source_address,
+                            "name": cfg.name or "",
+                            "pool": config.pool,
+                            "id": cfg.id,
                         },
+                        "type": {
+                            "source": EventSource.SYSLOG.value,
+                            "facility": facility,
+                            "severity": SyslogSeverity(severity).noc_severity.value,
+                        },
+                        "message": message,
+                        "data": [
+                            {"name": "facility", "value": facility},
+                            {"name": "severity", "value": severity},
+                            {"name": "message_id", "value": message_id},
+                        ],
                     }
                 ),
                 stream=cfg.stream,
@@ -143,7 +153,14 @@ class SyslogCollectorService(FastAPIService):
                     }
                 ],
             )
-        if config.message.enable_snmptrap:
+        if config.message.enable_syslog and not cfg.managed_object:
+            self.logger.warning(
+                "[%s] Cfg source not ManagedObject Meta."
+                " Please Reboot cfgtarget datastream and reboot collector. Skipping..",
+                source_address,
+            )
+            return
+        elif config.message.enable_syslog:
             metrics["events_message"] += 1
             n_partitions = get_mx_partitions()
             self.publish(
@@ -167,7 +184,7 @@ class SyslogCollectorService(FastAPIService):
                 stream=MX_STREAM,
                 partition=int(cfg.id) % n_partitions,
                 headers={
-                    MX_MESSAGE_TYPE: b"syslog",
+                    MX_MESSAGE_TYPE: MessageType.SYSLOG.value.encode(),
                     MX_LABELS: MX_H_VALUE_SPLITTER.join(cfg.effective_labels).encode(
                         DEFAULT_ENCODING
                     ),
@@ -180,7 +197,7 @@ class SyslogCollectorService(FastAPIService):
         Subscribe and track datastream changes
         """
         # Register RPC aliases
-        client = SysologDataStreamClient("cfgsyslog", service=self)
+        client = SysologDataStreamClient("cfgtarget", service=self)
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
@@ -216,22 +233,26 @@ class SyslogCollectorService(FastAPIService):
             old_addresses = set(old_cfg.addresses)
         else:
             old_addresses = set()
+        cfg_syslog = data.pop("syslog", None)
         # Get pool and sharding information
         fm_pool = data.get("fm_pool", None) or config.pool
         num_partitions = await self.get_pool_partitions(fm_pool)
         # Build new config
         cfg = SourceConfig(
             id=data["id"],
-            addresses=tuple(data["addresses"]),
+            addresses=tuple([a["address"] for a in data["addresses"] if a["syslog_source"]]),
             bi_id=data.get("bi_id"),  # For backward compatibility
             process_events=data.get("process_events", True),  # For backward compatibility
-            archive_events=data.get("archive_events", False),
+            archive_events=cfg_syslog.get("archive_events", False) if cfg_syslog else False,
             stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
         )
-        if config.message.enable_syslog and "managed_object" in data:
-            cfg.managed_object = ManagedObjectData(**data["managed_object"])
+        if not cfg_syslog or not cfg.addresses:
+            await self.delete_source(data["id"])
+            return
+        if config.message.enable_syslog and "opaque_data" in data:
+            cfg.managed_object = ManagedObjectData(**data["opaque_data"])
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:

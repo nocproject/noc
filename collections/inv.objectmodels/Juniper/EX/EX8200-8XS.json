@@ -7,80 +7,106 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "0/0",
             "description": "xe-X/0/0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "0/1",
             "description": "xe-X/0/1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "0/2",
             "description": "xe-X/0/2",
             "direction": "i",
             "gender": "f",
-            "name": "0/2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "0/3",
             "description": "xe-X/0/3",
             "direction": "i",
             "gender": "f",
-            "name": "0/3",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "0/4",
             "description": "xe-X/0/4",
             "direction": "i",
             "gender": "f",
-            "name": "0/4",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "0/5",
             "description": "xe-X/0/5",
             "direction": "i",
             "gender": "f",
-            "name": "0/5",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "0/6",
             "description": "xe-X/0/6",
             "direction": "i",
             "gender": "f",
-            "name": "0/6",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "0/7",
             "description": "xe-X/0/7",
             "direction": "i",
             "gender": "f",
-            "name": "0/7",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 8200 FPC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["710-016837", "710-045518"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["710-016837", "710-045518"]
         }
-    }
+    ]
 }

@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Web 2.0 API interface<br/>
       <strong>Long description</strong>: Nginx upstream to provide API for new web interface<br/>
       <strong>Scale Recommendations</strong>: At least two per system. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/ui/ target=_blank>Web</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/ui/ target=_blank>Web</a><br/>
       <strong>Placement constraint</strong>: On node with service Nginx <br/>
     power:
       default: 2

@@ -8,16 +8,18 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ASR9010 | PEM-V1"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["A9K-2KW-DC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["A9K-2KW-DC"]
         }
-    }
+    ]
 }

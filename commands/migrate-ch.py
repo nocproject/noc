@@ -25,8 +25,8 @@ class Command(BaseCommand):
         mongo_connect()
         self.ensure_db()
         self.create_dictionaries_db()
-        changed = ensure_bi_models(connect=self.connect)
-        changed |= ensure_pm_scopes(connect=self.connect)
+        changed = ensure_pm_scopes(connect=self.connect)
+        changed |= ensure_bi_models(connect=self.connect)
         changed |= ensure_dictionary_models(connect=self.connect)
         if changed:
             self.print("CHANGED")

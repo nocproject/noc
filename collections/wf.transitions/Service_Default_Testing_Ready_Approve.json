@@ -1,0 +1,10 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__uuid": "cc4dcb38-54af-415c-88ee-d94cdd95419d",
+    "to_state__uuid": "b76321f4-7cc3-4f56-b92f-481078af2340",
+    "uuid": "d9c12ef3-76af-400e-b45c-7854c1f9c6f8",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Approve",
+    "enable_manual": true
+}

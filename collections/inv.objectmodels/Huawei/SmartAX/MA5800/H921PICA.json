@@ -1,0 +1,62 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | H921PICA",
+    "$collection": "inv.objectmodels",
+    "uuid": "b1ce38fd-7350-4392-9b8c-b47f42b3af3e",
+    "vendor__code": "HUAWEI",
+    "description": "Double DC power Board",
+    "cr_context": "PWR",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "DC1",
+            "description": "3V3 power connector",
+            "direction": "i",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Huawei | SmartAX | Power 3V3"
+        },
+        {
+            "name": "DC2",
+            "description": "3V3 power connector",
+            "direction": "i",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Huawei | SmartAX | Power 3V3"
+        },
+        {
+            "name": "in",
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA5801 | PWR"
+        }
+    ],
+    "data": [
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 40
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 218
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 69
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H921PICA"]
+        }
+    ]
+}

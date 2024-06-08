@@ -7,36 +7,78 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "eth1",
             "description": "Main port",
             "direction": "s",
             "gender": "f",
-            "name": "eth1",
-            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth2",
             "description": "Secondary port",
             "direction": "s",
             "gender": "f",
-            "name": "eth2",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NanoStation M2"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 8.0
         },
-        "dimensions": {
-            "depth": 80,
-            "height": 30,
-            "width": 290
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NanoStation M2"]
         },
-        "power": {
-            "power": 8.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.4
         },
-        "weight": {
-            "weight": 0.4
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 290
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 80
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
         }
-    }
+    ]
 }

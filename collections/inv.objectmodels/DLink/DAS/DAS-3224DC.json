@@ -9,93 +9,161 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "LINE1",
             "description": "USER 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "LINE1",
-            "protocols": ["ADSL", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "PSTN1",
             "description": "PSTN 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "PSTN1",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "alarm",
             "description": "Alarm I/O",
             "direction": "s",
             "gender": "m",
-            "name": "alarm",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | MSTB 2,5/13-ST-5,08"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "M-Eth",
             "description": "M-Eth",
             "direction": "s",
             "gender": "f",
-            "name": "M-Eth",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "1",
             "description": "Port 1 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "name": "1",
-            "protocols": ["100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "2",
             "description": "Port 2 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "name": "2",
-            "protocols": ["100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
-            "protocols": [">-42VDC", ">-56VDC"],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["DAS-3224DC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DAS-3224DC"]
         },
-        "dimensions": {
-            "depth": 400,
-            "height": 44,
-            "width": 440
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 400
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "power": {
-            "power": 150.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 6.8
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 150.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 6.8
         }
-    }
+    ]
 }

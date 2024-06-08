@@ -1,0 +1,25 @@
+---
+- name: Check if Kafka has already been downloaded and unpacked
+  stat:
+    path: '{{ kafka_dir }}_{{ kafka_scala_version }}-{{ kafka_version }}'
+  register: dir
+
+- name: Download Apache Kafka
+  get_url:
+    url: '{{ kafka_download_url }}'
+    dest: /tmp
+    validate_certs: '{{ not kafka_insecure_certs }}'
+    mode: 0644
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when: not dir.stat.exists
+
+- name: Unpack Apache Kafka
+  unarchive:
+    src: /tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz
+    dest: '{{ kafka_root_dir }}'
+    copy: false
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+  when: not dir.stat.exists

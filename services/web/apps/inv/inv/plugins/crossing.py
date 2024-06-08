@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv crossing plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,9 @@ class CrossingPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.crossing.CrossingPanel"
 
     def get_data(self, request, o):
-        cables_model = ObjectModel.objects.filter(data__length__length__gte=0)
+        cables_model = ObjectModel.objects.filter(
+            data__match={"interface": "length", "attr": "length", "value__gte": 0},
+        )
         oc_ids = chain.from_iterable(
             ObjectConnection.objects.filter(
                 __raw__={"connection": {"$elemMatch": {"object": {"$in": o.get_nested_ids()}}}}
@@ -30,14 +32,20 @@ class CrossingPlugin(InvPlugin):
         for oo in Object.objects.filter(
             model__in=cables_model, id__in=[x.object.id for x in oc_ids]
         ):
-            c1, c2 = None, None
-            c = ObjectConnection.objects.filter(
+            # wires
+            c1, *other = ObjectConnection.objects.filter(
                 __raw__={"connection": {"$elemMatch": {"object": oo.id}}}
             )[:2]
-            if c:
-                c1 = [c for c in c[0].connection if c.object != oo][0]
-            if len(c) > 1:
-                c2 = [c for c in c[1].connection if c.object != oo][0]
+            if not c1:
+                continue
+            c1 = [c for c in c1.connection if c.object != oo][0]
+            if other and other[0].connection[0].object == oo:
+                # Same connection
+                c2 = other[0].connection[0]
+            elif other:
+                c2 = [c for c in other[0].connection if c.object != oo][0]
+            else:
+                continue
             r += [
                 {
                     "name": oo.name,

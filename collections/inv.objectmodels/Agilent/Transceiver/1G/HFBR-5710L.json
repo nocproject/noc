@@ -8,34 +8,64 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">1000BASESX"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
-            "protocols": ["<1000BASESX"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["HFBR-5710LP"],
-            "part_no": ["HFBR-5710L"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HFBR-5710L"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["HFBR-5710LP"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

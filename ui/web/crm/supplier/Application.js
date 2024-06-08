@@ -119,7 +119,7 @@ Ext.define("NOC.crm.supplier.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_supplier": true
+                        "allow_models": ["crm.Supplier"]
                     },
                 }
             ]

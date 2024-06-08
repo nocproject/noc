@@ -8,124 +8,162 @@
     "cr_context": "SUP",
     "connections": [
         {
+            "name": "Gi9",
             "description": "GigabitEthernet X/9 RJ45 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi9",
-            "protocols": ["100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi8_sfp",
             "description": "GigabitEthernet X/8 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi8_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi7_sfp",
             "description": "GigabitEthernet X/7 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi7_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi6_sfp",
             "description": "GigabitEthernet X/6 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi6_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi5_sfp",
             "description": "GigabitEthernet X/5 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi5_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi4_sfp",
             "description": "GigabitEthernet X/4 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi3_sfp",
             "description": "GigabitEthernet X/3 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Supervisor"
         },
         {
+            "name": "disk1",
             "description": "Compact flash slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "disk1",
             "type__name": "Flash | CF"
         },
         {
+            "name": "disk2",
             "description": "Compact flash slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "disk2",
             "type__name": "Flash | CF"
         },
         {
+            "name": "msfc",
             "description": "MSFC slot",
             "direction": "i",
             "gender": "f",
-            "name": "msfc",
             "type__name": "Cisco | 6500-7600 | MSFC"
         },
         {
+            "name": "pfc",
             "description": "PFC slot",
             "direction": "i",
             "gender": "f",
-            "name": "pfc",
             "type__name": "Cisco | 6500-7600 | PFC"
         },
         {
+            "name": "Gi1_sfp",
             "description": "GigabitEthernet X/1 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "Gi2_sfp",
             "description": "GigabitEthernet X/2 SFP port",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "console",
             "description": "Management console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-SUP32-GE-3B"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-SUP32-GE-3B"]
         }
-    }
+    ]
 }

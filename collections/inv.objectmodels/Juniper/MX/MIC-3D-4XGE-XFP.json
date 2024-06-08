@@ -7,49 +7,67 @@
     "cr_context": "MIC",
     "connections": [
         {
+            "name": "in",
             "description": "MPC connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MIC"
         },
         {
+            "name": "0/0",
             "description": "Port 0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "0/1",
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "1/0",
             "description": "Port 2",
             "direction": "i",
             "gender": "f",
-            "name": "1/0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "1/1",
             "description": "Port 3",
             "direction": "i",
             "gender": "f",
-            "name": "1/1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MIC-3D-4XGE-XFP"],
-            "part_no": ["750-028387"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-028387"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MIC-3D-4XGE-XFP"]
         }
-    }
+    ]
 }

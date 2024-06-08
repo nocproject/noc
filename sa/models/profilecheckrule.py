@@ -1,15 +1,19 @@
 # ---------------------------------------------------------------------
 # ProfileCheckRule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
+import operator
+from threading import Lock
 from typing import Any, Dict
 
 # Third-party modules
+import cachetools
+from pymongo import ReadPreference
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, ObjectIdField, IntField
 from mongoengine.errors import ValidationError
@@ -20,6 +24,9 @@ from noc.sa.models.profile import Profile
 from noc.main.models.doccategory import category
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
+from noc.core.checkers.profile import SuggestProfile
+
+rules_lock = Lock()
 
 
 @category
@@ -58,6 +65,8 @@ class ProfileCheckRule(Document):
     profile = PlainReferenceField(Profile, required=True)
     #
     category = ObjectIdField()
+
+    _rules_cache = cachetools.TTLCache(10, ttl=60)
 
     def __str__(self):
         return self.name
@@ -104,3 +113,25 @@ class ProfileCheckRule(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
+    def get_profile_check_rules(cls):
+        r = []
+        for rule in (
+            ProfileCheckRule.objects.all()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
+            .order_by("preference")
+        ):
+            r.append(
+                SuggestProfile(
+                    method=rule.method,
+                    param=rule.param,
+                    match=rule.match_method,
+                    value=rule.value,
+                    profile=rule.profile.name,
+                    preference=rule.preference,
+                    name=rule.name,
+                )
+            )
+        return r

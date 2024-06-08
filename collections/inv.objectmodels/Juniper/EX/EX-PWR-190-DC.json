@@ -8,36 +8,50 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Inner slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4200 PSU"
         },
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "m",
-            "name": "-48V",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "m",
-            "name": "RTN",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["740-023938"],
-            "order_part_no": ["EX-PWR-190-DC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-023938"]
         },
-        "power": {
-            "power": 190.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX-PWR-190-DC"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 190.0
         }
-    }
+    ]
 }

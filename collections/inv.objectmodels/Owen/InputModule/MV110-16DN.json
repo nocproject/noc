@@ -6,310 +6,376 @@
     "description": "Прибор предназначен для сбора данных со встроенных дискретных входов с передачей их в сеть RS-485. Встроенные дискретные входы могут работать в режиме счетчиков импульсов частотой до 1 кГц",
     "connections": [
         {
+            "name": "PWR-",
             "description": "Питание ~90...264 В  или минус питания = 18...30 В",
             "direction": "s",
             "gender": "f",
-            "name": "PWR-",
-            "protocols": [">+24VDC", ">220VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "+24VDC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "PWR+",
             "description": "Питание ~90...264 В или плюс питания = 18...30 В",
             "direction": "s",
             "gender": "f",
-            "name": "PWR+",
-            "protocols": [">+24VDC", ">220VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "+24VDC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI1",
             "description": "Вход 1 (DI1)",
             "direction": "s",
             "gender": "f",
-            "name": "DI1",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "COM",
             "description": "Общий (COM)",
             "direction": "s",
             "gender": "f",
-            "name": "COM",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI2",
             "description": "Вход 2 (DI2)",
             "direction": "s",
             "gender": "f",
-            "name": "DI2",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI3",
             "description": "Вход 3 (DI3)",
             "direction": "s",
             "gender": "f",
-            "name": "DI3",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI4",
             "description": "Вход 4 (DI4)",
             "direction": "s",
             "gender": "f",
-            "name": "DI4",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI5",
             "description": "Вход 5 (DI5)",
             "direction": "s",
             "gender": "f",
-            "name": "DI5",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI6",
             "description": "Вход 6 (DI6)",
             "direction": "s",
             "gender": "f",
-            "name": "DI6",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI7",
             "description": "Вход 7 (DI7)",
             "direction": "s",
             "gender": "f",
-            "name": "DI7",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "COM",
             "description": "Общий (COM)",
             "direction": "s",
             "gender": "f",
-            "name": "COM",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI8",
             "description": "Вход 8 (DI8)",
             "direction": "s",
             "gender": "f",
-            "name": "DI8",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "B",
             "description": "RS-485 (B)",
             "direction": "s",
             "gender": "f",
-            "name": "B",
-            "protocols": [">RS485-B"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "A",
             "description": "RS-485 (A)",
             "direction": "s",
             "gender": "f",
-            "name": "A",
-            "protocols": [">RS485-A"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI9",
             "description": "Вход 9 (DI9)",
             "direction": "s",
             "gender": "f",
-            "name": "DI9",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "COM",
             "description": "Общий (COM)",
             "direction": "s",
             "gender": "f",
-            "name": "COM",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI10",
             "description": "Вход 10 (DI10)",
             "direction": "s",
             "gender": "f",
-            "name": "DI10",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI11",
             "description": "Вход 11 (DI11)",
             "direction": "s",
             "gender": "f",
-            "name": "DI11",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI12",
             "description": "Вход 12 (DI12)",
             "direction": "s",
             "gender": "f",
-            "name": "DI12",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI13",
             "description": "Вход 13 (DI13)",
             "direction": "s",
             "gender": "f",
-            "name": "DI13",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI14",
             "description": "Вход 14 (DI14)",
             "direction": "s",
             "gender": "f",
-            "name": "DI14",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI15",
             "description": "Вход 15 (DI15)",
             "direction": "s",
             "gender": "f",
-            "name": "DI15",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "COM",
             "description": "Общий (COM)",
             "direction": "s",
             "gender": "f",
-            "name": "COM",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         },
         {
+            "name": "DI16",
             "description": "Вход 16 (DI16)",
             "direction": "s",
             "gender": "f",
-            "name": "DI16",
             "type__name": "Power | TB Barrier Screw 12 Pin"
         }
     ],
-    "data": {
-        "dimensions": {
-            "depth": 75,
-            "height": 110,
-            "width": 63
+    "data": [
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 75
         },
-        "modbus": {
-            "bits": 8,
-            "parity": false,
-            "slave_id": 16,
-            "speed": 115200,
-            "stop": 1,
-            "type": "RTU"
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 110
         },
-        "power": {
-            "power": 6.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 63
         },
-        "weight": {
-            "weight": 0.5
+        {
+            "attr": "bits",
+            "interface": "modbus",
+            "value": 8
+        },
+        {
+            "attr": "parity",
+            "interface": "modbus",
+            "value": false
+        },
+        {
+            "attr": "slave_id",
+            "interface": "modbus",
+            "value": 16
+        },
+        {
+            "attr": "speed",
+            "interface": "modbus",
+            "value": 115200
+        },
+        {
+            "attr": "stop",
+            "interface": "modbus",
+            "value": 1
+        },
+        {
+            "attr": "type",
+            "interface": "modbus",
+            "value": "RTU"
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 6.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.5
         }
-    },
+    ],
     "sensors": [
         {
+            "name": "in1",
             "description": "Вход 1",
             "modbus_format": "i16_be",
             "modbus_register": 64,
-            "name": "in1",
             "units__code": "1"
         },
         {
+            "name": "in2",
             "description": "Вход 2",
             "modbus_format": "i16_be",
             "modbus_register": 65,
-            "name": "in2",
             "units__code": "1"
         },
         {
+            "name": "in3",
             "description": "Вход 3",
             "modbus_format": "i16_be",
             "modbus_register": 66,
-            "name": "in3",
             "units__code": "1"
         },
         {
+            "name": "in4",
             "description": "Вход 4",
             "modbus_format": "i16_be",
             "modbus_register": 67,
-            "name": "in4",
             "units__code": "1"
         },
         {
+            "name": "in5",
             "description": "Вход 5",
             "modbus_format": "i16_be",
             "modbus_register": 68,
-            "name": "in5",
             "units__code": "1"
         },
         {
+            "name": "in6",
             "description": "Вход 6",
             "modbus_format": "i16_be",
             "modbus_register": 69,
-            "name": "in6",
             "units__code": "1"
         },
         {
+            "name": "in7",
             "description": "Вход 7",
             "modbus_format": "i16_be",
             "modbus_register": 70,
-            "name": "in7",
             "units__code": "1"
         },
         {
+            "name": "in8",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 71,
-            "name": "in8",
             "units__code": "1"
         },
         {
+            "name": "in9",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 72,
-            "name": "in9",
             "units__code": "1"
         },
         {
+            "name": "in10",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 73,
-            "name": "in10",
             "units__code": "1"
         },
         {
+            "name": "in11",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 74,
-            "name": "in11",
             "units__code": "1"
         },
         {
+            "name": "in12",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 75,
-            "name": "in12",
             "units__code": "1"
         },
         {
+            "name": "in13",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 76,
-            "name": "in13",
             "units__code": "1"
         },
         {
+            "name": "in14",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 77,
-            "name": "in14",
             "units__code": "1"
         },
         {
+            "name": "in15",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 78,
-            "name": "in15",
             "units__code": "1"
         },
         {
+            "name": "in16",
             "description": "Вход 8",
             "modbus_format": "i16_be",
             "modbus_register": 79,
-            "name": "in16",
             "units__code": "1"
         }
     ]

@@ -8,25 +8,48 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "port",
             "description": "1000Base-T port",
             "direction": "s",
             "gender": "f",
-            "name": "port",
-            "protocols": ["1000BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "1000BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SFP-1G-T"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SFP-1G-T"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

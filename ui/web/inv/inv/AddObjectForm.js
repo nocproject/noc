@@ -7,113 +7,117 @@
 console.debug("Defining NOC.inv.inv.AddObjectForm");
 
 Ext.define("NOC.inv.inv.AddObjectForm", {
-    extend: "Ext.panel.Panel",
-    requires: ["NOC.inv.objectmodel.LookupField"],
-    app: null,
-    groupContainer: null,
+  extend: "Ext.panel.Panel",
+  requires: ["NOC.inv.objectmodel.LookupField"],
+  app: null,
+  padding: 4,
 
-    initComponent: function() {
-        var me = this,
-            title;
+  initComponent: function(){
+    var me = this,
+      title = __("Create new top-level object");
 
-        if(me.groupContainer) {
-            title = __("Create new object in '") + me.groupContainer.get("name") + "'";
-        } else {
-            title = __("Create new top-level object");
-        }
+    me.form = Ext.create("Ext.form.Panel", {
+      layout: "anchor",
+      defaults: {
+        anchor: "100%",
+        labelWidth: 40,
+      },
+      items: [
+        {
+          xtype: "inv.objectmodel.LookupField",
+          name: "type",
+          fieldLabel: __("Type"),
+          uiStyle: "large",
+          allowBlank: false,
+        },
+        {
+          xtype: "textfield",
+          name: "name",
+          fieldLabel: __("Name"),
+          uiStyle: "medium",
+          allowBlank: false,
+        },
+        {
+          xtype: "textfield",
+          name: "serial",
+          fieldLabel: __("Serial"),
+          uiStyle: "medium",
+          allowBlank: true,
+        },
+      ],
+    });
 
-        me.form = Ext.create("Ext.form.Panel", {
-            bodyPadding: 4,
-            layout: "anchor",
-            defaults: {
-                anchor: "100%",
-                labelWidth: 40
+    Ext.apply(me, {
+      title: title,
+      items: [me.form],
+      dockedItems: [
+        {
+          xtype: "toolbar",
+          dock: "top",
+          padding: "4 4 4 0",
+          items: [
+            {
+              text: __("Save"),
+              glyph: NOC.glyph.save,
+              scope: me,
+              handler: me.onPressAdd,
             },
-            items: [
-                {
-                    xtype: "inv.objectmodel.LookupField",
-                    name: "type",
-                    fieldLabel: __("Type"),
-                    uiStyle: "large",
-                    allowBlank: false
-                },
-                {
-                    xtype: "textfield",
-                    name: "name",
-                    fieldLabel: __("Name"),
-                    allowBlank: false
-                },
-                {
-                    xtype: "textfield",
-                    name: "serial",
-                    fieldLabel: __("Serial"),
-                    allowBlank: true
-                }
-            ]
-        });
+            {
+              text: __("Close"),
+              scope: me,
+              glyph: NOC.glyph.arrow_left,
+              handler: me.onPressClose,
+            },
+          ],
+        },
+      ],
+    });
+    me.callParent();
+  },
 
-        Ext.apply(me, {
-            title: title,
-            items: [me.form],
-            dockedItems: [
-                {
-                    xtype: "toolbar",
-                    dock: "top",
-                    items: [
-                        {
-                            text: __("Close"),
-                            scope: me,
-                            glyph: NOC.glyph.arrow_left,
-                            handler: me.onPressClose
-                        },
-                        {
-                            text: __("Save"),
-                            glyph: NOC.glyph.save,
-                            scope: me,
-                            handler: me.onPressAdd
-                        }
-                    ]
-                }
-            ]
-        });
-        me.callParent();
-    },
+  onPressClose: function(){
+    var me = this;
+    me.app.showItem(me.app.ITEM_MAIN);
+  },
 
-    setContainer: function(c) {
-        var me = this;
-        me.groupContainer = c;
-    },
-
-    onPressClose: function() {
-        var me = this;
+  onPressAdd: function(){
+    var me = this,
+      values = me.form.getValues();
+    Ext.Ajax.request({
+      url: "/inv/inv/add_group/",
+      method: "POST",
+      jsonData: {
+        name: values.name,
+        type: values.type,
+        serial: values.serial,
+        container: me.groupContainer ? me.groupContainer.get("id") : null,
+      },
+      scope: me,
+      success: function(response){
+        var objectId = Ext.decode(response.responseText);
         me.app.showItem(me.app.ITEM_MAIN);
-    },
-
-    onPressAdd: function() {
-        var me = this,
-            values = me.form.getValues();
-        Ext.Ajax.request({
-            url: "/inv/inv/add_group/",
-            method: "POST",
-            jsonData: {
-                name: values.name,
-                type: values.type,
-                serial: values.serial,
-                container: me.groupContainer ? me.groupContainer.get("id") : null
+        if(me.groupContainer){
+          me.app.store.reload({node: me.groupContainer});
+          me.app.showObject(objectId, false);
+          me.groupContainer.expand();
+        } else{
+          me.app.store.reload({
+            callback: function(){
+              me.app.showObject(objectId, false);
             },
-            scope: me,
-            success: function() {
-                me.app.showItem(me.app.ITEM_MAIN);
-                if(me.groupContainer) {
-                    me.app.store.reload({node: me.groupContainer});
-                } else {
-                    me.app.store.reload();
-                }
-            },
-            failure: function() {
-                NOC.error(__("Failed to save"));
-            }
-        });
-    }
+          });
+        }
+        me.app.setHistoryHash(objectId);
+      },
+      failure: function(){
+        NOC.error(__("Failed to save"));
+      },
+    });
+  },
 
+  setContainer: function(container){
+    var me = this;
+    me.groupContainer = container;
+    me.setTitle(__("Add object to ") + (container ? container.getPath("name") : __("Root")));
+  },
 });

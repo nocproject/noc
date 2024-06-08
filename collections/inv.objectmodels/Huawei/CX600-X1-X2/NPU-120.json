@@ -9,72 +9,110 @@
     "labels": ["noc::inv::lc", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX600-X1-X2 | NPU"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "GigabitEthernetX/0/1",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/2",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | XFP"
         },
         {
+            "name": "GigabitEthernetX/0/2",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "1",
             "description": "PIC Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | CX600-X1-X2 | PIC"
         },
         {
+            "name": "2",
             "description": "PIC Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Huawei | CX600-X1-X2 | PIC"
         },
         {
+            "name": "3",
             "description": "PIC Slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Huawei | CX600-X1-X2 | PIC"
         },
         {
+            "name": "4",
             "description": "PIC Slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | CX600-X1-X2 | PIC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03030MDQ"],
-            "part_no": ["CX67NPUI20"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 200.0
         },
-        "dimensions": {
-            "depth": 226,
-            "height": 20,
-            "width": 194
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX67NPUI20"]
         },
-        "power": {
-            "power": 200.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03030MDQ"]
         },
-        "weight": {
-            "weight": 2.6
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.6
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 194
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 226
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 20
         }
-    }
+    ]
 }

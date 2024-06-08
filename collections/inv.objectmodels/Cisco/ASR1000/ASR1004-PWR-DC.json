@@ -8,31 +8,36 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ASR1000 | ASR1004 PSU"
         },
         {
+            "name": "alarm",
             "description": "Alarm connector",
             "direction": "s",
             "gender": "f",
-            "name": "alarm",
             "type__name": "Electrical | DB25"
         },
         {
+            "name": "power",
             "description": "DC power inlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/2-G-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ASR1004-PWR-DC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1004-PWR-DC"]
         }
-    }
+    ]
 }

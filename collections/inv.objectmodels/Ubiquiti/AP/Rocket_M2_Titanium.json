@@ -7,52 +7,104 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "eth1",
             "description": "Main port",
             "direction": "s",
             "gender": "f",
-            "name": "eth1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "eth2",
             "description": "Secondary port",
             "direction": "s",
             "gender": "f",
-            "name": "eth2",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "rf1",
             "description": "MIMO 2x2 2.4GHz",
             "direction": "s",
             "gender": "f",
-            "name": "rf1",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | RP SMA"
         },
         {
+            "name": "rf2",
             "description": "MIMO 2x2 2.4GHz",
             "direction": "s",
             "gender": "f",
-            "name": "rf2",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | RP SMA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["Rocket M2 Titanium"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["Rocket M2 Titanium"]
         },
-        "dimensions": {
-            "depth": 80,
-            "height": 44,
-            "width": 160
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 80
         },
-        "power": {
-            "power": 6.5
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "weight": {
-            "weight": 0.35
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 160
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 6.5
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.35
         }
-    }
+    ]
 }

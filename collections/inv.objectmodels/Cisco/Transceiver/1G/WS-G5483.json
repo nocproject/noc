@@ -7,25 +7,48 @@
     "cr_context": "XCVR",
     "connections": [
         {
+            "name": "in",
             "description": "GBIC Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC | Cisco"
         },
         {
+            "name": "port",
             "description": "1000BASE-T Port",
             "direction": "s",
             "gender": "f",
-            "name": "port",
-            "protocols": ["1000BASET"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "1000BASET"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-G5483"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-G5483"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

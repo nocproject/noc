@@ -70,7 +70,7 @@ Ext.define("NOC.sla.slaprofile.Application", {
                     allowBlank: true,
                     uiStyle: "medium",
                     query: {
-                        "enable_slaprobe": true
+                        "allow_models": ["sla.SLAProfile"]
                     },
                 },
                 {

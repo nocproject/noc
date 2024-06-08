@@ -1,5 +1,5 @@
 {
-    "name": "Avago | Transceiver | 1G | SFP T",
+    "name": "Avago | Transceiver | 1G | HBCU-5710R",
     "$collection": "inv.objectmodels",
     "uuid": "7cfc875b-2413-4607-96c0-608a78b59b80",
     "vendor__code": "AVAGO",
@@ -8,25 +8,55 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "port",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "port",
-            "protocols": ["1000BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "1000BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["HBCU-5710R", "ABCU-5710RZ-CS4", "ABCU-5710RZ-CS2", "ABCU-5710RZ-CS4B", "ABCU-5710RZ", "ABCU-5712RZ-HP1"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "HBCU-5710R",
+                "ABCU-5710RZ-CS4",
+                "ABCU-5710RZ-CS2",
+                "ABCU-5710RZ-CS4B",
+                "ABCU-5710RZ",
+                "ABCU-5712RZ-HP1"
+            ]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

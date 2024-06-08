@@ -9,31 +9,47 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "XFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Transceiver | CFP | Juniper"
         },
         {
+            "name": "rx",
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
             "type__name": "Optical | LC"
         },
         {
+            "name": "tx",
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "tx",
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["CFP-GEN2-100GBASE-LR4"],
-            "part_no": ["740-047682"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-047682"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["CFP-GEN2-100GBASE-LR4"]
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
-    }
+    ]
 }

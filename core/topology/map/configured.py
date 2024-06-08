@@ -19,11 +19,12 @@ from noc.inv.models.configuredmap import ConfiguredMap
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.cpe import CPE
+from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 
 
 class ConfiguredTopology(TopologyBase):
-
     name = "configured"
     header = "Configured Map"
 
@@ -42,11 +43,14 @@ class ConfiguredTopology(TopologyBase):
     def meta(self) -> MapMeta:
         return MapMeta(
             title=self.title,
-            image=BackgroundImage(
-                image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity
-            )
-            if self.cfgmap.background_image
-            else None,
+            image=(
+                BackgroundImage(
+                    image=str(self.cfgmap.background_image.id),
+                    opacity=self.cfgmap.background_opacity,
+                )
+                if self.cfgmap.background_image
+                else None
+            ),
             width=self.cfgmap.width,
             height=self.cfgmap.height,
             layout=Layout(self.cfgmap.layout),
@@ -129,6 +133,7 @@ class ConfiguredTopology(TopologyBase):
     def load(self):
         parent_links = []
         object_mos = set()
+        object_cpes = set()
         nodes: Dict[str, Any] = {}
         # Extract Nodes
         for nc in self.cfgmap.nodes:
@@ -142,6 +147,7 @@ class ConfiguredTopology(TopologyBase):
             self.add_node(ni)
             if not nc.add_nested:
                 continue
+            print("Nested", nc.node_type, nc.object)
             if nc.node_type == "objectgroup" and nc.object:
                 object_mos = object_mos.union(
                     set(ResourceGroup.get_model_instance_ids("sa.ManagedObject", str(nc.object.id)))
@@ -150,8 +156,42 @@ class ConfiguredTopology(TopologyBase):
                 object_mos = object_mos.union(
                     set(nc.object.managed_objects.values_list("id", flat=True))
                 )
+            elif nc.node_type == "container" and nc.object:
+                object_mos = object_mos.union(
+                    set(
+                        ManagedObject.objects.filter(container=nc.object).values_list(
+                            "id", flat=True
+                        )
+                    )
+                )
+                object_cpes = object_cpes.union(
+                    {
+                        a.value
+                        for a in itertools.chain.from_iterable(
+                            Object.objects.filter(
+                                data__match={
+                                    "interface": "cpe",
+                                    "attr": "cpe_id",
+                                    "value__exists": True,
+                                },
+                                container=nc.object,
+                            ).values_list("data")
+                        )
+                        if a.attr == "cpe_id"
+                    }
+                )
+            elif nc.node_type == "managedobject" and nc.object:
+                object_cpes = object_cpes.union(
+                    {
+                        str(cpe)
+                        for cpe in CPE.objects.filter(controller=nc.object).values_list("_id")
+                    }
+                )
+
         for mo in ManagedObject.objects.filter(id__in=list(object_mos)).iterator():
             self.add_node(mo.get_topology_node(), {"role": "segment"})
+        for cpe in CPE.objects.filter(id__in=list(object_cpes)):
+            self.add_node(cpe.get_topology_node())
         # Add parent links
         for child_id, parent_id in parent_links:
             self.add_parent(parent_id, child_id)

@@ -1,13 +1,12 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import difflib
-from collections import namedtuple
 import logging
 import os
 import re
@@ -41,7 +40,7 @@ from django.db.models import (
     Subquery,
     OuterRef,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 from pymongo import ASCENDING
 
 # NOC modules
@@ -56,7 +55,16 @@ from noc.core.wf.diagnostic import (
     ALARM_DIAG,
 )
 from noc.core.wf.interaction import Interaction
-from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
+from noc.core.mx import (
+    send_message,
+    MessageType,
+    MX_LABELS,
+    MX_H_VALUE_SPLITTER,
+    MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_RESOURCE_GROUPS,
+    MX_PROFILE_ID,
+    MX_NOTIFICATION_DELAY,
+)
 from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -107,7 +115,13 @@ from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext, ScriptCaller
 from noc.core.bi.decorator import bi_sync
-from noc.core.script.scheme import SCHEME_CHOICES
+from noc.core.script.scheme import (
+    SCHEME_CHOICES,
+    SNMPCredential,
+    SNMPv3Credential,
+    CLICredential,
+    TELNET,
+)
 from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams
 from noc.core.change.policy import change_tracker
@@ -132,12 +146,49 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 46
-CREDENTIAL_CACHE_VERSION = 6
+MANAGEDOBJECT_CACHE_VERSION = 50
+CREDENTIAL_CACHE_VERSION = 7
 
-Credentials = namedtuple(
-    "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
-)
+
+@dataclass(frozen=True)
+class Credentials(object):
+    user: str
+    password: str
+    super_password: str
+    snmp_ro: str
+    snmp_rw: str
+    snmp_rate_limit: str
+    snmp_security_level: str
+    snmp_username: str
+    snmp_ctx_name: str
+    snmp_auth_key: str
+    snmp_auth_proto: str
+    snmp_priv_key: str
+    snmp_priv_proto: str
+    snmp_rate_limit: int
+
+    def get_snmp_credential(self) -> Optional[Union[SNMPCredential, SNMPv3Credential]]:
+        if self.snmp_security_level == "Community" and self.snmp_ro:
+            return SNMPCredential(snmp_ro=self.snmp_ro, snmp_rw=self.snmp_rw)
+        elif self.snmp_security_level != "Community" and self.snmp_username:
+            return SNMPv3Credential(
+                username=self.snmp_username,
+                auth_proto=self.snmp_auth_proto,
+                auth_key=self.snmp_auth_key,
+                private_proto=self.snmp_priv_proto,
+                private_key=self.snmp_priv_key,
+            )
+        return None
+
+    def get_cli_credential(self) -> Optional[CLICredential]:
+        if not self.user:
+            return None
+        return CLICredential(
+            username=self.user,
+            password=self.password,
+            super_password=self.super_password,
+            raise_privilege=True,
+        )
 
 
 class MaintenanceItem(BaseModel):
@@ -148,12 +199,10 @@ class MaintenanceItem(BaseModel):
     stop: Optional[datetime.datetime] = None
 
 
-class MaintenanceItems(BaseModel):
-    __root__: Dict[str, MaintenanceItem]
+MaintenanceItems = RootModel[Dict[str, MaintenanceItem]]
 
 
-class CapsItems(BaseModel):
-    __root__: List[ModelCapsItem]
+CapsItems = RootModel[List[ModelCapsItem]]
 
 
 class CheckStatus(BaseModel):
@@ -178,13 +227,12 @@ class DiagnosticItem(BaseModel):
         return any(c.status for c in self.checks if not c.skipped)
 
 
-class DiagnosticItems(BaseModel):
-    __root__: Dict[str, DiagnosticItem]
+DiagnosticItems = RootModel[Dict[str, DiagnosticItem]]
 
 
 def default(obj):
     if isinstance(obj, BaseModel):
-        return obj.dict()
+        return obj.model_dump()
     elif isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
@@ -272,7 +320,7 @@ class ManagedObjectManager(Manager):
     delete=[
         ("sa.ManagedObjectAttribute", "managed_object"),
         ("sa.CPEStatus", "managed_object"),
-        ("inv.CPE", "controller"),
+        ("inv.CPE", "controllers__managed_object"),
         ("inv.MACDB", "managed_object"),
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
@@ -283,6 +331,7 @@ class ManagedObjectManager(Manager):
         ("sa.Service", "managed_object"),
         ("maintenance.Maintenance", "escalate_managed_object"),
         ("maintenance.Maintenance", "direct_objects__object"),
+        ("sa.DiscoveredObject", "managed_object"),
     ],
 )
 class ManagedObject(NOCModel):
@@ -354,7 +403,7 @@ class ManagedObject(NOCModel):
             ("l", "Loopback address"),
             ("a", "All interface addresses"),
         ],
-        default="d",
+        default="m",
         null=False,
         blank=False,
     )
@@ -368,7 +417,7 @@ class ManagedObject(NOCModel):
             ("l", "Loopback address"),
             ("a", "All interface addresses"),
         ],
-        default="d",
+        default="m",
         null=False,
         blank=False,
     )
@@ -430,6 +479,7 @@ class ManagedObject(NOCModel):
         null=True,
         blank=True,
     )
+    shape_title_template = CharField("Shape Name template", max_length=256, blank=True, null=True)
     #
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
@@ -715,6 +765,34 @@ class ManagedObject(NOCModel):
     # Interval
     effective_metric_discovery_interval = IntegerField(default=0, validators=[MinValueValidator(0)])
 
+    snmp_security_level = CharField(
+        "SNMP protocol security",
+        max_length=12,
+        choices=[
+            ("Community", "Community"),
+            ("noAuthNoPriv", "noAuthNoPriv"),
+            ("authNoPriv", "authNoPriv"),
+            ("authPriv", "authPriv"),
+        ],
+        default="Community",
+    )
+    snmp_username = CharField("SNMP user name", max_length=32, null=True, blank=True)
+    snmp_auth_proto = CharField(
+        "Authentication protocol",
+        max_length=3,
+        choices=[("MD5", "MD5"), ("SHA", "SHA")],
+        default="MD5",
+    )
+    snmp_auth_key = CharField("Authentication key", max_length=32, null=True, blank=True)
+    snmp_priv_proto = CharField(
+        "Privacy protocol",
+        max_length=3,
+        choices=[("DES", "DES"), ("AES", "AES")],
+        default="DES",
+    )
+    snmp_priv_key = CharField("Privacy key", max_length=32, null=True, blank=True)
+    snmp_ctx_name = CharField("Context name", max_length=32, null=True, blank=True)
+
     # Overridden objects manager
     objects = ManagedObjectManager()
 
@@ -735,7 +813,6 @@ class ManagedObject(NOCModel):
 
     BOX_DISCOVERY_JOB = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
-    INTERVAL_DISCOVERY_JOB = "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob"
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -778,21 +855,21 @@ class ManagedObject(NOCModel):
         lock=lambda _: id_lock,
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
-    def get_by_id(cls, oid: int) -> "Optional[ManagedObject]":
+    def get_by_id(cls, id: int) -> Optional["ManagedObject"]:
         """
         Get ManagedObject by id. Cache returned instance for future use.
 
         :param oid: Managed Object's id
         :return: ManagedObject instance
         """
-        mo = ManagedObject.objects.filter(id=oid)[:1]
+        mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
             return mo[0]
         return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id) -> "Optional[ManagedObject]":
+    def get_by_bi_id(cls, bi_id: int) -> Optional["ManagedObject"]:
         mo = ManagedObject.objects.filter(bi_id=bi_id)[:1]
         if mo:
             return mo[0]
@@ -803,54 +880,8 @@ class ManagedObject(NOCModel):
         changed_fields = set(changed_fields or [])
         if config.datastream.enable_managedobject:
             yield "managedobject", self.id
-        if config.datastream.enable_cfgping and changed_fields.intersection(
-            {
-                "id",  # Create object
-                "name",
-                "bi_id",
-                "state",
-                "pool",
-                "fm_pool",
-                "address",
-                "object_profile",
-                "time_pattern",
-                "event_processing_policy",
-            }
-        ):
-            yield "cfgping", self.id
-        if config.datastream.enable_cfgsyslog and changed_fields.intersection(
-            {
-                "id",  # Create object
-                "name",
-                "bi_id",
-                "state",
-                "pool",
-                "fm_pool",
-                "address",
-                "object_profile",
-                "event_processing_policy",
-                "syslog_archive_policy",
-                "syslog_source_type",
-                "syslog_source_ip",
-            }
-        ):
-            yield "cfgsyslog", self.id
-        if config.datastream.enable_cfgtrap and changed_fields.intersection(
-            {
-                "id",  # Create object
-                "name",
-                "bi_id",
-                "state",
-                "pool",
-                "fm_pool",
-                "address",
-                "object_profile",
-                "event_processing_policy",
-                "trap_source_type",
-                "trap_source_ip",
-            }
-        ):
-            yield "cfgtrap", self.id
+        if config.datastream.enable_cfgtarget:
+            yield "cfgtarget", self.id
         if config.datastream.enable_cfgmetricsources and changed_fields.intersection(
             {"id", "bi_id", "state", "pool", "fm_pool", "labels", "effective_labels"}
         ):
@@ -969,7 +1000,6 @@ class ManagedObject(NOCModel):
             pool_name = Pool.get_by_id(self.initial_data["pool"].id).name
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=pool_name)
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=pool_name)
-            Job.remove("discovery", self.INTERVAL_DISCOVERY_JOB, key=self.id, pool=pool_name)
         # Reset matchers
         if (
             "vendor" in self.changed_fields
@@ -1284,19 +1314,16 @@ class ManagedObject(NOCModel):
         :param tag: Notification tag
         """
         logger.debug("[%s|%s] Sending object event message: %s", self.name, event_id, data)
-        data = data or {}
-        data.update({"managed_object": self.get_message_context()})
+        d = {"managed_object": self.get_message_context()}
+        if data:
+            d.update(data)
+        headers = self.get_mx_message_headers([tag] if tag else None)
+        if delay:
+            headers[MX_NOTIFICATION_DELAY] = delay
         send_message(
-            data=data,
-            message_type=event_id,
-            headers={
-                MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
-                    encoding=DEFAULT_ENCODING
-                ),
-                MX_ADMINISTRATIVE_DOMAIN_ID: str(self.administrative_domain.id).encode(
-                    encoding=DEFAULT_ENCODING
-                ),
-            },
+            data=d,
+            message_type=MessageType(event_id),
+            headers=headers,
         )
 
         # Schedule FTS reindex
@@ -1539,6 +1566,13 @@ class ManagedObject(NOCModel):
                 snmp_ro=self.auth_profile.snmp_ro or self.snmp_ro,
                 snmp_rw=self.auth_profile.snmp_rw or self.snmp_rw,
                 snmp_rate_limit=self.get_effective_snmp_rate_limit(),
+                snmp_security_level=self.auth_profile.snmp_security_level,
+                snmp_username=self.auth_profile.snmp_username,
+                snmp_ctx_name=self.auth_profile.snmp_ctx_name,
+                snmp_auth_proto=self.auth_profile.snmp_auth_proto,
+                snmp_auth_key=self.auth_profile.snmp_auth_key,
+                snmp_priv_proto=self.auth_profile.snmp_priv_proto,
+                snmp_priv_key=self.auth_profile.snmp_priv_key,
             )
         else:
             return Credentials(
@@ -1548,6 +1582,13 @@ class ManagedObject(NOCModel):
                 snmp_ro=self.snmp_ro,
                 snmp_rw=self.snmp_rw,
                 snmp_rate_limit=self.get_effective_snmp_rate_limit(),
+                snmp_security_level=self.snmp_security_level,
+                snmp_username=self.snmp_username,
+                snmp_ctx_name=self.snmp_ctx_name,
+                snmp_auth_proto=self.snmp_auth_proto,
+                snmp_auth_key=self.snmp_auth_key,
+                snmp_priv_proto=self.snmp_priv_proto,
+                snmp_priv_key=self.snmp_priv_key,
             )
 
     @property
@@ -1750,9 +1791,8 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
-        if (
-            Interaction.PeriodicDiscovery in self.interactions
-            and self.object_profile.enable_periodic_discovery
+        if Interaction.PeriodicDiscovery in self.interactions and (
+            self.object_profile.enable_periodic_discovery or self.object_profile.enable_metrics
         ):
             Job.submit(
                 "discovery",
@@ -1765,21 +1805,6 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
-        if (
-            Interaction.ServiceActivation in self.interactions
-            and self.object_profile.enable_metrics
-        ):
-            Job.submit(
-                "discovery",
-                self.INTERVAL_DISCOVERY_JOB,
-                key=self.id,
-                pool=self.pool.name,
-                delta=self.pool.get_delta(),
-                keep_ts=True,
-                shard=shard,
-            )
-        else:
-            Job.remove("discovery", self.INTERVAL_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
 
     def update_topology(self):
         """
@@ -2170,9 +2195,9 @@ class ManagedObject(NOCModel):
         mo.is_mock = True
         return mo
 
-    def iter_scope(self, scope):
+    def iter_technology(self, technologies):
         for o in Object.get_managed(self):
-            yield from o.iter_scope(scope)
+            yield from o.iter_technology(technologies)
 
     def get_effective_fm_pool(self):
         if self.fm_pool:
@@ -2245,13 +2270,13 @@ class ManagedObject(NOCModel):
             yield ResourceGroup.get_lazy_labels(instance.effective_service_groups)
         yield Label.get_effective_regex_labels("managedobject_name", instance.name)
         lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
-        yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
+        yield Label.ensure_labels(lazy_profile_labels, ["sa.ManagedObject"])
         if instance.vendor:
             lazy_vendor_labels = list(Vendor.iter_lazy_labels(instance.vendor))
-            yield Label.ensure_labels(lazy_vendor_labels, enable_managedobject=True)
+            yield Label.ensure_labels(lazy_vendor_labels, ["sa.ManagedObject"])
         if instance.platform:
             lazy_platform_labels = list(Platform.iter_lazy_labels(instance.platform))
-            yield Label.ensure_labels(lazy_platform_labels, enable_managedobject=True)
+            yield Label.ensure_labels(lazy_platform_labels, ["sa.ManagedObject"])
         if instance.address:
             yield Label.get_effective_prefixfilter_labels("managedobject_address", instance.address)
             yield Label.get_effective_regex_labels("managedobject_address", instance.address)
@@ -2275,7 +2300,7 @@ class ManagedObject(NOCModel):
             for d in instance.diagnostic:
                 yield Label.ensure_labels(
                     [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"],
-                    enable_managedobject=True,
+                    ["sa.ManagedObject"],
                 )
 
     @classmethod
@@ -2307,6 +2332,7 @@ class ManagedObject(NOCModel):
         :return:
         """
         from django.db import connection as pg_connection
+        from noc.core.change.model import ChangeField
 
         obj_data: List[ObjectUplinks] = []
         seen_neighbors: Set[int] = set()
@@ -2354,7 +2380,10 @@ class ManagedObject(NOCModel):
                 "update",
                 "sa.ManagedObject",
                 str(ou.object_id),
-                fields=["uplinks", "rca_neighbors"],
+                fields=[
+                    ChangeField(field="uplinks", new=ou.uplinks),
+                    ChangeField(field="rca_neighbors", new=ou.rca_neighbors),
+                ],
                 datastreams=[("managedobject", ou.object_id)],
             )
 
@@ -2367,6 +2396,7 @@ class ManagedObject(NOCModel):
         :return:
         """
         from noc.inv.models.link import Link
+        from django.db import connection as pg_connection
 
         coll = Link._get_collection()
         r: Dict[int, Set] = {lo: set() for lo in linked_objects}
@@ -2387,7 +2417,27 @@ class ManagedObject(NOCModel):
             r[c["_id"]] = set(chain(*c["neighbors"])) - {c["_id"]}
         # Update ManagedObject links
         for lo in r:
-            ManagedObject.objects.filter(id=lo).update(links=list(r[lo]))
+            if r[lo]:
+                # Add Links
+                SQL = """
+                    UPDATE sa_managedobject
+                    SET effective_labels = CASE WHEN 'noc::is_linked::=' = ANY(effective_labels)
+                        THEN effective_labels ELSE effective_labels || '{"noc::is_linked::="}' END,
+                        links = %s::numeric[]
+                    WHERE id = %s;
+                    """
+            else:
+                # Remove Links
+                SQL = """
+                    UPDATE sa_managedobject
+                    SET effective_labels = CASE WHEN 'noc::is_linked::=' = ANY(effective_labels)
+                        THEN array_remove(effective_labels, 'noc::is_linked::=') ELSE effective_labels END,
+                        links = %s::numeric[]
+                    WHERE id = %s;
+                    """
+            with pg_connection.cursor() as cursor:
+                cursor.execute(SQL, [list(r[lo]), lo])
+                # Generate change
             ManagedObject._reset_caches(lo)
 
     @property
@@ -2421,8 +2471,9 @@ class ManagedObject(NOCModel):
         return r
 
     def get_message_context(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
+        r = {
+            "id": str(self.id),
+            "bi_id": str(self.bi_id),
             "name": self.name,
             "description": self.description,
             "address": self.address,
@@ -2430,9 +2481,28 @@ class ManagedObject(NOCModel):
                 "id": str(self.profile.id),
                 "name": self.administrative_domain.name,
             },
+            "labels": [
+                ll
+                for ll in Label.objects.filter(
+                    name__in=self.labels, expose_datastream=True
+                ).values_list("name")
+            ],
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
             "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
         }
+        if self.remote_system:
+            r["remote_system"] = {
+                "id": str(self.remote_system.id),
+                "name": self.remote_system.name,
+            }
+            r["remote_id"] = self.remote_id
+        if self.administrative_domain.remote_system:
+            r["administrative_domain"]["remote_system"] = {
+                "id": str(self.administrative_domain.remote_system.id),
+                "name": self.administrative_domain.remote_system.name,
+            }
+            r["administrative_domain"]["remote_id"] = self.administrative_domain.remote_id
+        return r
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
@@ -2480,9 +2550,14 @@ class ManagedObject(NOCModel):
             )
             if interval and mi.is_run(d_interval, int(self.bi_id), 1, run):
                 metrics.append(mi)
+        cpe = None
+        if self.cpe_id:
+            cpe = CPE.get_by_id(self.cpe_id)
         if metrics:
             logger.debug("Object metrics: %s", ",".join(m.name for m in metrics))
-            yield MetricCollectorConfig(collector="managed_object", metrics=tuple(metrics))
+            yield MetricCollectorConfig(
+                collector="managed_object", metrics=tuple(metrics), cpe=cpe.bi_id if cpe else None
+            )
         yield from CPE.iter_collected_metrics(self, run=run, d_interval=d_interval)
         yield from SLAProbe.iter_collected_metrics(self, run=run, d_interval=d_interval)
         yield from Interface.iter_collected_metrics(self, run=run, d_interval=d_interval)
@@ -2619,6 +2694,9 @@ class ManagedObject(NOCModel):
             type="managedobject",
             resource_id=self.id,
             title=self.name,
+            title_metric_template=self.shape_title_template
+            or self.object_profile.shape_title_template
+            or "",
             stencil=self.get_stencil(),
             overlays=self.get_shape_overlays(),
             level=self.object_profile.level,
@@ -2658,6 +2736,43 @@ class ManagedObject(NOCModel):
             return interactions
         self._interactions = InteractionHub(self)
         return self._interactions
+
+    def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
+        return {
+            MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels + (labels or [])).encode(
+                DEFAULT_ENCODING
+            ),
+            MX_ADMINISTRATIVE_DOMAIN_ID: str(self.administrative_domain.id).encode(
+                DEFAULT_ENCODING
+            ),
+            MX_PROFILE_ID: str(self.object_profile.id).encode(DEFAULT_ENCODING),
+            MX_RESOURCE_GROUPS: MX_H_VALUE_SPLITTER.join(
+                [str(sg) for sg in self.effective_service_groups]
+            ).encode(DEFAULT_ENCODING),
+        }
+
+    @classmethod
+    def get_object_by_template(
+        cls,
+        address: str,
+        pool: str,
+        name: Optional[str] = None,
+        template=None,
+        **data,
+    ) -> "ManagedObject":
+        mo = ManagedObject(
+            name=name or address,
+            address=address,
+            pool=pool,
+            description=data.get("description"),
+            scheme=TELNET,
+            object_profile=ManagedObjectProfile.objects.filter().first(),
+            administrative_domain=AdministrativeDomain.objects.filter().first(),
+            segment=NetworkSegment.objects.filter().first(),
+        )
+        return mo
+
+    def update_template_data(self, data, template=None): ...
 
 
 @on_save

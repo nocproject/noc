@@ -7,16 +7,18 @@
     "cr_context": "DFC",
     "connections": [
         {
+            "name": "in",
             "description": "DFC slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | DFC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-F6700-DFC3B"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-F6700-DFC3B"]
         }
-    }
+    ]
 }

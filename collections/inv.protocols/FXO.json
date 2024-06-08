@@ -1,0 +1,10 @@
+{
+    "name": "FXO",
+    "code": "FXO",
+    "$collection": "inv.protocols",
+    "uuid": "f4174089-0c9f-4acc-b7cc-5ae13b989361",
+    "description": "The foreign exchange office (FXO) interface is a telephone signaling interface that terminates the foreign exchange line at the central office that provides the telephone number and the call switching for the service. It generates the off-hook and on-hook indications through loop closure and non-closure of a direct current (DC) circuit powered by the serving central office switch.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "PSTN"
+}

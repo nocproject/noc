@@ -9,101 +9,176 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "DSL",
             "description": "USER 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "DSL",
-            "protocols": ["ADSL", "ADSL+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "POTS",
             "description": "PSTN 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "POTS",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "alarm",
             "description": "Alarm port",
             "direction": "s",
             "gender": "f",
-            "name": "alarm",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
+            "name": "1",
             "description": "Port 1 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "2",
             "description": "Port 2 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "3",
             "description": "Port 3 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "3",
-            "name": "3",
-            "protocols": ["100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp3",
             "description": "Port 3 (SFP)",
             "direction": "i",
             "gender": "f",
             "group": "3",
-            "name": "sfp3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
-            "protocols": [">-48VDC", ">-60VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["4229-A2-531", "4229-A3-531"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["4229-A2-531", "4229-A3-531"]
         },
-        "dimensions": {
-            "depth": 299,
-            "height": 44,
-            "width": 436
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 299
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "power": {
-            "power": 37.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 436
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 4.2
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 37.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 4.2
         }
-    }
+    ]
 }

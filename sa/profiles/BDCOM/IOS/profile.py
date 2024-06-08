@@ -30,10 +30,21 @@ class Profile(BaseProfile):
     ]
 
     def convert_interface_name(self, interface):
+        if interface.startswith("TGigaEthernet"):
+            return interface
+        elif interface.startswith("GigaEthernet"):
+            return interface
+
         if interface.startswith("f"):
             return interface.replace("f", "FastEthernet")
         elif interface.startswith("g"):
             return interface.replace("g", "GigaEthernet")
+        elif interface.startswith("Gig"):
+            return interface.replace("Gig", "GigaEthernet")
+        elif interface.startswith("TGi"):
+            return interface.replace("TGi", "TGigaEthernet")
+        elif interface.startswith("tg"):
+            return interface.replace("tg", "TGigaEthernet")
         elif interface.startswith("v"):
             return interface.replace("v", "VLAN")
         elif interface.startswith("n"):

@@ -138,6 +138,8 @@ class TopologyBase(object):
                 "type": n.type,
                 "id": o_id,
                 "node_id": n.resource_id,
+                "metrics_label": "",
+                "metrics_template": n.title_metric_template or "",
                 "level": n.level,
                 "name": n.title or "",
                 "shape": getattr(stencil, "path", ""),

@@ -1,0 +1,8 @@
+config: |
+  create vlan VLAN401 tag 401
+  create vlan VLAN407 tag 407
+  create vlan VLAN431 tag 431
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 401, 'name', 'VLAN401', {'replace': True}]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 407, 'name', 'VLAN407', {'replace': True}]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 431, 'name', 'VLAN431', {'replace': True}]

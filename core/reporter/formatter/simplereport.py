@@ -85,7 +85,7 @@ class SimpleReportFormatter(DataFormatter):
             r += data.select(out_columns).write_csv(
                 # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                 # columns=out_columns,
-                sep=self.csv_delimiter,
+                separator=self.csv_delimiter,
                 quote='"',
                 has_header=False,
             )
@@ -93,7 +93,7 @@ class SimpleReportFormatter(DataFormatter):
         elif self.output_type == OutputType.XLSX:
             book = Workbook(self.output_stream)
             cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
-            worksheet = book.add_worksheet("Alarms")
+            worksheet = book.add_worksheet(self.report_template.output_name_pattern)
             for cn, col in enumerate(out_columns):
                 worksheet.write(0, cn, HEADER_ROW.get(col, col), cf1)
             for cn, col in enumerate(out_columns):

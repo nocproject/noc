@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject LAG Store
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.LAGStore");
@@ -16,6 +16,10 @@ Ext.define("NOC.sa.managedobject.LAGStore", {
         },
         {
             name: "name",
+            type: "string"
+        },
+        {
+            name: "status",
             type: "string"
         },
         {

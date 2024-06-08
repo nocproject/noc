@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Install npkg packages
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import tarfile
 import tempfile
 import json
 import shutil
+from urllib.parse import urlparse, urlunparse
 # NOC modules
 from noc.core.fileutils import urlopen
 from noc.config import config
@@ -19,6 +20,7 @@ from noc.config import config
 
 class NPkg(object):
     VAR = config.path.npkg_root
+    CDN = config.path.cdn_url
 
     def __init__(self, config, verbose=False):
         self.config = config
@@ -43,6 +45,10 @@ class NPkg(object):
         with open(self.config) as f:
             cfg = json.load(f)
         self.url = cfg["url"]
+        if self.CDN:
+            url = urlparse(self.url)
+            cdn = urlparse(self.CDN)
+            self.url = urlunparse(url._replace(scheme=cdn.scheme, netloc=cdn.netloc))
         self.required_versions = {}
         for r in cfg["packages"]:
             if r["version"] == "latest":

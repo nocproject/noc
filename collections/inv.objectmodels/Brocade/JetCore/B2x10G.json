@@ -9,32 +9,40 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
-            "description": "XENPAK port 1",
-            "direction": "i",
-            "gender": "f",
             "name": "xenpak1",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XENPAK"
-        },
-        {
             "description": "XENPAK port 1",
             "direction": "i",
             "gender": "f",
-            "name": "xenpak2",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK"
         },
         {
+            "name": "xenpak2",
+            "description": "XENPAK port 1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XENPAK"
+        },
+        {
+            "name": "in",
             "description": "backplane",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Brocade | JetCore | Backplane Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["J8174A", "B2x10G"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["J8174A", "B2x10G"]
         }
-    }
+    ]
 }

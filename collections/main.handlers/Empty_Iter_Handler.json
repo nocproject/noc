@@ -1,0 +1,21 @@
+{
+    "uuid": "3184cbf5-1290-4132-8fda-ea4ae8519305",
+    "$collection": "main.handlers",
+    "handler": "noc.main.handlers.emptyiterhandler.handler",
+    "name": "Empty Iter Handler",
+    "description": "Empty iter handler. Print arguments. Applied for Datastream",
+    "allow_config_filter": false,
+    "allow_config_validation": false,
+    "allow_config_diff": false,
+    "allow_config_diff_filter": false,
+    "allow_housekeeping": false,
+    "allow_resolver": false,
+    "allow_threshold": false,
+    "allow_threshold_handler": false,
+    "allow_threshold_value_handler": false,
+    "allow_ds_filter": true,
+    "allow_ifdesc": false,
+    "allow_mx_transmutation": false,
+    "allow_match_rule": false,
+    "allow_fm_alarmgrouprule": null
+}

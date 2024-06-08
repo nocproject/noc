@@ -2,6 +2,10 @@
 - name: import path to control repo
   include_vars: "vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
 
+- name: Changing interpreter for a while
+  set_fact:
+    ansible_correct_python: "{{ ansible_python_interpreter }}"
+    ansible_python_interpreter: "{{ consul_control_python }}"
 
 - name: Register a key/value pair for {{ consul_service_key }}
   consul_kv:
@@ -9,3 +13,7 @@
     value: "{{ consul_service_value }}"
   vars:
     ansible_python_interpreter: "{{ consul_control_python }}"
+
+- name: Reverting interpreter back
+  set_fact:
+    ansible_python_interpreter: "{{ ansible_correct_python }}"

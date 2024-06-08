@@ -8,30 +8,32 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7200 | Linecard"
         },
         {
+            "name": "rx_port",
             "description": "Port1",
             "direction": "s",
             "gender": "f",
-            "name": "rx_port",
             "type__name": "Optical | SC"
         },
         {
+            "name": "tx_port",
             "description": "Port2",
             "direction": "s",
             "gender": "f",
-            "name": "tx_port",
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PA-POS-OC3SMI", "PA-POS-OC3SMI="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PA-POS-OC3SMI", "PA-POS-OC3SMI="]
         }
-    }
+    ]
 }

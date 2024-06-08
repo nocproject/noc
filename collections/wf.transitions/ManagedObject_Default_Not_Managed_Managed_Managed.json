@@ -1,0 +1,15 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "from_state__uuid": "d349d91d-1f32-4514-9307-88bcc4c7556a",
+    "to_state__uuid": "929cf1ec-d3ac-433c-90e8-dfb129cc7a12",
+    "uuid": "c7b728dc-b354-4644-874e-1917b4f33fe5",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "managed",
+    "label": "Managed",
+    "enable_manual": true,
+    "vertices": [{
+        "x": 350,
+        "y": 220
+    }]
+}

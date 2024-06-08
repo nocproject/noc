@@ -1,25 +1,19 @@
 ---
-- name: Get MongoDB Key from remote server
+- name: Add MongoDB apt repository key
   get_url:
-    url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
-    dest: "/tmp/mongo_apt_key.gpg"
+    url: "{{ mongo_deb_gpgkey }}"
+    dest: /etc/apt/trusted.gpg.d/mongodb.asc
+    mode: '0644'
+    force: true
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
-- name: Add MongoDB apt key
-  apt_key:
-    file: "/tmp/mongo_apt_key.gpg"
-    id: "{{ mongo_apt_id[mongod_version] }}"
-    state: present
-  tags:
-    - repo
-
 - name: Add MongoDB repository
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} multiverse"
+    repo: "{{ mongo_deb_ub_repo }}"
     state: present
     update_cache: "True"
   register: mongo_repo_stat
@@ -70,7 +64,7 @@
 
 - name: Copy mongod service file
   template:
-    src: "os/Ubuntu_18/etc/systemd/system/mongod.service.j2"
+    src: "os/Ubuntu_20/etc/systemd/system/mongod.service.j2"
     dest: "/etc/systemd/system/mongod.service"
   register: mongod_service
   notify: restart mongod

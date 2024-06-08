@@ -8,28 +8,42 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
-            "cross": "1",
+            "name": "0",
             "description": "480G stacking connector",
             "direction": "s",
             "gender": "m",
-            "name": "0",
             "type__name": "Cisco | Electrical | StackWise 480"
         },
         {
-            "cross": "0",
+            "name": "1",
             "description": "480G stacking connector",
             "direction": "s",
             "gender": "m",
-            "name": "1",
             "type__name": "Cisco | Electrical | StackWise 480"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["STACK-T1-50CM"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "STACK-T1-50CM"
+            ]
         },
-        "length": {
-            "length": 0.5
+        {
+            "attr": "length",
+            "interface": "length",
+            "value": 0.5
         }
-    }
+    ],
+    "cross": [
+        {
+            "input": "0",
+            "output": "1"
+        },
+        {
+            "input": "1",
+            "output": "0"
+        }
+    ]
 }

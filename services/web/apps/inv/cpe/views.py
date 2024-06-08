@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.cpe application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class CPEApplication(ExtDocApplication):
     title = _("CPEs")
     menu = _("CPEs")
     model = CPE
-    query_fields = ["description__contains", "global_id", "global_id__contains"]
+    query_fields = ["description__contains", "global_id", "global_id__contains", "address", "label"]
 
     @staticmethod
     def get_style(cpe: CPE):
@@ -36,3 +36,22 @@ class CPEApplication(ExtDocApplication):
             s = ""
         # style_cache[profile.id] = s
         return s
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
+        if not isinstance(o, CPE):
+            return r
+        if o.controller:
+            r["controller"] = o.controller.managed_object.id
+            r["controller__label"] = o.controller.managed_object.name
+            r["local_id"] = o.controller.local_id
+        return r
+
+    def cleaned_query(self, q):
+        if "controller" in q:
+            q["controllers__match"] = {
+                "managed_object": int(q.pop("controller")),
+                "is_active": True,
+            }
+        # Clean other
+        return super().cleaned_query(q)

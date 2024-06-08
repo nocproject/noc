@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 import logging
 from functools import partial
-from typing import Optional, Dict, AsyncIterable, Any
+from typing import Optional, Dict, AsyncIterable, Any, Union
 
 # Third-party modules
 import orjson
@@ -182,15 +183,17 @@ class MessageStreamClient(object):
         :return:
         """
         # Get stream config
-        s = get_stream(name)
+        stream = get_stream(name)
         # Get liftbridge metadata
-        partitions = partitions or s.get_partitions()
+        partitions = partitions or stream.get_partitions()
         # Check if stream is configured properly
         if not partitions:
             logger.info("Stream '%s' without partition. Skipping..", name)
             return False
         meta = await self.fetch_metadata(name)
         rf = self.client.get_replication_factor(meta)
+        # Apply replication factor from config
+        rf = min(rf, stream.config.replication_factor or rf)
         stream_meta = meta.metadata[name] if name in meta.metadata else None
         if stream_meta and len(stream_meta) == partitions:
             return False
@@ -265,12 +268,10 @@ class MessageStreamClient(object):
         new_partitions: Optional[int] = None,
         replication_factor: Optional[int] = None,
     ) -> bool:
+        tmp_stream = f"__tmp-{name}"
         old_partitions = len(current_meta)
-        n_msg: Dict[int, int] = {}  # partition -> copied messages
-        s = get_stream(name)
         logger.info("Altering stream %s", name)
         # Create temporary stream with same structure, as original one
-        tmp_stream = f"__tmp-{name}"
         logger.info("Creating temporary stream %s", tmp_stream)
         await self.delete_stream(tmp_stream)
         await self.create_stream(
@@ -278,51 +279,12 @@ class MessageStreamClient(object):
             partitions=old_partitions,
             replication_factor=1,
         )
-        # Copy all unread data to temporary stream as is
-        for partition in range(old_partitions):
-            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
-            n_msg[partition] = 0
-            # Get current offset
-            p_meta = await self.fetch_partition_metadata(name, partition)
-            newest_offset = p_meta.newest_offset or 0
-            # Fetch cursor
-            current_offset = (
-                await self.fetch_cursor(
-                    stream=name,
-                    partition=partition,
-                    cursor_id=s.cursor_name,
-                )
-                or 0
-            )
-            # For -1 as nothing messages
-            current_offset = max(0, current_offset)
-            if current_offset > newest_offset:
-                # Fix if cursor not set properly
-                current_offset = newest_offset
-            logger.info(
-                "Start copying from current_offset: %s to newest offset: %s",
-                current_offset,
-                newest_offset,
-            )
-            if current_offset < newest_offset:
-                async for msg in self.subscribe(
-                    stream=name, partition=partition, start_offset=current_offset
-                ):
-                    await self.publish(
-                        msg.value,
-                        stream=tmp_stream,
-                        partition=partition,
-                    )
-                    n_msg[partition] += 1
-                    if msg.offset == newest_offset:
-                        break
-            if n_msg[partition]:
-                logger.info("  %d messages has been copied", n_msg[partition])
-            else:
-                logger.info("  nothing to copy")
+        # Copy messages from original to tmp stream
+        n_msg = await self.client.copy_topic_messages(name, tmp_stream, old_partitions)
         # Drop original stream
         logger.info("Dropping original stream %s", name)
         await self.delete_stream(name)
+        await asyncio.sleep(1)
         # Create new stream with required structure
         logger.info("Creating stream %s", name)
         await self.create_stream(
@@ -330,23 +292,19 @@ class MessageStreamClient(object):
             partitions=new_partitions,
             replication_factor=replication_factor,
         )
+        await asyncio.sleep(2)  # Fix for wait update cluster metadata
         # Copy data from temporary stream to a new one
         for partition in range(old_partitions):
-            logger.info("Restoring partition %s:%s to %s" % (tmp_stream, partition, new_partitions))
+            logger.info("Restoring partition %s:%s to %s", tmp_stream, partition, new_partitions)
             # Re-route dropped partitions to partition 0
             dest_partition = partition if partition < new_partitions else 0
-            n = n_msg[partition]
-            if n > 0:
-                async for msg in self.subscribe(
-                    stream=tmp_stream,
-                    partition=partition,
-                    start_offset=0,
-                ):
-                    await self.publish(msg.value, stream=name, partition=dest_partition)
-                    n -= 1
-                    if not n:
-                        break
-                logger.info("  %s messages restored", n_msg[partition])
+            if n_msg[partition] > 0:
+                restore_num = await self.client.copy_topic_messages(
+                    tmp_stream,
+                    name,
+                    partitions={partition: dest_partition},
+                )
+                logger.info("  %s messages restored", restore_num[partition])
             else:
                 logger.info("  nothing to restore")
         # Drop temporary stream
@@ -355,3 +313,18 @@ class MessageStreamClient(object):
         # Uh-oh
         logger.info("Stream %s has been altered", name)
         return True
+
+    async def copy_topic_messages(
+        self,
+        from_topic,
+        to_topic,
+        partitions: Optional[Union[Dict[int, int], int]] = None,
+    ) -> Dict[int, int]:
+        """
+        Copy message from one topic to another
+        :param from_topic: From topic
+        :param to_topic: To topic
+        :param partitions: Number of from partition or MAP
+        :return:
+        """
+        raise NotImplementedError()

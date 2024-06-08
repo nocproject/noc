@@ -1,0 +1,10 @@
+{
+    "name": "Time-of-Day Measurement",
+    "code": "ToD",
+    "$collection": "inv.protocols",
+    "uuid": "c5f0c671-3425-4669-94f8-b182844d7bf5",
+    "description": "Time-of-day (TOD) traffic signal control is based on the principle where multiple TOD signal timing plans (STPs) are scheduled to operate during the day. TOD plans are characterized by a unique cycle length that is highly correlated with traffic volumes",
+    "data": [],
+    "connection_schema": "U",
+    "technology__name": "Time Syncrinization"
+}

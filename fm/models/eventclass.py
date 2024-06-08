@@ -9,9 +9,11 @@
 import re
 import os
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -103,7 +105,7 @@ class EventDispositionRule(EmbeddedDocument):
     # Applicable for actions: raise and clear
     alarm_class = PlainReferenceField(AlarmClass, required=False)
     # Additional condition. Raise or clear action
-    # will be performed only if additional events occured during time window
+    # will be performed only if additional events occurred during time window
     combo_condition = StringField(
         required=False,
         default="none",
@@ -271,8 +273,8 @@ class EventClass(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return EventClass.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["EventClass"]:
+        return EventClass.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -281,7 +283,7 @@ class EventClass(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id):
+    def get_by_bi_id(cls, bi_id: int) -> Optional["EventClass"]:
         return EventClass.objects.filter(bi_id=bi_id).first()
 
     def get_handlers(self):

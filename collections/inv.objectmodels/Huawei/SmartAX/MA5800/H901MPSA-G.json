@@ -20,7 +20,20 @@
             "description": "100M Base-T maintenance network port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +41,16 @@
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -36,7 +58,16 @@
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -44,7 +75,16 @@
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -52,7 +92,16 @@
             "description": "Upstream transmission or cascading port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -60,7 +109,10 @@
             "description": "RS-232 serial port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,21 +120,38 @@
             "description": "RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS485"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS485"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H901MPSA-G"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H901MPSA-G"]
         },
-        "dimensions": {
-            "depth": 258,
-            "height": 130,
-            "width": 35
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 258
         },
-        "power": {
-            "power": 43.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 130
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 35
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 43.0
         }
-    }
+    ]
 }

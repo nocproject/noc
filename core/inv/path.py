@@ -15,6 +15,7 @@ from itertools import permutations
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
+from noc.inv.models.protocol import ProtocolVariant
 
 
 class ConnAction(int, Enum):
@@ -88,7 +89,7 @@ def find_path(
     if not oc:
         return None
     # Process starting connection
-    tp = set(target_protocols)
+    tp = set(ProtocolVariant.get_by_code(p) for p in target_protocols)
     wave: Set[Object] = set()  # Search wave
     prev: Dict[PathItem, PathItem] = {}
     p0 = PathItem(obj=obj, connection=connection)

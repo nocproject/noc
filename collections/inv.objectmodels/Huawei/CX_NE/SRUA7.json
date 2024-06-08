@@ -9,118 +9,187 @@
     "labels": ["noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX&NE | SRU"
         },
         {
-            "description": "The USB interface functions are uN/Available and reserved.",
-            "direction": "s",
-            "gender": "f",
             "name": "usb0",
-            "protocols": ["USB2.0"],
-            "type__name": "Electrical | USB"
-        },
-        {
             "description": "The USB interface functions are uN/Available and reserved.",
             "direction": "s",
             "gender": "f",
-            "name": "usb1",
-            "protocols": ["USB2.0"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "USB20"
+            }],
             "type__name": "Electrical | USB"
         },
         {
+            "name": "usb1",
+            "description": "The USB interface functions are uN/Available and reserved.",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "USB20"
+            }],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "name": "CTL-ETH-SFP0",
             "description": "Reserved cascading interface.",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "name": "CTL-ETH-SFP0",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "CTL-ETH-SFP1",
             "description": "Reserved cascading interface.",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "name": "CTL-ETH-SFP1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "MEth0/1",
             "description": "Management port",
             "direction": "s",
             "gender": "f",
-            "name": "MEth0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "console",
             "description": "Console for on-site system configuration",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "aux",
             "description": "The AUX interface is reserved for further expansion.",
             "direction": "s",
             "gender": "f",
-            "name": "aux",
-            "protocols": ["<RS232", ">RS232"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, 1pps+ASCII time signals, or two channels of DCLS time signals.",
-            "direction": "s",
-            "gender": "f",
             "name": "clk_tod0",
-            "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, 1pps+ASCII time signals, or two channels of DCLS time signals.",
             "direction": "s",
             "gender": "f",
-            "name": "clk_tod1",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "clk_tod1",
+            "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, 1pps+ASCII time signals, or two channels of DCLS time signals.",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "clk_pps",
             "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, or 1 PPS signals.",
             "direction": "s",
             "gender": "f",
-            "name": "clk_pps",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Radio | RF | RP SMB"
         },
         {
+            "name": "clk_pps",
             "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, or RS-232 signals.",
             "direction": "s",
             "gender": "f",
-            "name": "clk_pps",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Radio | RF | RP SMB"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03054226"],
-            "part_no": ["CX61SRU100A7"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03054226"]
         },
-        "dimensions": {
-            "depth": 536,
-            "height": 36,
-            "width": 400
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX61SRU100A7"]
         },
-        "power": {
-            "power": 125.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 536
         },
-        "weight": {
-            "weight": 0.94
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 36
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 400
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 125.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.94
         }
-    }
+    ]
 }

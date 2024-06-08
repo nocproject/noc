@@ -8,24 +8,30 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Extreme | Summit | PSU"
         },
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["10925"],
-            "part_no": ["800282-00-04", "800282-00-06", "800285-00-06", "800462-00-04"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["10925"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["800282-00-04", "800282-00-06", "800285-00-06", "800462-00-04"]
         }
-    }
+    ]
 }
