@@ -9,7 +9,6 @@
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
-    ListField,
     BooleanField,
     IntField,
     EmbeddedDocumentListField,
