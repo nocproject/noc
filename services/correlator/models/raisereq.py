@@ -23,6 +23,7 @@ class RaiseRequest(BaseModel):
     reference: str
     managed_object: str
     alarm_class: str
+    severity: Optional[int] = None
     timestamp: Optional[str] = None
     groups: Optional[List[GroupItem]] = None
     vars: Optional[Dict[str, Any]] = None
