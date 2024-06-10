@@ -39,17 +39,16 @@ class DigestAuthMiddeware(BaseMiddleware):
 
     def get_digest(self, uri, realm):
         """
-
+        Calculate credential Digest
         :param uri:
         :param realm:
-        :param method: GET/POST
         :return:
         """
-        A1 = "%s:%s:%s" % (self.user, realm, self.password)
-        A2 = "%s:%s" % (self.method, uri)
+        A1 = f"{self.user}:{realm}:{self.password}".encode()
+        A2 = f"{self.method}:{uri}".encode()
 
-        HA1 = hashlib.md5(smart_bytes(A1)).hexdigest()
-        HA2 = hashlib.md5(smart_bytes(A2)).hexdigest()
+        HA1 = hashlib.md5(A1).hexdigest()
+        HA2 = hashlib.md5(A2).hexdigest()
 
         return HA1, HA2
 
