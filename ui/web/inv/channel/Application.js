@@ -73,6 +73,7 @@ Ext.define("NOC.inv.channel.Application", {
           name: "name",
           xtype: "textfield",
           fieldLabel: __("Name"),
+          allowBlank: false,
           uiStyle: "medium",
         },
         {
@@ -83,11 +84,11 @@ Ext.define("NOC.inv.channel.Application", {
           allowBlank: true,
         },
         {
-          name: "tech_domainn",
+          name: "tech_domain",
           xtype: "inv.techdomain.LookupField",
           fieldLabel: __("Tech Domain"),
           uiStyle: "medium",
-          allowBlank: true,
+          allowBlank: false,
         },
         {
           name: "description",
@@ -100,6 +101,7 @@ Ext.define("NOC.inv.channel.Application", {
           xtype: "textfield",
           fieldLabel: __("Discriminator"),
           allowBlank: true,
+          uiStyle: "small",
         },
         {
           name: "project",
