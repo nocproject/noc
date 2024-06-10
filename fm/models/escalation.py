@@ -158,7 +158,7 @@ class Escalation(Document):
             "items.0.alarm",
             "escalations.document_id",
             ("end_timestamp", "items.0.alarm", "items.0.status", "is_dirty"),
-            ("end_timestamp", "items.alarm", "escalations.member"),
+            # ("end_timestamp", "items.alarm", "escalations.member"),
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
