@@ -394,12 +394,14 @@ class CorrelatorService(FastAPIService):
             # Refresh last update
             alarm.last_update = timestamp
             alarm.save()
-        if severity and alarm.base_severity != severity.severity:
-            alarm.base_severity = severity
-            severity = alarm.get_effective_severity()
-            if severity != alarm.severity:
-                alarm.last_update = datetime.datetime.now().replace(microsecond=0)
-                alarm.save()
+        if not severity:
+            return
+        e_severity = alarm.get_effective_severity(severity=severity)
+        if e_severity != alarm.severity:
+            alarm.base_severity = severity.severity
+            alarm.severity = e_severity
+            alarm.last_update = datetime.datetime.now().replace(microsecond=0)
+            alarm.save()
 
     async def raise_alarm(
         self,
