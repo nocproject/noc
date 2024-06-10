@@ -1,0 +1,19 @@
+{
+    "name": "noc::severity::MINOR",
+    "$collection": "main.labels",
+    "uuid": "d332496d-1479-4af2-8cf9-36c7b64c4546",
+    "description": "Builtin Labels mark for Alarm Severity",
+    "bg_color1": 15105570,
+    "fg_color1": 16777215,
+    "bg_color2": 16777147,
+    "fg_color2": 12255232,
+    "display_order": 0,
+    "allow_models": ["fm.ActiveAlarm"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

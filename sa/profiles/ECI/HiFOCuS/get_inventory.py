@@ -98,9 +98,9 @@ class Script(BaseScript):
                     "type": "LINECARD",
                     "number": slot,
                     "vendor": "ECI",
-                    "part_no": [x["hw_descr"], x["order_num"]]
-                    if x.get("order_num")
-                    else [x["hw_descr"]],
+                    "part_no": (
+                        [x["hw_descr"], x["order_num"]] if x.get("order_num") else [x["hw_descr"]]
+                    ),
                     "serial": serial,
                     "revision": smart_text(smart_bytes(x["rev"]), errors="ignore"),
                     "description": "",

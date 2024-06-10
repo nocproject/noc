@@ -142,7 +142,7 @@ class Script(GetMetricsScript):
     def get_interface_cbqos_metrics_snmp(self, metrics):
         ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         for ifindex in ifaces:
-            for (index, out_packets, out_octets, discards) in self.snmp.get_tables(
+            for index, out_packets, out_octets, discards in self.snmp.get_tables(
                 [
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedPkts", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedBytes", ifindex],

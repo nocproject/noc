@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Dict
 from http.cookies import SimpleCookie
 
 # Third-party modules
@@ -33,8 +34,8 @@ class HTTP(object):
         self.script = script
         if script:  # For testing purposes
             self.logger = PrefixLoggerAdapter(script.logger, "http")
-        self.headers = {}
-        self.cookies = None
+        self.headers: Dict[str, bytes] = {}
+        self.cookies: Optional[SimpleCookie] = None
         self.session_started = False
         self.request_id = 1
         self.session_id = None
@@ -182,7 +183,7 @@ class HTTP(object):
         if self.session_started:
             self.shutdown_session()
 
-    def _process_cookies(self, headers):
+    def _process_cookies(self, headers: Dict[str, bytes]):
         """
         Process and store cookies from response headers
         :param headers:
@@ -213,7 +214,7 @@ class HTTP(object):
             return None
         return self.cookies.get(name)
 
-    def _get_effective_headers(self, headers):
+    def _get_effective_headers(self, headers: Dict[str, bytes]):
         """
         Append session headers when necessary. Apply effective cookies
         :param headers:
@@ -228,13 +229,12 @@ class HTTP(object):
         elif not headers and self.cookies:
             headers = {}
         if self.cookies:
-            # headers["Cookie"] = self.cookies.output(header="").lstrip()
             headers["Cookie"] = (
                 self.cookies.output(header="", sep=";").lstrip().encode(DEFAULT_ENCODING)
             )
         return headers
 
-    def set_header(self, name, value):
+    def set_header(self, name: str, value: str):
         """
         Set HTTP header to be set with all following requests
         :param name:
@@ -242,7 +242,7 @@ class HTTP(object):
         :return:
         """
         self.logger.debug("Set header: %s = %s", name, value)
-        self.headers[name] = str(value)
+        self.headers[name] = str(value).encode(DEFAULT_ENCODING)
 
     def set_session_id(self, session_id):
         """

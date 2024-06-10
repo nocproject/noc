@@ -656,9 +656,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                                     "name": vrf["instance"],
                                     "rd": vrf.get("rd"),
                                     "rt_export": vrf.get("rt_export", []),
-                                    "type": vrf["type"].upper()
-                                    if vrf["type"] in ["vrf", "vpls", "vll"]
-                                    else vrf["type"],
+                                    "type": (
+                                        vrf["type"].upper()
+                                        if vrf["type"] in ["vrf", "vpls", "vll"]
+                                        else vrf["type"]
+                                    ),
                                 }
                             )
                     except ValueError:

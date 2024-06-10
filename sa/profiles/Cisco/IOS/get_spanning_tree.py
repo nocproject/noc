@@ -122,12 +122,16 @@ class Script(BaseScript):
                 {
                     "id": int(instance_id),
                     "vlans": str(int(instance_id)),
-                    "root_id": match.group("root_id")
-                    if match.group("root_id")
-                    else match.group("bridge_id"),
-                    "root_priority": match.group("root_priority")
-                    if match.group("root_priority")
-                    else match.group("bridge_priority"),
+                    "root_id": (
+                        match.group("root_id")
+                        if match.group("root_id")
+                        else match.group("bridge_id")
+                    ),
+                    "root_priority": (
+                        match.group("root_priority")
+                        if match.group("root_priority")
+                        else match.group("bridge_priority")
+                    ),
                     "bridge_id": match.group("bridge_id"),
                     "bridge_priority": match.group("bridge_priority"),
                 }

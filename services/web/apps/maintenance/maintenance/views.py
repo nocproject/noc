@@ -133,12 +133,12 @@ class MaintenanceApplication(ExtDocApplication):
             "stop": o.stop.strftime("%Y-%m-%d %H:%M:%S") if o.stop else "",
             "start": o.start.strftime("%Y-%m-%d %H:%M:%S") if o.start else "",
             "suppress_alarms": o.suppress_alarms,
-            "escalate_managed_object": o.escalate_managed_object.id
-            if o.escalate_managed_object
-            else None,
-            "escalate_managed_object__label": o.escalate_managed_object.name
-            if o.escalate_managed_object
-            else "",
+            "escalate_managed_object": (
+                o.escalate_managed_object.id if o.escalate_managed_object else None
+            ),
+            "escalate_managed_object__label": (
+                o.escalate_managed_object.name if o.escalate_managed_object else ""
+            ),
             "escalation_policy": o.escalation_policy,
             "escalation_tt": o.escalation_tt if o.escalation_tt else None,
             "is_completed": o.is_completed,

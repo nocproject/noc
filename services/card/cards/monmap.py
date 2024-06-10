@@ -275,7 +275,7 @@ class MonMapCard(BaseCard):
                 if pv and show_in_summary(pv):
                     if isinstance(c, list):
                         badge = []
-                        for (color, count) in c:
+                        for color, count in c:
                             if count is None:
                                 badge += ["<td style='padding-right: 15px;'>&nbsp;</td>"]
                             else:

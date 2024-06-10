@@ -277,7 +277,9 @@ class Script(BaseScript):
                     if c.crossing:
                         for cross in c.crossing.values():
                             if len(cross) < 2:
-                                self.logger.info("Cross len lower than 2: [%s][%s]", len(cross), cross)
+                                self.logger.info(
+                                    "Cross len lower than 2: [%s][%s]", len(cross), cross
+                                )
                                 continue
                             c_in, c_out = cross[:2]
                             card["crossing"] += [

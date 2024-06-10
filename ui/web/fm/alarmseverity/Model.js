@@ -42,6 +42,10 @@ Ext.define("NOC.fm.alarmseverity.Model", {
             type: "string"
         },
         {
+            name: "code",
+            type: "string"
+        },
+        {
             name: "sound",
             type: "string"
         },

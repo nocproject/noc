@@ -1,0 +1,19 @@
+{
+    "name": "noc::severity::MAJOR",
+    "$collection": "main.labels",
+    "uuid": "abfb6edf-b5ac-48b8-9519-ecc1d5538705",
+    "description": "Builtin Labels mark for Alarm Severity",
+    "bg_color1": 15105570,
+    "fg_color1": 2899536,
+    "bg_color2": 16772829,
+    "fg_color2": 12255232,
+    "display_order": 0,
+    "allow_models": ["fm.ActiveAlarm"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": true
+}

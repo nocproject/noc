@@ -80,8 +80,7 @@ class ParamSchema(BaseModel):
                 raise ValueError("Value is not match pattern: %s" % value)
         return value
 
-    def merge(self, schema: "ParamSchema") -> NoReturn:
-        ...
+    def merge(self, schema: "ParamSchema") -> NoReturn: ...
 
     @property
     def json_schema(self):

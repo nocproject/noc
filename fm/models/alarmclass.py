@@ -41,6 +41,7 @@ from .datasource import DataSource
 from .alarmrootcausecondition import AlarmRootCauseCondition
 from .alarmclasscategory import AlarmClassCategory
 from .alarmplugin import AlarmPlugin
+from .alarmseverity import AlarmSeverity
 
 id_lock = Lock()
 handlers_lock = Lock()
@@ -217,6 +218,12 @@ class AlarmClass(Document):
     def get_by_name(cls, name: str) -> Optional["AlarmClass"]:
         return AlarmClass.objects.filter(name=name).first()
 
+    @property
+    def severity(self) -> Optional[AlarmSeverity]:
+        if self.labels and self.labels[0].startswith("noc::severity::"):
+            return AlarmSeverity.get_by_code(self.labels[0][15:].upper())
+        return None
+
     def get_handlers(self) -> List[Callable]:
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
         def _get_handlers(alarm_class: AlarmClass):
@@ -300,7 +307,7 @@ class AlarmClass(Document):
         if self.topology_rca:
             r["topology_rca"] = True
         if self.affected_service:
-            r["affected_service"] = True
+            r["affected_service"] = self.affected_service
         if self.plugins:
             r["plugins"] = [p.json_data for p in self.plugins]
         if self.notification_delay:

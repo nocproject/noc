@@ -71,9 +71,11 @@ class Script(BaseScript):
                             {
                                 "name": ip.group("iface"),
                                 "mtu": match.group("mtu"),
-                                "mac": match.group("mac")
-                                if match.group("mac") != "00:00:00:00:00:00"
-                                else None,
+                                "mac": (
+                                    match.group("mac")
+                                    if match.group("mac") != "00:00:00:00:00:00"
+                                    else None
+                                ),
                                 "admin_status": admin_status,
                                 "oper_status": oper_status,
                                 "enabled_afi": ["BRIDGE", "IPv4"],
@@ -85,9 +87,11 @@ class Script(BaseScript):
                     {
                         "name": match.group("ifname"),
                         "mtu": match.group("mtu"),
-                        "mac": match.group("mac")
-                        if match.group("mac") != "00:00:00:00:00:00"
-                        else None,
+                        "mac": (
+                            match.group("mac")
+                            if match.group("mac") != "00:00:00:00:00:00"
+                            else None
+                        ),
                         "admin_status": admin_status,
                         "oper_status": oper_status,
                         "enabled_afi": ["BRIDGE"],

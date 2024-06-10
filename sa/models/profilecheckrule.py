@@ -130,6 +130,7 @@ class ProfileCheckRule(Document):
                     match=rule.match_method,
                     value=rule.value,
                     profile=rule.profile.name,
+                    preference=rule.preference,
                     name=rule.name,
                 )
             )

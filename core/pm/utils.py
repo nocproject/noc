@@ -216,7 +216,7 @@ def get_dict_interface_metrics(
     Get field_name and name from metric_type for interface.
     :param managed_objects:
     :return:
-    meric_map = {
+    metric_map = {
             "mo_name":{
                 "table_name": "interface",
                 "map": {
@@ -229,18 +229,16 @@ def get_dict_interface_metrics(
         }
     """
     # Avoid circular references
-    meric_map = {}
+    metric_map = {}
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
 
     for mo in managed_objects:
-        meric_map[mo] = {"table_name": "interface", "map": _get_dict_interface_metrics(mo)}
-    return meric_map
+        metric_map[mo] = {"table_name": "interface", "map": _get_dict_interface_metrics(mo)}
+    return metric_map
 
 
-def _get_dict_interface_metrics(
-    managed_object: ["ManagedObject"],
-) -> Dict[str, Union[str, Dict[str, str]]]:
+def _get_dict_interface_metrics(managed_object: "ManagedObject") -> Dict[str, str]:
     """
     :return:
     {
@@ -262,7 +260,8 @@ def _get_dict_interface_metrics(
         metrics_type = set()
         for ip in InterfaceProfile.objects.filter(id__in=i_profile):
             for metric in ip.metrics:
-                metrics_type.add(metric.metric_type)
+                if metric.metric_type.scope.table_name == "interface":
+                    metrics_type.add(metric.metric_type)
         for mt in metrics_type:
             f_n[mt.field_name] = mt.name
     return f_n
@@ -411,9 +410,9 @@ class MetricScopeProxy:
         self.scope: "MetricScope" = scope
         self.queries: Dict[str, QueryField] = {}  # Requested Queries to MetricScope
         self.query_conditions: Set[MetricKey] = set()  # Predefined conditions to query
-        self.query_cache: Dict[
-            QueryField, Dict[MetricKey, List["MetricValue"]]
-        ] = {}  # Cached return values
+        self.query_cache: Dict[QueryField, Dict[MetricKey, List["MetricValue"]]] = (
+            {}
+        )  # Cached return values
 
     def get_metric_key(self, fields: Set[str] = None, **kwargs) -> "MetricKey":
         """

@@ -1,0 +1,19 @@
+{
+    "name": "noc::severity::CRITICAL",
+    "$collection": "main.labels",
+    "uuid": "403b3e65-21c5-46d4-967d-67be5c7ca5aa",
+    "description": "Builtin Labels mark for Alarm Severity",
+    "bg_color1": 15105570,
+    "fg_color1": 16777215,
+    "bg_color2": 16768460,
+    "fg_color2": 12255232,
+    "display_order": 0,
+    "allow_models": ["fm.ActiveAlarm"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": true
+}

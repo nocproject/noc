@@ -272,12 +272,12 @@ class EventApplication(ExtApplication):
             "status": "A",
             "managed_object": managed_object.id if managed_object else o.target.id,
             "managed_object__label": managed_object.name if managed_object else o.target.name,
-            "administrative_domain": managed_object.administrative_domain.id
-            if managed_object
-            else None,
-            "administrative_domain__label": managed_object.administrative_domain.name
-            if managed_object
-            else "",
+            "administrative_domain": (
+                managed_object.administrative_domain.id if managed_object else None
+            ),
+            "administrative_domain__label": (
+                managed_object.administrative_domain.name if managed_object else ""
+            ),
             "event_class": str(event_class.id) if event_class else None,
             "event_class__label": event_class.name if event_class else None,
             "timestamp": self.to_json(o.timestamp),
@@ -424,9 +424,9 @@ class EventApplication(ExtApplication):
             "event_class": str(event_class.id) if event_class else None,
             "event_class__label": event_class.name if event_class else None,
             "timestamp": self.to_json(event.timestamp),
-            "subject": self.render_event_template(event_class.subject_template, ctx)
-            if event_class
-            else "",
+            "subject": (
+                self.render_event_template(event_class.subject_template, ctx) if event_class else ""
+            ),
             "repeats": None,
             "duration": None,
             "alarms": [],

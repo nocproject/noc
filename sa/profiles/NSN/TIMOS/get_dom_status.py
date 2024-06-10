@@ -45,9 +45,9 @@ class Script(BaseScript):
                     "voltage_v": float(voltage_v) / 1000,
                     "current_ma": float(current_ma) / 500,
                     "optical_tx_dbm": float(optical_tx_dbm) / 100.0,
-                    "optical_rx_dbm": float(optical_rx_dbm) / 100.0
-                    if optical_rx_dbm != 2147483647
-                    else 0,
+                    "optical_rx_dbm": (
+                        float(optical_rx_dbm) / 100.0 if optical_rx_dbm != 2147483647 else 0
+                    ),
                 }
             ]
         return r
