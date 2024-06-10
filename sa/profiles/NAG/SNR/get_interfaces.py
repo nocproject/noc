@@ -54,7 +54,7 @@ class Script(BaseScript):
         r"(,\s+address is (?P<mac>\S+))?\s*\n",
         re.MULTILINE,
     )
-    rx_alias = re.compile(r"\s+alias name is (?P<alias>\S+)\s", re.MULTILINE)
+    rx_alias = re.compile(r"\s+alias name is (?P<alias>.+),", re.MULTILINE)
     rx_index = re.compile(r", index is (?P<ifindex>\d+)")
     rx_alias_and_index = re.compile(r" alias name is (?P<alias>.+), index is (?P<ifindex>\d+)")
     rx_mtu = re.compile(r"MTU (?P<mtu>\d+) bytes")
