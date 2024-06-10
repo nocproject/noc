@@ -114,7 +114,7 @@ class CheckTTJob(Job):
                     client="escalator",
                     sample=self.object.telemetry_sample,
                     context=doc.ctx_id,
-                ) as span_ctx,
+                ),
                 self.lock.acquire(doc.get_lock_items()),
                 change_tracker.bulk_changes(),
             ):

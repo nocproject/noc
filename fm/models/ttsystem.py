@@ -10,7 +10,7 @@ import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Union, FrozenSet
+from typing import Optional, Union
 
 # Third-party modules
 from bson import ObjectId
@@ -29,7 +29,7 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 from noc.core.tt.base import BaseTTSystem
-from noc.core.tt.types import TTAction, TTSystemConfig
+from noc.core.tt.types import TTSystemConfig
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
