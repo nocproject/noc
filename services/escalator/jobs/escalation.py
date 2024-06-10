@@ -11,11 +11,10 @@ from typing import Iterable, Dict, Optional, Any, List
 
 # Third-party modules
 from bson import ObjectId
-from pymongo import ReadPreference
 
 # NOC modules
 from noc.services.escalator.jobs.base import SequenceJob
-from noc.core.span import Span, PARENT_SAMPLE
+from noc.core.span import Span
 from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
 from noc.core.tt.types import (

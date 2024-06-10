@@ -129,6 +129,7 @@ class User(NOCModel):
     @cachetools.cachedmethod(operator.attrgetter("_contact_cache"), lock=lambda _: id_lock)
     def get_by_contact(cls, contact) -> Optional["User"]:
         from .usercontact import UserContact
+
         uc = UserContact.objects.filter(params=contact).first()
         if uc:
             return uc.user

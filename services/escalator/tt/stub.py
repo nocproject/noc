@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  Stub TT System
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,11 @@ import logging
 
 # NOC modules
 from noc.core.tt.base import BaseTTSystem
+from noc.core.tt.types import (
+    EscalationContext,
+    DeescalationContext,
+)
+from noc.core.span import Span
 
 
 class StubTTSystem(BaseTTSystem):
@@ -25,20 +30,19 @@ class StubTTSystem(BaseTTSystem):
         super().__init__(name, connection)
         self.logger = logging.getLogger("StubTTSystem.%s" % name)
 
-    def create_tt(
-        self, queue, obj, reason=None, subject=None, body=None, login=None, timestamp=None
-    ):
-        self.logger.info(
-            "create_tt(queue=%s, obj=%s, reason=%s, subject=%s, body=%s, login=%s, timestamp=%s)",
-            queue,
-            obj,
-            reason,
-            subject,
-            body,
-            login,
-            timestamp,
-        )
-        return str(uuid.uuid4())
+    def create(self, ctx: EscalationContext) -> str:
+        with Span(server="telegram", service="sendMessage") as span:
+            self.logger.info(
+                "create_tt(queue=%s, obj=%s, reason=%s, subject=%s, body=%s, login=%s, timestamp=%s)",
+                ctx.queue,
+                ctx.leader,
+                ctx.reason,
+                ctx.subject,
+                ctx.body,
+                ctx.login,
+                ctx.timestamp,
+            )
+            return str(uuid.uuid4())
 
     def add_comment(self, tt_id, subject=None, body=None, login=None, queue=None):
         self.logger.info(
@@ -46,32 +50,15 @@ class StubTTSystem(BaseTTSystem):
         )
         return True
 
-    def create_group_tt(self, tt_id, timestamp=None):
+    def close(self, ctx: DeescalationContext) -> None:
         """
-        Promote tt as the group tt.
-        Called only when promote_group_tt is set
-        :param tt_id: tt_id as returned by create_tt
-        """
-        return tt_id
+        Close TT.
 
-    def add_to_group_tt(self, gtt_id, obj):
-        """
-        Add object to the group tt
-        :param gtt_id: Group tt id, as returned by create_group_tt
-        :param obj: Supported object's identifier
-        """
-        self.logger.info("Object %s appended to group TT %s", obj, gtt_id)
+        Args:
+            ctx: Deescalation context.
 
-    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None, queue=None):
+        Raises:
+            TTError: on deescalation error.
         """
-        Close TT
-        :param tt_id: TT id, as returned by create_tt
-        :param subject: Closing message subject
-        :param body: Closing message body
-        :param reason: Final reason
-        :param login: User login
-        :param queue: ticket queue
-        :returns: Boolean. True, when alarm is closed properly
-        :raises TTError:
-        """
-        self.logger.info("TT %s closed", tt_id)
+        with Span(server="telegram", service="deleteMessage", in_label=ctx.id):
+            self.logger.info("TT %s closed", ctx.tt_id)
