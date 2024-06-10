@@ -120,6 +120,7 @@ class EscalationAction(EmbeddedDocument):
 @on_delete_check(
     check=[
         ("fm.Escalation", "profile"),
+        ("fm.ActiveAlarm", "escalation_profile"),
     ]
 )
 class EscalationProfile(Document):
