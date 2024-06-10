@@ -101,7 +101,7 @@ Ext.define("NOC.inv.channel.Application", {
           xtype: "textfield",
           fieldLabel: __("Discriminator"),
           allowBlank: true,
-          uiStyle: "small",
+          uiStyle: "medium",
         },
         {
           name: "project",
