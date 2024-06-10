@@ -780,7 +780,8 @@ class DiscriminatorParameter(StringParameter):
 
     def clean(self, value):
         try:
-            return discriminator(value)
+            discriminator(value)
+            return value
         except ValueError as e:
             self.raise_error("Bad discriminator: %s" % str(e))
 
