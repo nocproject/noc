@@ -31,7 +31,7 @@ class StubTTSystem(BaseTTSystem):
         self.logger = logging.getLogger("StubTTSystem.%s" % name)
 
     def create(self, ctx: EscalationContext) -> str:
-        with Span(server="telegram", service="sendMessage") as span:
+        with Span(server="telegram", service="sendMessage"):
             self.logger.info(
                 "create_tt(queue=%s, obj=%s, reason=%s, subject=%s, body=%s, login=%s, timestamp=%s)",
                 ctx.queue,

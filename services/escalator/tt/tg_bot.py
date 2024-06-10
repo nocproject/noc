@@ -111,7 +111,7 @@ class TGBotTTSystem(BaseTTSystem):
             self.logger.info("Changed TT: %s", ctx.id)
             action = "editMessageText"
             msg["message_id"] = ctx.id
-        with Span(server="telegram", service="sendMessage") as span:
+        with Span(server="telegram", service="sendMessage"):
             status, _, body = self.http_client.post(
                 f"{self.url}/{action}",
                 orjson.dumps(msg),

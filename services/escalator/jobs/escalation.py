@@ -108,7 +108,7 @@ class EscalationJob(SequenceJob):
                 client="escalator",
                 sample=self.get_span_sample(),
                 context=self.object.ctx_id,
-            ) as span_ctx,
+            ),
             self.lock.acquire(self.object.get_lock_items()),
             change_tracker.bulk_changes(),
         ):
@@ -519,7 +519,7 @@ class EscalationJob(SequenceJob):
             tt_system.register_failure()
             error = f"Temporary error detected while closing tt {tt_id}: {r.error}"
         elif r.status == EscalationStatus.FAIL:
-            metrics[f"escalation_tt_close_fail"] += 1
+            metrics["escalation_tt_close_fail"] += 1
             error = f"Failed to close tt {tt_id}: {ctx.error_text}"
         else:
             error = r.error
@@ -546,10 +546,10 @@ class EscalationJob(SequenceJob):
             metrics["escalation_tt_comment"] += 1
             return r
         if r.status == EscalationStatus.TEMP:
-            metrics[f"escalation_tt_comment_fail"] += 1
+            metrics["escalation_tt_comment_fail"] += 1
             error = f"Failed to add comment to {tt_id}: {r.error}"
         elif r.status == EscalationStatus.FAIL:
-            metrics[f"escalation_tt_comment_fail"] += 1
+            metrics["escalation_tt_comment_fail"] += 1
             error = f"Failed to close tt {tt_id}: {ctx.error_text}"
         else:
             error = r.error
