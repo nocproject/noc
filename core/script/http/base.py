@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Dict
 from http.cookies import SimpleCookie
 
 # Third-party modules
@@ -33,7 +34,7 @@ class HTTP(object):
         self.script = script
         if script:  # For testing purposes
             self.logger = PrefixLoggerAdapter(script.logger, "http")
-        self.headers = {}
+        self.headers: Dict[str, bytes] = {}
         self.cookies = None
         self.session_started = False
         self.request_id = 1
@@ -191,6 +192,8 @@ class HTTP(object):
         cdata = headers.get("Set-Cookie")
         if not cdata:
             return
+        if isinstance(cdata, bytes):
+            cdata = cdata.decode()
         if not self.cookies:
             self.cookies = SimpleCookie()
         # self.cookies.load(cdata)
@@ -240,7 +243,7 @@ class HTTP(object):
         :return:
         """
         self.logger.debug("Set header: %s = %s", name, value)
-        self.headers[name] = str(value)
+        self.headers[name] = str(value).encode(DEFAULT_ENCODING)
 
     def set_session_id(self, session_id):
         """
