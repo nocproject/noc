@@ -73,6 +73,8 @@ class Group(EmbeddedDocument):
 
 
 class Action(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     when = StringField(
         default="raise",
         choices=[
