@@ -46,7 +46,9 @@ rx_module = re.compile(
 rx_channel = re.compile(r"\S+Lane_(\d+)\S+")
 rx_threshold = re.compile(r"(?P<param>\S+)(?P<type>CMax|WMax|WMin|CMin)$")
 rx_num = re.compile(r"\S+(\d+)")
-rx_cross_dst = re.compile(r"(?:ODU\d+)?(?P<port>(?:Ln|Cl|IN)_?\d+)(_(?P<odu>ODU\d+)(?P<odu_idx>_\d+))?")
+rx_cross_dst = re.compile(
+    r"(?:ODU\d+)?(?P<port>(?:Ln|Cl|IN)_?\d+)(_(?P<odu>ODU\d+)(?P<odu_idx>_\d+))?"
+)
 rx_param_match = re.compile(
     r"(?:pt)?(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+|OSC|H\d+|C\d+)?(?P<c_name>\w+\d)*(\w*)"
     r"(?P<code>Set\S+|EnableTx|TxInfo|TxCat|RxCat|RxInfo|Source|Destination)"
@@ -426,8 +428,8 @@ class Component:
                 c.info_params.append(p)
             elif p.is_threshold:
                 c.cfg_thresholds.append(p)
-#            elif p.is_cross:
-#                c.add_cross(p)
+            # elif p.is_cross:
+            #     c.add_cross(p)
             elif p.is_config:
                 c.cfg_params.append(p)
             elif p.is_metric:
@@ -473,4 +475,3 @@ class Profile(BaseProfile):
                 continue
             return int(s["crateId"]), int(s["slotNumber"])
         raise script.NotSupportedError("Unknown Control Unit")
-
