@@ -79,7 +79,7 @@ class TechDomain(Document):
     code = StringField(unique=True)
     description = StringField()
     kind = StringField(choices=[x.value for x in ChannelKind])
-    channel_discrimiator = StringField(required=False)
+    channel_discriminator = StringField(required=False)
     endpoint_discriminator = StringField(required=False)
     max_endpoints = IntField(required=False)
     controller_handler = PlainReferenceField(Handler, required=False)
@@ -140,8 +140,8 @@ class TechDomain(Document):
                 "allow_star": self.allow_star,
             }
         )
-        if self.channel_discrimiator:
-            r["channel_discrimiator"] = self.channel_discrimiator
+        if self.channel_discriminator:
+            r["channel_discriminator"] = self.channel_discriminator
         if self.endpoint_discriminator:
             r["endpoint_discriminator"] = self.endpoint_discriminator
         return r
