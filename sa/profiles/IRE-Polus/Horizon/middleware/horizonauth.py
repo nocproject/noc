@@ -52,4 +52,3 @@ class HorizonAuthMiddeware(BaseMiddleware):
                 body,
             )
             return url, body, headers
-
