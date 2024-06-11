@@ -252,21 +252,16 @@ class Script(BaseScript):
                 for cross in common.crossing.values():
                     if not cross:
                         continue
-                    try:
-                        c_in, c_out = cross[:2]
-                        card["crossing"] += [
-                            {
-                                "input": c_in[0],
-                                "input_discriminator": c_in[1],
-                                "output": c_out[0],
-                                "output_discriminator": c_out[1],
-                                # "gain":
-                            }
-                        ]
-                    except Exception as e:
-                        self.logger.info("Some exception while crossing: [%s]", e)
-                        continue
-
+                    c_in, c_out = cross[:2]
+                    card["crossing"] += [
+                        {
+                            "input": c_in[0],
+                            "input_discriminator": c_in[1],
+                            "output": c_out[0],
+                            "output_discriminator": c_out[1],
+                            # "gain":
+                        }
+                    ]
             r += [card]
             for c_name, c in components.items():
                 fru = self.get_fru(c)
@@ -278,20 +273,16 @@ class Script(BaseScript):
                     card["param_data"] += cfgs
                     if c.crossing:
                         for cross in c.crossing.values():
-                            try:
-                                c_in, c_out = cross[:2]
-                                card["crossing"] += [
-                                    {
-                                        "input": c_in[0],
-                                        "input_discriminator": c_in[1],
-                                        "output": c_out[0],
-                                        "output_discriminator": c_out[1],
-                                        # "gain":
-                                    }
-                                ]
-                            except Exception as e:
-                                self.logger.info("Some exception while crossing: [%s]", e)
-                                continue
+                            c_in, c_out = cross[:2]
+                            card["crossing"] += [
+                                {
+                                    "input": c_in[0],
+                                    "input_discriminator": c_in[1],
+                                    "output": c_out[0],
+                                    "output_discriminator": c_out[1],
+                                    # "gain":
+                                }
+                            ]
                     for cc in c.cfg_params:
                         if not cc.get_param_code():
                             continue

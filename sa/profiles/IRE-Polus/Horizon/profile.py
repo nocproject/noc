@@ -414,6 +414,7 @@ class Component:
     def get_components(cls, params: List[PolusParam]) -> Dict[str, "Component"]:
         r = {}
         ignored_components = set()
+
         for p in params:
             if p.value is None:
                 continue
@@ -425,8 +426,8 @@ class Component:
                 c.info_params.append(p)
             elif p.is_threshold:
                 c.cfg_thresholds.append(p)
-            elif p.is_cross:
-                c.add_cross(p)
+#            elif p.is_cross:
+#                c.add_cross(p)
             elif p.is_config:
                 c.cfg_params.append(p)
             elif p.is_metric:
