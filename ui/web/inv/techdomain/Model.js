@@ -37,12 +37,12 @@ Ext.define("NOC.inv.techdomain.Model", {
       type: "string",
     },
     {
-      name: "channel_discriminator",
-      type: "string",
+      name: "channel_discriminators",
+      type: "auto",
     },
     {
-      name: "endpoint_discriminator",
-      type: "string",
+      name: "endpoint_discriminators",
+      type: "auto",
     },
     {
       name: "max_endpoints",

@@ -11,5 +11,12 @@
     "allow_star": false,
     "allow_up2mp": false,
     "allow_up2p": true,
-    "code": "optical_sm"
+    "code": "optical_sm",
+    "endpoint_discriminators": [
+        {
+            "description": "Wavelength and channel width",
+            "discriminator": "lambda",
+            "is_required": false
+        }
+    ]
 }

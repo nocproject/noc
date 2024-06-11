@@ -11,7 +11,13 @@
     "allow_star": false,
     "allow_up2mp": false,
     "allow_up2p": true,
+    "channel_discriminators": [
+        {
+            "description": "ODU level",
+            "discriminator": "odu",
+            "is_required": true
+        }
+    ],
     "code": "otn_odu",
-    "max_endpoints": 2,
-    "channel_discriminator": "odu"
+    "max_endpoints": 2
 }

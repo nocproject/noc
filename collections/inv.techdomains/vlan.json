@@ -11,6 +11,12 @@
     "allow_star": true,
     "allow_up2mp": false,
     "allow_up2p": false,
-    "code": "vlan",
-    "channel_discriminator": "vlan"
+    "channel_discriminators": [
+        {
+            "description": "vlan number",
+            "discriminator": "vlan",
+            "is_required": true
+        }
+    ],
+    "code": "vlan"
 }

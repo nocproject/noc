@@ -14,13 +14,14 @@ import operator
 # Third-party modules
 from bson import ObjectId
 import cachetools
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     LongField,
     IntField,
     UUIDField,
     BooleanField,
+    EmbeddedDocumentListField,
 )
 
 # NOC modules
@@ -33,6 +34,18 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.channel.types import ChannelKind, ChannelTopology
 
 id_lock = Lock()
+
+
+class DiscriminatorItem(EmbeddedDocument):
+    discriminator = StringField()
+    description = StringField(required=False)
+    is_required = BooleanField()
+
+    def to_json(self) -> str:
+        r = {"discriminator": self.discriminator, "is_required": self.is_required}
+        if self.description:
+            r["description"] = self.description
+        return r
 
 
 @bi_sync
@@ -52,10 +65,8 @@ class TechDomain(Document):
         description: Optional descirption.
         uuid: UUID.
         description: Optional description.
-        channel_discriminator: If set, discriminator must be defined on channel level.
-        endpoint_discriminator: If set, channnels connected to endpoints
-            must use this kind of discriminator.
-        max_endpoints: Limit maximal amount of endpoints, when set.
+        channel_discriminators: Discriminators which can be used on channel level.
+        endpoint_discriminators: Discriminator which can be used on endpoint level.
         allow_parent: Allow parent channels.
         allow_children: Allow nested channels.
         allow_p2p: Allow p2p topology.
@@ -79,8 +90,8 @@ class TechDomain(Document):
     code = StringField(unique=True)
     description = StringField()
     kind = StringField(choices=[x.value for x in ChannelKind])
-    channel_discriminator = StringField(required=False)
-    endpoint_discriminator = StringField(required=False)
+    channel_discriminators = EmbeddedDocumentListField(DiscriminatorItem)
+    endpoint_discriminators = EmbeddedDocumentListField(DiscriminatorItem)
     max_endpoints = IntField(required=False)
     controller_handler = PlainReferenceField(Handler, required=False)
     allow_parent = BooleanField()
@@ -140,10 +151,10 @@ class TechDomain(Document):
                 "allow_star": self.allow_star,
             }
         )
-        if self.channel_discriminator:
-            r["channel_discriminator"] = self.channel_discriminator
-        if self.endpoint_discriminator:
-            r["endpoint_discriminator"] = self.endpoint_discriminator
+        if self.channel_discriminators:
+            r["channel_discriminators"] = [x.to_json() for x in self.channel_discriminators]
+        if self.endpoint_discriminators:
+            r["endpoint_discriminators"] = [x.to_json() for x in self.endpoint_discriminators]
         return r
 
     def to_json(self) -> str:
