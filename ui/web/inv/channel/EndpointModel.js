@@ -29,15 +29,6 @@ Ext.define("NOC.inv.channel.EndpointModel", {
       type: "string",
     },
     {
-      name: "resource__label",
-      type: "string",
-      persist: false,
-    },
-    {
-      name: "discriminator",
-      type: "string",
-    },
-    {
       name: "is_root",
       type: "boolean",
     },
