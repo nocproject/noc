@@ -55,7 +55,7 @@ class ConstraintItem(EmbeddedDocument):
 
 @bi_sync
 @Label.model
-@on_delete_check(check=[("inv.Endpoint", "channel")])
+@on_delete_check(check=[("inv.Channel", "parent"), ("inv.Endpoint", "channel")])
 class Channel(Document):
     """
     Channel.

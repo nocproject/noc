@@ -49,7 +49,7 @@ class DiscriminatorItem(EmbeddedDocument):
 
 
 @bi_sync
-@on_delete_check(check=[("inv.Endpoint", "tech_domain")])
+@on_delete_check(check=[("inv.Channel", "tech_domain")])
 class TechDomain(Document):
     """
     Technological Domain.
