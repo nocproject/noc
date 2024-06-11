@@ -33,17 +33,11 @@ Ext.define("NOC.inv.endpoint.Application", {
           width: 100,
         },
         {
-          text: __("Discriminator"),
-          dataIndex: "discriminator",
-          width: 100,
-        },
-        {
           text: __("Description"),
           dataIndex: "description",
           flex: 1,
         },
       ],
-
       fields: [
         {
           name: "channel",

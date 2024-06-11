@@ -25,16 +25,7 @@ Ext.define("NOC.inv.endpoint.Model", {
       persist: false,
     },
     {
-      name: "resource_domain",
-      type: "string",
-    },
-    {
-      name: "resource__label",
-      type: "string",
-      persist: false,
-    },
-    {
-      name: "discriminator",
+      name: "resource",
       type: "string",
     },
     {
