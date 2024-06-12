@@ -165,22 +165,24 @@ class Site(object):
                 """
                 if s.endswith("[]"):
                     return s[:-2]
-                else:
-                    return s
+                return s
 
-            try:
-                v = view_map[request.method]
-            except KeyError:
+            # Find appropriate view
+            v = view_map.get(request.method)
+            if not v:
                 logger.info("No handler for '%s' method", request.method)
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
-            if not request.user or not v.access.check(app, request.user):
+            # Check access
+            if request.path != "/main/desktop/" and (
+                not request.user or not v.access.check(app, request.user)
+            ):
                 return HttpResponseForbidden()
             to_log_api_call = self.log_api_calls and hasattr(v, "api") and v.api
             app_logger = v.__self__.logger
             try:
                 # Validate requests
                 if getattr(v, "validate", False):
-                    # Additional validation
+                    # Additional validation through view validator
                     errors = None
                     if isinstance(v.validate, DictParameter):
                         # Validate via NOC interfaces

@@ -57,6 +57,8 @@ class DesktopApplication(ExtApplication):
         """
         Get language for request
         """
+        if not request.user:
+            return config.language
         return request.user.preferred_language or config.language
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
