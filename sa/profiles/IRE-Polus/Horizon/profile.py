@@ -387,7 +387,7 @@ class Component:
         return ""
 
     def add_cross(self, p: PolusParam):
-        if not p.value or p.value == "Заблокирован":
+        if not p.value or p.value in ["Заблокирован", "Blocked"]:
             return
         # xc_index, xc_type = p.name.rsplit("_", 1)
         cross = rx_cross_dst.match(p.value).groupdict()
@@ -396,6 +396,8 @@ class Component:
         d_desc = cross.get("desc")
         if not d_port:
             print(f"Unknown port on crossing {p.value}")
+            return
+        if not d_odu:
             return
         if self.crossing is None:
             self.crossing = {}
@@ -414,6 +416,7 @@ class Component:
     def get_components(cls, params: List[PolusParam]) -> Dict[str, "Component"]:
         r = {}
         ignored_components = set()
+
         for p in params:
             if p.value is None:
                 continue
@@ -425,8 +428,8 @@ class Component:
                 c.info_params.append(p)
             elif p.is_threshold:
                 c.cfg_thresholds.append(p)
-            elif p.is_cross:
-                c.add_cross(p)
+            # elif p.is_cross:
+            #     c.add_cross(p)
             elif p.is_config:
                 c.cfg_params.append(p)
             elif p.is_metric:
@@ -468,7 +471,7 @@ class Profile(BaseProfile):
         slots = script.http.get("/api/slots", json=True, cached=True)
         # Getting ControlUnit
         for s in slots["slots"]:
-            if "name" not in s or not s["name"].lower().startswith("cu"):
+            if "name" not in s or not s["name"].lower().startswith("cu") and "my" in s:
                 continue
             return int(s["crateId"]), int(s["slotNumber"])
         raise script.NotSupportedError("Unknown Control Unit")
