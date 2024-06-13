@@ -1,0 +1,30 @@
+{
+    "name": "OTN OTU",
+    "$collection": "inv.techdomains",
+    "uuid": "b4d63619-8465-4568-a8c5-5791e5747746",
+    "description": "OTU level of the Optical Transport Network",
+    "allow_bunch": false,
+    "allow_children": false,
+    "allow_p2mp": false,
+    "allow_p2p": true,
+    "allow_parent": true,
+    "allow_star": false,
+    "allow_up2mp": false,
+    "allow_up2p": true,
+    "channel_discriminators": [
+        {
+            "description": "OTU level",
+            "discriminator": "otu",
+            "is_required": true
+        }
+    ],
+    "code": "otn_otu",
+    "endpoint_discriminators": [
+        {
+            "description": "ODU level",
+            "discriminator": "odu",
+            "is_required": true
+        }
+    ],
+    "max_endpoints": 2
+}

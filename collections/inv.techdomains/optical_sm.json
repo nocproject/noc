@@ -1,0 +1,22 @@
+{
+    "name": "Optical Single-mode",
+    "$collection": "inv.techdomains",
+    "uuid": "1a2c65fb-0c5b-4b28-be3e-8645ef23df92",
+    "description": "Optical single-mode network",
+    "allow_bunch": true,
+    "allow_children": false,
+    "allow_p2mp": true,
+    "allow_p2p": true,
+    "allow_parent": true,
+    "allow_star": false,
+    "allow_up2mp": false,
+    "allow_up2p": true,
+    "code": "optical_sm",
+    "endpoint_discriminators": [
+        {
+            "description": "Wavelength and channel width",
+            "discriminator": "lambda",
+            "is_required": false
+        }
+    ]
+}

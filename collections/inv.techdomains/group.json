@@ -1,0 +1,15 @@
+{
+    "name": "Group",
+    "$collection": "inv.techdomains",
+    "uuid": "8263ab25-d9db-4ae0-9f39-112a0eb5d82a",
+    "description": "Grouping node of channels",
+    "allow_bunch": true,
+    "allow_children": true,
+    "allow_p2mp": true,
+    "allow_p2p": true,
+    "allow_parent": false,
+    "allow_star": true,
+    "allow_up2mp": false,
+    "allow_up2p": true,
+    "code": "group"
+}

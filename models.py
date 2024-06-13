@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NOC models lazy loading and utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -150,6 +150,7 @@ _MODELS = {
     "inv.AllocationGroup": "noc.inv.models.allocationgroup.AllocationGroup",
     "inv.BioSegTrial": "noc.inv.models.biosegtrial.BioSegTrial",
     "inv.Capability": "noc.inv.models.capability.Capability",
+    "inv.Channel": "noc.inv.models.channel.Channel",
     "inv.ConfiguredMap": "noc.inv.models.configuredmap.ConfiguredMap",
     "inv.ConnectionRule": "noc.inv.models.connectionrule.ConnectionRule",
     "inv.ConnectionType": "noc.inv.models.connectiontype.ConnectionType",
@@ -159,6 +160,7 @@ _MODELS = {
     "inv.CPE": "noc.inv.models.cpe.CPE",
     "inv.CPEProfile": "noc.inv.models.cpeprofile.CPEProfile",
     "inv.DiscoveryID": "noc.inv.models.discoveryid.DiscoveryID",
+    "inv.Endpoint": "noc.inv.models.endpoint.Endpoint",
     "inv.ExtNRILink": "noc.inv.models.extnrilink.ExtNRILink",
     "inv.Facade": "noc.inv.models.facade.Facade",
     "inv.Firmware": "noc.inv.models.firmware.Firmware",
@@ -189,6 +191,7 @@ _MODELS = {
     "inv.Sensor": "noc.inv.models.sensor.Sensor",
     "inv.SensorProfile": "noc.inv.models.sensor.SensorProfile",
     "inv.SubInterface": "noc.inv.models.subinterface.SubInterface",
+    "inv.TechDomain": "noc.inv.models.techdomain.TechDomain",
     "inv.Technology": "noc.inv.models.technology.Technology",
     "inv.ResourceGroup": "noc.inv.models.resourcegroup.ResourceGroup",
     "inv.UnknownModel": "noc.inv.models.unknownmodel.UnknownModel",
@@ -383,6 +386,7 @@ COLLECTIONS = [
     "inv.Platform",
     "inv.Firmware",
     "inv.MACBlacklist",
+    "inv.TechDomain",
     "fm.MIBAlias",
     "gis.Layer",
     "fm.OIDAlias",
@@ -461,3 +465,5 @@ LABEL_MODELS = {
     #
     "wf.State": "enable_workflowstate",
 }
+
+RESOURCE_MODELS = {"o": "inv.Object"}
