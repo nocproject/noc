@@ -1927,5 +1927,6 @@
             "interface": "dwdm",
             "value": 196.1
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | OM-96-50-H13-OSC(1511) IP1550"
 }
