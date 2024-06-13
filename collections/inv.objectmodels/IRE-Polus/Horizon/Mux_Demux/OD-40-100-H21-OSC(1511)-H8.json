@@ -863,5 +863,6 @@
             "interface": "dwdm",
             "value": 196.05
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | OD-40-100-C21-OSC(1511) IP1550"
 }

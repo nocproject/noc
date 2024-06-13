@@ -1,0 +1,58 @@
+{
+    "name": "IRE-Polus | Horizon | PEM-H3",
+    "$collection": "inv.objectmodels",
+    "uuid": "4d8a21bb-e559-4016-84f5-16af1acb14b4",
+    "vendor__code": "IRE-POLUS",
+    "description": "K4-H8 and K10-H8 Power Unit (48V DC, 100W) Power Supply",
+    "cr_context": "PEM",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | PEM"
+        },
+        {
+            "name": "-48V",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | M4 Pin"
+        },
+        {
+            "name": "RETURN",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | M4 Pin"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RBS-PEM-H3"]
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.4
+        }
+    ],
+    "front_facade__name": "RBS | iData | PEM 1509-3"
+}
