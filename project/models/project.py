@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Project models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ id_lock = Lock()
         ("crm.Subscriber", "project"),
         ("crm.Supplier", "project"),
         ("dns.DNSZone", "project"),
+        ("inv.Channel", "project"),
         ("inv.Interface", "project"),
         ("inv.SubInterface", "project"),
         ("ip.Address", "project"),

@@ -1,0 +1,16 @@
+{
+    "name": "Internet",
+    "$collection": "inv.techdomains",
+    "uuid": "5123f8e9-ac9b-4484-b3d1-588f3ccb65c5",
+    "description": "Global IP connectivity",
+    "allow_bunch": false,
+    "allow_children": false,
+    "allow_p2mp": false,
+    "allow_p2p": false,
+    "allow_parent": true,
+    "allow_star": false,
+    "allow_up2mp": false,
+    "allow_up2p": false,
+    "code": "internet",
+    "max_endpoints": 1
+}

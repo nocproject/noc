@@ -78,6 +78,7 @@ class EnvItem(EmbeddedDocument):
         ("sa.ManagedObjectProfile", "remote_system"),
         ("sa.AuthProfile", "remote_system"),
         ("sa.ServiceProfile", "remote_system"),
+        ("inv.Channel", "remote_system"),
         ("inv.ResourceGroup", "remote_system"),
         ("sa.Service", "remote_system"),
         ("vc.VLAN", "remote_system"),

@@ -1489,6 +1489,20 @@ class Object(Document):
             if c.input != name and (not remote_name or remote_name == c.output)
         ]
 
+    def as_resource(self, path: Optional[str] = None) -> str:
+        """
+        Convert instance or connection to the resource reference.
+
+        Args:
+            path: Optional connection name
+
+        Returns:
+            Resource reference
+        """
+        if path:
+            return f"o:{self.id}:{path}"
+        return f"o:{self.id}"
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
