@@ -378,11 +378,18 @@ class AlarmApplication(ExtApplication):
                 for ll in o.log
                 if getattr(ll, "source", None)
             ][: config.web.api_alarm_comments_limit],
-            "__tmp_groups": o.groups[0] if o.groups else None,
         }
         if fields:
             d = {k: d[k] for k in fields}
         return d
+
+    def instance_to_dict_list(self, o, fields=None):
+        r = self.instance_to_dict(o, fields)
+        if fields:
+            return r
+        # Will be removed by bulk_field_group_subject
+        r["__tmp_groups"] = o.groups[0] if o.groups else None
+        return r
 
     def get_request_status(self, request) -> str:
         status = "A"
