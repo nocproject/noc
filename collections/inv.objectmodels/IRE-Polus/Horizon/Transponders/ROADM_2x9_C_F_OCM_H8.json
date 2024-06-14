@@ -1,0 +1,204 @@
+{
+    "name": "IRE-Polus | Horizon | Transponders | ROADM-2x9-С-F-OCM-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "230e3071-793d-4556-9e21-489b94812201",
+    "vendor__code": "IRE-POLUS",
+    "description": "ROADM-2x9-С-F-OCM-H8 – перестраиваемый оптический мультиплексор ввода/вывода",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "COM_IN",
+            "description": "Вход со стороны оптоволоконной линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "COM_OUT",
+            "description": "Выход в сторону оптоволоконной линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_IN",
+            "description": "Порт мониторинга оптического сигнала на входе COM IN",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_OUT",
+            "description": "Порт мониторинга оптического сигнала на выходе COM OUT",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN1",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN2",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN3",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN4",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN5",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN6",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN7",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN8",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN9",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT1",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT2",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT3",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT4",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT5",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT6",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT7",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT8",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT9",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 8.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 351
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.5
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RBS-ROADM-2x9-C-F-OCM-H8"]
+        }
+    ]
+}
