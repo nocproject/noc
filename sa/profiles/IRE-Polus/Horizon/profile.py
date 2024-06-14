@@ -50,7 +50,7 @@ rx_cross_dst = re.compile(
     r"(?:ODU\d+)?(?P<port>(?:Ln|Cl|IN)_?\d+)(_(?P<odu>ODU\d+)(?P<odu_idx>_\d+))?"
 )
 rx_param_match = re.compile(
-    r"(?:pt)?(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+|OSC|H\d+|C\d+)?(?P<c_name>\w+\d)*(\w*)"
+    r"(?:pt)?(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+|OSC|H\d+|C\d+|Out\d+|ComOut|Ch\d+)?(?P<c_name>\w+\d)*(\w*)"
     r"(?P<code>Set\S+|EnableTx|TxInfo|TxCat|RxCat|RxInfo|Source|Destination)"
 )
 rx_metric_match = re.compile(
@@ -159,7 +159,8 @@ class PolusParam:
             r.append({"scope": "OpticalPort", "value": f"CLIENT{port[3:]}"})
         elif port and port.lower().startswith("po"):
             r.append({"scope": "EthernetPort", "value": f"Port{port[4:]}"})
-        elif port and (port.lower().startswith("h") or port.lower().startswith("c")):
+        elif port and (port.lower().startswith("h") or port.lower().startswith("c")
+        or port.lower().startswith("out")):
             r.append({"scope": "OpticalPort", "value": port})
         if port and module:
             r.append({"scope": "OTN", "value": module.strip("_")})
