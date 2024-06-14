@@ -159,8 +159,11 @@ class PolusParam:
             r.append({"scope": "OpticalPort", "value": f"CLIENT{port[3:]}"})
         elif port and port.lower().startswith("po"):
             r.append({"scope": "EthernetPort", "value": f"Port{port[4:]}"})
-        elif port and (port.lower().startswith("h") or port.lower().startswith("c")
-        or port.lower().startswith("out")):
+        elif port and (
+            port.lower().startswith("h")
+            or port.lower().startswith("c")
+            or port.lower().startswith("out")
+        ):
             r.append({"scope": "OpticalPort", "value": port})
         if port and module:
             r.append({"scope": "OTN", "value": module.strip("_")})
