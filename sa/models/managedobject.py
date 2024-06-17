@@ -3014,7 +3014,7 @@ class MatchersProxy(object):
         # Build version structure
         version = {}
         if self._object.vendor:
-            version["verndor"] = self._object.vendor.code
+            version["vendor"] = self._object.vendor.code
         if self._object.platform:
             version["platform"] = self._object.platform.name
         if self._object.version:
