@@ -10,6 +10,7 @@ import datetime
 from collections import defaultdict
 
 # Third-party modules
+import orjson
 from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q
 
@@ -260,14 +261,18 @@ class ManagedObjectsExtractor(BaseExtractor):
             str(bi_id): mo_id for mo_id, bi_id in ManagedObject.objects.values_list("id", "bi_id")
         }
         ch = connection()
-        for row in ch.execute(
-            "SELECT managed_object, sum(stp_topology_changes_delta) "
-            "FROM routing WHERE ts > '%s' and ts < '%s' GROUP BY managed_object"
+        res = ch.execute(
+            "SELECT managed_object, sum(stp_topology_changes_delta) as changes "
+            "FROM routing WHERE ts > '%s' and ts < '%s' GROUP BY managed_object FORMAT JSONEachRow"
             % (
                 start.replace(microsecond=0).isoformat(sep=" "),
                 stop.replace(microsecond=0).isoformat(sep=" "),
-            )
-        ):  # delta
-            r[bi_map[row[0]]] = {"n_stp_topo_changes": row[1]}
+            ),
+            return_raw=True,
+        )  # delta
+        for row in res.splitlines():
+            d = orjson.loads(row)
+            r[bi_map[d["managed_object"]]] = {"n_stp_topo_changes": d["changes"]}
+
         del bi_map
         return r
