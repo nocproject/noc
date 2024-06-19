@@ -50,12 +50,13 @@ class Script(BaseScript):
     }
 
     def get_active_pon_ports(self):
+        n = self.profile.get_count_pon_ports(self)  # PON-ports
         pon_ports_active = []
         try:
-            v = self.cli("show interface pon-port 1-16 state", cached=True)
+            v = self.cli(f"show interface pon-port 1-{n} state", cached=True)
             for i in parse_table(v, line_wrapper=None):
                 if i[1] == "OK":
-                    pon_ports_active += [i[0].split()]
+                    pon_ports_active += i[0].split()
         except self.CLISyntaxError:
             raise NotImplementedError
 
@@ -75,7 +76,7 @@ class Script(BaseScript):
                     parts = self.splitter.split(port)
                     if len(parts) > 1:
                         header = parts[1]
-                        cpe_id = header.split("[ONT")[-1].split("]")[0]
+                        cpe_id = header.split("[ONT")[-1].split("]")[0].lstrip()
                         data = parse_kv(self.kv_map, port)
                         if data:
                             r += [
@@ -101,7 +102,7 @@ class Script(BaseScript):
             r += [
                 {
                     "interface": iface,
-                    "id": ont_id,
+                    "id": f"{iface}/{ont_id}",
                     "global_id": self.snmp.get(
                         f"1.3.6.1.4.1.35265.1.209.4.1.1.1.4.1.{iface}.{ont_id}"
                     ),

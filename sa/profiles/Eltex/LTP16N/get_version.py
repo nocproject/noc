@@ -20,9 +20,9 @@ class Script(BaseScript):
     cache = True
 
     rx_platform = re.compile(
-        r"^\s*[Tt][Yy][Pp][Ee]:\s+(?P<platform>\S+)\s*\n"
-        r"^\s*Revision:\s+(?P<hardware>\S+)\s*\n"
-        r"^\s*SN:\s+(?P<serial>\S+)",
+        r"^\s*([Tt][Yy][Pp][Ee]|Device\s+name):\s+(?P<platform>\S+)\s*\n"
+        r"^\s*(Revision|Hardware\s+revision):\s+(?P<hardware>\S+)\s*\n"
+        r"^\s*(SN|Serial\s+number):\s+(?P<serial>\S+)",
         re.MULTILINE,
     )
 

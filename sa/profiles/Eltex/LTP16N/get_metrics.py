@@ -110,7 +110,11 @@ class Script(GetMetricsScript):
         t = self.snmp.get("1.3.6.1.4.1.35265.1.209.1.2.19.0")
         if t:
             self.set_metric(
-                id=("Environment | Temperature", None), value=int(t), multi=True, units="C"
+                id=("Environment | Temperature", None),
+                value=int(t),
+                multi=True,
+                labels=["noc::sensor::Temperature Sensor"],
+                units="C",
             )
 
     @metrics(
@@ -209,7 +213,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=packets_in,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
             self.set_metric(
@@ -217,7 +221,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=packets_out,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
             self.set_metric(
@@ -279,7 +283,7 @@ class Script(GetMetricsScript):
                     labels=ilabels,
                     value=errors_bip,
                     type="counter",
-                    units="pps",
+                    units="pkt",
                     multi=True,
                 )
 
@@ -288,7 +292,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=errors_in,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
             self.set_metric(
@@ -296,7 +300,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=errors_out,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
 
@@ -305,7 +309,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=discards_in,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
             self.set_metric(
@@ -313,7 +317,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=discards_out,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
 
@@ -322,7 +326,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=errors_crc,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
 
@@ -331,7 +335,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=errors_fcs,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
 
@@ -413,7 +417,7 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=broadcast_out,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
             self.set_metric(
@@ -421,21 +425,21 @@ class Script(GetMetricsScript):
                 labels=ilabels,
                 value=broadcast_in,
                 type="counter",
-                units="pps",
+                units="pkt",
                 multi=True,
             )
             self.set_metric(
                 id=("Interface | Multicast | In", ilabels),
                 labels=ilabels,
                 value=multicast_out,
-                units="byte",
+                units="pkt",
                 multi=True,
             )
             self.set_metric(
                 id=("Interface | Multicast | Out", ilabels),
                 labels=ilabels,
                 value=multicast_in,
-                units="byte",
+                units="pkt",
                 multi=True,
             )
 

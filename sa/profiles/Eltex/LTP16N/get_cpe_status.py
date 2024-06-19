@@ -27,3 +27,16 @@ class Script(BaseScript):
                 }
             )
         return r
+
+    def execute_snmp(self, **kwargs):
+        r = []
+        for x in self.scripts.get_cpe():
+            r.append(
+                {
+                    "interface": x["interface"],
+                    "oper_status": x["status"] == "active",
+                    "local_id": x["id"],
+                    "global_id": x["global_id"],
+                }
+            )
+        return r

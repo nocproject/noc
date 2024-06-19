@@ -171,15 +171,15 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "psu2",
-            "description": null,
+            "name": "psu1",
+            "description": "Power slot 1",
             "direction": "i",
             "gender": "f",
             "type__name": "Eltex | MES | PSU"
         },
         {
-            "name": "psu1",
-            "description": null,
+            "name": "psu0",
+            "description": "Power slot 0",
             "direction": "i",
             "gender": "f",
             "type__name": "Eltex | MES | PSU"
