@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
     always_prefer = "S"
 
-    rx_mac = re.compile(r"^\s+MAC:\s+(?P<mac>\S+)\s*\n", re.MULTILINE)
+    rx_mac = re.compile(r"^\s+(MAC|MAC\s+address):\s+(?P<mac>\S+)\s*\n", re.MULTILINE)
 
     def execute_cli(self, **kwargs):
         mac = self.cli("show system environment", cached=True)

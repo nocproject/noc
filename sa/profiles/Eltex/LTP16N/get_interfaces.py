@@ -18,36 +18,30 @@ class Script(BaseScript):
         interfaces = []
         ifname = self.scripts.get_ifindexes()
         ifname = {value: key for key, value in ifname.items()}
-
-        if self.capabilities["SNMP | OID | sysDescr"] == "ELTEX LTP-16N":
-            N = 16
-        else:
-            N = 8
+        n = self.profile.get_count_pon_ports(self)  # PON-ports
 
         # PON-port
         ifstatus = {}
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.35265.1.209.4.3.1.1.3", cached=True):
             sindex = oid[len("1.3.6.1.4.1.35265.1.209.4.3.1.1.3") + 1 :].split(".")[1]
+            v = False
             if v == 4:
                 v = True
-            else:
-                v = False
             ifstatus[str(sindex)] = v
 
         # Front-port
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.35265.1.209.1.6.2.1.2", cached=True):
             sindex = oid[len("1.3.6.1.4.1.35265.1.209.1.6.2.1.2") + 1 :]
-            sindex = int(sindex) + N
+            sindex = int(sindex) + n
+            v = False
             if v == 1:
                 v = True
-            else:
-                v = False
             ifstatus[str(sindex)] = v
 
         ifdescr = {}
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.35265.1.209.1.6.4.1.5", cached=True):
             sindex = oid[len("1.3.6.1.4.1.35265.1.209.1.6.4.1.5") + 1 :]
-            sindex = int(sindex) + N
+            sindex = int(sindex) + n
             ifdescr[str(sindex)] = v
 
         for i in ifname:

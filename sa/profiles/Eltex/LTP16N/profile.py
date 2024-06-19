@@ -52,6 +52,10 @@ class Profile(BaseProfile):
         },
     }
 
+    matchers = {
+        "is_LTP16N": {"platform": {"$regex": r"LTP-16N"}},
+    }
+
     def get_platform(self, s):
         return self.PLATFORMS.get(s)
 
@@ -84,3 +88,6 @@ class Profile(BaseProfile):
             return "10G-front-port %s" % (int(match.group("number")) - 8)
         else:
             return s
+
+    def get_count_pon_ports(self):
+        return 16 if self.is_LTP16N else 8

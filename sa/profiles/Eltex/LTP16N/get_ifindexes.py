@@ -22,5 +22,5 @@ class Script(BaseScript):
             sindex = oid[len("1.3.6.1.2.1.2.2.1.2") + 1 :]
 
             if v.split(" ")[0] == "Front-port" or v.split(" ")[0] == "PON-port":
-                ifname[v] = sindex
+                ifname[v.lower()] = sindex
         return ifname
