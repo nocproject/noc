@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Various checks
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022, The NOC Project
+# Copyright (C) 2007-2024, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,10 @@ def check_close_consequence(alarm_id):
     alarm.log_message("Detached from root for not recovered", to_save=True)
     metrics["detached_root"] += 1
     # Trigger escalations
-    if alarm.managed_object.tt_system.alarm_consequence_policy == "D":
+    if (
+        alarm.managed_object.tt_system
+        and alarm.managed_object.tt_system.alarm_consequence_policy == "D"
+    ):
         return
     # @todo check if root is not escalated
     # Do not remove, if escalation is not performed escalation doc not created
