@@ -32,8 +32,8 @@ def check_close_consequence(alarm_id):
     metrics["detached_root"] += 1
     # Trigger escalations
     if (
-            alarm.managed_object.tt_system
-            and alarm.managed_object.tt_system.alarm_consequence_policy == "D"
+        alarm.managed_object.tt_system
+        and alarm.managed_object.tt_system.alarm_consequence_policy == "D"
     ):
         return
     # @todo check if root is not escalated
