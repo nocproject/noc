@@ -197,7 +197,7 @@ class Script(BaseScript):
             ),
         )
         # /api/devices/params?crateId=1&slotNumber=3
-        adapters = {}
+        adapters = []
         for slot, d in devices.items():
             v = self.http.get(
                 f"/api/devices/params?crateId={d.crate_id}&slotNumber={slot}&fields=name,value,description",
@@ -206,18 +206,22 @@ class Script(BaseScript):
             adapter, num = None, d.slot_name
             if "." in num:
                 adapter, num = num.split(".")
+            elif "-" in num:
+                num, _ = num.split("-")
             elif num.startswith("CU"):
                 num = num[-1]
             if adapter and adapter not in adapters:
                 # H8 -> H4 card adapter
                 r += [
                     {
-                        "type": "LINECARD",
+                        "type": "ADAPTER",
                         "number": adapter,
                         "vendor": "IRE-Polus",
                         "part_no": "HS-H8",
                     }
                 ]
+                adapters.append(adapter)
+
             params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"]]
             self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
             # Getting components
@@ -248,6 +252,8 @@ class Script(BaseScript):
                 "crossing": [],
                 # "param_data": self.get_cfg_param_data(common),
             }
+            if adapter:
+                card["type"] = "LINECARDH4"
             if common.crossing:
                 for cross in common.crossing.values():
                     if not cross:
