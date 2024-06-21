@@ -70,7 +70,7 @@ class NBIAPI(object):
                 response_model=route["response_model"],
                 name=route["name"],
                 description=route["description"],
-                response_model_exclude_none=route.get("response_model_exclude_none"),
+                response_model_exclude_none=route.get("response_model_exclude_none", False),
                 responses={
                     403: {
                         "content": {"text/html": {"example": FORBIDDEN_MESSAGE}},
