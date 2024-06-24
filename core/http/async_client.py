@@ -20,6 +20,7 @@ from noc.core.comp import DEFAULT_ENCODING
 from noc.config import config
 from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
+from .resolver import resolve_async
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ class HttpClient(GufoHttpClient):
             proxy = (proxies or SYSTEM_PROXIES).get("https")
         else:
             proxy = None
-        self.resolver: Optional[Callable] = resolver
+        self.resolver: Optional[Callable] = resolver or resolve_async
         super().__init__(
             max_redirects=max_redirects,
             headers=headers,
