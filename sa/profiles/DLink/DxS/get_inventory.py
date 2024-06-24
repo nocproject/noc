@@ -39,15 +39,15 @@ class Script(BaseScript):
     )
 
     # output sample
-    # 1:9     SFP LC          OEM/               SFP-WDM1.25G-55/   PC99749158/
-    #                         0 :90:65           A0                 120904
-    #         Compatibility: Single Mode (SM),1300Mbd, 1550nm
-    # 1:10    -               OEM/               WDM-1.25G-13-S03/  SK350913190532/
-    #                         0 :90:65           A0                 201312
-    #         Compatibility: Single Mode (SM),1300Mbd, 1310nm
-    # 1:11    SFP LC          OEM/               SFP-BX-D55/        FNS195090989/
-    #                         0 :0 :0            A                  081201
-    #         Compatibility: Single Mode (SM),1300Mbd, 1310nm
+    # | 1:9     SFP LC          OEM/               SFP-WDM1.25G-55/   PC99749158/
+    # |                         0 :90:65           A0                 120904
+    # |         Compatibility: Single Mode (SM),1300Mbd, 1550nm
+    # | 1:10    -               OEM/               WDM-1.25G-13-S03/  SK350913190532/
+    # |                         0 :90:65           A0                 201312
+    # |         Compatibility: Single Mode (SM),1300Mbd, 1310nm
+    # | 1:11    SFP LC          OEM/               SFP-BX-D55/        FNS195090989/
+    # |                         0 :0 :0            A                  081201
+    # |         Compatibility: Single Mode (SM),1300Mbd, 1310nm
     rx_media_type = re.compile(
         r"^\s((?P<unit>\d+):)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
         r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
@@ -58,16 +58,16 @@ class Script(BaseScript):
     )
 
     # DGS-1210 output sample
-    #3  (F)  SFP - SC        OEM                SFP-BIDI-5KM       N5KD9919
-    #                        00:00:00                1.0           130226
-    #                Compatibility:  Single Mode,   1300 Mbd,  1550 nm
-    #
-    #
-    #4  (F)  SFP - LC        OEM                SFP-BX-U31         FNS115992547
-    #                        00:00:00                A             110914
-    #                Compatibility:    ,   1300 Mbd,  1310 nm
-    #
-    #
+    # |3  (F)  SFP - SC        OEM                SFP-BIDI-5KM       N5KD9919
+    # |                        00:00:00                1.0           130226
+    # |                Compatibility:  Single Mode,   1300 Mbd,  1550 nm
+    # |
+    # |
+    # |4  (F)  SFP - LC        OEM                SFP-BX-U31         FNS115992547
+    # |                        00:00:00                A             110914
+    # |                Compatibility:    ,   1300 Mbd,  1310 nm
+    # |
+    # |
     rx_media_type_1210 = re.compile(
         r"^((?P<unit>\d+):)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|SFP - SC|SFP - LC|\-)\s+"
         r"(?P<vendor>.+?)\s+(?P<part_no>.+?)\s+(?P<serial>.+?)\s+\n"
