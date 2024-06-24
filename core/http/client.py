@@ -331,7 +331,7 @@ def fetch_sync(
     body: Optional[bytes] = None,
     connect_timeout=DEFAULT_CONNECT_TIMEOUT,
     request_timeout=DEFAULT_REQUEST_TIMEOUT,
-    resolver=resolve,
+    resolver=resolve_async,
     max_buffer_size=DEFAULT_BUFFER_SIZE,
     follow_redirects=False,
     max_redirects=DEFAULT_MAX_REDIRECTS,
