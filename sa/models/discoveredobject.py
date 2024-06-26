@@ -550,7 +550,7 @@ def sync_object():
     :return:
     """
     for do in DiscoveredObject.objects.filter(is_dirty=True):
-        if do.rule.allow_sync and not do.origin:
+        if do.rule.allow_sync and not do.origin and do.is_approved:
             do.sync()
 
 
