@@ -162,7 +162,7 @@ class MatchItem(EmbeddedDocument):
         if self.match_data and not data:
             return False
         elif self.match_data and data:
-            return all(c.is_match(checks) for c in self.match_checks)
+            return all(d.is_match(data) for d in self.match_data)
         if self.match_checks and not checks:
             return False
         elif self.match_checks and checks:
