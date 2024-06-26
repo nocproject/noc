@@ -378,7 +378,7 @@ def wipe(model_id: str, oid):
     elif not o.state.is_wiping:
         logger.info("[%s] Object state: %s is not enable wiping. End..", o, o.state)
         return
-    logger.info("[%s] Delete...")
+    logger.info("[%s] Delete...", oid)
     try:
         if model_id == "sa.ManagedObject":
             # Custom delete handler
