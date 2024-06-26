@@ -98,6 +98,7 @@ class HttpClient(GufoHttpClient):
             host, port = u.netloc.rsplit(":")
         else:
             host = u.netloc
+            port = DEFAULT_PORTS.get(u.scheme)
         if is_ipv4(host):
             return url
         addr = await self.resolver(host)
@@ -106,8 +107,7 @@ class HttpClient(GufoHttpClient):
         if isinstance(addr, tuple):
             host = "%s:%s" % addr
         else:
-            # Port ?
-            host = addr
+            host = f"{addr}:{port}"
         return u._replace(netloc=host).geturl()
 
     async def request(

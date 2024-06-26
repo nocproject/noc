@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 ERR_TIMEOUT = 599
 ERR_READ_TIMEOUT = 598
+DEFAULT_PORTS = {"http": config.http_client.http_port, "https": config.http_client.https_port}
 
 
 class HttpClient(GufoHttpClient):
@@ -97,6 +98,7 @@ class HttpClient(GufoHttpClient):
             host, port = u.netloc.rsplit(":")
         else:
             host = u.netloc
+            port = DEFAULT_PORTS.get(u.scheme)
         if is_ipv4(host):
             return url
         addr = self.resolver(host)
@@ -105,8 +107,7 @@ class HttpClient(GufoHttpClient):
         if isinstance(addr, tuple):
             host = "%s:%s" % addr
         else:
-            # Port ?
-            host = addr
+            host = f"{addr}:{port}"
         return u._replace(netloc=host).geturl()
 
     def request(
