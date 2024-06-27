@@ -59,12 +59,12 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
                         select: "setFilter"
                     },
                     query: {
-                        "allowed_models": "sa.ManagedObject"
+                        "allowed_models": "sa.DiscoveredObject"
                     },
                 },
                 {
                     xtype: "labelfield",
-                    name: "labels",
+                    name: "effective_labels",
                     fieldLabel: __("By Labels:"),
                     toBufferTrigger: false,
                     filterProtected: false,

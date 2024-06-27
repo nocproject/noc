@@ -46,11 +46,6 @@ Ext.define("NOC.sa.objectdiscoveryrule.Model", {
             type: "auto"
         },
         {
-            name: "condition_type",
-            type: "string",
-            defaultValue: "AND"
-        },
-        {
             name: "checks",
             type: "auto"
         },
@@ -60,6 +55,10 @@ Ext.define("NOC.sa.objectdiscoveryrule.Model", {
         },
         {
             name: "network_ranges",
+            type: "auto"
+        },
+        {
+            name: "conditions",
             type: "auto"
         },
         {
@@ -78,7 +77,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Model", {
             defaultValue: 0
         },
         {
-            name: "action",
+            name: "default_action",
             type: "string"
         },
         {
@@ -90,6 +89,16 @@ Ext.define("NOC.sa.objectdiscoveryrule.Model", {
             name: "allow_sync",
             type: "boolean",
             defaultValue: false
+        },
+        {
+            name: "enable_ip_scan_discovery",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "ip_scan_discovery_interval",
+            type: "int",
+            defaultValue: 0
         }
     ]
 });

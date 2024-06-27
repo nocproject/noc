@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
+from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule, CheckItem
 from noc.core.translation import ugettext as _
 
 
@@ -21,3 +21,9 @@ class ObjectDiscoveryRuleApplication(ExtDocApplication):
     model = ObjectDiscoveryRule
     query_fields = ["name__icontains", "description__icontains"]
     default_ordering = ["name"]
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
+        if isinstance(o, CheckItem):
+            r["check__label"] = r["check"]
+        return r
