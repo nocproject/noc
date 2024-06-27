@@ -38,10 +38,10 @@ class ManagedObjectLoader(BaseLoader):
         self.clean_map["fm_pool"] = lambda x: Pool.get_by_name(x) if x else None
         self.clean_map["profile"] = Profile.get_by_name
         self.clean_map["static_service_groups"] = lambda x: [
-            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x)
+            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x or [])
         ]
         self.clean_map["static_client_groups"] = lambda x: [
-            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x)
+            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x or [])
         ]
         self.available_caps = {x.name for x in Capability.objects.filter()}
 

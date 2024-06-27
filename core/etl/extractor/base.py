@@ -418,5 +418,6 @@ class BaseExtractor(object):
                     remote_system=self.system.remote_system.bi_id,
                     remote_id=item.id,
                     checks=item.checks,
+                    labels=item.labels or [],
                     **(item.data or {}),
                 )
