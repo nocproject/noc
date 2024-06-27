@@ -91,15 +91,15 @@ Ext.define("NOC.sa.discoveredobject.Model", {
             type: "string",
             persist: false
         },
-        // {
-        //     name: "rule",
-        //     type: "string"
-        // },
-        // {
-        //     name: "rule__label",
-        //     type: "string",
-        //     persist: false
-        // },
+        {
+            name: "rule",
+            type: "string"
+        },
+        {
+            name: "rule__label",
+            type: "string",
+            persist: false
+        },
         {
             name: "checks",
             type: "auto",

@@ -14,6 +14,7 @@ from typing import Dict, Optional, List, Any, Union
 
 # Third-party modules
 import orjson
+from django.db.models.query_utils import Q as d_Q
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -165,6 +166,7 @@ class DiscoveredObject(Document):
             "state",
             "effective_labels",
             "hostname",
+            "origin",
         ],
     }
 
@@ -241,7 +243,7 @@ class DiscoveredObject(Document):
         # Update Extra Labels
         if self.extra_labels:
             labels += [ll for ll in Label.merge_labels(self.extra_labels.values())]
-        if not changed or set(self.effective_labels) != set(labels):
+        if not changed and set(self.effective_labels) == set(labels):
             return
         self.address_bin = IP.prefix(self.address).d
         self.is_dirty = True  # if data changed
@@ -310,12 +312,24 @@ class DiscoveredObject(Document):
                 labels=labels or [],
                 rule=rule,
             )
-        rule = rule or ObjectDiscoveryRule.get_rule(address, pool, checks)
+        is_dirty = False
+        if not update_ts or update_ts != o.last_seen:
+            o.update_data(data, checks)
+        rule = rule or ObjectDiscoveryRule.get_rule(
+            address,
+            pool,
+            o.checks,
+            o.effective_labels,
+            o.get_effective_data(),
+            sources,
+        )
         if not rule:
+            if o.rule and o.state:
+                o.fire_event("expired")  # Remove
             logger.debug("[%s|%s] Not find rule for address. Skipping", pool.name, address)
             return
-        if update_ts and update_ts == o.last_seen and rule == o.rule:
-            logger.info("[%s|%s] Nothing updating data. Skipping", pool.name, address)
+        if not o.is_dirty and o.is_dirty == is_dirty and rule == o.rule:
+            logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
             return
         if o.rule != rule:
             o.rule = rule
@@ -324,16 +338,15 @@ class DiscoveredObject(Document):
             o.sources = sources
             o.is_dirty = True
         # Set Status, is_dirty
-        o.update_data(data, checks)
         o.save()
-        o.fire_event(rule.action)
+        if rule.default_action == "approve":
+            o.fire_event("approve")
         o.touch(ts=update_ts)
         return o
 
-    def sync(self):
+    def get_ctx(self) -> Dict[str, Any]:
         """
-        Sync with ManagedObject or Agent
-        :return:
+        Getting Context for Synchronise object template
         """
         ctx = {
             "hostname": self.hostname,
@@ -342,19 +355,101 @@ class DiscoveredObject(Document):
             "effective_labels": self.effective_labels,
         }
         ctx |= self.effective_data
+        for d in self.data:
+            if d.remote_system and d.remote_id:
+                ctx["remote_system"] = d.remote_system
+                ctx["remote_id"] = d.remote_id
+        # Iter Origin
+        for o in DiscoveredObject.objects.filter(origin=self.id):
+            if o.effective_labels:
+                ctx["effective_labels"] += o.effective_labels
+        return ctx
+
+    def get_managed_object_query(self, pool: Optional[Pool] = None):
+        """Query for request Managed Object"""
+        q = d_Q(name=self.hostname)
+        if pool:
+            q |= d_Q(address=self.address, pool=pool)
+        for d in self.data:
+            if d.remote_system:
+                q |= d_Q(remote_system=d.remote_system, remote_id=d.remote_id)
+        return q
+
+    def get_pool(self) -> Pool:
+        """Return Address Pool"""
+        pool = self.rule.get_pool(self.address)
+        if not pool:
+            pool = Pool.get_by_name("default")
+        return pool
+
+    def check_duplicate(
+        self,
+        hostname: Optional[str] = None,
+        address: Optional[str] = None,
+        managed_object: Optional[ManagedObject] = None,
+    ) -> Optional[List["DiscoveredObject"]]:
+        """Check duplicate"""
+        from noc.inv.models.subinterface import SubInterface
+        from mongoengine.queryset.visitor import Q
+
+        addresses = {address or self.address}
+        hostname = hostname or self.hostname
+        pool = self.pool
+        if managed_object:
+            pool = managed_object.pool
+            addresses.add(managed_object.address)
+            for d in SubInterface._get_collection().find(
+                {"managed_object": managed_object.id, "ipv4_addresses": {"$exists": True}},
+                {"ipv4_addresses": 1},
+            ):
+                for a in d.get("ipv4_addresses", []):
+                    ip = IP.prefix(a)
+                    if ip.is_internal:
+                        continue
+                    addresses.add(ip.address)
+        return DiscoveredObject.objects.filter(
+            Q(origin=None, id__ne=self.id)
+            & (Q(address__in=addresses, pool=pool) | Q(hostname=hostname)),
+        )
+
+    def sync(self, dry_run=False):
+        """
+        Sync with ManagedObject
+
+        Args:
+            dry_run: Run with test
+        """
+        from noc.inv.models.discoveryid import DiscoveryID
+
+        if self.origin:
+            logger.info("Duplicate Record. Skipping")
+            return
+        pool = self.get_pool()
         if self.managed_object:
             # Sync data
             mo = ManagedObject.objects.filter(id=self.managed_object).first()
         else:
             # Check Removed Managed Object ?
-            pool = self.rule.get_pool(self.address)
-            # Check duplicate
-            mo = ManagedObject.objects.filter(address=self.address, pool=pool).first()
+            mo = ManagedObject.objects.filter(self.get_managed_object_query(pool))
             if not mo:
-                mo = ManagedObject.get_object_by_template(
-                    address=self.address, pool=pool, name=self.hostname
+                mo = DiscoveryID.find_object(ipv4_address=self.address)
+        if dry_run:
+            return mo
+        if not mo:
+            mo = ManagedObject.get_object_by_template(
+                address=self.address,
+                pool=pool,
+                name=self.hostname,
+            )
+        elif mo and not self.managed_object:
+            # Duplicate
+            duplicates = self.check_duplicate(managed_object=mo)
+            if duplicates:
+                DiscoveredObject.objects.filter(id__in=[d.id for d in duplicates]).update(
+                    is_dirty=True,
+                    origin=self.id,
                 )
-        mo.update_template_data(ctx)
+        mo.update_template_data(self.get_ctx())
         mo.save()
         self.managed_object = mo.id
         self.is_dirty = False
@@ -455,7 +550,7 @@ def sync_object():
     :return:
     """
     for do in DiscoveredObject.objects.filter(is_dirty=True):
-        if do.rule.allow_sync and not do.origin:
+        if do.rule.allow_sync and not do.origin and do.is_approved:
             do.sync()
 
 
@@ -484,10 +579,12 @@ def sync_purgatorium():
             ranges[p].append(r)
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True)
+    processed, updated = 0, 0
     for row in r.splitlines():
         row = orjson.loads(row)
         pool = Pool.get_by_bi_id(row["pool"])
         data = defaultdict(dict)
+        d_labels = defaultdict(list)
         # hostnames, descriptions, uptimes, all_data,
         for source, rs, d1, d2, labels in row["all_data"]:
             if not int(d1["uptime"]):
@@ -502,8 +599,10 @@ def sync_purgatorium():
                 rs = rs.name
             # Check timestamp
             data[(source, rs)].update(d1 | d2)
+            #
+            d_labels[(source, rs)] = labels
         last_ts = datetime.datetime.fromisoformat(row["last_ts"])
-        DiscoveredObject.register(
+        r = DiscoveredObject.register(
             pool,
             row["address"],
             list(set(row["sources"])),
@@ -513,6 +612,7 @@ def sync_purgatorium():
                     ts=datetime.datetime.fromisoformat(d.pop("ts")),
                     remote_system=rs,
                     data=d,
+                    labels=d_labels.get((source, rs)) or [],
                 )
                 for (source, rs), d in data.items()
             ],
@@ -521,6 +621,10 @@ def sync_purgatorium():
             # data, check, labels
             # TS (timestamp)
         )
+        processed += 1
+        if r:
+            updated += 1
+    logger.info("End Purgatorium Sync: %s. Processed: %s/Updated: %s", ls, processed, updated)
     now = datetime.datetime.now()
     for o in DiscoveredObject.objects.filter(expired__gt=now):
         o.fire_event("expired")
