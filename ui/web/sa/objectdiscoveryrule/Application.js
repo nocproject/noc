@@ -17,6 +17,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
         "NOC.main.handler.LookupField",
         "NOC.main.ref.check.LookupField",
         "Ext.ux.form.GridField",
+        "NOC.core.ListFormField",
         "NOC.core.JSONPreview"
     ],
     model: "NOC.sa.objectdiscoveryrule.Model",
@@ -49,8 +50,15 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     text: __("Pref."),
                     // tooltip: "Preference", - broken in ExtJS 5.1
                     dataIndex: "preference",
-                    width: 40,
+                    width: 150,
                     align: "right"
+                },
+                {
+                    text: __("IP Scan Discovery"),
+                    dataIndex: "enable_ip_scan_discovery",
+                    renderer: NOC.render.Bool,
+                    width: 100,
+                    align: "left"
                 }
             ],
 
@@ -81,16 +89,17 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                 {
                   name: "workflow",
                   xtype: "wf.workflow.LookupField",
+                  uiStyle: 'large',
                   fieldLabel: __("WorkFlow"),
                   allowBlank: true
                 },
                 {
-                    name: "preference",
-                    xtype: "numberfield",
-                    fieldLabel: __("Preference"),
-                    allowBlank: true,
-                    uiStyle: "small",
-                    defaultValue: 100,
+                  name: "preference",
+                  xtype: "numberfield",
+                  fieldLabel: __("Preference"),
+                  allowBlank: true,
+                  uiStyle: "small",
+                  defaultValue: 70,
                 },
                 {
                     name: "network_ranges",
@@ -122,42 +131,6 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     ]
                 },
                 {
-                  name: "update_interval",
-                  xtype: "numberfield",
-                  fieldLabel: __("Check update interval (sec)"),
-                  allowBlank: true,
-                  uiStyle: "medium",
-                  defaultValue: 0,
-                  minValue: 0
-                },
-                {
-                  name: "expired_ttl",
-                  xtype: "numberfield",
-                  fieldLabel: __("Expired TTL (sec)"),
-                  allowBlank: true,
-                  uiStyle: "medium",
-                  defaultValue: 0,
-                  minValue: 0
-                },
-                {
-                    name: "stop_processed",
-                    xtype: "checkbox",
-                    boxLabel: __("Stop Processing")
-                },
-                {
-                    name: "action",
-                    xtype: "combobox",
-                    fieldLabel: __("Action"),
-                    store: [
-                        ["new", __("As New")],
-                        ["ignore", __("Send Ignore")],
-                        ["skip", __("Skip Rule")],
-                        ["approve", __("Send Approve")]
-                    ],
-                    value: "new",
-                    uiStyle: "medium"
-                },
-                {
                     name: "sources",
                     xtype: "gridfield",
                     fieldLabel: __("Sources"),
@@ -176,6 +149,13 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                             }
                         },
                         {
+                            text: __("Update Last Seen"),
+                            dataIndex: "update_last_seen",
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool,
+                            width: 50
+                        },
+                        {
                             text: __("Required"),
                             dataIndex: "is_required",
                             editor: "checkbox",
@@ -185,88 +165,212 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     ]
                 },
                 {
-                    name: "check_policy",
+                  name: "update_interval",
+                  xtype: "numberfield",
+                  fieldLabel: __("Check update interval (sec)"),
+                  allowBlank: true,
+                  uiStyle: "medium",
+                  defaultValue: 0,
+                  minValue: 0
+                },
+                {
+                  name: "expired_ttl",
+                  xtype: "numberfield",
+                  fieldLabel: __("Expired TTL (sec)"),
+                  allowBlank: true,
+                  uiStyle: "medium",
+                  defaultValue: 0,
+                  minValue: 0
+                },
+                {
+                    name: "default_action",
                     xtype: "combobox",
-                    fieldLabel: __("Check Policy"),
+                    fieldLabel: __("Default Action"),
                     store: [
-                        ["ALL", __("All success")],
-                        ["ANY", __("Any success")],
+                        ["new", __("As New")],
+                        ["ignore", __("Send Ignore")],
+                        ["skip", __("Skip Rule")],
+                        ["approve", __("Send Approve")]
                     ],
-                    allowBlank: true,
-                    value: "ALL",
+                    value: "new",
                     uiStyle: "medium"
                 },
                 {
-                    name: "checks",
-                    fieldLabel: __("Checks"),
-                    xtype: "gridfield",
-                    allowBlank: true,
-                    width: 350,
-                    columns: [
+                    name: "stop_processed",
+                    xtype: "checkbox",
+                    boxLabel: __("Stop Processing")
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("IP Scan Discovery"),
+                    items: [
                         {
-                            text: __("Check"),
-                            dataIndex: "check",
-                            width: 200,
-                            editor: "main.ref.check.LookupField",
-                            allowBlank: false,
-                            renderer: NOC.render.Lookup("check")
+                          name: "enable_ip_scan_discovery",
+                          xtype: "checkbox",
+                          boxLabel: __("Enable IP Scan Discovery")
                         },
                         {
-                            text: __("Argument"),
-                            dataIndex: "arg0",
-                            editor: "textfield",
-                            width: 150
+                            xtype: "container",
+                            layout: "hbox",
+                            defaults: {
+                                padding: "0 8 0 0"
+                            },
+                            items: [
+                                {
+                                    name: "ip_scan_discovery_interval",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Interval, sec"),
+                                    allowBlank: true,
+                                    uiStyle: "small",
+                                    minValue: 0,
+                                    listeners: {
+                                        scope: me,
+                                        change: function(_item, newValue, oldValue, eOpts) {
+                                            me.form.findField("ip_scan_discovery_interval_calculated").setValue(newValue);
+                                        }
+                                    }
+                                },
+                                {
+                                    name: 'ip_scan_discovery_interval_calculated',
+                                    xtype: 'displayfield',
+                                    renderer: NOC.render.Duration
+                                }
+                            ]
                         },
                         {
-                            text: __("Port"),
-                            dataIndex: "port",
-                            editor: {
-                                xtype: "numberfield",
-                                defaultValue: 0
+                            name: "checks",
+                            fieldLabel: __("Checks"),
+                            xtype: "gridfield",
+                            allowBlank: true,
+                            width: 550,
+                            columns: [
+                                {
+                                    text: __("Check"),
+                                    dataIndex: "check",
+                                    width: 100,
+                                    editor: "main.ref.check.LookupField",
+                                    allowBlank: false,
+                                    renderer: NOC.render.Lookup("check")
+                                },
+                                {
+                                    text: __("Argument"),
+                                    dataIndex: "arg0",
+                                    editor: "textfield",
+                                    width: 150
+                                },
+                                {
+                                    text: __("Port"),
+                                    dataIndex: "port",
+                                    width: 50,
+                                    editor: {
+                                        xtype: "numberfield",
+                                        defaultValue: 0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "conditions",
+                    xtype: "listform",
+                    rows: 6,
+                    labelAlign: "top",
+                    uiStyle: "large",
+                    fieldLabel: __("Match Conditions"),
+                    items: [
+                        {
+                            name: "match_labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Match Labels"),
+                            allowBlank: true,
+                            isTree: true,
+                            filterProtected: false,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
                             }
                         },
                         {
-                            text: __("Match State"),
-                            dataIndex: "match_state",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["ok", __("OK")],
-                                    ["fail", __("Fail")],
-                                    ["any", __("Any")]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                "ok": __("OK"),
-                                "fail": __("Fail"),
-                                "any": __("Any")
-                            })
+                            name: "match_checks",
+                            xtype: "gridfield",
+                            fieldLabel: __("Check Match"),
+                            columns: [
+                                                            {
+                                    text: __("Check"),
+                                    dataIndex: "check",
+                                    width: 200,
+                                    editor: "main.ref.check.LookupField",
+                                    allowBlank: false,
+                                    renderer: NOC.render.Lookup("check")
+                                },
+                                {
+                                    text: __("Port"),
+                                    dataIndex: "port",
+                                    editor: {
+                                        xtype: "numberfield",
+                                        defaultValue: 0
+                                    }
+                                },
+                                {
+                                    text: __("Match State"),
+                                    dataIndex: "match_state",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["ok", __("OK")],
+                                            ["fail", __("Fail")],
+                                            ["any", __("Any")]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "ok": __("OK"),
+                                        "fail": __("Fail"),
+                                        "any": __("Any")
+                                    })
+                                },
+                            ]
                         },
                         {
-                            text: __("Match"),
-                            dataIndex: "match",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["regex", __("Regex")],
-                                    ["contains", __("Contains")],
-                                    ["eq", __("Equal")],
-                                    ["gte", __("Greater Equal")]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                "regex": __("Regex"),
-                                "contains": __("Contains"),
-                                "eq": __("Equal"),
-                                "gte": __("Greater Equal")
-                            })
-                        },
-                        {
-                            text: __("Value"),
-                            dataIndex: "value",
-                            editor: "textfield"
+                            name: "match_data",
+                            xtype: "gridfield",
+                            fieldLabel: __("Data Match"),
+                            columns: [
+                                {
+                                    text: __("Field"),
+                                    dataIndex: "field",
+                                    editor: "textfield",
+                                    width: 250
+                                },
+                                {
+                                    text: __("Op"),
+                                    dataIndex: "op",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["regex", __("Regex")],
+                                            ["contains", __("Contains")],
+                                            ["eq", __("Equal")],
+                                            ["gte", __("Greater Equal")]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "regex": __("Regex"),
+                                        "contains": __("Contains"),
+                                        "eq": __("Equal"),
+                                        "gte": __("Greater Equal")
+                                    })
+                                },
+                                {
+                                    text: __("Value"),
+                                    dataIndex: "value",
+                                    editor: "textfield",
+                                    flex: 1
+                                }
+                            ]
                         }
                     ]
                 }

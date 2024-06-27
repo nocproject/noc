@@ -54,6 +54,12 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
             renderer: NOC.render.Lookup("state"),
         },
         {
+            text: __("Rule"),
+            dataIndex: "rule",
+            width: 100,
+            renderer: NOC.render.Lookup("rule"),
+        },
+        {
             text: __("Checks"),
             dataIndex: "checks",
             width: 250,
@@ -61,7 +67,7 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
         },
         {
             text: __("Labels"),
-            dataIndex: "labels",
+            dataIndex: "effective_labels",
             editor: "labelfield",
             width: 200,
             renderer: NOC.render.LabelField,
