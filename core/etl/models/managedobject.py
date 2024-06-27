@@ -58,7 +58,7 @@ class ManagedObject(BaseModel):
     segment: Reference["NetworkSegment"]
     profile: Optional[str] = None
     object_profile: Reference["ManagedObjectProfile"]
-    static_client_groups: List[Reference["ResourceGroup"]]
+    static_client_groups: Optional[List[Reference["ResourceGroup"]]] = None
     static_service_groups: List[Reference["ResourceGroup"]]
     scheme: str
     address: str
