@@ -6,8 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
-import threading
 import ssl
 import logging
 import zlib
@@ -16,10 +14,8 @@ import struct
 import codecs
 from urllib.parse import urlparse
 import asyncio
-import random
 
 # Third-party modules
-import cachetools
 import orjson
 from typing import Optional, List, Tuple, Any, Dict
 
@@ -27,6 +23,7 @@ from typing import Optional, List, Tuple, Any, Dict
 from noc.core.perf import metrics
 from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
+from .resolver import resolve_async
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
 from noc.core.ioloop.util import run_sync
@@ -48,37 +45,8 @@ DEFAULT_PORTS = {"http": config.http_client.http_port, "https": config.http_clie
 # Methods require Content-Length header
 REQUIRE_LENGTH_METHODS = {"POST", "PUT"}
 
-ns_lock = threading.Lock()
-ns_cache = cachetools.TTLCache(
-    config.http_client.ns_cache_size, ttl=config.http_client.resolver_ttl
-)
-
 CE_DEFLATE = "deflate"
 CE_GZIP = "gzip"
-
-
-async def resolve(host):
-    """
-    Resolve host and return address
-    :param host:
-    :return:
-    """
-    with ns_lock:
-        addrs = ns_cache.get(host)
-    if addrs:
-        return random.choice(addrs)
-    try:
-        addr_info = await asyncio.get_running_loop().getaddrinfo(
-            host, None, proto=socket.IPPROTO_TCP
-        )
-        addrs = [x[4][0] for x in addr_info if x[0] == socket.AF_INET]
-        if not addrs:
-            return None
-        with ns_lock:
-            ns_cache[host] = addrs
-        return random.choice(addrs)
-    except socket.gaierror:
-        return None
 
 
 async def fetch(
@@ -88,7 +56,7 @@ async def fetch(
     body: Optional[bytes] = None,
     connect_timeout=DEFAULT_CONNECT_TIMEOUT,
     request_timeout=DEFAULT_REQUEST_TIMEOUT,
-    resolver=resolve,
+    resolver=resolve_async,
     max_buffer_size=DEFAULT_BUFFER_SIZE,
     follow_redirects: bool = False,
     max_redirects=DEFAULT_MAX_REDIRECTS,
@@ -363,7 +331,7 @@ def fetch_sync(
     body: Optional[bytes] = None,
     connect_timeout=DEFAULT_CONNECT_TIMEOUT,
     request_timeout=DEFAULT_REQUEST_TIMEOUT,
-    resolver=resolve,
+    resolver=resolve_async,
     max_buffer_size=DEFAULT_BUFFER_SIZE,
     follow_redirects=False,
     max_redirects=DEFAULT_MAX_REDIRECTS,
