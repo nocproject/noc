@@ -24,6 +24,7 @@ from kafka.errors import (
     UnknownTopicOrPartitionError,
     NodeNotReadyError,
     KafkaConnectionError,
+    MessageSizeTooLargeError,
 )
 
 # NOC Modules
@@ -442,6 +443,9 @@ class RedPandaClient(object):
         except KafkaTimeoutError as e:
             logger.error("Timeout when sending to topic: %s", stream)
             raise MsgStreamError(str(e))
+        except MessageSizeTooLargeError as e:
+            metrics["messages_sent_error", ("topic", stream)] += 1
+            logger.error("Failed to send to topic %s: %s", stream, str(e))
         except KafkaError as e:
             metrics["messages_sent_error", ("topic", stream)] += 1
             logger.error("Failed to send to topic %s: %s", stream, e)
