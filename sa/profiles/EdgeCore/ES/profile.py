@@ -2,7 +2,7 @@
 # Vendor: EdgeCore
 # OS:     ES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -54,6 +54,7 @@ class Profile(BaseProfile):
         "is_platform_46": {"platform": {"$regex": r"46"}},
         "is_platform_4612": {"platform": {"$regex": r"4612"}},
         "is_platform_4626": {"platform": {"$regex": r"4626"}},
+        "is_platform_ecs3510": {"platform": {"$regex": r"ECS3510"}},
         "is_platform_3510": {"platform": {"$regex": r"3510|3526|3528|3552|2228N|ECS4210|ECS4510"}},
         "is_platform_3510ma": {"platform": {"$regex": r"3510MA|ECS4210|ECS4510"}},
         "is_platform_3526s": {"platform": {"$regex": r"3526S"}},
