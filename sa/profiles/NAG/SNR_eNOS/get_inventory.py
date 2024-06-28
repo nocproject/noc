@@ -215,6 +215,7 @@ class Script(BaseScript):
                     "part_no": part_no,
                     "serial": match.group("serial"),
                     "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
+                    "data": data,
                 }
             else:
                 mf_mon = self.month.get(mf_m)
@@ -228,6 +229,7 @@ class Script(BaseScript):
                     "mfg_date": mf_date,
                     "serial": match.group("serial"),
                     "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
+                    "data": data,
                 }
             out += [i]
 
