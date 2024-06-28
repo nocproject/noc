@@ -15,5 +15,4 @@ class Script(BaseScript):
     interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports=None):
-        # See bug NOC-291: http://bt.nocproject.org/browse/NOC-291
         raise NotImplementedError()
