@@ -1,0 +1,8 @@
+{
+  "$metric": "CPU | Usage",
+  "$type": "oid",
+  "oid": "1.3.6.1.4.1.40418.7.100.1.11.10.0",
+  "type": "gauge",
+  "scale": 1,
+  "units": "%"
+}
