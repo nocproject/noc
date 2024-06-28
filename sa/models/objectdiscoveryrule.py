@@ -34,6 +34,7 @@ from noc.core.purgatorium import SOURCES
 from noc.core.prettyjson import to_json
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.resourcetemplate import ResourceTemplate
 from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
@@ -199,6 +200,8 @@ class ObjectDiscoveryRule(Document):
         "collection": "objectdiscoveryrules",
         "strict": False,
         "auto_create_index": False,
+        "json_collection": "sa.objectdiscoveryrules",
+        "json_unique_fields": ["name"],
     }
     name = StringField(unique=True)
     description = StringField()
@@ -241,7 +244,7 @@ class ObjectDiscoveryRule(Document):
     )
     stop_processed = BooleanField(default=False)
     allow_sync = BooleanField(default=True)  # sync record on
-    # default_template
+    default_template: ResourceTemplate = PlainReferenceField(ResourceTemplate)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _prefix_cache = cachetools.TTLCache(maxsize=10, ttl=600)
@@ -336,7 +339,7 @@ class ObjectDiscoveryRule(Document):
     @staticmethod
     def parse_check(checks: List[Any]) -> Dict[Tuple[str, int], bool]:
         """
-        Parse Check Ruesult list to Dict
+        Parse Check Result list to Dict
 
         Args:
             checks: - List of Check Result
