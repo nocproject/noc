@@ -105,6 +105,16 @@ class Script(BaseScript):
             r += self.get_transceivers(1)
         return r
 
+    def convert_t_data_to_speed(self, mbd: int, description: str = "") -> str:
+        speed = "0"
+        if mbd > 1000 and mbd <= 1300:
+            speed = "1000"
+        elif mbd > 10000 and mbd <= 10300:
+            speed = "10000"
+        elif description.startswith("40G"):
+            speed = "40000"
+        return speed
+
     def get_transceivers(self, slot_id):
         out = []
         try:
@@ -115,8 +125,6 @@ class Script(BaseScript):
             description = match.group("part_no")
             mbd = int(match.group("mbd"))
             nm = match.group("nm")
-            #ch_id = int(match.group("ch_id"))
-            #if ch_id == slot_id:
             nm = nm or 0
             nm = int(nm)
             vendor = "NONAME"
@@ -170,6 +178,35 @@ class Script(BaseScript):
             else:
                 part_no = part_no + "Unknown SFP"
             mf_m = match.group("mf_m")
+
+            data = [
+                {
+                    "interface": "optical",
+                    "attr": "tx_wavelength",
+                    "value": nm,
+                },
+                {
+                    "interface": "optical",
+                    "attr": "rx_wavelength",
+                    "value": nm,
+                },
+                {
+                    "interface": "optical",
+                    "attr": "bidi",
+                    "value": False,
+                },
+                {
+                    "interface": "optical",
+                    "attr": "xwdm",
+                    "value": False,
+                },
+                {
+                    "interface": "optical",
+                    "attr": "bit_rate",
+                    "value": self.convert_t_data_to_speed(mbd, description),
+                },
+            ]
+
             if mf_m == "(null)":
                 i = {
                     "type": "XCVR",

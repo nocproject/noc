@@ -28,7 +28,7 @@ class Script(BaseScript):
         r"line protocol is\s+(?P<oper_status>up|down)"
         r"(^\s.*addr: (?P<hwaddr>\d+))?\s*\n"
         r"(?P<other>(?:^\s+.+\n)+?)"
-        #r"(?:^\s+FlowControl |^\s+inet)",
+        # r"(?:^\s+FlowControl |^\s+inet)",
         r"(?:^\n)",
         re.MULTILINE,
     )
@@ -55,15 +55,12 @@ class Script(BaseScript):
         r"(\s+Current HW addr: (?P<mac>\S+))?\s*\n",
         re.MULTILINE,
     )
-#    rx_alias = re.compile(r"\s+alias name is (?P<alias>\S+)\s", re.MULTILINE)
     rx_alias = re.compile(r"Description: (?P<alias>.+)", re.MULTILINE)
     rx_index = re.compile(r"\s+Index (?P<ifindex>\d+)")
     rx_alias_and_index = re.compile(r" alias name is (?P<alias>.+), index is (?P<ifindex>\d+)")
     rx_mtu = re.compile(r"\s+.*mtu (?P<mtu>\d+)")
     rx_pvid = re.compile(r"PVID is (?P<pvid>\d+)")
-    rx_ip = re.compile(
-        r"inet (?P<ip>\S+)/(?P<mask>\S+)", re.MULTILINE
-    )
+    rx_ip = re.compile(r"inet (?P<ip>\S+)/(?P<mask>\S+)", re.MULTILINE)
     rx_vlan = re.compile(
         r"^interface (?P<ifname>(?:xe|ge)\S+)\s*\n"
         r"(?:|^ spanning-tree.+\s*\n)"
@@ -71,7 +68,6 @@ class Script(BaseScript):
         r"(?:|^ speed-duplex.+\s*\n)"
         r"^ switchport mode (?P<mode>\S+)\s*\n"
         r"(^ switchport access vlan (?P<untagged_vlan>\d+)\s*\n|^ switchport trunk allowed vlan (?P<tagged_vlans>\S+))",
-        #r"(^Trunk allowed Vlan\s*:\s*(?P<tagged_vlans>\S+)\s*\n)?",
         re.MULTILINE,
     )
     rx_mgmt = re.compile(
@@ -85,12 +81,9 @@ class Script(BaseScript):
     rx_lag_port = re.compile(r"\s*\S+ is LAG member port, LAG port:(?P<lag_port>\S+)\n")
 
     def get_switchport_cli(self) -> Dict[str, Dict[str, Any]]:
-        #if self.is_foxgate_cli:
-        #    return {}
-        # New CLI syntax
         result = defaultdict(lambda: {"untagged": None, "tagged": []})
         v = self.cli("show running-config interface")
-        v= v.replace('\n switchport trunk allowed vlan add ',',')
+        v = v.replace("\n switchport trunk allowed vlan add ", ",")
         for match in self.rx_vlan.finditer(v):
             ifname = match.group("ifname")
             result[ifname]["untagged"] = match.group("untagged_vlan")
@@ -109,59 +102,6 @@ class Script(BaseScript):
             if ll:
                 lldp = set(ll.group("local_if").split())
         return lldp
-
-    # def get_interfaces_foxgatecli(self):
-    #     """
-    #     For FoxGate Like CLI syntax
-    #     :return:
-    #     """
-    #     v = self.cli("show interface", cached=True)
-    #     interfaces = {}
-    #     for match in self.rx_sh_int_old.finditer(v):
-    #         ifname = match.group("interface")
-    #         sub = {
-    #             "name": match.group("interface"),
-    #             "admin_status": match.group("admin_status") == "enabled",
-    #             "oper_status": match.group("oper_status") == "up",
-    #             "mac": match.group("mac"),
-    #             "enabled_afi": ["BRIDGE"],
-    #         }
-    #         if match.group("mode") == "access":
-    #             sub["untagged_vlan"] = match.group("untagged")
-    #         else:
-    #             sub["untagged_vlan"] = match.group("pvid")
-    #             sub["tagged_vlans"] = self.expand_rangelist(match.group("tagged"))
-    #         interfaces[ifname] = {
-    #             "name": ifname,
-    #             "type": "physical",
-    #             "admin_status": match.group("admin_status") == "enabled",
-    #             "oper_status": match.group("oper_status") == "up",
-    #             "mac": match.group("mac"),
-    #             "subinterfaces": [sub],
-    #         }
-    #
-    #     v = self.cli("show ip", cached=True)
-    #     match = self.rx_mgmt.search(v)
-    #     ip_address = f'{match.group("ip")}/{IPv4.netmask_to_len(match.group("mask"))}'
-    #     interfaces["system"] = {
-    #         "name": "system",
-    #         "type": "SVI",
-    #         "admin_status": True,
-    #         "oper_status": True,
-    #         "mac": match.group("mac"),
-    #         "subinterfaces": [
-    #             {
-    #                 "name": "system",
-    #                 "admin_status": True,
-    #                 "oper_status": True,
-    #                 "mac": match.group("mac"),
-    #                 "enabled_afi": ["IPv4"],
-    #                 "ipv4_addresses": [ip_address],
-    #                 "vlan_ids": match.group("vlan_id"),
-    #             }
-    #         ],
-    #     }
-    #     return [{"interfaces": list(interfaces.values())}]
 
     def execute_cli(self, **kwargs):
         interfaces = {}
@@ -184,7 +124,6 @@ class Script(BaseScript):
                 "enabled_afi": [],
             }
             # Switchport
-            print ('IFNAME = ', ifname)
             if ifname in switchports:
                 # Bridge
                 sub["enabled_afi"] += ["BRIDGE"]
@@ -208,7 +147,6 @@ class Script(BaseScript):
             # IP Address
             match1 = self.rx_ip.search(other)
             if match1 and "NULL" not in match1.group("ip"):
-                #ip_address = f'{match1.group("ip")}/{IPv4.netmask_to_len(match1.group("mask"))}'
                 ip_address = f'{match1.group("ip")}/{match1.group("mask")}'
                 sub["ipv4_addresses"] = [ip_address]
                 sub["enabled_afi"] = ["IPv4"]
@@ -227,7 +165,6 @@ class Script(BaseScript):
                 sub["mac"] = match1.group("mac")
             # Description
             match1 = self.rx_alias.search(other)
-#            if match1 and match1.group("alias") != "(null),":
             if match1 and match1.group("alias") != "(null)":
                 iface["description"] = match1.group("alias")
                 sub["description"] = match1.group("alias")

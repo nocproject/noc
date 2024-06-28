@@ -32,7 +32,7 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         r = []
         # Fallback to CLI
-        for lldp in self.cli("show lldp neighbors brief").split('\n'):
+        for lldp in self.cli("show lldp neighbors brief").split("\n"):
             match = self.rx_detail.search(lldp)
             if match:
                 i = {"local_interface": match.group("local_if"), "neighbors": []}

@@ -15,7 +15,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NAG.SNR_eNOS"
-    pattern_username = rb"(?<!Last )([Uu]ser ?[Nn]ame|[Ll]ogin): ?" #Добавлено для обхода Last login: ...
+    pattern_username = (
+        # Add for bypass 'Last login: ...'
+        rb"(?<!Last )([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
+    )
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)(?:\(config[^\)]*\))?>"
     pattern_prompt = rb"^(?P<hostname>\S+)(?:\(config[^\)]*\))?#"
     pattern_more = [
@@ -51,7 +54,7 @@ class Profile(BaseProfile):
             script.cli("", ignore_errors=True)
 
     INTERFACE_TYPES = {
-	"ge": "physical",  # Ethernet
+        "ge": "physical",  # Ethernet
         "xe": "physical",  # Ethernet
         "vl": "SVI",  # Vlan
         "syst": "SVI",  # system

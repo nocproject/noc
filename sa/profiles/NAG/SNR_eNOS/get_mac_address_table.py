@@ -16,7 +16,7 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "NAG.SNR_eNOS.get_mac_address_table"
     interface = IGetMACAddressTable
-    
+
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<iface>\S+)",
         re.MULTILINE,

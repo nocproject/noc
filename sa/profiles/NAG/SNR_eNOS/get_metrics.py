@@ -12,4 +12,3 @@ from noc.core.mib import mib
 
 class Script(GetMetricsScript):
     name = "NAG.SNR_eNOS.get_metrics"
-
