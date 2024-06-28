@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
-# NAG.SNR.add_vlan
+# NAG.SNR_eNOS.add_vlan
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from noc.sa.interfaces.iaddvlan import IAddVlan
 
 
 class Script(BaseScript):
-    name = "NAG.SNR.add_vlan"
+    name = "NAG.SNR_eNOS.add_vlan"
     interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports=None):

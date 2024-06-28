@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
-# NAG.SNR.get_vlans
+# NAG.SNR_eNOS.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 
 
 class Script(BaseScript):
-    name = "NAG.SNR.get_vlans"
+    name = "NAG.SNR_eNOS.get_vlans"
     interface = IGetVlans
 
     def execute(self):
