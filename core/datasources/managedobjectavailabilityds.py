@@ -31,8 +31,10 @@ OUTAGES_SQL = """
 
 class ManagedObjectAvailabilityDS(BaseDataSource):
     name = "managedobjectavailabilityds"
+    row_index = "managed_object_id"
 
     fields = [
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
         FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
         FieldInfo(name="current_avail_status", description="Avail Status", type=FieldType.BOOL),
         FieldInfo(name="avail_percent", description="Availability by Percent", type=FieldType.UINT),
@@ -187,6 +189,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
                 outage_duration += s_outage
                 outage_count += 1
             outage_duration = min(outage_duration, td)
+            yield num, "managed_object_id", oid
             yield num, "id", oid
             yield num, "current_avail_status", row["status"]
             yield num, "avail_percent", (td - outage_duration) * 100.0 / td
