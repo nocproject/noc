@@ -18,10 +18,9 @@ class Script(BaseScript):
     interface = IGetLACPNeighbors
     pattern_split_1 = r"^(\s+[-]+)+$"
     pattern_split_2 = r"^\s+Link is.+"
-    pattern_split_3 = r"[=]+"
     split_group_re = re.compile(r"\nBundle-\w+(\d+)")
     split_group2_re = re.compile(r"\nBundle-\D+(\d+)")
-    split_group3_re = re.compile(r"\n?[=]+")
+    split_group3_re = re.compile(r"\n?[-]{5,}")
 
     rx_sys_id = re.compile(
         r"\s*(?P<sys_id>\w{2}-\w{2}-\w{2}-\w{2}-\w{2}-\w{2})",
