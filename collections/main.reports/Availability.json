@@ -1,0 +1,146 @@
+{
+    "name": "Availability",
+    "$collection": "main.reports",
+    "uuid": "d3291e4a-6283-4f58-8de1-8e3afc2dfaf5",
+    "title": "Availability (New)",
+    "description": "Доступность",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectavailabilityds",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "column_format": [
+                {
+                    "name": "administrativedomain",
+                    "title": "ADM. DOMAIN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "name",
+                    "title": "NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "profile",
+                    "title": "PROFILE",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectavailabilityds.avail_percent",
+                    "title": "AVAIL. PERCENT",
+                    "format_type": "integer"
+                },
+                {
+                    "name": "managedobjectavailabilityds.downtime",
+                    "title": "DOWNTIME",
+                    "format_type": "integer"
+                },
+                {
+                    "name": "managedobjectavailabilityds.down_count",
+                    "title": "DOWN COUNT",
+                    "format_type": "integer"
+                },
+                {
+                    "name": "managedobjectavailabilityds.reboots",
+                    "title": "REBOOTS",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "fm",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Доступность (Новый)"
+        },
+        "columns.administrativedomain": {
+            "ru": "З.О."
+        },
+        "columns.name": {
+            "ru": "Объект управления"
+        },
+        "columns.address": {
+            "ru": "Адрес"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
+        },
+        "columns.avail_percent": {
+            "ru": "Доступность"
+        },
+        "columns.downtime": {
+            "ru": "Общее время недос.(сек)"
+        },
+
+        "parameters.start": {
+            "ru": "С"
+        },
+        "parameters.end": {
+            "ru": "По"
+        },
+        "parameters.administrative_domain": {
+            "ru": "З.О."
+        }
+    },
+    "parameters": [
+        {
+            "name": "start",
+            "description": null,
+            "label": "From",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "end",
+            "description": null,
+            "label": "To",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "label": "Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "administrativedomain,name,address,profile,managedobjectavailabilityds.avail_percent,managedobjectavailabilityds.downtime,managedobjectavailabilityds.down_count,managedobjectavailabilityds.reboots",
+            "hide": false,
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": false,
+            "is_alterable_output": true,
+            "output_type": "csv"
+        }
+    ]
+}
