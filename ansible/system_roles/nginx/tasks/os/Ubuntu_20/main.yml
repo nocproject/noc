@@ -17,6 +17,7 @@
     state: present
     update_cache: "True"
   environment:
+    https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
