@@ -13,12 +13,6 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   layout: "fit",
   initComponent: function(){
     var me = this;
-
-    me.schemaPanel = Ext.create("Ext.panel.Panel", {
-    });
-    Ext.apply(me, {
-      items: [me.schemaPanel],
-    });
     me.callParent();
   },
   //
@@ -39,8 +33,12 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     var me = this,
       viz=new Viz();
     viz.renderSVGElement(dot).then(function(el){
-      me.schemaPanel.update("");
-      me.schemaPanel.getEl().appendChild(el);
+      me.removeAll();
+      me.add({
+        xtype: "component",
+        autoScroll: true,
+        html: el.outerHTML,
+      });
     });
   },
   //
