@@ -130,8 +130,6 @@ class Interface(Document):
     technologies = ListField(StringField())
     # External NRI interface name
     nri_name = StringField()
-    #
-    service = ReferenceField(Service)
     # Resource groups
     static_service_groups = ListField(ObjectIdField())
     effective_service_groups = ListField(ObjectIdField())
@@ -158,6 +156,14 @@ class Interface(Document):
                 for ll in Label.merge_labels(self.extra_labels.values())
                 if Interface.can_set_label(ll)
             ]
+
+    @property
+    def service(self):
+        from noc.sa.models.serviceinstance import ServiceInstance
+        si = ServiceInstance.objects.filter(interface_id=self.id).first()
+        if si:
+            return si.service
+        return
 
     @classmethod
     def get_component(
@@ -497,8 +503,6 @@ class Interface(Document):
                 for ll in instance.managed_object.get_effective_labels()
                 if ll != "noc::is_linked::=" and not ll.startswith(f"{DIAGNOCSTIC_LABEL_SCOPE}::")
             ]
-        if instance.service:
-            yield from Service.iter_effective_labels(instance.service)
         if instance.parent.id and instance.type in ("physical", "virtiual") and instance.is_linked:
             # Idle Discovery When create Aggregate interface (fixed not use lag_members)
             yield ["noc::is_linked::="]

@@ -1,18 +1,19 @@
 # ----------------------------------------------------------------------
 # Service loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 # NOC modules
 from noc.inv.models.capability import Capability
 from noc.sa.models.service import Service as ServiceModel
+from noc.sa.models.serviceinstance import ServiceInstance
 from .base import BaseLoader
-from ..models.service import Service
+from ..models.service import Service, Instance
 
 
 class ServiceLoader(BaseLoader):
@@ -27,13 +28,14 @@ class ServiceLoader(BaseLoader):
     discard_deferred = True
     workflow_state_sync = True
 
-    post_save_fields = {"capabilities"}
+    post_save_fields = {"capabilities", "instances"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.available_caps = {x.name for x in Capability.objects.filter()}
 
     def post_save(self, o: ServiceModel, fields: Dict[str, Any]):
+        self.apply_instances(o, fields.get("instances") or [])
         if not fields or "capabilities" not in fields:
             return
         for cc in fields["capabilities"] or []:
@@ -43,11 +45,37 @@ class ServiceLoader(BaseLoader):
             o.set_caps(c_name, cc["value"], source="etl", scope=self.system.name)
         o.save()
 
-    def find_object(self, v):
+    @classmethod
+    def apply_instances(cls, o: ServiceModel, fields: List[Dict[str, Any]]):
+        """Synchronize Service Instances"""
+        instances = {i["remote_id"]: Instance(**i) for i in fields}
+        for si in ServiceInstance.objects.filter(service=o.id, remote_id__exists=True):
+            if si.remote_id not in instances:
+                si.unseen("etl")
+                continue
+            i = instances.pop(si.remote_id)
+            if si.address == i.address and si.port == i.port:
+                continue
+            si.address = i.address
+            si.fqdn = i.fqdn
+            si.port = i.port
+            si.save()
+        for i in instances.values():
+            o.register_instance(
+                source="etl",
+                name="",
+                address=i.address,
+                fqdn=i.fqdn,
+                port=i.port,
+                remote_id=i.remote_id,
+            )
+
+    def find_object(self, v: Dict[str, Any]):
         """
         Find object by remote system/remote id
-        :param v:
-        :return:
+
+        Attrs:
+            v: Object attributes
         """
         if not v.get("remote_system") or not v.get("remote_id"):
             self.logger.warning("RS or RID not found")
