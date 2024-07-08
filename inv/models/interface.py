@@ -87,7 +87,6 @@ class Interface(Document):
             ("managed_object", "name"),
             "mac",
             ("managed_object", "ifindex"),
-            "service",
             "aggregated_interface",
             "labels",
             "profile",
@@ -160,6 +159,7 @@ class Interface(Document):
     @property
     def service(self):
         from noc.sa.models.serviceinstance import ServiceInstance
+
         si = ServiceInstance.objects.filter(interface_id=self.id).first()
         if si:
             return si.service

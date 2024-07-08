@@ -15,15 +15,17 @@ from typing import Any, Dict, Optional, Iterable, List, Union
 # Third-party modules
 import orjson
 from bson import ObjectId
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     DateTimeField,
     ReferenceField,
     ListField,
     EmbeddedDocumentField,
+    EmbeddedDocumentListField,
     LongField,
     ObjectIdField,
+    IntField,
     EnumField,
 )
 from mongoengine.queryset.visitor import Q as m_q
@@ -31,7 +33,7 @@ import cachetools
 
 # NOC modules
 from .serviceprofile import ServiceProfile, Status
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.resourcegroup.decorator import resourcegroup
@@ -42,12 +44,13 @@ from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
-from noc.sa.models.managedobject import ManagedObject
+from noc.main.models.pool import Pool
 from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
 
 logger = logging.getLogger(__name__)
@@ -56,6 +59,12 @@ id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 SVC_REF_PREFIX = "svc"
 SVC_AC = "Service | Status | Change"
+
+
+class Instance(EmbeddedDocument):
+    name = StringField()
+    pool: "Pool" = PlainReferenceField(Pool, required=False)
+    port_range = StringField()
 
 
 @Label.model
@@ -68,9 +77,9 @@ SVC_AC = "Service | Status | Change"
 @on_delete_check(
     clean=[
         ("phone.PhoneNumber", "service"),
-        ("inv.Interface", "service"),
         ("sa.Service", "parent"),
-    ]
+    ],
+    delete=[("sa.ServiceInstance", "service")],
 )
 class Service(Document):
     meta = {
@@ -81,11 +90,7 @@ class Service(Document):
             "subscriber",
             "supplier",
             "profile",
-            "managed_object",
-            ("managed_object", "effective_client_groups"),
             ("caps.capability", "caps.value"),
-            "interface_id",
-            "subinterface_id",
             "sla_probe",
             "parent",
             "order_id",
@@ -99,6 +104,7 @@ class Service(Document):
         ],
     }
     profile: ServiceProfile = ReferenceField(ServiceProfile, required=True)
+    name_template = StringField()
     # Creation timestamp
     ts = DateTimeField(default=datetime.datetime.now)
     # Logical state of service
@@ -129,12 +135,6 @@ class Service(Document):
     account_id = StringField()
     # Connection address
     address = StringField()
-    # For port services
-    managed_object = ForeignKeyField(ManagedObject)
-    interface_id = ObjectIdField()  # Interface mapping
-    subinterface_id = ObjectIdField()  # Subinterface mapping cache
-    # NRI port id, converted by portmapper to native name
-    nri_port = StringField()
     # SLAProbe
     sla_probe = PlainReferenceField(SLAProbe)
     # CPE information
@@ -144,6 +144,8 @@ class Service(Document):
     cpe_group = StringField()
     # Capabilities
     caps: List[CapsItem] = ListField(EmbeddedDocumentField(CapsItem))
+    #
+    static_instances: List[Instance] = EmbeddedDocumentListField(Instance)
     # Link to agent
     agent = PlainReferenceField(Agent)
     # Integration with external NRI and TT systems
@@ -165,6 +167,7 @@ class Service(Document):
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _id_bi_id_map_cache = cachetools.LFUCache(maxsize=10000)
+    _instance_cache = cachetools.TTLCache(maxsize=500, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -181,6 +184,26 @@ class Service(Document):
     def get_bi_id_by_id(cls, sid):
         return Service.objects.filter(id=sid).scalar("bi_id").first()
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_instance_cache"))
+    def get_by_instance(cls, address, port: Optional[str] = None) -> Optional["Service"]:
+        if port:
+            # Service.objects.filter(static_instances__match={"address": address, "port": port})
+            si = ServiceInstance.objects.filter(address=address, port=port).first()
+            if si:
+                return Service.get_by_id(si.service)
+            return
+        # return ServiceInstance.objects.filter(static_instances__match={"address": address, "port": 0}).first()
+        si = ServiceInstance.objects.filter(address=address, port=0).first()
+        if si:
+            return Service.get_by_id(si.service)
+        return
+
+    @property
+    def managed_object(self):
+        si = self.get_instances()
+        return si.managed_object
+
     def __str__(self):
         return str(self.id) if self.id else "new service"
 
@@ -189,8 +212,8 @@ class Service(Document):
             self.unbind_interface()
 
     def on_save(self):
-        if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
-            self.unbind_interface()
+        # if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
+        #    self.unbind_interface()
         if not hasattr(self, "_changed_fields") or "parent" in self._changed_fields:
             self._refresh_managed_object()
             self.service_path = self.get_path()
@@ -421,12 +444,12 @@ class Service(Document):
         self._refresh_managed_object()
 
     def get_managed_object(self):
-        r = self
-        while r:
-            if r.managed_object:
-                return self.managed_object
-            r = r.parent
-        return None
+        from noc.sa.models.serviceinstance import ServiceInstance
+
+        si = ServiceInstance.objects.filter(
+            service__in=self.service_path, managed_object__exists=True
+        ).first()
+        return si.managed_object
 
     def get_caps(self) -> Dict[str, Any]:
         return CapsItem.get_caps(self.caps, self.profile.caps)
@@ -479,7 +502,13 @@ class Service(Document):
         return None
 
     def get_message_context(self) -> Dict[str, Any]:
-        return {"caps": self.get_caps()}
+        return {
+            "profile": {"id": str(self.profile.id), "name": self.profile.name},
+            "address": self.address,
+            "description": self.description,
+            "agreement_id": self.agreement_id,
+            "caps": self.get_caps(),
+        }
 
     @property
     def in_maintenance(self):
@@ -495,18 +524,104 @@ class Service(Document):
 
     @property
     def label(self) -> str:
+        """Service text label"""
+        if self.name_template:
+            return self.name_template
         return self.description
+
+    def get_instances(self) -> List["ServiceInstance"]:
+        """Get Service instances"""
+        return list(ServiceInstance.objects.filter(service=self.id))
 
     @property
     def interface(self):
-        from noc.inv.models.interface import Interface
-        from noc.inv.models.subinterface import SubInterface
-
-        if self.subinterface_id:
-            return SubInterface.objects.filter(id=self.subinterface_id).first()
-        if self.interface_id:
-            Interface.objects.filter(id=self.interface_id).first()
+        si = ServiceInstance.objects.filter(service=self.id, interface_id__exists=True).first()
+        if si:
+            return si.interface
         return
+
+    def find_instance(
+        self,
+        port: int = 0,
+        name: Optional[str] = None,
+        address: Optional[str] = None,
+        pool: Optional[str] = None,
+        managed_object: Optional[str] = None,
+        remote_id: Optional[str] = None,
+    ) -> Optional["ServiceInstance"]:
+        """
+        Find Service instance by host ID
+
+        Attrs:
+            address: Instance IP Address
+            pool: Address Pool
+            managed_object: Instance Host
+            remote_id: Instance ID on Remote System
+
+        """
+        if remote_id:
+            return ServiceInstance.objects.filter(service=self.id, remote_id=remote_id).first()
+        si = None
+        if managed_object:
+            si = ServiceInstance.objects.filter(
+                service=self.id, managed_object=managed_object, port=port
+            ).first()
+        if not si and address:
+            si = ServiceInstance.objects.filter(service=self.id, address=address, port=port).first()
+        return si
+
+    def register_instance(
+        self,
+        source: str,
+        port: int,
+        name: str,
+        address: Optional[str] = None,
+        fqdn: Optional[str] = None,
+        pool: Optional[str] = None,
+        managed_object: Optional[str] = None,
+        remote_id: Optional[str] = None,
+    ):
+        """
+        Register Instance for Service
+
+        Args:
+            source: Instance source: manual, etl, discovery
+            port: Instance TCP/UDP port
+            name: Instance name, for host - process name
+            address: Instance IP Address
+            fqdn: Instance FQDN (for resolve address)
+            pool: Address Pool
+            managed_object: Instance Host
+            remote_id: Instance ID on Remote System
+        """
+        if source == "etl" and not remote_id:
+            raise AttributeError("remote_id required for ETL source")
+        if source == "discovery" and not managed_object:
+            raise AttributeError("managed_object required for Discovery source")
+        if not address and not managed_object and not remote_id:
+            raise AttributeError("One of Host ID required")
+        instance = self.find_instance(
+            address=address,
+            managed_object=managed_object,
+            remote_id=remote_id,
+            port=port,
+            pool=pool,
+        )
+        if not instance:
+            instance = ServiceInstance(
+                service=self.id,
+                name=name,
+                address=address,
+                fqdn=fqdn,
+                port=port,
+                pool=pool,
+                remote_id=remote_id,
+            )
+        if instance.managed_object != managed_object:
+            instance.managed_object = managed_object
+        instance.save()
+        instance.seen(source=source, address=address, port=port)
+        return instance
 
 
 def refresh_service_status(svc_ids: List[str]):
