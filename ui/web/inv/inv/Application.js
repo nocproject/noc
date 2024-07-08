@@ -122,6 +122,12 @@ Ext.define("NOC.inv.inv.Application", {
         scope: me,
         select: me.onSelectNav,
         deselect: me.onDeselect,
+        afteritemexpand: function(node, eOpts) {
+          me.navTree.getSelectionModel().select(node);
+        },
+        afteritemecollapse: function(node, eOpts) {
+          me.navTree.getSelectionModel().select(node);
+        }
       },
       viewConfig: {
         plugins: {
