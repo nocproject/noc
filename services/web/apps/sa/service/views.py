@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------------
 # sa.service application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from collections import defaultdict
 
 # Third-party modules
 from mongoengine.queryset import Q
@@ -12,6 +15,7 @@ from mongoengine.queryset import Q
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
 from noc.sa.models.service import Service
+from noc.sa.models.serviceinstance import ServiceInstance
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.translation import ugettext as _
 from noc.core.validators import is_objectid
@@ -29,7 +33,7 @@ class ServiceApplication(ExtDocApplication):
     model = Service
     parent_model = Service
     parent_field = "parent"
-    query_fields = ["address__contains", "description__contains"]
+    query_fields = ["location__contains", "description__contains", "name_template__contains", "remote_id"]
 
     resource_group_fields = [
         "static_service_groups",
@@ -40,6 +44,23 @@ class ServiceApplication(ExtDocApplication):
 
     def field_label(self, o):
         return o.label
+
+    def bulk_field_instances(self, data):
+        """
+        Apply interface_count fields
+        :param data:
+        :return:
+        """
+        svc_ids = [x["id"] for x in data]
+        if not svc_ids:
+            return data
+        instances = defaultdict(list)
+        for si in ServiceInstance.objects.filter(service__in=svc_ids):
+            instances[str(si.service.id)].append(self.service_instance_to_dict(si))
+        # Apply service instance
+        for x in data:
+            x["instances"] = instances.get(x["id"]) or []
+        return data
 
     def get_Q(self, request, query):
         if is_objectid(query):
@@ -63,6 +84,19 @@ class ServiceApplication(ExtDocApplication):
             data["in_maintenance"] = o.in_maintenance
             data["service_path"] = [str(sp) for sp in data["service_path"]]
         return data
+
+    @staticmethod
+    def service_instance_to_dict(o: "ServiceInstance"):
+        r = {
+            "name": o.name,
+            "address": o.address,
+            "port": o.port,
+            "fqdn": o.fqdn,
+        }
+        if o.managed_object:
+            r["managed_object"] = o.managed_object.id
+            r["managed_object__label"] = str(o.managed_object.name)
+        return r
 
     def clean(self, data):
         # Clean resource groups
