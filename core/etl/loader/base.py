@@ -812,7 +812,7 @@ class BaseLoader(object):
         self.mappings[str(rv)] = str(lv)
 
     def update_document_clean_map(self):
-        from mongoengine.fields import BooleanField, ReferenceField, EmbeddedDocumentListField
+        from mongoengine.fields import BooleanField, ReferenceField
         from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
         self.logger.debug("Update Document clean map")
@@ -837,11 +837,6 @@ class BaseLoader(object):
                         ft.document_type,
                         self.mapped_fields[fn],
                     )
-            elif isinstance(ft, EmbeddedDocumentListField):
-                self.clean_map[fn] = functools.partial(
-                    self.clean_ed_list,
-                    ft.field.document_type,
-                )
             elif fn in self.mapped_fields:
                 self.clean_map[fn] = functools.partial(
                     self.clean_map_str,

@@ -109,6 +109,9 @@ class ServiceInstance(Document):
         if source and source in SOURCES:
             self.sources = list(set(self.sources or []).union({source}))
             self._get_collection().update_one({"_id": self.id}, {"$addToSet": {"sources": source}})
+        elif source and source not in SOURCES:
+            self.sources.append(source)
+            self._get_collection().update_one({"_id": self.id}, {"$addToSet": {"sources": source}})
 
     def unseen(self, source: Optional[str] = None):
         """
