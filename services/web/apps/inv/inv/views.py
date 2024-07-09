@@ -500,7 +500,7 @@ class InvApplication(ExtApplication):
             cable = Object(
                 name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
                 model=cable_model,
-                container=lo.container.id if lo.container else None,
+                container=None,  # lo.container.id if lo.container else None,
             )
             cable.save()
             # Connect to cable
