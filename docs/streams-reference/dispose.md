@@ -71,7 +71,7 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 
 | Field       | Type   | Description                           |
 | ----------- | ------ | ------------------------------------- |
-| `$op`       | String | Equals to `clear`                     |
+| `$op`       | String | Equals to `clearid`                   |
 | `id`        | String | Alarm id                              |
 | `timestamp` | String | Optional timestamp in ISO 8601 format |
 | `message`   | String | Optional closing message              |
