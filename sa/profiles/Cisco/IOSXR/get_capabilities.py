@@ -22,6 +22,15 @@ class Script(BaseScript):
         return "% LLDP is not enabled" not in r
 
     @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check LACP Status
+        :return:
+        """
+        r = self.cli("show lacp counters")
+        return r
+
+    @false_on_cli_error
     def has_cdp_cli(self):
         """
         Check box has cdp enabled
