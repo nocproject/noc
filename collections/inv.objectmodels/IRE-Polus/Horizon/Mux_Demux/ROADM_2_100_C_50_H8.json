@@ -1,5 +1,5 @@
 {
-    "name": "IRE-Polus | Horizon | Transponders | ROADM-2-100-C-50-H8",
+    "name": "IRE-Polus | Horizon | Mux_Demux | ROADM-2-100-C-50-H8",
     "$collection": "inv.objectmodels",
     "uuid": "8bf70a10-d062-427b-a7da-349a03cbdd18",
     "vendor__code": "IRE-POLUS",
