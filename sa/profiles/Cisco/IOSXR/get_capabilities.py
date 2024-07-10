@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,6 +20,15 @@ class Script(BaseScript):
         """
         r = self.cli("show lldp neighbors")
         return "% LLDP is not enabled" not in r
+
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check LACP Status
+        :return:
+        """
+        r = self.cli("show lacp counters")
+        return r
 
     @false_on_cli_error
     def has_cdp_cli(self):
