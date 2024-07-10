@@ -44,6 +44,7 @@ class InvApplication(ExtApplication):
 
     title = _("Inventory")
     menu = _("Inventory")
+    glyph = "archive"
 
     # Undeletable nodes
     UNDELETABLE = {
@@ -138,6 +139,8 @@ class InvApplication(ExtApplication):
                 plugins.append(self.get_plugin_data("managedobject"))
             if o.get_data("contacts", "has_contacts"):
                 plugins.append(self.get_plugin_data("contacts"))
+            if self.can_show_topo(o):
+                plugins.append(self.get_plugin_data("commutation"))
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():
                 plugins.append(self.get_plugin_data("sensor"))
                 plugins.append(self.get_plugin_data("metric"))
@@ -497,7 +500,7 @@ class InvApplication(ExtApplication):
             cable = Object(
                 name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
                 model=cable_model,
-                container=lo.container.id if lo.container else None,
+                container=None,  # lo.container.id if lo.container else None,
             )
             cable.save()
             # Connect to cable
@@ -701,6 +704,33 @@ class InvApplication(ExtApplication):
                 ]
                 used |= {c.input, c.output}
         return used, r
+
+    def can_show_topo(self, o: Object) -> bool:
+        """
+        Check if topology-related and channel plugins
+        can be used.
+
+        Args:
+            o: Object instance
+
+        Returns:
+            True: if topology-related plugins can be used.
+            False: Otherwise.
+        """
+        # Is chassis
+        if o.model.cr_context == "CHASSIS":
+            return True
+        # Has outer connections
+        if any(o.iter_connections("o")):
+            return True
+        # Inside rack or PoP
+        while o:
+            if o.get_data("rack", "units"):
+                return True
+            if o.get_data("pop", "level") is not None:
+                return True
+            o = o.container
+        return False
 
     @view(url=r"^(?P<oid>[0-9a-f]{24})/map_lookup/$", method=["GET"], access="read", api=True)
     def api_map_lookup(self, request, oid):
