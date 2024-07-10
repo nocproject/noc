@@ -10,10 +10,34 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   extend: "Ext.panel.Panel",
   title: __("Channel"),
   closable: false,
+  defaultListenerScope: true,
   layout: {
-    type: 'vbox',
-    align: 'stretch',
+    type: "vbox",
+    align: "stretch",
   },
+  tbar: [
+    {
+      xtype: "combobox",
+      store: [
+        [0.25, "25%"],
+        [0.5, "50%"],
+        [0.75, "75%"],
+        [1.0, "100%"],
+        [1.25, "125%"],
+        [1.5, "150%"],
+        [2.0, "200%"],
+        [3.0, "300%"],
+        [4.0, "400%"],
+      ],
+      width: 100,
+      value: 1.0,
+      valueField: "zoom",
+      displayField: "label",
+      listeners: {
+        select: "onZoom",
+      },    
+    },
+  ],
   items: [
     {
       xtype: "grid",
@@ -63,9 +87,17 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     },
     {
       xtype: "container",
-      itemId: "scheme",
       flex: 1,
-      padding: 5,
+      layout: "fit",
+      scrollable: true,
+      items: [
+        {
+          xtype: "image",
+          itemId: "scheme",
+          hidden: true,
+          padding: 5,
+        },
+      ],
     },
   ],
   preview: function(data){
@@ -78,7 +110,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var me = this,
       viz = new Viz();
     viz.renderSVGElement(dot).then(function(el){
-      me.down("[itemId=scheme]").update(el.outerHTML);
+      var imageComponent = me.down("[itemId=scheme]");
+      imageComponent.setHidden(false);
+      imageComponent.setSrc(me.svgToBase64(el.outerHTML));
     });
   },
   //
@@ -92,5 +126,17 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     } else{
       me._render(dot);
     }
+  },
+  //
+  onZoom: function(combo){
+    var me = this,
+      imageComponent = me.down("#scheme");
+    imageComponent.getEl().dom.style.transformOrigin = "0 0";
+    imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
+  },
+  //
+  svgToBase64: function(svgString){
+    var base64String = "data:image/svg+xml;base64," + btoa(svgString);
+    return base64String;
   },
 });
