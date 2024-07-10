@@ -22,6 +22,7 @@ from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
+from noc.fm.models.activealarm import ActiveAlarm
 
 
 class HomeAppplication(ExtApplication):
@@ -37,11 +38,12 @@ class HomeAppplication(ExtApplication):
     def api_welcome(self, request):
         user = request.user
         widgets = [
+            self.get_welcome(user),
+            self.get_community(user),
             self.get_favorites(user),
             self.get_inventory_summary(user),
             self.get_mo_summary(user),
-            self.get_welcome(user),
-            self.get_community(user),
+            self.get_alarms(user),
         ]
         return {"widgets": [x for x in widgets if x]}
 
@@ -150,6 +152,28 @@ class HomeAppplication(ExtApplication):
                 {
                     "text": _("Managed Objects"),
                     "value": total_mo,
+                },
+            ],
+        }
+
+    def get_alarms(self, user: User) -> Optional[Dict[str, Any]]:
+        """
+        Generate managed object summary widget.
+        """
+        if not Permission.has_perm(user, "fm:alarm:launch"):
+            return None  # No access to MO
+        mo_count_q = ManagedObject.objects.all()
+        if not user.is_superuser:
+            mo_count_q = list(mo_count_q.filter(UserAccess.Q(user)).values("id"))
+        total_alarms = ActiveAlarm.objects.filter(managed_object__in=mo_count_q).count()
+        return {
+            "type": "summary",
+            "title": _("Total Alarms"),
+            "height": "small",
+            "items": [
+                {
+                    "text": _("Alarms"),
+                    "value": total_alarms,
                 },
             ],
         }
