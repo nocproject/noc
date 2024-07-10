@@ -47,8 +47,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
             Ext.Ajax.request({
               url: url,
               method: 'GET',
+              scope: this,
               success: function(response){
-                var me = this,
+                var me = this.up(),
                   obj = Ext.decode(response.responseText);
                 me.renderScheme(obj.dot);
               },
