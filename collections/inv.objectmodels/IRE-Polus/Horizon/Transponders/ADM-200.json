@@ -20,6 +20,7 @@
             "cross_direction": "o",
             "direction": "i",
             "gender": "f",
+            "internal_name": "Ln_1",
             "protocols": [
                 {
                     "direction": "*",
@@ -38,6 +39,7 @@
             "cross_direction": "o",
             "direction": "i",
             "gender": "f",
+            "internal_name": "Ln_2",
             "protocols": [
                 {
                     "direction": "*",
@@ -600,7 +602,8 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["ADM-200-SFP+/CFP2-H8"]
+            "value": ["RBS-ADM-200-SFP+/CFP2-H8"]
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | ADM-200 1438-1"
 }

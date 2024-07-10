@@ -60,5 +60,6 @@
             "interface": "asset",
             "value": ["HS-H8"]
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | HS-H8"
 }

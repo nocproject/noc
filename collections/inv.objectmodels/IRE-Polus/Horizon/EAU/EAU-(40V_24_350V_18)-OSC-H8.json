@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "357b182c-083c-4bb6-afaf-552aaa2f893d",
     "vendor__code": "IRE-POLUS",
-    "description": "Полуслотовый адаптер",
+    "description": "EAU-2x(40V/xx+100/yy)-OSC-H8 – эрбиевый волоконно-оптический усилитель. ",
     "cr_context": "LINECARD",
     "connections": [
         {
