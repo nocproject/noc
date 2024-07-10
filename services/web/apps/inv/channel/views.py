@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint
 from noc.core.translation import ugettext as _
@@ -25,3 +25,10 @@ class ChannelApplication(ExtDocApplication):
     endpoints = DocInline(Endpoint)
     parent_model = Channel
     parent_field = "parent"
+
+    @view(url="^(?P<id>[0-9a-f]{24})/dot/", method=["GET"], api=True, access="read")
+    def api_dot(self, request, id: str):
+        r = ["graph {"]
+        r.append("  A -- B")
+        r.append("}")
+        return self.render_json({"dot": "\n".join(r)})

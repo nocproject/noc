@@ -140,6 +140,7 @@ class InvApplication(ExtApplication):
             if o.get_data("contacts", "has_contacts"):
                 plugins.append(self.get_plugin_data("contacts"))
             if self.can_show_topo(o):
+                plugins.append(self.get_plugin_data("channel"))
                 plugins.append(self.get_plugin_data("commutation"))
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():
                 plugins.append(self.get_plugin_data("sensor"))
