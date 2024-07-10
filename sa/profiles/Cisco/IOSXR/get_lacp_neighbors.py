@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_lacp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class Script(BaseScript):
         re.IGNORECASE | re.DOTALL,
     )
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         v = self.cli("show lacp system-id")
         sys_id = self.rx_sys_id.search(v)
