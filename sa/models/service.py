@@ -191,13 +191,10 @@ class Service(Document):
             # Service.objects.filter(static_instances__match={"address": address, "port": port})
             si = ServiceInstance.objects.filter(address=address, port=port).first()
             if si:
-                return Service.get_by_id(si.service)
-            return
+                return si.service
         # return ServiceInstance.objects.filter(static_instances__match={"address": address, "port": 0}).first()
-        si = ServiceInstance.objects.filter(address=address, port=0).first()
-        if si:
-            return Service.get_by_id(si.service)
-        return
+        si = ServiceInstance.objects.filter(address=address, port__exists=False).first()
+        return si.service if si else None
 
     @property
     def managed_object(self):
@@ -614,7 +611,7 @@ class Service(Document):
                 address=address,
                 fqdn=fqdn,
                 port=port,
-                pool=pool,
+                # pool=pool,
                 remote_id=remote_id,
             )
         if instance.managed_object != managed_object:
