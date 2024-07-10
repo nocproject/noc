@@ -33,7 +33,12 @@ class ServiceApplication(ExtDocApplication):
     model = Service
     parent_model = Service
     parent_field = "parent"
-    query_fields = ["location__contains", "description__contains", "name_template__contains", "remote_id"]
+    query_fields = [
+        "address__contains",
+        "description__icontains",
+        "name_template__icontains",
+        "remote_id",
+    ]
 
     resource_group_fields = [
         "static_service_groups",
