@@ -97,6 +97,35 @@ class CommutationPlugin(InvPlugin):
         Returns:
             Iterable of Node
         """
+
+        def get_outer(obj: Object) -> Optional[Tuple[Object, str]]:
+            for _, c, n in obj.iter_outer_connections():
+                return c, n
+            return None
+
+        def add_external(obj: Object) -> Node:
+            """
+            Append external node and parents.
+            """
+            node = Node.from_object(obj)
+            node.external = True
+            nodes[node.object_id] = node
+            parent = None
+            if not obj.container:
+                cc = get_outer(obj)
+                if cc:
+                    oo, parent_connection = cc
+                    # Add parent
+                    parent = nodes.get(str(oo.id))
+                    if not parent:
+                        # Register parent
+                        parent = add_external(oo)
+                    parent.children.append(node)
+                    node.parent_connection = parent_connection
+            if parent is None:
+                ext_nodes_roots.add(node.object_id)
+            return node
+
         root = str(obj.id)
         # Get objects by hierarchy
         hier_ids = obj.get_nested_ids()
@@ -152,11 +181,7 @@ class CommutationPlugin(InvPlugin):
                 conns[c.connection[1].object.id].append((co.object.id, co.name))
             if co.object.id not in omap:
                 # External object
-                # @todo: Its parents
-                node = Node.from_object(co.object)
-                node.external = True
-                nodes[node.object_id] = node
-                ext_nodes_roots.add(node.object_id)
+                add_external(co.object)
         for items in conns.values():
             if len(items) != 2:
                 continue
