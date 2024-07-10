@@ -46,6 +46,18 @@ class Node(object):
             connections=[],
         )
 
+    @property
+    def is_chassis(self) -> bool:
+        """
+        Check if box is chassis.
+
+        Returns:
+            True: if node is chassis
+        """
+        if self.parent_connection:
+            return False
+        return any(bool(c.parent_connection) for c in self.children)
+
 
 class CommutationPlugin(InvPlugin):
     name = "commutation"
@@ -196,6 +208,16 @@ class CommutationPlugin(InvPlugin):
         return pruned_child(node)
 
     def to_dot(self, nodes: Iterable[Node]) -> str:
+        """
+        Render nodes to .dot
+
+        Args:
+            nodes: Iterable of Node
+
+        Returns:
+            Formatted graphviz document
+        """
+
         def q(s: str) -> str:
             return s.replace('"', '\\"')
 
@@ -211,9 +233,13 @@ class CommutationPlugin(InvPlugin):
             r = []
             c = []
             if node.children:
+                if node.is_chassis:
+                    style = 'style = box bgcolor = "#bec3c6" color = black'
+                else:
+                    style = 'style = "rounded,dashed" color = "#919191"'
                 r += [
                     f"subgraph cluster_{node.object_id} {{",
-                    f'  graph [label = "{q(node.name)}" style = rounded]',
+                    f'  graph [label = "{q(node.name)}" {style}]',
                 ]
                 for child in node.children:
                     cr, cc = render(child, 1)
