@@ -11,6 +11,29 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   title: __("Commutation"),
   closable: false,
   layout: "fit",
+  defaultListenerScope: true,
+  tbar: [
+    {
+      xtype: "combobox",
+      store: [
+        [0.25, "25%"],
+        [0.5, "50%"],
+        [0.75, "75%"],
+        [1.0, "100%"],
+        [1.25, "125%"],
+        [1.5, "150%"],
+        [2.0, "200%"],
+        [3.0, "300%"],
+        [4.0, "400%"],
+      ],
+      width: 100,
+      value: 1.0,
+      valueField: "zoom",
+      displayField: "label",
+      listeners: {
+        select: "onZoom",
+      },    
+    }],
   initComponent: function(){
     var me = this;
     me.callParent();
@@ -35,9 +58,13 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     viz.renderSVGElement(dot).then(function(el){
       me.removeAll();
       me.add({
-        xtype: "component",
-        autoScroll: true,
-        html: el.outerHTML,
+        xtype: "container",
+        layout: "fit",
+        items: {
+          xtype: "image",
+          itemId: "scheme",
+          src: me.svgToBase64(el.outerHTML),
+        },
       });
     });
   },
@@ -55,5 +82,17 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
         NOC.error(__("Failed to get data"));
       },
     });
+  },
+  //
+  onZoom: function(combo){
+    var me = this,
+      imageComponent = me.down("#scheme");
+    imageComponent.getEl().dom.style.transformOrigin = "0 0";
+    imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
+  },
+  //
+  svgToBase64: function(svgString){
+    var base64String = "data:image/svg+xml;base64," + btoa(svgString);
+    return base64String;
   },
 });
