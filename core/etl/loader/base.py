@@ -76,11 +76,12 @@ class BaseLoader(object):
     discard_deferred = False
     # Ignore auto-generated unique fields
     ignore_unique = {"bi_id"}
+    unique_index: Tuple[str, ...] = None
     # Array fields need merge values
     incremental_change = {"labels", "static_client_groups", "static_service_groups"}
     # Workflow fields
     workflow_state_sync = False
-    workflow_fields = {"state", "state_changed", "event"}
+    workflow_fields: Set[str] = {"state", "state_changed", "event"}
     workflow_event_model = False
     workflow_add_event = "seen"
     workflow_delete_event = "missed"
@@ -104,7 +105,7 @@ class BaseLoader(object):
         self.import_dir = os.path.join(config.path.etl_import, self.system.name, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(self.import_dir, "mappings.csv")
-        self.mappings = {}
+        self.mappings: Dict[str, str] = {}
         self.wf_state_mappings = {}
         self.ensured_labels = set()
         self.new_state_path = None
@@ -384,13 +385,17 @@ class BaseLoader(object):
             o.save()
         except self.integrity_exception as e:
             self.logger.warning("Integrity error: %s", e)
-            assert self.unique_field
+            assert self.unique_field or self.unique_index
             if not self.is_document:
                 from django.db import connection
 
                 connection._rollback()
             # Fallback to change object
-            o = self.model.objects.get(**{self.unique_field: v[self.unique_field]})
+            if self.unique_field:
+                q = {self.unique_field: v[self.unique_field]}
+            else:
+                q = {i: getattr(o, i) for i in self.unique_index}
+            o = self.model.objects.get(**q)
             for k, nv in v.items():
                 setattr(o, k, nv)
             o.save()
@@ -428,7 +433,27 @@ class BaseLoader(object):
             setattr(o, k, nv)
         if self.workflow_state_sync and state:
             self.change_workflow(o, state, state_changed)
-        o.save()
+        try:
+            o.save()
+        except self.integrity_exception as e:
+            self.logger.warning("Integrity error: %s", e)
+            assert self.unique_field or self.unique_index
+            if not self.is_document:
+                from django.db import connection
+
+                connection._rollback()
+            # Fallback to change object
+            if self.unique_field:
+                q = {self.unique_field: v[self.unique_field]}
+            else:
+                q = {i: getattr(o, i) for i in self.unique_index}
+            o = self.model.objects.get(**q)
+            for k, nv in v.items():
+                setattr(o, k, nv)
+            o.save()
+        except Exception as e:
+            error_report()
+            raise e
         return o
 
     @property
