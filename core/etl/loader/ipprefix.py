@@ -23,3 +23,18 @@ class IPPrefixLoader(BaseLoader):
 
     workflow_delete_event = "remove"
     workflow_state_sync = True
+    unique_index = ("vrf", "afi", "prefix")
+
+    def purge(self):
+        """
+        Perform pending deletes
+        """
+        for r_id, msg in reversed(self.pending_deletes):
+            self.logger.debug("Deactivating: %s", msg)
+            self.c_delete += 1
+            try:
+                obj = self.model.objects.get(pk=self.mappings[r_id])
+                obj.fire_event("expired")
+            except self.model.DoesNotExist:
+                pass  # Already deleted
+        self.pending_deletes = []
