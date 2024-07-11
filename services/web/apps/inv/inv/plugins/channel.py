@@ -58,8 +58,8 @@ class ChannelPlugin(InvPlugin):
 
     def api_get_adhoc_list(self, request, id):
         o = self.app.get_object_or_404(Object, id=id)
-        return [{"id": str(o.id), "label": str(o), "tracer": "DWDM Ubunch"}]
+        return [{"object": str(o.id), "object__label": str(o), "tracer": "DWDM Ubunch"}]
 
     def api_create_adhoc(self, request, id):
-        o = self.app.get_object_or_404(Object, id=id)
+        self.app.get_object_or_404(Object, id=id)
         return {"status": "True", "msg": "Ad-hoc channel is created"}
