@@ -30,6 +30,7 @@ class ConnectionItem(object):
 class Node(object):
     object_id: str
     name: str
+    model: str
     parent_connection: Optional[str]
     children: List["Node"]
     is_external: bool
@@ -39,7 +40,8 @@ class Node(object):
     def from_object(cls, obj: Object) -> "Node":
         return Node(
             object_id=str(obj.id),
-            name=obj.name,
+            name=obj.name or "",
+            model=obj.model.get_short_label(),
             parent_connection=None,
             children=[],
             is_external=False,
@@ -249,6 +251,14 @@ class CommutationPlugin(InvPlugin):
         def q_id(s: str) -> str:
             return s.replace(" ", "_")
 
+        def dot_label(name: str, model: str) -> str:
+            parts = []
+            if name:
+                parts.append(name)
+            if model:
+                parts.append(model)
+            return q("\\n".join(parts))
+
         def c_hash(node: None, c: ConnectionItem) -> str:
             if node.object_id < c.remote_object:
                 return f"{node.object_id}|{c.local_name}|{c.remote_object}|{c.remote_name}"
@@ -264,7 +274,7 @@ class CommutationPlugin(InvPlugin):
                     style = 'style = "rounded,dashed" color = "#919191"'
                 r += [
                     f"subgraph cluster_{node.object_id} {{",
-                    f'  graph [label = "{q(node.name)}" {style}]',
+                    f'  graph [label = "{dot_label(node.name, node.model)}" {style}]',
                 ]
                 for child in node.children:
                     cr, cc = render(child, 1)
@@ -277,9 +287,11 @@ class CommutationPlugin(InvPlugin):
                     )
                 r.append("}")
             else:
-                slots = [node.parent_connection if node.parent_connection else node.name] + [
-                    f"<{s.local_name}>{s.local_name}" for s in node.connections
-                ]
+                slots = [
+                    dot_label(
+                        node.parent_connection if node.parent_connection else node.name, node.model
+                    )
+                ] + [f"<{s.local_name}>{s.local_name}" for s in node.connections]
                 r.append(f"obj_{node.object_id} [shape=record label=\"{'|'.join(slots)}\"]")
             if node.connections:
                 for s in node.connections:
