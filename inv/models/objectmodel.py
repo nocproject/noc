@@ -345,6 +345,7 @@ class ObjectModel(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
+    short_label = StringField(required=False)
     vendor: "Vendor" = PlainReferenceField(Vendor)
     connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
     configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(
@@ -383,6 +384,26 @@ class ObjectModel(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
+
+    def get_short_label(self) -> str:
+        """
+        Get label for schemes.
+
+        Use short_label, if defined.
+        Compose label otherwise.
+
+        Returns:
+            Short label for schemes.
+        """
+        if self.short_label:
+            return self.short_label
+        parts = []
+        if self.vendor.code:
+            parts.append(self.vendor.code[0])
+        else:
+            parts.append(self.vendor.full_name)
+        parts.append(self.name.split("|")[-1].strip())
+        return " ".join(parts)
 
     def get_data(
         self,
@@ -560,6 +581,8 @@ class ObjectModel(Document):
             "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
+        if self.short_label:
+            r["short_label"] = self.short_label
         if self.cross:
             r["cross"] = [s.json_data for s in self.cross]
         if self.sensors:
