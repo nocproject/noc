@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from django.db.models.query_utils import Q
-
 # NOC modules
 from .base import BaseLoader
 from ..models.ipprefix import IPPrefix
