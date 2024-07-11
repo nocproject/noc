@@ -112,9 +112,9 @@ class ReportConfigApplication(ExtDocApplication):
             elif fn not in columns[q_name] and fn not in {"all", "*"}:
                 continue
             title = (
-                report.get_localization(f"columns.{field_name}", lang=pref_lang)
+                report.get_localization(f"columns.{fn}", lang=pref_lang)
                 or field.get("title")
-                or field_name
+                or fn
             )
             r += [(field_name, title, field_name in checked)]
         return r
