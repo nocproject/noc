@@ -1,9 +1,9 @@
 {
-    "name": "IRE-Polus | Horizon | IL-2-50/100-C-M-OSC(1511)-H8",
+    "name": "IRE-Polus | Horizon | Mux_Demux | IL-2-50/100-C-M-OSC(1511)-H8",
     "$collection": "inv.objectmodels",
     "uuid": "d730388f-3a59-4c42-8c24-0e8393cd7e5a",
     "vendor__code": "IRE-POLUS",
-    "description": "Полуслотовый адаптер",
+    "description": "IL-2-50/100-C-M-OSC(xxxx)-H8 – оптический интерливер.",
     "cr_context": "LINECARD",
     "connections": [
         {
