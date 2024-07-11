@@ -45,7 +45,7 @@ rx_module = re.compile(
 )
 rx_channel = re.compile(r"\S+Lane_(\d+)\S+")
 rx_threshold = re.compile(r"(?P<param>\S+)(?P<type>CMax|WMax|WMin|CMin)$")
-rx_num = re.compile(r"\S+(\d+)")
+rx_num = re.compile(r"\D+(\d+)")
 rx_cross_dst = re.compile(
     r"(?:ODU\d+)?(?P<port>(?:Ln|Cl|IN)_?\d+)(_(?P<odu>ODU\d+)(?P<odu_idx>_\d+))?"
 )
