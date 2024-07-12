@@ -119,7 +119,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   svgToBase64: function(svgString){
-    var base64String = "data:image/svg+xml;base64," + btoa(svgString);
+    var base64String = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
     return base64String;
   },
   //

@@ -25,6 +25,58 @@ Ext.define("NOC.inv.channel.Application", {
 
   initComponent: function(){
     var me = this;
+
+    me.mapPanel = Ext.create("Ext.panel.Panel", {
+      app: me,
+      title: __("Map"),
+      layout: "fit",
+      items: [
+        {
+          xtype: "container",
+          flex: 1,
+          layout: "fit",
+          scrollable: true,
+          items: [
+            {
+              xtype: "image",
+              itemId: "scheme",
+              padding: 5,
+            },
+          ],
+        },
+      ],
+      tbar: [
+        {
+          text: __("Close"),
+          glyph: NOC.glyph.arrow_left,
+          scope: me,
+          handler: me.onCloseMap,
+        },
+        {
+          xtype: "combobox",
+          store: [
+            [0.25, "25%"],
+            [0.5, "50%"],
+            [0.75, "75%"],
+            [1.0, "100%"],
+            [1.25, "125%"],
+            [1.5, "150%"],
+            [2.0, "200%"],
+            [3.0, "300%"],
+            [4.0, "400%"],
+          ],
+          width: 100,
+          value: 1.0,
+          valueField: "zoom",
+          displayField: "label",
+          listeners: {
+            scope: me,
+            select: me.onZoom,
+          },    
+        },
+      ],
+    });
+    me.ITEM_MAP = me.registerItem(me.mapPanel);
     Ext.apply(me, {
       columns: [
         {
@@ -251,7 +303,74 @@ Ext.define("NOC.inv.channel.Application", {
           ],
         },
       ],
+      formToolbar: [
+        {
+          text: __("Map"),
+          glyph: NOC.glyph.globe,
+          tooltip: __("Show Map"),
+          scope: me,
+          handler: me.onMap,
+        },
+      ],
+
     });
     me.callParent();
+  },
+  //
+  onMap: function(){
+    var me = this,
+      currentId = me.currentRecord.id,
+      url = `/inv/channel/${currentId}/dot`;
+    Ext.Ajax.request({
+      url: url,
+      method: "GET",
+      success: function(response){
+        var obj = Ext.decode(response.responseText);
+        me.renderScheme(obj.dot);
+        me.showItem(me.ITEM_MAP);
+      },
+      failure: function(response){
+        NOC.error("Error status: " + response.status);
+      },
+    });
+  },
+  //
+  onCloseMap: function(){
+    var me = this;
+    me.showForm();
+  },
+  //
+  onZoom: function(combo){
+    var me = this,
+      imageComponent = me.down("#scheme");
+    imageComponent.getEl().dom.style.transformOrigin = "0 0";
+    imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
+  },
+  //
+  svgToBase64: function(svgString){
+    var base64String = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
+    return base64String;
+  },
+  //
+  //
+  _render: function(dot){
+    var me = this,
+      viz = new Viz();
+    viz.renderSVGElement(dot).then(function(el){
+      var imageComponent = me.down("[itemId=scheme]");
+      imageComponent.setSrc(me.svgToBase64(el.outerHTML));
+    });
+  },
+  //
+  renderScheme: function(dot){
+    var me = this;
+    if(typeof Viz === "undefined"){
+      new_load_scripts([
+        "https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js",          
+      ], me, Ext.bind(me._render, me, [dot]));
+    } else{
+      me._render(dot);
+    }
   },
 });
