@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.core.ip import IPv6
@@ -56,6 +56,10 @@ class Script(BaseScript):
         "g": "physical",  # GigabitEthernet
         "t": "physical",  # TenGigabitEthernet
     }
+
+    def get_portchannels(self):
+        r = {}
+        return r
 
     def get_ospfint(self):
         ospfs = []

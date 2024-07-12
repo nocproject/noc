@@ -75,6 +75,16 @@ class Profile(BaseProfile):
             r += [name]
         return r
 
+    _IF_TYPES = {
+        "e": "physical",  # FastEthernet
+        "g": "physical",  # GigabitEthernet
+        "t": "physical",  # TenGigabitEthernet
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls._IF_TYPES.get(name[:1].lower(), "unknown")
+
     def clean_lldp_neighbor(self, obj, neighbor):
         neighbor = super().clean_lldp_neighbor(obj, neighbor)
         if neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
