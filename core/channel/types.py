@@ -18,6 +18,7 @@ class ChannelTopology(Enum):
         P2P: Point-to-point.
         UP2P: Unidirectional point-to-point.
         BUNCH: Bunch of P2P pairs.
+        UBUNCH: Unidirectional bunch of P2P pairs.
         P2MP: Point-to-multipoint.
         UP2MP: Unidirectional point-to-point.
         STAR: Full mesh.
@@ -26,6 +27,7 @@ class ChannelTopology(Enum):
     P2P = "p2p"
     UP2P = "up2p"
     BUNCH = "bunch"
+    UBUNCH = "ubunch"
     P2MP = "p2mp"
     UP2MP = "up2mp"
     STAR = "star"

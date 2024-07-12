@@ -187,12 +187,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                       Ext.Ajax.request({
                         url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
                         method: "POST",
-                        jsonData: {id: selectedValue, tracer: selectedRecord.get("tracer")},
+                        jsonData: {object: selectedValue, tracer: selectedRecord.get("tracer")},
                         success: function(response){
                           var data = Ext.decode(response.responseText);
                           if(data.status){
                             NOC.info(data.msg);
                             adHocWindow.close();
+                            NOC.launch("inv.channel", "history", {"args": [data.channel]})
                           } else{
                             NOC.error(data.msg);
                           }

@@ -63,4 +63,4 @@ class Endpoint(Document):
     used_by = EmbeddedDocumentListField(UsageItem)
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.channel.name}:{self.resource}"

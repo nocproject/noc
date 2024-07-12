@@ -996,9 +996,11 @@ class Object(Document):
         """
         return Object.objects.filter(container=self.id)
 
-    def get_local_name_path(self):
+    def get_local_name_path(self, include_chassis: bool = False) -> str:
         for _, ro, rn in self.get_outer_connections():
-            return ro.get_local_name_path() + [rn]
+            return ro.get_local_name_path(include_chassis) + [rn]
+        if include_chassis:
+            return [self.name]
         return []
 
     def get_name_path(self) -> List[str]:
@@ -1445,12 +1447,12 @@ class Object(Document):
         seen: Set[str] = set()
         discriminators = [discriminator(x) for x in discriminators or []]
         # Dynamic crossings
-        if self.cross:
-            for item in iter_merge(self.cross, self.model.cross):
-                # @todo: Restrict to type `s`?
-                if item.input == name and item.output not in seen and is_passable(item):
-                    yield item.output
-                    seen.add(item.output)
+        #if self.cross:
+        for item in iter_merge(self.cross, self.model.cross):
+            # @todo: Restrict to type `s`?
+            if item.input == name and item.output not in seen and is_passable(item):
+                yield item.output
+                seen.add(item.output)
 
     def set_internal_connection(self, input: str, output: str, data: Dict[str, str] = None):
         """ """
