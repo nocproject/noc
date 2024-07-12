@@ -21,9 +21,9 @@ from typing import Tuple, Iterable, List, Any, Dict, Set, Optional, Union
 # Third-party modules
 import cachetools
 from django.contrib.postgres.fields import ArrayField
+from django.db.models.query_utils import Q
 from django.core.validators import MinValueValidator
 from django.db.models import (
-    Q,
     CharField,
     BooleanField,
     ForeignKey,
@@ -146,7 +146,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 50
+MANAGEDOBJECT_CACHE_VERSION = 51
 CREDENTIAL_CACHE_VERSION = 7
 
 
@@ -203,6 +203,14 @@ MaintenanceItems = RootModel[Dict[str, MaintenanceItem]]
 
 
 CapsItems = RootModel[List[ModelCapsItem]]
+
+
+class MappingItem(BaseModel):
+    remote_system: str
+    remote_id: str
+
+
+MappingItems = RootModel[Dict[str, MappingItem]]
 
 
 class CheckStatus(BaseModel):
@@ -499,6 +507,13 @@ class ManagedObject(NOCModel):
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
+    mappings: Optional[Dict[str, MappingItem]] = PydanticField(
+        "Remote System Mapping Items",
+        schema=MappingItems,
+        blank=True,
+        null=True,
+        default=dict,
+    )
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
@@ -816,6 +831,7 @@ class ManagedObject(NOCModel):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _mapping_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _e_labels_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _neighbor_cache = cachetools.TTLCache(1000, ttl=300)
 
@@ -862,19 +878,20 @@ class ManagedObject(NOCModel):
         :param oid: Managed Object's id
         :return: ManagedObject instance
         """
-        mo = ManagedObject.objects.filter(id=id)[:1]
-        if mo:
-            return mo[0]
-        return None
+        return ManagedObject.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["ManagedObject"]:
-        mo = ManagedObject.objects.filter(bi_id=bi_id)[:1]
-        if mo:
-            return mo[0]
-        else:
-            return None
+        return ManagedObject.objects.filter(bi_id=bi_id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_mapping_cache"), lock=lambda _: id_lock)
+    def get_by_mapping(cls, remote_system: str, remote_id: str) -> Optional["ManagedObject"]:
+        return ManagedObject.objects.filter(
+            Q(remote_system=remote_system, remote_id=remote_id)
+            | Q(**{f"mappings__{remote_system}__remote_id": remote_id})
+        ).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         changed_fields = set(changed_fields or [])
@@ -2079,7 +2096,7 @@ class ManagedObject(NOCModel):
         if not fqdn:
             return None
         if self.object_profile.resolver_handler:
-            handler = Handler.get_by_id(self.config_diff_filter_handler)
+            handler = Handler.get_by_id(self.object_profile.resolver_handler)
             if handler and handler.allow_resolver:
                 return handler.get_handler()(fqdn)
             elif handler and not handler.allow_resolver:
@@ -2751,6 +2768,26 @@ class ManagedObject(NOCModel):
             ).encode(DEFAULT_ENCODING),
         }
 
+    def set_mapping(self, remote_system: RemoteSystem, remote_id: str):
+        """
+        Set Object mapping
+        Args:
+            remote_system: Remote System Instance
+            remote_id: Id on Remote system
+        """
+        rid = str(remote_system.id)
+        if rid in self.mappings and self.mappings[rid]["remote_id"] != remote_id:
+            self.mappings[rid]["remote_id"] = remote_id
+        else:
+            self.mappings[rid] = {"remote_system": rid, "remote_id": remote_id}
+
+    def get_mappings(self) -> List[Tuple[str, str]]:
+        """return object mapping from"""
+        r = []
+        for m in self.mappings.values():
+            r.append((m["remote_system"], m["remote_id"]))
+        return r
+
     @classmethod
     def get_object_by_template(
         cls,
@@ -3047,7 +3084,7 @@ class InteractionHub(object):
     def __init__(self, obj):
         self.logger = logging.getLogger(__name__)
         self.__supported_interactions: Set[Interaction] = self.load_supported_interactions()
-        self.__state: State = obj.state
+        self.__state: State = obj.state or obj.workflow.get_default_state()
 
     @staticmethod
     def load_supported_interactions():
