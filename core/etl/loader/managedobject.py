@@ -17,6 +17,8 @@ from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
 from noc.sa.models.profile import Profile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
+from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -31,6 +33,8 @@ class ManagedObjectLoader(BaseLoader):
     label_enable_setting = "enable_managedobject"
     workflow_delete_event = "remove"
     workflow_state_sync = True
+
+    model_mappings = {"segment": NetworkSegment, "objectprofile": ManagedObjectProfile}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
