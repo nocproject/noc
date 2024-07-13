@@ -59,7 +59,7 @@ class ManagedObject(BaseModel):
     profile: Optional[str] = None
     object_profile: Reference["ManagedObjectProfile"]
     static_client_groups: Optional[List[Reference["ResourceGroup"]]] = None
-    static_service_groups: List[Reference["ResourceGroup"]]
+    static_service_groups: Optional[List[Reference["ResourceGroup"]]] = None
     scheme: str
     address: str
     port: Optional[str] = None
