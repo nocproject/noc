@@ -258,6 +258,8 @@ class ResourceTemplate(Document):
         env = self.get_env(item)
         if dry_run:
             return
+        if not hasattr(self.model_instance, "from_template"):
+            raise ValueError("Resource '%s' does not supported Templating" % self.model_instance)
         o = self.model_instance.from_template(**env)
         o.full_clean()
         return o
@@ -274,7 +276,7 @@ class ResourceTemplate(Document):
             item: Resource Item
         """
         r: Dict[str, Any] = {}
-        caps: List[CapsItem] = []
+        caps: Dict[str, Any] = {}
         data: Dict[str, Any] = {}
         params: Dict[str, ParamItem] = {}
         for p in self.get_template_params():
@@ -300,9 +302,7 @@ class ResourceTemplate(Document):
                 continue
             value = data.pop(p.name)
             if p.set_capability:
-                caps.append(
-                    CapsItem(capability=p.set_capability, value=p.set_capability.clean_value(value))
-                )
+                caps[str(p.set_capability.id)] = p.set_capability.clean_value(value)
             r[p.param or p.name] = value
         # Labels
         if item.labels:
