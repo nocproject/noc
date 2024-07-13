@@ -2779,7 +2779,7 @@ class ManagedObject(NOCModel):
             object_profile=object_profile,
             administrative_domain=administrative_domain,
             segment=segment,
-            labes=labels or [],
+            labels=labels or [],
         )
         if capabilities:
             mo.update_caps(capabilities, source="template")

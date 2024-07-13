@@ -28,8 +28,8 @@ from jinja2 import Template as Jinja2Template
 
 # NOC Modules
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.model.fields import DocumentReferenceField
 from noc.inv.models.capability import Capability
-from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.prettyjson import to_json
 from noc.models import get_model, get_model_id
@@ -186,7 +186,7 @@ class ResourceTemplate(Document):
     )
     resource_model = StringField(
         validation=check_model,
-        required=True,
+        required=False,
         choices=[
             ("vc.Vlan", "Vlan"),
         ],
@@ -297,7 +297,11 @@ class ResourceTemplate(Document):
             elif p.name not in data and p.required:
                 raise ValueError("Parameter %s is required" % p.name)
             elif p.name not in data and p.default_expression:
-                r[p.name] = p.render_default(**data)
+                if p.name in params:
+                    r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
+                else:
+                    r[p.name] = p.render_default(**data)
+                continue
             elif p.name not in data:
                 continue
             value = data.pop(p.name)
@@ -309,17 +313,24 @@ class ResourceTemplate(Document):
             # Check allowed set
             r["labels"] = list(item.labels)
         r["static_service_groups"] = []
+        allowed_sg, deny_sg = set(), set()
         for g in self.groups:
             if g.action == "set":
                 r["static_service_groups"].append(g.group)
-            elif g.action == "allow" and str(g.id) in item.service_groups:
-                r["static_service_groups"].append(g.group)
-            elif g.action == "deny" and str(g.id) in item.service_groups:
-                item.service_groups.pop(str(g.id))
-        for g in item.service_groups:
-            g = ResourceGroup.get_by_id(g)
-            if g and g not in r["static_service_groups"]:
+            if not item.service_groups:
+                continue
+            if g.action == "allow":
+                allowed_sg.add(str(g.group.id))
+            elif g.action == "deny":
+                deny_sg.add(str(g.group.id))
+        for g in item.service_groups or []:
+            if g in deny_sg:
+                continue
+            elif g in allowed_sg:
+                g = ResourceGroup.get_by_id(g)
                 r["static_service_groups"].append(g)
+        for k, v in data.items():
+            r[k] = v
         return r
 
     def get_model_params(self) -> List[ParamItem]:
@@ -327,9 +338,16 @@ class ResourceTemplate(Document):
         r = []
         for field in self.model_instance._meta.fields:
             if isinstance(field, ForeignKey):
-                r.append(
-                    ParamItem(name=field.name, model_id=get_model_id(field.remote_field.model))
+                mid = get_model_id(field.remote_field.model)
+            elif isinstance(field, DocumentReferenceField):
+                mid = (
+                    get_model_id(field.document)
+                    if not isinstance(field.document, str)
+                    else field.document
                 )
+            else:
+                mid = None
+            r.append(ParamItem(name=field.name, model_id=mid))
         return r
 
     def get_template_params(self) -> List[ParamItem]:

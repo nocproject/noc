@@ -7,9 +7,6 @@ console.debug("Defining NOC.sa.resourcetemplate.Model");
 Ext.define("NOC.sa.resourcetemplate.Model", {
     extend: "Ext.data.Model",
     rest_url: "/sa/resourcetemplate/",
-    actionMethods:{
-        read   : 'POST'
-    },
 
     fields: [
         {
@@ -22,7 +19,8 @@ Ext.define("NOC.sa.resourcetemplate.Model", {
         },
         {
             name: "type",
-            type: "string"
+            type: "string",
+            defaultValue: "host"
         },
         {
             name: "uuid",
@@ -65,6 +63,6 @@ Ext.define("NOC.sa.resourcetemplate.Model", {
             name: "default_state__label",
             type: "string",
             persist: false
-        },
+        }
     ]
 });

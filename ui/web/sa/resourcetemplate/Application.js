@@ -46,11 +46,6 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
                     align: "center"
                 },
                 {
-                    name: "uuid",
-                    xtype: "displayfield",
-                    fieldLabel: __("UUID")
-                },
-                {
                     text: __("Resource"),
                     dataIndex: "resource_model",
                     width: 70
@@ -88,6 +83,15 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
                     fieldLabel: __("Description")
                 },
                 {
+                    name: "type",
+                    xtype: "combobox",
+                    fieldLabel: __("Type"),
+                    allowBlank: true,
+                    store: [
+                        ["host", __("Managed Object")]
+                    ]
+                },
+                {
                     name: "params",
                     xtype: "gridfield",
                     fieldLabel: __("Fields"),
@@ -95,7 +99,7 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
                         {
                             text: __("Name"),
                             dataIndex: "name",
-                            width: 100,
+                            width: 200,
                             sortable: false,
                             editor: {
                                 xtype: "textfield",
@@ -118,7 +122,7 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
                         {
                             text: __("Param"),
                             dataIndex: "param",
-                            width: 100,
+                            width: 200,
                             sortable: false,
                             editor: {
                                 xtype: "textfield",
@@ -157,19 +161,19 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
                           },
                         },
                         {
-                            text: __("Action"),
-                            dataIndex: "action",
-                            width: 150,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["set", __("Set")],
-                                    ["allow", __("Allow")],
-                                    ["deny", __("Deny")],
-                                ],
-                                queryMode: "local",
-                            },
-                            renderer: NOC.render.Lookup("action")
+                          text: __("Action"),
+                          dataIndex: "action",
+                          width: 150,
+                          editor: {
+                              xtype: "combobox",
+                              store: [
+                                  ["set", __("Set")],
+                                  ["allow", __("Allow")],
+                                  ["deny", __("Deny")],
+                              ],
+                              queryMode: "local",
+                          },
+                          renderer: NOC.render.Lookup("action")
                         },
                         {
                             text: __("Client"),
