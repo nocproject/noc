@@ -5,11 +5,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Dict, Any
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.techdomain.tracer.base import BaseTracer
 from noc.sa.interfaces.base import ObjectIdParameter, StringParameter
 from noc.core.techdomain.tracer.loader import loader as tracer_loader
+from noc.inv.models.channel import Channel
+from noc.inv.models.endpoint import Endpoint
 from .base import InvPlugin
 
 
@@ -34,23 +39,23 @@ class ChannelPlugin(InvPlugin):
         )
 
     def get_data(self, request, object):
-        # @todo: Write implementation
-        return {
-            "records": [
-                {
-                    "id": "1" * 24,
-                    "name": "Ch1",
-                    "tech_domain": "444",
-                    "tech_domain__label": "Optical SM",
-                },
-                {
-                    "id": "2" * 24,
-                    "name": "Ch2",
-                    "tech_domain": "444",
-                    "tech_domain__label": "Optical SM",
-                },
-            ]
-        }
+        def q(ch:Channel) -> Dict[str, Any]:
+            return {
+                    "id": str(ch.id),
+                    "name": ch.name,
+                    "tech_domain": str(ch.tech_domain.id),
+                    "tech_domain__label": ch.tech_domain.name,
+            }
+
+        nested_objects_ids = "|".join(str(o.id) for o in BaseTracer().iter_nested_objects(object))
+        rx = f"^o:({nested_objects_ids}):"
+        pipeline = [{"$match": {"resource": {"$regex": rx}}}, {"$group": {"_id": "$channel"}}]
+        r = Endpoint._get_collection().aggregate(pipeline)
+        items = [i["_id"] for i in r]
+        if not items:
+            return []  # No data
+        r = [q(i) for i in Channel.objects.filter(id__in=items)]
+        return {"records": r}
 
     def object_label(self, obj: Object) -> str:
         """

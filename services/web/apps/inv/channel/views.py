@@ -12,6 +12,7 @@ from noc.inv.models.endpoint import Endpoint
 from noc.core.translation import ugettext as _
 from noc.services.web.base.docinline import DocInline
 from noc.core.resource import resource_label
+from noc.core.techdomain.mapper.loader import loader as mapper_loader
 
 
 class EndpointDocInline(DocInline):
@@ -33,7 +34,7 @@ class ChannelApplication(ExtDocApplication):
 
     @view(url="^(?P<id>[0-9a-f]{24})/dot/", method=["GET"], api=True, access="read")
     def api_dot(self, request, id: str):
-        r = ["graph {"]
-        r.append("  A -- B")
-        r.append("}")
-        return self.render_json({"dot": "\n".join(r)})
+        channel = self.get_object_or_404(Channel, id=id)
+        mapper = mapper_loader[channel.tech_domain.code](channel)
+        dot = mapper.to_dot()
+        return self.render_json({"dot": dot})

@@ -37,6 +37,14 @@ class Endpoint(object):
         return f"o:{self.object.id}:{self.name}"
 
 
+@dataclass
+class PathItem(object):
+    object: Object
+    input: str
+    output: Optional[str]
+    input_discriminator: Optional[str] = None
+
+
 class BaseTracer(object):
     name: str = "base"
     tech_domain: str
@@ -70,6 +78,12 @@ class BaseTracer(object):
         """
         return iter(())
 
+    def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
+        """
+        Iterate all intermediate points of path
+        """
+        return iter(())
+
     def trace_path(self, start: Endpoint) -> Optional[Endpoint]:
         """
         Trace path from starting endpoint to the end.
@@ -80,7 +94,11 @@ class BaseTracer(object):
         Returns:
             ending endpoint, if possible, None otherwise
         """
-        return None
+        try:
+            *_, last = self.iter_path(start)
+        except ValueError:
+            return None  # No path
+        return Endpoint(object=last.object, name=last.output if last.output else last.input)
 
     def is_ad_hoc_available(self, obj: Object) -> bool:
         """

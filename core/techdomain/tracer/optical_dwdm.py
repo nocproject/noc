@@ -11,7 +11,7 @@ from typing import Iterable, Optional
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
-from .base import BaseTracer, Endpoint
+from .base import BaseTracer, Endpoint, PathItem
 
 
 class OpticalDWDMTracer(BaseTracer):
@@ -32,7 +32,7 @@ class OpticalDWDMTracer(BaseTracer):
                 if pvi.protocol.code == "DWDM" and pvi.direction == ">" and pvi.discriminator:
                     yield Endpoint(object=obj, name=c.name)
 
-    def trace_path(self, start: Endpoint) -> Optional[Endpoint]:
+    def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
         def get_discriminator(ep: Endpoint) -> Optional[str]:
             for item in self.iter_cross(ep.object):
                 if item.input == ep.name and item.input_discriminator:
@@ -70,11 +70,14 @@ class OpticalDWDMTracer(BaseTracer):
                 oep = Endpoint(object=ep.object, name=out)
                 if is_exit(oep):
                     self.logger.debug("Traced to %s", oep)
-                    return oep
+                    yield PathItem(object=ep.object, input=ep.name, output=oep.name)
                 candidates.append(oep)
             for oep in candidates:
                 # Next step trough cable
+                pi = PathItem(object=ep.object, input=ep.name, output=oep.name)
                 ep = self.get_peer(oep)
+                if ep:
+                    yield pi
                 break
         self.logger.debug("Failed to trace")
         return None

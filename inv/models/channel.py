@@ -104,3 +104,14 @@ class Channel(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["Channel"]:
         return Channel.objects.filter(bi_id=bi_id).first()
+
+    @property
+    def is_unidirectional(self) -> bool:
+        """
+        Check if channel is unidirectional.
+        """
+        return self.topology in (
+            ChannelTopology.UP2P.value,
+            ChannelTopology.UBUNCH.value,
+            ChannelTopology.UP2MP.value,
+        )
