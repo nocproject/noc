@@ -210,7 +210,7 @@ class MappingItem(BaseModel):
     remote_id: str
 
 
-MappingItems = RootModel[Dict[str, MappingItem]]
+MappingItems = RootModel[List[MappingItem]]
 
 
 class CheckStatus(BaseModel):
@@ -507,12 +507,12 @@ class ManagedObject(NOCModel):
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
-    mappings: Optional[Dict[str, MappingItem]] = PydanticField(
+    mappings: Optional[List[MappingItem]] = PydanticField(
         "Remote System Mapping Items",
         schema=MappingItems,
         blank=True,
         null=True,
-        default=dict,
+        default=list,
     )
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
@@ -890,7 +890,7 @@ class ManagedObject(NOCModel):
     def get_by_mapping(cls, remote_system: str, remote_id: str) -> Optional["ManagedObject"]:
         return ManagedObject.objects.filter(
             Q(remote_system=remote_system, remote_id=remote_id)
-            | Q(**{f"mappings__{remote_system}__remote_id": remote_id})
+            | Q(mappings__contains=[{"remote_id": remote_id, "remote_system": str(remote_system)}])
         ).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -2776,17 +2776,21 @@ class ManagedObject(NOCModel):
             remote_id: Id on Remote system
         """
         rid = str(remote_system.id)
-        if rid in self.mappings and self.mappings[rid]["remote_id"] != remote_id:
-            self.mappings[rid]["remote_id"] = remote_id
+        for m in self.mappings:
+            if m["remote_system"] == rid and m["remote_id"] != remote_id:
+                m["remote_id"] = remote_id
+                break
+            elif m["remote_system"] == rid:
+                break
         else:
-            self.mappings[rid] = {"remote_system": rid, "remote_id": remote_id}
+            self.mappings += [{"remote_system": rid, "remote_id": remote_id}]
 
-    def get_mappings(self) -> List[Tuple[str, str]]:
+    def get_mapping(self, remote_system: RemoteSystem) -> Optional[str]:
         """return object mapping from"""
-        r = []
-        for m in self.mappings.values():
-            r.append((m["remote_system"], m["remote_id"]))
-        return r
+        for m in self.mappings:
+            if m["remote_system"] == str(remote_system.id):
+                return m["remote_id"]
+        return None
 
     @classmethod
     def get_object_by_template(
