@@ -233,6 +233,12 @@ class Object(Document):
     def get_by_bi_id(cls, bi_id: int) -> Optional["Object"]:
         return Object.objects.filter(bi_id=bi_id).first()
 
+    def resource_label(self) -> str:
+        """
+        Generate resource label.
+        """
+        return " | ".join(self.get_local_name_path(True))
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             if self.data and self.get_data("management", "managed_object"):

@@ -55,6 +55,8 @@ class DocInline(object):
     pk_field_name = None  # Set by constructor
     clean_fields = {}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
+    # Add `__label` items
+    field_labels = {}  # field_name -> callable(field_value) -> result
 
     def __init__(self, model):
         self.model = model
@@ -276,6 +278,8 @@ class DocInline(object):
                         v = str(v.id)
                     else:
                         v = str(v)
+                elif f.name in self.field_labels:
+                    r[f"{f.name}__label"] = self.field_labels[f.name](v)
                 elif not isinstance(v, int) and not isinstance(v, str) and not isinstance(v, bool):
                     if hasattr(v, "id"):
                         v = v.id

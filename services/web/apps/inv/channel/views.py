@@ -11,6 +11,11 @@ from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint
 from noc.core.translation import ugettext as _
 from noc.services.web.base.docinline import DocInline
+from noc.core.resource import resource_label
+
+
+class EndpointDocInline(DocInline):
+    field_labels = {"resource": resource_label}
 
 
 class ChannelApplication(ExtDocApplication):
@@ -22,7 +27,7 @@ class ChannelApplication(ExtDocApplication):
     menu = [_("Channels")]
     model = Channel
     glyph = "road"
-    endpoints = DocInline(Endpoint)
+    endpoints = EndpointDocInline(Endpoint)
     parent_model = Channel
     parent_field = "parent"
 

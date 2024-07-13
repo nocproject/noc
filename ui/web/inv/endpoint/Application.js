@@ -31,6 +31,7 @@ Ext.define("NOC.inv.endpoint.Application", {
           text: __("Resource"),
           dataIndex: "resource",
           width: 100,
+          renderer: NOC.render.Lookup("resource"),
         },
         {
           text: __("Description"),

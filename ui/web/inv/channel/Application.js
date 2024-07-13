@@ -275,6 +275,7 @@ Ext.define("NOC.inv.channel.Application", {
               dataIndex: "resource",
               width: 200,
               editor: "textfield",
+              renderer: NOC.render.Lookup("resource"),
             },
             {
               text: __("Is Root"),
@@ -297,7 +298,7 @@ Ext.define("NOC.inv.channel.Application", {
               dataIndex: "used_by",
               flex: 1,
               renderer: function(v){
-                return __("TODO");
+                return __("...");
               },
             },
           ],
