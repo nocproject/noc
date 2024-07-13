@@ -192,7 +192,7 @@ class BaseTracer(object):
         """
         Create new ad-hoc channel instace
         """
-        ch= Channel(
+        ch = Channel(
             tech_domain=TechDomain.get_by_code(self.tech_domain),
             name=f"Ad-hoc {self.name} {datetime.datetime.now().isoformat()}",
             description=f"Created by {self.name} tracer",
