@@ -5,22 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from dataclasses import dataclass
-from typing import List, Optional, Iterable, Tuple, Dict, DefaultDict
-from collections import defaultdict
-
-# Third party modules
-from bson import ObjectId
-
 # NOC modules
 from noc.inv.models.object import Object
-from noc.inv.models.objectconnection import ObjectConnection
-from .base import InvPlugin
 from noc.core.techdomain.tracer.base import BaseTracer
-from noc.core.techdomain.tracer.loader import loader as tracer_loader
 from noc.sa.interfaces.base import ObjectIdParameter, StringParameter
 from noc.core.techdomain.tracer.loader import loader as tracer_loader
+from .base import InvPlugin
 
 
 class ChannelPlugin(InvPlugin):

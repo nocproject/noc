@@ -6,13 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional
 
 # NOC modules
 from noc.inv.models.object import Object
-from noc.inv.models.channel import Channel
-from noc.inv.models.endpoint import Endpoint as DBEndpoint
-from noc.inv.models.techdomain import TechDomain
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from .base import BaseTracer, Endpoint
 
