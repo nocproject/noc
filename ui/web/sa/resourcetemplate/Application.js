@@ -16,6 +16,7 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
         "NOC.inv.resourcegroup.LookupField",
         "NOC.core.label.LabelField",
         "NOC.main.ref.modelid.LookupField",
+        "NOC.wf.state.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.resourcetemplate.Model",
@@ -90,6 +91,12 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
                     store: [
                         ["host", __("Managed Object")]
                     ]
+                },
+                {
+                    text: __("Default State"),
+                    dataIndex: "default_state",
+                    width: 200,
+                    renderer: NOC.render.Lookup("default_state")
                 },
                 {
                     name: "params",

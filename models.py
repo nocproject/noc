@@ -221,6 +221,7 @@ _MODELS = {
     "sa.Service": "noc.sa.models.service.Service",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.ServiceSummary": "noc.sa.models.servicesummary.ServiceSummary",
+    "sa.ResourceTemplate": "noc.sa.models.resourcetemplate.ResourceTemplate",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
     # fm models
     "fm.ActiveAlarm": "noc.fm.models.activealarm.ActiveAlarm",
@@ -407,6 +408,7 @@ COLLECTIONS = [
     "bi.Dashboard",
     "cm.ConfDBQuery",
     "main.Report",
+    "sa.ResourceTemplate",
 ]
 
 # Model -> Setting

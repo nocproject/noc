@@ -32,6 +32,7 @@ from noc.core.model.fields import DocumentReferenceField
 from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.prettyjson import to_json
+from noc.core.model.decorator import on_delete_check
 from noc.models import get_model, get_model_id
 from noc.wf.models.state import State
 
@@ -166,6 +167,7 @@ class ParamFormItem(EmbeddedDocument):
         return r
 
 
+@on_delete_check(check=[("sa.DiscoveredObject", "default_template")])
 class ResourceTemplate(Document):
     meta = {
         "collection": "resourcetemplates",
@@ -331,6 +333,10 @@ class ResourceTemplate(Document):
                 r["static_service_groups"].append(g)
         for k, v in data.items():
             r[k] = v
+        if self.default_state:
+            r["state"] = self.default_state
+        if self.sticky:
+            r["template"] = self
         return r
 
     def get_model_params(self) -> List[ParamItem]:

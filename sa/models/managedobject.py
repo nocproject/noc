@@ -2761,6 +2761,7 @@ class ManagedObject(NOCModel):
         administrative_domain: AdministrativeDomain,
         segment: NetworkSegment,
         scheme: int = TELNET,
+        state: Optional[State] = None,
         template: Optional[Any] = None,
         labels: Optional[List[str]] = None,
         capabilities: Optional[Dict[str, Any]] = None,
@@ -2785,6 +2786,8 @@ class ManagedObject(NOCModel):
             mo.update_caps(capabilities, source="template")
         if groups:
             mo.static_service_groups = [str(g.id) for g in groups]
+        if state:
+            mo.state = state
         for field, value in data.items():
             if hasattr(mo, field):
                 setattr(mo, field, value)
