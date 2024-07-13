@@ -21,15 +21,32 @@ Ext.define("NOC.sa.resourcetemplate.Model", {
             type: "string"
         },
         {
+            name: "type",
+            type: "string"
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
+        },
+        {
             name: "description",
             type: "string"
         },
         {
-            name: "resource",
+            name: "resource_model",
             type: "string"
         },
         {
-            name: "fields",
+            name: "params",
+            type: "auto"
+        },
+        {
+            name: "params_form",
+            type: "auto"
+        },
+        {
+            name: "groups",
             type: "auto"
         },
         {
