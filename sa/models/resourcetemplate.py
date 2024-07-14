@@ -181,6 +181,7 @@ class ResourceTemplate(Document):
     }
 
     name = StringField(unique=True)
+    code = StringField()
     description = StringField()
     # Global ID
     uuid = UUIDField(binary=True, unique=True)
@@ -205,10 +206,18 @@ class ResourceTemplate(Document):
     # instances
     default_state: "State" = PlainReferenceField(State)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=120)
+    _code_cache = cachetools.TTLCache(maxsize=100, ttl=300)
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ResourceTemplate"]:
         return ResourceTemplate.objects.filter(id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
+    def get_by_code(cls, code: str) -> Optional["ResourceTemplate"]:
+        return ResourceTemplate.objects.filter(code=code).first()
 
     @property
     def json_data(self) -> Dict[str, Any]:
