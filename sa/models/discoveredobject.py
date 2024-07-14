@@ -361,6 +361,7 @@ class DiscoveredObject(Document):
                 ResourceDataItem(name="pool", value=str(self.pool.id)),
             ],
         )
+        mappings = {}
         for d in self.data:
             for k, v in d.data.items():
                 r.data.append(
@@ -370,6 +371,8 @@ class DiscoveredObject(Document):
                         remote_system=str(d.remote_system.id) if d.remote_system else None,
                     )
                 )
+                if d.remote_system and d.remote_system not in mappings:
+                    mappings[d.remote_system] = d.remote_id
         # Iter Origin
         for o in DiscoveredObject.objects.filter(origin=self.id):
             if o.effective_labels:
@@ -446,12 +449,8 @@ class DiscoveredObject(Document):
                 mo = DiscoveryID.find_object(ipv4_address=self.address)
         if dry_run:
             return mo
-        if not mo:
-            mo = ManagedObject.get_object_by_template(
-                address=self.address,
-                pool=pool,
-                name=self.hostname,
-            )
+        if not mo and self.rule.default_template:
+            mo = self.rule.default_template.render(self.get_ctx())
         elif mo and not self.managed_object:
             # Duplicate
             duplicates = self.check_duplicate(managed_object=mo)
@@ -460,7 +459,7 @@ class DiscoveredObject(Document):
                     is_dirty=True,
                     origin=self.id,
                 )
-        mo.update_template_data(self.get_ctx())
+        # mo.update_template_data(self.get_ctx())
         mo.save()
         self.managed_object = mo.id
         self.is_dirty = False

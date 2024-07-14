@@ -29,11 +29,12 @@ from jinja2 import Template as Jinja2Template
 # NOC Modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.fields import DocumentReferenceField
-from noc.inv.models.capability import Capability
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.models import get_model, get_model_id
+from noc.inv.models.capability import Capability
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.label import Label
 from noc.wf.models.state import State
 
 
@@ -82,6 +83,8 @@ class ResourceItem(BaseModel):
     id: Optional[str] = None
     labels: Optional[List[str]] = None
     service_groups: Optional[List[str]] = None
+    # Remote System map
+    mappings: Optional[Dict[str, str]] = None
     # Caps
     user: Optional[Any] = None  # User for changes
 
@@ -167,7 +170,7 @@ class ParamFormItem(EmbeddedDocument):
         return r
 
 
-@on_delete_check(check=[("sa.DiscoveredObject", "default_template")])
+@on_delete_check(check=[("sa.ObjectDiscoveryRule", "default_template")])
 class ResourceTemplate(Document):
     meta = {
         "collection": "resourcetemplates",
@@ -310,10 +313,13 @@ class ResourceTemplate(Document):
             if p.set_capability:
                 caps[str(p.set_capability.id)] = p.set_capability.clean_value(value)
             r[p.param or p.name] = value
+        r["labels"] = []
         # Labels
         if item.labels:
-            # Check allowed set
-            r["labels"] = list(item.labels)
+            for ll in item.labels:
+                # Check allowed set
+                if Label.has_model(ll, get_model_id(self.model_instance)):
+                    r["labels"].append(ll)
         r["static_service_groups"] = []
         allowed_sg, deny_sg = set(), set()
         for g in self.groups:
@@ -337,6 +343,8 @@ class ResourceTemplate(Document):
             r["state"] = self.default_state
         if self.sticky:
             r["template"] = self
+        if item.mappings:
+            r["mappings"] = item.mappings
         return r
 
     def get_model_params(self) -> List[ParamItem]:
