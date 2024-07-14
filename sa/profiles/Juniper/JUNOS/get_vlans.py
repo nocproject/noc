@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_vlans import Script as BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 
 
@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"^((?P<routing_instance>\S+)\s+)?(?P<name>\S+)\s+(?P<vlan_id>[1-9][0-9]*)\s+", re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         if not self.is_switch or not self.profile.command_exist(self, "vlans"):
             return []
         r = []

@@ -98,6 +98,16 @@ class Script(BaseScript):
         r = self.cli("show lacp interfaces")
         return "lacp subsystem not running" not in r
 
+    @false_on_snmp_error
+    def has_lacp_snmp(self):
+        """
+        Check box has lacp enabled on Eltex
+        """
+        for oid, value in self.snmp.getnext(mib["IEEE8023-LAG-MIB::dot3adAggPortPartnerOperKey"]):
+            if value:
+                return True
+        return False
+
     @false_on_cli_error
     def get_rpm_probes(self):
         i = 0

@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -28,7 +29,15 @@ class Script(BaseScript):
         r"/ (?P<rx_dbm>\S+|\- Inf) dBm"
     )
 
-    def execute(self, interface=None):
+    DOM_METRIC_INDEX = [
+        ("Temperature", 8),
+        ("Voltage", 25),
+        ("Bias_Current", 6),
+        ("RxPower", 5),
+        ("TxPower", 7),
+    ]
+
+    def execute_cli(self, interface=None):
         r = []
         v = self.cli("show interfaces diagnostics optics")
         for I in self.rx_phy_split.split(v)[1:]:
@@ -58,6 +67,28 @@ class Script(BaseScript):
                     "current_ma": current_ma,
                     "optical_rx_dbm": optical_rx_dbm,
                     "optical_tx_dbm": optical_tx_dbm,
+                }
+            ]
+        return r
+
+    def execute_snmp(self, interface=None):
+        r = []
+        for oid, _ in self.snmp.getnext(mib["JUNIPER-DOM-MIB::jnxDomLaneIndex"]):
+            ifindex = oid.split(".")[-2]
+            dom_oid_dict = {
+                m_name: f"{mib['JUNIPER-DOM-MIB::jnxDomCurrentEntry']}.{i}.{ifindex}"
+                for m_name, i in self.DOM_METRIC_INDEX
+            }
+            interface_dom_metrics = self.snmp.get(dom_oid_dict)
+            name = self.snmp.get(mib["IF-MIB::ifName", int(ifindex)])
+            r += [
+                {
+                    "interface": name,
+                    "temp_c": interface_dom_metrics["Temperature"],
+                    "voltage_v": interface_dom_metrics["Voltage"],
+                    "current_ma": interface_dom_metrics["Bias_Current"],
+                    "optical_rx_dbm": interface_dom_metrics["RxPower"],
+                    "optical_tx_dbm": interface_dom_metrics["TxPower"],
                 }
             ]
         return r

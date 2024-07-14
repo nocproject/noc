@@ -64,21 +64,21 @@ class Script(GetMetricsScript):
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="u,s",
+            units="m,s",
         ),
         "SLA | Jitter | Out | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Out | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.egress.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="u,s",
+            units="m,s",
         ),
         "SLA | Jitter | In | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | In | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.ingress.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="u,s",
+            units="m,s",
         ),
         #
         "SLA | RTT | Min": ProfileMetricConfig(
@@ -86,14 +86,14 @@ class Script(GetMetricsScript):
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="u,s",
+            units="m,s",
         ),
         "SLA | RTT | Max": ProfileMetricConfig(
             metric="SLA | RTT | Max",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMax", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="u,s",
+            units="m,s",
         ),
     }
 
@@ -361,3 +361,12 @@ class Script(GetMetricsScript):
                     multi=True,
                     units="%",
                 )
+
+    @metrics(["Object | MAC | TotalUsed"], access="S")  # SNMP version
+    def get_count_mac_snmp(self, metrics):
+        mac_total_used = 0
+        for _, mac_num in self.snmp.getnext(mib["Q-BRIDGE-MIB::dot1qFdbDynamicCount"]):
+            if mac_num:
+                mac_total_used += mac_num
+        if mac_total_used:
+            self.set_metric(id=("Object | MAC | TotalUsed", None), value=int(mac_total_used))
