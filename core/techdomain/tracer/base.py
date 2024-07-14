@@ -33,6 +33,9 @@ class Endpoint(object):
     object: Object
     name: str
 
+    def __hash__(self) -> int:
+        return hash((str(self.object.id), self.name))
+
     def as_resource(self) -> str:
         return f"o:{self.object.id}:{self.name}"
 

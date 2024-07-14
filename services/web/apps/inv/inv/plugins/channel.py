@@ -7,10 +7,12 @@
 
 # Python modules
 from typing import Dict, Any
+from collections import defaultdict
 
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.techdomain.tracer.base import BaseTracer
+from noc.core.resource import resource_label
 from noc.sa.interfaces.base import ObjectIdParameter, StringParameter
 from noc.core.techdomain.tracer.loader import loader as tracer_loader
 from noc.inv.models.channel import Channel
@@ -39,12 +41,41 @@ class ChannelPlugin(InvPlugin):
         )
 
     def get_data(self, request, object):
-        def q(ch:Channel) -> Dict[str, Any]:
+        def q(ch: Channel) -> Dict[str, Any]:
+            def key(s: str) -> str:
+                p = s.split(":")
+                return ":".join(p[:2])
+
+            ch_endpoints = endpoints[ch.id]
+            from_endpoint = ""
+            to_endpoint = ""
+            if len(ch_endpoints) == 2:
+                # p2p
+                r1, r2 = ch_endpoints
+                if r2 in root_endpoints:
+                    r1, r2 = r2, r1
+                from_endpoint = resource_label(r1)
+                to_endpoint = resource_label(r2)
+            elif len(ch_endpoints) > 2:
+                # Multi
+                hubs = defaultdict(list)
+                for e in ch_endpoints:
+                    hubs[key(e)].append(e)
+                if len(hubs) == 2:
+                    h1, h2 = list(hubs)
+                    if hubs[h2][0] in root_endpoints:
+                        h1, h2 = h2, h1
+                    from_endpoint = f"{resource_label(h1)} + {len(hubs[h1])}"
+                    to_endpoint = f"{resource_label(h2)} + {len(hubs[h2])}"
             return {
-                    "id": str(ch.id),
-                    "name": ch.name,
-                    "tech_domain": str(ch.tech_domain.id),
-                    "tech_domain__label": ch.tech_domain.name,
+                "id": str(ch.id),
+                "name": ch.name,
+                "tech_domain": str(ch.tech_domain.id),
+                "tech_domain__label": ch.tech_domain.name,
+                "kind": ch.kind,
+                "topology": ch.topology,
+                "from_endpoint": from_endpoint,
+                "to_endpoint": to_endpoint,
             }
 
         nested_objects_ids = "|".join(str(o.id) for o in BaseTracer().iter_nested_objects(object))
@@ -54,6 +85,14 @@ class ChannelPlugin(InvPlugin):
         items = [i["_id"] for i in r]
         if not items:
             return []  # No data
+        endpoints = defaultdict(list)
+        root_endpoints = set()
+        for doc in Endpoint._get_collection().find(
+            {"channel": {"$in": items}}, {"_id": 0, "resource": 1, "channel": 1, "is_root": 1}
+        ):
+            endpoints[doc["channel"]].append(doc["resource"])
+            if doc.get("is_root"):
+                root_endpoints.add(doc["resource"])
         r = [q(i) for i in Channel.objects.filter(id__in=items)]
         return {"records": r}
 

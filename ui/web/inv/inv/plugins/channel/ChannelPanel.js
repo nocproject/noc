@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.inv.plugins.channel.ChannelPanel");
 
 Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   extend: "Ext.panel.Panel",
-  title: __("Channel"),
+  title: __("Channels"),
   closable: false,
   defaultListenerScope: true,
   layout: {
@@ -39,9 +39,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     },
     {
       xtype: "button",
-      text: __("Ad-Hoc"),
+      text: __("Magic"),
       itemId: "adhoc",
-      glyph: NOC.glyph.plus,
+      glyph: NOC.glyph.magic,
       handler: "onAddHoc",
     },
   ],
@@ -58,8 +58,28 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         {
           text: __("Tech Domain"),
           dataIndex: "tech_domain",
-          width: 100,
+          width: 150,
           renderer: NOC.render.Lookup("tech_domain"),
+        },
+        {
+          text: __("Kind"),
+          dataIndex: "kind",
+          widht: 50,
+        },
+        {
+          text: __("Topo"),
+          dataIndex: "topology",
+          width: 100,
+        },
+        {
+          text: __("From"),
+          dataIndex: "from_endpoint",
+          flex: 1,
+        },
+        {
+          text: __("To"),
+          dataIndex: "to_endpoint",
+          flex: 1,
         },
       ],
       listeners: {
