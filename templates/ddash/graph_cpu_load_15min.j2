@@ -1,0 +1,87 @@
+{
+  "title": "CPU | Load | 15min per CPU",
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": 1151904820716516,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "seriesOverrides": [],
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "{{ noc_db_metrics }}",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "cpu",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((name, CPUUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        name, \n        any(load_15min) as `CPUUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY name, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "interval": "$discovery_interval"
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "x-axis": true,
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true,
+      "decimals": null
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": false
+    }
+  ],
+  "decimals": 2
+}

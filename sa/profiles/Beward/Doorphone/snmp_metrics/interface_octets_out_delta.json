@@ -1,0 +1,16 @@
+{
+  "$metric": "Interface | Octets | Out | Delta",
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHCOutOctets.{{ ifIndex }}",
+    "type": "delta",
+    "units": "byte"
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifOutOctets.{{ ifIndex }}",
+    "type": "delta",
+    "units": "byte"
+  }
+}

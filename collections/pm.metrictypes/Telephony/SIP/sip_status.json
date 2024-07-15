@@ -1,0 +1,12 @@
+{
+    "name": "SIP | Status",
+    "$collection": "pm.metrictypes",
+    "uuid": "ee0b9369-b625-48e5-9f7a-b3db98c4d028",
+    "scope__name": "Object",
+    "field_name": "sip_status",
+    "field_type": "UInt64",
+    "description": "Status SIP on device",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}

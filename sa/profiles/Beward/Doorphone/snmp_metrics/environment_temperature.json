@@ -1,0 +1,10 @@
+{
+    "$metric": "Environment | Temperature",
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.44490.1.2.1.0",
+    "labels": [
+        "noc::sensor::Temperature Chassis"
+    ],
+    "type": "gauge",
+    "units": "C"
+}
