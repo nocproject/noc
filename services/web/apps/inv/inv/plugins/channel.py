@@ -108,7 +108,7 @@ class ChannelPlugin(InvPlugin):
         """
         local_name = obj.get_local_name_path(True)
         if local_name:
-            return " | ".join(local_name)
+            return " > ".join(local_name)
         return obj.name
 
     def oblect_and_model_label(self, obj: Object) -> str:

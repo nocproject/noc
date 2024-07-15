@@ -16,7 +16,7 @@ import datetime
 from bson import ObjectId
 
 # NOC modules
-from noc.inv.models.objectmodel import Crossing
+from noc.inv.models.objectmodel import Crossing, ObjectModelConnection
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.inv.models.techdomain import TechDomain
@@ -24,6 +24,7 @@ from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.resource import from_resource
 
 
 @dataclass
@@ -32,6 +33,7 @@ class Endpoint(object):
 
     object: Object
     name: str
+    channel: Optional[Channel] = None
 
     def __hash__(self) -> int:
         return hash((str(self.object.id), self.name))
@@ -43,9 +45,11 @@ class Endpoint(object):
 @dataclass
 class PathItem(object):
     object: Object
-    input: str
+    input: Optional[str]
     output: Optional[str]
     input_discriminator: Optional[str] = None
+    channel: Optional[Channel] = None
+    output_object: Optional[Object] = None
 
 
 class BaseTracer(object):
@@ -53,6 +57,7 @@ class BaseTracer(object):
     tech_domain: str
     kind: ChannelKind
     topology: ChannelTopology
+    adhoc_bidirectional: bool = False
 
     def __init__(self):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
@@ -109,9 +114,18 @@ class BaseTracer(object):
         """
         self.logger.debug("Checking ad-hoc paths for %s", obj.name)
         for ep in self.iter_endpoints(obj):
-            if self.trace_path(ep):
-                self.logger.debug("Ad-hoc path found for %s", ep.as_resource())
-                return True
+            end = self.trace_path(ep)
+            if end:
+                self.logger.debug("Ad-hoc path found for %s", end.as_resource())
+                if self.adhoc_bidirectional:
+                    self.logger.debug("Tracing reverse path")
+                    start = self.trace_path(end)
+                    if start:
+                        self.logger.debug("Reverse path found for %s", start.as_resource())
+                        if ep.as_resource() == start.as_resource():
+                            return True
+                else:
+                    return True
         self.logger.debug("No any ad-hoc paths found")
         return False
 
@@ -302,3 +316,84 @@ class BaseTracer(object):
         if current_endpoints:
             return channel, "Channel updated"
         return channel, "Channel created"
+
+    def is_connected(self, obj: Object, name: str) -> bool:
+        """
+        Check if connection is connected.
+
+        Args:
+            obj: Object instance
+            name: connection name
+
+        Returns:
+            True: if object connected.
+            False: if object is not connected
+        """
+        _, ro, _ = obj.get_p2p_connection(name)
+        return bool(ro)
+
+    def down(self, obj: Object, name: str) -> Optional[Object]:
+        """
+        Go down the connnection.
+
+        Args:
+            obj: Object instance.
+            name: Connection name.
+
+        Returns:
+            Underlying object if found, none otherwise
+        """
+        _, ro, _ = obj.get_p2p_connection(name)
+        return ro
+
+    def up(self, obj: Object) -> Optional[Endpoint]:
+        """
+        Go to the parent object
+
+        Args:
+            obj: Object instance.
+            name: Connection name.
+
+        Returns:
+            Underlying object if found, none otherwise
+        """
+        for _, ro, rname in obj.iter_outer_connections():
+            return Endpoint(object=ro, name=rname)
+        return None
+
+    def get_connection(self, obj: Object, name: str) -> Optional[ObjectModelConnection]:
+        """
+        Get connection by name.
+        """
+        for c in obj.model.connections:
+            if c.name == name:
+                return c
+        return None
+
+    def pass_channel(self, ep: Endpoint) -> Optional[Endpoint]:
+        """
+        Pass through the channel.
+
+        Pass through the channel if endpoint.
+
+        Args:
+            ep: Endpoint
+
+        Returns:
+            Channel exit point, if passed.
+        """
+        e = DBEndpoint.objects.filter(resource=ep.as_resource()).first()
+        if not e:
+            return None
+        ch = e.channel
+        if ch.topology == ChannelTopology.UBUNCH.value:
+            if not e.is_root:
+                return False  # Opposite direction
+            endpoints = list(DBEndpoint.objects.filter(channel=ch.id, pair=e.pair, is_root=False))
+            if len(endpoints) != 1:
+                return None  # Broken channel
+            e = endpoints[0]
+            o, n = from_resource(e.resource)
+            return Endpoint(object=o, name=n, channel=ch)
+        msg = f"Topology {ch.topology} is not supported"
+        raise NotImplementedError(msg)

@@ -237,7 +237,7 @@ class Object(Document):
         """
         Generate resource label.
         """
-        return " | ".join(self.get_local_name_path(True))
+        return " > ".join(self.get_local_name_path(True))
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
