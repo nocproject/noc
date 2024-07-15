@@ -57,6 +57,15 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       scrollable: "y",
       columns: [
         {
+          xtype: "glyphactioncolumn",
+          glyph: NOC.glyph.star,
+          tooltip: __("Mark/Unmark"),
+          getColor: function(cls, meta, r){
+            return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
+          },
+          handler: "onFavItem",
+        },
+        {
           text: __("Name"),
           dataIndex: "name",
           width: 200,
@@ -293,5 +302,25 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       failure: function(response){
         NOC.error("Error status: " + response.status);
       },
-    }); },
+    });
+  },
+  //
+  onFavItem: function(grid, rowIndex){
+    var me = this,
+      r = grid.getStore().getAt(rowIndex),
+      id = r.get("id"),
+      action = r.get("fav_status") ? "reset" : "set",
+      url = "/inv/channel/favorites/item/" + id + "/" + action + "/";
+
+    Ext.Ajax.request({
+      url: url,
+      method: "POST",
+      scope: me,
+      success: function(){
+        // Invert current status
+        r.set("fav_status", !r.get("fav_status"));
+        grid.refresh();
+      },
+    });
+  },
 });
