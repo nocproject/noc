@@ -1,0 +1,12 @@
+{
+    "name": "8GFC",
+    "code": "8GFC",
+    "$collection": "inv.protocols",
+    "uuid": "0697d4b2-14f5-4b40-aca5-05947e2a153b",
+    "description": "10Gbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODUC2",
+    "technology__name": "OTN"
+}
