@@ -229,13 +229,14 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                           if(data.status){
                             NOC.info(data.msg);
                             adHocWindow.close();
+                            me.onReload();
                             NOC.launch("inv.channel", "history", {"args": [data.channel]})
                           } else{
                             NOC.error(data.msg);
                           }
                         },
                         failure: function(response){
-                          console.log("Failure", response);
+                          NOC.error("Failure", response);
                         },
                       });
                     },
