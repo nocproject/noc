@@ -305,7 +305,7 @@ class Report(Document):
         for bf in self.bands_format:
             columns = []
             for cf in bf.column_format:
-                cf_name = cf["name"].split(".")[1] if "." in cf["name"] else cf["name"]
+                *_, cf_name = cf["name"].rsplit(".", 1)
                 cf["title"] = (
                     self.get_localization(f"columns.{cf_name}", lang=pref_lang) or cf["title"]
                 )
