@@ -53,5 +53,6 @@
             "interface": "optical",
             "value": false
         }
-    ]
+    ],
+    "front_facade__name": "Transceiver | CFP2"
 }
