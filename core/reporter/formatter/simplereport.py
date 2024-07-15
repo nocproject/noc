@@ -75,7 +75,8 @@ class SimpleReportFormatter(DataFormatter):
         # Column title map
         HEADER_ROW = {}
         for col in r_format.columns:
-            HEADER_ROW[col.name] = col.title
+            *_, col_name = col.name.rsplit(".", 1)
+            HEADER_ROW[col_name] = col.title
         data = self.root_band.rows
         if data is None:
             return
