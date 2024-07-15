@@ -110,9 +110,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   ],
   preview: function(data, objectId){
     var me = this,
-      grid = me.down("grid");
+      grid = me.down("grid"),
+      records = data.records || [];
     me.currentId = objectId;
-    grid.getStore().loadData(data.records);
+    grid.getStore().loadData(records);
   },
   //
   _render: function(dot){
@@ -285,8 +286,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       url: `/inv/inv/${me.currentId}/plugin/channel/`,
       method: "GET",
       success: function(response){
-        var obj = Ext.decode(response.responseText);
-        grid.getStore().loadData(obj.records); 
+        var obj = Ext.decode(response.responseText),
+          data = obj.records || [];
+        grid.getStore().loadData(data); 
       },
       failure: function(response){
         NOC.error("Error status: " + response.status);
