@@ -44,6 +44,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       glyph: NOC.glyph.magic,
       handler: "onAddHoc",
     },
+    {
+      xtype: "button",
+      glyph: NOC.glyph.refresh,
+      tooltip: __("Reload"),
+      handler: "onReload",
+    },
   ],
   items: [
     {
@@ -271,4 +277,19 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       grid.setHeight(containerHeight / 2);
     }
   },
+  //
+  onReload: function(){
+    var me = this,
+      grid = me.down("grid");
+    Ext.Ajax.request({
+      url: `/inv/inv/${me.currentId}/plugin/channel/`,
+      method: "GET",
+      success: function(response){
+        var obj = Ext.decode(response.responseText);
+        grid.getStore().loadData(obj.records); 
+      },
+      failure: function(response){
+        NOC.error("Error status: " + response.status);
+      },
+    }); },
 });
