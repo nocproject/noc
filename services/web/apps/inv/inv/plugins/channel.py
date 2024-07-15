@@ -17,6 +17,7 @@ from noc.sa.interfaces.base import ObjectIdParameter, StringParameter
 from noc.core.techdomain.tracer.loader import loader as tracer_loader
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint
+from noc.main.models.favorites import Favorites
 from .base import InvPlugin
 
 
@@ -69,6 +70,7 @@ class ChannelPlugin(InvPlugin):
                     to_endpoint = f"{resource_label(h2)} + {len(hubs[h2])}"
             return {
                 "id": str(ch.id),
+                "fav_status": str(ch.id) in fav_items,
                 "name": ch.name,
                 "tech_domain": str(ch.tech_domain.id),
                 "tech_domain__label": ch.tech_domain.name,
@@ -93,6 +95,10 @@ class ChannelPlugin(InvPlugin):
             endpoints[doc["channel"]].append(doc["resource"])
             if doc.get("is_root"):
                 root_endpoints.add(doc["resource"])
+        # Get favorites
+        f = Favorites.objects.filter(user=request.user.id, app="inv.channel").first()
+        fav_items = set(f.favorites) if f else set()
+        # Format result
         r = [q(i) for i in Channel.objects.filter(id__in=items)]
         return {"records": r}
 
