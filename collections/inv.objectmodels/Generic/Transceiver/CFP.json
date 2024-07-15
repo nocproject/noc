@@ -1,0 +1,47 @@
+{
+    "name": "Generic | Transceiver | CFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "ca11d729-22e9-41c8-8000-f6c3146622fd",
+    "vendor__code": "GENERIC",
+    "description": "Generic | Transceiver | CFP",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | CFP"
+        },
+        {
+            "name": "rx",
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | SC"
+        },
+        {
+            "name": "tx",
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
+}
