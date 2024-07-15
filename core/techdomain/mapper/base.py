@@ -74,9 +74,6 @@ class BaseMapper(object):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
         self.channel = channel
 
-    def to_dot(self, channnel: Channel) -> str:
-        raise NotImplementedError
-
     def get_tracer(self) -> BaseTracer:
         raise NotImplementedError
 

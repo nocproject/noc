@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Optional
+from typing import Iterable
 
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
-from .base import BaseTracer, Endpoint, PathItem
+from .base import BaseTracer, Endpoint
 
 
 class OTNODUTracerTracer(BaseTracer):

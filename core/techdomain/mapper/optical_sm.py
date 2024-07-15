@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from noc.inv.models.channel import Channel
 from noc.core.channel.types import ChannelTopology
 from .base import BaseMapper
 from ..tracer.base import BaseTracer
