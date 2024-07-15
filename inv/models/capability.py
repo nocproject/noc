@@ -34,7 +34,7 @@ TCapsValue = Union[bool, str, int, float]
         ("pm.MetricType", "required_capability"),
         ("sa.Service", "caps__capability"),
         ("sa.ManagedObject", "caps__capability"),
-        ("sa.ResourceTemplate", "params__set_capability"),
+        ("main.ModelTemplate", "params__set_capability"),
     ]
 )
 @category

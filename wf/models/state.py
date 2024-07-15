@@ -83,7 +83,7 @@ class InteractionSetting(EmbeddedDocument):
         ("sa.Service", "state"),
         ("sa.ManagedObject", "state"),
         ("sa.DiscoveredObject", "state"),
-        ("sa.ResourceTemplate", "default_state"),
+        ("main.ModelTemplate", "default_state"),
         ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),
         ("vc.VPN", "state"),

@@ -408,7 +408,7 @@ COLLECTIONS = [
     "bi.Dashboard",
     "cm.ConfDBQuery",
     "main.Report",
-    "sa.ResourceTemplate",
+    "main.ModelTemplate",
 ]
 
 # Model -> Setting
