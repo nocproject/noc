@@ -338,6 +338,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   onEdit: function(grid, rowIndex){
     var r = grid.getStore().getAt(rowIndex),
       id = r.get("id");
-    NOC.launch("inv.channel", "change", {"args": [id]});
+    NOC.launch("inv.channel", "history", {"args": [id]})
   },
 });
