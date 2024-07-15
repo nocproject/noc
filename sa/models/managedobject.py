@@ -887,10 +887,16 @@ class ManagedObject(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_mapping_cache"), lock=lambda _: id_lock)
-    def get_by_mapping(cls, remote_system: RemoteSystem, remote_id: str) -> Optional["ManagedObject"]:
+    def get_by_mapping(
+        cls, remote_system: RemoteSystem, remote_id: str
+    ) -> Optional["ManagedObject"]:
         return ManagedObject.objects.filter(
             Q(remote_system=str(remote_system.id), remote_id=remote_id)
-            | Q(mappings__contains=[{"remote_id": remote_id, "remote_system": str(remote_system.id)}])
+            | Q(
+                mappings__contains=[
+                    {"remote_id": remote_id, "remote_system": str(remote_system.id)}
+                ]
+            )
         ).first()
 
     def iter_changed_datastream(self, changed_fields=None):
