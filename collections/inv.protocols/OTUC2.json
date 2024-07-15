@@ -3,7 +3,7 @@
     "code": "OTUC2",
     "$collection": "inv.protocols",
     "uuid": "92fd1880-c103-4357-9875-2e9b4ca9289f",
-    "description": "100Gbit/s",
+    "description": "200Gbit/s",
     "data": [],
     "connection_schema": "BO",
     "discriminator": "odu",
