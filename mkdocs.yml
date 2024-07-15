@@ -148,6 +148,7 @@ nav:
           - Beward:
               - Overview: profiles-reference/Beward/index.md
               - Beward.BD: profiles-reference/Beward/BD.md
+              - Beward.Doorphone: profiles-reference/Beward/Doorphone.md
           - Bradbury:
               - Overview: profiles-reference/Bradbury/index.md
               - Bradbury.HighVideo: profiles-reference/Bradbury/HighVideo.md

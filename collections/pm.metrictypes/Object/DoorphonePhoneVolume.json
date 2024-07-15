@@ -1,0 +1,12 @@
+{
+    "name": "Doorphone | PhoneVolume",
+    "$collection": "pm.metrictypes",
+    "uuid": "09be1d10-edaa-47b0-8fa4-b48f0151b58b",
+    "scope__name": "Object",
+    "field_name": "phone_volume",
+    "field_type": "UInt64",
+    "description": null,
+    "measure": "",
+    "units__code": "1",
+    "scale__code": "1"
+}

@@ -1,0 +1,67 @@
+{
+    "name": "Beward | Doorphone",
+    "$collection": "inv.objectmodels",
+    "uuid": "4aee0d90-5b63-479b-8633-03e195b4c373",
+    "vendor__code": "BEWARD",
+    "description": "Beward Doorphone DKS series",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::psu",
+        "noc::inv::sup"
+    ],
+    "connections": [],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "Beward IP Doorphone DKS850430"
+            ]
+        }
+    ],
+    "sensors": [
+        {
+            "name": "microcontroller",
+            "description": "microcontroller status",
+            "snmp_oid": "1.3.6.1.4.1.44490.1.6.6.0",
+            "units__code": "status"
+        },
+        {
+            "name": "vedeo module",
+            "description": "video module status",
+            "snmp_oid": "1.3.6.1.4.1.44490.1.6.5.0",
+            "units__code": "status"
+        },
+        {
+            "name": "reader sensor",
+            "description": "reader sensor status",
+            "snmp_oid": "1.3.6.1.4.1.44490.1.6.4.0",
+            "units__code": "status"
+        },
+        {
+            "name": "hacking sensor",
+            "description": "hacking sensor status",
+            "snmp_oid": "1.3.6.1.4.1.44490.1.6.3.0",
+            "units__code": "status"
+        },
+        {
+            "name": "Sensor",
+            "description": "Sensor status",
+            "snmp_oid": "1.3.6.1.4.1.44490.1.5.2.3.0",
+            "units__code": "status"
+        },
+        {
+            "name": "Door_2",
+            "description": "Door_2 status",
+            "snmp_oid": "1.3.6.1.4.1.44490.1.5.2.2.0",
+            "units__code": "status"
+        },
+        {
+            "name": "Door_1",
+            "description": "Door_1 status",
+            "snmp_oid": "1.3.6.1.4.1.44490.1.5.2.1.0",
+            "units__code": "status"
+        }
+    ]
+}

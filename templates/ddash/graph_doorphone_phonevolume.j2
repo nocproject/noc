@@ -1,0 +1,85 @@
+{
+  "title": "Beward | Doorphone | PhoneVolume",
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": 1552414413515611,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "seriesOverrides": [],
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "{{ noc_db_metrics }}",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "intervalFactor": 1,
+      "table": "object",
+      "policy": "default",
+      "query": "SELECT \n    t, \n    groupArray((slot, PhoneVolume)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(labels,'/') as slot, \n        avg(phone_volume) as `PhoneVolume` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY labels, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "refId": "A",
+      "resultFormat": "time_series",
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "x-axis": true,
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "logBase": 1,
+      "show": true,
+      "max": "100",
+      "format": "percent",
+      "min": "0",
+      "label": null
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    }
+  ]
+}
