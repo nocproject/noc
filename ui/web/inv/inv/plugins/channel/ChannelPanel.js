@@ -17,6 +17,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   tbar: [
     {
+      xtype: "button",
+      glyph: NOC.glyph.refresh,
+      tooltip: __("Reload"),
+      handler: "onReload",
+    },
+    {
       xtype: "combobox",
       store: [
         [0.25, "25%"],
@@ -43,12 +49,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       itemId: "adhoc",
       glyph: NOC.glyph.magic,
       handler: "onAddHoc",
-    },
-    {
-      xtype: "button",
-      glyph: NOC.glyph.refresh,
-      tooltip: __("Reload"),
-      handler: "onReload",
     },
   ],
   items: [
