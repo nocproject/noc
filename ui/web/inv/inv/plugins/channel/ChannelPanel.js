@@ -57,13 +57,23 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       scrollable: "y",
       columns: [
         {
-          xtype: "glyphactioncolumn",
-          glyph: NOC.glyph.star,
-          tooltip: __("Mark/Unmark"),
-          getColor: function(cls, meta, r){
-            return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
-          },
-          handler: "onFavItem",
+          xtype: 'glyphactioncolumn',
+          width: 50,
+          items: [
+            {
+              glyph: NOC.glyph.star,
+              tooltip: __('Mark/Unmark'),
+              getColor: function(cls, meta, r){
+                return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
+              },
+              handler: "onFavItem",
+            },
+            {
+              glyph: NOC.glyph.edit,
+              tooltip: __('Edit'),
+              handler: "onEdit",
+            },
+          ],
         },
         {
           text: __("Name"),
@@ -323,5 +333,11 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         grid.refresh();
       },
     });
+  },
+  //
+  onEdit: function(grid, rowIndex){
+    var r = grid.getStore().getAt(rowIndex),
+      id = r.get("id");
+    NOC.launch("inv.channel", "change", {"args": [id]});
   },
 });
