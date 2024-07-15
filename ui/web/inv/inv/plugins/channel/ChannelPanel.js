@@ -183,9 +183,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         } else{
           var adHocWindow = Ext.create("Ext.window.Window", {
             title: __("Create Ad-Hoc channel"),
-            height: 200,
+            height: 400,
             width: 600,
             layout: "fit",
+            scrollable: true,
             modal: true,
             items: [
               {
@@ -198,26 +199,36 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                 },
                 items: [
                   {
-                    xtype: "combobox",
-                    fieldLabel: __("Select starting point"),
+                    xtype: "grid",
                     store: new Ext.data.Store({
                       fields: ["tracer", "object__label", "object"],
                       data: obj,
                     }),
-                    queryMode: "local",
-                    displayField: "object__label",
-                    valueField: "object",
-                    tpl: Ext.create("Ext.XTemplate",
-                                    "<tpl for='.'>",
-                                    "<div class='x-boundlist-item'>{tracer} {object__label}</div>",
-                                    "</tpl>",
-                    ),
-                    listeners: {
-                      change: function(combo, newValue){
-                        adHocWindow.down("#createButton").setDisabled(!newValue);
+                    columns: [
+                      {
+                        text: __("Label"),
+                        dataIndex: "object__label",
+                        flex: 2,
                       },
-                    },
-                  },
+                      {
+                        text: __("Tracer"),
+                        dataIndex: "tracer",
+                        flex: 1,
+                      },
+                    ],
+                    selModel: {
+                      selType: "rowmodel",
+                      listeners: {
+                        selectionchange: function(selModel, selections){
+                          if(selections.length > 0){
+                            adHocWindow.down("#createButton").setDisabled(false);
+                          }
+                        },
+                        deselect: function(){
+                          adHocWindow.down("#createButton").setDisabled(true);
+                        },
+                      },
+                    } },
                 ],
                 buttons: [
                   {
@@ -226,14 +237,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                     disabled: true,
                     handler: function(){
                       var form = this.up("form"),
-                        combo = form.down("combobox"),
-                        selectedValue = combo.getValue(),
-                        selectedRecord = combo.findRecordByValue(selectedValue);
-                      console.log("Selected record", selectedRecord);
+                        grid = form.down("grid"),
+                        selectionModel = grid.getSelectionModel(),
+                        selectedRecord = selectionModel.getSelection()[0];
                       Ext.Ajax.request({
                         url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
                         method: "POST",
-                        jsonData: {object: selectedValue, tracer: selectedRecord.get("tracer")},
+                        jsonData: {object: selectedRecord.get("object"), tracer: selectedRecord.get("tracer")},
                         success: function(response){
                           var data = Ext.decode(response.responseText);
                           if(data.status){
