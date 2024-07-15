@@ -19,7 +19,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-FB-K4"]
+            "value": ["FB-K4"]
         },
         {
             "attr": "depth",

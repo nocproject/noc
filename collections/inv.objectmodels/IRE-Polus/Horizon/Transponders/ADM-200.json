@@ -28,7 +28,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTUCn"
+                    "protocol__code": "OTUC2"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -47,7 +47,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTUCn"
+                    "protocol__code": "OTUC2"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -602,7 +602,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-ADM-200-SFP+/CFP2-H8"]
+            "value": ["ADM-200-SFP+/CFP2-H8"]
         }
     ],
     "front_facade__name": "RBS | iData | ADM-200 1438-1"

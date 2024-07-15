@@ -851,7 +851,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["OM-40V-100-H21-OSC(1511)-H8", "RBS-OM-40V-100-H21-OSC(1511)-H8"]
+            "value": ["OM-40V-100-H21-OSC(1511)-H8"]
         },
         {
             "attr": "min_rx_tx_frequency",

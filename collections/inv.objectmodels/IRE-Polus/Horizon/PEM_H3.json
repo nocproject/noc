@@ -41,7 +41,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-PEM-H3"]
+            "value": ["PEM-H3"]
         },
         {
             "attr": "is_recursive",

@@ -198,7 +198,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-ROADM-2x9-C-F-OCM-H8"]
+            "value": ["ROADM-2x9-C-F-OCM-H8"]
         }
     ]
 }
