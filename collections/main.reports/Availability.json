@@ -31,7 +31,12 @@
                 },
                 {
                     "name": "name",
-                    "title": "NAME",
+                    "title": "MANAGED OBJECT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "hostname",
+                    "title": "HOSTNAME",
                     "format_type": "string"
                 },
                 {
@@ -81,6 +86,9 @@
         "columns.name": {
             "ru": "Объект управления"
         },
+        "columns.hostname": {
+            "ru": "Имя хоста"
+        },
         "columns.address": {
             "ru": "Адрес"
         },
@@ -93,7 +101,12 @@
         "columns.downtime": {
             "ru": "Общее время недос.(сек)"
         },
-
+        "columns.down_count": {
+            "ru": "Число периодов"
+        },
+        "columns.reboots": {
+            "ru": "Перезагрузки"
+        },
         "parameters.start": {
             "ru": "С"
         },
@@ -129,7 +142,7 @@
         {
             "name": "fields",
             "description": null,
-            "default": "administrativedomain,name,address,profile,managedobjectavailabilityds.avail_percent,managedobjectavailabilityds.downtime,managedobjectavailabilityds.down_count,managedobjectavailabilityds.reboots",
+            "default": "administrativedomain,name,hostname,address,profile,managedobjectavailabilityds.avail_percent,managedobjectavailabilityds.downtime,managedobjectavailabilityds.down_count,managedobjectavailabilityds.reboots",
             "hide": false,
             "label": "Fields",
             "type": "fields_selector"
