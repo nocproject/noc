@@ -3,10 +3,10 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 
-console.debug("Defining NOC.sa.resourcetemplate.Model");
-Ext.define("NOC.sa.resourcetemplate.Model", {
+console.debug("Defining NOC.main.modeltemplate.Model");
+Ext.define("NOC.main.modeltemplate.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/sa/resourcetemplate/",
+    rest_url: "/main/modeltemplate/",
 
     fields: [
         {

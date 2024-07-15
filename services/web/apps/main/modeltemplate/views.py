@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# sa.resourcetemplates application
+# sa.modeltemplates application
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -7,17 +7,17 @@
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.sa.models.resourcetemplate import ResourceTemplate
+from noc.main.models.modeltemplate import ModelTemplate
 from noc.core.translation import ugettext as _
 
 
-class ResourceTemplateApplication(ExtDocApplication):
+class ModelTemplateApplication(ExtDocApplication):
     """
-    Resource Template application
+    Model Template application
     """
 
-    title = "Resource Template"
-    menu = [_("Setup"), _("Resource Templates")]
-    model = ResourceTemplate
+    title = "Model Template"
+    menu = [_("Setup"), _("Model Templates")]
+    model = ModelTemplate
     query_fields = ["name__icontains", "description__icontains"]
     default_ordering = ["name"]

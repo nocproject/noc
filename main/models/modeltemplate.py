@@ -171,12 +171,12 @@ class ParamFormItem(EmbeddedDocument):
 
 
 @on_delete_check(check=[("sa.ObjectDiscoveryRule", "default_template")])
-class ResourceTemplate(Document):
+class ModelTemplate(Document):
     meta = {
-        "collection": "resourcetemplates",
+        "collection": "modeltemplates",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "sa.resourcetemplates",
+        "json_collection": "main.modeltemplates",
         "json_unique_fields": ["name"],
     }
 
@@ -211,13 +211,13 @@ class ResourceTemplate(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ResourceTemplate"]:
-        return ResourceTemplate.objects.filter(id=oid).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ModelTemplate"]:
+        return ModelTemplate.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["ResourceTemplate"]:
-        return ResourceTemplate.objects.filter(code=code).first()
+    def get_by_code(cls, code: str) -> Optional["ModelTemplate"]:
+        return ModelTemplate.objects.filter(code=code).first()
 
     @property
     def json_data(self) -> Dict[str, Any]:

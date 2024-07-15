@@ -1,16 +1,16 @@
 //---------------------------------------------------------------------
-// sa.resourcetemplate application
+// main.modeltemplate application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.sa.resourcetemplate.Application");
+console.debug("Defining NOC.main.modeltemplate.Application");
 
-Ext.define("NOC.sa.resourcetemplate.Application", {
+Ext.define("NOC.main.modeltemplate.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.JSONPreview",
-        "NOC.sa.resourcetemplate.Model",
+        "NOC.main.modeltemplate.Model",
         "NOC.sa.profile.LookupField",
         "NOC.inv.capability.LookupField",
         "NOC.inv.resourcegroup.LookupField",
@@ -19,15 +19,15 @@ Ext.define("NOC.sa.resourcetemplate.Application", {
         "NOC.wf.state.LookupField",
         "Ext.ux.form.GridField"
     ],
-    model: "NOC.sa.resourcetemplate.Model",
+    model: "NOC.main.modeltemplate.Model",
     search: true,
     initComponent: function() {
         var me = this;
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: new Ext.XTemplate('/sa/resourcetemplate/{id}/json/'),
-            previewName: new Ext.XTemplate('Resource Template: {name}')
+            restUrl: new Ext.XTemplate('/main/modeltemplate/{id}/json/'),
+            previewName: new Ext.XTemplate('Model Template: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 

@@ -40,9 +40,9 @@ from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.modeltemplate import ResourceItem, DataItem as ResourceDataItem
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.resourcetemplate import ResourceItem, DataItem as ResourceDataItem
 from noc.pm.models.agent import Agent
 from noc.wf.models.state import State
 

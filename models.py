@@ -123,6 +123,7 @@ _MODELS = {
     "main.Report": "noc.main.models.report.Report",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
+    "main.ModelTemplate": "noc.main.models.modeltemplate.ModelTemplate",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
     "main.Style": "noc.main.models.style.Style",
     "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
@@ -221,7 +222,6 @@ _MODELS = {
     "sa.Service": "noc.sa.models.service.Service",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.ServiceSummary": "noc.sa.models.servicesummary.ServiceSummary",
-    "sa.ResourceTemplate": "noc.sa.models.resourcetemplate.ResourceTemplate",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
     # fm models
     "fm.ActiveAlarm": "noc.fm.models.activealarm.ActiveAlarm",
