@@ -98,8 +98,8 @@ class ManagedObjectLoader(BaseLoader):
                 remote_id=data.pop("id"),
                 # checks=item.checks,
                 labels=labels or [],
-                service_groups=service_groups or [],
-                client_groups=client_groups or [],
+                service_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in service_groups or []],
+                client_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in client_groups or []],
                 **data,
             )
             self.c_add += 1

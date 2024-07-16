@@ -60,8 +60,8 @@ def register(
     remote_id: Optional[str] = None,
     uptime: Optional[int] = None,
     labels: Optional[List[str]] = None,
-    service_groups: Optional[List[str]] = None,
-    clients_groups: Optional[List[str]] = None,
+    service_groups: Optional[List[int]] = None,
+    clients_groups: Optional[List[int]] = None,
     template: Optional[str] = None,
     is_delete: bool = False,
     checks: Optional[List[ProtocolCheckResult]] = None,
@@ -126,7 +126,7 @@ def register(
     if checks:
         data["checks"] = [orjson.dumps(c).decode("utf-8") for c in checks]
     if service_groups:
-        data["service_groups"] = [rg.bi_id for rg in service_groups]
+        data["service_groups"] = [int(rg) for rg in service_groups]
     if clients_groups:
-        data["clients_groups"] = [rg.bi_id for rg in clients_groups]
+        data["clients_groups"] = [int(rg) for rg in clients_groups]
     svc.publish(orjson.dumps(data), f"ch.{PURGATORIUM_TABLE}")

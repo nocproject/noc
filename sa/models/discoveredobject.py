@@ -14,6 +14,7 @@ from typing import Dict, Optional, List, Any, Union
 
 # Third-party modules
 import orjson
+from bson import ObjectId
 from django.db.models.query_utils import Q as d_Q
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -41,6 +42,7 @@ from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.modeltemplate import ResourceItem, DataItem as ResourceDataItem
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.agent import Agent
@@ -53,7 +55,7 @@ SELECT
     IPv4NumToString(ip) as address,
     pool,
     groupArray(source) as sources,
-    groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels)) as all_data,
+    groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels, service_groups, clients_groups)) as all_data,
     groupUniqArrayArray(checks) as all_checks,
     groupUniqArrayArray(labels) as all_labels,
     max(last_ts) as last_ts
@@ -61,8 +63,9 @@ FROM (
     SELECT ip, pool, remote_system,
      argMax(source, ts) as source, argMax(hostname, ts) as hostname, argMax(description, ts) as description,
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
-     argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(ts, ts) as max_ts,
-     argMax(ts, ts) as last_ts
+     argMax(data, ts) as data, argMax(labels, ts) as labels,
+     argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
+     argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
     FROM noc.purgatorium
     GROUP BY ip, pool, remote_system
     )
@@ -95,6 +98,8 @@ class PurgatoriumData(object):
     ts: Optional[datetime.datetime] = None
     remote_system: Optional[str] = None
     labels: Optional[List[str]] = None
+    service_groups: Optional[List[ObjectId]] = None
+    client_groups: Optional[List[ObjectId]] = None
     data: Optional[Dict[str, str]] = None
 
 
@@ -123,6 +128,8 @@ class DataItem(EmbeddedDocument):
     remote_system: "RemoteSystem" = ReferenceField(RemoteSystem, required=False)
     remote_id: str = StringField(required=False)
     labels: List[str] = ListField(StringField())
+    service_groups: List[ObjectId] = ListField(ObjectIdField())
+    client_groups: List[ObjectId] = ListField(ObjectIdField())
     data = DictField()
 
     def __eq__(self, other: "DataItem") -> bool:
@@ -480,17 +487,22 @@ class DiscoveredObject(Document):
         source,
         data: Dict[str, str],
         labels: Optional[List[str]] = None,
+        service_groups: Optional[List[ObjectId]] = None,
+        client_groups: Optional[List[ObjectId]] = None,
         remote_system: Optional[str] = None,
         ts: Optional[datetime.datetime] = None,
     ):
         """
         Set data for source
-        :param source: Source code
-        :param data: Dict of data
-        :param labels: label list
-        :param remote_system: Remote System from data
-        :param ts: timestamp when data updated
-        :return:
+
+        Args:
+            source: Source code
+            data: Dict of data
+            labels: label list
+            service_groups: Service groups
+            client_groups: Client groups
+            remote_system: Remote System from data
+            ts: timestamp when data updated
         """
         if source == ETL_SOURCE and not remote_system:
             raise AttributeError("remote_system param is required for 'etl' source")
@@ -502,6 +514,10 @@ class DiscoveredObject(Document):
                 continue
             if d.last_update == last_update:
                 continue
+            if set(service_groups or []) != set(d.service_groups or []):
+                d.service_groups = service_groups
+            if set(client_groups or []) != set(d.client_groups or []):
+                d.client_groups = client_groups
             d.data = data
             d.labels = labels or []
             d.last_update = last_update
@@ -513,6 +529,8 @@ class DiscoveredObject(Document):
                     remote_system=remote_system,
                     remote_id=data.pop("remote_id", None),
                     labels=labels,
+                    service_groups=service_groups,
+                    client_groups=client_groups,
                     data=data,
                     last_update=last_update,
                 )
@@ -527,9 +545,9 @@ class DiscoveredObject(Document):
         *
         # source, remote_system, data, labels, checks
         bulk ?
-        :param data:
-        :param checks:
-        :return:
+        Args:
+            data:
+            checks: List processed checks
         """
         # Merge Data
         for d in data:
@@ -539,7 +557,9 @@ class DiscoveredObject(Document):
             rs = None
             if d.remote_system:
                 rs = RemoteSystem.get_by_name(d.remote_system)
-            self.set_data(d.source, d.data, d.labels, remote_system=rs)
+            self.set_data(
+                d.source, d.data, d.labels, d.service_groups, d.client_groups, remote_system=rs
+            )
         if not checks and not self.checks:
             return
         checks = [
@@ -595,8 +615,9 @@ def sync_purgatorium():
         pool = Pool.get_by_bi_id(row["pool"])
         data = defaultdict(dict)
         d_labels = defaultdict(list)
+        groups = defaultdict(list)
         # hostnames, descriptions, uptimes, all_data,
-        for source, rs, d1, d2, labels in row["all_data"]:
+        for source, rs, d1, d2, labels, s_groups, c_groups in row["all_data"]:
             if not int(d1["uptime"]):
                 # Filter 0 uptime
                 del d1["uptime"]
@@ -611,6 +632,15 @@ def sync_purgatorium():
             data[(source, rs)].update(d1 | d2)
             #
             d_labels[(source, rs)] = labels
+            #
+            for rg in s_groups or []:
+                rg = ResourceGroup.get_by_bi_id(rg)
+                if rg:
+                    groups[(source, rs, "s")].append(rg.id)
+            for rg in c_groups or []:
+                rg = ResourceGroup.get_by_bi_id(rg)
+                if rg:
+                    groups[(source, rs, "c")].append(rg.id)
         last_ts = datetime.datetime.fromisoformat(row["last_ts"])
         r = DiscoveredObject.register(
             pool,
@@ -623,6 +653,8 @@ def sync_purgatorium():
                     remote_system=rs,
                     data=d,
                     labels=d_labels.get((source, rs)) or [],
+                    service_groups=groups.get((source, rs, "s")) or [],
+                    client_groups=groups.get((source, rs, "c")) or [],
                 )
                 for (source, rs), d in data.items()
             ],
