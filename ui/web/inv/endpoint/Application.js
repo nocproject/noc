@@ -64,6 +64,7 @@ Ext.define("NOC.inv.endpoint.Application", {
         {
           name: "used_by",
           xtype: "gridfield",
+          fieldLabel: __("Used by"),
           columns: [
             {
               text: __("Channel"),

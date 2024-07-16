@@ -184,7 +184,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           var adHocWindow = Ext.create("Ext.window.Window", {
             title: __("Create Ad-Hoc channel"),
             height: 400,
-            width: 600,
+            width: 800,
             layout: "fit",
             scrollable: true,
             modal: true,
@@ -201,19 +201,38 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                   {
                     xtype: "grid",
                     store: new Ext.data.Store({
-                      fields: ["tracer", "object__label", "object"],
+                      fields: ["tracer", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
                       data: obj,
                     }),
                     columns: [
                       {
-                        text: __("Label"),
-                        dataIndex: "object__label",
-                        flex: 2,
+                        text: __("Start"),
+                        dataIndex: "start_endpoint",
+                        flex: 1,
+                        renderer: NOC.render.Lookup("start_endpoint"),
+                      },
+                      {
+                        text: __("End"),
+                        dataIndex: "end_endpoint",
+                        flex: 1,
+                        renderer: NOC.render.Lookup("end_endpoint"),
                       },
                       {
                         text: __("Tracer"),
                         dataIndex: "tracer",
-                        flex: 1,
+                        width: 100,
+                      },
+                      {
+                        text: __("Status"),
+                        dataIndex: "status",
+                        width: 50,
+                        renderer: function(v){
+                          return {
+                            "new": "<i class='fa fa-plus' style='color:" + NOC.colors.emerald + "' title='New'></i>",
+                            "done": "<i class='fa fa-check' style='color:" + NOC.colors.yes + "' title='Done'></i>",
+                            "broken": "<i class='fa fa-exclamation-triangle' style='color:" + NOC.colors.no + "' title='Broken'></i>",
+                          }[v];
+                        },
                       },
                     ],
                     selModel: {
@@ -243,7 +262,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                       Ext.Ajax.request({
                         url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
                         method: "POST",
-                        jsonData: {object: selectedRecord.get("object"), tracer: selectedRecord.get("tracer")},
+                        jsonData: {endpoint: selectedRecord.get("start_endpoint"), tracer: selectedRecord.get("tracer")},
                         success: function(response){
                           var data = Ext.decode(response.responseText);
                           if(data.status){
@@ -262,7 +281,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                     },
                   },
                   {
-                    text: "Cancel",
+                    text: __("Cancel"),
                     handler: function(){
                       adHocWindow.close();
                     },

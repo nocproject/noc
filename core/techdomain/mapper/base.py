@@ -8,14 +8,12 @@
 # Python modules
 import logging
 from dataclasses import dataclass
-from typing import List, Iterable
+from typing import List, Iterable, Optional
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.channel import Channel
-from noc.inv.models.endpoint import Endpoint as DBEndpoint
-from noc.core.resource import from_resource
-from ..tracer.base import BaseTracer, Endpoint, PathItem
+from ..tracer.base import Endpoint
 
 
 @dataclass
@@ -74,83 +72,5 @@ class BaseMapper(object):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
         self.channel = channel
 
-    def get_tracer(self) -> BaseTracer:
+    def to_dot(self, start: Optional[Endpoint] = None, end:Optional[Endpoint]=None, connect_input:Optional[str]=None, connect_output:Optional[str]=None) -> str:
         raise NotImplementedError
-
-    def to_dot(self) -> str:
-        def get_node_key(pi: PathItem) -> str:
-            parts = [str(pi.object.id)]
-            if pi.input and Endpoint(object=pi.object, name=pi.input) not in endpoints:
-                parts.append(pi.input)
-            else:
-                parts.append("")
-            if pi.output and Endpoint(object=pi.object, name=pi.output) not in endpoints:
-                parts.append(pi.output)
-            else:
-                parts.append("")
-            return "|".join(parts)
-
-        tr = self.get_tracer()
-        starting = []
-        endpoints = set()
-        nodes = {}
-        for ep in DBEndpoint.objects.filter(channel=self.channel.id):
-            o, p = from_resource(ep.resource)
-            if not p:
-                continue
-            e = Endpoint(object=o, name=p)
-            endpoints.add(e)
-            if ep.is_root:  # @depends on topology
-                starting.append(e)
-        # Trace path
-        if self.channel.is_unidirectional:
-            edge_style = " dir = forward"
-        else:
-            edge_style = ""
-        edges = set()
-        for ep in starting:
-            last_pi = None
-            last_node = None
-            for pi in tr.iter_path(ep):
-                # Get node
-                node_key = get_node_key(pi)
-                node = nodes.get(node_key)
-                if not node:
-                    name = " > ".join(pi.object.get_local_name_path(True))
-                    model = pi.object.model.get_short_label()
-                    node = Node(
-                        label=f"{name}\\n{model}",
-                        endpoints=[],
-                        inputs=[],
-                        outputs=[],
-                    )
-                    nodes[node_key] = node
-                # Mark inputs, outputs, and endpoints
-                if pi.input:
-                    if Endpoint(object=pi.object, name=pi.input) in endpoints:
-                        node.add_endpoint(pi.input)
-                    else:
-                        node.add_input(pi.input)
-                if pi.output:
-                    if Endpoint(object=pi.object, name=pi.output) in endpoints:
-                        node.add_endpoint(pi.output)
-                    elif pi.output not in node.outputs:
-                        node.add_output(pi.output)
-                if last_pi and last_node:
-                    # Edge from previous item
-                    s_ref = last_node.get_ref(last_pi.output)
-                    e_ref = node.get_ref(pi.input)
-                    edges.add(f"{s_ref} -- {e_ref} [{edge_style}]")
-                # Internal edge
-                if pi.output:
-                    s_ref = node.get_ref(pi.input)
-                    e_ref = node.get_ref(pi.output)
-                    edges.add(f"{s_ref} -- {e_ref} [{edge_style} style = dashed]")
-                last_pi = pi
-                last_node = node
-        r = ["graph {", "graph [rankdir = LR]"]
-        for n in nodes.values():
-            r.extend(n.to_dot())
-        r.extend(edges)
-        r.append("}")
-        return "\n".join(r)

@@ -9,7 +9,6 @@
 from typing import Iterable, Optional, List, Tuple
 from dataclasses import dataclass
 import logging
-from itertools import count
 import datetime
 
 # Third-party modules
@@ -39,7 +38,14 @@ class Endpoint(object):
         return hash((str(self.object.id), self.name))
 
     def as_resource(self) -> str:
-        return f"o:{self.object.id}:{self.name}"
+        if self.name:
+            return f"o:{self.object.id}:{self.name}"
+        return f"o:{self.object.id}"
+
+    @classmethod
+    def from_resource(cls, res: str) -> "Endpoint":
+        o, n = from_resource(res)
+        return Endpoint(object=o, name=n)
 
 
 @dataclass
@@ -58,6 +64,9 @@ class BaseTracer(object):
     kind: ChannelKind
     topology: ChannelTopology
     adhoc_bidirectional: bool = False
+    # True - iter_adhoc_endpoints will return entryponts
+    # False - return whole object
+    adhoc_endpoints: bool = False
 
     def __init__(self):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
@@ -108,26 +117,36 @@ class BaseTracer(object):
             return None  # No path
         return Endpoint(object=last.object, name=last.output if last.output else last.input)
 
-    def is_ad_hoc_available(self, obj: Object) -> bool:
+    def iter_adhoc_endpoints(self, obj: Object) -> Iterable[Tuple[Endpoint, Endpoint]]:
         """
-        Check if ad-hoc channel can be created.
+        Iterate endpoints suitable to create a channel.
+
+        Returns:
+            Tuple of starting and ending endpoints.
         """
-        self.logger.debug("Checking ad-hoc paths for %s", obj.name)
         for ep in self.iter_endpoints(obj):
             end = self.trace_path(ep)
-            if end:
-                self.logger.debug("Ad-hoc path found for %s", end.as_resource())
-                if self.adhoc_bidirectional:
-                    self.logger.debug("Tracing reverse path")
-                    start = self.trace_path(end)
-                    if start:
-                        self.logger.debug("Reverse path found for %s", start.as_resource())
-                        if ep.as_resource() == start.as_resource():
-                            return True
-                else:
-                    return True
-        self.logger.debug("No any ad-hoc paths found")
-        return False
+            if not end:
+                continue
+            if self.adhoc_bidirectional:
+                # Trace back
+                start = self.trace_path(end)
+                if not start:
+                    continue
+                # Returned back
+                if ep.as_resource() == start.as_resource():
+                    if self.adhoc_endpoints:
+                        yield ep, end
+                    else:
+                        # Whole object
+                        yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name="")
+                        return
+            elif self.adhoc_endpoints:
+                yield ep, end
+            else:
+                # Whole object
+                yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name="")
+                return
 
     @classmethod
     def iter_nested_objects(self, obj: Object) -> Iterable[Object]:
@@ -229,7 +248,7 @@ class BaseTracer(object):
         """
         ch = Channel(
             tech_domain=TechDomain.get_by_code(self.tech_domain),
-            name=f"Ad-hoc {self.name} {datetime.datetime.now().isoformat()}",
+            name=f"Magical {self.name} {datetime.datetime.now().isoformat()}",
             description=f"Created by {self.name} tracer",
             kind=self.kind.value,
             topology=self.topology.value,
@@ -237,85 +256,17 @@ class BaseTracer(object):
         ch.save()
         return ch
 
-    def sync_ad_hoc_channel(self, obj: Object) -> Tuple[Optional[Channel], str]:
+    def sync_ad_hoc_channel(self, ep: Endpoint) -> Tuple[Optional[Channel], str]:
         """
         Create or update ad-hoc channel.
 
         Args:
-            obj: Starting object
-            name: Proposed channel name
+            ep: Starting endpoint
 
         Returns:
             Channel instance, message
         """
-
-        def next_free_pair() -> Optional[int]:
-            """
-            Generate next free pair number
-            """
-            if not self.use_pairs:
-                return None
-            while True:
-                pn = next(pair_count)
-                if pn not in used_pairs:
-                    return pn
-
-        # Trace paths
-        pairs = []
-        resources = set()
-        for sep in self.iter_endpoints(obj):
-            eep = self.trace_path(sep)
-            if not eep:
-                continue
-            pairs.append((sep, eep))
-            resources.add(sep.as_resource())
-            resources.add(eep.as_resource())
-        # Find existing endpoints
-        current_endpoints = {
-            e.resource: e for e in DBEndpoint.objects.filter(resource__in=list(resources))
-        }
-        # Get channel or create new
-        if current_endpoints:
-            # Calculate number of channels
-            cc = {x.channel for x in current_endpoints.values()}
-            if len(cc) > 2:
-                return None, "Multiple channels exists"
-            channel = list(cc)[0]
-            try:
-                self.validate_ad_hoc_channel(channel)
-            except ValueError as e:
-                return None, str(e)
-            used_pairs = {x.pair for x in current_endpoints.values() if x.pair}
-        else:
-            # Brand new channel
-            channel = self.create_ad_hoc_channel()
-            used_pairs = set()
-        # Process endpoints
-        pair_count = count(1)
-        for sep, eep in pairs:
-            start = current_endpoints.get(sep.as_resource())
-            if not start:
-                # Create start endpoint
-                start = DBEndpoint(
-                    channel=channel,
-                    resource=sep.as_resource(),
-                    is_root=self.is_unidirectional,
-                    pair=next_free_pair() if self.use_pairs else None,
-                )
-                start.save()
-            end = current_endpoints.get(eep.as_resource())
-            if not end:
-                end = DBEndpoint(
-                    channel=channel,
-                    resource=eep.as_resource(),
-                    is_root=False,
-                    pair=start.pair if self.use_pairs else None,
-                )
-                end.save()
-        # @todo: Remove hanging endpoints
-        if current_endpoints:
-            return channel, "Channel updated"
-        return channel, "Channel created"
+        raise NotImplementedError
 
     def is_connected(self, obj: Object, name: str) -> bool:
         """
