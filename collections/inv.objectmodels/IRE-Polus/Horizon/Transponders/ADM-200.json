@@ -77,11 +77,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -111,11 +111,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -145,11 +145,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -179,11 +179,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -213,11 +213,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -247,11 +247,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -281,11 +281,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -315,11 +315,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -349,11 +349,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -383,11 +383,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -417,11 +417,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -451,11 +451,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -485,11 +485,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -519,11 +519,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -553,11 +553,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -587,11 +587,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -621,11 +621,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -655,11 +655,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -689,11 +689,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -723,11 +723,11 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC8"
+                    "protocol__code": "8GFC"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "GFC16"
+                    "protocol__code": "16GFC"
                 }
             ],
             "type__name": "Transceiver | SFP+"
