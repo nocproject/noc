@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# OpticalSMMapper class
+# OTNOTUMapper class
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -65,10 +65,17 @@ class DWDMOTUMapper(BaseMapper):
                     from .loader import loader as mapper_loader
 
                     inner_mapper = mapper_loader[pi.channel.tech_domain.code](pi.channel)
-                    r += [f"subgraph cluster_ch_{pi.channel.id} {{", f"  graph [ label = \"{pi.channel.name}\" style = dashed ]"]
+                    r += [
+                        f"subgraph cluster_ch_{pi.channel.id} {{",
+                        f'  graph [ label = "{pi.channel.name}" style = dashed ]',
+                    ]
                     start = Endpoint(object=pi.object, name=pi.input)
                     end = Endpoint(object=pi.output_object, name=pi.output)
-                    r.append(inner_mapper.to_dot(start=start, end=end, connect_input="start:tx", connect_output="end:rx"))
+                    r.append(
+                        inner_mapper.to_dot(
+                            start=start, end=end, connect_input="start:tx", connect_output="end:rx"
+                        )
+                    )
                     r.append("}")
         else:
             # Direct connection
@@ -82,10 +89,17 @@ class DWDMOTUMapper(BaseMapper):
                     from .loader import loader as mapper_loader
 
                     inner_mapper = mapper_loader[pi.channel.tech_domain.code](pi.channel)
-                    r += [f"subgraph cluster_ch_{pi.channel.id} {{", f"  graph [ label = \"{pi.channel.name}\" style = dashed ]"]
+                    r += [
+                        f"subgraph cluster_ch_{pi.channel.id} {{",
+                        f'  graph [ label = "{pi.channel.name}" style = dashed ]',
+                    ]
                     start = Endpoint(object=pi.object, name=pi.input)
                     end = Endpoint(object=pi.output_object, name=pi.output)
-                    r.append(inner_mapper.to_dot(start=start, end=end, connect_input="end:tx", connect_output="start:rx"))
+                    r.append(
+                        inner_mapper.to_dot(
+                            start=start, end=end, connect_input="end:tx", connect_output="start:rx"
+                        )
+                    )
                     r.append("}")
         else:
             e.append("  end:rx -- start:rx [ dir = forward ]")

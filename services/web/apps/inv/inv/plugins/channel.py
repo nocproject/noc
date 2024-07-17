@@ -79,6 +79,7 @@ class ChannelPlugin(InvPlugin):
                 "topology": ch.topology,
                 "from_endpoint": from_endpoint,
                 "to_endpoint": to_endpoint,
+                "discriminator": ch.discriminator or "",
             }
 
         nested_objects_ids = "|".join(str(o.id) for o in BaseTracer().iter_nested_objects(object))
@@ -160,14 +161,12 @@ class ChannelPlugin(InvPlugin):
         if unqualified:
             ids = "|".join(x[2:] for x in unqualified)
             q_rx = f"^o:({ids}):"
-            print("re", q_rx)
             ch_ep.update({
                 x["resource"][:26]: x["channel"]
                 for x in DBEndpoint._get_collection().find(
                     {"resource": {"$regex": q_rx}}, {"_id": 0, "resource": 1, "channel": 1}
                 )
             })
-        print("ch_ep", ch_ep)
         # Update statuses
         for x in r:
             update_proposal_status(x)

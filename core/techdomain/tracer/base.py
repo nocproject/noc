@@ -242,7 +242,7 @@ class BaseTracer(object):
             msg = f"Expecting {self.topology.value}, found {channel.topology}"
             raise ValueError(msg)
 
-    def create_ad_hoc_channel(self) -> Channel:
+    def create_ad_hoc_channel(self, discriminator: Optional[str] = None) -> Channel:
         """
         Create new ad-hoc channel instace
         """
@@ -252,6 +252,7 @@ class BaseTracer(object):
             description=f"Created by {self.name} tracer",
             kind=self.kind.value,
             topology=self.topology.value,
+            discriminator=discriminator,
         )
         ch.save()
         return ch
@@ -337,9 +338,16 @@ class BaseTracer(object):
         if not e:
             return None
         ch = e.channel
+        if ch.topology == ChannelTopology.P2P.value:
+            endpoints = list(DBEndpoint.objects.filter(channel=ch.id))
+            if len(endpoints) != 2:
+                return None  # No valid channel
+            eps = [x for x in endpoints if x.resource != ep.as_resource()]
+            o, n = from_resource(eps[0].resource)
+            return Endpoint(object=o, name=n, channel=ch)
         if ch.topology == ChannelTopology.UBUNCH.value:
             if not e.is_root:
-                return False  # Opposite direction
+                return None  # Opposite direction
             endpoints = list(DBEndpoint.objects.filter(channel=ch.id, pair=e.pair, is_root=False))
             if len(endpoints) != 1:
                 return None  # Broken channel

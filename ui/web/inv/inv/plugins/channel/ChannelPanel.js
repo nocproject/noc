@@ -94,6 +94,11 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         {
           text: __("Topo"),
           dataIndex: "topology",
+          width: 120,
+        },
+        {
+          text: __("Discriminator"),
+          dataIndex: "discriminator",
           width: 100,
         },
         {

@@ -61,7 +61,10 @@ class OTNOTUTracerTracer(BaseTracer):
             self.logger.info("No %s connection", out_conn)
             return
         # Yield transceiver
-        path = [PathItem(object=start.object, input=None, output=start.name), PathItem(object=xcvr, input="in", output=out_conn)]
+        path = [
+            PathItem(object=start.object, input=None, output=start.name),
+            PathItem(object=xcvr, input="in", output=out_conn),
+        ]
         #
         ep = self.get_peer(Endpoint(object=xcvr, name=out_conn))
         if not ep:
@@ -138,7 +141,8 @@ class OTNOTUTracerTracer(BaseTracer):
         dbe = list(DBEndpoint.objects.filter(resource__in=[start.as_resource(), end.as_resource()]))
         if not dbe:
             # New channel
-            ch = self.create_ad_hoc_channel()
+            # @todo: ADM200 only
+            ch = self.create_ad_hoc_channel(discriminator="otu::OTUC2")
             is_new = True
             # Create endpoints
             DBEndpoint(channel=ch, resource=start.as_resource()).save()
