@@ -701,7 +701,9 @@ class ClassifierService(FastAPIService):
             # Append resolved vars to data
         return raw_vars
 
-    def resolve_object(self, target: Target, remote_system: Optional[str] = None) -> Optional[ManagedObject]:
+    def resolve_object(
+        self, target: Target, remote_system: Optional[str] = None
+    ) -> Optional[ManagedObject]:
         """
         Resolve Managed Object by target
 
