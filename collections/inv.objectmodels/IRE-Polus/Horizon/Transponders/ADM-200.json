@@ -82,6 +82,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -116,6 +124,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -150,6 +166,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -184,6 +208,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -218,6 +250,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -252,6 +292,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -286,6 +334,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -320,6 +376,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -354,6 +418,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -388,6 +460,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -422,6 +502,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -456,6 +544,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -490,6 +586,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -524,6 +628,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -558,6 +670,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -592,6 +712,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -626,6 +754,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -660,6 +796,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -694,6 +838,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -728,6 +880,14 @@
                 {
                     "direction": "*",
                     "protocol__code": "16GFC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODUflex"
                 }
             ],
             "type__name": "Transceiver | SFP+"
