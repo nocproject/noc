@@ -60,27 +60,34 @@ def register(
     remote_id: Optional[str] = None,
     uptime: Optional[int] = None,
     labels: Optional[List[str]] = None,
+    service_groups: Optional[List[int]] = None,
+    clients_groups: Optional[List[int]] = None,
+    template: Optional[str] = None,
     is_delete: bool = False,
     checks: Optional[List[ProtocolCheckResult]] = None,
     **kwargs,
 ):
     """
     Register host on Purgatorium DB
-    :param address: Host IP address, 0.0.0.0 if not find
-    :param pool: Pool on found IP
-    :param source: Source that found OP: etl, network-scan, neighbors, syslog-source, trap-source, manual
-    :param description: sysDescription
-    :param border: Device, that find host on neighbors
-    :param chassis_id: ChassisID host
-    :param hostname: Host Hostname
-    :param remote_system: RemoteSystem from received host
-    :param remote_id: Host ID on RemoteSystem
-    :param uptime: Host Uptime
-    :param labels: Some tags
-    :param is_delete: Flag that host deleted
-    :param checks: List Checks, that running on discovery
-    :param kwargs: Some data about Host (used when received from RemoteSystem)
-    :return:
+    Args:
+        address: Host IP address, 0.0.0.0 if not find
+        pool: Pool on found IP
+        source: Source that found OP: etl, network-scan, neighbors, syslog-source, trap-source, manual
+        description: sysDescription
+        border: Device, that find host on neighbors
+        chassis_id: ChassisID host
+        hostname: Host Hostname
+        remote_system: RemoteSystem from received host
+        remote_id: Host ID on RemoteSystem
+        uptime: Host Uptime
+        labels: Some tags
+        service_groups: List of Resource Group instance
+        clients_groups: List of Resource Group instance
+        template: Using template (default template)
+        is_delete: Flag that host deleted
+        checks: List Checks, that running on discovery
+        kwargs: Some data about Host (used when received from RemoteSystem)
+
     """
     # address = IP.prefix(address)
     now = datetime.datetime.now()
@@ -118,4 +125,8 @@ def register(
         data["labels"] = list(labels)
     if checks:
         data["checks"] = [orjson.dumps(c).decode("utf-8") for c in checks]
+    if service_groups:
+        data["service_groups"] = [int(rg) for rg in service_groups]
+    if clients_groups:
+        data["clients_groups"] = [int(rg) for rg in clients_groups]
     svc.publish(orjson.dumps(data), f"ch.{PURGATORIUM_TABLE}")

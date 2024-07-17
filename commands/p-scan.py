@@ -50,6 +50,15 @@ class Command(BaseCommand):
             dest="pool",
             default="default",
             help="NOC Pool on scanning net",
+            required=True,
+        )
+        parser.add_argument(
+            "--adm-domain",
+            action="store",
+            dest="adm_domain",
+            default="default",
+            help="NOC Administrative Domain on scanning net",
+            required=False,
         )
         parser.add_argument(
             "--jobs", action="store", type=int, default=100, dest="jobs", help="Concurrent jobs"
@@ -147,6 +156,7 @@ class Command(BaseCommand):
         jobs,
         checks,
         pool: str,
+        adm_domain: Optional[str] = None,
         ports: Optional[str] = None,
         community: Optional[str] = None,
         snmp_user: Optional[str] = None,

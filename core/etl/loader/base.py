@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Data Loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -125,6 +125,8 @@ class BaseLoader(object):
         self.clean_map = {}  # field name -> clean function
         self.pending_deletes: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
         self.referred_errors: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
+        if not self.model:
+            return
         if self.is_document:
             import mongoengine.errors
 
@@ -512,7 +514,7 @@ class BaseLoader(object):
         """
         Create new record
         """
-        self.logger.debug("Add: %s", item.json())
+        self.logger.debug("Add: %s", item.model_dump())
         v = self.clean(item)
         if "id" in v:
             del v["id"]
@@ -555,7 +557,7 @@ class BaseLoader(object):
         """
         Create change record
         """
-        self.logger.debug("Change: %s", n.json())
+        self.logger.debug("Change: %s", n.model_dump())
         self.c_change += 1
         nv = self.clean(n)
         changes = {"remote_system": nv["remote_system"], "remote_id": nv["remote_id"]}
@@ -975,7 +977,6 @@ class BaseLoader(object):
                             row,
                         )
                         n_errors += 1
-                        print("XXX", r_data)
                 elif isinstance(v, dict) and "scope" in v:
                     value = self.get_mapping(v["scope"], v["value"])
                     if not value:
