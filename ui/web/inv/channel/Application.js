@@ -298,8 +298,13 @@ Ext.define("NOC.inv.channel.Application", {
               dataIndex: "used_by",
               flex: 1,
               renderer: function(v){
-                console.log(">>>", v)
-                return __("...");
+                  return v.map(function(x) {
+                      if(x.discriminator === "") {
+                          return x.channel__label;
+                      } else {
+                          return x.channel__label + " [" + x.discriminator + "]";
+                      }
+                  }).join(", ");
               },
             },
           ],

@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Dict
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -32,6 +35,15 @@ class UsageItem(EmbeddedDocument):
     channel = PlainReferenceField(Channel)
     discriminator = StringField(required=False)
     direction = IntField(required=False)
+
+    def to_json(self) -> Dict[str, str]:
+        r = {
+            "channel": str(self.channel.id),
+            "channel__label": self.channel.name,
+            "name": self.channel.name,
+            "discriminator": self.discriminator or "",
+        }
+        return r
 
 
 class Endpoint(Document):

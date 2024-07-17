@@ -6,17 +6,25 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from typing import List, Optional, Dict
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.inv.models.channel import Channel
-from noc.inv.models.endpoint import Endpoint
+from noc.inv.models.endpoint import Endpoint, UsageItem
 from noc.core.translation import ugettext as _
 from noc.services.web.base.docinline import DocInline
 from noc.core.resource import resource_label
 from noc.core.techdomain.mapper.loader import loader as mapper_loader
 
 
+def get_usage(v: Optional[List[UsageItem]]) -> List[Dict[str, str]]:
+    if not v:
+        return []
+    return [i.to_json() for i in v]
+
+
 class EndpointDocInline(DocInline):
     field_labels = {"resource": resource_label}
+    render_fields = {"used_by": get_usage}
 
 
 class ChannelApplication(ExtDocApplication):

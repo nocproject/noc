@@ -57,6 +57,7 @@ class DocInline(object):
     custom_fields = {}  # name -> handler, populated automatically
     # Add `__label` items
     field_labels = {}  # field_name -> callable(field_value) -> result
+    render_fields = {}  # field_name -> callable(field_value) -> result
 
     def __init__(self, model):
         self.model = model
@@ -265,7 +266,10 @@ class DocInline(object):
                 continue
             v = getattr(o, n)
             if v is not None:
-                v = f.to_python(v)
+                if f.name in self.render_fields:
+                    v = self.render_fields[f.name](v)
+                else:
+                    v = f.to_python(v)
             if v is not None:
                 if isinstance(f, GeoPointField):
                     pass
@@ -280,7 +284,7 @@ class DocInline(object):
                         v = str(v)
                 elif f.name in self.field_labels:
                     r[f"{f.name}__label"] = self.field_labels[f.name](v)
-                elif not isinstance(v, int) and not isinstance(v, str) and not isinstance(v, bool):
+                elif not isinstance(v, int) and not isinstance(v, str) and not isinstance(v, bool) and f.name not in self.render_fields:
                     if hasattr(v, "id"):
                         v = v.id
                     else:
