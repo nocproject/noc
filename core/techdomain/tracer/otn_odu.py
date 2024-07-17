@@ -14,10 +14,10 @@ from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from .base import BaseTracer, Endpoint, PathItem
-from .otn_otu import OTNOTUTracerTracer
+from .otn_otu import OTNOTUTracer
 
 
-class OTNODUTracerTracer(BaseTracer):
+class OTNODUTracer(BaseTracer):
     """
     OTN OTU level tracer
     """
@@ -30,7 +30,7 @@ class OTNODUTracerTracer(BaseTracer):
 
     def iter_endpoints(self, obj: Object) -> Iterable[Endpoint]:
         # Check if card has OTU endpoints
-        otu_tr = OTNOTUTracerTracer()
+        otu_tr = OTNOTUTracer()
         otu_endpoints = [e.as_resource() for e in otu_tr.iter_endpoints(obj)]
         if not otu_endpoints:
             return

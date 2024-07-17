@@ -6,17 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 from typing import Iterable
 
 # Python modules
-from noc.core.channel.types import ChannelTopology
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
-from noc.core.resource import from_resource
-from ..tracer.base import BaseTracer, Endpoint, PathItem
-from .base import BaseMapper, Node
-from ..tracer.optical_dwdm import OpticalDWDMTracer
-from ..tracer.otn_otu import OTNOTUTracerTracer
+from ..tracer.base import Endpoint
+from .base import BaseMapper
+from ..tracer.otn_otu import OTNOTUTracer
 
 
 class DWDMOTUMapper(BaseMapper):
@@ -39,7 +35,7 @@ class DWDMOTUMapper(BaseMapper):
             r.append("  }")
             yield from r
 
-        tr = OTNOTUTracerTracer()
+        tr = OTNOTUTracer()
         paths = []
         for db_ep in DBEndpoint.objects.filter(channel=self.channel.id):
             ep = Endpoint.from_resource(db_ep.resource)

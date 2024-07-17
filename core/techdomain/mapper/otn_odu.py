@@ -6,17 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
-from typing import Iterable
-
-# Python modules
-from noc.core.channel.types import ChannelTopology
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
-from noc.core.resource import from_resource
 from noc.inv.models.object import Object
-from ..tracer.base import BaseTracer, Endpoint, PathItem
-from .base import BaseMapper, Node
-from ..tracer.otn_odu import OTNODUTracerTracer
+from ..tracer.base import Endpoint
+from .base import BaseMapper
+from ..tracer.otn_odu import OTNODUTracer
 
 
 class DWDMOdUMapper(BaseMapper):
@@ -38,7 +32,7 @@ class DWDMOdUMapper(BaseMapper):
 
         db_ep = DBEndpoint.objects.filter(channel=self.channel.id).first()
         start = Endpoint.from_resource(db_ep.resource)
-        tr = OTNODUTracerTracer()
+        tr = OTNODUTracer()
         path = list(tr.iter_path(start))
         # @todo: Check path length
         r = [

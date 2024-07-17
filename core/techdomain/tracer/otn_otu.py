@@ -16,7 +16,7 @@ from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from .base import BaseTracer, Endpoint, PathItem
 
 
-class OTNOTUTracerTracer(BaseTracer):
+class OTNOTUTracer(BaseTracer):
     """
     OTN OTU level tracer
     """
