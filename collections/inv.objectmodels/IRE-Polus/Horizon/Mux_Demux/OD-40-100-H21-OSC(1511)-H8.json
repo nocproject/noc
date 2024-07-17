@@ -851,7 +851,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["OD-40-100-H21-OSC(1511)-H8", "RBS-OD-40-100-H21-OSC(1511)-H8"]
+            "value": ["OD-40-100-H21-OSC(1511)-H8"]
         },
         {
             "attr": "min_rx_tx_frequency",

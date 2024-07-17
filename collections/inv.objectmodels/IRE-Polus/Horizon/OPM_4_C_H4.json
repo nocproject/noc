@@ -74,7 +74,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-OPM-4-C-H4"]
+            "value": ["OPM-4-C-H4"]
         }
     ],
     "front_facade__name": "RBS | iData | RBS-OPM-4-C-H4 IP1503"

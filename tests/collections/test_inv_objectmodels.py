@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test inv.objectmodels collection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -235,7 +235,6 @@ CONNECTION_CHECKLIST = {
             "OTU2e",
             "OTU3",
             "OTU4",
-            "OTUCn",
         ],
     },
     "Transceiver | CFP4": {

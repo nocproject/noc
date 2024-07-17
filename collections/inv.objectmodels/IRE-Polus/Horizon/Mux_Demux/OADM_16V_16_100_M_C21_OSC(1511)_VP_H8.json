@@ -593,7 +593,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-OADM-16V/16-100-M-C21-OSC(1511)VP-H8"]
+            "value": ["OADM-16V/16-100-M-C21-OSC(1511)VP-H8"]
         },
         {
             "attr": "min_rx_tx_frequency",

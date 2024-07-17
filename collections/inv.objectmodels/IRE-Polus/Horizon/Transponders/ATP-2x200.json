@@ -48,7 +48,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTUCn"
+                    "protocol__code": "OTUC2"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -105,7 +105,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTUCn"
+                    "protocol__code": "OTUC2"
                 }
             ],
             "type__name": "Transceiver | CFP2"
