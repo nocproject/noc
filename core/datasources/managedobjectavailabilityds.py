@@ -170,12 +170,11 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
-        # now = datetime.datetime.now()
-        from_date = datetime.datetime(2022, 10, 1)
-        to_date = datetime.datetime(2022, 10, 31)
-        td = int((to_date - from_date).total_seconds())
-        rb = cls.get_reboots_by_object(start_date=from_date, stop_date=to_date)
-        outages = cls.get_outages_ch(start_date=from_date, stop_date=to_date)
+        start: datetime.datetime = kwargs.get("start")
+        end: datetime.datetime = kwargs.get("end")
+        td = int((end - start).total_seconds())
+        rb = cls.get_reboots_by_object(start_date=start, stop_date=end)
+        outages = cls.get_outages_ch(start_date=start, stop_date=end)
         # Getting unavailable
         for num, row in enumerate(
             ObjectStatus._get_collection().find({"object": {"$exists": True}})
@@ -183,7 +182,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
             oid, status = row["object"], row["status"]
             outage_duration, outage_count = outages.get(oid, (0, 0))
             s_outage = cls.get_status_outage(
-                start_date=from_date, stop_date=to_date, status=status, last=row.get("last")
+                start_date=start, stop_date=end, status=status, last=row.get("last")
             )
             if s_outage:
                 outage_duration += s_outage
