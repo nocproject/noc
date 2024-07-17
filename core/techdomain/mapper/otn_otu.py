@@ -98,7 +98,7 @@ class DWDMOTUMapper(BaseMapper):
                     )
                     r.append("}")
         else:
-            e.append("  end:rx -- start:rx [ dir = forward ]")
+            r.append("  end:rx -- start:rx [ dir = forward ]")
         r.append("}")
         print("\n".join(r))
         return "\n".join(r)

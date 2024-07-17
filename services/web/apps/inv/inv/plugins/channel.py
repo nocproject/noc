@@ -110,7 +110,7 @@ class ChannelPlugin(InvPlugin):
         if local_name:
             parts.append(" > ".join(local_name))
         else:
-            parts.append(obj.name)
+            parts.append(ep.object.name)
         if ep.name:
             parts.append(f" > {ep.name}")
         parts.append(f" [{ep.object.model.get_short_label()}]")
