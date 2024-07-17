@@ -701,17 +701,20 @@ class ClassifierService(FastAPIService):
             # Append resolved vars to data
         return raw_vars
 
-    def resolve_object(self, target: Target) -> Optional[ManagedObject]:
+    def resolve_object(self, target: Target, remote_system: Optional[str] = None) -> Optional[ManagedObject]:
         """
         Resolve Managed Object by target
-        :param target:
-        :return:
+
+        Args:
+            target: Event Target
+            remote_system: Remote System name
         """
         mo = None
         if target.id and not target.is_agent:
             mo = ManagedObject.get_by_id(int(target.id))
-        if not mo and target.remote_id:
-            mo = ManagedObject.objects.filter(remote_id=target.remote_id).first()
+        if not mo and target.remote_id and remote_system:
+            remote_system = RemoteSystem.get_by_name(remote_system)
+            mo = ManagedObject.get_by_mapping(remote_system, target.remote_id)
         if not mo and target.pool:
             mo = ManagedObject.objects.filter(pool=target.pool, address=target.address).first()
         return mo
@@ -738,7 +741,7 @@ class ClassifierService(FastAPIService):
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event.id, event.data, lag)
         metrics[EventMetrics.CR_PROCESSED] += 1
         # Resolve managed object
-        mo = self.resolve_object(event.target)
+        mo = self.resolve_object(event.target, remote_system=event.remote_system)
         if not mo:
             self.logger.info("[%s] Unknown managed object id %s. Skipping", event.id, event.target)
             event.type.profile = GENERIC_PROFILE

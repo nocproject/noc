@@ -76,6 +76,7 @@ class ManagedObjectLoader(BaseLoader):
             name, pool = vv.pop("name"), vv.pop("pool")
             description, labels = vv.pop("description", None), vv.pop("labels", None)
             remote_system, remote_id = vv.pop("remote_system"), vv.pop("remote_id")
+            del data["id"]
             service_groups = vv.pop("static_service_groups", None)
             client_groups = vv.pop("static_client_groups", None)
             for k, v in vv.items():
@@ -95,7 +96,7 @@ class ManagedObjectLoader(BaseLoader):
                 description=description,
                 hostname=name,
                 remote_system=remote_system.bi_id,
-                remote_id=data.pop("id"),
+                remote_id=remote_id,
                 # checks=item.checks,
                 labels=labels or [],
                 service_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in service_groups or []],

@@ -369,6 +369,7 @@ class DiscoveredObject(Document):
             ],
         )
         mappings = {}
+        s_groups = set()
         for d in self.data:
             for k, v in d.data.items():
                 r.data.append(
@@ -378,8 +379,14 @@ class DiscoveredObject(Document):
                         remote_system=str(d.remote_system.id) if d.remote_system else None,
                     )
                 )
-                if d.remote_system and d.remote_system not in mappings:
-                    mappings[d.remote_system] = d.remote_id
+            if d.remote_system and d.remote_system not in mappings:
+                mappings[d.remote_system] = d.remote_id
+            if d.service_groups:
+                s_groups.update(set(d.service_groups))
+        if mappings:
+            r.mappings = mappings
+        if s_groups:
+            r.service_groups = list(s_groups)
         # Iter Origin
         for o in DiscoveredObject.objects.filter(origin=self.id):
             if o.effective_labels:
