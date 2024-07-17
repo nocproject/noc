@@ -1,0 +1,251 @@
+{
+    "name": "IRE-Polus | Horizon | EAU | EAU-2x(40V+100)-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "0d48fa8c-370d-4817-98c1-7a229fcd17e1",
+    "vendor__code": "IRE-POLUS",
+    "description": "Карта EAU является эрбиевым волоконным оптическим усилителем и предназначена для усиления оптических DWDM-сигналов в C3 области (1529-1564нм). Рекомендуется к применению в многоканальных системах. Предназначен для усиления оптического сигнала в усилительном узле волоконно-оптического тракта.",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "OSC1_IN",
+            "description": "Вход служебного канала 1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC1_OUT",
+            "description": "Выход служебного канала 1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON1",
+            "description": "Мониторный выход 1-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON2",
+            "description": "Мониторный выход 2-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN1",
+            "description": "Вход 1-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT1",
+            "description": "Выход 1-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN2",
+            "description": "Вход 2-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT2",
+            "description": "Выход 2-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC2_IN",
+            "description": "Вход служебного канала 2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC2_OUT",
+            "description": "Выход служебного канала 2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON3",
+            "description": "Мониторный выход 3-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON4",
+            "description": "Мониторный выход 4-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN3",
+            "description": "Вход 3-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT3",
+            "description": "Выход 3-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN4",
+            "description": "Вход 4-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT4",
+            "description": "Выход 4-го усилителя",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "cross": [
+        {
+            "input": "IN1",
+            "output": "OSC1_OUT"
+        },
+        {
+            "input": "IN1",
+            "output": "MON1"
+        },
+        {
+            "input": "IN1",
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "output": "OUT2"
+        },
+        {
+            "input": "IN2",
+            "output": "MON2"
+        },
+        {
+            "input": "IN3",
+            "output": "OSC2_OUT"
+        },
+        {
+            "input": "IN3",
+            "output": "MON3"
+        },
+        {
+            "input": "IN3",
+            "output": "OUT3"
+        },
+        {
+            "input": "IN4",
+            "output": "OUT4"
+        },
+        {
+            "input": "IN4",
+            "output": "MON4"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 50.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 351
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.5
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EAU-2x(40V+100)-H8"]
+        }
+    ]
+}

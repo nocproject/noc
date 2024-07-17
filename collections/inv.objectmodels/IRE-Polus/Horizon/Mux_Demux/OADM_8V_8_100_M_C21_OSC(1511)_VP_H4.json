@@ -1,0 +1,385 @@
+{
+    "name": "IRE-Polus | Horizon | Mux_Demux | OADM-8V/8-100-M-С21-OSC(1511)VP-H4",
+    "$collection": "inv.objectmodels",
+    "uuid": "2783f3d3-6384-435e-958c-0d6286f639ca",
+    "vendor__code": "IRE-POLUS",
+    "description": "OADM-8V/8– Оптический мультиплексор ввода/вывода",
+    "cr_context": "LINECARDH4",
+    "labels": ["noc::inv::lc"],
+    "configuration_rule__name": "OM/OD Rules",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "LINE_IN",
+            "description": "Линейный вход",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "LINE_OUT",
+            "description": "Линейный выход",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "P_IN",
+            "description": "Вход с предусилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "P_OUT",
+            "description": "Выход с предусилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "B_IN",
+            "description": "Вход с усилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "B_OUT",
+            "description": "Выход с усилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "EXT_IN",
+            "description": "Порт входа расширения",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "EXT_OUT",
+            "description": "Порт выхода расширения",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_IN",
+            "description": "Вход служебного канала OSC",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_OUT",
+            "description": "Выход служебного канала OSC",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "OSC"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_IN",
+            "description": "Мониторинг входа линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_OUT",
+            "description": "Мониторинг выхода линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C21_IN",
+            "description": "Вход канала С21",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C21",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C22_IN",
+            "description": "Вход канала С22",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C22",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C23_IN",
+            "description": "Вход канала С23",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C23",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C24_IN",
+            "description": "Вход канала С24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C24",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C25_IN",
+            "description": "Вход канала С25",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C25",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C26_IN",
+            "description": "Вход канала С26",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C26",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C27_IN",
+            "description": "Вход канала С27",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C27",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C28_IN",
+            "description": "Вход канала С28",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C28",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C21_OUT",
+            "description": "Выход канала С21",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C21",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C22_OUT",
+            "description": "Выход канала С22",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C22",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C23_OUT",
+            "description": "Выход канала С23",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C23",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C24_OUT",
+            "description": "Выход канала С24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C24",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C25_OUT",
+            "description": "Выход канала С25",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C25",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C26_OUT",
+            "description": "Выход канала С26",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C26",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C27_OUT",
+            "description": "Выход канала С27",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C27",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C28_OUT",
+            "description": "Выход канала С28",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C28",
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 5.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 150
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 278
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.1
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["OADM-8V/8-100-M-C21-OSC(1511)VP-H4"]
+        },
+        {
+            "attr": "min_rx_tx_frequency",
+            "interface": "dwdm",
+            "value": 192.1
+        },
+        {
+            "attr": "max_rx_tx_frequency",
+            "interface": "dwdm",
+            "value": 192.8
+        }
+    ]
+}
