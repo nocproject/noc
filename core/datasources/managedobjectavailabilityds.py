@@ -7,7 +7,6 @@
 
 # Python Modules
 import datetime
-import math
 from typing import Optional, Iterable, Tuple, AsyncIterable, Union
 
 # Third-party modules
@@ -16,7 +15,6 @@ from pymongo.read_preferences import ReadPreference
 
 # NOC modules
 from .base import FieldInfo, FieldType, BaseDataSource
-from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.managedobject import ManagedObject
@@ -125,47 +123,6 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
             if max_stop > stop_date:
                 duration -= (max_stop - stop_date).total_seconds()
             outages[oid] = (duration, int(row["unavail_count"]))
-        return outages
-
-    @staticmethod
-    def get_outages(start_date, stop_date, skip_zero_avail=False):
-        coll = Outage._get_collection()
-        pipeline = [
-            {
-                "$match": {
-                    "$or": [{"start": {"$gte": start_date}}, {"stop": {"$gte": start_date}}],
-                    "start": {"$lt": stop_date},
-                    "stop": {"$ne": None},
-                }
-            },
-            {
-                "$project": {
-                    "duration": {"$subtract": ["$stop", "$start"]},
-                    "start": 1,
-                    "stop": 1,
-                    "object": 1,
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$object",
-                    "duration_u": {"$sum": "$duration"},
-                    "unavail_count": {"$sum": 1},
-                    "min_start": {"$min": "$start"},
-                    "max_stop": {"$max": "$stop"},
-                }
-            },
-        ]
-        outages = {}
-        for num, row in enumerate(coll.aggregate(pipeline)):
-            oid = row["_id"]
-            min_start, max_stop = row["min_start"], row["max_stop"]
-            duration = math.ceil(row["duration_u"] / 1_000)
-            if min_start < start_date:
-                duration -= (start_date - min_start).total_seconds()
-            if max_stop > stop_date:
-                duration -= (max_stop - stop_date).total_seconds()
-            outages[oid] = (duration, row["unavail_count"])
         return outages
 
     @classmethod
