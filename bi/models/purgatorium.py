@@ -68,6 +68,8 @@ class Purgatorium(Model):
     is_delete = BooleanField(description="Address was removed from RemoteSystem", default=False)
     # Labels List
     labels = ArrayField(StringField(), description=_("Tags"))
+    service_groups = ArrayField(UInt64Field(), description=_("Service Groups Ids"))
+    clients_groups = ArrayField(UInt64Field(), description=_("Client Groups Ids"))
     remote_system = StringField(description="Remote System")
     remote_id = StringField(description="Remote System Id")
     # Maybe fields for detect hints

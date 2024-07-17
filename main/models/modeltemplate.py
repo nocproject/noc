@@ -341,10 +341,10 @@ class ModelTemplate(Document):
             elif g.action == "deny":
                 deny_sg.add(str(g.group.id))
         for g in item.service_groups or []:
-            if g in deny_sg:
+            g = ResourceGroup.get_by_id(g)
+            if str(g.id) in deny_sg:
                 continue
-            elif g in allowed_sg:
-                g = ResourceGroup.get_by_id(g)
+            elif g not in r["static_service_groups"]:
                 r["static_service_groups"].append(g)
         for k, v in data.items():
             r[k] = v
