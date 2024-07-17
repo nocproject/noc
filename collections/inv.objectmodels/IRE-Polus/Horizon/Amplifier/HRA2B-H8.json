@@ -1,11 +1,11 @@
 {
-    "name": "IRE-Polus | Horizon | Amplifier | RA2-H4",
+    "name": "IRE-Polus | Horizon | Amplifier | HRA2B-H8",
     "$collection": "inv.objectmodels",
-    "uuid": "a3d77fe4-d4d5-460e-a4c3-761b7bbdbd7d",
+    "uuid": "b2709ab2-00c0-47a2-9070-e4da756c2261",
     "vendor__code": "IRE-POLUS",
-    "description": "RA2-H4 – волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель).",
+    "description": "HRA2-H8/HRA2B-H8 – комбинированный волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель) и эрбиевого усилителя.",
     "connection_rule__name": "IRE-Polus | Horizon",
-    "cr_context": "LINECARDH4",
+    "cr_context": "LINECARD",
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
     "connections": [
@@ -14,60 +14,67 @@
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "type__name": "IRE-Polus | Horizon | H4 Card"
+            "type__name": "IRE-Polus | Horizon | H8 Card"
         },
         {
-            "name": "MON_LINE_TX",
-            "description": "Порт мониторинга сигнала в линию",
+            "name": "MON_LINE_IN",
+            "description": " Мониторинг входа линии",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "MON_LINE_RX",
-            "description": "Порт мониторинга сигнала из линии",
+            "name": "MON_LINE_OUT",
+            "description": "Мониторинг выхода линии",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "LINE_TX",
-            "description": "Оптический адаптер E2000/APC, выход в сторону волоконно-оптической линии связи.",
+            "name": "MON_CLIENT_OUT",
+            "description": "Мониторинг выхода клиента",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "LINE_IN",
+            "description": "Линейный вход",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | E2000"
         },
         {
-            "name": "LINE_RX",
-            "description": "Оптический адаптер E2000/APC, вход со стороны волоконно-оптической линии связи / выходной порт накачки",
+            "name": "LINE_OUT",
+            "description": "Линейный выход",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | E2000"
         },
         {
-            "name": "CLIENT_RX",
-            "description": "Оптический адаптер LC/APC, входной порт клиентского сигнала.",
+            "name": "CLIENT_IN",
+            "description": " Клиентский вход.",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "CLIENT_TX",
-            "description": "Оптический адаптер LC/APC, выходной порт клиентского сигнала.",
+            "name": "CLIENT_OUT",
+            "description": "Клиентский выход.",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "OSC_RX",
-            "description": "Оптический адаптер LC/APC, вход служебного канала.",
+            "name": "OSC_IN",
+            "description": "Вход служебного канала.",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "OSC_TX",
-            "description": "Оптический адаптер LC/APC, выход служебного канала.",
+            "name": "OSC_OUT",
+            "description": "Выход служебного канала.",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
@@ -77,17 +84,17 @@
         {
             "attr": "power",
             "interface": "power",
-            "value": 27.0
+            "value": 90.0
         },
         {
             "attr": "width",
             "interface": "dimensions",
-            "value": 150
+            "value": 355
         },
         {
             "attr": "depth",
             "interface": "dimensions",
-            "value": 278
+            "value": 292
         },
         {
             "attr": "height",
@@ -97,12 +104,12 @@
         {
             "attr": "weight",
             "interface": "weight",
-            "value": 1.5
+            "value": 3
         },
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RA2-H4"]
+            "value": ["HRA2B-H8"]
         }
     ]
 }

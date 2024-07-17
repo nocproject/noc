@@ -1,0 +1,107 @@
+{
+    "name": "IRE-Polus | Horizon | Mux_Demux | FS-2-1/12-1550-H4",
+    "$collection": "inv.objectmodels",
+    "uuid": "559514d4-0343-409c-a99e-f6ee5af0da48",
+    "vendor__code": "IRE-POLUS",
+    "description": "FS-2-1/12-1550-H4 – волоконно-оптический разветвитель.",
+    "cr_context": "LINECARDH4",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "COM_IN",
+            "description": "Общий вход",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "COM_OUT",
+            "description": "Общий выход",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_IN",
+            "description": " Мониторинг общего входа",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_OUT",
+            "description": "Мониторинг общего выхода",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MPO_IN",
+            "description": "1x12 MPO розетка на для ввода 12 сигналов",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | MPO"
+        },
+        {
+            "name": "MPO_OUT",
+            "description": "1x12 MPO розетка на для вывода 12 сигналов",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DWDM"
+            }],
+            "type__name": "Optical | MPO"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 20.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 150
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 278
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.8
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FS-2-1/12-1550-H4"]
+        }
+    ]
+}

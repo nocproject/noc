@@ -1,9 +1,9 @@
 {
-    "name": "IRE-Polus | Horizon | Amplifier | RA2-H4",
+    "name": "IRE-Polus | Horizon | Amplifier | FRA-H4",
     "$collection": "inv.objectmodels",
-    "uuid": "a3d77fe4-d4d5-460e-a4c3-761b7bbdbd7d",
+    "uuid": "9c07396d-de34-4d81-944f-cb60d15591f3",
     "vendor__code": "IRE-POLUS",
-    "description": "RA2-H4 – волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель).",
+    "description": "FRA-H4 – волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель)",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARDH4",
     "labels": ["noc::inv::lc"],
@@ -17,57 +17,57 @@
             "type__name": "IRE-Polus | Horizon | H4 Card"
         },
         {
-            "name": "MON_LINE_TX",
-            "description": "Порт мониторинга сигнала в линию",
+            "name": "MON_LINE",
+            "description": "Мониторинг выхода линии",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "MON_LINE_RX",
-            "description": "Порт мониторинга сигнала из линии",
+            "name": "MON_BS",
+            "description": "Мониторинг обратного сигнала",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "LINE_TX",
-            "description": "Оптический адаптер E2000/APC, выход в сторону волоконно-оптической линии связи.",
+            "name": "LINE",
+            "description": "Линейный выход сигнала и накачки",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | E2000"
         },
         {
-            "name": "LINE_RX",
-            "description": "Оптический адаптер E2000/APC, вход со стороны волоконно-оптической линии связи / выходной порт накачки",
+            "name": "CLIENT_OUT",
+            "description": "Клиентский выход",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | E2000"
         },
         {
             "name": "CLIENT_RX",
-            "description": "Оптический адаптер LC/APC, входной порт клиентского сигнала.",
+            "description": " Клиентский вход",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
             "name": "CLIENT_TX",
-            "description": "Оптический адаптер LC/APC, выходной порт клиентского сигнала.",
+            "description": "Клиентский выход",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
             "name": "OSC_RX",
-            "description": "Оптический адаптер LC/APC, вход служебного канала.",
+            "description": "Вход служебного канала",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
             "name": "OSC_TX",
-            "description": "Оптический адаптер LC/APC, выход служебного канала.",
+            "description": "Выход служебного канала",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
@@ -77,7 +77,7 @@
         {
             "attr": "power",
             "interface": "power",
-            "value": 27.0
+            "value": 20.0
         },
         {
             "attr": "width",
@@ -97,12 +97,12 @@
         {
             "attr": "weight",
             "interface": "weight",
-            "value": 1.5
+            "value": 1.1
         },
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RA2-H4"]
+            "value": ["FRA-H4"]
         }
     ]
 }
