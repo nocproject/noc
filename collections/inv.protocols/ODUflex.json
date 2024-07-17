@@ -1,0 +1,12 @@
+{
+    "name": "ODUflex",
+    "code": "ODUflex",
+    "$collection": "inv.protocols",
+    "uuid": "b1077b7a-35d8-4dc8-8929-c6a5fb0abd64",
+    "description": "255/237 × 9 953 280 kbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODUflex",
+    "technology__name": "OTN"
+}

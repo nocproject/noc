@@ -102,7 +102,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-RA2-H4"]
+            "value": ["RA2-H4"]
         }
     ]
 }

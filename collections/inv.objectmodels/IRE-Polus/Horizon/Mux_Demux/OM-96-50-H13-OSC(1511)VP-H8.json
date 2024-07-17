@@ -1915,7 +1915,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["RBS-OM-96-50-H13-OSC(1511)VP-H8"]
+            "value": ["OM-96-50-H13-OSC(1511)VP-H8"]
         },
         {
             "attr": "min_rx_tx_frequency",

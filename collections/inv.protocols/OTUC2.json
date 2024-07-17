@@ -1,8 +1,8 @@
 {
-    "name": "OTUCn",
-    "code": "OTUCn",
+    "name": "OTUC2",
+    "code": "OTUC2",
     "$collection": "inv.protocols",
-    "uuid": "27edf556-f574-4d13-af63-8ea47b4456b2",
+    "uuid": "92fd1880-c103-4357-9875-2e9b4ca9289f",
     "description": "200Gbit/s",
     "data": [],
     "connection_schema": "BO",
