@@ -1,0 +1,8 @@
+{
+    "name": "Optical | MPO",
+    "$collection": "inv.connectiontypes",
+    "uuid": "e6ba82bc-e510-4d12-85d8-08ff443b423e",
+    "description": "Optical MPO connection",
+    "c_group": [],
+    "genders": "mf"
+}

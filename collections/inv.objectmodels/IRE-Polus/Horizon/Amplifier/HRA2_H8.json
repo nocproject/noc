@@ -1,0 +1,115 @@
+{
+    "name": "IRE-Polus | Horizon | Amplifier | HRA2-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "2d204ee4-be43-42d2-bfd6-d6acd360ac06",
+    "vendor__code": "IRE-POLUS",
+    "description": "HRA2-H8/HRA2B-H8 – комбинированный волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель) и эрбиевого усилителя.",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc"],
+    "configuration_rule__name": "OM/OD Rules",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "MON_LINE_IN",
+            "description": " Мониторинг входа линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_LINE_OUT",
+            "description": "Мониторинг выхода линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_CLIENT_OUT",
+            "description": "Мониторинг выхода клиента",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "LINE_IN",
+            "description": "Линейный вход",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | E2000"
+        },
+        {
+            "name": "LINE_OUT",
+            "description": "Линейный выход",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | E2000"
+        },
+        {
+            "name": "CLIENT_IN",
+            "description": " Клиентский вход.",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "CLIENT_OUT",
+            "description": "Клиентский выход.",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_IN",
+            "description": "Вход служебного канала.",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_OUT",
+            "description": "Выход служебного канала.",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 60.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 355
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HRA2-H8"]
+        }
+    ]
+}
