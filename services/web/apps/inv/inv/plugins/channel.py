@@ -152,21 +152,25 @@ class ChannelPlugin(InvPlugin):
         unqualified = [x for x in endpoints if len(x) == 26]
         ch_ep = {}
         if qualified:
-            ch_ep.update({
-                x["resource"]: x["channel"]
-                for x in DBEndpoint._get_collection().find(
-                    {"resource": {"$in": qualified}}, {"_id": 0, "resource": 1, "channel": 1}
-                )
-            })
+            ch_ep.update(
+                {
+                    x["resource"]: x["channel"]
+                    for x in DBEndpoint._get_collection().find(
+                        {"resource": {"$in": qualified}}, {"_id": 0, "resource": 1, "channel": 1}
+                    )
+                }
+            )
         if unqualified:
             ids = "|".join(x[2:] for x in unqualified)
             q_rx = f"^o:({ids}):"
-            ch_ep.update({
-                x["resource"][:26]: x["channel"]
-                for x in DBEndpoint._get_collection().find(
-                    {"resource": {"$regex": q_rx}}, {"_id": 0, "resource": 1, "channel": 1}
-                )
-            })
+            ch_ep.update(
+                {
+                    x["resource"][:26]: x["channel"]
+                    for x in DBEndpoint._get_collection().find(
+                        {"resource": {"$regex": q_rx}}, {"_id": 0, "resource": 1, "channel": 1}
+                    )
+                }
+            )
         # Update statuses
         for x in r:
             update_proposal_status(x)

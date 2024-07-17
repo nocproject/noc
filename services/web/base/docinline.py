@@ -284,7 +284,12 @@ class DocInline(object):
                         v = str(v)
                 elif f.name in self.field_labels:
                     r[f"{f.name}__label"] = self.field_labels[f.name](v)
-                elif not isinstance(v, int) and not isinstance(v, str) and not isinstance(v, bool) and f.name not in self.render_fields:
+                elif (
+                    not isinstance(v, int)
+                    and not isinstance(v, str)
+                    and not isinstance(v, bool)
+                    and f.name not in self.render_fields
+                ):
                     if hasattr(v, "id"):
                         v = v.id
                     else:

@@ -26,7 +26,13 @@ class OpticalSMMapper(BaseMapper):
             return OpticalDWDMTracer()
         raise NotImplementedError()
 
-    def to_dot(self, start: Optional[Endpoint] = None, end:Optional[Endpoint]=None,connect_input:Optional[str]=None, connect_output:Optional[str]=None) -> str:
+    def to_dot(
+        self,
+        start: Optional[Endpoint] = None,
+        end: Optional[Endpoint] = None,
+        connect_input: Optional[str] = None,
+        connect_output: Optional[str] = None,
+    ) -> str:
         def get_node_key(pi: PathItem) -> str:
             parts = [str(pi.object.id)]
             if pi.input and Endpoint(object=pi.object, name=pi.input) not in endpoints:
@@ -45,7 +51,7 @@ class OpticalSMMapper(BaseMapper):
         nodes = {}
         used_by = defaultdict(list)  # endpoint resource -> (ch name, discriminator)
         endpoint_nodes = {}  # endpoint resource -> node
-        query = {"channel":self.channel.id}
+        query = {"channel": self.channel.id}
         if start and not end:
             query["resource"] = start.as_resource()
         elif not start and end:
@@ -94,7 +100,7 @@ class OpticalSMMapper(BaseMapper):
                         node.add_endpoint(pi.input)
                         endpoint_nodes[ee.as_resource()] = node
                         if start and connect_input and ee.as_resource() == start.as_resource():
-                           edges.add(f"{connect_input} -- {node.get_ref(pi.input)} [{edge_style}]") 
+                            edges.add(f"{connect_input} -- {node.get_ref(pi.input)} [{edge_style}]")
                     else:
                         node.add_input(pi.input)
                 if pi.output:
@@ -103,7 +109,9 @@ class OpticalSMMapper(BaseMapper):
                         node.add_endpoint(pi.output)
                         endpoint_nodes[ee.as_resource()] = node
                         if end and connect_output and ee.as_resource() == end.as_resource():
-                           edges.add(f"{node.get_ref(pi.output)} -- {connect_output} [{edge_style}]") 
+                            edges.add(
+                                f"{node.get_ref(pi.output)} -- {connect_output} [{edge_style}]"
+                            )
                     elif pi.output not in node.outputs:
                         node.add_output(pi.output)
                 if last_pi and last_node:

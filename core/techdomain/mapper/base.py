@@ -72,5 +72,11 @@ class BaseMapper(object):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
         self.channel = channel
 
-    def to_dot(self, start: Optional[Endpoint] = None, end:Optional[Endpoint]=None, connect_input:Optional[str]=None, connect_output:Optional[str]=None) -> str:
+    def to_dot(
+        self,
+        start: Optional[Endpoint] = None,
+        end: Optional[Endpoint] = None,
+        connect_input: Optional[str] = None,
+        connect_output: Optional[str] = None,
+    ) -> str:
         raise NotImplementedError
