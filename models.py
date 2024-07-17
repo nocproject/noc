@@ -123,6 +123,7 @@ _MODELS = {
     "main.Report": "noc.main.models.report.Report",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
+    "main.ModelTemplate": "noc.main.models.modeltemplate.ModelTemplate",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
     "main.Style": "noc.main.models.style.Style",
     "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
@@ -407,6 +408,7 @@ COLLECTIONS = [
     "bi.Dashboard",
     "cm.ConfDBQuery",
     "main.Report",
+    "main.ModelTemplate",
 ]
 
 # Model -> Setting

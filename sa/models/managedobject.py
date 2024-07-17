@@ -2752,24 +2752,51 @@ class ManagedObject(NOCModel):
         }
 
     @classmethod
-    def get_object_by_template(
+    def from_template(
         cls,
         address: str,
         pool: str,
-        name: Optional[str] = None,
-        template=None,
+        name: str,
+        object_profile: ManagedObjectProfile,
+        administrative_domain: AdministrativeDomain,
+        segment: NetworkSegment,
+        scheme: int = TELNET,
+        state: Optional[State] = None,
+        template: Optional[Any] = None,
+        labels: Optional[List[str]] = None,
+        capabilities: Optional[Dict[str, Any]] = None,
+        groups: Optional[List[ResourceGroup]] = None,
+        mappings: Optional[Dict[str, str]] = None,
         **data,
     ) -> "ManagedObject":
+        """
+        Create Managed Object instance from Template
+        """
         mo = ManagedObject(
             name=name or address,
             address=address,
             pool=pool,
             description=data.get("description"),
-            scheme=TELNET,
-            object_profile=ManagedObjectProfile.objects.filter().first(),
-            administrative_domain=AdministrativeDomain.objects.filter().first(),
-            segment=NetworkSegment.objects.filter().first(),
+            scheme=scheme,
+            object_profile=object_profile,
+            administrative_domain=administrative_domain,
+            segment=segment,
+            labels=labels or [],
         )
+        if capabilities:
+            mo.update_caps(capabilities, source="template")
+        if groups:
+            mo.static_service_groups = [str(g.id) for g in groups]
+        if state:
+            mo.state = state
+        if mappings:
+            for ris, rid in mappings.items():
+                mo.remote_system = rid
+                mo.remote_id = ris
+                break
+        for field, value in data.items():
+            if hasattr(mo, field):
+                setattr(mo, field, value)
         return mo
 
     def update_template_data(self, data, template=None): ...

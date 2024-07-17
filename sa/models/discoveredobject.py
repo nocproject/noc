@@ -40,6 +40,7 @@ from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.modeltemplate import ResourceItem, DataItem as ResourceDataItem
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.agent import Agent
@@ -208,7 +209,8 @@ class DiscoveredObject(Document):
     labels: List[str] = ListField(StringField())  # Manual Set
     effective_labels: List[str] = ListField(StringField())
     # Calculated duplicate hash
-    # duplicate_hash =
+    # duplicate_hashes =
+    # duplicate_keys =
     #
     bi_id = LongField(unique=True)
     # Comments ?
@@ -344,26 +346,38 @@ class DiscoveredObject(Document):
         o.touch(ts=update_ts)
         return o
 
-    def get_ctx(self) -> Dict[str, Any]:
+    def get_ctx(self) -> ResourceItem:
         """
         Getting Context for Synchronise object template
         """
-        ctx = {
-            "hostname": self.hostname,
-            "description": self.description,
-            "address": self.address,
-            "effective_labels": self.effective_labels,
-        }
-        ctx |= self.effective_data
+        r = ResourceItem(
+            id=self.managed_object,
+            labels=self.effective_labels,
+            data=[
+                ResourceDataItem(name="name", value=self.hostname),
+                ResourceDataItem(name="description", value=self.description),
+                ResourceDataItem(name="hostname", value=self.hostname),
+                ResourceDataItem(name="address", value=self.address),
+                ResourceDataItem(name="pool", value=str(self.pool.id)),
+            ],
+        )
+        mappings = {}
         for d in self.data:
-            if d.remote_system and d.remote_id:
-                ctx["remote_system"] = d.remote_system
-                ctx["remote_id"] = d.remote_id
+            for k, v in d.data.items():
+                r.data.append(
+                    ResourceDataItem(
+                        name=k,
+                        value=v,
+                        remote_system=str(d.remote_system.id) if d.remote_system else None,
+                    )
+                )
+                if d.remote_system and d.remote_system not in mappings:
+                    mappings[d.remote_system] = d.remote_id
         # Iter Origin
         for o in DiscoveredObject.objects.filter(origin=self.id):
             if o.effective_labels:
-                ctx["effective_labels"] += o.effective_labels
-        return ctx
+                r.labels += o.effective_labels
+        return r
 
     def get_managed_object_query(self, pool: Optional[Pool] = None):
         """Query for request Managed Object"""
@@ -435,12 +449,8 @@ class DiscoveredObject(Document):
                 mo = DiscoveryID.find_object(ipv4_address=self.address)
         if dry_run:
             return mo
-        if not mo:
-            mo = ManagedObject.get_object_by_template(
-                address=self.address,
-                pool=pool,
-                name=self.hostname,
-            )
+        if not mo and self.rule.default_template:
+            mo = self.rule.default_template.render(self.get_ctx())
         elif mo and not self.managed_object:
             # Duplicate
             duplicates = self.check_duplicate(managed_object=mo)
@@ -449,7 +459,7 @@ class DiscoveredObject(Document):
                     is_dirty=True,
                     origin=self.id,
                 )
-        mo.update_template_data(self.get_ctx())
+        # mo.update_template_data(self.get_ctx())
         mo.save()
         self.managed_object = mo.id
         self.is_dirty = False
