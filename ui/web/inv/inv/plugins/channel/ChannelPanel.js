@@ -191,7 +191,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
             height: 400,
             width: 800,
             layout: "fit",
-            scrollable: true,
             modal: true,
             items: [
               {
@@ -206,6 +205,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                   {
                     xtype: "grid",
                     scrollable: "y",
+                    height: 310,
                     store: new Ext.data.Store({
                       fields: ["tracer", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
                       data: obj,
