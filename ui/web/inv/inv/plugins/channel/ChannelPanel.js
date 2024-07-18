@@ -259,6 +259,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                   {
                     text: __("Create"),
                     itemId: "createButton",
+                    glyph: NOC.glyph.plus,
                     disabled: true,
                     handler: function(){
                       var form = this.up("form"),
@@ -288,6 +289,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                   },
                   {
                     text: __("Cancel"),
+                    glyph: NOC.glyph.times,
                     handler: function(){
                       adHocWindow.close();
                     },
