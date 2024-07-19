@@ -16,6 +16,7 @@ from mongoengine.fields import (
     IntField,
     EmbeddedDocumentListField,
 )
+from mongoengine import signals
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -58,6 +59,7 @@ class Endpoint(Document):
     Attributes:
         channel: Channel reference.
         resource: Resource reference.
+        root_resource: Calculated field bound to the nearest inventory object.
         is_rool: Root for p2mp/up2mp topology.
         pair: Pair number for `bunch` topology.
         used_by: List of channels which uses this entrypoint.
@@ -67,12 +69,28 @@ class Endpoint(Document):
         "collection": "endpoints",
         "strict": False,
         "auto_create_index": False,
+        "indexes": ["root_resource"],
     }
     channel = PlainReferenceField(Channel, required=True)
     resource = StringField(unique=True)
+    root_resource = StringField()
     is_root = BooleanField()
     pair = IntField(required=False)
     used_by = EmbeddedDocumentListField(UsageItem)
 
     def __str__(self) -> str:
         return f"{self.channel.name}:{self.resource}"
+
+    @classmethod
+    def _update_root_resource(cls, sender, document: "Endpoint", **kwargs) -> None:
+        """
+        Calculate root_resource field.
+        """
+        if document.resource.count(":") == 1:
+            document.root_resource = document.resource
+        else:
+            parts = document.resource.split(":", 2)
+            document.root_resource = f"{parts[0]}:{parts[1]}"
+
+
+signals.pre_save.connect(Endpoint._update_root_resource, sender=Endpoint)

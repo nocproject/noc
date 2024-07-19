@@ -82,9 +82,8 @@ class ChannelPlugin(InvPlugin):
                 "discriminator": ch.discriminator or "",
             }
 
-        nested_objects_ids = "|".join(str(o.id) for o in BaseTracer().iter_nested_objects(object))
-        rx = f"^o:({nested_objects_ids}):"
-        pipeline = [{"$match": {"resource": {"$regex": rx}}}, {"$group": {"_id": "$channel"}}]
+        nested = [f"o:{o.id}" for o in BaseTracer().iter_nested_objects(object)]
+        pipeline = [{"$match": {"root_resource": {"$in": nested}}}, {"$group": {"_id": "$channel"}}]
         r = DBEndpoint._get_collection().aggregate(pipeline)
         items = [i["_id"] for i in r]
         if not items:
@@ -130,7 +129,7 @@ class ChannelPlugin(InvPlugin):
 
         o = self.app.get_object_or_404(Object, id=id)
         nested_objects = list(BaseTracer().iter_nested_objects(o))
-        r: Dict[str, str] = []
+        r: List[Dict[str, str]] = []
         # Check all tracers
         for tr_name in tracer_loader:
             tr = tracer_loader[tr_name]()
@@ -156,18 +155,16 @@ class ChannelPlugin(InvPlugin):
                 {
                     x["resource"]: x["channel"]
                     for x in DBEndpoint._get_collection().find(
-                        {"resource": {"$in": qualified}}, {"_id": 0, "resource": 1, "channel": 1}
+                        {"root_resource": {"$in": qualified}}, {"_id": 0, "resource": 1, "channel": 1}
                     )
                 }
             )
         if unqualified:
-            ids = "|".join(x[2:] for x in unqualified)
-            q_rx = f"^o:({ids}):"
             ch_ep.update(
                 {
                     x["resource"][:26]: x["channel"]
                     for x in DBEndpoint._get_collection().find(
-                        {"resource": {"$regex": q_rx}}, {"_id": 0, "resource": 1, "channel": 1}
+                        {"root_resource": {"$in": unqualified}}, {"_id": 0, "resource": 1, "channel": 1}
                     )
                 }
             )
