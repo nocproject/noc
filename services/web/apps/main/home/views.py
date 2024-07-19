@@ -20,6 +20,8 @@ from noc.config import config
 from noc.aaa.models.permission import Permission
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.techdomain import TechDomain
+from noc.inv.models.channel import Channel
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
@@ -41,6 +43,7 @@ class HomeAppplication(ExtApplication):
             self.get_welcome(user),
             self.get_community(user),
             self.get_favorites(user),
+            self.get_channels(user),
             self.get_inventory_summary(user),
             self.get_mo_summary(user),
             self.get_alarms(user),
@@ -161,7 +164,7 @@ class HomeAppplication(ExtApplication):
         Generate managed object summary widget.
         """
         if not Permission.has_perm(user, "fm:alarm:launch"):
-            return None  # No access to MO
+            return None  # No access to alarms
         mo_count_q = ManagedObject.objects.all()
         if not user.is_superuser:
             mo_count_q = list(mo_count_q.filter(UserAccess.Q(user)).values("id"))
@@ -177,3 +180,20 @@ class HomeAppplication(ExtApplication):
                 },
             ],
         }
+
+    def get_channels(self, user: User) -> Optional[Dict[str, Any]]:
+        print(">>>> GET CHANNELS")
+        if not Permission.has_perm(user, "inv:channel:launch"):
+            print("!!!!")
+            return None  # No access to channels
+        summary = {
+            doc["_id"]: doc["count"]
+            for doc in Channel._get_collection().aggregate(
+                [{"$group": {"_id": "$tech_domain", "count": {"$sum": 1}}}]
+            )
+        }
+        td_map = {doc["_id"]: doc["name"] for doc in TechDomain._get_collection().find({"_id": {"$in": list(summary)}}, {"_id": 1, "name": 1})}
+        items = [{"text": td_map[k], "value": v} for k, v in sorted(summary.items(), key=lambda x: x[1], reverse=True)]
+        return {
+                "type": "summary", "title": _("Channels"), "height": "medium", "items":items
+                }
