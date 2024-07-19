@@ -155,7 +155,8 @@ class ChannelPlugin(InvPlugin):
                 {
                     x["resource"]: x["channel"]
                     for x in DBEndpoint._get_collection().find(
-                        {"root_resource": {"$in": qualified}}, {"_id": 0, "resource": 1, "channel": 1}
+                        {"root_resource": {"$in": qualified}},
+                        {"_id": 0, "resource": 1, "channel": 1},
                     )
                 }
             )
@@ -164,7 +165,8 @@ class ChannelPlugin(InvPlugin):
                 {
                     x["resource"][:26]: x["channel"]
                     for x in DBEndpoint._get_collection().find(
-                        {"root_resource": {"$in": unqualified}}, {"_id": 0, "resource": 1, "channel": 1}
+                        {"root_resource": {"$in": unqualified}},
+                        {"_id": 0, "resource": 1, "channel": 1},
                     )
                 }
             )
