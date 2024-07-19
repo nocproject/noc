@@ -182,9 +182,7 @@ class HomeAppplication(ExtApplication):
         }
 
     def get_channels(self, user: User) -> Optional[Dict[str, Any]]:
-        print(">>>> GET CHANNELS")
         if not Permission.has_perm(user, "inv:channel:launch"):
-            print("!!!!")
             return None  # No access to channels
         summary = {
             doc["_id"]: doc["count"]
@@ -192,8 +190,14 @@ class HomeAppplication(ExtApplication):
                 [{"$group": {"_id": "$tech_domain", "count": {"$sum": 1}}}]
             )
         }
-        td_map = {doc["_id"]: doc["name"] for doc in TechDomain._get_collection().find({"_id": {"$in": list(summary)}}, {"_id": 1, "name": 1})}
-        items = [{"text": td_map[k], "value": v} for k, v in sorted(summary.items(), key=lambda x: x[1], reverse=True)]
-        return {
-                "type": "summary", "title": _("Channels"), "height": "medium", "items":items
-                }
+        td_map = {
+            doc["_id"]: doc["name"]
+            for doc in TechDomain._get_collection().find(
+                {"_id": {"$in": list(summary)}}, {"_id": 1, "name": 1}
+            )
+        }
+        items = [
+            {"text": td_map[k], "value": v}
+            for k, v in sorted(summary.items(), key=lambda x: x[1], reverse=True)
+        ]
+        return {"type": "summary", "title": _("Channels"), "height": "medium", "items": items}
