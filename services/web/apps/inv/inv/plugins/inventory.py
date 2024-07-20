@@ -22,7 +22,7 @@ class InventoryPlugin(InvPlugin):
             "serial": o.get_data("asset", "serial"),
             "revision": rev or "",
             "description": o.model.description,
-            "model": o.model.name,
+            "model": o.model.get_short_label(),
         }
         children = []
         for n in o.model.connections:
