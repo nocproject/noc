@@ -113,7 +113,7 @@ class CommutationPlugin(InvPlugin):
             node.external = True
             nodes[node.object_id] = node
             parent = None
-            if not obj.container:
+            if not obj.parent:
                 cc = get_outer(obj)
                 if cc:
                     oo, parent_connection = cc
@@ -138,8 +138,8 @@ class CommutationPlugin(InvPlugin):
             omap[o.id] = o
             node = Node.from_object(o)
             nodes[node.object_id] = node
-            if o.container:
-                containers.append((node.object_id, str(o.container.id)))
+            if o.parent:
+                containers.append((node.object_id, str(o.parent.id)))
         # Link containers
         for node_id, c_id in containers:
             node = nodes[node_id]

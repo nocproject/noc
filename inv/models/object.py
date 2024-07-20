@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
-# ObjectModel model
+# Object model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -163,7 +163,7 @@ class ObjectConfigurationData(EmbeddedDocument):
     check=[
         ("sa.ManagedObject", "container"),
         ("inv.CoveredObject", "object"),
-        ("inv.Object", "container"),
+        ("inv.Object", "parent"),
     ],
     delete=[("inv.Sensor", "object")],
 )
@@ -178,8 +178,8 @@ class Object(Document):
         "auto_create_index": False,
         "indexes": [
             "data",
-            "container",
-            ("name", "container"),
+            "parent",
+            ("name", "parent"),
             ("data.interface", "data.attr", "data.value"),
             "labels",
             "effective_labels",
@@ -189,7 +189,7 @@ class Object(Document):
     name = StringField()
     model: "ObjectModel" = PlainReferenceField(ObjectModel)
     data: List["ObjectAttr"] = ListField(EmbeddedDocumentField(ObjectAttr))
-    container: Optional["Object"] = PlainReferenceField("self", required=False)
+    parent: Optional["Object"] = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
     # Configuration Param
     cfg_data: List["ObjectConfigurationData"] = ListField(
@@ -275,7 +275,7 @@ class Object(Document):
     def on_save(self):
         def get_coordless_objects(o):
             r = {str(o.id)}
-            for co in Object.objects.filter(container=o.id):
+            for co in Object.objects.filter(parent=o.id):
                 cx, cy = co.get_data_tuple("geopoint", ("x", "y"))
                 if cx is None and cy is None:
                     r |= get_coordless_objects(co)
@@ -296,22 +296,22 @@ class Object(Document):
                     x=x, y=y, default_zoom=self.layer.default_zoom if self.layer else DEFAULT_ZOOM
                 )
         if self._created:
-            if self.container:
+            if self.parent:
                 pop = self.get_pop()
                 if pop:
                     pop.update_pop_links()
-        # Changed container
-        elif hasattr(self, "_changed_fields") and "container" in self._changed_fields:
+        # Changed parent
+        elif hasattr(self, "_changed_fields") and "parent" in self._changed_fields:
             # Old pop
-            old_container_id = getattr(self, "_old_container", None)
+            old_parent_id = getattr(self, "_old_parent", None)
             old_pop = None
-            if old_container_id:
-                c = Object.get_by_id(old_container_id)
+            if old_parent_id:
+                c = Object.get_by_id(old_parent_id)
                 while c:
                     if c.get_data("pop", "level"):
                         old_pop = c
                         break
-                    c = c.container
+                    c = c.parent
             # New pop
             new_pop = self.get_pop()
             # Check if pop moved
@@ -327,8 +327,8 @@ class Object(Document):
         Returns list of parent segment ids
         :return:
         """
-        if self.container:
-            return self.container.get_path() + [self.id]
+        if self.parent:
+            return self.parent.get_path() + [self.id]
         return [self.id]
 
     @property
@@ -337,16 +337,17 @@ class Object(Document):
         Return level
         :return:
         """
-        if not self.container:
+        if not self.parent:
             return 0
         return len(self.get_path()) - 1  # self
 
     @property
     def has_children(self) -> bool:
-        return bool(Object.objects.filter(container=self.id))
+        return bool(Object.objects.filter(parent=self.id))
 
     @property
     def is_wire(self) -> bool:
+        # @todo: Replace with proper implementation
         return bool(self.model.get_data("length", "length"))
 
     @property
@@ -365,6 +366,16 @@ class Object(Document):
         """
         return self.model.vendor.name == "Generic" or self.model.vendor.name == "NoName"
 
+    @property
+    def is_point(self) -> bool:
+        """
+        Check if object has coordinates
+        """
+        return (
+            self.get_data("geopoint", "x") is not None
+            and self.get_data("geopoint", "y") is not None
+        )
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object
@@ -378,8 +389,7 @@ class Object(Document):
         for _ in range(max_level):
             # Get next wave
             wave = (
-                set(d["_id"] for d in coll.find({"container": {"$in": list(wave)}}, {"_id": 1}))
-                - seen
+                set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
             )
             if not wave:
                 break
@@ -830,8 +840,8 @@ class Object(Document):
         Get container for object.
         """
         # Direct container
-        if self.container:
-            return self.container
+        if self.parent:
+            return self.parent
         # Outer
         for _, c, _ in self.iter_outer_connections():
             return c.get_container()
@@ -843,12 +853,12 @@ class Object(Document):
         """
         from .objectconnection import ObjectConnection
 
-        def move_to_container(obj: Object) -> None:
+        def move_to_parent(obj: Object) -> None:
             """
             Move object to the nearest container.
             """
             c = obj.get_container()
-            obj.container = c
+            obj.parent = c
             obj.log(f"Insert into {c}", system="CORE", op="INSERT")
             obj.save()
 
@@ -858,9 +868,9 @@ class Object(Document):
         mc = self.model.get_model_connection(name)
         if mc:
             if mc.is_outer:
-                move_to_container(self)
+                move_to_parent(self)
             elif mc.is_inner:
-                move_to_container(o)
+                move_to_parent(o)
         self.log(f"'{name}' disconnected", system="CORE", op="DISCONNECT")
         c.delete()
         if o.is_wire and not ObjectConnection.objects.filter(connection__object=o.id).first():
@@ -920,10 +930,11 @@ class Object(Document):
             "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
         # Disconnect from container on o-connection
+        # @todo: will be useless code
         for obj, conn in [(self, lc), (remote_object, rc)]:
-            if obj.container and conn.is_outer:
-                obj.log("Remove from %s" % obj.container, system="CORE", op="REMOVE")
-                obj.container = None
+            if obj.parent and conn.is_outer:
+                obj.log(f"Remove from {obj.parent}", system="CORE", op="REMOVE")
+                obj.parent = None
                 obj.save()
         return c
 
@@ -980,16 +991,17 @@ class Object(Document):
         """
         Put object into container
         """
-        if container and not container.get_data("container", "container"):
+        if container and not container.is_container:
             raise ValueError("Must be put into container")
         # Disconnect all o-connections
+        # @todo: Will be useless code
         for c in self.model.connections:
             if c.direction == "o":
                 c, _, _ = self.get_p2p_connection(c.name)
                 if c:
                     self.disconnect_p2p(c.name)
         # Connect to parent
-        self.container = container.id if container else None
+        self.parent = container.id if container else None
         # Reset previous rack position
         self.reset_data("rackmount", ("position", "side", "shift"))
         #
@@ -1000,7 +1012,7 @@ class Object(Document):
         """
         Returns all items directly put into container
         """
-        return Object.objects.filter(container=self.id)
+        return Object.objects.filter(parent=self.id)
 
     def get_local_name_path(self, include_chassis: bool = False) -> str:
         for _, ro, rn in self.get_outer_connections():
@@ -1013,7 +1025,7 @@ class Object(Document):
         """
         Return list of container names
         """
-        current = self.container
+        current = self.parent
         if current is None:
             for _, ro, rn in self.get_outer_connections():
                 return ro.get_name_path() + [rn]
@@ -1021,7 +1033,7 @@ class Object(Document):
         np = [smart_text(self)]
         while current:
             np.insert(0, smart_text(current))
-            current = current.container
+            current = current.parent
         return np
 
     def log(self, message, user=None, system=None, managed_object=None, op=None):
@@ -1048,24 +1060,31 @@ class Object(Document):
 
     def get_lost_and_found(self) -> Optional["Object"]:
         m = ObjectModel.get_by_name("Lost&Found")
-        c = self.container
+        c = self.parent
         while c:
             # Check siblings
-            lf = Object.objects.filter(container=c, model=m).first()
+            lf = Object.objects.filter(parent=c, model=m).first()
             if lf:
                 return lf
             # Up one level
-            c = c.container
+            c = c.parent
         return None
+
+    @property
+    def is_container(self) -> bool:
+        """
+        Check if object is container
+        """
+        return bool(self.get_data("container", "container"))
 
     @classmethod
     def detach_children(cls, sender, document, target=None):
-        if not document.get_data("container", "container"):
+        if not document.is_container:
             return
         if not target:
             target = document.get_lost_and_found()
-        for o in Object.objects.filter(container=document.id):
-            if o.get_data("container", "container"):
+        for o in Object.objects.filter(parent=document.id):
+            if o.is_container:
                 cls.detach_children(sender, o, target)
                 o.delete()
             else:
@@ -1138,16 +1157,23 @@ class Object(Document):
                 c.connection = left
                 c.save()
 
+    @property
+    def is_pop(self) -> bool:
+        """
+        Check if object is point of presence
+        """
+        return bool(self.get_data("pop", "level"))
+
     def get_pop(self) -> Optional["Object"]:
         """
         Find enclosing PoP
         :returns: PoP instance or None
         """
-        c = self.container
+        c = self.parent
         while c:
-            if c.get_data("pop", "level"):
+            if c.is_pop:
                 return c
-            c = c.container
+            c = c.parent
         return None
 
     def get_coordinates_zoom(self) -> Tuple[Optional[float], Optional[float], Optional[int]]:
@@ -1162,8 +1188,8 @@ class Object(Document):
                 x, y = c.get_data_tuple("geopoint", ("x", "y"))
                 zoom = c.layer.default_zoom or DEFAULT_ZOOM
                 return x, y, zoom
-            if c.container:
-                c = Object.get_by_id(c.container.id)
+            if c.parent:
+                c = Object.get_by_id(c.parent.id)
                 if c:
                     continue
             break
@@ -1202,7 +1228,7 @@ class Object(Document):
                     "$graphLookup": {
                         "from": "noc.objects",
                         "connectFromField": "_id",
-                        "connectToField": "container",
+                        "connectToField": "parent",
                         "startWith": "$_id",
                         "as": "_path",
                         "maxDepth": 50,
@@ -1244,7 +1270,7 @@ class Object(Document):
         """
         current = None
         for p in path:
-            current = Object.objects.filter(name=p, container=current).first()
+            current = Object.objects.filter(name=p, parent=current).first()
             if not current:
                 return None
             if hints:
@@ -1256,15 +1282,6 @@ class Object(Document):
     def update_pop_links(self, delay: int = 20):
         call_later("noc.inv.util.pop_links.update_pop_links", delay, pop_id=self.id)
 
-    @classmethod
-    def _pre_init(cls, sender, document, values, **kwargs):
-        """
-        Object pre-initialization
-        """
-        # Store original container id
-        if "container" in values and values["container"]:
-            document._cache_container = values["container"]
-
     def get_address_text(self) -> Optional[str]:
         """
         Return first found address.text value upwards the path
@@ -1275,8 +1292,8 @@ class Object(Document):
             addr = current.get_data("address", "text")
             if addr:
                 return addr
-            if current.container:
-                current = Object.get_by_id(current.container.id)
+            if current.parent:
+                current = Object.get_by_id(current.parent.id)
             else:
                 break
         return None
@@ -1522,4 +1539,3 @@ class Object(Document):
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
-signals.pre_init.connect(Object._pre_init, sender=Object)

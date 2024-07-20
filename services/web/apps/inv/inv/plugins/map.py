@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv map plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -74,11 +74,11 @@ class MapPlugin(InvPlugin):
         """
         Find parent object with geopoint
         """
-        p = o.container
+        p = o.parent
         while p:
-            if p.get_data("geopoint", "x") and p.get_data("geopoint", "y"):
+            if p.is_point:
                 return p
-            p = p.container
+            p = p.parent
 
     def get_data(self, request, o):
         layers = [
@@ -211,14 +211,14 @@ class MapPlugin(InvPlugin):
             np, npd = ap, apd
         # Get best nearest container
         if to_pop and np.layer.code.startswith("pop_"):
-            container = np.id
+            parent = np.id
         else:
-            container = np.container
+            parent = np.parent
         # Create object
         o = Object(
             name=name,
             model=model,
-            container=container,
+            parent=parent,
             data=[
                 ObjectAttr(scope="", interface="geopoint", attr="srid", value=srid),
                 ObjectAttr(scope="", interface="geopoint", attr="x", value=x),

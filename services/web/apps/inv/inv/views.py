@@ -76,15 +76,15 @@ class InvApplication(ExtApplication):
     def api_node(self, request):
         children = []
         if request.GET and "node" in request.GET:
-            container = request.GET["node"]
-            if is_objectid(container):
-                container = Object.get_by_id(container)
-                if not container:
+            parent = request.GET["node"]
+            if is_objectid(parent):
+                parent = Object.get_by_id(parent)
+                if not parent:
                     return self.response_not_found()
-                children = [(o.name, o) for o in Object.objects.filter(container=container.id)]
+                children = [(o.name, o) for o in Object.objects.filter(parent=parent.id)]
                 # Collect inner connections
-                children += [(name, o) for name, o, _ in container.get_inner_connections()]
-            elif container == "root":
+                children += [(name, o) for name, o, _ in parent.get_inner_connections()]
+            elif parent == "root":
                 cmodels = [
                     d["_id"]
                     for d in ObjectModel._get_collection().find(
@@ -103,7 +103,7 @@ class InvApplication(ExtApplication):
                 children: List[Tuple[str, "Object"]] = [
                     (o.name, o)
                     for o in Object.objects.filter(
-                        __raw__={"container": None, "model": {"$in": cmodels}}
+                        __raw__={"parent": None, "model": {"$in": cmodels}}
                     )
                 ]
 
@@ -118,12 +118,11 @@ class InvApplication(ExtApplication):
                 "id": str(o.id),
                 "name": name,
                 "plugins": [],
-                "can_add": bool(o.get_data("container", "container")),
+                "can_add": o.is_container,
                 "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
             }
             plugins = []
-            if o.get_data("container", "container") or o.has_inner_connections():
-                # n["expanded"] = Object.objects.filter(container=o.id).count() == 1
+            if o.is_container or o.has_inner_connections():
                 n["expanded"] = False
             else:
                 n["leaf"] = True
@@ -156,7 +155,7 @@ class InvApplication(ExtApplication):
                 self.get_plugin_data("file"),
                 self.get_plugin_data("log"),
             ]
-            if o.get_data("container", "container"):
+            if o.is_container:
                 plugins.append(self.get_plugin_data("sensor"))
             plugins.append(self.get_plugin_data("crossing"))
             # Process disabled plugins
@@ -193,7 +192,7 @@ class InvApplication(ExtApplication):
         m = ObjectModel.get_by_id(type)
         if not m:
             return self.response_not_found()
-        o = Object(name=name, model=m, container=c)
+        o = Object(name=name, model=m, parent=c)
         if serial and m.get_data("asset", "part_no0"):
             o.set_data("asset", "serial", serial)
         o.save()
@@ -239,7 +238,7 @@ class InvApplication(ExtApplication):
             for x in o:
                 x.put_into(c)
         elif position in ("before", "after"):
-            cc = self.get_object_or_404(Object, id=c.container.id) if c.container else None
+            cc = self.get_object_or_404(Object, id=c.parent.id) if c.parent else None
             for x in o:
                 x.put_into(cc)
         return True
@@ -248,15 +247,15 @@ class InvApplication(ExtApplication):
     def api_get_path(self, request, id):
         o = self.get_object_or_404(Object, id=id)
         path = [{"id": str(o.id), "name": o.name}]
-        while not o.container:
+        while not o.parent:
             # Check outer connections
             oc = next(o.iter_outer_connections(), None)
             if not oc:
                 break
             o = oc[1]
             path.insert(0, {"id": str(o.id), "name": o.name})
-        while o.container:
-            o = o.container
+        while o.parent:
+            o = o.parent
             path.insert(0, {"id": str(o.id), "name": o.name})
         return path
 
@@ -505,7 +504,7 @@ class InvApplication(ExtApplication):
             cable = Object(
                 name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
                 model=cable_model,
-                container=None,  # lo.container.id if lo.container else None,
+                parent=None,
             )
             cable.save()
             # Connect to cable
@@ -738,13 +737,13 @@ class InvApplication(ExtApplication):
             # PoP
             if o.get_data("pop", "level") is not None:
                 return True
-            o = o.container
+            o = o.parent
         return False
 
     @view(url=r"^(?P<oid>[0-9a-f]{24})/map_lookup/$", method=["GET"], access="read", api=True)
     def api_map_lookup(self, request, oid):
         o: Object = self.get_object_or_404(Object, id=oid)
-        if not o.get_data("container", "container"):
+        if not o.is_container:
             return []
         r = [
             {
