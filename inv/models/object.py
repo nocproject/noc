@@ -178,7 +178,7 @@ class Object(Document):
         "auto_create_index": False,
         "indexes": [
             "data",
-            "parent",
+            ("parent", "parent_connection"),
             ("name", "parent"),
             ("data.interface", "data.attr", "data.value"),
             "labels",
@@ -190,6 +190,8 @@ class Object(Document):
     model: "ObjectModel" = PlainReferenceField(ObjectModel)
     data: List["ObjectAttr"] = ListField(EmbeddedDocumentField(ObjectAttr))
     parent: Optional["Object"] = PlainReferenceField("self", required=False)
+    parent_connection = StringField(required=False)
+    additional_connections = ListField(StringField(), required=False)
     comment = GridVCSField("object_comment")
     # Configuration Param
     cfg_data: List["ObjectConfigurationData"] = ListField(
