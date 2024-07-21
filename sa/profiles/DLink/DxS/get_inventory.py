@@ -38,6 +38,8 @@ class Script(BaseScript):
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$"
     )
 
+    rx_stacking_disabled = re.compile(r"\s+Stacking\s+mode\s+:\s+Disabled", re.MULTILINE)
+
     # output sample
     # | 1:9     SFP LC          OEM/               SFP-WDM1.25G-55/   PC99749158/
     # |                         0 :90:65           A0                 120904
@@ -90,14 +92,28 @@ class Script(BaseScript):
         if ser and ser.group("serial") != "System" and ser.group("serial") != "Power":
             p["serial"] = ser.group("serial")
         p["description"] = self.rx_des.search(s).group("descr")
+
+        stacking_enabled = True
         try:
-            s = self.cli("show stack_device")
-            for match in self.rx_stack.finditer(s):
-                stacks += [match.groupdict()]
+            s = self.cli("show stacking_mode")
+            if self.rx_stacking_disabled.search(s):
+                stacking_enabled = False
         except self.CLISyntaxError:
             pass
+
+        self.logger.debug("Stacking enabled: %s", stacking_enabled)
+
+        if stacking_enabled:
+            try:
+                s = self.cli("show stack_device")
+                for match in self.rx_stack.finditer(s):
+                    stacks += [match.groupdict()]
+            except self.CLISyntaxError:
+                pass
+
         if not stacks:
             r += [p]
+
         box_id = "0"
         match = self.rx_mod.search(s)
         if match:
