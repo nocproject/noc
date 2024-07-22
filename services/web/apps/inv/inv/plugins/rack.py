@@ -39,7 +39,7 @@ class RackPlugin(InvPlugin):
         }
         r["rack"]["label"] = o.name
         # Fill content
-        for c in o.get_content():
+        for c in o.iter_children():
             units = c.get_data("rackmount", "units")
             pos = c.get_data("rackmount", "position")
             side = c.get_data("rackmount", "side") or "f"

@@ -100,11 +100,6 @@ class CommutationPlugin(InvPlugin):
             Iterable of Node
         """
 
-        def get_outer(obj: Object) -> Optional[Tuple[Object, str]]:
-            for _, c, n in obj.iter_outer_connections():
-                return c, n
-            return None
-
         def add_external(obj: Object) -> Node:
             """
             Append external node and parents.
@@ -113,17 +108,14 @@ class CommutationPlugin(InvPlugin):
             node.external = True
             nodes[node.object_id] = node
             parent = None
-            if not obj.parent:
-                cc = get_outer(obj)
-                if cc:
-                    oo, parent_connection = cc
-                    # Add parent
-                    parent = nodes.get(str(oo.id))
-                    if not parent:
-                        # Register parent
-                        parent = add_external(oo)
-                    parent.children.append(node)
-                    node.parent_connection = parent_connection
+            if obj.parent_connection:
+                # Add parent
+                parent = nodes.get(str(obj.parent.id))
+                if not parent:
+                    # Register parent
+                    parent = add_external(obj.parent)
+                parent.children.append(node)
+                node.parent_connection = obj.parent_connection
             if parent is None:
                 ext_nodes_roots.add(node.object_id)
             return node

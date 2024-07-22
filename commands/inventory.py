@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ./noc inventory command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -50,17 +50,16 @@ class Command(BaseCommand):
 
         def iter_obj(o):
             outer_conns = list(o.iter_outer_connections())
-            if len(outer_conns) == 1:
+            if o.parent and o.parent_connection:
                 # Allow follow up
-                _, ro, rn = outer_conns[0]
-                yield obj_str(o, rn)
+                yield obj_str(o, o.parent_connection)
                 # Follow up
-                yield from iter_obj(ro)
+                yield from iter_obj(o.parent)
             else:
                 # Try up to container
                 yield obj_str(o)
-                if o.container:
-                    yield from iter_obj(o.container)
+                if o.parent:
+                    yield from iter_obj(o.parent)
 
         for n, sr in enumerate(reversed(list(iter_obj(obj)))):
             self.print("%s * %s" % ("  " * n, sr))

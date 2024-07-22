@@ -63,14 +63,14 @@ class Migration(BaseMigration):
                 to_prune.append(oc["_id"])
                 parent_bulk.append(
                     UpdateOne(
-                        {"_id": c[1]["object"]}, {"$set": {"parent_connection": c[0]["name"]}}
+                        {"_id": c[1]["object"]}, {"$set": {"parent":c[0]["object"], "parent_connection": c[0]["name"]}}
                     )
                 )
             elif is_outer(c[0]) and is_inner(c[1]):
                 to_prune.append(oc["_id"])
                 parent_bulk.append(
                     UpdateOne(
-                        {"_id": c[0]["object"]}, {"$set": {"parent_connection": c[1]["name"]}}
+                        {"_id": c[0]["object"]}, {"$set": {"parent":c[1]["object"], "parent_connection": c[1]["name"]}}
                     )
                 )
         # Update objects

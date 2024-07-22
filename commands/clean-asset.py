@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ./noc clean-asset
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,12 +31,9 @@ class Command(BaseCommand):
 
     def clean_obj(self, obj):
         print("Cleaning %s %s (%s)" % (obj.model.name, obj.name, obj.id))
-        # Clean children
-        for o in Object.objects.filter(container=obj.id):
-            self.clean_obj(o)
-        # Clean inner connections
-        for name, remote, remote_name in obj.iter_connections("i"):
-            self.clean_obj(remote)
+        # Clean children and inner connections
+        for child in obj.iter_children():
+            child.clean_obj(remote)
         obj.delete()
 
 

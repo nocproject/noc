@@ -81,9 +81,10 @@ class InvApplication(ExtApplication):
                 parent = Object.get_by_id(parent)
                 if not parent:
                     return self.response_not_found()
-                children = [(o.name, o) for o in Object.objects.filter(parent=parent.id)]
-                # Collect inner connections
-                children += [(name, o) for name, o, _ in parent.get_inner_connections()]
+                children = [
+                    (o.parent_connection if o.parent_connection else o.name, o)
+                    for o in parent.iter_children()
+                ]
             elif parent == "root":
                 cmodels = [
                     d["_id"]
@@ -122,7 +123,7 @@ class InvApplication(ExtApplication):
                 "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
             }
             plugins = []
-            if o.is_container or o.has_inner_connections():
+            if o.has_children:
                 n["expanded"] = False
             else:
                 n["leaf"] = True
@@ -247,16 +248,11 @@ class InvApplication(ExtApplication):
     def api_get_path(self, request, id):
         o = self.get_object_or_404(Object, id=id)
         path = [{"id": str(o.id), "name": o.name}]
-        while not o.parent:
-            # Check outer connections
-            oc = next(o.iter_outer_connections(), None)
-            if not oc:
-                break
-            o = oc[1]
-            path.insert(0, {"id": str(o.id), "name": o.name})
         while o.parent:
             o = o.parent
-            path.insert(0, {"id": str(o.id), "name": o.name})
+            path.insert(
+                0, {"id": str(o.id), "name": o.parent_connection if o.parent_connection else o.name}
+            )
         return path
 
     @view(
@@ -724,7 +720,7 @@ class InvApplication(ExtApplication):
         if o.model.cr_context == "CHASSIS":
             return True
         # Has outer connections
-        if any(o.iter_connections("o")):
+        if o.parent_connection:
             return True
         # Inside rack or PoP
         while o:

@@ -296,9 +296,7 @@ class AssetCheck(DiscoveryCheck):
             )
         else:
             # Add all connection to disconnect list
-            self.to_disconnect.update(
-                set((o, c[0], c[1], c[2]) for c in o.iter_inner_connections())
-            )
+            self.to_disconnect.update(set((o, c[0], c[1], c[2]) for c in o.iter_children()))
         # Check revision
         if o.get_data("asset", "revision") != revision:
             # Update revision
@@ -597,23 +595,19 @@ class AssetCheck(DiscoveryCheck):
         """
         try:
             cn = o1.connect_p2p(c1, o2, c2, {}, reconnect=True)
-            if cn:
-                o1.log(
-                    "Connect %s -> %s:%s" % (c1, o2, c2),
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="CONNECT",
-                )
-                o2.log(
-                    "Connect %s -> %s:%s" % (c2, o1, c1),
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="CONNECT",
-                )
+            o1.log(
+                "Connect %s -> %s:%s" % (c1, o2, c2),
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CONNECT",
+            )
+            o2.log(
+                "Connect %s -> %s:%s" % (c2, o1, c1),
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CONNECT",
+            )
             c_name = o2.model.get_model_connection(c2)  # If internal_name use
-            # self.logger.debug(
-            #    "[%s|%s]To disconnect object: %s", o2, c_name.name, self.to_disconnect
-            # )
             if (o2, c_name.name, o1, c1) in self.to_disconnect:
                 # Remove if connection on system
                 self.to_disconnect.remove((o2, c_name.name, o1, c1))
