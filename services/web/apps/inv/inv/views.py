@@ -321,7 +321,7 @@ class InvApplication(ExtApplication):
             cable = ObjectModel.get_by_name(cable_filter)
         checking_ports = []
         id_ports_map = {}  # Left ports
-        # Getting cable
+        # Getting cable models
         cables = ObjectModel.objects.filter(
             data__match={"interface": "length", "attr": "length", "value__gte": 0},
         )
@@ -332,44 +332,21 @@ class InvApplication(ExtApplication):
                 "device": {},
                 "internal_connections": [],
             },
+            # @todo: Replace with cable lookup
             "cable": [{"name": c.name, "available": True} for c in cables],
             "valid": False,
             "wires": [],
         }
         # Left and Right Object Processed
+        # @todo: process alternative_connections
         for key, o_from, left_filter, o_to, right_filter in check:
             internal_used, left_cross = self.get_cross(o_from)
-
             result[key]["internal_connections"] = left_cross
+            children = {child.parent_connection: child for child in o_from.iter_children()}
             for c in o_from.model.connections:
                 cid = f"{str(o_from.id)}{c.name}"
                 id_ports_map[key, c.name] = cid
                 c_data = o_from.get_effective_connection_data(c.name)
-                oc, oo, _ = o_from.get_p2p_connection(c.name)
-                self.logger.debug(
-                    "[%s -> %s][%s] Checking connections: free: %s, valid: %s",
-                    o_from,
-                    o_to,
-                    cid,
-                    oc,
-                    oo,
-                )
-                # Deny same and internal <-> external
-                valid = not internal and c.type.name != "Composed"
-                if left_filter == c.name and o_from == o1:
-                    # Same connection
-                    valid = False
-                if o_to or cable_filter:
-                    cp = o_from.get_connection_proposals(
-                        c.name,
-                        cable or o_to.model,
-                        right_filter if not cable else None,
-                        only_first=True,
-                    )
-                    valid = bool(cp)
-                if oc and o_from == lo:
-                    checking_ports.append(c)
-                free = not oc
                 r = {
                     "id": cid,
                     "name": c.name,
@@ -378,33 +355,91 @@ class InvApplication(ExtApplication):
                     "gender": c.gender,
                     "direction": c.direction,
                     "protocols": [str(p) for p in c_data.protocols],
-                    "free": free,
-                    # "allow_internal": False,
                     "internal": None,
-                    "valid": valid,
                     "disable_reason": "",
                 }
-                if o_from.model.has_connection_cross(c.name):
-                    # Allowed crossed input
-                    r["internal"] = {
-                        "valid": c.name != left_filter and not (internal and left_filter),
-                        "free": c.name not in internal_used,
-                        "allow_discriminators": [],
-                    }
-                    if internal and left_filter:
-                        rc = o_from.get_crossing_proposals(c.name, left_filter)
-                        if rc:
-                            r["internal"].update(
-                                {"valid": True, "free": True, "allow_discriminators": rc[0][1]}
+                if c.is_inner or c.is_outer:
+                    if right_filter and o_to:
+                        r["valid"] = any(
+                            o_from.iter_connection_proposals(c.name, o_to.model, right_filter)
+                        )
+                    else:
+                        r["valid"] = True
+                if c.is_inner:
+                    # Inner connection
+                    child = children.get(c.name)
+                    if child:
+                        r["free"] = False
+                        child_outer = child.model.get_outer()
+                        if child != o_to and child_outer:
+                            r["remote_device"] = {
+                                "name": child.name,
+                                "id": str(child.id),
+                                "slot": child_outer.name,
+                            }
+                    else:
+                        r["free"] = True
+                elif c.is_outer:
+                    # Outer connection
+                    if o_from.parent and o_from.parent_connection:
+                        r["free"] = False
+                        if o_from.parent != o_to:
+                            r["remote_device"] = {
+                                "name": o_from.parent.name,
+                                "id": str(o_from.parent.id),
+                                "slot": o_from.parent_connection,
+                            }
+                    else:
+                        r["free"] = True
+                elif c.is_same_level:
+                    oc, oo, _ = o_from.get_p2p_connection(c.name)
+                    self.logger.debug(
+                        "[%s -> %s][%s] Checking connections: free: %s, valid: %s",
+                        o_from,
+                        o_to,
+                        cid,
+                        oc,
+                        oo,
+                    )
+                    # Deny same and internal <-> external
+                    valid = not internal and c.type.name != "Composed"
+                    if left_filter == c.name and o_from == o1:
+                        # Same connection
+                        valid = False
+                    if o_to or cable_filter:
+                        valid = any(
+                            o_from.iter_connection_proposals(
+                                c.name,
+                                cable or o_to.model,
+                                right_filter if not cable else None,
                             )
-                if not free:
-                    rd = self.get_remote_device(c.name, c_data.protocols, o_from)
-                    if rd and rd.obj != o_to:
-                        r["remote_device"] = {
-                            "name": rd.obj.name,
-                            "id": str(rd.obj.id),
-                            "slot": rd.connection,
+                        )
+                    if oc and o_from == lo:
+                        checking_ports.append(c)
+                    free = not oc
+                    r["free"] = free
+                    r["valid"] = valid
+                    if o_from.model.has_connection_cross(c.name):
+                        # Allowed crossed input
+                        r["internal"] = {
+                            "valid": c.name != left_filter and not (internal and left_filter),
+                            "free": c.name not in internal_used,
+                            "allow_discriminators": [],
                         }
+                        if internal and left_filter:
+                            rc = o_from.get_crossing_proposals(c.name, left_filter)
+                            if rc:
+                                r["internal"].update(
+                                    {"valid": True, "free": True, "allow_discriminators": rc[0][1]}
+                                )
+                    if not free:
+                        rd = self.get_remote_device(c.name, c_data.protocols, o_from)
+                        if rd and rd.obj != o_to:
+                            r["remote_device"] = {
+                                "name": rd.obj.name,
+                                "id": str(rd.obj.id),
+                                "slot": rd.connection,
+                            }
                 result[key]["connections"] += [r]
             # lcs.append(r)
         if result["left"]["connections"] and result["right"]["connections"]:
@@ -429,17 +464,6 @@ class InvApplication(ExtApplication):
                         ]
                     )
         return result
-        # return {
-        #     "left": {"connections": lcs, "device": device_left, "internal_connections": left_cross},
-        #     "right": {
-        #         "connections": rcs,
-        #         "device": device_right,
-        #         "internal_connections": right_cross,
-        #     },
-        #     "cable": [{"name": c.name, "available": True} for c in cables],
-        #     "valid": lcs and rcs and left_filter and right_filter,
-        #     "wires": wires,
-        # }
 
     @view(
         "^connect/$",

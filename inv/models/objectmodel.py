@@ -10,7 +10,7 @@ import os
 from threading import Lock
 import operator
 import re
-from typing import Any, Dict, Optional, List, Tuple, Union
+from typing import Any, Dict, Optional, List, Tuple, Union, Iterable
 
 # Third-party modules
 from bson import ObjectId
@@ -461,20 +461,23 @@ class ObjectModel(Document):
                 return True
         return False
 
-    def get_connection_proposals(self, name: str) -> List[Tuple["ObjectId", str]]:
+    def iter_connection_proposals(self, name: str) -> Iterable[Tuple["ObjectId", str]]:
         """
-        Return possible connections for connection name
-        as (model id, connection name)
+        Iterate possible connections from given one.
+
+        Args:
+            name: Connection name
+
+        Returns:
+            Yield tuples of (model id, connection names)
         """
         cn = self.get_model_connection(name)
         if not cn:
-            return []  # Connection not found
-        r = []
+            return  # Connection not found
         c_types = cn.type.get_compatible_types(cn.gender)
         og = ConnectionType.OPPOSITE_GENDER[cn.gender]
         for cc in ModelConnectionsCache.objects.filter(type__in=c_types, gender=og):
-            r += [(cc.model, cc.name)]
-        return r
+            yield cc.model, cc.name
 
     def get_model_connection(self, name: str) -> Optional["ObjectModelConnection"]:
         for c in self.connections:
@@ -574,6 +577,15 @@ class ObjectModel(Document):
             # Unique match found
             return oml[0]
         # Nothing found
+        return None
+
+    def get_outer(self) -> Optional[ObjectModelConnection]:
+        """
+        Get outer connection if any.
+        """
+        for c in self.connections:
+            if c.is_outer:
+                return c
         return None
 
     @property

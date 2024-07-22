@@ -766,38 +766,26 @@ class Object(Document):
             r.append((c.name, discriminators))
         return r
 
-    def get_connection_proposals(
+    def iter_connection_proposals(
         self,
-        name,
+        name: str,
         ro: "ObjectModel",
         remote_name: Optional[str] = None,
         use_cable: bool = False,
-        only_first: bool = False,
-    ) -> List[Tuple[Optional["ObjectModel"], str]]:
+    ) -> Iterable[Tuple[Optional["ObjectModel"], str]]:
         """
-
-        :param name:
-        :param ro:
-        :param remote_name:
-        :param use_cable:
-        :param only_first:
-        :return:
+        Iterate possible connections.
         """
-        r = []
-        for model_id, c_name in self.model.get_connection_proposals(name):
+        for model_id, c_name in self.model.iter_connection_proposals(name):
             if use_cable:
                 model = ObjectModel.get_by_id(model_id)
                 if bool(model.get_data("length", "length")):
                     # Wired, Multiple Cable?
-                    r.append((model, c_name))
+                    yield model, c_name
             elif remote_name and c_name != remote_name:
                 continue
             elif ro and ro.id == model_id:
-                r.append((None, c_name))
-            if only_first and r:
-                return r
-            # Check connection
-        return r
+                yield None, c_name
 
     def has_connection(self, name: str) -> bool:
         """
