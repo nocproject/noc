@@ -10,11 +10,11 @@
             "orientation": "H",
             "queries": [
                 {
-                    "datasource": "managedobjectds",
+                    "datasource": "managedobjectavailabilityds",
                     "json": null
                 },
                 {
-                    "datasource": "managedobjectavailabilityds",
+                    "datasource": "managedobjectds",
                     "json": null
                 }
             ]
@@ -25,47 +25,47 @@
             "name": "Root",
             "column_format": [
                 {
-                    "name": "administrativedomain",
+                    "name": "managedobjectds.administrativedomain",
                     "title": "ADM. DOMAIN",
                     "format_type": "string"
                 },
                 {
-                    "name": "name",
+                    "name": "managedobjectds.name",
                     "title": "MANAGED OBJECT",
                     "format_type": "string"
                 },
                 {
-                    "name": "hostname",
+                    "name": "managedobjectds.hostname",
                     "title": "HOSTNAME",
                     "format_type": "string"
                 },
                 {
-                    "name": "address",
+                    "name": "managedobjectds.address",
                     "title": "ADDRESS",
                     "format_type": "string"
                 },
                 {
-                    "name": "profile",
+                    "name": "managedobjectds.profile",
                     "title": "PROFILE",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectavailabilityds.avail_percent",
+                    "name": "avail_percent",
                     "title": "AVAIL. PERCENT",
                     "format_type": "integer"
                 },
                 {
-                    "name": "managedobjectavailabilityds.downtime",
+                    "name": "downtime",
                     "title": "DOWNTIME",
                     "format_type": "integer"
                 },
                 {
-                    "name": "managedobjectavailabilityds.down_count",
+                    "name": "down_count",
                     "title": "DOWN COUNT",
                     "format_type": "integer"
                 },
                 {
-                    "name": "managedobjectavailabilityds.reboots",
+                    "name": "reboots",
                     "title": "REBOOTS",
                     "format_type": "integer"
                 }
@@ -142,7 +142,7 @@
         {
             "name": "fields",
             "description": null,
-            "default": "administrativedomain,name,hostname,address,profile,managedobjectavailabilityds.avail_percent,managedobjectavailabilityds.downtime,managedobjectavailabilityds.down_count,managedobjectavailabilityds.reboots",
+            "default": "managedobjectds.administrativedomain,managedobjectds.name,managedobjectds.hostname,managedobjectds.address,managedobjectds.profile,avail_percent,downtime,down_count,reboots",
             "hide": false,
             "label": "Fields",
             "type": "fields_selector"
