@@ -89,7 +89,7 @@ class _SideBuilder(object):
         o_to: Optional[Object] = None,
         right_filter: Optional[str] = None,
         internal: bool = False,
-        cable: Optional[Object] = None
+        cable: Optional[Object] = None,
     ):
         self.o_from = o_from
         self.left_filter = left_filter
@@ -207,20 +207,22 @@ class _SideBuilder(object):
         r["free"] = False
         if self.is_on_map(self.o_from.parent):
             if self.has_wires:
-                    self.wires.append(
-                        [
-                            {
-                                "id": self.connection_id(self.o_from, c.name),
-                                "name": c.name,
-                                "side": "left",
-                            },
-                            {
-                                "id": self.connection_id(self.o_from.parent, self.o_from.parent_connection),
-                                "name": self.o_from.parent_connection,
-                                "side": "right",
-                            },
-                        ]
-                    )
+                self.wires.append(
+                    [
+                        {
+                            "id": self.connection_id(self.o_from, c.name),
+                            "name": c.name,
+                            "side": "left",
+                        },
+                        {
+                            "id": self.connection_id(
+                                self.o_from.parent, self.o_from.parent_connection
+                            ),
+                            "name": self.o_from.parent_connection,
+                            "side": "right",
+                        },
+                    ]
+                )
         else:
             r["remote_device"] = {
                 "name": self.o_from.parent.name,
@@ -362,6 +364,8 @@ class _SideBuilder(object):
         if prefix == "lambda":
             return f"{chr(955)}{d}"
         return d
+
+
 class _LeftBuilder(_SideBuilder):
     key = "left"
     has_wires = True
