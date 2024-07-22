@@ -16,8 +16,7 @@ from pymongo.read_preferences import ReadPreference
 # NOC modules
 from .base import FieldInfo, FieldType, BaseDataSource
 from noc.fm.models.reboot import Reboot
-from noc.sa.models.objectstatus import ObjectStatus
-from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectStatus
 
 OUTAGES_SQL = """
     SELECT managed_object, min(start) as min_start, max(stop) as max_stop,
@@ -71,7 +70,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         last: Optional[datetime.datetime] = None,
     ) -> int:
         """
-        Convert ObjectStatus cache to outage interval
+        Convert ManagedObjectStatus to outage interval
         :param start_date: Start interval time
         :param stop_date: End interval time
         :param status: Object Status
@@ -136,10 +135,10 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         outages = cls.get_outages_ch(start_date=start, stop_date=end)
         # Getting unavailable
         for num, row in enumerate(
-            ObjectStatus._get_collection().find({"object": {"$exists": True}})
+            ManagedObjectStatus.objects.all().values("managed_object", "last", "status")
         ):
-            oid, status = row["object"], row["status"]
-            outage_duration, outage_count = outages.get(oid, (0, 0))
+            mo_id, status = row["managed_object"], row["status"]
+            outage_duration, outage_count = outages.get(mo_id, (0, 0))
             s_outage = cls.get_status_outage(
                 start_date=start, stop_date=end, status=status, last=row.get("last")
             )
@@ -147,10 +146,10 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
                 outage_duration += s_outage
                 outage_count += 1
             outage_duration = min(outage_duration, td)
-            yield num, "managed_object_id", oid
-            yield num, "id", oid
+            yield num, "managed_object_id", mo_id
+            yield num, "id", mo_id
             yield num, "current_avail_status", row["status"]
             yield num, "avail_percent", (td - outage_duration) * 100.0 / td
             yield num, "downtime", outage_duration
             yield num, "down_count", outage_count
-            yield num, "reboots", rb.get(oid, 0)
+            yield num, "reboots", rb.get(mo_id, 0)
