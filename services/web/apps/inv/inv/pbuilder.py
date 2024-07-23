@@ -323,7 +323,7 @@ class _SideBuilder(object):
             )
             or []
         ):
-            if path.obj.model.get_data("length", "length"):
+            if path.obj.is_wire:
                 wire = path.obj
             if path.obj == ro:
                 return wire, path

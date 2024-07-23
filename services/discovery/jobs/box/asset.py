@@ -594,7 +594,7 @@ class AssetCheck(DiscoveryCheck):
         Create P2P connection o1:c1 - o2:c2
         """
         try:
-            cn = o1.connect_p2p(c1, o2, c2, {}, reconnect=True)
+            o1.connect_p2p(c1, o2, c2, {}, reconnect=True)
             o1.log(
                 "Connect %s -> %s:%s" % (c1, o2, c2),
                 system="DISCOVERY",

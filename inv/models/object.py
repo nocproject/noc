@@ -937,7 +937,7 @@ class Object(Document):
                     else:
                         raise ConnectionError("Already connected")
             # Create connection
-            c = ObjectConnection(
+            ObjectConnection(
                 connection=[
                     ObjectConnectionItem(object=self, name=name),
                     ObjectConnectionItem(object=remote_object, name=remote_name),

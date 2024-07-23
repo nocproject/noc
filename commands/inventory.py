@@ -49,7 +49,6 @@ class Command(BaseCommand):
             return " ".join(r)
 
         def iter_obj(o):
-            outer_conns = list(o.iter_outer_connections())
             if o.parent and o.parent_connection:
                 # Allow follow up
                 yield obj_str(o, o.parent_connection)

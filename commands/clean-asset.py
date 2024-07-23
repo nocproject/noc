@@ -30,10 +30,10 @@ class Command(BaseCommand):
             self.clean_obj(o)
 
     def clean_obj(self, obj):
-        print("Cleaning %s %s (%s)" % (obj.model.name, obj.name, obj.id))
+        print(f"Cleaning {obj.model.name} {obj.name} ({obj.id})")
         # Clean children and inner connections
         for child in obj.iter_children():
-            child.clean_obj(remote)
+            self.clean_obj(child)
         obj.delete()
 
 
