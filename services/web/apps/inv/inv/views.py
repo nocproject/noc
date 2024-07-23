@@ -8,7 +8,7 @@
 # Python modules
 import inspect
 import os
-from typing import Optional, Dict, List, Any, Tuple, Set
+from typing import Optional, Dict, List, Any, Tuple
 
 # Third-party modules
 from mongoengine import ValidationError
@@ -31,7 +31,6 @@ from noc.sa.interfaces.base import (
     DictParameter,
     FloatParameter,
 )
-from noc.core.inv.path import find_path
 from noc.core.translation import ugettext as _
 from .pbuilder import CrossingProposalsBuilder
 
