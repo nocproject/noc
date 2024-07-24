@@ -43,8 +43,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     var me = this;
     if(typeof Viz === "undefined"){
       new_load_scripts([
-        'https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js',          
+        "ui/pkg/viz-js/viz-standalone.js",
       ], me, function(){
         me.renderScheme(data.dot);
       });
@@ -53,9 +52,9 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     }
   },
   renderScheme: function(dot){
-    var me = this,
-      viz=new Viz();
-    viz.renderSVGElement(dot).then(function(el){
+    var me = this;
+    Viz.instance().then(function(viz){ 
+      var svg = viz.renderSVGElement(dot);
       me.removeAll();
       me.add({
         xtype: "container",
@@ -63,7 +62,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
         items: {
           xtype: "image",
           itemId: "scheme",
-          src: me.svgToBase64(el.outerHTML),
+          src: me.svgToBase64(svg.outerHTML),
         },
       });
     });

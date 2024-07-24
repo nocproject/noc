@@ -298,13 +298,13 @@ Ext.define("NOC.inv.channel.Application", {
               dataIndex: "used_by",
               flex: 1,
               renderer: function(v){
-                  return v.map(function(x) {
-                      if(x.discriminator === "") {
-                          return x.channel__label;
-                      } else {
-                          return x.channel__label + " [" + x.discriminator + "]";
-                      }
-                  }).join(", ");
+                return v.map(function(x){
+                  if(x.discriminator === ""){
+                    return x.channel__label;
+                  } else{
+                    return x.channel__label + " [" + x.discriminator + "]";
+                  }
+                }).join(", ");
               },
             },
           ],
@@ -361,11 +361,12 @@ Ext.define("NOC.inv.channel.Application", {
   //
   //
   _render: function(dot){
-    var me = this,
-      viz = new Viz();
-    viz.renderSVGElement(dot).then(function(el){
-      var imageComponent = me.down("[itemId=scheme]");
-      imageComponent.setSrc(me.svgToBase64(el.outerHTML));
+    var me = this;
+    Viz.instance().then(function(viz){ 
+      var imageComponent = me.down("[itemId=scheme]"),
+        svg = viz.renderSVGElement(dot);
+      imageComponent.setHidden(false);
+      imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
     });
   },
   //
@@ -373,8 +374,7 @@ Ext.define("NOC.inv.channel.Application", {
     var me = this;
     if(typeof Viz === "undefined"){
       new_load_scripts([
-        "https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js",          
+        "ui/pkg/viz-js/viz-standalone.js",
       ], me, Ext.bind(me._render, me, [dot]));
     } else{
       me._render(dot);
