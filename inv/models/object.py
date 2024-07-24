@@ -11,6 +11,7 @@ import operator
 from dataclasses import dataclass
 from threading import Lock
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
+import warnings
 
 # Third-party modules
 from bson import ObjectId
@@ -53,6 +54,7 @@ from noc.pm.models.agent import Agent
 from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 from noc.inv.models.technology import Technology
+from noc.core.deprecations import RemovedInNOC2501Warning
 from .objectmodel import ObjectModel, Crossing
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -801,7 +803,7 @@ class Object(Document):
         Returns connection, remote object, remote connection or
         None, None, None
         """
-        from .objectconnection import ObjectConnection
+        from .objectconnection import ObjectConnection, ObjectConnectionItem
 
         c = ObjectConnection.objects.filter(
             __raw__={"connection": {"$elemMatch": {"object": self.id, "name": name}}}
@@ -810,6 +812,40 @@ class Object(Document):
             for x in c.connection:
                 if x.object.id != self.id:
                     return c, x.object, x.name
+        else:
+            # Emulate legacy code
+            # Will be removed in NOC 25.1
+            mc = self.model.get_model_connection(name)
+            if mc and mc.is_outer:
+                warnings.warn(
+                    "Object.get_p2p_connection for outer connections is deprecated "
+                    "and will be removed in NOC 25.1",
+                    RemovedInNOC2501Warning,
+                )
+                if not self.parent or not self.parent_connection:
+                    return None, None, None
+                c = ObjectConnection(
+                    connection=[
+                        ObjectConnectionItem(object=self, name=name),
+                        ObjectConnectionItem(object=self.parent, name=self.parent_connection),
+                    ]
+                )
+                return c, self.parent, self.parent_connection
+            elif mc and mc.is_inner:
+                warnings.warn(
+                    "Object.get_p2p_connection for inner connections is deprecated "
+                    "and will be removed in NOC 25.1",
+                    RemovedInNOC2501Warning,
+                )
+                child = Object.objects.filter(parent=self.id, parent_connection=name).first()
+                if child:
+                    c = ObjectConnection(
+                        connection=[
+                            ObjectConnectionItem(object=self, name=self.name),
+                            ObjectConnectionItem(object=child.parent, name=child.parent_connection),
+                        ]
+                    )
+                    return c, child.parent, child.parent_connection
         # Strange things happen
         return None, None, None
 
@@ -1487,6 +1523,28 @@ class Object(Document):
         if path:
             return f"o:{self.id}:{path}"
         return f"o:{self.id}"
+
+    @property
+    def container(self) -> Optional["Object"]:
+        """
+        Emulates deprecated container property
+        """
+        warnings.warn(
+            "Object.container is deprecated and will be removed in NOC 25.1",
+            RemovedInNOC2501Warning,
+        )
+        if self.parent_connection:
+            return None
+        return self.parent
+
+    @property.setter
+    def container(self, value: Optional["Object"]) -> None:
+        warnings.warn(
+            "Object.container is deprecated and will be removed in NOC 25.1",
+            RemovedInNOC2501Warning,
+        )
+        self.parent_connection = None
+        self.parent = value
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
