@@ -162,7 +162,9 @@ class Script(BaseScript):
             r[match.group("pname")] = match.group("pvalue").strip()
         return r
 
-    def get_crossings(self, config: Dict[str, Any], crate_num: int, slot: int) -> List[Dict[str, str]]:
+    def get_crossings(
+        self, config: Dict[str, Any], crate_num: int, slot: int
+    ) -> List[Dict[str, str]]:
         def get_default_datatype(mode: str, port: str) -> str:
             DEFAULT_DATATYPE_MAP = {
                 "AGG-200": {
