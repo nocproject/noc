@@ -30,6 +30,7 @@ from mongoengine.fields import (
     DateTimeField,
 )
 from mongoengine import signals
+from mongoengine.queryset.queryset import QuerySet
 import cachetools
 from typing import Iterable, Tuple
 
@@ -157,6 +158,23 @@ class ObjectConfigurationData(EmbeddedDocument):
         return "".join(f"@{s.code}" for s in self.contexts)
 
 
+class ObjectQuerySet(QuerySet):
+    """Fix Object.container usage"""
+
+    def __call__(self, **kwargs):
+        legacy = [k for k in kwargs if k.startswith("container")]
+        if legacy:
+            # Rewrite container queryes
+            warnings.warn(
+                "Object.container is deprecated and will be removed in NOC 25.1",
+                RemovedInNOC2501Warning,
+            )
+            for q in legacy:
+                kwargs[f"parent{q[9:]}"] = kwargs.pop(q)
+            kwargs["parent_connection__exists"] = False
+        return super().__call__(**kwargs)
+
+
 @Label.model
 @bi_sync
 @on_save
@@ -186,6 +204,7 @@ class Object(Document):
             "labels",
             "effective_labels",
         ],
+        "queryset_class": ObjectQuerySet,
     }
 
     name = StringField()
@@ -1524,8 +1543,7 @@ class Object(Document):
             return f"o:{self.id}:{path}"
         return f"o:{self.id}"
 
-    @property
-    def container(self) -> Optional["Object"]:
+    def _get_container(self) -> Optional["Object"]:
         """
         Emulates deprecated container property
         """
@@ -1537,14 +1555,15 @@ class Object(Document):
             return None
         return self.parent
 
-    @property.setter
-    def container(self, value: Optional["Object"]) -> None:
+    def _set_container(self, value: Optional["Object"]) -> None:
         warnings.warn(
             "Object.container is deprecated and will be removed in NOC 25.1",
             RemovedInNOC2501Warning,
         )
         self.parent_connection = None
         self.parent = value
+
+    container = property(fget=_get_container, fset=_set_container, doc="Legacy container attribute")
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
