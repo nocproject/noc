@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # IRE-Polus.Horizon.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -36,7 +36,6 @@ class FRU:
     revision: Optional[str] = None
     type: str = "LINECARD"
     vendor: str = "IRE-Polus"
-    is_rbs: bool = False
 
     # def parse_sensors(self, params: List[PolusParam]) -> List[Dict[str, Any]]:
     #     r = {}
@@ -95,12 +94,7 @@ class Script(BaseScript):
         r = FRU("", "")
         for p in c.info_params:
             if p.code == "PtNumber" or p.code == "pId":
-                if p.value.startswith("RBS-"):
-                    r.is_rbs = True
-                    r.part_no = p.value[4:]
-                else:
-                    r.part_no = p.value
-
+                r.part_no = p.value
                 r.type = p.component_type
             elif p.code == "SrNumber":
                 r.serial = p.value
@@ -162,6 +156,147 @@ class Script(BaseScript):
             r[match.group("pname")] = match.group("pvalue").strip()
         return r
 
+    def get_crossings(self, config: Dict[str, Any], crate_num: int, slot: int) -> List[Dict[str, str]]:
+        def get_default_datatype(mode: str, port: str) -> str:
+            DEFAULT_DATATYPE_MAP = {
+                "AGG-200": {
+                    "LINE1": "OTUC2",
+                    "LINE2": "OTUC2",
+                },
+                "AGG-100-BS": {
+                    "LINE1": "OTU4",
+                    "LINE2": "OTU4",
+                },
+                "AGG-2x100": {
+                    "LINE1": "OTU4",
+                    "LINE2": "OTU4",
+                },
+                "TP-100+TP-10x10": {
+                    "LINE1": "OTU4",
+                    "LINE2": "OTU4",
+                    "CLIENT11": "OTU2",
+                    "CLIENT12": "OTU2",
+                    "CLIENT13": "OTU2",
+                    "CLIENT14": "OTU2",
+                    "CLIENT15": "OTU2",
+                    "CLIENT16": "OTU2",
+                    "CLIENT17": "OTU2",
+                    "CLIENT18": "OTU2",
+                    "CLIENT19": "OTU2",
+                    "CLIENT20": "OTU2",
+                },
+            }
+            datatype = ""
+            if mode in DEFAULT_DATATYPE_MAP:
+                if port in DEFAULT_DATATYPE_MAP[mode]:
+                    datatype = DEFAULT_DATATYPE_MAP[mode][port]
+                else:
+                    self.logger.debug("Unknown port %s in mode %s", port, mode)
+            else:
+                self.logger.debug("Unknown mode %s", mode)
+
+            return datatype
+
+        def convert_datatype_to_odu(datatype: str) -> str:
+            OTU_MAP = {
+                "OTUC2": "ODUC2",
+                "OTU4": "ODU4",
+                "OTU2": "ODU2",
+            }
+
+            if datatype in OTU_MAP:
+                odu = OTU_MAP[datatype]
+            else:
+                odu = datatype
+                self.logger.debug("datatype %s is not in map", datatype)
+
+            return odu
+
+        def get_outer_odu(card_mode: str, dst_port: str, dst_datatype: str) -> str:
+            if not dst_datatype:
+                dst_datatype = get_default_datatype(card_mode, dst_port)
+
+            return convert_datatype_to_odu(dst_datatype)
+
+        def get_raw_port(n: str) -> str:
+            t, n, _ = n.split("_", 2)
+            return "_".join([t, n])
+
+        def get_port(n: str) -> str:
+            t, n = n.split("_", 1)
+            if t == "Cl":
+                return f"CLIENT{n}"
+            elif t == "Ln":
+                return f"LINE{n}"
+            raise ValueError(f"Invalid port {n}")
+
+        def get_discriminator(outer_odu: str, code_dst: str) -> str:
+            dst_odu = code_dst
+            dst_discriminator = code_dst
+            if "_" in code_dst:
+                dst_odu, dst_n = code_dst.split("_")
+                dst_discriminator = f"{dst_odu}-{dst_n}"
+
+            if outer_odu == dst_odu:
+                return f"odu::{dst_odu}"
+
+            return f"odu::{outer_odu}::{dst_discriminator}"
+
+        src: Dict[str, str] = {}
+        dst: Dict[str, str] = {}
+        datatypes: Dict[str, str] = {}
+        mode: Optional[str] = None
+        enable_oduflex = set()
+
+        for o in config["RK"][crate_num]["DV"]:
+            if o["slt"] != slot:
+                continue
+            for oo in o["PM"]:
+                if "nam" not in oo or "val" not in oo:
+                    continue
+                name = oo["nam"]
+                if name.endswith("_SetSrc"):
+                    if oo["val"] != "None":
+                        src[name[:-7]] = oo["val"]
+                elif name.endswith("_SetDst"):
+                    if oo["val"] != "None":
+                        dst[name[:-7]] = oo["val"]
+                elif name == "SetMode":
+                    mode = oo["val"]
+                elif name.endswith("_SetDataType"):
+                    if "GFC" in oo["val"]:
+                        enable_oduflex.add(name[:-12])
+                    datatypes[get_port(name[:-12])] = oo["val"]
+
+        crossings = []
+        if mode:
+            self.logger.debug("Mode %s:", mode)
+
+        for cname in src:
+            if cname not in dst:
+                continue
+
+            input = get_port(get_raw_port(src[cname]))
+            output = get_port(get_raw_port(dst[cname]))
+            rest_dst = dst[cname].split("_", 2)[-1]
+
+            datatype = datatypes[output]
+            outer_odu = get_outer_odu(mode, output, datatype)
+
+            if cname in enable_oduflex and rest_dst != "ODUFlex":
+                continue
+            if cname not in enable_oduflex and rest_dst == "ODUFlex":
+                continue
+            crossings.append(
+                {
+                    "input": input,
+                    "output": output,
+                    "output_discriminator": get_discriminator(outer_odu, rest_dst),
+                }
+            )
+
+        return crossings
+
     def execute_http(self, **kwargs):
         r = []
         c = self.http.get("/api/crates", json=True)
@@ -202,6 +337,12 @@ class Script(BaseScript):
                 "utf-8"
             ),
         )
+
+        config = self.http.get(
+            f"/snapshots/full/config.json",
+            json=True,
+        )
+
         # /api/devices/params?crateId=1&slotNumber=3
         adapters = []
         for slot, d in devices.items():
@@ -227,6 +368,9 @@ class Script(BaseScript):
                     }
                 ]
                 adapters.append(adapter)
+
+            crossings = self.get_crossings(config, d.crate_id - 1, slot)
+            self.logger.debug("==|CROSS|==\n%s\n", crossings)
 
             params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"]]
             self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
@@ -255,25 +399,25 @@ class Script(BaseScript):
                 "sensors": sensors,
                 "param_data": cfgs,
                 "data": [{"interface": "hw_path", "attr": "slot", "value": str(slot)}],
-                "crossing": [],
+                "crossing": crossings,
                 # "param_data": self.get_cfg_param_data(common),
             }
             if adapter:
                 card["type"] = "LINECARDH4"
-            if common.crossing:
-                for cross in common.crossing.values():
-                    if not cross:
-                        continue
-                    c_in, c_out = cross[:2]
-                    card["crossing"] += [
-                        {
-                            "input": c_in[0],
-                            "input_discriminator": c_in[1],
-                            "output": c_out[0],
-                            "output_discriminator": c_out[1],
-                            # "gain":
-                        }
-                    ]
+            # if common.crossing:
+            #     for cross in common.crossing.values():
+            #         if not cross:
+            #             continue
+            #         c_in, c_out = cross[:2]
+            #         card["crossing"] += [
+            #             {
+            #                 "input": c_in[0],
+            #                 "input_discriminator": c_in[1],
+            #                 "output": c_out[0],
+            #                 "output_discriminator": c_out[1],
+            #                 # "gain":
+            #             }
+            #         ]
             r += [card]
             for c_name, c in components.items():
                 fru = self.get_fru(c)
@@ -283,18 +427,18 @@ class Script(BaseScript):
                     sensors, cfgs = self.get_sensors(c, slot)
                     card["sensors"] += sensors
                     card["param_data"] += cfgs
-                    if c.crossing:
-                        for cross in c.crossing.values():
-                            c_in, c_out = cross[:2]
-                            card["crossing"] += [
-                                {
-                                    "input": c_in[0],
-                                    "input_discriminator": c_in[1],
-                                    "output": c_out[0],
-                                    "output_discriminator": c_out[1],
-                                    # "gain":
-                                }
-                            ]
+                    # if c.crossing:
+                    #     for cross in c.crossing.values():
+                    #         c_in, c_out = cross[:2]
+                    #         card["crossing"] += [
+                    #             {
+                    #                 "input": c_in[0],
+                    #                 "input_discriminator": c_in[1],
+                    #                 "output": c_out[0],
+                    #                 "output_discriminator": c_out[1],
+                    #                 # "gain":
+                    #             }
+                    #         ]
                     for cc in c.cfg_params:
                         if not cc.get_param_code():
                             continue
