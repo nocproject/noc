@@ -16,5 +16,6 @@
             "interface": "container",
             "value": true
         }
-    ]
+    ],
+    "glyph__name": "FontAwesome | globe"
 }

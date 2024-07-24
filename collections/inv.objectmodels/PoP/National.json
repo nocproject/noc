@@ -40,5 +40,6 @@
             "interface": "contacts",
             "value": true
         }
-    ]
+    ],
+    "glyph__name": "FontAwesome | building-o"
 }

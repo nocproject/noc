@@ -94,6 +94,7 @@ Ext.define("NOC.inv.objectmodel.Model", {
     {
       name: "front_facade__label",
       type: "string",
+      persist: false,
     },
     {
       name: "rear_facade",
@@ -102,6 +103,16 @@ Ext.define("NOC.inv.objectmodel.Model", {
     {
       name: "rear_facade__label",
       type: "string",
+      persist: false,
+    },
+    {
+      name: "glyph",
+      type: "string",
+    },
+    {
+      name: "glyph__label",
+      type: "string",
+      persist: false,
     },
   ],
 });
