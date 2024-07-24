@@ -81,6 +81,8 @@ class Channel(Document):
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
     constraints = EmbeddedDocumentListField(ConstraintItem)
+    # Controller which created the channel
+    controller = StringField(required=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

@@ -10,9 +10,9 @@ from typing import Iterable
 
 # Python modules
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
-from ..tracer.base import Endpoint
+from ..controller.base import Endpoint
 from .base import BaseMapper
-from ..tracer.otn_otu import OTNOTUTracer
+from ..controller.otn_otu import OTNOTUController
 
 
 class DWDMOTUMapper(BaseMapper):
@@ -35,7 +35,7 @@ class DWDMOTUMapper(BaseMapper):
             r.append("  }")
             yield from r
 
-        tr = OTNOTUTracer()
+        tr = OTNOTUController()
         paths = []
         for db_ep in DBEndpoint.objects.filter(channel=self.channel.id):
             ep = Endpoint.from_resource(db_ep.resource)

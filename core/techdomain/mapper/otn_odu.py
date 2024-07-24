@@ -8,9 +8,9 @@
 # Python modules
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.inv.models.object import Object
-from ..tracer.base import Endpoint
+from ..controller.base import Endpoint
 from .base import BaseMapper
-from ..tracer.otn_odu import OTNODUTracer
+from ..controller.otn_odu import OTNODUController
 
 
 class DWDMOdUMapper(BaseMapper):
@@ -32,7 +32,7 @@ class DWDMOdUMapper(BaseMapper):
 
         db_ep = DBEndpoint.objects.filter(channel=self.channel.id).first()
         start = Endpoint.from_resource(db_ep.resource)
-        tr = OTNODUTracer()
+        tr = OTNODUController()
         path = list(tr.iter_path(start))
         # @todo: Check path length
         r = [

@@ -206,7 +206,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                     scrollable: "y",
                     height: 310,
                     store: new Ext.data.Store({
-                      fields: ["tracer", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
+                      fields: ["controller", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
                       data: obj,
                     }),
                     columns: [
@@ -223,8 +223,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                         renderer: NOC.render.Lookup("end_endpoint"),
                       },
                       {
-                        text: __("Tracer"),
-                        dataIndex: "tracer",
+                        text: __("Controller"),
+                        dataIndex: "controller",
                         width: 100,
                       },
                       {
@@ -268,7 +268,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                       Ext.Ajax.request({
                         url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
                         method: "POST",
-                        jsonData: {endpoint: selectedRecord.get("start_endpoint"), tracer: selectedRecord.get("tracer")},
+                        jsonData: {endpoint: selectedRecord.get("start_endpoint"), controller: selectedRecord.get("controller")},
                         success: function(response){
                           var data = Ext.decode(response.responseText);
                           if(data.status){

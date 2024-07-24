@@ -11,11 +11,11 @@ from collections import defaultdict
 
 # NOC modules
 from noc.inv.models.object import Object
-from noc.core.techdomain.tracer.base import BaseTracer
+from noc.core.techdomain.controller.base import BaseController
 from noc.core.resource import resource_label, from_resource
 from noc.sa.interfaces.base import StringParameter
-from noc.core.techdomain.tracer.loader import loader as tracer_loader
-from noc.core.techdomain.tracer.base import Endpoint
+from noc.core.techdomain.controller.loader import loader as controller_loader
+from noc.core.techdomain.controller.base import Endpoint
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.main.models.favorites import Favorites
@@ -39,7 +39,7 @@ class ChannelPlugin(InvPlugin):
             self.api_create_adhoc,
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/adhoc/$" % self.name,
             method=["POST"],
-            validate={"endpoint": StringParameter(), "tracer": StringParameter()},
+            validate={"endpoint": StringParameter(), "controller": StringParameter()},
         )
 
     def get_data(self, request, object):
@@ -82,7 +82,7 @@ class ChannelPlugin(InvPlugin):
                 "discriminator": ch.discriminator or "",
             }
 
-        nested = [f"o:{o.id}" for o in BaseTracer().iter_nested_objects(object)]
+        nested = [f"o:{o.id}" for o in BaseController().iter_nested_objects(object)]
         pipeline = [{"$match": {"root_resource": {"$in": nested}}}, {"$group": {"_id": "$channel"}}]
         r = DBEndpoint._get_collection().aggregate(pipeline)
         items = [i["_id"] for i in r]
@@ -128,11 +128,11 @@ class ChannelPlugin(InvPlugin):
             x["status"] = "broken"
 
         o = self.app.get_object_or_404(Object, id=id)
-        nested_objects = list(BaseTracer().iter_nested_objects(o))
+        nested_objects = list(BaseController().iter_nested_objects(o))
         r: List[Dict[str, str]] = []
-        # Check all tracers
-        for tr_name in tracer_loader:
-            tr = tracer_loader[tr_name]()
+        # Check all cotrollers
+        for tr_name in controller_loader:
+            tr = controller_loader[tr_name]()
             for no in nested_objects:
                 for sep, eep in tr.iter_adhoc_endpoints(no):
                     r += [
@@ -141,7 +141,7 @@ class ChannelPlugin(InvPlugin):
                             "start_endpoint__label": self.get_endpoint_label(sep),
                             "end_endpoint": eep.as_resource(),
                             "end_endpoint__label": self.get_endpoint_label(eep),
-                            "tracer": tr.name,
+                            "controller": tr.name,
                         }
                     ]
         # Get channel endpoints
@@ -175,11 +175,11 @@ class ChannelPlugin(InvPlugin):
             update_proposal_status(x)
         return r
 
-    def api_create_adhoc(self, request, id, endpoint, tracer):
+    def api_create_adhoc(self, request, id, endpoint, controller):
         self.app.get_object_or_404(Object, id=id)
         o, n = from_resource(endpoint)
         ep = Endpoint(object=o, name=n or "")
-        tr = tracer_loader[tracer]()
+        tr = controller_loader[controller]()
         ch, msg = tr.sync_ad_hoc_channel(ep)
         r = {"status": ch is not None, "msg": msg}
         if ch:

@@ -13,7 +13,7 @@ from typing import List, Iterable, Optional
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.channel import Channel
-from ..tracer.base import Endpoint
+from ..controller.base import Endpoint
 
 
 @dataclass

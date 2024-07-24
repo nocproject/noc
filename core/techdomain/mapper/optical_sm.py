@@ -13,17 +13,17 @@ from typing import Optional
 from noc.core.channel.types import ChannelTopology
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.resource import from_resource
-from ..tracer.base import BaseTracer, Endpoint, PathItem
+from ..controller.base import BaseController, Endpoint, PathItem
 from .base import BaseMapper, Node
-from ..tracer.optical_dwdm import OpticalDWDMTracer
+from ..controller.optical_dwdm import OpticalDWDMController
 
 
 class OpticalSMMapper(BaseMapper):
     name = "optical_sm"
 
-    def get_tracer(self) -> BaseTracer:
+    def get_controller(self) -> BaseController:
         if self.channel.topology == ChannelTopology.UBUNCH.value:
-            return OpticalDWDMTracer()
+            return OpticalDWDMController()
         raise NotImplementedError()
 
     def to_dot(
@@ -45,7 +45,7 @@ class OpticalSMMapper(BaseMapper):
                 parts.append("")
             return "|".join(parts)
 
-        tr = self.get_tracer()
+        tr = self.get_controller()
         starting = []
         endpoints = set()
         nodes = {}

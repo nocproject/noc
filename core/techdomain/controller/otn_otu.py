@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# OTNOTUTracer class
+# OTNOTUController class
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -13,12 +13,12 @@ from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
-from .base import BaseTracer, Endpoint, PathItem
+from .base import BaseController, Endpoint, PathItem
 
 
-class OTNOTUTracer(BaseTracer):
+class OTNOTUController(BaseController):
     """
-    OTN OTU level tracer
+    OTN OTU level controller
     """
 
     name = "otn_otu"

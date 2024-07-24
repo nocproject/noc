@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# BaseTracer class
+# BaseController class
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -58,7 +58,7 @@ class PathItem(object):
     output_object: Optional[Object] = None
 
 
-class BaseTracer(object):
+class BaseController(object):
     name: str = "base"
     tech_domain: str
     kind: ChannelKind
@@ -69,7 +69,7 @@ class BaseTracer(object):
     adhoc_endpoints: bool = False
 
     def __init__(self):
-        self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
+        self.logger = PrefixLoggerAdapter(logging.getLogger("controller"), self.name)
 
     @property
     def is_unidirectional(self) -> bool:
@@ -249,10 +249,11 @@ class BaseTracer(object):
         ch = Channel(
             tech_domain=TechDomain.get_by_code(self.tech_domain),
             name=f"Magical {self.name} {datetime.datetime.now().isoformat()}",
-            description=f"Created by {self.name} tracer",
+            description=f"Created by {self.name} controller",
             kind=self.kind.value,
             topology=self.topology.value,
             discriminator=discriminator,
+            controller=self.name,
         )
         ch.save()
         return ch

@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# OTNODUTracer class
+# OTNODUController class
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -13,13 +13,13 @@ from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
-from .base import BaseTracer, Endpoint, PathItem
-from .otn_otu import OTNOTUTracer
+from .base import BaseController, Endpoint, PathItem
+from .otn_otu import OTNOTUController
 
 
-class OTNODUTracer(BaseTracer):
+class OTNODUController(BaseController):
     """
-    OTN OTU level tracer
+    OTN OTU level controller
     """
 
     name = "otn_odu"
@@ -30,7 +30,7 @@ class OTNODUTracer(BaseTracer):
 
     def iter_endpoints(self, obj: Object) -> Iterable[Endpoint]:
         # Check if card has OTU endpoints
-        otu_tr = OTNOTUTracer()
+        otu_tr = OTNOTUController()
         otu_endpoints = [e.as_resource() for e in otu_tr.iter_endpoints(obj)]
         if not otu_endpoints:
             return
