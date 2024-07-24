@@ -53,15 +53,6 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
-            name: "managed_object",
-            type: "int"
-        },
-        {
-            name: "managerd_object__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "subscriber",
             type: "string"
         },
