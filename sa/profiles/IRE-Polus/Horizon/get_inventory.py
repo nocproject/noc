@@ -36,6 +36,7 @@ class FRU:
     revision: Optional[str] = None
     type: str = "LINECARD"
     vendor: str = "IRE-Polus"
+    is_rbs: bool = False
 
     # def parse_sensors(self, params: List[PolusParam]) -> List[Dict[str, Any]]:
     #     r = {}
@@ -94,7 +95,12 @@ class Script(BaseScript):
         r = FRU("", "")
         for p in c.info_params:
             if p.code == "PtNumber" or p.code == "pId":
-                r.part_no = p.value
+                if p.value.startswith("RBS-"):
+                    r.is_rbs = True
+                    r.part_no = p.value[4:]
+                else:
+                    r.part_no = p.value
+
                 r.type = p.component_type
             elif p.code == "SrNumber":
                 r.serial = p.value
