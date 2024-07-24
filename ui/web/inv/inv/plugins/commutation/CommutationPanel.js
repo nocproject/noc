@@ -43,7 +43,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     var me = this;
     if(typeof Viz === "undefined"){
       new_load_scripts([
-        "ui/pkg/viz-js/viz-standalone.js",
+        "/ui/pkg/viz-js/viz-standalone.js",
       ], me, function(){
         me.renderScheme(data.dot);
       });

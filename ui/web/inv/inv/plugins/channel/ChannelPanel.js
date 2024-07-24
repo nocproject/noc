@@ -154,7 +154,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var me = this;
     if(typeof Viz === "undefined"){
       new_load_scripts([
-        "ui/pkg/viz-js/viz-standalone.js",
+        "/ui/pkg/viz-js/viz-standalone.js",
       ], me, Ext.bind(me._render, me, [dot]));
     } else{
       me._render(dot);
