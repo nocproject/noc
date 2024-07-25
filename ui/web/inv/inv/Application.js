@@ -144,6 +144,27 @@ Ext.define("NOC.inv.inv.Application", {
         scrollable: true,
       },
       items: [],
+      listeners: {
+        scope: me,
+        beforetabchange: function(tabPanel, newCard){
+          var me = this,
+            objectId = me.selectedObjectId,
+            pluginName = newCard.pluginName;
+          console.log("beforetabchange ", objectId, pluginName);
+          Ext.Ajax.request({
+            url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
+            method: "GET",
+            scope: me,
+            success: function(response){
+              var data = Ext.decode(response.responseText);
+              newCard.preview(data, objectId);
+            },
+            failure: function(){
+              NOC.error(__("Failed to get data for plugin") + " " + pluginName);
+            },
+          });
+        },
+      },
     });
     //
     me.connectionPanel = Ext.create("NOC.inv.inv.CreateConnectionForm", {
@@ -203,18 +224,7 @@ Ext.define("NOC.inv.inv.Application", {
       plugin = Ext.create(pData.xtype, {app: me});
     me.tabPanel.add(plugin);
     me.invPlugins[pData.name] = plugin;
-    Ext.Ajax.request({
-      url: "/inv/inv/" + objectId + "/plugin/" + pData.name + "/",
-      method: "GET",
-      scope: me,
-      success: function(response){
-        var data = Ext.decode(response.responseText);
-        plugin.preview(data, objectId);
-      },
-      failure: function(){
-        NOC.error(__("Failed to get data for plugin") + " " + pData.name);
-      },
-    });
+    plugin.pluginName = pData.name;
   },
   //
   addAppForm: function(parent, app, objectId){
@@ -248,6 +258,7 @@ Ext.define("NOC.inv.inv.Application", {
     var me = this,
       objectId = record.get("id"),
       plugins = record.get("plugins");
+    me.selectedObjectId = objectId;
     me.addButton.setDisabled(!record.get("can_add"));
     me.removeButton.setDisabled(!record.get("can_delete"));
     me.dashboardButton.setDisabled(false);
