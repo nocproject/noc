@@ -35,7 +35,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 //     width: 300,
                 //     items: [
                 //         {text: __("Active Alarms"), value: 'active', pressed: true},
-                //         {text: __("Archived Alarms"), value: 'archive'},
+                //         {text: __("Archived Alarms"), value: 'archived'},
                 //         {text: __("Both"), value: 'both'}
                 //     ]
                 // },
@@ -49,7 +49,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     width: 600,
                     items: [
                         {boxLabel: __("Active Alarms"), inputValue: 'active', checked: true},
-                        {boxLabel: __("Archived Alarms"), inputValue: 'archive'},
+                        {boxLabel: __("Archived Alarms"), inputValue: 'archived'},
                         {boxLabel: __("Both"), inputValue: 'both'},
                         {boxLabel: __("Long Alarm Archive (more 3 months)"), inputValue: 'long_archive'}]
                 },
