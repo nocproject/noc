@@ -347,7 +347,7 @@ class Script(BaseScript):
         )
 
         config = self.http.get(
-            f"/snapshots/full/config.json",
+            "/snapshots/full/config.json",
             json=True,
         )
 
