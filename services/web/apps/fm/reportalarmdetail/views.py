@@ -104,7 +104,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             "min_objects": IntParameter(required=False),
             "min_subscribers": IntParameter(required=False),
             "source": StringParameter(
-                default="both", choices=["active", "both", "archive", "long_archive"]
+                default="both", choices=["active", "both", "archived", "long_archive"]
             ),
             "segment": ObjectIdParameter(required=False),
             "administrative_domain": IntParameter(required=False),
