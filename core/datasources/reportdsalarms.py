@@ -266,6 +266,8 @@ class ReportDsAlarms(BaseDataSource):
                     alarm_collections += [ActiveAlarm]
                 if "archived" in values or "both" in values:
                     alarm_collections += [ArchivedAlarm]
+                if not alarm_collections:
+                    raise ValueError("alarm_collections must be not empty")
             elif name == "min_subscribers":
                 match_middle["total_subscribers_sum.sum"] = {"$gte": int(value)}
             elif name == "min_objects":
