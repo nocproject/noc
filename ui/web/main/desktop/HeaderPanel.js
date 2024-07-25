@@ -91,6 +91,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
           style: {
             width: NOC.settings.logo_width + "px",
             height: NOC.settings.logo_height + "px",
+            cursor: "pointer",
           },
           listeners: {
             el: {
@@ -106,6 +107,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
           style: {
             fontSize: "18px",
             fontWeight: "bold",
+            cursor: "pointer",
           },
           border: false,
           listeners: {
@@ -122,6 +124,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
           html: NOC.settings.installation_name,
           style: {
             fontSize: "18px",
+            cursor: "pointer",
           },
           border: false,
           listeners: {
