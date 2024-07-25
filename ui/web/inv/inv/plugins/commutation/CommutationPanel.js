@@ -45,16 +45,16 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       new_load_scripts([
         "/ui/pkg/viz-js/viz-standalone.js",
       ], me, function(){
-        me.renderScheme(data.dot);
+        me.renderScheme(data.data);
       });
     } else{
-      me.renderScheme(data.dot);
+      me.renderScheme(data.data);
     }
   },
-  renderScheme: function(dot){
+  renderScheme: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
-      var svg = viz.renderSVGElement(dot);
+      var svg = viz.renderSVGElement(data);
       me.removeAll();
       me.add({
         xtype: "container",

@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import List, Optional, Iterable, Tuple, Dict, DefaultDict
+from typing import List, Optional, Iterable, Tuple, Dict, DefaultDict, Any, Set
 from collections import defaultdict
 
 # Third party modules
@@ -69,7 +69,7 @@ class CommutationPlugin(InvPlugin):
         super().init_plugin()
 
     def get_data(self, request, object):
-        return {"dot": self.to_dot(self.get_nested_inventory(object))}
+        return {"data": self.to_viz(self.get_nested_inventory(object))}
 
     @staticmethod
     def iter_indent(s: Iterable[str], i: int = 0) -> Iterable[str]:
@@ -234,86 +234,154 @@ class CommutationPlugin(InvPlugin):
 
         return pruned_child(node)
 
-    def to_dot(self, nodes: Iterable[Node]) -> str:
+    def to_viz(self, nodes: Iterable[Node]) -> Dict[str, Any]:
         """
-        Render nodes to .dot
+        Render nodes to viz-js JSON
 
         Args:
             nodes: Iterable of Node
 
         Returns:
-            Formatted graphviz document
+            JSON document describing charts
         """
 
-        def q(s: str) -> str:
-            return s.replace('"', '\\"')
-
-        def q_id(s: str) -> str:
-            return s.replace(" ", "_")
-
-        def dot_label(name: str, model: str) -> str:
+        def get_label(name: str, model: str) -> str:
             parts = []
             if name:
                 parts.append(name)
             if model:
                 parts.append(model)
-            return q("\\n".join(parts))
+            return "\\n".join(parts)
 
-        def c_hash(node: None, c: ConnectionItem) -> str:
-            if node.object_id < c.remote_object:
-                return f"{node.object_id}|{c.local_name}|{c.remote_object}|{c.remote_name}"
-            return f"{c.remote_object}|{c.remote_name}|{node.object_id}|{c.local_name}"
+        def get_graph_template() -> Dict[str, Any]:
+            """Get graph template."""
+            return {"graphAttributes": {}, "nodes": [], "edges": [], "subgraphs": []}
 
-        def render(node: Node, level: int = 0) -> Tuple[List[str], List[str]]:
-            r = []
-            c = []
+        def render(node: Node, r: Dict[str, Any]) -> None:
+            """Render node to given parent."""
             if node.children:
-                if node.is_chassis:
-                    style = 'style = box bgcolor = "#bec3c6" color = black'
-                else:
-                    style = 'style = "rounded,dashed" color = "#919191"'
-                r += [
-                    f"subgraph cluster_{node.object_id} {{",
-                    f'  graph [label = "{dot_label(node.name, node.model)}" {style}]',
-                ]
-                for child in node.children:
-                    cr, cc = render(child, 1)
-                    r.extend(cr)
-                    c.extend(cc)
-                if node.connections:
-                    slots = [f"<{s.local_name}>{s.local_name}" for s in node.connections]
-                    r.append(
-                        f"  obj_{node.object_id} [shape = record label = \"{'|'.join(slots)}\"]"
-                    )
-                r.append("}")
+                render_subgraph(node, r)
             else:
-                slots = [
-                    dot_label(
-                        node.parent_connection if node.parent_connection else node.name, node.model
-                    )
-                ] + [f"<{s.local_name}>{s.local_name}" for s in node.connections]
-                r.append(f"obj_{node.object_id} [shape=record label=\"{'|'.join(slots)}\"]")
+                render_node(node, r)
+            # Render connections
             if node.connections:
-                for s in node.connections:
-                    h = c_hash(node, s)
-                    if h in seen_conns:
-                        continue
-                    c.append(
-                        f"obj_{node.object_id}:{q_id(s.local_name)} -- obj_{s.remote_object}:{q_id(s.remote_name)}"
+                for c in node.connections:
+                    add_connection(
+                        local_object=node.object_id,
+                        local_name=c.local_name,
+                        remote_object=c.remote_object,
+                        remote_name=c.remote_name,
                     )
-                    seen_conns.add(h)
-            return list(self.iter_indent(r, level)), c
 
-        r = ["graph {", "  graph [rankdir = LR]"]
-        conns = []
-        seen_conns = set()
+        def render_subgraph(node: Node, r: Dict[str, Any]) -> None:
+            g = get_graph_template()
+            g["graphAttributes"]["label"] = get_label(node.name, node.model)
+            g["name"] = f"cluster_{node.object_id}"
+            # Attach as subgraph
+            r["subgraphs"].append(g)
+            # Set style
+            if node.is_chassis:
+                g["graphAttributes"]["style"] = "box"
+                g["graphAttributes"]["bgcolor"] = "#bec3c6"
+                g["graphAttributes"]["color"] = "black"
+            else:
+                g["graphAttributes"]["style"] = "rounded,dashed"
+                g["graphAttributes"]["color"] = "#919191"
+            # Render nested children
+            for child in node.children:
+                render(child, g)
+            # Render slots
+            if node.connections:
+                g["nodes"].append(
+                    {
+                        "name": q_node(node.object_id),
+                        "attributes": {
+                            "shape": "record",
+                            "label": "|".join(get_conn(s.local_name) for s in node.connections),
+                        },
+                    }
+                )
+
+        def render_node(node: Node, r: Dict[str, Any]) -> None:
+            slots = [
+                get_label(
+                    node.parent_connection if node.parent_connection else node.name, node.model
+                )
+            ]
+            slots.extend(get_conn(s.local_name) for s in node.connections)
+            # Append node
+            r["nodes"].append(
+                {
+                    "name": q_node(node.object_id),
+                    "attributes": {"shape": "record", "label": "|".join(slots)},
+                }
+            )
+
+        def q_node(s: str) -> str:
+            """
+            Generate node name from id
+            """
+            return f"obj_{s}"
+
+        def q_conn_name(s: str) -> str:
+            """
+            Quote connection name
+            """
+            # @todo: Implement properly
+            return s
+
+        def q_conn_label(s: str) -> str:
+            """
+            Quote connection label
+            """
+            # @todo: Implement properly
+            return s
+
+        def get_conn(name: str) -> str:
+            """
+            Generate record item representing connections.
+            """
+            return f"<{q_conn_name(name)}>{q_conn_label(name)}"
+
+        def add_connection(
+            local_object: str, local_name: str, remote_object: str, remote_name: str
+        ) -> None:
+            # Calculate stable hash
+            if local_object == remote_object:
+                # Loop
+                if local_name < remote_name:
+                    c_hash = f"{local_object}|{local_name}|{remote_object}|{remote_name}"
+                else:
+                    c_hash = f"{local_object}|{remote_name}|{remote_object}|{local_name}"
+            elif local_object < remote_object:
+                c_hash = f"{local_object}|{local_name}|{remote_object}|{remote_name}"
+            else:
+                c_hash = f"{remote_object}|{remote_name}|{local_object}|{local_name}"
+            # Check if we have seen this connection
+            if c_hash in seen_conns:
+                return
+            # Generate connnection edge
+            edge = {
+                "head": q_node(local_object),
+                "tail": q_node(remote_object),
+                "attributes": {
+                    "headport": q_conn_name(local_name),
+                    "tailport": q_conn_name(remote_name),
+                },
+            }
+            top["edges"].append(edge)
+            # Add to seen connections
+            seen_conns.add(c_hash)
+
+        seen_conns: Set[str] = set()
+        top = get_graph_template()
+        top["directed"] = False
+        top["graphAttributes"]["rankdir"] = "LR"
+        top["graphAttributes"]["bgcolor"] = ""  # Prevent attribute propagation
+        top["graphAttributes"]["label"] = ""  # And here too
+        top["edgeAttributes"] = {"penwidth": 2}
         for node in nodes:
             if not node:
                 continue  # Pruned
-            g, c = render(node, 1)
-            r.extend(g)
-            conns.extend(c)
-        # Inject connections
-        r.extend(self.iter_indent(conns, 1))
-        r.append("}")
-        return "\n".join(r)
+            render(node, top)
+        return top
