@@ -7,11 +7,11 @@
 console.debug("Defining NOC.sa.discoveredobject.model.DiscoveredObject");
 
 Ext.define("NOC.sa.discoveredobject.model.DiscoveredObject", {
-    extend: "Ext.data.Model",
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-    ]
+  extend: "Ext.data.Model",
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+  ],
 });
