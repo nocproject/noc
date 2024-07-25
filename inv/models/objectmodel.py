@@ -39,6 +39,7 @@ from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.core.discriminator import discriminator
+from noc.main.models.glyph import Glyph
 from .objectconfigurationrule import ObjectConfigurationRule
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
@@ -364,6 +365,8 @@ class ObjectModel(Document):
     # Facades
     front_facade = PlainReferenceField(Facade, required=False)
     rear_facade = PlainReferenceField(Facade, required=False)
+    # Glyph for navigation tree
+    glyph = PlainReferenceField(Glyph, required=False)
     # Labels
     labels = ListField(StringField())
     category = ObjectIdField()
@@ -583,6 +586,8 @@ class ObjectModel(Document):
         }
         if self.short_label:
             r["short_label"] = self.short_label
+        if self.glyph:
+            r["glyph__name"] = self.glyph.name
         if self.cross:
             r["cross"] = [s.json_data for s in self.cross]
         if self.sensors:
@@ -643,6 +648,26 @@ class ObjectModel(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_objectmodel")
+
+    @property
+    def glyph_css_class(self) -> Optional[str]:
+        # Explicitly defined glyph
+        if self.glyph:
+            return self.glyph.css_class
+        # Pre-defined glyphs
+        # Rack
+        if self.get_data("rack", "units"):
+            return "fa fa-th-large"
+        # Chassis
+        if self.cr_context == "CHASSIS":
+            return "fa fa-square"
+        # Linecard
+        if self.cr_context == "LINECARD":
+            return "fa fa-window-minimize"
+        # Transceiver
+        if self.cr_context == "XCVR":
+            return "fa fa-bolt"
+        return None
 
 
 class ModelConnectionsCache(Document):

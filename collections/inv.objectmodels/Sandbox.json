@@ -1,9 +1,9 @@
 {
-    "name": "Lost&Found",
+    "name": "Sandbox",
     "$collection": "inv.objectmodels",
-    "uuid": "b0fae773-b214-4edf-be35-3468b53b03f2",
+    "uuid": "54233881-3e91-4043-8dbf-f475fa059cb0",
     "vendor__code": "NOC",
-    "description": "Lost&Found Storage",
+    "description": "Sandboxed part of the inventory",
     "connections": [],
     "data": [
         {
@@ -12,5 +12,5 @@
             "value": true
         }
     ],
-    "glyph__name": "FontAwesome | question-circle"
+    "glyph__name": "FontAwesome | object-group"
 }

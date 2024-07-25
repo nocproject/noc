@@ -23,6 +23,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     "NOC.inv.objectconfigurationrule.LookupField",
     "Ext.ux.form.GridField",
     "NOC.inv.facade.LookupField",
+    "NOC.main.glyph.LookupField",
   ],
   model: "NOC.inv.objectmodel.Model",
   search: true,
@@ -143,11 +144,24 @@ Ext.define("NOC.inv.objectmodel.Application", {
           allowBlank: false,
         },
         {
-          name: "short_label",
-          xtype: "textfield",
-          fieldLabel: __("Short Label"),
-          allowBlank: true,
-          uiStyle: "medium",
+          xtype: "fieldset",
+          layout: {type: "hbox"},
+          title: __("Visual"),
+          items: [
+            {
+              name: "short_label",
+              xtype: "textfield",
+              fieldLabel: __("Short Label"),
+              allowBlank: true,
+              uiStyle: "medium",
+            },
+            {
+              name: "glyph",
+              xtype: "main.glyph.LookupField",
+              fieldLabel: __("Glyph"),
+              allowBlank: true,
+            },
+          ],
         },
         {
           xtype: "fieldset",

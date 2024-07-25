@@ -160,6 +160,10 @@ class InvApplication(ExtApplication):
             plugins.append(self.get_plugin_data("crossing"))
             # Process disabled plugins
             n["plugins"] = [p for p in plugins if p["name"] not in disabled_plugins]
+            # Navigation glyphs
+            icon_cls = o.model.glyph_css_class
+            if icon_cls:
+                n["iconCls"] = icon_cls
             r.append(n)
         return r
 
