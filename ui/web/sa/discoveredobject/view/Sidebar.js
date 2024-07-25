@@ -51,6 +51,11 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
                     }
                 },
                 {
+                    xtype: "hiddenfield",
+                    name: "__format",
+                    value: "ext"
+                },
+                {
                     xtype: "core.combo",
                     restUrl: "/wf/state/lookup/",
                     name: "state",
