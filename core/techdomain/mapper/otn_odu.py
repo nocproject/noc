@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any, Optional
+from typing import Optional
 
 # NOC modules
 from noc.inv.models.endpoint import Endpoint as DBEndpoint

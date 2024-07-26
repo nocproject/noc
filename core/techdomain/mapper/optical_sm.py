@@ -7,7 +7,7 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Optional, Dict, Any
+from typing import Optional
 
 # Python modules
 from noc.core.channel.types import ChannelTopology
