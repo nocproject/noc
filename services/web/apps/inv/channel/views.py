@@ -40,9 +40,9 @@ class ChannelApplication(ExtDocApplication):
     parent_model = Channel
     parent_field = "parent"
 
-    @view(url="^(?P<id>[0-9a-f]{24})/dot/", method=["GET"], api=True, access="read")
-    def api_dot(self, request, id: str):
+    @view(url="^(?P<id>[0-9a-f]{24})/viz/", method=["GET"], api=True, access="read")
+    def api_viz(self, request, id: str):
         channel = self.get_object_or_404(Channel, id=id)
         mapper = mapper_loader[channel.tech_domain.code](channel)
-        dot = mapper.to_dot()
-        return self.render_json({"dot": dot})
+        data = mapper.to_viz()
+        return self.render_json({"data": data})

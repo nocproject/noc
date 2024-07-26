@@ -327,13 +327,13 @@ Ext.define("NOC.inv.channel.Application", {
   onMap: function(){
     var me = this,
       currentId = me.currentRecord.id,
-      url = `/inv/channel/${currentId}/dot`;
+      url = `/inv/channel/${currentId}/viz/`;
     Ext.Ajax.request({
       url: url,
       method: "GET",
       success: function(response){
         var obj = Ext.decode(response.responseText);
-        me.renderScheme(obj.dot);
+        me.renderScheme(obj.data);
         me.showItem(me.ITEM_MAP);
       },
       failure: function(response){
@@ -360,24 +360,24 @@ Ext.define("NOC.inv.channel.Application", {
   },
   //
   //
-  _render: function(dot){
+  _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
       var imageComponent = me.down("[itemId=scheme]"),
-        svg = viz.renderSVGElement(dot);
+        svg = viz.renderSVGElement(data);
       imageComponent.setHidden(false);
       imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
     });
   },
   //
-  renderScheme: function(dot){
+  renderScheme: function(data){
     var me = this;
     if(typeof Viz === "undefined"){
       new_load_scripts([
-        "ui/pkg/viz-js/viz-standalone.js",
-      ], me, Ext.bind(me._render, me, [dot]));
+        "/ui/pkg/viz-js/viz-standalone.js",
+      ], me, Ext.bind(me._render, me, [data]));
     } else{
-      me._render(dot);
+      me._render(data);
     }
   },
 });

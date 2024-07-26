@@ -6,6 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Dict, Any, Optional
+
+# NOC modules
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.inv.models.object import Object
 from ..controller.base import Endpoint
@@ -16,7 +19,11 @@ from ..controller.otn_odu import OTNODUController
 class DWDMOdUMapper(BaseMapper):
     name = "otn_odu"
 
-    def to_dot(self) -> str:
+    def render(
+        self,
+        start: Optional[Endpoint] = None,
+        end: Optional[Endpoint] = None,
+    ) -> None:
         def node_label(obj: Object) -> str:
             o_name = " > ".join(obj.get_local_name_path(True))
             model = obj.model.get_short_label()
@@ -31,26 +38,40 @@ class DWDMOdUMapper(BaseMapper):
                 return d
 
         db_ep = DBEndpoint.objects.filter(channel=self.channel.id).first()
-        start = Endpoint.from_resource(db_ep.resource)
-        tr = OTNODUController()
-        path = list(tr.iter_path(start))
-        # @todo: Check path length
-        r = [
-            "graph {",
-            "  graph [rankdir = LR]",
-            "  subgraph cluster_start {",
-            f'   graph [label = "{node_label(path[0].object)}" bgcolor = "#bec3c6"]',
-            f'   start_odu [ label = "{path[0].input}" shape = box]',
-            f'   start_otu [ label = "{path[0].output}" shape = box]',
-            "  }",
-            "  subgraph cluster_end {",
-            f'   graph [label = "{node_label(path[1].object)}" bgcolor = "#bec3c6"]',
-            f'   end_odu [ label = "{path[1].output}" shape = box]',
-            f'   end_otu [ label = "{path[1].input}" shape = box]',
-            "  }",
-            f'  start_otu -- start_odu [label = "{q_disc(path[0].input_discriminator)}"]',
-            f'  end_otu -- end_odu [label = "{q_disc(path[1].input_discriminator)}"]',
-            f'  start_otu -- end_otu [label = "{path[0].channel.name}"]' "}",
-        ]
-        print("\n".join(r))
-        return "\n".join(r)
+        controller = OTNODUController()
+        path = list(controller.iter_path(Endpoint.from_resource(db_ep.resource)))
+        self.add_subgraph(
+            {
+                "name": "cluster_start",
+                "graphAttributes": {"label": node_label(path[0].object), "bgcolor": "#bec3c6"},
+                "nodes": [
+                    {
+                        "name": "start_odu",
+                        "attributes": {"label": path[0].input, "shape": "box"},
+                    },
+                    {
+                        "name": "start_otu",
+                        "attributes": {"label": path[0].output, "shape": "box"},
+                    },
+                ],
+            }
+        )
+        self.add_subgraph(
+            {
+                "name": "cluster_end",
+                "graphAttributes": {"label": node_label(path[1].object), "bgcolor": "#bec3c6"},
+                "nodes": [
+                    {
+                        "name": "end_odu",
+                        "attributes": {"label": path[1].output, "shape": "box"},
+                    },
+                    {
+                        "name": "end_otu",
+                        "attributes": {"label": path[1].input, "shape": "box"},
+                    },
+                ],
+            }
+        )
+        self.add_edge(start="start_odu", end="start_otu", label=q_disc(path[0].input_discriminator))
+        self.add_edge(start="end_otu", end="end_odu", label=q_disc(path[1].input_discriminator))
+        self.add_edge(start="start_otu", end="end_otu", label=path[0].channel.name)

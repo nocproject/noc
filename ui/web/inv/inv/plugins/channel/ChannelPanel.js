@@ -140,24 +140,24 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     grid.getStore().loadData(records);
   },
   //
-  _render: function(dot){
+  _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
       var imageComponent = me.down("[itemId=scheme]"),
-        svg = viz.renderSVGElement(dot);
+        svg = viz.renderSVGElement(data);
       imageComponent.setHidden(false);
       imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
     });
   },
   //
-  renderScheme: function(dot){
+  renderScheme: function(data){
     var me = this;
     if(typeof Viz === "undefined"){
       new_load_scripts([
         "/ui/pkg/viz-js/viz-standalone.js",
-      ], me, Ext.bind(me._render, me, [dot]));
+      ], me, Ext.bind(me._render, me, [data]));
     } else{
-      me._render(dot);
+      me._render(data);
     }
   },
   //
@@ -310,14 +310,14 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     if(selected.length > 0){
       var me = this,
         recordData = selected[0].getData(),
-        url = "/inv/channel/" + recordData.id + "/dot/";
+        url = "/inv/channel/" + recordData.id + "/viz/";
       Ext.Ajax.request({
         url: url,
         method: "GET",
         scope: me,
         success: function(response){
           var obj = Ext.decode(response.responseText);
-          this.renderScheme(obj.dot);
+          this.renderScheme(obj.data);
         },
         failure: function(response){
           NOC.error(__("Failed to get data") + ": " + response.status);

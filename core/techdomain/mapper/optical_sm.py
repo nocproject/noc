@@ -7,7 +7,7 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Optional
+from typing import Optional, Dict, Any
 
 # Python modules
 from noc.core.channel.types import ChannelTopology
@@ -21,18 +21,11 @@ from ..controller.optical_dwdm import OpticalDWDMController
 class OpticalSMMapper(BaseMapper):
     name = "optical_sm"
 
-    def get_controller(self) -> BaseController:
-        if self.channel.topology == ChannelTopology.UBUNCH.value:
-            return OpticalDWDMController()
-        raise NotImplementedError()
-
-    def to_dot(
+    def render(
         self,
         start: Optional[Endpoint] = None,
         end: Optional[Endpoint] = None,
-        connect_input: Optional[str] = None,
-        connect_output: Optional[str] = None,
-    ) -> str:
+    ) -> None:
         def get_node_key(pi: PathItem) -> str:
             parts = [str(pi.object.id)]
             if pi.input and Endpoint(object=pi.object, name=pi.input) not in endpoints:
@@ -45,7 +38,7 @@ class OpticalSMMapper(BaseMapper):
                 parts.append("")
             return "|".join(parts)
 
-        tr = self.get_controller()
+        controller = self.get_controller()
         starting = []
         endpoints = set()
         nodes = {}
@@ -64,22 +57,27 @@ class OpticalSMMapper(BaseMapper):
                 continue
             e = Endpoint(object=o, name=p)
             endpoints.add(e)
-            if ep.is_root:  # @depends on topology
+            if self.channel.is_unidirectional:
+                if ep.is_root:
+                    starting.append(e)
+            else:
                 starting.append(e)
             if not start and ep.used_by:
                 res = e.as_resource()
                 for u in ep.used_by:
                     used_by[res].append((u.channel.name, u.discriminator))
-        # Trace path
+        # Edge attributes
         if self.channel.is_unidirectional:
-            edge_style = " dir = forward"
+            edge_attrs = {"dir": "forward"}
         else:
-            edge_style = ""
-        edges = set()
+            edge_attrs = {}
+        internal_edge_attrs = edge_attrs.copy() if edge_attrs else {}
+        internal_edge_attrs["style"] = "dashed"
+        # Trace path
         for ep in starting:
             last_pi = None
             last_node = None
-            for pi in tr.iter_path(ep):
+            for pi in controller.iter_path(ep):
                 # Get node
                 node_key = get_node_key(pi)
                 node = nodes.get(node_key)
@@ -99,8 +97,9 @@ class OpticalSMMapper(BaseMapper):
                     if ee in endpoints:
                         node.add_endpoint(pi.input)
                         endpoint_nodes[ee.as_resource()] = node
-                        if start and connect_input and ee.as_resource() == start.as_resource():
-                            edges.add(f"{connect_input} -- {node.get_ref(pi.input)} [{edge_style}]")
+                        if start and ee.as_resource() == start.as_resource():
+                            self.input = node.get_ref(pi.input)
+                            self.input_port = pi.input
                     else:
                         node.add_input(pi.input)
                 if pi.output:
@@ -108,42 +107,45 @@ class OpticalSMMapper(BaseMapper):
                     if ee in endpoints:
                         node.add_endpoint(pi.output)
                         endpoint_nodes[ee.as_resource()] = node
-                        if end and connect_output and ee.as_resource() == end.as_resource():
-                            edges.add(
-                                f"{node.get_ref(pi.output)} -- {connect_output} [{edge_style}]"
-                            )
+                        if end and ee.as_resource() == end.as_resource():
+                            self.output = node.get_ref(pi.output)
+                            self.output_port = pi.output
                     elif pi.output not in node.outputs:
                         node.add_output(pi.output)
                 if last_pi and last_node:
                     # Edge from previous item
-                    s_ref = last_node.get_ref(last_pi.output)
-                    e_ref = node.get_ref(pi.input)
-                    edges.add(f"{s_ref} -- {e_ref} [{edge_style}]")
+                    self.add_edge(
+                        start=last_node.get_ref(last_pi.output),
+                        end=node.get_ref(pi.input),
+                        start_port=last_pi.output,
+                        end_port=pi.input,
+                        **edge_attrs,
+                    )
                 # Internal edge
                 if pi.output:
-                    s_ref = node.get_ref(pi.input)
-                    e_ref = node.get_ref(pi.output)
-                    edges.add(f"{s_ref} -- {e_ref} [{edge_style} style = dashed]")
+                    self.add_edge(
+                        start=node.get_ref(pi.input),
+                        end=node.get_ref(pi.output),
+                        start_port=pi.input,
+                        end_port=pi.output,
+                        **internal_edge_attrs,
+                    )
                 last_pi = pi
                 last_node = node
-        if start:
-            r = []
-        else:
-            r = ["graph {", "graph [rankdir = LR]"]
-        for n in nodes.values():
-            r.extend(n.to_dot())
-        r.extend(edges)
+        # Render
+        self.add_subgraphs(n.to_viz() for n in nodes.values())
         # Apply used by
         for x, ep_resource in enumerate(used_by):
             node = endpoint_nodes[ep_resource]
-            for y, (ch, discriminator) in enumerate(used_by[ep_resource]):
+            for y, (ch, _discriminator) in enumerate(used_by[ep_resource]):
                 k = f"u_{x}_{y}"
-                r.append(f'  {k} [ label = "{ch}" shape = parallelogram]')
                 _, _, n = ep_resource.split(":", 2)
-                ref = node.get_ref(n)
-                r.append(f"  {k} -- {ref}")
-        if start:
-            pass
-        else:
-            r.append("}")
-        return "\n".join(r)
+                self.add_node(
+                    {"name": k, "attributes": {"shape": "hexagon", "label": ch, "style": "dashed"}}
+                )
+                self.add_edge(start=k, end=node.get_ref(n), end_port=n)
+
+    def get_controller(self) -> BaseController:
+        if self.channel.topology == ChannelTopology.UBUNCH.value:
+            return OpticalDWDMController()
+        raise NotImplementedError()
