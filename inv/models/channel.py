@@ -117,3 +117,30 @@ class Channel(Document):
             ChannelTopology.UBUNCH.value,
             ChannelTopology.UP2MP.value,
         )
+
+    def on_before_delete(self) -> None:
+        """
+        Perform checks and clean up endpoints.
+        """
+        from .endpoint import Endpoint
+
+        # Check channel is not used by other channels
+        used = set()
+        for ep in Endpoint.objects.filter(channel=self.id):
+            if ep.used_by:
+                for item in ep.used_by:
+                    used.add(item.channel.name)
+        if used:
+            if len(used) <= 3:
+                msg = f"Channel is used by: {', '.join(used)}"
+            else:
+                msg = f"Channel is used by {len(used)} channels"
+            raise ValueError(msg)
+
+        # Remove endpoints
+        Endpoint.objects.filter(channel=self.id).delete()
+
+        # Remove from used_by
+        for ep in Endpoint.objects.filter(used_by__channel=self.id):
+            ep.used_by = [i for i in ep.used_by if i.channel.id != self.id]
+            ep.save()

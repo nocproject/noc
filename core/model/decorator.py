@@ -168,6 +168,9 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         if not instance:
             # If mongo document instance
             instance = kwargs.get("document")
+        # Run on_before_delete if defined
+        if hasattr(instance, "on_before_delete"):
+            instance.on_before_delete()
         # Raise value error when referred
         for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
