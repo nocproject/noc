@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from bson import ObjectId
-
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
