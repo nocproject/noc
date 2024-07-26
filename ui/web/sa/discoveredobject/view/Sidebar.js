@@ -68,6 +68,15 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
           },
         },
         {
+          xtype: "core.combo",
+          restUrl: "/sa/objectdiscoveryrule/lookup/",
+          name: "rule",
+          fieldLabel: __("By Rule:"),
+          listeners: {
+            select: "setFilter"
+          },
+        },
+        {
           xtype: "labelfield",
           name: "effective_labels",
           fieldLabel: __("By Labels:"),

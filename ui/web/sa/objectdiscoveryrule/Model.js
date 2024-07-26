@@ -99,6 +99,10 @@ Ext.define("NOC.sa.objectdiscoveryrule.Model", {
             name: "ip_scan_discovery_interval",
             type: "int",
             defaultValue: 0
+        },
+        {
+            name: "default_template",
+            type: "string"
         }
     ]
 });

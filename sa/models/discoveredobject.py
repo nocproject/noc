@@ -346,11 +346,21 @@ class DiscoveredObject(Document):
         if set(o.sources).difference(set(sources)):
             o.sources = sources
             o.is_dirty = True
-        # Set Status, is_dirty
-        o.save()
-        if rule.default_action == "approve":
-            o.fire_event("approve")
+        action = rule.get_action(o.checks, o.effective_labels, o.get_effective_data())
+        if action == "skip":
+            return
+        elif action == "ignore" and not o.id:
+            return
+        if not o.id or o.is_dirty:
+            # Set Status, is_dirty
+            o.is_dirty = False
+            o.save()
+        o.fire_event("seen")
         o.touch(ts=update_ts)
+        if action == "ignore":
+            o.fire_event("ignore")
+        elif action == "approve":
+            o.fire_event("approve")
         return o
 
     def get_ctx(self) -> ResourceItem:
@@ -616,7 +626,7 @@ def sync_purgatorium():
             ranges[p].append(r)
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True)
-    processed, updated = 0, 0
+    processed, updated, removed = 0, 0, 0
     for row in r.splitlines():
         row = orjson.loads(row)
         pool = Pool.get_by_bi_id(row["pool"])
@@ -673,7 +683,17 @@ def sync_purgatorium():
         processed += 1
         if r:
             updated += 1
-    logger.info("End Purgatorium Sync: %s. Processed: %s/Updated: %s", ls, processed, updated)
     now = datetime.datetime.now()
     for o in DiscoveredObject.objects.filter(expired__gt=now):
         o.fire_event("expired")
+    logger.debug("Removing expired objects")
+    for o in DiscoveredObject.objects.filter(state__in=list(State.objects.filter(is_wiping=True))):
+        removed += 1
+        o.delete()
+    logger.info(
+        "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s",
+        ls,
+        processed,
+        updated,
+        removed,
+    )

@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Resource Template
+# Model Template
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -208,6 +208,9 @@ class ModelTemplate(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=120)
     _code_cache = cachetools.TTLCache(maxsize=100, ttl=300)
+
+    def __str__(self):
+        return f"{self.name} ({self.type})"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

@@ -5,12 +5,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
 from bson import ObjectId
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
-from noc.sa.models.discoveredobject import DiscoveredObject, CheckStatus
+from noc.main.models.modeltemplate import ModelTemplate
+from noc.sa.models.discoveredobject import DiscoveredObject, CheckStatus, DataItem
 from noc.sa.interfaces.base import (
     ListOfParameter,
     StringListParameter,
@@ -44,6 +46,9 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = super().instance_to_dict(o, fields, nocustom)
+        if isinstance(o, DataItem):
+            r["service_groups"] = [str(x) for x in o.service_groups]
+            r["client_groups"] = [str(x) for x in o.client_groups]
         if "checks" in r:
             r["checks"] = [
                 {"name": c.name, "port": c.port, "status": c.status, "label": c.name}
@@ -105,15 +110,16 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     @view(url=r"^template_lookup/$", method=["GET"], access="read", api=True)
     def api_sync_template_lookup(self, request):
-        x = str(ObjectId())
-        r = [
-            {
-                "id": x,
-                "label": _("Default Managed Object"),
-                "is_default": True,
-                "args": {"action": "sync_records", "template": x},
-            }
-        ]
+        r = []
+        for num, tmpl in enumerate(ModelTemplate.objects.filter(type="host")):
+            r.append(
+                {
+                    "id": str(tmpl.id),
+                    "label": _(tmpl.name),
+                    "is_default": not num,
+                    "args": {"action": "sync_records", "template": str(tmpl.id)},
+                }
+            )
         return r
 
     @view(url=r"^action_lookup/$", method=["GET"], access="read", api=True)

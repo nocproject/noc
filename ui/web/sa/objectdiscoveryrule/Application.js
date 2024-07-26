@@ -16,6 +16,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.handler.LookupField",
         "NOC.main.ref.check.LookupField",
+        "NOC.main.modeltemplate.LookupField",
         "Ext.ux.form.GridField",
         "NOC.core.ListFormField",
         "NOC.core.JSONPreview"
@@ -43,15 +44,21 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     text: __("Active"),
                     dataIndex: "is_active",
                     renderer: NOC.render.Bool,
-                    width: 100,
+                    width: 50,
                     align: "left"
                 },
                 {
                     text: __("Pref."),
                     // tooltip: "Preference", - broken in ExtJS 5.1
                     dataIndex: "preference",
-                    width: 150,
+                    width: 50,
                     align: "right"
+                },
+                {
+                    text: __("Default Action"),
+                    dataIndex: "default_action",
+                    width: 100,
+                    align: "left"
                 },
                 {
                     text: __("IP Scan Discovery"),
@@ -78,7 +85,8 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                 {
                     name: "is_active",
                     xtype: "checkbox",
-                    boxLabel: __("Active")
+                    boxLabel: __("Active"),
+                    defaultValue: true
                 },
                 {
                     name: 'description',
@@ -194,6 +202,18 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     ],
                     value: "new",
                     uiStyle: "medium"
+                },
+                {
+                    name: "allow_sync",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Sync")
+                },
+                {
+                  name: "default_template",
+                  xtype: "main.modeltemplate.LookupField",
+                  uiStyle: 'large',
+                  fieldLabel: __("Default Template"),
+                  allowBlank: true
                 },
                 {
                     name: "stop_processed",
@@ -371,6 +391,19 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                     flex: 1
                                 }
                             ]
+                        },
+                        {
+                            name: "action",
+                            xtype: "combobox",
+                            fieldLabel: __("Default Action"),
+                            store: [
+                                ["new", __("As New")],
+                                ["ignore", __("Send Ignore")],
+                                ["skip", __("Skip Rule")],
+                                ["approve", __("Send Approve")]
+                            ],
+                            value: "new",
+                            uiStyle: "medium"
                         }
                     ]
                 }
