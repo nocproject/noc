@@ -7,27 +7,27 @@
 console.debug("Defining NOC.inv.inv.NavModel");
 
 Ext.define("NOC.inv.inv.NavModel", {
-    extend: "Ext.data.Model",
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "plugins",
-            type: "auto"
-        },
-        {
-            name: "can_add",
-            type: "boolean"
-        },
-        {
-            name: "can_delete",
-            type: "boolean"
-        }
-    ]
+  extend: "Ext.data.Model",
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "plugins",
+      type: "auto",
+    },
+    {
+      name: "can_add",
+      type: "boolean",
+    },
+    {
+      name: "can_delete",
+      type: "boolean",
+    },
+  ],
 });
