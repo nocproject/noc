@@ -20,10 +20,11 @@ from noc.core.purgatorium import register
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
 from noc.sa.models.profile import Profile
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
 from noc.inv.models.networksegment import NetworkSegment
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -39,7 +40,11 @@ class ManagedObjectLoader(BaseLoader):
     workflow_delete_event = "remove"
     workflow_state_sync = True
 
-    model_mappings = {"segment": NetworkSegment, "objectprofile": ManagedObjectProfile}
+    model_mappings = {
+        "segment": NetworkSegment,
+        "objectprofile": ManagedObjectProfile,
+        "adm_domain": AdministrativeDomain,
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -76,7 +81,7 @@ class ManagedObjectLoader(BaseLoader):
             name, pool = vv.pop("name"), vv.pop("pool")
             description, labels = vv.pop("description", None), vv.pop("labels", None)
             remote_system, remote_id = vv.pop("remote_system"), vv.pop("remote_id")
-            del data["id"]
+            del vv["id"]
             service_groups = vv.pop("static_service_groups", None)
             client_groups = vv.pop("static_client_groups", None)
             for k, v in vv.items():

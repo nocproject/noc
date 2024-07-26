@@ -87,16 +87,18 @@ Ext.define("NOC.main.modeltemplate.Application", {
                     name: "type",
                     xtype: "combobox",
                     fieldLabel: __("Type"),
+                    uiStyle: 'medium',
                     allowBlank: true,
                     store: [
                         ["host", __("Managed Object")]
                     ]
                 },
                 {
-                    text: __("Default State"),
-                    dataIndex: "default_state",
-                    width: 200,
-                    renderer: NOC.render.Lookup("default_state")
+                  name: "default_state",
+                  xtype: "wf.state.LookupField",
+                  uiStyle: 'large',
+                  fieldLabel: __("Default State"),
+                  allowBlank: true
                 },
                 {
                     name: "params",
@@ -156,7 +158,7 @@ Ext.define("NOC.main.modeltemplate.Application", {
                 {
                     name: "groups",
                     xtype: "gridfield",
-                    fieldLabel: __("Fields"),
+                    fieldLabel: __("Groups"),
                     columns: [
                         {
                           dataIndex: "group",
