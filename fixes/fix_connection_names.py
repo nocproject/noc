@@ -61,4 +61,6 @@ def fix():
             if (model, cn) not in conn_dirs:
                 # Renamed or deleted connection
                 nearest = find_nearest(cn, mod_conns[model])
-                print(f"Renaming connection connection `{cn}` -> `{nearest}`")
+                print(
+                    f"Renaming connection connection `{cn}` -> `{nearest}` (possible variants: {', '.join(mod_conns[model])})"
+                )
