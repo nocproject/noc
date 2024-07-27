@@ -74,6 +74,9 @@ class Migration(BaseMigration):
                         {"$set": {"parent": c[1]["object"], "parent_connection": c[1]["name"]}},
                     )
                 )
+            elif get_dir(c[0]) is None or get_dir(c[1]) is None:
+                # Renamed connections or hanging connection
+                to_prune.append(oc["_id"])
         # Update objects
         if parent_bulk:
             self.mongo_db["noc.objects"].bulk_write(parent_bulk)
