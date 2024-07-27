@@ -133,15 +133,19 @@ class CommutationPlugin(InvPlugin):
         hier_ids = obj.get_nested_ids()
         nodes: Dict[str, Node] = {}
         omap = {}
+        containers:List[Tuple[str,str]] = []  # (node_id, container_id)
         for o in Object.objects.filter(id__in=hier_ids):
             omap[o.id] = o
             node = Node.from_object(o)
             nodes[node.object_id] = node
             if o.container:
-                c_id = str(o.container.id)
-                container = nodes.get(c_id)
-                if container:
-                    container.children.append(node)
+                containers.append((node.object_id, str(o.container.id)))
+        # Link containers
+        for node_id, c_id in containers:
+            node = nodes[node_id]
+            container = nodes.get(c_id)
+            if container:
+                container.children.append(node)
         # Find vertical and horizontal connections
         wave = list(omap)
         cables = {}
@@ -362,11 +366,11 @@ class CommutationPlugin(InvPlugin):
                 return
             # Generate connnection edge
             edge = {
-                "head": q_node(local_object),
-                "tail": q_node(remote_object),
+                "tail": q_node(local_object),
+                "head": q_node(remote_object),
                 "attributes": {
-                    "headport": q_conn_name(local_name),
-                    "tailport": q_conn_name(remote_name),
+                    "tailport": q_conn_name(local_name),
+                    "headport": q_conn_name(remote_name),
                 },
             }
             top["edges"].append(edge)

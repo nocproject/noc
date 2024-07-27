@@ -530,7 +530,6 @@ class InvApplication(ExtApplication):
 
         data: List[Dict[str, Any]] = self.deserialize(request.body)
         errors: List[Dict[str, Any]] = []
-        print(">>>", data)
         for link in data:
             lo = self.get_object_or_404(Object, id=link["object"])
             remote_object = link.get("remote_object")
@@ -730,8 +729,13 @@ class InvApplication(ExtApplication):
             return True
         # Inside rack or PoP
         while o:
+            # Sandbox
+            if o.model.name == "Sandbox":
+                return True
+            # Rack
             if o.get_data("rack", "units"):
                 return True
+            # PoP
             if o.get_data("pop", "level") is not None:
                 return True
             o = o.container
