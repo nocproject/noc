@@ -1424,7 +1424,7 @@ class Object(Document):
 
     def iter_cross(
         self, name: str, discriminators: Optional[Iterable[str]] = None
-    ) -> Iterable[str]:
+    ) -> Iterable[Crossing]:
         """
         Iterate crossed outputs.
 
@@ -1453,11 +1453,9 @@ class Object(Document):
         seen: Set[str] = set()
         discriminators = [discriminator(x) for x in discriminators or []]
         # Dynamic crossings
-        # if self.cross:
         for item in iter_merge(self.cross, self.model.cross):
-            # @todo: Restrict to type `s`?
             if item.input == name and item.output not in seen and is_passable(item):
-                yield item.output
+                yield item
                 seen.add(item.output)
 
     def set_internal_connection(self, input: str, output: str, data: Dict[str, str] = None):

@@ -38,9 +38,9 @@ class OpticalDWDMController(BaseController):
 
     def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
         def get_discriminator(ep: Endpoint) -> Optional[str]:
-            for item in self.iter_cross(ep.object):
-                if item.input == ep.name and item.input_discriminator:
-                    return item.input_discriminator
+            for cc in ep.object.iter_cross(ep.name):
+                if cc.input_discriminator:
+                    return cc.input_discriminator
             return None
 
         def is_exit(ep: Endpoint) -> bool:
@@ -69,9 +69,9 @@ class OpticalDWDMController(BaseController):
             self.logger.debug("Tracing %s", ep)
             # From input to output
             candidates = []  # We may found real exit on next step
-            for out in ep.object.iter_cross(ep.name, [discriminator]):
+            for cc in ep.object.iter_cross(ep.name, [discriminator]):
                 # Check if output is satisfactory
-                oep = Endpoint(object=ep.object, name=out)
+                oep = Endpoint(object=ep.object, name=cc.output)
                 if is_exit(oep):
                     self.logger.debug("Traced to %s", oep)
                     yield PathItem(object=ep.object, input=ep.name, output=oep.name)

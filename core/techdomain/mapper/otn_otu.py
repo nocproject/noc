@@ -90,7 +90,8 @@ class DWDMOTUMapper(BaseMapper):
         for db_ep in DBEndpoint.objects.filter(channel=self.channel.id):
             ep = Endpoint.from_resource(db_ep.resource)
             paths.append(list(controller.iter_path(ep)))
-        # @todo: Check path length
+        if len(paths) != 2:
+            raise ValueError("Mismatched paths")
         forward, backward = paths
         # Starting node
         card = Endpoint(object=forward[0].object, name=forward[0].output)

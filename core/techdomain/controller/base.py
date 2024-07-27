@@ -202,9 +202,9 @@ class BaseController(object):
             self.logger.debug("Wire not found")
             return None
         # Pass through cross
-        for out in ro.iter_cross(rn):
+        for oc in ro.iter_cross(rn):
             # Get other side
-            _, rro, rrn = ro.get_p2p_connection(out)
+            _, rro, rrn = ro.get_p2p_connection(oc.output)
             if rro:
                 oep = Endpoint(object=rro, name=rrn)
                 self.logger.debug("Peer found: %s", oep)
@@ -212,15 +212,6 @@ class BaseController(object):
             break
         self.logger.debug("Broken cable")
         return None
-
-    def iter_cross(self, obj: Object) -> Iterable[Crossing]:
-        """
-        Iterate all crossings
-        """
-        if obj.model.cross:
-            yield from obj.model.cross
-        if obj.cross:
-            yield from obj.cross
 
     def validate_ad_hoc_channel(self, channel: Channel) -> None:
         """
