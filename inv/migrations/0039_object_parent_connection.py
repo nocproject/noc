@@ -26,7 +26,7 @@ class Migration(BaseMigration):
             n = doc.get("name")
             if not n:
                 return None
-            return conn_dirs[m, n]
+            return conn_dirs.get((m, n))
 
         def is_inner(doc: Dict[str, Any]) -> bool:
             d = get_dir(doc)
