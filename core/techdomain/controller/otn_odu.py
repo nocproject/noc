@@ -43,7 +43,6 @@ class OTNODUController(BaseController):
                 continue
             for pvi in c.protocols:
                 # @todo: Check for OTU trails from same card
-                print(">", pvi.protocol.code)
                 if pvi.protocol.code.startswith("ODU") and self.is_connected(obj, c.name):
                     yield Endpoint(object=obj, name=c.name)
 
@@ -67,9 +66,19 @@ class OTNODUController(BaseController):
         if not start_protocols:
             self.logger.info("Starting port does not supports ODU")
             return
-        # @todo: ADM200 only
-        discriminator = f"odu::ODUC2::ODU4-{start.name[6:]}"  # Strip CLIENT
-        otu_start = Endpoint(object=start.object, name="LINE1")
+        # Get existing exiting protocol and discriminator
+        otu_port = None
+        discriminator = None
+        for cc in start.object.iter_cross(start.name):
+            if cc.output_discriminator:
+                otu_port = cc.output
+                discriminator = cc.output_discriminator
+                break
+        else:
+            self.logger.info("Ingress client port has no ODU crossing")
+            return
+        # Find OTU channel
+        otu_start = Endpoint(object=start.object, name=otu_port)
         otu_eps = DBEndpoint.objects.filter(resource=otu_start.as_resource()).first()
         if not otu_eps:
             self.logger.info("No outgoing OTU")
@@ -78,7 +87,7 @@ class OTNODUController(BaseController):
             PathItem(
                 object=start.object,
                 input=start.name,
-                output="LINE1",
+                output=otu_port,
                 channel=otu_eps.channel,
                 input_discriminator=discriminator,
             )
@@ -88,9 +97,14 @@ class OTNODUController(BaseController):
         if not otu_end:
             self.logger.info("Hanging OTU")
             return
-        # Ending cart
-        # @todo: ADM200 only
-        end = Endpoint(object=otu_end.object, name=start.name)
+        # Find ending client port
+        for cc in otu_end.object.iter_effective_crossing():
+            if cc.output == otu_end.name and cc.output_discriminator == discriminator:
+                end = Endpoint(object=otu_end.object, name=cc.input)
+                break
+        else:
+            self.logger.info("Egress client port has no ODU crossing")
+            return
         # Check protocols
         end_protocols = set(self.get_supported_protocols(end))
         if not end_protocols:
@@ -132,6 +146,15 @@ class OTNODUController(BaseController):
             e.used_by += [UsageItem(channel=ch, discriminator=discriminator)]
             e.save()
 
+        def get_channel_odu(s: str) -> str:
+            """
+            Get channel discriminator from crossing
+            """
+            last = s.split("::")[-1]
+            if "-" in s:
+                last, _ = last.split("-", 1)
+            return f"odu::{last}"
+
         is_new = False
         path = list(self.iter_path(ep))
         start = Endpoint(object=path[0].object, name=path[0].input)
@@ -140,8 +163,7 @@ class OTNODUController(BaseController):
         dbe = list(DBEndpoint.objects.filter(resource__in=[start.as_resource(), end.as_resource()]))
         if not dbe:
             # New channel
-            # @todo: ADM200 only
-            ch = self.create_ad_hoc_channel(discriminator="odu::ODU4")
+            ch = self.create_ad_hoc_channel(discriminator=get_channel_odu(discriminator))
             is_new = True
             # Create endpoints
             DBEndpoint(channel=ch, resource=start.as_resource()).save()

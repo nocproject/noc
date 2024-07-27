@@ -1422,6 +1422,24 @@ class Object(Document):
             attrs={},
         )
 
+    def iter_effective_crossing(self) -> Iterable[Crossing]:
+        """
+        Iterate objects all effective crossings.
+        """
+
+        def iter_merge(
+            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
+        ) -> Iterable[Crossing]:
+            if i1:
+                yield from i1
+            if i2:
+                yield from i2
+
+        if self.cross:
+            yield from self.cross
+        if self.model.cross:
+            yield from self.model.cross
+
     def iter_cross(
         self, name: str, discriminators: Optional[Iterable[str]] = None
     ) -> Iterable[Crossing]:
@@ -1442,18 +1460,10 @@ class Object(Document):
             item_desc = discriminator(item.input_discriminator)
             return any(d in item_desc for d in discriminators)
 
-        def iter_merge(
-            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
-        ) -> Iterable[Crossing]:
-            if i1:
-                yield from i1
-            if i2:
-                yield from i2
-
         seen: Set[str] = set()
         discriminators = [discriminator(x) for x in discriminators or []]
         # Dynamic crossings
-        for item in iter_merge(self.cross, self.model.cross):
+        for item in self.iter_effective_crossing():
             if item.input == name and item.output not in seen and is_passable(item):
                 yield item
                 seen.add(item.output)

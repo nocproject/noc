@@ -38,8 +38,8 @@ class OpticalDWDMController(BaseController):
 
     def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
         def get_discriminator(ep: Endpoint) -> Optional[str]:
-            for cc in ep.object.iter_cross(ep.name):
-                if cc.input_discriminator:
+            for cc in ep.object.iter_effective_crossing():
+                if cc.input == ep.name and cc.input_discriminator:
                     return cc.input_discriminator
             return None
 
