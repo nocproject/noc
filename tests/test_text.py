@@ -26,6 +26,7 @@ from noc.core.text import (
     safe_shadow,
     ch_escape,
     split_text,
+    str_distance,
 )
 
 
@@ -491,3 +492,30 @@ def test_ch_escape(config, expected):
 )
 def test_split_text(config, max_chunk, expected):
     assert list(split_text(config, max_chunk=max_chunk)) == expected
+
+
+@pytest.mark.parametrize(
+    ["s1", "s2", "expected"],
+    [
+        # Empty
+        ("", "", 0),
+        # Same
+        ("a", "a", 0),
+        ("ab", "ab", 0),
+        ("abc", "abc", 0),
+        # Diference in case
+        ("a", "A", 0),
+        ("aB", "Ab", 0),
+        ("aBc", "aBC", 0),
+        # Difference in length
+        ("ab", "abcd", 2),
+        ("abcd", "ab", 2),
+        # Difference in one char
+        ("Gi X/1", "Gi 0/1", 1),
+        # Difference in two chars
+        ("Gi X/1", "Gi 0/2", 2),
+    ],
+)
+def test_str_distance(s1: str, s2: str, expected: int) -> None:
+    d = str_distance(s1, s2)
+    assert d == expected
