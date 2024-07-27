@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Tuple, List, Any,DefaultDict,Optional
+from typing import Dict, Tuple, List, Any, DefaultDict, Optional
 from collections import defaultdict
 
 # Third-party modules
@@ -20,9 +20,9 @@ from noc.inv.models.objectconnection import ObjectConnection
 
 
 def fix():
-    def find_nearest(x:str, items:List[str])->Optional[str]:
-        best:Optional[str] = None
-        best_dist:Optional[int] = None
+    def find_nearest(x: str, items: List[str]) -> Optional[str]:
+        best: Optional[str] = None
+        best_dist: Optional[int] = None
 
         for i in items:
             d = str_distance(x, i)
@@ -39,7 +39,7 @@ def fix():
             continue
         for c in conns:
             conn_dirs[doc["_id"], c["name"]] = c["direction"]
-    mod_conns:DefaultDict[ObjectId,List]=defaultdict(list)
+    mod_conns: DefaultDict[ObjectId, List] = defaultdict(list)
     for m, n in conn_dirs:
         mod_conns[m].append(n)
     # Get object models
@@ -55,7 +55,7 @@ def fix():
         for c in conns:
             model = obj_models.get(c["object"])
             if not model:
-                print(f"Hanging connection {doc["_id"]}. Missed object {c["object"]}")
+                print(f"Hanging connection {doc['id']}. Missed object {c['object']}")
                 continue
             cn = c["name"]
             if (model, cn) not in conn_dirs:
