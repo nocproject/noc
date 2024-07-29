@@ -126,6 +126,40 @@ class OTNOTUController(BaseController):
             e.used_by += [UsageItem(channel=ch)]
             e.save()
 
+        def otu_discriminator(start: Endpoint, end: Endpoint) -> Optional[str]:
+            """Calculate OTU type"""
+            # Get from crossing
+            s_otu = get_crossing_otu(start)
+            e_otu = get_crossing_otu(end)
+            if s_otu and e_otu and s_otu == e_otu:
+                return f"otu::{s_otu}"
+            if s_otu or e_otu:
+                return None  # Mismatched types
+            # Get common protocol set
+            p1 = set(self.get_supported_protocols(start))
+            p2 = set(self.get_supported_protocols(end))
+            print("Supported protocols", p1, p2)
+            common = p1.intersection(p2)
+            if not common:
+                return None # No common set
+            # Get highest available
+            r = sorted(common, key=otu_rank, reverse=True)[0]
+            return f"otu::{r}"
+
+        def get_crossing_otu(ep: Endpoint) -> Optional[str]:
+            """Get OTU from crossing."""
+            for cc in ep.object.iter_effective_crossing():
+                if cc.output == ep.name and cc.output_discriminator:
+                    parts = cc.output_discriminator.split("::")
+                    return parts[1].replace("ODU", "OTU")
+            return None
+
+        def otu_rank(s:str) -> int:
+            """Calculate OTU rank for sorting."""
+            if s.startswith("OTUC"):
+                return 10 * int(s[4:])
+            return int(s[3:4])
+
         # Trace path forward
         end = self.trace_path(ep)
         if not end:
@@ -140,9 +174,11 @@ class OTNOTUController(BaseController):
         is_new = False
         dbe = list(DBEndpoint.objects.filter(resource__in=[start.as_resource(), end.as_resource()]))
         if not dbe:
-            # New channel
-            # @todo: ADM200 only
-            ch = self.create_ad_hoc_channel(discriminator="otu::OTUC2")
+            # Create channel
+            discriminator = otu_discriminator(start, end)
+            if not discriminator:
+                return None, "Incompatibile OTU types"
+            ch = self.create_ad_hoc_channel(discriminator=discriminator)
             is_new = True
             # Create endpoints
             DBEndpoint(channel=ch, resource=start.as_resource()).save()
