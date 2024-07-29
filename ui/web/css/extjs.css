@@ -709,3 +709,7 @@ table {
 .noc-home-summary-select:hover {
     background-color: #f1c40f;
 }
+
+.noc-inv-nav-cell-inner::before { 
+    border: none !important;
+}
