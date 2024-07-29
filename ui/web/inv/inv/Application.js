@@ -79,6 +79,19 @@ Ext.define("NOC.inv.inv.Application", {
             text: "...",
             hidden: true,
             arrowVisible: false,
+            hideMode: "visibility",
+            style: {
+              backgroundColor: "#ECECEC",
+            },
+            listeners: {
+              afterrender: function(button){
+                var innerCells = button.getEl().up(".x-grid-row");
+                Ext.each(innerCells.query(".x-grid-cell-inner"), function(cell){
+                  cell.classList.add("noc-inv-nav-cell-inner");
+                });
+                button.getEl().down(".x-btn-inner").setStyle("color", "black");
+              },
+            },
             menu: {},
           },
           onWidgetAttach: function(col, widget, record){
@@ -357,12 +370,14 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   onDeselect: function(rowModel, record){
-    var me = this,
-      vwidgetColumn = rowModel.view.getHeaderCt().down('widgetcolumn'),
+    var vwidgetColumn, widget, me = this;
+
+    if(rowModel){
+      vwidgetColumn = rowModel.view.getHeaderCt().down('widgetcolumn');
       widget = vwidgetColumn.getWidget(record);
-    
-    if(widget){
-      widget.hide();
+      if(widget){
+        widget.hide();
+      }
     }
     me.tabPanel.removeAll();
     me.setHistoryHash();
