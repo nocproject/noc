@@ -414,7 +414,7 @@ class Object(Document):
         # $graphLookup hits 100Mb memory limit. Do not use it
         seen = {self.id}
         wave = {self.id}
-        max_level = 4
+        max_level = 7
         coll = Object._get_collection()
         for _ in range(max_level):
             # Get next wave
