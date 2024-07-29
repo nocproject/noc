@@ -85,10 +85,6 @@ Ext.define("NOC.inv.inv.Application", {
             },
             listeners: {
               afterrender: function(button){
-                var innerCells = button.getEl().up(".x-grid-row");
-                Ext.each(innerCells.query(".x-grid-cell-inner"), function(cell){
-                  cell.classList.add("noc-inv-nav-cell-inner");
-                });
                 button.getEl().down(".x-btn-inner").setStyle("color", "black");
               },
             },
@@ -236,6 +232,7 @@ Ext.define("NOC.inv.inv.Application", {
     var me = this,
       sel = me.navTree.getSelection();
 
+    me.navTree.getSelectionModel().deselectAll();
     me.store.reload({
       node: me.store.getRootNode(),
       callback: function(){
@@ -293,6 +290,10 @@ Ext.define("NOC.inv.inv.Application", {
       menu = widget.getMenu();
     
     if(widget){
+      var innerCells = widget.getEl().up(".x-grid-row");
+      Ext.each(innerCells.query(".x-grid-cell-inner"), function(cell){
+        cell.classList.add("noc-inv-nav-cell-inner");
+      });
       widget.show();
       mapMenuItem = widget.down("#invNavContextMenuMap");
       if(mapMenuItem){
