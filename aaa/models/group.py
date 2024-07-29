@@ -21,7 +21,13 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@on_delete_check(check=[("sa.GroupAccess", "group"), ("main.AuthLDAPDomain", "groups__group")])
+@on_delete_check(
+    check=[
+        ("sa.GroupAccess", "group"),
+        ("main.AuthLDAPDomain", "groups__group"),
+        ("aaa.ModelProtectionProfile", "groups"),
+    ]
+)
 class Group(NOCModel):
     class Meta(object):
         verbose_name = "Group"
