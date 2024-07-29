@@ -83,6 +83,7 @@ _MODELS = {
     # aaa models
     "aaa.APIKey": "noc.aaa.models.apikey.APIKey",
     "aaa.Group": "noc.aaa.models.group.Group",
+    "aaa.ModelProtectionProfile": "noc.aaa.models.modelprotectionprofile.ModelProtectionProfile",
     "aaa.Permission": "noc.aaa.models.permission.Permission",
     "aaa.User": "noc.aaa.models.user.User",
     "aaa.UserContact": "noc.aaa.models.usercontact.UserContact",
