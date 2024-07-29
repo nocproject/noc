@@ -62,9 +62,9 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
       },
       menuNode: node,
     });
-    // Close Welcome tab, if any
+    // Close Home tab, if any
     var first = me.items.first();
-    if(first && first.title !== title && first.title === "Welcome"){
+    if(first && first.title !== title && first.title === "Home"){
       first.close();
     }
     //

@@ -28,7 +28,7 @@ from noc.core.discriminator import discriminator
         # odu
         "odu::ODU777",
         "odu::ODU1-2",
-        "odu::ODU1::ODU0-2",
+        "odu::ODU1::ODU0-3",
         "odu::ODU0::ODU1",
     ],
 )
