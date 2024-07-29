@@ -84,9 +84,17 @@ class Command(BaseCommand):
 
     def handle_sync(self):
         connect()
+        partials = []
         for c in Collection.iter_collections():
             try:
                 c.sync()
+                if c.partial_errors:
+                    partials.insert(0, c)
+            except ValueError as e:
+                self.die(str(e))
+        for c in partials:
+            try:
+                c.delete_partials()
             except ValueError as e:
                 self.die(str(e))
 
