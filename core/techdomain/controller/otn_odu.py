@@ -45,6 +45,7 @@ class OTNODUController(BaseController):
                 # @todo: Check for OTU trails from same card
                 if pvi.protocol.code.startswith("ODU") and self.is_connected(obj, c.name):
                     yield Endpoint(object=obj, name=c.name)
+                    break
 
     def get_supported_protocols(self, ep: Endpoint) -> List[str]:
         for c in ep.object.model.connections:
@@ -121,7 +122,7 @@ class OTNODUController(BaseController):
             PathItem(
                 object=otu_end.object,
                 input=otu_end.name,
-                output=start.name,
+                output=end.name,
                 channel=otu_eps.channel,
                 input_discriminator=discriminator,
             )

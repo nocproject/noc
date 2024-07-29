@@ -141,7 +141,7 @@ class OTNOTUController(BaseController):
             print("Supported protocols", p1, p2)
             common = p1.intersection(p2)
             if not common:
-                return None # No common set
+                return None  # No common set
             # Get highest available
             r = sorted(common, key=otu_rank, reverse=True)[0]
             return f"otu::{r}"
@@ -154,7 +154,7 @@ class OTNOTUController(BaseController):
                     return parts[1].replace("ODU", "OTU")
             return None
 
-        def otu_rank(s:str) -> int:
+        def otu_rank(s: str) -> int:
             """Calculate OTU rank for sorting."""
             if s.startswith("OTUC"):
                 return 10 * int(s[4:])

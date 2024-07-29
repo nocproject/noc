@@ -133,7 +133,7 @@ class CommutationPlugin(InvPlugin):
         hier_ids = obj.get_nested_ids()
         nodes: Dict[str, Node] = {}
         omap = {}
-        containers:List[Tuple[str,str]] = []  # (node_id, container_id)
+        containers: List[Tuple[str, str]] = []  # (node_id, container_id)
         for o in Object.objects.filter(id__in=hier_ids):
             omap[o.id] = o
             node = Node.from_object(o)
