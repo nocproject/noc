@@ -7,11 +7,13 @@
 
 # Python modules
 import logging
+from functools import partial
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Iterable, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.ioloop.util import run_sync
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 from noc.core.script.caller import ScriptCaller
 
@@ -75,6 +77,19 @@ class Check(object):
         :return:
         """
 
+    @classmethod
+    def from_dict(cls, data) -> "Check":
+        credential = data.pop("credential", None)
+        if credential and "snmp_ro" in credential:
+            credential = SNMPCredential(**credential)
+        elif credential and "context" in credential:
+            credential = SNMPv3Credential(**credential)
+        elif credential and "super_password" in credential:
+            credential = CLICredential(**credential)
+        if credential:
+            data["credential"] = credential
+        return Check(**data)
+
     @property
     def snmp_credential(self) -> Optional[SNMPCredential]:
         if isinstance(self.credential, SNMPCredential):
@@ -124,43 +139,32 @@ class Checker(object):
     name: str
     CHECKS: List[str]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
-    PARAMS: List[str] = ["address", "object"]  # List of checker params
 
     def __init__(
         self,
         *,
         logger=None,
-        calling_service: Optional[str] = None,
-        pool: Optional[str] = None,
         **kwargs,
     ):
-        self.logger = PrefixLoggerAdapter(
-            logger or logging.getLogger(self.name),
-            f"{calling_service or self.name}]",
-        )
-        self.calling_service = calling_service or self.name
-        # Set for pooled check, Default value
-        self.pool = pool
-        self.object = kwargs.get("object")
+        self.logger = PrefixLoggerAdapter(logger or logging.getLogger(self.name), self.name)
         self.address = kwargs.get("address")
-        self._script_caller: Optional["ScriptCaller"] = None
 
-    def get_script(self, name: str) -> "ScriptCaller":
-        if not self._script_caller and not self.object:
-            raise NotImplementedError()
-        if not self._script_caller:
-            o = lambda: None  # noqa:E731
-            o.id = self.object
-            self._script_caller = ScriptCaller(o, name)
-        return self._script_caller
+    def get_script(self, name: str) -> "ScriptCaller": ...
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """
-        Iterate over result
-        :param checks: List checks param for run
-        :return:
+        Iterate over result checks
+        Args:
+            checks: List checks param for run
         """
-        ...
+
+    async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
+        """
+        Iterate over result checks
+        Args:
+            checks: List checks param for run
+        """
+        return run_sync(partial(self.iter_result, checks))
 
 
 class ObjectChecker(Checker):

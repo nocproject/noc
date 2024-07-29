@@ -19,6 +19,8 @@ from noc.core.checkers.base import (
     DataItem,
     MetricValue,
 )
+from noc.core.service.client import open_sync_rpc
+from noc.core.service.error import RPCError
 from noc.core.checkers.loader import loader
 from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, CheckData, PROFILE_DIAG
 from noc.core.debug import error_report
@@ -79,25 +81,28 @@ class DiagnosticCheck(DiscoveryCheck):
                     Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
                 ] = []
                 data: List[DataItem] = []
-                for cr in self.iter_checks(dc.checks):
-                    if cr.credential:
-                        credentials += [(Protocol[cr.check], cr.credential)]
-                    if cr.data:
-                        data += cr.data
-                    checks.append(cr)
-                    m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{d.diagnostic}"]
-                    if cr.arg0:
-                        m_labels += [f"noc::check::arg0::{cr.arg0}"]
-                    if cr.address:
-                        m_labels += [f"noc::check::address::{cr.address}"]
-                    if not cr.skipped:
-                        metrics += [
-                            MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
-                        ]
-                    if cr.metrics:
-                        metrics += cr.metrics
-                    # if cr.data:
-                    #    d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
+                for do_checks in d.iter_checks():
+                    for cr in self.run_checks(do_checks):
+                        if cr.credential:
+                            credentials += [(Protocol[cr.check], cr.credential)]
+                        if cr.data:
+                            data += cr.data
+                        checks.append(cr)
+                        m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{d.diagnostic}"]
+                        if cr.arg0:
+                            m_labels += [f"noc::check::arg0::{cr.arg0}"]
+                        if cr.address:
+                            m_labels += [f"noc::check::address::{cr.address}"]
+                        if not cr.skipped:
+                            metrics += [
+                                MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
+                            ]
+                        if cr.metrics:
+                            metrics += cr.metrics
+                        # if cr.data:
+                        #    d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
+                    d.update_checks(checks)
+
                 dd = self.apply_data(data)
                 if dd:
                     d_data[d.diagnostic].update(dd)
@@ -129,6 +134,16 @@ class DiagnosticCheck(DiscoveryCheck):
         # self.object.diagnostic.refresh_diagnostics()
         self.logger.debug("Object Diagnostics: %s", self.object.diagnostics)
         # Fire workflow event diagnostic ?
+
+    def run_checks(self, checks: Tuple[Check, ...]) -> List[CheckResult]:
+        self.logger.debug("Call checks on activator: %s", checks)
+        try:
+            return open_sync_rpc(
+                "activator", pool=self.object.pool.name, calling_service="discovery"
+            ).run_checks(checks)
+        except RPCError as e:
+            self.logger.error("RPC Error: %s", e)
+        return []
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
         # Group check by checker

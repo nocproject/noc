@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # @diagnostic decorator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ from pydantic import BaseModel, PrivateAttr
 
 # NOC modules
 from noc.core.ioloop.util import run_sync
-from noc.core.checkers.base import Check
+from noc.core.checkers.base import Check, CheckResult
 from noc.config import config
 from noc.models import is_document
 
@@ -166,6 +166,39 @@ class DiagnosticItem(BaseModel):
             self.reason = reason
         self.checks = []
         self.changed = datetime.datetime.now()
+
+    def iter_checks(self) -> Iterable[Check]:
+        """Iterable over configured checks"""
+        yield tuple(c for c in self.config.checks)
+
+    def update_checks(self, checks: List[CheckResult]):
+        """Update check result"""
+        self.checks += checks
+
+    def get_result(self) -> Tuple[DiagnosticState, str, Dict[str, Any]]:
+        c_state = any(self.checks) if self.config.state_policy == "ANY" else all(self.checks)
+        ...
+
+
+class DiagnosticHandler:
+    """
+    Run diagnostic by config and check status
+    """
+
+    def __init__(self, cfg: DiagnosticConfig, labels: Optional[List[str]] = None):
+        self.config = cfg
+        self.labels = labels
+
+    def iter_checks(self) -> Iterable[Check]:
+        """Iterate over checks"""
+        for c in self.config.checks:
+            yield c
+
+    def update_checks(self, checks: List[CheckData]):
+        """Set Check Result"""
+
+    def get_result(self) -> Optional[Tuple[DiagnosticItem, Dict[str, Any]]]:
+        """Getting Diagnostic result"""
 
 
 class DiagnosticHub(object):
