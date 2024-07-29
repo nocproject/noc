@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 from collections import defaultdict
 
 # NOC modules
@@ -127,21 +127,33 @@ class ChannelPlugin(InvPlugin):
                 return
             x["status"] = "broken"
 
+        def ep_hash(controller: str, ep1: Endpoint, ep2: Endpoint) -> Tuple[str, str, str]:
+            r1 = ep1.as_resource()
+            r2 = ep2.as_resource()
+            if r1 < r2:
+                return controller, r1, r2
+            return controller, r2, r1
+
         o = self.app.get_object_or_404(Object, id=id)
         nested_objects = list(BaseController().iter_nested_objects(o))
         r: List[Dict[str, str]] = []
         # Check all cotrollers
-        for tr_name in controller_loader:
-            tr = controller_loader[tr_name]()
+        seen = set()
+        for controller_name in controller_loader:
+            controller = controller_loader[controller_name]()
             for no in nested_objects:
-                for sep, eep in tr.iter_adhoc_endpoints(no):
+                for sep, eep in controller.iter_adhoc_endpoints(no):
+                    h = ep_hash(controller.name, sep, eep)
+                    if h in seen:
+                        continue
+                    seen.add(h)
                     r += [
                         {
                             "start_endpoint": sep.as_resource(),
                             "start_endpoint__label": self.get_endpoint_label(sep),
                             "end_endpoint": eep.as_resource(),
                             "end_endpoint__label": self.get_endpoint_label(eep),
-                            "controller": tr.name,
+                            "controller": controller.name,
                         }
                     ]
         # Get channel endpoints
