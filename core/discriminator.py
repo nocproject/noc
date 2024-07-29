@@ -83,7 +83,7 @@ ODU_LIMITS = {
     "ODU3e2": {"ODU2e": 4},
     "ODU4": {"ODU0": 80, "ODU1": 40, "ODU2": 10, "ODU2e": 10, "ODU3": 2},
     "ODUC1": {"ODU4": 1},
-    "ODUC2": {"ODU4": 2},
+    "ODUC2": {"ODU4": 2, "ODU2": 20},
     "ODUC3": {"ODU4": 3},
     "ODUC4": {"ODU4": 4},
     "ODUC5": {"ODU4": 5},
@@ -107,7 +107,7 @@ class OduDiscriminator(object):
                     msg = f"{n} cannot be nested in {prev_odu}"
                     raise ValueError(msg)
                 max_idx = ODU_LIMITS[prev_odu][n]
-                if idx >= max_idx:
+                if idx > max_idx:
                     msg = f"ODU index overflow: {idx} >= {max_idx}"
                     raise ValueError(msg)
             elif idx:

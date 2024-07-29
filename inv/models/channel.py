@@ -81,6 +81,8 @@ class Channel(Document):
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
     constraints = EmbeddedDocumentListField(ConstraintItem)
+    # Controller which created the channel
+    controller = StringField(required=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -104,3 +106,41 @@ class Channel(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["Channel"]:
         return Channel.objects.filter(bi_id=bi_id).first()
+
+    @property
+    def is_unidirectional(self) -> bool:
+        """
+        Check if channel is unidirectional.
+        """
+        return self.topology in (
+            ChannelTopology.UP2P.value,
+            ChannelTopology.UBUNCH.value,
+            ChannelTopology.UP2MP.value,
+        )
+
+    def on_before_delete(self) -> None:
+        """
+        Perform checks and clean up endpoints.
+        """
+        from .endpoint import Endpoint
+
+        # Check channel is not used by other channels
+        used = set()
+        for ep in Endpoint.objects.filter(channel=self.id):
+            if ep.used_by:
+                for item in ep.used_by:
+                    used.add(item.channel.name)
+        if used:
+            if len(used) <= 3:
+                msg = f"Channel is used by: {', '.join(used)}"
+            else:
+                msg = f"Channel is used by {len(used)} channels"
+            raise ValueError(msg)
+
+        # Remove endpoints
+        Endpoint.objects.filter(channel=self.id).delete()
+
+        # Remove from used_by
+        for ep in Endpoint.objects.filter(used_by__channel=self.id):
+            ep.used_by = [i for i in ep.used_by if i.channel.id != self.id]
+            ep.save()

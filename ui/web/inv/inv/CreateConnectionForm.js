@@ -697,9 +697,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             });
             me.drawWires(data.wires, mainSurface);
             // workaround zIndex, redraw labels and set zIndex to 60
-            setTimeout(function(){
-              me.reDrawLabels(mainSurface);
-            }, 500);
+            me.reDrawLabels(mainSurface);
+            // setTimeout(function(){
+            // me.reDrawLabels(mainSurface);
+            // }, 500);
             me.drawLegend(mainSurface);
             if(Ext.isEmpty(rightObjectId)){
               me.drawEmptyText(me.drawPanel);

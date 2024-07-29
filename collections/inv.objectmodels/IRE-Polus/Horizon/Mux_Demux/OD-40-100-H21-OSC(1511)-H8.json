@@ -624,202 +624,202 @@
         {
             "input": "P2",
             "output": "H21",
-            "output_discriminator": "lambda::192150-50"
+            "input_discriminator": "lambda::192150-50"
         },
         {
             "input": "P2",
             "output": "H22",
-            "output_discriminator": "lambda::192250-50"
+            "input_discriminator": "lambda::192250-50"
         },
         {
             "input": "P2",
             "output": "H23",
-            "output_discriminator": "lambda::192350-50"
+            "input_discriminator": "lambda::192350-50"
         },
         {
             "input": "P2",
             "output": "H24",
-            "output_discriminator": "lambda::192450-50"
+            "input_discriminator": "lambda::192450-50"
         },
         {
             "input": "P2",
             "output": "H25",
-            "output_discriminator": "lambda::192550-50"
+            "input_discriminator": "lambda::192550-50"
         },
         {
             "input": "P2",
             "output": "H26",
-            "output_discriminator": "lambda::192650-50"
+            "input_discriminator": "lambda::192650-50"
         },
         {
             "input": "P2",
             "output": "H27",
-            "output_discriminator": "lambda::192750-50"
+            "input_discriminator": "lambda::192750-50"
         },
         {
             "input": "P2",
             "output": "H28",
-            "output_discriminator": "lambda::192850-50"
+            "input_discriminator": "lambda::192850-50"
         },
         {
             "input": "P2",
             "output": "H29",
-            "output_discriminator": "lambda::192950-50"
+            "input_discriminator": "lambda::192950-50"
         },
         {
             "input": "P2",
             "output": "H30",
-            "output_discriminator": "lambda::193050-50"
+            "input_discriminator": "lambda::193050-50"
         },
         {
             "input": "P2",
             "output": "H31",
-            "output_discriminator": "lambda::193150-50"
+            "input_discriminator": "lambda::193150-50"
         },
         {
             "input": "P2",
             "output": "H32",
-            "output_discriminator": "lambda::193250-50"
+            "input_discriminator": "lambda::193250-50"
         },
         {
             "input": "P2",
             "output": "H33",
-            "output_discriminator": "lambda::193350-50"
+            "input_discriminator": "lambda::193350-50"
         },
         {
             "input": "P2",
             "output": "H34",
-            "output_discriminator": "lambda::193450-50"
+            "input_discriminator": "lambda::193450-50"
         },
         {
             "input": "P2",
             "output": "H35",
-            "output_discriminator": "lambda::193550-50"
+            "input_discriminator": "lambda::193550-50"
         },
         {
             "input": "P2",
             "output": "H36",
-            "output_discriminator": "lambda::193650-50"
+            "input_discriminator": "lambda::193650-50"
         },
         {
             "input": "P2",
             "output": "H37",
-            "output_discriminator": "lambda::193750-50"
+            "input_discriminator": "lambda::193750-50"
         },
         {
             "input": "P2",
             "output": "H38",
-            "output_discriminator": "lambda::193850-50"
+            "input_discriminator": "lambda::193850-50"
         },
         {
             "input": "P2",
             "output": "H39",
-            "output_discriminator": "lambda::193950-50"
+            "input_discriminator": "lambda::193950-50"
         },
         {
             "input": "P2",
             "output": "H40",
-            "output_discriminator": "lambda::194050-50"
+            "input_discriminator": "lambda::194050-50"
         },
         {
             "input": "P2",
             "output": "H41",
-            "output_discriminator": "lambda::194150-50"
+            "input_discriminator": "lambda::194150-50"
         },
         {
             "input": "P2",
             "output": "H42",
-            "output_discriminator": "lambda::194250-50"
+            "input_discriminator": "lambda::194250-50"
         },
         {
             "input": "P2",
             "output": "H43",
-            "output_discriminator": "lambda::194350-50"
+            "input_discriminator": "lambda::194350-50"
         },
         {
             "input": "P2",
             "output": "H44",
-            "output_discriminator": "lambda::194450-50"
+            "input_discriminator": "lambda::194450-50"
         },
         {
             "input": "P2",
             "output": "H45",
-            "output_discriminator": "lambda::194550-50"
+            "input_discriminator": "lambda::194550-50"
         },
         {
             "input": "P2",
             "output": "H46",
-            "output_discriminator": "lambda::194650-50"
+            "input_discriminator": "lambda::194650-50"
         },
         {
             "input": "P2",
             "output": "H47",
-            "output_discriminator": "lambda::194750-50"
+            "input_discriminator": "lambda::194750-50"
         },
         {
             "input": "P2",
             "output": "H48",
-            "output_discriminator": "lambda::194850-50"
+            "input_discriminator": "lambda::194850-50"
         },
         {
             "input": "P2",
             "output": "H49",
-            "output_discriminator": "lambda::194950-50"
+            "input_discriminator": "lambda::194950-50"
         },
         {
             "input": "P2",
             "output": "H50",
-            "output_discriminator": "lambda::195050-50"
+            "input_discriminator": "lambda::195050-50"
         },
         {
             "input": "P2",
             "output": "H51",
-            "output_discriminator": "lambda::195150-50"
+            "input_discriminator": "lambda::195150-50"
         },
         {
             "input": "P2",
             "output": "H52",
-            "output_discriminator": "lambda::195250-50"
+            "input_discriminator": "lambda::195250-50"
         },
         {
             "input": "P2",
             "output": "H53",
-            "output_discriminator": "lambda::195350-50"
+            "input_discriminator": "lambda::195350-50"
         },
         {
             "input": "P2",
             "output": "H54",
-            "output_discriminator": "lambda::195450-50"
+            "input_discriminator": "lambda::195450-50"
         },
         {
             "input": "P2",
             "output": "H55",
-            "output_discriminator": "lambda::195550-50"
+            "input_discriminator": "lambda::195550-50"
         },
         {
             "input": "P2",
             "output": "H56",
-            "output_discriminator": "lambda::195650-50"
+            "input_discriminator": "lambda::195650-50"
         },
         {
             "input": "P2",
             "output": "H57",
-            "output_discriminator": "lambda::195750-50"
+            "input_discriminator": "lambda::195750-50"
         },
         {
             "input": "P2",
             "output": "H58",
-            "output_discriminator": "lambda::195850-50"
+            "input_discriminator": "lambda::195850-50"
         },
         {
             "input": "P2",
             "output": "H59",
-            "output_discriminator": "lambda::195950-50"
+            "input_discriminator": "lambda::195950-50"
         },
         {
             "input": "P2",
             "output": "H60",
-            "output_discriminator": "lambda::196050-50"
+            "input_discriminator": "lambda::196050-50"
         }
     ],
     "data": [

@@ -233,6 +233,12 @@ class Object(Document):
     def get_by_bi_id(cls, bi_id: int) -> Optional["Object"]:
         return Object.objects.filter(bi_id=bi_id).first()
 
+    def resource_label(self) -> str:
+        """
+        Generate resource label.
+        """
+        return " > ".join(self.get_local_name_path(True))
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             if self.data and self.get_data("management", "managed_object"):
@@ -996,9 +1002,11 @@ class Object(Document):
         """
         return Object.objects.filter(container=self.id)
 
-    def get_local_name_path(self):
+    def get_local_name_path(self, include_chassis: bool = False) -> str:
         for _, ro, rn in self.get_outer_connections():
-            return ro.get_local_name_path() + [rn]
+            return ro.get_local_name_path(include_chassis) + [rn]
+        if include_chassis:
+            return [self.name]
         return []
 
     def get_name_path(self) -> List[str]:
@@ -1414,9 +1422,27 @@ class Object(Document):
             attrs={},
         )
 
+    def iter_effective_crossing(self) -> Iterable[Crossing]:
+        """
+        Iterate objects all effective crossings.
+        """
+
+        def iter_merge(
+            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
+        ) -> Iterable[Crossing]:
+            if i1:
+                yield from i1
+            if i2:
+                yield from i2
+
+        if self.cross:
+            yield from self.cross
+        if self.model.cross:
+            yield from self.model.cross
+
     def iter_cross(
         self, name: str, discriminators: Optional[Iterable[str]] = None
-    ) -> Iterable[str]:
+    ) -> Iterable[Crossing]:
         """
         Iterate crossed outputs.
 
@@ -1434,23 +1460,13 @@ class Object(Document):
             item_desc = discriminator(item.input_discriminator)
             return any(d in item_desc for d in discriminators)
 
-        def iter_merge(
-            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
-        ) -> Iterable[Crossing]:
-            if i1:
-                yield from i1
-            if i2:
-                yield from i2
-
         seen: Set[str] = set()
         discriminators = [discriminator(x) for x in discriminators or []]
         # Dynamic crossings
-        if self.cross:
-            for item in iter_merge(self.cross, self.model.cross):
-                # @todo: Restrict to type `s`?
-                if item.input == name and item.output not in seen and is_passable(item):
-                    yield item.output
-                    seen.add(item.output)
+        for item in self.iter_effective_crossing():
+            if item.input == name and item.output not in seen and is_passable(item):
+                yield item
+                seen.add(item.output)
 
     def set_internal_connection(self, input: str, output: str, data: Dict[str, str] = None):
         """ """
