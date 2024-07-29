@@ -148,39 +148,6 @@ class BaseController(object):
                 yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name="")
                 return
 
-    @classmethod
-    def iter_nested_objects(self, obj: Object) -> Iterable[Object]:
-        """
-        Iterate all nested objects.
-        """
-        # Get objects by hierarchy
-        hier_ids: List[ObjectId] = obj.get_nested_ids()
-        omap = {}
-        for o in Object.objects.filter(id__in=hier_ids):
-            omap[o.id] = o
-            yield o
-        # Find vertical
-        wave = list(omap)
-        while wave:
-            new_wave = []
-            for c in ObjectConnection.objects.filter(connection__object__in=wave):
-                if len(c.connection) != 2:
-                    continue  # @todo: Process later
-                if c.connection[0].object.id in omap:
-                    local = c.connection[0]
-                    remote = c.connection[1]
-                else:
-                    local = c.connection[1]
-                    remote = c.connection[0]
-                if remote.object.id in omap:
-                    continue  # Already processed
-                mc = local.object.model.get_model_connection(local.name)
-                if mc and mc.is_inner:
-                    omap[remote.object.id] = remote.object
-                    new_wave.append(remote.object)
-                    yield remote.object
-            wave = new_wave
-
     def get_peer(self, ep: Endpoint) -> Optional[Endpoint]:
         """
         Get connected peer.
@@ -287,8 +254,7 @@ class BaseController(object):
         Returns:
             Underlying object if found, none otherwise
         """
-        _, ro, _ = obj.get_p2p_connection(name)
-        return ro
+        return Object.objects.filter(parent=obj.id, parent_connection=name).first()
 
     def up(self, obj: Object) -> Optional[Endpoint]:
         """
@@ -301,9 +267,7 @@ class BaseController(object):
         Returns:
             Underlying object if found, none otherwise
         """
-        for _, ro, rname in obj.iter_outer_connections():
-            return Endpoint(object=ro, name=rname)
-        return None
+        return Endpoint(object=obj.parent, name=obj.parent_connection)
 
     def get_connection(self, obj: Object, name: str) -> Optional[ObjectModelConnection]:
         """

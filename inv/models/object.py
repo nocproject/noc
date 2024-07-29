@@ -1072,6 +1072,13 @@ class Object(Document):
         """
         yield from Object.objects.filter(parent=self.id)
 
+    def get_local_name_path(self, include_chassis: bool = False) -> str:
+        if self.parent and self.parent_connection:
+            return self.parent.get_local_name_path(include_chassis) + [self.parent_connection]
+        if include_chassis:
+            return [self.name]
+        return []
+
     def get_name_path(self) -> List[str]:
         """
         Return list of container names

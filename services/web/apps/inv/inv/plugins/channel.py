@@ -82,7 +82,7 @@ class ChannelPlugin(InvPlugin):
                 "discriminator": ch.discriminator or "",
             }
 
-        nested = [f"o:{o.id}" for o in BaseController().iter_nested_objects(object)]
+        nested = [f"o:{o_id}" for o_id in object.get_nested_ids()]
         pipeline = [{"$match": {"root_resource": {"$in": nested}}}, {"$group": {"_id": "$channel"}}]
         r = DBEndpoint._get_collection().aggregate(pipeline)
         items = [i["_id"] for i in r]
@@ -135,7 +135,7 @@ class ChannelPlugin(InvPlugin):
             return controller, r2, r1
 
         o = self.app.get_object_or_404(Object, id=id)
-        nested_objects = list(BaseController().iter_nested_objects(o))
+        nested_objects = list(Object.objects.filter(id__in=o.get_nested_ids()))
         r: List[Dict[str, str]] = []
         # Check all cotrollers
         seen = set()
