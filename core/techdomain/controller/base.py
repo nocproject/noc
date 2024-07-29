@@ -15,7 +15,7 @@ import datetime
 from bson import ObjectId
 
 # NOC modules
-from noc.inv.models.objectmodel import Crossing, ObjectModelConnection
+from noc.inv.models.objectmodel import ObjectModelConnection
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.inv.models.techdomain import TechDomain
