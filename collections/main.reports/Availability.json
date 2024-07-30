@@ -140,6 +140,18 @@
             "type": "model"
         },
         {
+            "name": "skip_full_avail",
+            "description": null,
+            "label": "Skip full available",
+            "type": "bool"
+        },
+        {
+            "name": "skip_zero_avail",
+            "description": null,
+            "label": "Skip zero available",
+            "type": "bool"
+        },
+        {
             "name": "fields",
             "description": null,
             "default": "managedobjectds.administrativedomain,managedobjectds.name,managedobjectds.hostname,managedobjectds.address,managedobjectds.profile,avail_percent,downtime,down_count,reboots",

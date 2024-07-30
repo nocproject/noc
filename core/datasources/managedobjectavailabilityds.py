@@ -90,7 +90,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         return 0
 
     @staticmethod
-    def get_outages_ch(start_date, stop_date, skip_zero_avail=False):
+    def get_outages_ch(start_date, stop_date):
         from noc.core.clickhouse.connect import connection
 
         ch = connection()
@@ -130,10 +130,12 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
         start: datetime.datetime = kwargs.get("start")
         end: datetime.datetime = kwargs.get("end")
+        skip_full_avail = kwargs.get("skip_full_avail")
+        skip_zero_avail = kwargs.get("skip_zero_avail")
         td = int((end - start).total_seconds())
         rb = cls.get_reboots_by_object(start_date=start, stop_date=end)
         outages = cls.get_outages_ch(start_date=start, stop_date=end)
-        # Getting unavailable
+        # Getting managed object statuses
         for num, row in enumerate(
             ManagedObjectStatus.objects.all().values("managed_object", "last", "status")
         ):
@@ -146,6 +148,10 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
                 outage_duration += s_outage
                 outage_count += 1
             outage_duration = min(outage_duration, td)
+            if skip_full_avail and outage_duration == 0:
+                continue
+            if skip_zero_avail and outage_duration == td:
+                continue
             yield num, "managed_object_id", mo_id
             yield num, "id", mo_id
             yield num, "current_avail_status", row["status"]
