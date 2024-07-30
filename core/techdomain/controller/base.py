@@ -6,18 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Optional, List, Tuple
+from typing import Iterable, Optional, Tuple
 from dataclasses import dataclass
 import logging
 import datetime
 
-# Third-party modules
-from bson import ObjectId
-
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModelConnection
 from noc.inv.models.object import Object
-from noc.inv.models.objectconnection import ObjectConnection
 from noc.inv.models.techdomain import TechDomain
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint

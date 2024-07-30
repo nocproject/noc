@@ -11,7 +11,6 @@ from collections import defaultdict
 
 # NOC modules
 from noc.inv.models.object import Object
-from noc.core.techdomain.controller.base import BaseController
 from noc.core.resource import resource_label, from_resource
 from noc.sa.interfaces.base import StringParameter
 from noc.core.techdomain.controller.loader import loader as controller_loader
