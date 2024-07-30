@@ -258,7 +258,9 @@ class CommutationPlugin(InvPlugin):
 
         def render_subgraph(node: Node, r: Dict[str, Any]) -> None:
             g = get_graph_template()
-            g["graphAttributes"]["label"] = get_label(node.parent_connection if node.parent_connection else node.name, node.model)
+            g["graphAttributes"]["label"] = get_label(
+                node.parent_connection if node.parent_connection else node.name, node.model
+            )
             g["name"] = f"cluster_{node.object_id}"
             # Attach as subgraph
             r["subgraphs"].append(g)
