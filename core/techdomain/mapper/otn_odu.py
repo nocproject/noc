@@ -72,6 +72,11 @@ class DWDMOdUMapper(BaseMapper):
                 ],
             }
         )
-        self.add_edge(start="start_odu", end="start_otu", label=q_disc(path[0].input_discriminator))
-        self.add_edge(start="end_otu", end="end_odu", label=q_disc(path[1].input_discriminator))
-        self.add_edge(start="start_otu", end="end_otu", label=path[0].channel.name)
+        if path[0].channel.discriminator:
+            otu = path[0].channel.discriminator.split("::")[-1]
+            ch_label = f"{path[0].channel.name}\n{otu}"
+        else:
+            ch_label = path[0].channel.name
+        self.add_edge(start="start_odu", end="start_otu", label=q_disc(path[0].input_discriminator), style="dashed")
+        self.add_edge(start="end_otu", end="end_odu", label=q_disc(path[1].input_discriminator), style="dashed")
+        self.add_edge(start="start_otu", end="end_otu", label=ch_label, penwidth=2)
