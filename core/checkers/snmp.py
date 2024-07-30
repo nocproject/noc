@@ -19,7 +19,7 @@ from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 # NOC modules
 from .base import Checker, CheckResult, Check, CheckError, DataItem
 from ..script.scheme import Protocol, SNMPCredential, SNMPv3Credential
-from noc.core.snmp.error import TIMED_OUT, AUTHORIZATION_ERROR
+from noc.core.snmp.error import SNMPErrorCode
 from noc.core.mib import mib
 
 CHECK_OIDS = [mib["SNMPv2-MIB::sysObjectID.0"]]
@@ -62,11 +62,13 @@ class SNMPProtocolChecker(Checker):
         return [x for _, x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
 
     @staticmethod
-    def get_oids(check: Check) -> List[str]:
+    def get_oids(check: Check, cred=None) -> List[str]:
         if check.args and "oids" in check.args:
             return check.args["oids"].split(",")
-        elif check.credential.oids:
+        elif check.credential and check.credential.oids:
             return check.credential.oids
+        elif cred and cred.oids:
+            return cred.oids
         return CHECK_OIDS
 
     def iter_suggest_check(self, check: Check) -> Iterable[Check]:
@@ -126,7 +128,9 @@ class SNMPProtocolChecker(Checker):
                 for c in ccs:
                     if c in result:
                         continue
-                    data, error = await self.check_oids_async(c.address, self.get_oids(c), cred)
+                    data, error = await self.check_oids_async(
+                        c.address, self.get_oids(c, cred), cred
+                    )
                     result[c] = CheckResult(
                         check=c.name,
                         args=c.args,
@@ -251,11 +255,19 @@ class SNMPProtocolChecker(Checker):
                 data = session.get_many(oids)
         except TimeoutError:
             self.logger.debug("SNMP Timeout")
-            return None, CheckError(code=TIMED_OUT, message="Timeout", is_available=False)
+            return None, CheckError(
+                code=str(SNMPErrorCode.TIMED_OUT), message="Timeout", is_available=False
+            )
+        except OSError as e:
+            # Destination unreachable
+            self.logger.debug("Destination unreachable")
+            return None, CheckError(
+                code=str(SNMPErrorCode.UNREACHABLE), message=e.args[0], is_available=False
+            )
         except SnmpAuthError:
             self.logger.debug("SNMPv3 Authentication error")
             return None, CheckError(
-                code=AUTHORIZATION_ERROR,
+                code=str(SNMPErrorCode.AUTHORIZATION_ERROR),
                 message="Authentication Error",
                 is_available=True,
                 is_access=False,
@@ -291,11 +303,19 @@ class SNMPProtocolChecker(Checker):
                 data = await session.get_many(oids)
         except TimeoutError:
             self.logger.debug("SNMP Timeout")
-            return None, CheckError(code=TIMED_OUT, message="Timeout", is_available=False)
+            return None, CheckError(
+                code=str(SNMPErrorCode.TIMED_OUT), message="Timeout", is_available=False
+            )
+        except OSError as e:
+            # Destination unreachable
+            self.logger.debug("Destination unreachable")
+            return None, CheckError(
+                code=str(SNMPErrorCode.UNREACHABLE), message=e.args[0], is_available=False
+            )
         except SnmpAuthError:
             self.logger.debug("SNMPv3 Authentication error")
             return None, CheckError(
-                code=AUTHORIZATION_ERROR,
+                code=str(SNMPErrorCode.AUTHORIZATION_ERROR),
                 message="Authentication Error",
                 is_available=True,
                 is_access=False,
