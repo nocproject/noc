@@ -6,11 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Tuple, Optional, Any, List, Set
+from typing import Dict, List, Set
 
 # Third-party modules
 from bson import ObjectId
-from pymongo import UpdateOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
