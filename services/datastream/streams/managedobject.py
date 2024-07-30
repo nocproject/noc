@@ -440,7 +440,7 @@ class ManagedObjectDataStream(DataStream):
             "slots": [],
         }
         if_map = {c.name: c.interface_name for c in o.connections if c.interface_name}
-        children = {c.parent_connection: c for c in Object.objects.filter(parent=c.id)}
+        children = {child.parent_connection: child for child in Object.objects.filter(parent=o.id)}
         for n in o.model.connections:
             if n.direction.is_inner:
                 c, r_object, _ = o.get_p2p_connection(n.name)
