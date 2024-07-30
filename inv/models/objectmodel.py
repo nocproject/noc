@@ -438,6 +438,9 @@ class ObjectModel(Document):
         return None
 
     def on_save(self):
+        # Fix connections
+        if hasattr(self, "_changed_fields") and "connections" in self._changed_fields:
+            self._ensure_connection_names()
         # Update connection cache
         ModelConnectionsCache.update_for_model(self)
         # Exclude all part numbers from unknown models
@@ -668,6 +671,72 @@ class ObjectModel(Document):
         if self.cr_context == "XCVR":
             return "fa fa-bolt"
         return None
+
+    def _ensure_connection_names(self):
+        """
+        Ensure objects with this models have no hanging connections.
+        """
+        from .object import Object
+        from .objectconnection import ObjectConnection
+
+        # Get affected objects
+        obj_ids = {
+            doc["_id"] for doc in Object._get_collection().find({"model": self.id}, {"_id": 1})
+        }
+        if not obj_ids:
+            return  # No objects
+
+        # Find affected connections
+        to_prune_connections = set()
+        cable_candidates = set()
+        valid_names = {c.name for c in self.connections}
+        for oc in ObjectConnection._get_collection().find(
+            {
+                "connection": {
+                    "$elemMatch": {
+                        "object": {"$in": list(obj_ids)},
+                        "name": {"$nin": list(valid_names)},
+                    }
+                }
+            }
+        ):
+            conn_id = oc["_id"]
+            conns = oc.get("connection")
+            if len(conns) == 1:
+                to_prune_connections.add(conn_id)
+                continue
+            if len(conns) > 2:
+                conns = [
+                    cc for cc in conns if cc["object"] not in obj_ids or cc["name"] in valid_names
+                ]
+                if len(conns) > 1:
+                    ...  # @todo: Update connections
+                else:
+                    to_prune_connections.add(conn_id)
+                continue
+            # Connection is broken
+            to_prune_connections.add(conn_id)
+            # Potencial cables
+            cable_candidates.add([cc["object"] for cc in conns if cc["object"] not in obj_ids][0])
+        # Process cables
+        if cable_candidates:
+            to_prune_objects = {
+                obj.id
+                for obj in Object.objects.filter(id__in=list(cable_candidates))
+                if obj.is_wire
+            }
+            if to_prune_objects:
+                to_prune_connections.update(
+                    doc["_id"]
+                    for doc in ObjectConnection._get_collection().find(
+                        {"connection.object": {"$in": list(to_prune_objects)}}, {"_id": 1}
+                    )
+                )
+                Object._get_collection().delete_many({"_id": {"$in": list(to_prune_objects)}})
+        if to_prune_connections:
+            ObjectConnection._get_collection().delete_many(
+                {"_id": {"$in": list(to_prune_connections)}}
+            )
 
 
 class ModelConnectionsCache(Document):
