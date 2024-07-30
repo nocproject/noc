@@ -371,27 +371,29 @@ class ManagedObjectCard(BaseCard):
         service_groups = []
         for rg_id in self.object.effective_service_groups:
             rg = ResourceGroup.get_by_id(rg_id)
-            service_groups += [
-                {
-                    "id": rg_id,
-                    "name": rg.name,
-                    "technology": rg.technology,
-                    "is_static": rg_id in static_services,
-                }
-            ]
+            if rg:
+                service_groups += [
+                    {
+                        "id": rg_id,
+                        "name": rg.name,
+                        "technology": rg.technology,
+                        "is_static": rg_id in static_services,
+                    }
+                ]
         # Client groups (i.e. client)
         static_clients = set(self.object.static_client_groups)
         client_groups = []
         for rg_id in self.object.effective_client_groups:
             rg = ResourceGroup.get_by_id(rg_id)
-            client_groups += [
-                {
-                    "id": rg_id,
-                    "name": rg.name,
-                    "technology": rg.technology,
-                    "is_static": rg_id in static_clients,
-                }
-            ]
+            if rg:
+                client_groups += [
+                    {
+                        "id": rg_id,
+                        "name": rg.name,
+                        "technology": rg.technology,
+                        "is_static": rg_id in static_clients,
+                    }
+                ]
         # @todo: Administrative domain path
         # Alarms
         alarm_list = []
