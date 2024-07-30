@@ -38,7 +38,7 @@ class Migration(BaseMigration):
             conn_id = doc["_id"]
             for cc in conns:
                 obj_id = cc.get("object")
-                if not obj:
+                if not obj_id:
                     print(f"Connection without object: {doc}")
                     to_prune.append(conn_id)
                     break
