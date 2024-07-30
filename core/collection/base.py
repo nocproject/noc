@@ -404,12 +404,20 @@ class Collection(object):
                 )
         # Deleted items
         for u in current_uuids - new_uuids:
-            self.delete_item(u)
+            try:
+                self.delete_item(u)
+            except ValueError as e:
+                self.partial_errors[u] = str(e)
             changed = True
         # Save state
         if changed:
             state = {u: cdata[u].hash for u in sorted(cdata)}
             self.save_state(state)
+
+    def delete_partials(self) -> None:
+        """Process partial errors deletion"""
+        for u in self.partial_errors:
+            self.delete_item(u)
 
     def fix_uuids(self):
         """
