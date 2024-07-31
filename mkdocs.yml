@@ -930,6 +930,7 @@ nav:
       - Upgrade Your Single-node Postgres Server: upgrade-single-postgres-howto/index.md
       - NOC Monitoring: noc-monitoring-howto/index.md
       - Reclaim Database Space: reclaim-db-space-howto/index.md
+      - Migrate Liftbridge to Kafka: liftbridge-to-kafka-howto/index.md
       - Cleaning False Config Changes: cleaning-false-config-changes-howto/index.md
       - Create Object Models:
           - Overview: create-object-models-howto/index.md
