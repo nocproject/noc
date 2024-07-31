@@ -443,7 +443,6 @@ class ManagedObjectDataStream(DataStream):
         children = {child.parent_connection: child for child in Object.objects.filter(parent=o.id)}
         for n in o.model.connections:
             if n.is_inner:
-                c, r_object, _ = o.get_p2p_connection(n.name)
                 r["slots"] += [
                     {
                         "name": n.name,
