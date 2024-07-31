@@ -64,9 +64,9 @@ class AssetCheck(DiscoveryCheck):
                 List[ObjectAttr],
             ]
         ] = []  # [(type, object, context, serial, data)]
-        self.sensors: Dict[Tuple[Optional[Object], str] : Dict[str, Any]] = (
-            {}
-        )  # object, sensor -> sensor data
+        self.sensors: Dict[
+            Tuple[Optional[Object], str] : Dict[str, Any]
+        ] = {}  # object, sensor -> sensor data
         # Upper object, lower object
         self.to_disconnect: Set[Tuple[Object, Object]] = set()
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
@@ -1104,18 +1104,18 @@ class AssetCheck(DiscoveryCheck):
 
     def disconnect_connections(self):
         for o1, o2 in self.to_disconnect:
-            self.logger.info("Disconnect: %s:%s ->X<- %s", o1, o2.parent_connection, o2):
+            self.logger.info("Disconnect: %s:%s ->X<- %s", o1, o2.parent_connection, o2)
             o1.log(
-                    f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="DISCONNECT",
-                )
+                f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="DISCONNECT",
+            )
             o2.log(
-                    f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="DISCONNECT",
+                f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="DISCONNECT",
             )
             # Move o2 to lost&found
             o2.put_into(self.lost_and_found)
