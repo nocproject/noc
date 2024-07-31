@@ -898,9 +898,7 @@ class Object(Document):
         """
         Get chassis.
         """
-        if not self.parent:
-            return None  # Root level
-        if not self.parent_connection:
+        if not self.parent or not self.parent_connection:
             return self
         return self.parent.get_box()
 
