@@ -227,9 +227,9 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
       me.labelBackground = me.add({
         type: "rect",
         fill: "white",
-        hidden: true,
-        stroke: "black",
-        lineWidth: 1,
+        // hidden: true,
+        // stroke: "black",
+        // lineWidth: 1,
       })
       me.label = me.add({
         type: "text",
@@ -239,7 +239,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         textBaseline: "middle",
         x: 0,
         y: me.box.height / 2,
-        hidden: true,
+        // hidden: true,
       });
     }
   },
