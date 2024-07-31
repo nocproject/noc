@@ -183,7 +183,7 @@ class InvApplication(ExtApplication):
     def api_attach(self, request, container: str, item: str, choice: Optional[str] = None):
         c_obj = self.get_object_or_404(Object, id=container)
         i_obj = self.get_object_or_404(Object, id=item)
-        if c_obj.is_rack:  # @todo: and item is rack-mountable
+        if c_obj.is_rack and item.is_rackmount:
             return self._attach_rack(c_obj, i_obj, choice=choice)
         if c_obj.is_container:
             return self._attach_container(c_obj, i_obj, choice=choice)
@@ -197,37 +197,96 @@ class InvApplication(ExtApplication):
         """Insert item into rack."""
 
         def attach():
-            return self.render_json({"status": False, "message": "Not implemented"}, status=400)
+            # Check choice
+            try:
+                side, pos = choice.split("-")
+                pos = int(pos)
+            except ValueError:
+                return self.render_json({"status": False, "message": "Invalid position"})
+            # Check side
+            if side not in ("f", "r"):
+                return self.render_json({"status": False, "message": "Invalid side"})
+            # Get free units
+            free = get_side_free_units(side)
+            # Get occupied units
+            occupied = set(range(pos, pos + item.get_data("rackmount", "units") + 1))
+            if not occupied.issubset(free):
+                return self.render_json({"status": False, "message": "Space is busy"})
+            # Attach to rack
+            item.parent = container
+            item.parent_connection = None
+            # Set position
+            item.set_data("rackmount", "position", pos)
+            item.set_data("rackmount", "side", side)
+            item.save()
+            return self.render_json({"status": True, "message": "Placed to rack"}, status=400)
+
+        def get_occupied_units(obj: Object) -> Optional[Set[int]]:
+            """Get units occupied by object."""
+            #  Get position
+            o_pos = obj.get_data("rackmount", "position")
+            if not o_pos:
+                return None
+            # Get size in units
+            units = obj.get_data("rackmount", "units")
+            if not units:
+                return None
+            has_shift = bool(obj.get_data("rackmount", "shift"))
+            # Top position
+            top = o_pos - units
+            if has_shift:
+                top += 1
+            # Mark as occupied
+            return set(range(o_pos, top + 1))
+
+        def get_side_free_units(side: str) -> Set[int]:
+            free = set(range(1, container.get_data("rack", "units") + 1))
+            # Process nested items
+            for obj in container.iter_children():
+                # Check side
+                o_side = obj.get_data("rackmount", "side")
+                if not o_side or o_side != side:
+                    continue
+                # Occupied units
+                occupied = get_occupied_units(obj)
+                if occupied:
+                    free -= occupied
+            return free
 
         def get_choices():
-            return {
-                "expanded": True,
-                "iconCls": "fa fa-plus",
-                "children": [
-                    {"id": "---", "name": "Put into", "iconCls": "fa fa-cross", "leaf": True},
+            def get_side_items(side: str) -> List[Dict[str, Any]]:
+                # Generate items
+                return [
+                    {"id": f"{side}-{n}", "name": str(n), "leaf": True}
+                    for n in sorted(get_side_free_items(side), reverse=True)
+                ]
+
+            children = [
+                {"id": "---", "name": "Put into", "iconCls": "fa fa-download", "leaf": True}
+            ]
+            front_items = get_side_items("f")
+            if front_items:
+                children.append(
                     {
                         "name": "Front",
+                        "iconCls": "fa fa-hand-o-right",
                         "expanded": True,
-                        "iconCls": "fa fa-plus",
-                        "children": [
-                            {"id": "LC1-1", "name": "1", "iconCls": "fa fa-cross", "leaf": True},
-                            {"id": "LC1-2", "name": "2", "iconCls": "fa fa-cross", "leaf": True},
-                        ],
-                    },
+                        "children": front_items,
+                    }
+                )
+            rear_items = get_side_items("f")
+            if rear_items:
+                children.append(
                     {
-                        "name": "Rear",
+                        "name": "Front",
+                        "iconCls": "fa fa-hand-o-left",
                         "expanded": True,
-                        "iconCls": "fa fa-plus",
-                        "children": [
-                            {"id": "LC2-2", "name": "2", "iconCls": "fa fa-cross", "leaf": True},
-                            {"id": "LC2-5", "name": "5", "iconCls": "fa fa-cross", "leaf": True},
-                        ],
-                    },
-                ],
-            }
+                        "children": rear_items,
+                    }
+                )
 
-        # @todo: Current implementation is stub
-        # @todo: It item is not rack mounted
+            return {"expanded": True, "children": children}
+
         if choice:
             return attach()
         return {"choices": get_choices()}
