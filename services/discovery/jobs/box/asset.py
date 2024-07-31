@@ -67,9 +67,8 @@ class AssetCheck(DiscoveryCheck):
         self.sensors: Dict[Tuple[Optional[Object], str] : Dict[str, Any]] = (
             {}
         )  # object, sensor -> sensor data
-        self.to_disconnect: Set[Tuple[Object, str, Object, str]] = (
-            set()
-        )  # Save processed connection. [(in_connection, object, out_connection), ... ]
+        # Upper object, lower object
+        self.to_disconnect: Set[Tuple[Object, Object]] = set()
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
             list
         )  # Connection rule. type -> [rule1, ruleN]
@@ -295,8 +294,8 @@ class AssetCheck(DiscoveryCheck):
                 op="CHANGE",
             )
         else:
-            # Add all connection to disconnect list
-            self.to_disconnect.update(set((o, c[0], c[1], c[2]) for c in o.iter_children()))
+            # Add all inner connection to disconnect list
+            self.to_disconnect.update((o, c) for c in o.iter_children())
         # Check revision
         if o.get_data("asset", "revision") != revision:
             # Update revision
@@ -589,30 +588,28 @@ class AssetCheck(DiscoveryCheck):
                 if found:
                     break
 
-    def connect_p2p(self, o1: Object, c1: str, o2: Object, c2: str):
+    def connect_p2p(self, o1: Object, name: str, o2: Object):
         """
         Create P2P connection o1:c1 - o2:c2
         """
-        try:
-            o1.connect_p2p(c1, o2, c2, {}, reconnect=True)
-            o1.log(
-                "Connect %s -> %s:%s" % (c1, o2, c2),
-                system="DISCOVERY",
-                managed_object=self.object,
-                op="CONNECT",
-            )
-            o2.log(
-                "Connect %s -> %s:%s" % (c2, o1, c1),
-                system="DISCOVERY",
-                managed_object=self.object,
-                op="CONNECT",
-            )
-            c_name = o2.model.get_model_connection(c2)  # If internal_name use
-            if (o2, c_name.name, o1, c1) in self.to_disconnect:
-                # Remove if connection on system
-                self.to_disconnect.remove((o2, c_name.name, o1, c1))
-        except ConnectionError as e:
-            self.logger.error("Failed to connect: %s", e)
+        o2.parent = o1
+        o2.parent_connection = name
+        o2.save()
+        o1.log(
+            f"Connect {o1}:{name} -> {o2}",
+            system="DISCOVERY",
+            managed_object=self.object,
+            op="CONNECT",
+        )
+        o2.log(
+            f"Connect {o1}:{name} -> {o2}",
+            system="DISCOVERY",
+            managed_object=self.object,
+            op="CONNECT",
+        )
+        # Remove from pending disconnects
+        if (o2, o1) in self.to_disconnect and name == o1.parent_connection:
+            self.to_disconnect.remove((o2, o1))
 
     def connect_twinax(self, o1: Object, c1: str, o2: Object, c2: str):
         """
@@ -1106,32 +1103,22 @@ class AssetCheck(DiscoveryCheck):
         return name
 
     def disconnect_connections(self):
-        for o1, c1, o2, c2 in self.to_disconnect:
-            self.logger.info("Disconnect: %s:%s ->X<- %s:%s", o1, c1, c2, o2)
-            self.disconnect_p2p(o1, c1, c2, o2)
-
-    def disconnect_p2p(self, o1: "Object", c1: str, c2: str, o2: "Object"):
-        """
-        Disconnect P2P connection o1:c1 - o2:c2
-        """
-        try:
-            cn = o1.get_p2p_connection(c1)[0]
-            if cn:
-                o1.log(
-                    "Disconnect %s -> %s:%s" % (c1, o2, c2),
+        for o1, o2 in self.to_disconnect:
+            self.logger.info("Disconnect: %s:%s ->X<- %s", o1, o2.parent_connection, o2):
+            o1.log(
+                    f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
                     system="DISCOVERY",
                     managed_object=self.object,
                     op="DISCONNECT",
                 )
-                o2.log(
-                    "Disconnect %s -> %s:%s" % (c2, o1, c1),
+            o2.log(
+                    f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
                     system="DISCOVERY",
                     managed_object=self.object,
                     op="DISCONNECT",
-                )
-                cn.delete()
-        except ConnectionError as e:
-            self.logger.error("Failed to disconnect: %s", e)
+            )
+            # Move o2 to lost&found
+            o2.put_into(self.lost_and_found)
 
     def clean_serial(self, model: "ObjectModel", number: Optional[str], serial: Optional[str]):
         # Empty value
