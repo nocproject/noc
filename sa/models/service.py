@@ -189,11 +189,11 @@ class Service(Document):
     def get_by_instance(cls, address, port: Optional[str] = None) -> Optional["Service"]:
         if port:
             # Service.objects.filter(static_instances__match={"address": address, "port": port})
-            si = ServiceInstance.objects.filter(address=address, port=port).first()
+            si = ServiceInstance.objects.filter(addresses__address=address, port=port).first()
             if si:
                 return si.service
         # return ServiceInstance.objects.filter(static_instances__match={"address": address, "port": 0}).first()
-        si = ServiceInstance.objects.filter(address=address, port__exists=False).first()
+        si = ServiceInstance.objects.filter(addresses__address=address).first()
         return si.service if si else None
 
     @property
@@ -541,7 +541,7 @@ class Service(Document):
         self,
         port: int = 0,
         name: Optional[str] = None,
-        address: Optional[str] = None,
+        addresses: Optional[List[str]] = None,
         pool: Optional[str] = None,
         managed_object: Optional[str] = None,
         remote_id: Optional[str] = None,
@@ -563,8 +563,10 @@ class Service(Document):
             si = ServiceInstance.objects.filter(
                 service=self.id, managed_object=managed_object, port=port
             ).first()
-        if not si and address:
-            si = ServiceInstance.objects.filter(service=self.id, address=address, port=port).first()
+        if not si and addresses:
+            si = ServiceInstance.objects.filter(
+                service=self.id, addresses__address__in=addresses, port=port
+            ).first()
         return si
 
     def register_instance(
@@ -572,7 +574,7 @@ class Service(Document):
         source: str,
         port: int,
         name: str,
-        address: Optional[str] = None,
+        addresses: Optional[List[str]] = None,
         fqdn: Optional[str] = None,
         pool: Optional[str] = None,
         managed_object: Optional[str] = None,
@@ -585,7 +587,7 @@ class Service(Document):
             source: Instance source: manual, etl, discovery
             port: Instance TCP/UDP port
             name: Instance name, for host - process name
-            address: Instance IP Address
+            addresses: Instance IP Address
             fqdn: Instance FQDN (for resolve address)
             pool: Address Pool
             managed_object: Instance Host
@@ -595,10 +597,10 @@ class Service(Document):
             raise AttributeError("remote_id required for ETL source")
         if source == "discovery" and not managed_object:
             raise AttributeError("managed_object required for Discovery source")
-        if not address and not managed_object and not remote_id:
+        if not addresses and not managed_object and not remote_id:
             raise AttributeError("One of Host ID required")
         instance = self.find_instance(
-            address=address,
+            addresses=addresses,
             managed_object=managed_object,
             remote_id=remote_id,
             port=port,
@@ -608,16 +610,14 @@ class Service(Document):
             instance = ServiceInstance(
                 service=self.id,
                 name=name,
-                address=address,
                 fqdn=fqdn,
-                port=port,
                 # pool=pool,
                 remote_id=remote_id,
             )
         if instance.managed_object != managed_object:
             instance.managed_object = managed_object
         instance.save()
-        instance.seen(source=source, address=address, port=port)
+        instance.seen(source=source, addresses=addresses, port=port)
         return instance
 
 

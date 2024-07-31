@@ -26,7 +26,7 @@ class CapsItem(_BaseModel):
 
 class Instance(_BaseModel):
     name: Optional[str] = None
-    address: Optional[str] = None
+    addresses: Optional[List[str]] = None
     fqdn: Optional[str] = None
     port: Optional[int] = None
     remote_id: Optional[str] = None
