@@ -152,6 +152,12 @@
             "type": "bool"
         },
         {
+            "name": "skip_zero_access",
+            "description": null,
+            "label": "Skip zero access port",
+            "type": "bool"
+        },
+        {
             "name": "fields",
             "description": null,
             "default": "managedobjectds.administrativedomain,managedobjectds.name,managedobjectds.hostname,managedobjectds.address,managedobjectds.profile,avail_percent,downtime,down_count,reboots",

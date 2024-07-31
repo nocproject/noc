@@ -15,7 +15,9 @@ from pymongo.read_preferences import ReadPreference
 
 # NOC modules
 from .base import FieldInfo, FieldType, BaseDataSource
+from noc.core.mongo.connection import get_db
 from noc.fm.models.reboot import Reboot
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectStatus
 
 OUTAGES_SQL = """
@@ -132,13 +134,33 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         end: datetime.datetime = kwargs.get("end")
         skip_full_avail = kwargs.get("skip_full_avail")
         skip_zero_avail = kwargs.get("skip_zero_avail")
+        skip_zero_access = kwargs.get("skip_zero_access")
         td = int((end - start).total_seconds())
         rb = cls.get_reboots_by_object(start_date=start, stop_date=end)
         outages = cls.get_outages_ch(start_date=start, stop_date=end)
         # Getting managed object statuses
-        for num, row in enumerate(
-            ManagedObjectStatus.objects.all().values("managed_object", "last", "status")
-        ):
+        moss = ManagedObjectStatus.objects.all()
+        if skip_zero_access:
+            ips = list(InterfaceProfile.objects.filter(is_uni=True).scalar("id"))
+            pipeline = [
+                {"$match": {"profile": {"$in": ips}}},
+                {
+                    "$group": {
+                        "_id": "$managed_object",
+                        "m": {"$max": "$oper_status"},
+                    }
+                },
+                {"$match": {"m": False}},
+                {"$project": {"_id": True}},
+            ]
+            data = (
+                get_db()["noc.interfaces"]
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(pipeline)
+            )
+            data = [d["_id"] for d in data]
+            moss = moss.exclude(managed_object__in=data)
+        for num, row in enumerate(moss.values("managed_object", "last", "status")):
             mo_id, status = row["managed_object"], row["status"]
             outage_duration, outage_count = outages.get(mo_id, (0, 0))
             s_outage = cls.get_status_outage(
