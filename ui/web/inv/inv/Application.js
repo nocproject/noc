@@ -521,7 +521,7 @@ Ext.define("NOC.inv.inv.Application", {
                               var data = Ext.decode(response.responseText);
                               NOC.info(data.message); 
                               this.up("window").close();
-                              this.onReloadNav();
+                              me.onReloadNav();
                             },
                             failure: function(response){
                               var data = Ext.decode(response.responseText);
