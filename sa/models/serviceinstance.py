@@ -7,25 +7,38 @@
 
 # Python modules
 import datetime
-from typing import Optional, Union
+from typing import Optional, List
 
 # Third-party modules
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     BooleanField,
     IntField,
     DateTimeField,
     FloatField,
-    ObjectIdField,
     ListField,
+    EmbeddedDocumentListField,
 )
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.ip import IP
 from noc.sa.models.managedobject import ManagedObject
+from noc.main.models.pool import Pool
 
 SOURCES = {"discovery", "etl", "manual"}
+
+
+class AddressItem(EmbeddedDocument):
+    pool: "Pool" = PlainReferenceField(Pool, required=False)
+    address: str = StringField(required=True)
+    address_bin = IntField()
+    is_active = BooleanField(default=True)
+    sources: List[str] = ListField(StringField(choices=list(SOURCES)))
+
+    def clean(self):
+        self.address_bin = IP.prefix(self.address).d
 
 
 class ServiceInstance(Document):
@@ -38,33 +51,37 @@ class ServiceInstance(Document):
 
     Attributes:
         service: Reference to Service
-        resource: Resource Id
+        resources: Resource Id
     """
 
     meta = {
         "collection": "serviceinstances",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["service", "managed_object", ("address", "port")],
+        "indexes": [
+            "service",
+            "managed_object",
+            "addresses.address",
+            "resources",
+            ("addresses.address_bin", "port"),
+        ],
     }
     name: str = StringField(required=True)
     service = PlainReferenceField("sa.Service", required=True)
     # For port services
     managed_object = ForeignKeyField(ManagedObject, required=False)
-    interface_id = ObjectIdField()  # Interface mapping
-    # subinterface_id = ObjectIdField()  # Subinterface mapping cache
-    address = StringField()
     fqdn = StringField()
     # ? discriminator
     # Sources that find sensor
     sources = ListField(StringField(choices=list(SOURCES)))
     port = IntField(min_value=0, max_value=65536)
+    addresses: List[AddressItem] = EmbeddedDocumentListField(AddressItem)
     # NRI port id, converted by portmapper to native name
     nri_port = StringField()
     # Object id in remote system
     remote_id = StringField()
     # CPE
-    resource = StringField(required=False)
+    resources: List[str] = ListField(StringField(required=False))
     status: bool = BooleanField()
     # Timestamp of last confirmation
     last_seen = DateTimeField()
@@ -81,37 +98,63 @@ class ServiceInstance(Document):
         return name
 
     def on_save(self):
-        if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "resources" in self._changed_fields:
             pass
         #    self.unbind_interface()
 
     @property
     def interface(self):
+        """Return Interface resource"""
         from noc.inv.models.interface import Interface
         from noc.inv.models.subinterface import SubInterface
 
-        if self.subinterface_id:
-            return SubInterface.objects.filter(id=self.subinterface).first()
-        if self.interface_id:
-            return Interface.objects.filter(id=self.interface_id).first()
+        if not self.resources:
+            return None
+        for r in self.resources:
+            r_code, rid, *path = r.split(":")
+            if r_code.startswith("si"):
+                return SubInterface.objects.filter(id=rid).first()
+            elif r_code.startswith("if"):
+                return Interface.objects.filter(id=rid).first()
         return None
+
+    @property
+    def address(self) -> Optional[str]:
+        """Return first active Address"""
+        if not self.addresses:
+            return None
+        return self.addresses[0].address
 
     def seen(
         self,
-        source: Optional[str] = None,
-        address: Optional[str] = None,
+        source: Optional[str],
+        pool: Optional[Pool] = None,
+        addresses: Optional[List[str]] = None,
         port: Optional[str] = None,
         ts: Optional[datetime.datetime] = None,
     ):
         """
         Seen Instance
         """
-        if source and source in SOURCES:
+        if source not in self.sources:
             self.sources = list(set(self.sources or []).union({source}))
             self._get_collection().update_one({"_id": self.id}, {"$addToSet": {"sources": source}})
-        elif source and source not in SOURCES:
-            self.sources.append(source)
-            self._get_collection().update_one({"_id": self.id}, {"$addToSet": {"sources": source}})
+        if port and self.port != port:
+            self.port = port
+            ServiceInstance.objects(id=self.id).update(port=port)
+        if addresses is None:
+            return
+        new = set(addresses)
+        for a in self.addresses:
+            if a.address in new and source not in a.sources:
+                a.sources.append(source)
+            if a.address in new:
+                new.remove(a.address)
+        for a in new:
+            self.addresses.append(
+                AddressItem(address=a, address_bin=IP.prefix(a).d, sources=[source], pool=pool),
+            )
+        ServiceInstance.objects(id=self.id).update(addresses=self.addresses, port=port)
 
     def unseen(self, source: Optional[str] = None):
         """

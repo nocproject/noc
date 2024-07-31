@@ -54,7 +54,7 @@ class ServiceLoader(BaseLoader):
                 si.unseen("etl")
                 continue
             i = instances.pop(si.remote_id)
-            si.seen("etl", address=i.address, port=i.port)
+            si.seen("etl", addresses=i.addresses, port=i.port)
             if si.fqdn != i.fqdn:
                 si.fqdn = i.fqdn
                 si.save()
@@ -62,9 +62,9 @@ class ServiceLoader(BaseLoader):
             o.register_instance(
                 source="etl",
                 name="",
-                address=i.address,
-                fqdn=i.fqdn,
                 port=i.port,
+                addresses=i.addresses,
+                fqdn=i.fqdn,
                 remote_id=i.remote_id,
             )
 
