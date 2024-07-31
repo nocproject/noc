@@ -945,7 +945,7 @@ class Object(Document):
         name: str,
         remote_object: "Object",
         remote_name: str,
-        data: Dict[str, Any],
+        data: Optional[Dict[str, Any]] = None,
         reconnect: bool = False,
     ) -> None:
         """
@@ -974,6 +974,7 @@ class Object(Document):
             remote_object.parent_connection = name
             remote_object.save()
         elif lc.is_same_level:
+            data = data or {}
             # Check existing connections
             if lc.type.genders in ("s", "m", "f", "mf"):
                 ec, r_object, r_name = self.get_p2p_connection(name)
