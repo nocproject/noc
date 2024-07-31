@@ -14,6 +14,7 @@ from typing import Dict, Optional, List, Any, Union
 
 # Third-party modules
 import orjson
+from bson import ObjectId
 from django.db.models.query_utils import Q as d_Q
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -40,6 +41,8 @@ from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.modeltemplate import ResourceItem, DataItem as ResourceDataItem
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.agent import Agent
@@ -52,7 +55,7 @@ SELECT
     IPv4NumToString(ip) as address,
     pool,
     groupArray(source) as sources,
-    groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels)) as all_data,
+    groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels, service_groups, clients_groups)) as all_data,
     groupUniqArrayArray(checks) as all_checks,
     groupUniqArrayArray(labels) as all_labels,
     max(last_ts) as last_ts
@@ -60,8 +63,9 @@ FROM (
     SELECT ip, pool, remote_system,
      argMax(source, ts) as source, argMax(hostname, ts) as hostname, argMax(description, ts) as description,
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
-     argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(ts, ts) as max_ts,
-     argMax(ts, ts) as last_ts
+     argMax(data, ts) as data, argMax(labels, ts) as labels,
+     argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
+     argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
     FROM noc.purgatorium
     GROUP BY ip, pool, remote_system
     )
@@ -94,6 +98,8 @@ class PurgatoriumData(object):
     ts: Optional[datetime.datetime] = None
     remote_system: Optional[str] = None
     labels: Optional[List[str]] = None
+    service_groups: Optional[List[ObjectId]] = None
+    client_groups: Optional[List[ObjectId]] = None
     data: Optional[Dict[str, str]] = None
 
 
@@ -122,6 +128,8 @@ class DataItem(EmbeddedDocument):
     remote_system: "RemoteSystem" = ReferenceField(RemoteSystem, required=False)
     remote_id: str = StringField(required=False)
     labels: List[str] = ListField(StringField())
+    service_groups: List[ObjectId] = ListField(ObjectIdField())
+    client_groups: List[ObjectId] = ListField(ObjectIdField())
     data = DictField()
 
     def __eq__(self, other: "DataItem") -> bool:
@@ -208,7 +216,8 @@ class DiscoveredObject(Document):
     labels: List[str] = ListField(StringField())  # Manual Set
     effective_labels: List[str] = ListField(StringField())
     # Calculated duplicate hash
-    # duplicate_hash =
+    # duplicate_hashes =
+    # duplicate_keys =
     #
     bi_id = LongField(unique=True)
     # Comments ?
@@ -337,33 +346,62 @@ class DiscoveredObject(Document):
         if set(o.sources).difference(set(sources)):
             o.sources = sources
             o.is_dirty = True
-        # Set Status, is_dirty
-        o.save()
-        if rule.default_action == "approve":
-            o.fire_event("approve")
+        action = rule.get_action(o.checks, o.effective_labels, o.get_effective_data())
+        if action == "skip":
+            return
+        elif action == "ignore" and not o.id:
+            return
+        if not o.id or o.is_dirty:
+            # Set Status, is_dirty
+            o.is_dirty = False
+            o.save()
+        o.fire_event("seen")
         o.touch(ts=update_ts)
+        if action == "ignore":
+            o.fire_event("ignore")
+        elif action == "approve":
+            o.fire_event("approve")
         return o
 
-    def get_ctx(self) -> Dict[str, Any]:
+    def get_ctx(self) -> ResourceItem:
         """
         Getting Context for Synchronise object template
         """
-        ctx = {
-            "hostname": self.hostname,
-            "description": self.description,
-            "address": self.address,
-            "effective_labels": self.effective_labels,
-        }
-        ctx |= self.effective_data
+        r = ResourceItem(
+            id=self.managed_object,
+            labels=self.effective_labels,
+            data=[
+                ResourceDataItem(name="name", value=self.hostname),
+                ResourceDataItem(name="description", value=self.description),
+                ResourceDataItem(name="hostname", value=self.hostname),
+                ResourceDataItem(name="address", value=self.address),
+                ResourceDataItem(name="pool", value=str(self.pool.id)),
+            ],
+        )
+        mappings = {}
+        s_groups = set()
         for d in self.data:
-            if d.remote_system and d.remote_id:
-                ctx["remote_system"] = d.remote_system
-                ctx["remote_id"] = d.remote_id
+            for k, v in d.data.items():
+                r.data.append(
+                    ResourceDataItem(
+                        name=k,
+                        value=v,
+                        remote_system=str(d.remote_system.id) if d.remote_system else None,
+                    )
+                )
+            if d.remote_system and d.remote_system not in mappings:
+                mappings[d.remote_system] = d.remote_id
+            if d.service_groups:
+                s_groups.update(set(d.service_groups))
+        if mappings:
+            r.mappings = mappings
+        if s_groups:
+            r.service_groups = list(s_groups)
         # Iter Origin
         for o in DiscoveredObject.objects.filter(origin=self.id):
             if o.effective_labels:
-                ctx["effective_labels"] += o.effective_labels
-        return ctx
+                r.labels += o.effective_labels
+        return r
 
     def get_managed_object_query(self, pool: Optional[Pool] = None):
         """Query for request Managed Object"""
@@ -435,12 +473,8 @@ class DiscoveredObject(Document):
                 mo = DiscoveryID.find_object(ipv4_address=self.address)
         if dry_run:
             return mo
-        if not mo:
-            mo = ManagedObject.get_object_by_template(
-                address=self.address,
-                pool=pool,
-                name=self.hostname,
-            )
+        if not mo and self.rule.default_template:
+            mo = self.rule.default_template.render(self.get_ctx())
         elif mo and not self.managed_object:
             # Duplicate
             duplicates = self.check_duplicate(managed_object=mo)
@@ -449,7 +483,7 @@ class DiscoveredObject(Document):
                     is_dirty=True,
                     origin=self.id,
                 )
-        mo.update_template_data(self.get_ctx())
+        # mo.update_template_data(self.get_ctx())
         mo.save()
         self.managed_object = mo.id
         self.is_dirty = False
@@ -470,17 +504,22 @@ class DiscoveredObject(Document):
         source,
         data: Dict[str, str],
         labels: Optional[List[str]] = None,
+        service_groups: Optional[List[ObjectId]] = None,
+        client_groups: Optional[List[ObjectId]] = None,
         remote_system: Optional[str] = None,
         ts: Optional[datetime.datetime] = None,
     ):
         """
         Set data for source
-        :param source: Source code
-        :param data: Dict of data
-        :param labels: label list
-        :param remote_system: Remote System from data
-        :param ts: timestamp when data updated
-        :return:
+
+        Args:
+            source: Source code
+            data: Dict of data
+            labels: label list
+            service_groups: Service groups
+            client_groups: Client groups
+            remote_system: Remote System from data
+            ts: timestamp when data updated
         """
         if source == ETL_SOURCE and not remote_system:
             raise AttributeError("remote_system param is required for 'etl' source")
@@ -492,6 +531,10 @@ class DiscoveredObject(Document):
                 continue
             if d.last_update == last_update:
                 continue
+            if set(service_groups or []) != set(d.service_groups or []):
+                d.service_groups = service_groups
+            if set(client_groups or []) != set(d.client_groups or []):
+                d.client_groups = client_groups
             d.data = data
             d.labels = labels or []
             d.last_update = last_update
@@ -503,6 +546,8 @@ class DiscoveredObject(Document):
                     remote_system=remote_system,
                     remote_id=data.pop("remote_id", None),
                     labels=labels,
+                    service_groups=service_groups,
+                    client_groups=client_groups,
                     data=data,
                     last_update=last_update,
                 )
@@ -517,9 +562,9 @@ class DiscoveredObject(Document):
         *
         # source, remote_system, data, labels, checks
         bulk ?
-        :param data:
-        :param checks:
-        :return:
+        Args:
+            data:
+            checks: List processed checks
         """
         # Merge Data
         for d in data:
@@ -529,7 +574,9 @@ class DiscoveredObject(Document):
             rs = None
             if d.remote_system:
                 rs = RemoteSystem.get_by_name(d.remote_system)
-            self.set_data(d.source, d.data, d.labels, remote_system=rs)
+            self.set_data(
+                d.source, d.data, d.labels, d.service_groups, d.client_groups, remote_system=rs
+            )
         if not checks and not self.checks:
             return
         checks = [
@@ -579,14 +626,15 @@ def sync_purgatorium():
             ranges[p].append(r)
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True)
-    processed, updated = 0, 0
+    processed, updated, removed = 0, 0, 0
     for row in r.splitlines():
         row = orjson.loads(row)
         pool = Pool.get_by_bi_id(row["pool"])
         data = defaultdict(dict)
         d_labels = defaultdict(list)
+        groups = defaultdict(list)
         # hostnames, descriptions, uptimes, all_data,
-        for source, rs, d1, d2, labels in row["all_data"]:
+        for source, rs, d1, d2, labels, s_groups, c_groups in row["all_data"]:
             if not int(d1["uptime"]):
                 # Filter 0 uptime
                 del d1["uptime"]
@@ -601,6 +649,15 @@ def sync_purgatorium():
             data[(source, rs)].update(d1 | d2)
             #
             d_labels[(source, rs)] = labels
+            #
+            for rg in s_groups or []:
+                rg = ResourceGroup.get_by_bi_id(rg)
+                if rg:
+                    groups[(source, rs, "s")].append(rg.id)
+            for rg in c_groups or []:
+                rg = ResourceGroup.get_by_bi_id(rg)
+                if rg:
+                    groups[(source, rs, "c")].append(rg.id)
         last_ts = datetime.datetime.fromisoformat(row["last_ts"])
         r = DiscoveredObject.register(
             pool,
@@ -613,6 +670,8 @@ def sync_purgatorium():
                     remote_system=rs,
                     data=d,
                     labels=d_labels.get((source, rs)) or [],
+                    service_groups=groups.get((source, rs, "s")) or [],
+                    client_groups=groups.get((source, rs, "c")) or [],
                 )
                 for (source, rs), d in data.items()
             ],
@@ -624,7 +683,17 @@ def sync_purgatorium():
         processed += 1
         if r:
             updated += 1
-    logger.info("End Purgatorium Sync: %s. Processed: %s/Updated: %s", ls, processed, updated)
     now = datetime.datetime.now()
     for o in DiscoveredObject.objects.filter(expired__gt=now):
         o.fire_event("expired")
+    logger.debug("Removing expired objects")
+    for o in DiscoveredObject.objects.filter(state__in=list(State.objects.filter(is_wiping=True))):
+        removed += 1
+        o.delete()
+    logger.info(
+        "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s",
+        ls,
+        processed,
+        updated,
+        removed,
+    )

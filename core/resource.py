@@ -41,7 +41,7 @@ def from_resource(resource: str) -> Tuple[Union[Model, Document], Optional[str]]
         raise ValueError(msg)
     model = get_model(model_id)
     # Dereference item
-    item = model.get_by_id(parts[2])
+    item = model.get_by_id(parts[1])
     if not item:
         msg = f"Cannot dererence `{parts[2]}`"
         raise KeyError(msg)
@@ -50,3 +50,27 @@ def from_resource(resource: str) -> Tuple[Union[Model, Document], Optional[str]]
         return item, None
     # Reference to subcomponent
     return item, parts[2]
+
+
+def resource_label(resource: str) -> str:
+    """
+    Convert resource to human-readable label.
+
+    Resolve through resource model's
+    `.resource_label` method, if exists.
+    Otherwise use `str()`
+
+    Args:
+        resource: Resource reference
+
+    Returns:
+        Formatted label.
+    """
+    item, part = from_resource(resource)
+    if hasattr(item, "resource_label"):
+        rl = item.resource_label()
+    else:
+        rl = str(item)
+    if part:
+        return f"{rl} @ {part}"
+    return rl

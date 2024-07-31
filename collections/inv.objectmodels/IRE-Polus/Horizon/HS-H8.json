@@ -5,7 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "Полуслотовый адаптер",
     "connection_rule__name": "IRE-Polus | Horizon",
-    "cr_context": "LINECARD",
+    "cr_context": "ADAPTER",
     "connections": [
         {
             "name": "in",
@@ -60,5 +60,6 @@
             "interface": "asset",
             "value": ["HS-H8"]
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | HS-H8"
 }

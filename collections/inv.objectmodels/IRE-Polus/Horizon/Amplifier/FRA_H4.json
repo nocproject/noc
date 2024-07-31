@@ -1,0 +1,108 @@
+{
+    "name": "IRE-Polus | Horizon | Amplifier | FRA-H4",
+    "$collection": "inv.objectmodels",
+    "uuid": "9c07396d-de34-4d81-944f-cb60d15591f3",
+    "vendor__code": "IRE-POLUS",
+    "description": "FRA-H4 – волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель)",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARDH4",
+    "labels": ["noc::inv::lc"],
+    "configuration_rule__name": "OM/OD Rules",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "MON_LINE",
+            "description": "Мониторинг выхода линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_BS",
+            "description": "Мониторинг обратного сигнала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "LINE",
+            "description": "Линейный выход сигнала и накачки",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | E2000"
+        },
+        {
+            "name": "CLIENT_OUT",
+            "description": "Клиентский выход",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | E2000"
+        },
+        {
+            "name": "CLIENT_RX",
+            "description": " Клиентский вход",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "CLIENT_TX",
+            "description": "Клиентский выход",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_RX",
+            "description": "Вход служебного канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_TX",
+            "description": "Выход служебного канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 20.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 150
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 278
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.1
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FRA-H4"]
+        }
+    ]
+}

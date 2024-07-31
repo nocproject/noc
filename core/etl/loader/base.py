@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Data Loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,8 +14,9 @@ import csv
 import time
 import shutil
 import functools
+from collections import defaultdict
 from io import StringIO, TextIOWrapper
-from typing import Any, Optional, Iterable, Tuple, List, Dict, Set
+from typing import Any, Optional, Iterable, Tuple, List, Dict, Set, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -68,6 +69,9 @@ class BaseLoader(object):
     # List of tags to add to the created records
     tags = []
 
+    # Register model as Mapping Scope
+    model_mappings: Dict[str, str] = {}  # scope -> Model
+
     rx_archive = re.compile(
         r"^import-\d{4}(?:-\d{2}){5}.jsonl%s$" % compressor.ext.replace(".", r"\.")
     )
@@ -76,11 +80,12 @@ class BaseLoader(object):
     discard_deferred = False
     # Ignore auto-generated unique fields
     ignore_unique = {"bi_id"}
+    unique_index: Tuple[str, ...] = None
     # Array fields need merge values
     incremental_change = {"labels", "static_client_groups", "static_service_groups"}
     # Workflow fields
     workflow_state_sync = False
-    workflow_fields = {"state", "state_changed", "event"}
+    workflow_fields: Set[str] = {"state", "state_changed", "event"}
     workflow_event_model = False
     workflow_add_event = "seen"
     workflow_delete_event = "missed"
@@ -104,7 +109,8 @@ class BaseLoader(object):
         self.import_dir = os.path.join(config.path.etl_import, self.system.name, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(self.import_dir, "mappings.csv")
-        self.mappings = {}
+        self.mappings: Dict[str, str] = {}
+        self.remote_mappings: Dict[Tuple[str, str], Dict[str, str]] = {}
         self.wf_state_mappings = {}
         self.ensured_labels = set()
         self.new_state_path = None
@@ -112,11 +118,15 @@ class BaseLoader(object):
         self.c_change = 0
         self.c_delete = 0
         # Mapped fields
-        self.mapped_fields = self.data_model.get_mapped_fields()
+        self.mapped_fields: Dict[str, str] = (
+            self.data_model.get_mapped_fields()
+        )  # field_name -> loader_name
         # Build clean map
         self.clean_map = {}  # field name -> clean function
         self.pending_deletes: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
         self.referred_errors: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
+        if not self.model:
+            return
         if self.is_document:
             import mongoengine.errors
 
@@ -189,6 +199,44 @@ class BaseLoader(object):
                 continue
             self.ensured_labels.add(ll.name)
 
+    @classmethod
+    def get_remote_mappings(cls, remote_system: str, name: str) -> Dict[str, str]:
+        """
+        Return mappings from another remote_system
+
+        Args:
+            remote_system: Remote System name
+            name: Loader name
+        """
+        from noc.main.models.remotesystem import RemoteSystem
+
+        rs = RemoteSystem.get_by_name(remote_system)
+        if not rs:
+            raise ValueError("Unknown Remote System: %s" % remote_system)
+        ch = rs.get_loader_chain()
+        loader = ch.get_loader(name)
+        if not loader.mappings:
+            loader.load_mappings()
+        return loader.mappings
+
+    @classmethod
+    def get_mapping(cls, scope: str, value: Optional[str]) -> Optional[Any]:
+        """
+        Resolve mapping by NOC Mapping
+
+        Args:
+            scope: Mapping name
+            value: Resolve value
+        """
+        if scope not in cls.model_mappings:
+            raise ValueError("Unknown Scope: %s" % scope)
+        model = cls.model_mappings[scope]
+        if hasattr(model, "get_by_name"):
+            o = model.get_by_name(value)
+        else:
+            o = model.objects.filter(name=value).first()
+        return o
+
     def get_new_state(self) -> Optional[TextIOWrapper]:
         """
         Returns file object of new state, or None when not present
@@ -228,9 +276,10 @@ class BaseLoader(object):
     ) -> Iterable[BaseModel]:
         """
         Iterate over JSONl stream and yield model instances
-        :param f:
-        :param data_model:
-        :return:
+
+        Args:
+            f:
+            data_model:
         """
         dm = data_model or self.data_model
         for line in f:
@@ -384,13 +433,17 @@ class BaseLoader(object):
             o.save()
         except self.integrity_exception as e:
             self.logger.warning("Integrity error: %s", e)
-            assert self.unique_field
+            assert self.unique_field or self.unique_index
             if not self.is_document:
                 from django.db import connection
 
                 connection._rollback()
             # Fallback to change object
-            o = self.model.objects.get(**{self.unique_field: v[self.unique_field]})
+            if self.unique_field:
+                q = {self.unique_field: v[self.unique_field]}
+            else:
+                q = {i: getattr(o, i) for i in self.unique_index}
+            o = self.model.objects.get(**q)
             for k, nv in v.items():
                 setattr(o, k, nv)
             o.save()
@@ -428,7 +481,27 @@ class BaseLoader(object):
             setattr(o, k, nv)
         if self.workflow_state_sync and state:
             self.change_workflow(o, state, state_changed)
-        o.save()
+        try:
+            o.save()
+        except self.integrity_exception as e:
+            self.logger.warning("Integrity error: %s", e)
+            assert self.unique_field or self.unique_index
+            if not self.is_document:
+                from django.db import connection
+
+                connection._rollback()
+            # Fallback to change object
+            if self.unique_field:
+                q = {self.unique_field: v[self.unique_field]}
+            else:
+                q = {i: getattr(o, i) for i in self.unique_index}
+            o = self.model.objects.get(**q)
+            for k, nv in v.items():
+                setattr(o, k, nv)
+            o.save()
+        except Exception as e:
+            error_report()
+            raise e
         return o
 
     @property
@@ -441,7 +514,7 @@ class BaseLoader(object):
         """
         Create new record
         """
-        self.logger.debug("Add: %s", item.json())
+        self.logger.debug("Add: %s", item.model_dump())
         v = self.clean(item)
         if "id" in v:
             del v["id"]
@@ -484,7 +557,7 @@ class BaseLoader(object):
         """
         Create change record
         """
-        self.logger.debug("Change: %s", n.json())
+        self.logger.debug("Change: %s", n.model_dump())
         self.c_change += 1
         nv = self.clean(n)
         changes = {"remote_system": nv["remote_system"], "remote_id": nv["remote_id"]}
@@ -618,10 +691,18 @@ class BaseLoader(object):
         r["remote_id"] = self.clean_str(item.id)
         return r
 
-    def clean_any(self, value: Any) -> Any:
+    @classmethod
+    def clean_ed_list(cls, model, value: List[Dict[str, Any]]):
+        if not value:
+            return None
+        return [model(**v) for v in value]
+
+    @classmethod
+    def clean_any(cls, value: Any) -> Any:
         return value
 
-    def clean_str(self, value) -> Optional[str]:
+    @classmethod
+    def clean_str(cls, value) -> Optional[str]:
         if value:
             if isinstance(value, str):
                 return smart_text(value)
@@ -632,10 +713,14 @@ class BaseLoader(object):
         else:
             return None
 
-    def clean_map_str(self, mappings, value):
+    def clean_map_str(self, mappings: Dict[str, str], loader_name, value):
         value = self.clean_str(value)
         if self.disable_mappings and not mappings:
             return value
+        elif value and isinstance(value, dict) and "remote_system" in value:
+            return self.clean_remote_reference(value["remote_system"], loader_name, value["id"])
+        elif isinstance(value, dict) and "scope" in value:
+            return self.get_mapping(value["scope"], value["value"])
         elif value:
             try:
                 value = mappings[value]
@@ -644,7 +729,8 @@ class BaseLoader(object):
                 raise self.Deferred
         return value
 
-    def clean_bool(self, value: str) -> Optional[bool]:
+    @classmethod
+    def clean_bool(cls, value: str) -> Optional[bool]:
         if value == "" or value is None:
             return None
         try:
@@ -654,11 +740,34 @@ class BaseLoader(object):
         value = value.lower()
         return value in ("t", "true", "y", "yes")
 
-    def clean_reference(self, mappings, r_model, value):
+    def clean_remote_reference(self, remote_system, loader_name, value) -> Optional[str]:
+        """
+        Resolve value on Remote System Mapping
+
+        Args:
+            remote_system: Remote System Name
+            loader_name: Mapping loader name
+            value: Value for resolved
+        """
+        if (remote_system, loader_name) not in self.remote_mappings:
+            self.remote_mappings[(remote_system, loader_name)] = self.get_remote_mappings(
+                remote_system,
+                loader_name,
+            )
+        return self.remote_mappings[(remote_system, loader_name)][value]
+
+    def clean_reference(
+        self, mappings: Dict[str, str], r_model, loader_name: str, value: Union[str, Dict[str, str]]
+    ) -> Optional[str]:
         if not value:
             return None
         elif self.disable_mappings and not mappings:
             return value
+        elif isinstance(value, dict) and "remote_system" in value:
+            value = self.clean_remote_reference(value["remote_system"], loader_name, value["id"])
+            return self.chain.cache[r_model, value]
+        elif isinstance(value, dict) and "scope" in value:
+            return self.get_mapping(value["scope"], value["value"])
         else:
             # @todo: Get proper mappings
             try:
@@ -668,11 +777,18 @@ class BaseLoader(object):
                 raise self.Deferred()
             return self.chain.cache[r_model, value]
 
-    def clean_int_reference(self, mappings, r_model, value):
+    def clean_int_reference(
+        self, mappings: Dict[str, str], r_model, loader_name: str, value: str
+    ) -> Optional[int]:
         if not value:
             return None
         elif self.disable_mappings and not mappings:
             return value
+        elif isinstance(value, dict) and "remote_system" in value:
+            value = self.clean_remote_reference(value["remote_system"], loader_name, value["id"])
+            return self.chain.cache[r_model, int(value)]
+        elif isinstance(value, dict) and "scope" in value:
+            return self.get_mapping(value["scope"], value["value"])
         else:
             # @todo: Get proper mappings
             try:
@@ -696,7 +812,7 @@ class BaseLoader(object):
         self.mappings[str(rv)] = str(lv)
 
     def update_document_clean_map(self):
-        from mongoengine.fields import BooleanField, ReferenceField
+        from mongoengine.fields import BooleanField, ReferenceField, EmbeddedDocumentListField
         from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
         self.logger.debug("Update Document clean map")
@@ -711,6 +827,7 @@ class BaseLoader(object):
                         self.clean_reference,
                         self.chain.get_mappings(self.mapped_fields[fn]),
                         ft.document_type,
+                        self.mapped_fields[fn],
                     )
             elif isinstance(ft, ForeignKeyField):
                 if fn in self.mapped_fields:
@@ -718,10 +835,18 @@ class BaseLoader(object):
                         self.clean_int_reference,
                         self.chain.get_mappings(self.mapped_fields[fn]),
                         ft.document_type,
+                        self.mapped_fields[fn],
                     )
+            elif isinstance(ft, EmbeddedDocumentListField):
+                self.clean_map[fn] = functools.partial(
+                    self.clean_ed_list,
+                    ft.field.document_type,
+                )
             elif fn in self.mapped_fields:
                 self.clean_map[fn] = functools.partial(
-                    self.clean_map_str, self.chain.get_mappings(self.mapped_fields[fn])
+                    self.clean_map_str,
+                    self.chain.get_mappings(self.mapped_fields[fn]),
+                    self.mapped_fields[fn],
                 )
 
     def update_model_clean_map(self):
@@ -740,6 +865,7 @@ class BaseLoader(object):
                         self.clean_reference,
                         self.chain.get_mappings(self.mapped_fields[f.name]),
                         f.document,
+                        self.mapped_fields[f.name],
                     )
             elif isinstance(f, ForeignKey):
                 if f.name in self.mapped_fields:
@@ -747,10 +873,13 @@ class BaseLoader(object):
                         self.clean_reference,
                         self.chain.get_mappings(self.mapped_fields[f.name]),
                         f.remote_field.model,
+                        self.mapped_fields[f.name],
                     )
             elif f.name in self.mapped_fields:
                 self.clean_map[f.name] = functools.partial(
-                    self.clean_map_str, self.chain.get_mappings(self.mapped_fields[f.name])
+                    self.clean_map_str,
+                    self.chain.get_mappings(self.mapped_fields[f.name]),
+                    self.mapped_fields[f.name],
                 )
 
     def check(self, chain):
@@ -782,7 +911,7 @@ class BaseLoader(object):
             self.logger.info("No new state, skipping")
             return 0
         new_state = self.iter_jsonl(ns)
-        uv = set()
+        uv: Union[str, Tuple[str, str]] = set()
         m_data = {}  # field_number -> set of mapped ids
         # Load mapped ids
         for f in self.mapped_fields:
@@ -792,6 +921,7 @@ class BaseLoader(object):
                 ls = line.get_current_state()
             ms = self.iter_jsonl(ls, data_model=line.data_model)
             m_data[f] = set(row.id for row in ms)
+        r_data = defaultdict(dict)  # remote_system -> field_name -> set of mapped ids
         # Process data
         n_errors = 0
         for row in new_state:
@@ -815,6 +945,8 @@ class BaseLoader(object):
                 if f in self.ignore_unique:
                     continue
                 v = row[f]
+                if isinstance(v, dict) and "remote_system" in v:
+                    v = (v["remote_system"], v["id"])
                 if v in uv:
                     self.logger.error(
                         "ERROR: Field #(%s) value is not unique: %s",
@@ -830,7 +962,34 @@ class BaseLoader(object):
                 if i >= lr:
                     continue
                 v = row[f]
-                if v and v not in m_data[f]:
+                if v and "remote_system" in v:
+                    # Mapping with remote system
+                    rs, value = v["remote_system"], v["id"]
+                    if rs not in r_data or f not in r_data[rs]:
+                        r_data[rs][f] = set(self.get_remote_mappings(rs, self.mapped_fields[f]))
+                    if value and value not in r_data[rs][f]:
+                        self.logger.error(
+                            "ERROR: Field #%d(%s) == '%s::%s' refers to non-existent record: %s",
+                            i,
+                            f,
+                            rs,
+                            row[f]["id"],
+                            row,
+                        )
+                        n_errors += 1
+                elif isinstance(v, dict) and "scope" in v:
+                    value = self.get_mapping(v["scope"], v["value"])
+                    if not value:
+                        self.logger.error(
+                            "ERROR: Field #%d(%s) == '%s::%s' refers to non-existent NOC record: %s",
+                            i,
+                            f,
+                            v["scope"],
+                            row[f]["value"],
+                            row,
+                        )
+                        n_errors += 1
+                elif v and v not in m_data[f]:
                     self.logger.error(
                         "ERROR: Field #%d(%s) == '%s' refers to non-existent record: %s",
                         i,

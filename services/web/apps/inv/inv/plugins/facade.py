@@ -64,7 +64,7 @@ class FacadePlugin(InvPlugin):
         def load_svg(facade: Facade) -> SVG:
             svg = cache.get(facade.id)
             if svg:
-                return SVG
+                return svg
             svg = SVG.from_string(facade.data)
             cache[facade.id] = svg
             return svg

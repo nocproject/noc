@@ -1,0 +1,51 @@
+{
+    "name": "IRE-Polus | Horizon | FB-K4",
+    "$collection": "inv.objectmodels",
+    "uuid": "b8a3bb59-f922-416c-aea3-efaff99e93c9",
+    "vendor__code": "IRE-POLUS",
+    "description": "K4-H8 and K10-H8 Power Unit Fan Module",
+    "cr_context": "FAN",
+    "labels": ["noc::inv::fan"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Fan Slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | FAN"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FB-K4"]
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 100
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 40
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 103
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 12.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.27
+        }
+    ],
+    "front_facade__name": "RBS | iData | FAN IP1592"
+}

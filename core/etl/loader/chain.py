@@ -34,7 +34,7 @@ class LoaderChain(object):
 
     def get_mappings(self, name):
         """
-        Retuns mappings for a loader *name*
+        Returns mappings for a loader *name*
         """
         return self.get_loader(name).mappings
 

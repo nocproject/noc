@@ -1,0 +1,6 @@
+{
+    "name": "RBS | iData | HS-H8",
+    "$collection": "inv.facades",
+    "uuid": "a79b5f40-1779-49eb-b294-82b31377c8c5",
+    "data": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<svg viewBox=\"0 0 351 30\" xmlns=\"http://www.w3.org/2000/svg\">\n  <title>RBS | iData | HS-H8</title>\n  <defs/>\n  <g transform=\"matrix(1, 0, 0, 1, -95.999994, -132.000003)\">\n    <title>HS-H8</title>\n    <rect width=\"175.5\" height=\"30\" style=\"fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); vector-effect: non-scaling-stroke;\" x=\"96\" y=\"132\" id=\"noc-slot-1\">\n      <title>Card Slot 1</title>\n    </rect>\n    <rect width=\"175.5\" height=\"30\" style=\"fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); vector-effect: non-scaling-stroke;\" x=\"271.5\" y=\"132\" id=\"noc-slot-2\">\n      <title>Card Slot 2</title>\n    </rect>\n  </g>\n</svg>"
+}

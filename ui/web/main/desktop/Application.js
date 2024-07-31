@@ -334,7 +334,7 @@ Ext.define("NOC.main.desktop.Application", {
     });
     // Launch welcome application
     if(!Ext.History.getHash()){
-      me.launchTab("NOC.main.welcome.Application", "Welcome", {});
+      me.launchTab("NOC.main.home.Application", "Home", {});
     }
   },
   //

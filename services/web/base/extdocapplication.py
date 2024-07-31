@@ -73,6 +73,8 @@ class ExtDocApplication(ExtApplication):
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id", "state"}
     SECRET_MASK = "********"
+    # Add `__label` items
+    field_labels = {}  # field_name -> callable(field_value) -> result
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -358,6 +360,8 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
+                elif f.name in self.field_labels:
+                    r[f"{f.name}__label"] = self.field_labels[f.name](v)
                 elif (
                     f.name in {"labels", "effective_labels", "default_labels"}
                     and isinstance(f, ListField)

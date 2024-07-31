@@ -82,6 +82,7 @@ class MatchLabels(EmbeddedDocument):
         # SA
         ("sa.CommandSnippet", "resource_group"),
         ("sa.ObjectNotification", "resource_group"),
+        ("main.ModelTemplate", "groups__group"),
         # FM
         ("fm.AlarmDiagnosticConfig", "resource_group"),
         ("fm.AlarmEscalation", "escalations__resource_group"),

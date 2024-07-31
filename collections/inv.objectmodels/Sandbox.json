@@ -1,0 +1,16 @@
+{
+    "name": "Sandbox",
+    "$collection": "inv.objectmodels",
+    "uuid": "54233881-3e91-4043-8dbf-f475fa059cb0",
+    "vendor__code": "NOC",
+    "description": "Sandboxed part of the inventory",
+    "connections": [],
+    "data": [
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
+        }
+    ],
+    "glyph__name": "FontAwesome | object-group"
+}

@@ -1,0 +1,12 @@
+{
+    "name": "16GFC",
+    "code": "16GFC",
+    "$collection": "inv.protocols",
+    "uuid": "2104d313-4ae4-45fe-ba53-993e3f301d94",
+    "description": "16G Fibre Channel",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODUC2",
+    "technology__name": "OTN"
+}

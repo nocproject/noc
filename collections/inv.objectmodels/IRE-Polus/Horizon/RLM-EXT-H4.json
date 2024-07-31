@@ -1,0 +1,80 @@
+{
+    "name": "IRE-Polus | Horizon  | RLM-EXT-H4",
+    "$collection": "inv.objectmodels",
+    "uuid": "eeef5ab2-ccbc-470c-a579-741d81bb5321",
+    "vendor__code": "IRE-POLUS",
+    "description": "RLM-EXT-H4 – Рамановский лазерный модуль карта расширения.",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARDH4",
+    "labels": ["noc::inv::lc"],
+    "configuration_rule__name": "OM/OD Rules",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "MON_OUT",
+            "description": "Мониторинг накачки ROPA",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_BS",
+            "description": "Мониторинг обратного сигнала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "LINE",
+            "description": "Вход линии (выход накачки ROPA)",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | E2000"
+        },
+        {
+            "name": "EXT",
+            "description": "Выход расширения",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | E2000"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 40.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 150
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 278
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RLM-EXT-H4"]
+        }
+    ]
+}

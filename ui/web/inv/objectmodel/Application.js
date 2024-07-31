@@ -23,6 +23,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     "NOC.inv.objectconfigurationrule.LookupField",
     "Ext.ux.form.GridField",
     "NOC.inv.facade.LookupField",
+    "NOC.main.glyph.LookupField",
   ],
   model: "NOC.inv.objectmodel.Model",
   search: true,
@@ -91,6 +92,11 @@ Ext.define("NOC.inv.objectmodel.Application", {
           width: 150,
         },
         {
+          text: __("Short Label"),
+          dataIndex: "short_label",
+          width: 150,
+        },
+        {
           text: __("Connection Rule"),
           dataIndex: "connection_rule",
           renderer: NOC.render.Lookup("connection_rule"),
@@ -107,10 +113,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
           flex: 1,
         },
         {
-          text: __("Tags"),
-          dataIndex: "tags",
-          width: 100,
-          renderer: NOC.render.Tags,
+          text: __("Labels"),
+          dataIndex: "labels",
+          flex: 1,
+          renderer: NOC.render.LabelField,
         },
       ],
       fields: [
@@ -136,6 +142,26 @@ Ext.define("NOC.inv.objectmodel.Application", {
           xtype: "inv.vendor.LookupField",
           fieldLabel: __("Vendor"),
           allowBlank: false,
+        },
+        {
+          xtype: "fieldset",
+          layout: {type: "hbox"},
+          title: __("Visual"),
+          items: [
+            {
+              name: "short_label",
+              xtype: "textfield",
+              fieldLabel: __("Short Label"),
+              allowBlank: true,
+              uiStyle: "medium",
+            },
+            {
+              name: "glyph",
+              xtype: "main.glyph.LookupField",
+              fieldLabel: __("Glyph"),
+              allowBlank: true,
+            },
+          ],
         },
         {
           xtype: "fieldset",
@@ -286,7 +312,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
               dataIndex: "facade",
               width: 25,
               renderer: function(v){
-                return{
+                return {
                   "f": "<i class='x-btn-icon-el-default-toolbar-small fa fa-hand-o-right' title='Front'></i>",
                   "r": "<i class='x-btn-icon-el-default-toolbar-small fa fa-hand-o-left' title='Rear'></i>",
                   "": "",
@@ -332,7 +358,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
               },
               width: 50,
               renderer: function(v){
-                return{
+                return {
                   i: "<i class='fa fa-arrow-down' title='" + __("Inner") + "'></i>",
                   o: "<i class='fa fa-arrow-up' title='" + __("Outer") + "'></i>",
                   s: "<i class='fa fa-arrows-h' title='" + __("Connection") + "'></i>",
@@ -353,7 +379,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
               },
               width: 50,
               renderer: function(v){
-                return{
+                return {
                   m: "<i class='fa fa-mars' title='" + __("Male") + "'></i>",
                   f: "<i class='fa fa-venus' title='" + __("Female") + "'></i>",
                   s: "<i class='fa fa-genderless' title='" + __("Genderless") + "'></i>",
@@ -484,7 +510,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     .up("[xtype=form]")
                     .down("[name=connections]"),
                     data = Ext.Array.map(connectionsField.value, function(value){
-                      return{id: value.name, text: value.name};
+                      return {id: value.name, text: value.name};
                     }),
                     combo = editor.getEditor(context.record, context.column).field;
                   combo.getStore().loadData(data);

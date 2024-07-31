@@ -1,0 +1,73 @@
+{
+    "name": "IRE-Polus | Horizon  | RLM-H4",
+    "$collection": "inv.objectmodels",
+    "uuid": "78dc54e4-78fa-43e9-a167-3013ce1e1969",
+    "vendor__code": "IRE-POLUS",
+    "description": "RLM-H4 – Рамановский лазерный модуль для накачки усилителей типа ROPA через дополнительное волокно.",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARDH4",
+    "labels": ["noc::inv::lc"],
+    "configuration_rule__name": "OM/OD Rules",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "MON_OUT",
+            "description": "Мониторинг накачки ROPA",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON_BS",
+            "description": "Мониторинг обратного сигнала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT",
+            "description": "Выход накачки ROPA",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | E2000"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 40.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 150
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 278
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RLM-H4"]
+        }
+    ]
+}

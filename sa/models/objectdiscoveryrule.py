@@ -34,6 +34,7 @@ from noc.core.purgatorium import SOURCES
 from noc.core.prettyjson import to_json
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.modeltemplate import ModelTemplate
 from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
@@ -100,7 +101,7 @@ class MatchData(EmbeddedDocument):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        return {"field": self.field, "match": self.match, "value": self.value}
+        return {"field": self.field, "op": self.op, "value": self.value}
 
 
 class MatchCheck(EmbeddedDocument):
@@ -140,6 +141,7 @@ class MatchItem(EmbeddedDocument):
     match_checks = EmbeddedDocumentListField(MatchCheck)
     match_data = EmbeddedDocumentListField(MatchData)
     # Action
+    action = StringField(choices=["approve", "skip", "ignore"])
 
     def __str__(self):
         r = ""
@@ -199,6 +201,8 @@ class ObjectDiscoveryRule(Document):
         "collection": "objectdiscoveryrules",
         "strict": False,
         "auto_create_index": False,
+        "json_collection": "sa.objectdiscoveryrules",
+        "json_unique_fields": ["name"],
     }
     name = StringField(unique=True)
     description = StringField()
@@ -235,13 +239,14 @@ class ObjectDiscoveryRule(Document):
             ("new", "As New"),  # Set Rule, Save Record as New
             ("approve", "Approve"),  # Set Rule, Approve Record
             # ("remove", "Remove"),  # Set Rule and Send Ignored Signal
+            ("ignore", "Ignore"),  # Ignore Record
             ("skip", "Skip"),  # SkipRule, if Rule Needed for Discovery Settings
         ],
         default="new",
     )
     stop_processed = BooleanField(default=False)
-    allow_sync = BooleanField(default=True)  # sync record on
-    # default_template
+    allow_sync = BooleanField(default=False)  # sync record on
+    default_template: Optional[ModelTemplate] = PlainReferenceField(ModelTemplate)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _prefix_cache = cachetools.TTLCache(maxsize=10, ttl=600)
@@ -336,7 +341,7 @@ class ObjectDiscoveryRule(Document):
     @staticmethod
     def parse_check(checks: List[Any]) -> Dict[Tuple[str, int], bool]:
         """
-        Parse Check Ruesult list to Dict
+        Parse Check Result list to Dict
 
         Args:
             checks: - List of Check Result
@@ -409,3 +414,23 @@ class ObjectDiscoveryRule(Document):
             if address in prefix:
                 return net.pool
         return None
+
+    def get_action(
+        self,
+        checks: List[Any],
+        labels: Optional[List[str]] = None,
+        data: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        """
+        Return Discovered object action
+        Args:
+            checks:
+            labels:
+            data:
+        """
+        checks = self.parse_check(checks)
+        action = None
+        for c in self.conditions:
+            if c.is_match(labels, data, checks) and c.action:
+                action = c.action
+        return action or self.default_action

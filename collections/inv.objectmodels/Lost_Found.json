@@ -11,5 +11,6 @@
             "interface": "container",
             "value": true
         }
-    ]
+    ],
+    "glyph__name": "FontAwesome | question-circle"
 }

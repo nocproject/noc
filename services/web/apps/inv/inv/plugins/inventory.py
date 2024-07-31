@@ -22,8 +22,12 @@ class InventoryPlugin(InvPlugin):
             "serial": o.get_data("asset", "serial"),
             "revision": rev or "",
             "description": o.model.description,
-            "model": o.model.name,
+            "model": o.model.get_short_label(),
         }
+        # Navigation glyphs
+        icon_cls = o.model.glyph_css_class
+        if icon_cls:
+            r["iconCls"] = icon_cls
         children = []
         for n in o.model.connections:
             if n.direction == "i":
@@ -37,6 +41,7 @@ class InventoryPlugin(InvPlugin):
                             "serial": None,
                             "description": "--- EMPTY ---",
                             "model": None,
+                            "iconCls": "fa fa-square-o",
                         }
                     ]
                 else:

@@ -31,6 +31,7 @@ Ext.define("NOC.inv.endpoint.Application", {
           text: __("Resource"),
           dataIndex: "resource",
           width: 100,
+          renderer: NOC.render.Lookup("resource"),
         },
         {
           text: __("Description"),
@@ -63,6 +64,7 @@ Ext.define("NOC.inv.endpoint.Application", {
         {
           name: "used_by",
           xtype: "gridfield",
+          fieldLabel: __("Used by"),
           columns: [
             {
               text: __("Channel"),

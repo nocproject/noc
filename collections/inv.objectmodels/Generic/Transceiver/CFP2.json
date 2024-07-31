@@ -1,0 +1,58 @@
+{
+    "name": "Generic | Transceiver | CFP2",
+    "$collection": "inv.objectmodels",
+    "uuid": "30111df5-a9ca-45e1-828b-a8d6bf6434de",
+    "vendor__code": "GENERIC",
+    "description": "Generic | Transceiver | CFP2",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth200G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth400G"
+                }
+            ],
+            "type__name": "Transceiver | CFP2"
+        },
+        {
+            "name": "rx",
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "tx",
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ],
+    "front_facade__name": "Transceiver | CFP2"
+}

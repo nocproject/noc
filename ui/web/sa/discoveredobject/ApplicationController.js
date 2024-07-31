@@ -7,10 +7,10 @@
 console.debug("Defining NOC.sa.discoveredobject.ApplicationController");
 
 Ext.define("NOC.sa.discoveredobject.ApplicationController", {
-    extend: "Ext.app.ViewController",
-    alias: "controller.sa.discoveredobject",
+  extend: "Ext.app.ViewController",
+  alias: "controller.sa.discoveredobject",
 
-    onAfterRender: function(panel) {
-        panel.lookup("sa-discoveredobject-list").lookup("sa-discovered-sidebar").getController().restoreFilter();
-    },
+  onAfterRender: function(panel){
+    panel.lookup("sa-discoveredobject-list").lookup("sa-discovered-sidebar").getController().restoreFilter();
+  },
 });

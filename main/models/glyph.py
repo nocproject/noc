@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Glyph Collection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ id_lock = Lock()
         ("project.Project", "shape_overlay_glyph"),
         ("sa.ManagedObject", "shape_overlay_glyph"),
         ("sa.ManagedObjectProfile", "shape_overlay_glyph"),
+        ("inv.ObjectModel", "glyph"),
     ]
 )
 class Glyph(Document):
@@ -72,3 +73,13 @@ class Glyph(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    @property
+    def css_class(self) -> Optional[str]:
+        """
+        Generate CSS class
+        """
+        if self.font.name == "FontAwesome":
+            n = self.name.split("|")[-1].strip()
+            return f"fa fa-{n}"
+        return None

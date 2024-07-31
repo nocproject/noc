@@ -39,6 +39,7 @@ from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.core.discriminator import discriminator
+from noc.main.models.glyph import Glyph
 from .objectconfigurationrule import ObjectConfigurationRule
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
@@ -345,6 +346,7 @@ class ObjectModel(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
+    short_label = StringField(required=False)
     vendor: "Vendor" = PlainReferenceField(Vendor)
     connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
     configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(
@@ -363,6 +365,8 @@ class ObjectModel(Document):
     # Facades
     front_facade = PlainReferenceField(Facade, required=False)
     rear_facade = PlainReferenceField(Facade, required=False)
+    # Glyph for navigation tree
+    glyph = PlainReferenceField(Glyph, required=False)
     # Labels
     labels = ListField(StringField())
     category = ObjectIdField()
@@ -383,6 +387,26 @@ class ObjectModel(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
+
+    def get_short_label(self) -> str:
+        """
+        Get label for schemes.
+
+        Use short_label, if defined.
+        Compose label otherwise.
+
+        Returns:
+            Short label for schemes.
+        """
+        if self.short_label:
+            return self.short_label
+        parts = []
+        if self.vendor.code:
+            parts.append(self.vendor.code[0])
+        else:
+            parts.append(self.vendor.full_name)
+        parts.append(self.name.split("|")[-1].strip())
+        return " ".join(parts)
 
     def get_data(
         self,
@@ -414,6 +438,9 @@ class ObjectModel(Document):
         return None
 
     def on_save(self):
+        # Fix connections
+        if hasattr(self, "_changed_fields") and "connections" in self._changed_fields:
+            self._ensure_connection_names()
         # Update connection cache
         ModelConnectionsCache.update_for_model(self)
         # Exclude all part numbers from unknown models
@@ -560,6 +587,10 @@ class ObjectModel(Document):
             "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
+        if self.short_label:
+            r["short_label"] = self.short_label
+        if self.glyph:
+            r["glyph__name"] = self.glyph.name
         if self.cross:
             r["cross"] = [s.json_data for s in self.cross]
         if self.sensors:
@@ -620,6 +651,92 @@ class ObjectModel(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_objectmodel")
+
+    @property
+    def glyph_css_class(self) -> Optional[str]:
+        # Explicitly defined glyph
+        if self.glyph:
+            return self.glyph.css_class
+        # Pre-defined glyphs
+        # Rack
+        if self.get_data("rack", "units"):
+            return "fa fa-th-large"
+        # Chassis
+        if self.cr_context == "CHASSIS":
+            return "fa fa-square"
+        # Linecard
+        if self.cr_context == "LINECARD":
+            return "fa fa-window-minimize"
+        # Transceiver
+        if self.cr_context == "XCVR":
+            return "fa fa-bolt"
+        return None
+
+    def _ensure_connection_names(self):
+        """
+        Ensure objects with this models have no hanging connections.
+        """
+        from .object import Object
+        from .objectconnection import ObjectConnection
+
+        # Get affected objects
+        obj_ids = {
+            doc["_id"] for doc in Object._get_collection().find({"model": self.id}, {"_id": 1})
+        }
+        if not obj_ids:
+            return  # No objects
+
+        # Find affected connections
+        to_prune_connections = set()
+        cable_candidates = set()
+        valid_names = {c.name for c in self.connections}
+        for oc in ObjectConnection._get_collection().find(
+            {
+                "connection": {
+                    "$elemMatch": {
+                        "object": {"$in": list(obj_ids)},
+                        "name": {"$nin": list(valid_names)},
+                    }
+                }
+            }
+        ):
+            conn_id = oc["_id"]
+            conns = oc.get("connection")
+            if len(conns) == 1:
+                to_prune_connections.add(conn_id)
+                continue
+            if len(conns) > 2:
+                conns = [
+                    cc for cc in conns if cc["object"] not in obj_ids or cc["name"] in valid_names
+                ]
+                if len(conns) > 1:
+                    ...  # @todo: Update connections
+                else:
+                    to_prune_connections.add(conn_id)
+                continue
+            # Connection is broken
+            to_prune_connections.add(conn_id)
+            # Potencial cables
+            cable_candidates.add([cc["object"] for cc in conns if cc["object"] not in obj_ids][0])
+        # Process cables
+        if cable_candidates:
+            to_prune_objects = {
+                obj.id
+                for obj in Object.objects.filter(id__in=list(cable_candidates))
+                if obj.is_wire
+            }
+            if to_prune_objects:
+                to_prune_connections.update(
+                    doc["_id"]
+                    for doc in ObjectConnection._get_collection().find(
+                        {"connection.object": {"$in": list(to_prune_objects)}}, {"_id": 1}
+                    )
+                )
+                Object._get_collection().delete_many({"_id": {"$in": list(to_prune_objects)}})
+        if to_prune_connections:
+            ObjectConnection._get_collection().delete_many(
+                {"_id": {"$in": list(to_prune_connections)}}
+            )
 
 
 class ModelConnectionsCache(Document):

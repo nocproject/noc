@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | CloudEngine | PAC1000S56-CB",
+    "$collection": "inv.objectmodels",
+    "uuid": "655ac7a2-f404-433e-8534-d0caa893955f",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei CloudEngine AC Power Supply Unit PAC1000S56-CB",
+    "cr_context": "PWR",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | CloudEngine | PSU"
+        },
+        {
+            "name": "power",
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PAC1000S56-CB"]
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1000.0
+        }
+    ]
+}

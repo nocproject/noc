@@ -83,6 +83,7 @@ _MODELS = {
     # aaa models
     "aaa.APIKey": "noc.aaa.models.apikey.APIKey",
     "aaa.Group": "noc.aaa.models.group.Group",
+    "aaa.ModelProtectionProfile": "noc.aaa.models.modelprotectionprofile.ModelProtectionProfile",
     "aaa.Permission": "noc.aaa.models.permission.Permission",
     "aaa.User": "noc.aaa.models.user.User",
     "aaa.UserContact": "noc.aaa.models.usercontact.UserContact",
@@ -123,6 +124,7 @@ _MODELS = {
     "main.Report": "noc.main.models.report.Report",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
+    "main.ModelTemplate": "noc.main.models.modeltemplate.ModelTemplate",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
     "main.Style": "noc.main.models.style.Style",
     "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
@@ -407,6 +409,7 @@ COLLECTIONS = [
     "bi.Dashboard",
     "cm.ConfDBQuery",
     "main.Report",
+    "main.ModelTemplate",
 ]
 
 # Model -> Setting

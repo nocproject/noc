@@ -1,0 +1,99 @@
+{
+    "name": "IRE-Polus | Horizon | Mux_Demux | ROADM-2-100-C-50-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "8bf70a10-d062-427b-a7da-349a03cbdd18",
+    "vendor__code": "IRE-POLUS",
+    "description": "ROADM-2-100-C-50-H8 – перестраиваемый оптический мультиплексор ввода/вывода",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "LINE_IN",
+            "description": "Вход со стороны оптоволоконной линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "LINE_OUT",
+            "description": "Выход в сторону оптоволоконной линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "MON",
+            "description": "Порт мониторинга линейного выхода",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "CL IN",
+            "description": "Вход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "CL OUT",
+            "description": "Выход клиентского канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "DIR IN",
+            "description": "Вход транзитного канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "DIR OUT",
+            "description": "Выход транзитного канала",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 8.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 351
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.2
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ROADM-2-C-50-H8"]
+        }
+    ]
+}

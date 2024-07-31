@@ -1,0 +1,13 @@
+{
+    "name": "Beward | Doorphones",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "040c45ad-de2e-404d-9a51-23c1c7ecf47c",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.8072.3.2.10",
+    "action": "match",
+    "profile__name": "Beward.Doorphone"
+}

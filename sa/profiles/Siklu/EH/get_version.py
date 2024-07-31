@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Siklu.EH.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_sys = re.compile(r"^system description\s+: (?P<platform>.+?)$", re.MULTILINE)
-    rx_ver = re.compile(r"^\d+\s+(?P<version>\S+)\s+\S+\s+\S+\s+yes\s+\S+\s+\S+", re.MULTILINE)
+    rx_ver = re.compile(r"^\d+\s+(?P<version>\S+)\s+(\S+\s+\S+\s+)?yes\s+\S+\s+\S+", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show sw")

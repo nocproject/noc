@@ -25,7 +25,7 @@
             "group": "1",
             "protocols": [{
                 "direction": "*",
-                "protocol__code": "OTUCn"
+                "protocol__code": "OTUC2"
             }],
             "type__name": "Composed"
         },
@@ -54,7 +54,7 @@
             "group": "2",
             "protocols": [{
                 "direction": "*",
-                "protocol__code": "OTUCn"
+                "protocol__code": "OTUC2"
             }],
             "type__name": "Composed"
         },

@@ -20,6 +20,21 @@ class IPAddressLoader(BaseLoader):
     model = Address
     data_model = IPAddress
     ignore_unique = {"bi_id", "ipv6_transition"}
+    unique_index = ("vrf", "afi", "address")
 
     workflow_delete_event = "remove"
     workflow_state_sync = True
+
+    def purge(self):
+        """
+        Perform pending deletes
+        """
+        for r_id, msg in reversed(self.pending_deletes):
+            self.logger.debug("Deactivating: %s", msg)
+            self.c_delete += 1
+            try:
+                obj = self.model.objects.get(pk=self.mappings[r_id])
+                obj.fire_event("expired")
+            except self.model.DoesNotExist:
+                pass  # Already deleted
+        self.pending_deletes = []

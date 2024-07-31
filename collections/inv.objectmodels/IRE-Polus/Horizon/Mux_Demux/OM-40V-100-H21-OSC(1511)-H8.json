@@ -612,6 +612,216 @@
             "type__name": "Optical | LC"
         }
     ],
+    "cross": [
+        {
+            "input": "OSC_IN",
+            "output": "LINE_OUT"
+        },
+        {
+            "input": "B2",
+            "output": "LINE_OUT"
+        },
+        {
+            "input": "H21",
+            "output": "B1",
+            "input_discriminator": "lambda::192150-50"
+        },
+        {
+            "input": "H22",
+            "output": "B1",
+            "input_discriminator": "lambda::192250-50"
+        },
+        {
+            "input": "H23",
+            "output": "B1",
+            "input_discriminator": "lambda::192350-50"
+        },
+        {
+            "input": "H24",
+            "output": "B1",
+            "input_discriminator": "lambda::192450-50"
+        },
+        {
+            "input": "H25",
+            "output": "B1",
+            "input_discriminator": "lambda::192550-50"
+        },
+        {
+            "input": "H26",
+            "output": "B1",
+            "input_discriminator": "lambda::192650-50"
+        },
+        {
+            "input": "H27",
+            "output": "B1",
+            "input_discriminator": "lambda::192750-50"
+        },
+        {
+            "input": "H28",
+            "output": "B1",
+            "input_discriminator": "lambda::192850-50"
+        },
+        {
+            "input": "H29",
+            "output": "B1",
+            "input_discriminator": "lambda::192950-50"
+        },
+        {
+            "input": "H30",
+            "output": "B1",
+            "input_discriminator": "lambda::193050-50"
+        },
+        {
+            "input": "H31",
+            "output": "B1",
+            "input_discriminator": "lambda::193150-50"
+        },
+        {
+            "input": "H32",
+            "output": "B1",
+            "input_discriminator": "lambda::193250-50"
+        },
+        {
+            "input": "H33",
+            "output": "B1",
+            "input_discriminator": "lambda::193350-50"
+        },
+        {
+            "input": "H34",
+            "output": "B1",
+            "input_discriminator": "lambda::193450-50"
+        },
+        {
+            "input": "H35",
+            "output": "B1",
+            "input_discriminator": "lambda::193550-50"
+        },
+        {
+            "input": "H36",
+            "output": "B1",
+            "input_discriminator": "lambda::193650-50"
+        },
+        {
+            "input": "H37",
+            "output": "B1",
+            "input_discriminator": "lambda::193750-50"
+        },
+        {
+            "input": "H38",
+            "output": "B1",
+            "input_discriminator": "lambda::193850-50"
+        },
+        {
+            "input": "H39",
+            "output": "B1",
+            "input_discriminator": "lambda::193950-50"
+        },
+        {
+            "input": "H40",
+            "output": "B1",
+            "input_discriminator": "lambda::194050-50"
+        },
+        {
+            "input": "H41",
+            "output": "B1",
+            "input_discriminator": "lambda::194150-50"
+        },
+        {
+            "input": "H42",
+            "output": "B1",
+            "input_discriminator": "lambda::194250-50"
+        },
+        {
+            "input": "H43",
+            "output": "B1",
+            "input_discriminator": "lambda::194350-50"
+        },
+        {
+            "input": "H44",
+            "output": "B1",
+            "input_discriminator": "lambda::194450-50"
+        },
+        {
+            "input": "H45",
+            "output": "B1",
+            "input_discriminator": "lambda::194550-50"
+        },
+        {
+            "input": "H46",
+            "output": "B1",
+            "input_discriminator": "lambda::194650-50"
+        },
+        {
+            "input": "H47",
+            "output": "B1",
+            "input_discriminator": "lambda::194750-50"
+        },
+        {
+            "input": "H48",
+            "output": "B1",
+            "input_discriminator": "lambda::194850-50"
+        },
+        {
+            "input": "H49",
+            "output": "B1",
+            "input_discriminator": "lambda::194950-50"
+        },
+        {
+            "input": "H50",
+            "output": "B1",
+            "input_discriminator": "lambda::195050-50"
+        },
+        {
+            "input": "H51",
+            "output": "B1",
+            "input_discriminator": "lambda::195150-50"
+        },
+        {
+            "input": "H52",
+            "output": "B1",
+            "input_discriminator": "lambda::195250-50"
+        },
+        {
+            "input": "H53",
+            "output": "B1",
+            "input_discriminator": "lambda::195350-50"
+        },
+        {
+            "input": "H54",
+            "output": "B1",
+            "input_discriminator": "lambda::195450-50"
+        },
+        {
+            "input": "H55",
+            "output": "B1",
+            "input_discriminator": "lambda::195550-50"
+        },
+        {
+            "input": "H56",
+            "output": "B1",
+            "input_discriminator": "lambda::195650-50"
+        },
+        {
+            "input": "H57",
+            "output": "B1",
+            "input_discriminator": "lambda::195750-50"
+        },
+        {
+            "input": "H58",
+            "output": "B1",
+            "input_discriminator": "lambda::195850-50"
+        },
+        {
+            "input": "H59",
+            "output": "B1",
+            "input_discriminator": "lambda::195950-50"
+        },
+        {
+            "input": "H60",
+            "output": "B1",
+            "input_discriminator": "lambda::196050-50"
+        }
+    ],
     "data": [
         {
             "attr": "power",
@@ -653,5 +863,6 @@
             "interface": "dwdm",
             "value": 196.05
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | OM-40V-100-C21-OSC(1511) IP1550"
 }

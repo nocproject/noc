@@ -1,0 +1,8 @@
+{
+    "name": "Optical | E2000",
+    "$collection": "inv.connectiontypes",
+    "uuid": "aa528744-03fd-4997-bb84-967e1fc40159",
+    "description": "Optical E2000 connection",
+    "c_group": [],
+    "genders": "mf"
+}
