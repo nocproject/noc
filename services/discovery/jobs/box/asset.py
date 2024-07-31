@@ -597,10 +597,20 @@ class AssetCheck(DiscoveryCheck):
         except ConnectionError as e:
             self.logger.error("Conection error: %s", e)
             return
-        if o1.parent.id == o2.id and (o2, o1) in self.to_disconnect and o1.parent_connection == c2:
+        if (
+            o1.parent
+            and o1.parent_connection
+            and o1.parent.id == o2.id
+            and (o2, o1) in self.to_disconnect
+            and o1.parent_connection == c2
+        ):
             self.to_disconnect.remove((o2, o1))
         elif (
-            o2.parent.id == o1.id and (o1, o2) in self.to_disconnect and o2.parent_connection == c1
+            o2.parent
+            and o2.parent_connection
+            and o2.parent.id == o1.id
+            and (o1, o2) in self.to_disconnect
+            and o2.parent_connection == c1
         ):
             self.to_disconnect.remove((o1, o2))
 
