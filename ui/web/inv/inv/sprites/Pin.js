@@ -19,6 +19,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         pinNameOrig: "string",
         pinNameWidth: "number",
         labelAlign: "string",
+        labelColor: "string",
         internalLabelWidth: "number",
         hasInternalLabel: "bool",
         remoteId: "string",
@@ -47,6 +48,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         hasInternalLabel: "recalculate",
         pinName: "recalculate",
         labelAlign: "recalculate",
+        labelColor: "recalculate",
         remoteId: "recalculate",
         remoteName: "recalculate",
         remoteSlot: "recalculate",
@@ -107,8 +109,9 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
           me.allowDiscriminators = attr.allowDiscriminators;
           me.label.setAttributes({
             text: attr.pinName,
-            fontWeight: me.getFontWeight(),
+            fontWeight: attr.isSelected ? 'bold' : me.getFontWeight(),
             textAlign: attr.labelAlign === "left" ? "end" : "start",
+            fill: attr.labelColor,
           });
           if(me.internal){
             var internalCirclePadding = me.getBoxWidth() * (attr.side === "left" ? -1 : 2);
@@ -147,10 +150,10 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
             scalingX: attr.actualScale,
             scalingY: attr.actualScale,
           });
-          me.label.setAttributes({
-            scalingX: attr.actualScale,
-            scalingY: attr.actualScale,
-          });
+          // me.label.setAttributes({
+          // scalingX: attr.actualScale,
+          // scalingY: attr.actualScale,
+          // });
           if(me.internal){
             me.internal.setAttributes({
               scalingX: attr.actualScale,
