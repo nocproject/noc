@@ -232,7 +232,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       pointer = surface.get("pointer");
 
     Ext.Array.each(surface.getItems(), function(element){
-      if(element.attr.isSelected) element.setAttributes({isSelected: false});
+      if(element.attr.isSelected) element.setAttributes({isSelected: false, pinOver: false});
     });
     if(id){
       canvas.up().reloadStatuses(false);
@@ -322,6 +322,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       pinColor: me.OCCUPIED_COLOR,
       enabled: false,
       isSelected: false,
+      pinOver: false,
       pinName: fromName,
     });
     // reDraw label for zIndex workaround
@@ -334,6 +335,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       pinColor: me.OCCUPIED_COLOR,
       enabled: false,
       isSelected: false,
+      pinOver: false,
       pinName: toName,
     });
     // reDraw label for zIndex workaround
@@ -1276,7 +1278,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           if(sprite.enabled){
             sprite.setAttributes({
               actualScale: 1,
-              isSelected: false,
             });
             // mainSurface.get("label" + sprite.id).setAttributes({
             //   isSelected: false,
@@ -1305,9 +1306,11 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           // });
           mainSurface.get(sprite.fromPortId).setAttributes({
             actualScale: 1,
+            pinOver: false,
           });
           mainSurface.get(sprite.toPortId).setAttributes({
             actualScale: 1,
+            pinOver: false,
           });
           if(sprite.connectionType === "internal"){
             me.drawPanel.selectedSprite = undefined;
@@ -1345,7 +1348,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           if(sprite.enabled){
             sprite.setAttributes({
               actualScale: 1.2,
-              isSelected: true,
+              pinOver: true,
             });
             // illumination of selected label
             // mainSurface.get("label" + sprite.id).setAttributes({
@@ -1386,9 +1389,11 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           pointer = mainSurface.get("pointer");
           mainSurface.get(sprite.fromPortId).setAttributes({
             actualScale: 1.2,
+            pinOver: true,
           });
           mainSurface.get(sprite.toPortId).setAttributes({
             actualScale: 1.2,
+            pinOver: true,
           });
           // mainSurface.get("label" + sprite.fromPortId).setAttributes({
           //   isSelected: true,
