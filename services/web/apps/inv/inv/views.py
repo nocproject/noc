@@ -123,13 +123,14 @@ class InvApplication(ExtApplication):
                 "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
             }
             plugins = []
-            if o.has_children:
+            if o.is_container or o.has_children:
+                # n["expanded"] = Object.objects.filter(container=o.id).count() == 1
                 n["expanded"] = False
             else:
                 n["leaf"] = True
             if o.model.front_facade or o.model.rear_facade:
                 plugins.append(self.get_plugin_data("facade"))
-            if o.get_data("rack", "units"):
+            if o.is_rack:
                 plugins.append(self.get_plugin_data("rack"))
             if o.model.connections:
                 plugins.append(self.get_plugin_data("inventory"))
@@ -167,6 +168,114 @@ class InvApplication(ExtApplication):
                 n["iconCls"] = icon_cls
             r.append(n)
         return r
+
+    @view(
+        "^attach/$",
+        method=["POST"],
+        access="create_group",
+        api=True,
+        validate={
+            "container": ObjectIdParameter(),
+            "item": ObjectIdParameter(),
+            "choice": StringParameter(required=False),
+        },
+    )
+    def api_attach(self, request, container: str, item: str, choice: Optional[str] = None):
+        c_obj = self.get_object_or_404(Object, id=container)
+        i_obj = self.get_object_or_404(Object, id=item)
+        if c_obj.is_rack:  # @todo: and item is rack-mountable
+            return self._attach_rack(c_obj, i_obj, choice=choice)
+        if c_obj.is_container:
+            return self._attach_container(c_obj, i_obj, choice=choice)
+        if c_obj.has_inner_connections():
+            return self._attach_inner(c_obj, i_obj, choice=choice)
+        return self.render_json(
+            {"status": False, "message": "Selected objects cannot be connected"}, status=400
+        )
+
+    def _attach_rack(self, container: Object, item: Object, choice: Optional[str] = None):
+        """Insert item into rack."""
+
+        def attach():
+            return self.render_json({"status": False, "message": "Not implemented"}, status=400)
+
+        def get_choices():
+            return {
+                "expanded": True,
+                "iconCls": "fa fa-plus",
+                "children": [
+                    {"id": "---", "name": "Put into", "iconCls": "fa fa-cross", "leaf": True},
+                    {
+                        "name": "Front",
+                        "expanded": True,
+                        "iconCls": "fa fa-plus",
+                        "children": [
+                            {"id": "LC1-1", "name": "1", "iconCls": "fa fa-cross", "leaf": True},
+                            {"id": "LC1-2", "name": "2", "iconCls": "fa fa-cross", "leaf": True},
+                        ],
+                    },
+                    {
+                        "name": "Rear",
+                        "expanded": True,
+                        "iconCls": "fa fa-plus",
+                        "children": [
+                            {"id": "LC2-2", "name": "2", "iconCls": "fa fa-cross", "leaf": True},
+                            {"id": "LC2-5", "name": "5", "iconCls": "fa fa-cross", "leaf": True},
+                        ],
+                    },
+                ],
+            }
+
+        # @todo: Current implementation is stub
+        # @todo: It item is not rack mounted
+        if choice:
+            return attach()
+        return {"choices": get_choices()}
+
+    def _attach_container(self, container: Object, item: Object, choice: Optional[str] = None):
+        """Insert item into container."""
+        item.put_into(container)
+        return {
+            "status": True,
+            "message": "Item have been moved",
+        }
+
+    def _attach_inner(self, container: Object, item: Object, choice: Optional[str] = None):
+        """Insert item into chassis/module."""
+
+        def attach():
+            return self.render_json({"status": False, "message": "Not implemented"}, status=400)
+
+        def get_choices():
+            return {
+                "expanded": True,
+                "iconCls": "fa fa-plus",
+                "children": [
+                    {
+                        "name": "LC1",
+                        "expanded": True,
+                        "iconCls": "fa fa-plus",
+                        "children": [
+                            {"id": "LC1-1", "name": "1", "iconCls": "fa fa-cross", "leaf": True},
+                            {"id": "LC1-2", "name": "2", "iconCls": "fa fa-cross", "leaf": True},
+                        ],
+                    },
+                    {
+                        "name": "LC2",
+                        "expanded": True,
+                        "iconCls": "fa fa-plus",
+                        "children": [
+                            {"id": "LC2-2", "name": "2", "iconCls": "fa fa-cross", "leaf": True},
+                            {"id": "LC2-5", "name": "5", "iconCls": "fa fa-cross", "leaf": True},
+                        ],
+                    },
+                ],
+            }
+
+        # @todo: Current implementation is stub
+        if choice:
+            return attach()
+        return {"choices": get_choices()}
 
     @view(
         "^add_group/$",
