@@ -592,41 +592,17 @@ class AssetCheck(DiscoveryCheck):
         """
         Create P2P connection o1:c1 - o2:c2
         """
-        cn1 = o1.model.get_model_connection(c1)
-        if not cn1:
-            msg = f"Invalid connection {c1} for object {o1}"
-            raise ValueError(msg)
-        cn2 = o2.model.get_model_connection(c2)
-        if not cn2:
-            msg = f"Invalid connection {c2} for object {o2}"
-            raise ValueError(msg)
-        # o1 <- o2
-        if cn1.is_inner and cn2.is_outer:
-            o2.parent = o1
-            o2.parent_connection = c1
-            o2.save()
-            if (o1, o2) in self.to_disconnect and o2.parent_connection == c1:
-                self.to_disconnect.remove((o1, o2))
-        # o2 <- o1
-        elif c1.is_outer and cn2.is_inner:
-            o1.parent = o2
-            o1.parent_connection = c2
-            o1.save()
-        else:
-            msg = f"Incompatible connections {o1}:{c1}[{cn1.direction}] and {o2}:{c2}[{cn2.direction}]"
-            raise ValueError(msg)
-        o1.log(
-            f"Connect {o1}:{c1} -> {o2}:{c2}",
-            system="DISCOVERY",
-            managed_object=self.object,
-            op="CONNECT",
-        )
-        o2.log(
-            f"Connect {o1}:{c1} -> {o2}:{c2}",
-            system="DISCOVERY",
-            managed_object=self.object,
-            op="CONNECT",
-        )
+        try:
+            o1.connect_p2p(c1, o2, c2)
+        except ConnectionError as e:
+            self.logger.error("Conection error: %s", e)
+            return
+        if o1.parent.id == o2.id and (o2, o1) in self.to_disconnect and o1.parent_connection == c2:
+            self.to_disconnect.remove((o2, o1))
+        elif (
+            o2.parent.id == o1.id and (o1, o2) in self.to_disconnect and o2.parent_connection == c1
+        ):
+            self.to_disconnect.remove((o1, o2))
 
     def connect_twinax(self, o1: Object, c1: str, o2: Object, c2: str):
         """
