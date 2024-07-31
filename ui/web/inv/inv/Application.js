@@ -516,7 +516,7 @@ Ext.define("NOC.inv.inv.Application", {
                               container: overModel.get("id"),
                               choice: sel[0].get("id"),
                             },
-                            scope: me,
+                            scope: this,
                             success: function(response){
                               var data = Ext.decode(response.responseText);
                               NOC.info(data.message); 
