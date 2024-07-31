@@ -64,9 +64,9 @@ class AssetCheck(DiscoveryCheck):
                 List[ObjectAttr],
             ]
         ] = []  # [(type, object, context, serial, data)]
-        self.sensors: Dict[
-            Tuple[Optional[Object], str] : Dict[str, Any]
-        ] = {}  # object, sensor -> sensor data
+        self.sensors: Dict[Tuple[Optional[Object], str] : Dict[str, Any]] = (
+            {}
+        )  # object, sensor -> sensor data
         # Upper object, lower object
         self.to_disconnect: Set[Tuple[Object, Object]] = set()
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
@@ -582,34 +582,51 @@ class AssetCheck(DiscoveryCheck):
                         ):
                             self.connect_twinax(object, m_c, t_object, t_c)
                         else:
-                            self.connect_p2p(object, m_c, t_object)
+                            self.connect_p2p(object, m_c, t_object, t_c)
                         found = True
                         break
                 if found:
                     break
 
-    def connect_p2p(self, o1: Object, name: str, o2: Object):
+    def connect_p2p(self, o1: Object, c1: str, o2: Object, c2: str):
         """
         Create P2P connection o1:c1 - o2:c2
         """
-        o2.parent = o1
-        o2.parent_connection = name
-        o2.save()
+        cn1 = o1.model.get_model_connection(c1)
+        if not cn1:
+            msg = f"Invalid connection {c1} for object {o1}"
+            raise ValueError(msg)
+        cn2 = o2.model.get_model_connection(c2)
+        if not cn2:
+            msg = f"Invalid connection {c2} for object {o2}"
+            raise ValueError(msg)
+        # o1 <- o2
+        if cn1.is_inner and cn2.is_outer:
+            o2.parent = o1
+            o2.parent_connection = c1
+            o2.save()
+            if (o1, o2) in self.to_disconnect and o2.parent_connection == c1:
+                self.to_disconnect.remove((o1, o2))
+        # o2 <- o1
+        elif c1.is_outer and cn2.is_inner:
+            o1.parent = o2
+            o1.parent_connection = c2
+            o1.save()
+        else:
+            msg = f"Incompatible connections {o1}:{c1}[{cn1.direction}] and {o2}:{c2}[{cn2.direction}]"
+            raise ValueError(msg)
         o1.log(
-            f"Connect {o1}:{name} -> {o2}",
+            f"Connect {o1}:{c1} -> {o2}:{c2}",
             system="DISCOVERY",
             managed_object=self.object,
             op="CONNECT",
         )
         o2.log(
-            f"Connect {o1}:{name} -> {o2}",
+            f"Connect {o1}:{c1} -> {o2}:{c2}",
             system="DISCOVERY",
             managed_object=self.object,
             op="CONNECT",
         )
-        # Remove from pending disconnects
-        if (o2, o1) in self.to_disconnect and name == o1.parent_connection:
-            self.to_disconnect.remove((o2, o1))
 
     def connect_twinax(self, o1: Object, c1: str, o2: Object, c2: str):
         """
@@ -634,7 +651,7 @@ class AssetCheck(DiscoveryCheck):
         # Connect first free to o2:c2
         c = free_connections[0]
         self.logger.info("Using twinax connection '%s' instead of '%s'", c, c1)
-        self.connect_p2p(o1, c, o2)
+        self.connect_p2p(o1, c, o2, c2)
 
     def sync_sensors(self):
         obj_sensors: Dict[Tuple[Optional[Object], str], Sensor] = {
