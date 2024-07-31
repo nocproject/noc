@@ -183,7 +183,7 @@ class InvApplication(ExtApplication):
     def api_attach(self, request, container: str, item: str, choice: Optional[str] = None):
         c_obj = self.get_object_or_404(Object, id=container)
         i_obj = self.get_object_or_404(Object, id=item)
-        if c_obj.is_rack and item.is_rackmount:
+        if c_obj.is_rack and item.is_rackmount and not (choice and choice == "---"):
             return self._attach_rack(c_obj, i_obj, choice=choice)
         if c_obj.is_container:
             return self._attach_container(c_obj, i_obj, choice=choice)
