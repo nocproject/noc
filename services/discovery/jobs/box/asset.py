@@ -582,7 +582,7 @@ class AssetCheck(DiscoveryCheck):
                         ):
                             self.connect_twinax(object, m_c, t_object, t_c)
                         else:
-                            self.connect_p2p(object, m_c, t_object, t_c)
+                            self.connect_p2p(object, m_c, t_object)
                         found = True
                         break
                 if found:
@@ -634,7 +634,7 @@ class AssetCheck(DiscoveryCheck):
         # Connect first free to o2:c2
         c = free_connections[0]
         self.logger.info("Using twinax connection '%s' instead of '%s'", c, c1)
-        self.connect_p2p(o1, c, o2, c2)
+        self.connect_p2p(o1, c, o2)
 
     def sync_sensors(self):
         obj_sensors: Dict[Tuple[Optional[Object], str], Sensor] = {
