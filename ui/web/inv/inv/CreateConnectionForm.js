@@ -27,7 +27,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     "NOC.core.ComboBox",
     "NOC.inv.inv.sprites.Connection",
     "NOC.inv.inv.sprites.External",
-    "NOC.inv.inv.sprites.Label",
     "NOC.inv.inv.sprites.Pin",
     "NOC.inv.inv.sprites.Pointer",
   ],
@@ -325,12 +324,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       pinOver: false,
       pinName: fromName,
     });
-    // reDraw label for zIndex workaround
-    // mainSurface.get("label" + prevPinSprite.id).setAttributes({
-    //   labelText: fromName,
-    //   backgroundTranslationX: prevPinSprite.labelBackground.attr.translationX,
-    //   backgroundWidth: prevPinSprite.labelBackground.attr.width,
-    // });
     pinSprite.setAttributes({
       pinColor: me.OCCUPIED_COLOR,
       enabled: false,
@@ -338,12 +331,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       pinOver: false,
       pinName: toName,
     });
-    // reDraw label for zIndex workaround
-    // mainSurface.get("label" + pinSprite.id).setAttributes({
-    //   labelText: toName,
-    //   backgroundTranslationX: pinSprite.labelBackground.attr.translationX,
-    //   backgroundWidth: pinSprite.labelBackground.attr.width,
-    // });
     wires.push(wire);
     me.drawWires(wires, mainSurface);
     me.getViewModel().set("isDirty", true);
@@ -417,7 +404,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   drawLegend: function(surface){
     surface.add(this.makeLegend(__("Free slot"), this.AVAILABLE_COLOR, 2.5, this.surfaceHeight));
     surface.add(this.makeLegend(__("Occupied slot"), this.OCCUPIED_COLOR, 100, this.surfaceHeight));
-    //surface.add(this.makeLegend(__("Invalid slot"), this.INVALID_COLOR, 500, this.surfaceHeight));
   },
   drawObject: function(pins, surface, side, hasDiscriminator){
     var me = this;
@@ -694,11 +680,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
               }
             });
             me.drawWires(data.wires, mainSurface);
-            // workaround zIndex, redraw labels and set zIndex to 60
-            // me.reDrawLabels(mainSurface);
-            // setTimeout(function(){
-            // me.reDrawLabels(mainSurface);
-            // }, 500);
             me.drawLegend(mainSurface);
             if(Ext.isEmpty(rightObjectId)){
               me.drawEmptyText(me.drawPanel);
@@ -1235,14 +1216,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         break;
       }
-      // case"label": {
-      //   var pin = sprite.getSurface().get(sprite.pinId);
-
-      //   if(pin.remoteId !== "none"){
-      //     me.goToObject(pin.remoteId, pin.remoteName, side);
-      //   }
-      //   break;
-      // }
       case"external": {
         me.goToObject(sprite.remoteId, sprite.remoteName, side);
         break;
@@ -1277,9 +1250,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             sprite.setAttributes({
               actualScale: 1,
             });
-            // mainSurface.get("label" + sprite.id).setAttributes({
-            //   isSelected: false,
-            // });
           }
           // wire connections
           Ext.each(me.drawPanel.getSurface().getItems(), function(s){
@@ -1296,12 +1266,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           break;
         }
         case"connection": {
-          // mainSurface.get("label" + sprite.fromPortId).setAttributes({
-          //   isSelected: false,
-          // });
-          // mainSurface.get("label" + sprite.toPortId).setAttributes({
-          //   isSelected: false,
-          // });
           mainSurface.get(sprite.fromPortId).setAttributes({
             actualScale: 1,
             pinOver: false,
@@ -1348,10 +1312,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
               actualScale: 1.2,
               pinOver: true,
             });
-            // illumination of selected label
-            // mainSurface.get("label" + sprite.id).setAttributes({
-            //   isSelected: true,
-            // });
           }
           // illumination of ALL wire connections
           Ext.each(mainSurface.getItems(), function(s){
@@ -1393,12 +1353,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             actualScale: 1.2,
             pinOver: true,
           });
-          // mainSurface.get("label" + sprite.fromPortId).setAttributes({
-          //   isSelected: true,
-          // });
-          // mainSurface.get("label" + sprite.toPortId).setAttributes({
-          //   isSelected: true,
-          // });
           if(pointer){
             pointer.setAttributes({
               lineType: "line",
@@ -1475,43 +1429,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       enabled: enabled,
       masked: masked,
     };
-  },
-  /**
-     * Redraws labels on the given surface, workaround for zIndex, 
-     *    zIndex doesn't work with subsprites in custom sprite
-     *
-     * @param {type} surface - the surface to redraw the labels on
-     * @return {type} undefined - no return value
-     */
-  reDrawLabels: function(surface){
-    var me = this;
-    Ext.Array.each(
-      Ext.Array.filter(surface.getItems(), function(sprite){return sprite.type === "pin"}),
-      function(pin){
-        surface.add({
-          type: "label",
-          id: "label" + pin.id,
-          pinId: pin.id,
-          backgroundFill: pin.labelBackground.fill,
-          backgroundTranslationX: pin.labelBackground.attr.translationX,
-          backgroundTranslationY: pin.labelBackground.attr.translationY,
-          backgroundWidth: pin.labelBackground.attr.width,
-          backgroundHeight: pin.labelBackground.attr.height,
-          labelFontFamily: pin.label.attr.fontFamily,
-          labelFontWeight: pin.label.attr.fontWeight,
-          labelFontSize: pin.label.attr.fontSize,
-          labelTextBaseline: pin.label.attr.textBaseline,
-          labelTextAlign: pin.label.attr.textAlign,
-          labelText: pin.label.attr.text,
-          labelX: pin.label.attr.x,
-          labelY: pin.label.attr.y,
-          labelTranslationX: pin.label.attr.translationX,
-          labelTranslationY: pin.label.attr.translationY,
-          enabled: pin.enabled,
-          labelColor: pin.masked ? me.MASKED_LABEL_COLOR : me.UNMASKED_LABEL_COLOR,
-          zIndex: 60,
-        });
-      });
   },
   reDrawLabelsStyle: function(surface){
     var me = this;
@@ -1631,30 +1548,18 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       drawPanel = me.drawPanel,
       mainSurface = drawPanel.getSurface(),
       fromSprite = mainSurface.get(wireSprite.fromPortId),
-      // fromLabelSprite = mainSurface.get("label" + wireSprite.fromPortId),
       toSprite = mainSurface.get(wireSprite.toPortId);
-      // toLabelSprite = mainSurface.get("label" + wireSprite.toPortId);
     
     fromSprite.setAttributes({
       pinColor: me.AVAILABLE_COLOR,
       enabled: true,
       pinName: wireSprite.fromPort,
     });
-    // fromLabelSprite.setAttributes({
-    // labelText: wireSprite.fromPort,
-    // backgroundTranslationX: fromSprite.labelBackground.attr.translationX,
-    // backgroundWidth: fromSprite.labelBackground.attr.width,
-    // });
     toSprite.setAttributes({
       pinColor: me.AVAILABLE_COLOR,
       enabled: true,
       pinName: wireSprite.toPort,
     });
-    // toLabelSprite.setAttributes({
-    // labelText: wireSprite.toPort,
-    // backgroundTranslationX: toSprite.labelBackground.attr.translationX,
-    // backgroundWidth: toSprite.labelBackground.attr.width,
-    // });
     wireSprite.remove();
     connections = me.getWires(mainSurface);
     me.drawWires(connections, mainSurface);
