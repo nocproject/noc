@@ -273,7 +273,7 @@ class AssetCheck(DiscoveryCheck):
             if self.object.container:
                 container = self.object.container.id
             else:
-                container = self.lost_and_found
+                container = self.lost_and_found.id
             o = Object(model=m, data=o_data, container=container)
             o.save()
             o.log(
@@ -986,7 +986,7 @@ class AssetCheck(DiscoveryCheck):
         if self.object.container:
             container = self.object.container.id
         else:
-            container = self.lost_and_found
+            container = self.lost_and_found.id
         data += [ObjectAttr(scope="discovery", interface="asset", attr="part_no", value=[name])]
         o = Object(
             model=model,
@@ -1036,7 +1036,7 @@ class AssetCheck(DiscoveryCheck):
             return ObjectModel.get_by_name(m)
         return None
 
-    def get_lost_and_found(self, object):
+    def get_lost_and_found(self, object) -> Object:
         lfm = ObjectModel.objects.filter(name="Lost&Found").first()
         if not lfm:
             self.logger.error("Lost&Found model not found")
@@ -1045,7 +1045,7 @@ class AssetCheck(DiscoveryCheck):
         if not lf:
             self.logger.error("Lost&Found not found")
             return None
-        return lf.id
+        return lf
 
     def get_generic_models(self) -> List[str]:
         """ """
