@@ -36,7 +36,9 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         FieldInfo(name="managed_object_id", type=FieldType.UINT),
         FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
         FieldInfo(name="current_avail_status", description="Avail Status", type=FieldType.BOOL),
-        FieldInfo(name="avail_percent", description="Availability by Percent", type=FieldType.FLOAT),
+        FieldInfo(
+            name="avail_percent", description="Availability by Percent", type=FieldType.FLOAT
+        ),
         FieldInfo(name="downtime", description="Downtime (sec)", type=FieldType.UINT),
         FieldInfo(name="down_count", description="Count outages", type=FieldType.UINT),
         FieldInfo(name="reboots", description="Reboots", type=FieldType.UINT),
