@@ -422,8 +422,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   drawObject: function(pins, surface, side, hasDiscriminator){
     var me = this;
 
-    surface.add(me.makeExternalConnection(pins, side));
     surface.add(me.makePins(pins, side, hasDiscriminator));
+    surface.add(me.makeExternalConnection(pins, side));
     surface.add(me.makeBody(pins, side));
   },
   drawWires: function(wires, surface){
@@ -788,8 +788,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           remoteName = pin.remote_device.name || "",
           remoteSlot = pin.remote_device.slot || "",
           y = index * (this.boxHeight + this.gap) + this.gap + this.schemaPadding;
-
-        console.log(x, y);
 
         return {
           type: "external",
@@ -1606,7 +1604,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           params = {
             object: leftObject.id,
             name: wireSprite.fromPort,
-            remote_object: rightObject.id,
+            remote_object: rightObject ? rightObject.id : undefined,
             remote_name: wireSprite.toPort,
             is_internal: wireSprite.connectionType === "internal",
           };
@@ -1614,6 +1612,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(wireSprite.isNew){
           me.removeWire(wireSprite);
         } else{
+          if(!params.remote_object){
+            delete params.remote_object;
+          }
           me.disconnectConnection(params, function(){
             me.removeWire(wireSprite);
             me.reloadStatuses(true);
