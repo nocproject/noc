@@ -115,6 +115,15 @@
         },
         "parameters.administrative_domain": {
             "ru": "З.О."
+        },
+        "parameters.skip_full_avail": {
+            "ru": "Пропустить доступные за интервал"
+        },
+        "parameters.skip_zero_avail": {
+            "ru": "Пропустить недоступные за интервал"
+        },
+        "parameters.skip_zero_access": {
+            "ru": "Пропустить с неактивными портами доступа"
         }
     },
     "parameters": [
