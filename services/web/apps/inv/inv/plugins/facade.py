@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import Optional, Dict
+import random
 
 # Third-party modules
 from bson import ObjectId
@@ -35,18 +36,19 @@ class FacadePlugin(InvPlugin):
 
     def get_data(self, request, o: Object):
         r = {"id": str(o.id), "views": []}
+        seed = random.randint(0, 0x7FFFFFFF)
         if o.model.front_facade:
             r["views"].append(
                 {
                     "name": "Front",
-                    "src": f"/inv/inv/{o.id}/plugin/facade/front.svg",
+                    "src": f"/inv/inv/{o.id}/plugin/facade/front.svg?_dc={seed}",
                 }
             )
         if o.model.rear_facade:
             r["views"].append(
                 {
                     "name": "Rear",
-                    "src": f"/inv/inv/{o.id}/plugin/facade/rear.svg",
+                    "src": f"/inv/inv/{o.id}/plugin/facade/rear.svg?_dc={seed}",
                 }
             )
         return r
@@ -89,7 +91,12 @@ class FacadePlugin(InvPlugin):
             if mod_svg:
                 # Embed module
                 try:
-                    svg.embed(slot_to_id(ro.parent_connection), mod_svg)
+                    svg.embed(
+                        slot_to_id(ro.parent_connection),
+                        mod_svg,
+                        resource=ro.as_resource(),
+                        event="dblclick",
+                    )
                 except ValueError:
                     pass
         return svg

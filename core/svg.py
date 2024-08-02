@@ -199,13 +199,14 @@ class SVG(object):
         defs.append(el)
         self._defs[el_id] = el
 
-    def embed(self: "SVG", element_id: str, source: "SVG") -> None:
+    def embed(self: "SVG", element_id: str, source: "SVG", **kwargs) -> None:
         """
         Embed SVG instead of element.
 
         Args:
             element_id: Id of the element.
             source: Source SVG instance.
+            kwargs: Optional data-* attributes
 
         Raises:
             ValueError: If element not found.
@@ -229,6 +230,10 @@ class SVG(object):
         el_id = el.get("id")
         if el_id:
             attrs["id"] = el_id
+        # Apply data-* attributes
+        if kwargs:
+            attrs.update({f"data-{k.replace('_', '-')}": v for k, v in kwargs.items()})
+            attrs["class"] = "selectable"
         # Remove all children from elements
         el.clear()
         # Replace with `g`
