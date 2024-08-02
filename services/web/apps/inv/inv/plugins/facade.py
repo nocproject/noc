@@ -58,7 +58,16 @@ class FacadePlugin(InvPlugin):
         svg = self.get_svg(o, name)
         if svg is None:
             return self.app.response_not_found()
-        return HttpResponse(svg.to_string(), content_type="image/svg+xml", status=200)
+        return HttpResponse(
+            svg.to_string(),
+            content_type="image/svg+xml",
+            status=200,
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
 
     def get_svg(
         self, o: Object, name: Optional["str"] = None, cache: Optional[Dict[ObjectId, SVG]] = None
