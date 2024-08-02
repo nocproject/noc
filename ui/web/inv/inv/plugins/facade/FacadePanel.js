@@ -126,11 +126,13 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
                     if(svgDocument){
                       var svgElements = svgDocument.querySelectorAll("[data-event]");
                       svgElements.forEach(function(element){
-                        var event = element.dataset.event;
-                        element.addEventListener(event, function(){
-                          console.log("Scope:", app);
-                          console.log("Clicked element:", element);
-                          alert("Clicked element: " + element.dataset.resource);
+                        var events = element.dataset.event.split(",");
+                        events.forEach(function(event){
+                          element.addEventListener(event, function(){
+                            console.log("Scope:", app);
+                            console.log("Clicked element:", element);
+                            alert("Clicked element: " + element.dataset.resource);
+                          });
                         });
                       });
                     } else{
