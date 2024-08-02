@@ -143,6 +143,16 @@ Ext.define("NOC.inv.inv.Application", {
         dock: "top",
         items: [
           me.navReloadButton,
+          "->",
+          {
+            glyph: NOC.glyph.plus,
+            tooltip: __("Add objects"),
+            itemId: "addObjectDock",
+            disabled: false,
+            scope: me,
+            handler: me.onAddObject,
+          },
+
         ],
       }],
       listeners: {
@@ -294,6 +304,7 @@ Ext.define("NOC.inv.inv.Application", {
       Ext.each(innerCells.query(".x-grid-cell-inner"), function(cell){
         cell.classList.add("noc-inv-nav-cell-inner");
       });
+      me.down("#addObjectDock").hide();
       widget.show();
       mapMenuItem = widget.down("#invNavContextMenuMap");
       if(mapMenuItem){
@@ -373,6 +384,7 @@ Ext.define("NOC.inv.inv.Application", {
   onDeselect: function(rowModel, record){
     var vwidgetColumn, widget, me = this;
 
+    me.down("#addObjectDock").show();
     if(rowModel){
       vwidgetColumn = rowModel.view.getHeaderCt().down('widgetcolumn');
       widget = vwidgetColumn.getWidget(record);
