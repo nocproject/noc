@@ -104,11 +104,41 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
           xtype: "container",
           layout: "fit",
           items: [
+            // {
+            // xtype: "image",
+            // itemId: "image",
+            // src: view.src,
+            // title: view.name,
+            // padding: 5,
+            // },
             {
-              xtype: "image",
-              src: view.src,
-              title: view.name,
+              xtype: "container",
+              itemId: "image",
+              html: "<object id='svg-object' data=" + view.src + "' type='image/svg+xml'></object>",
               padding: 5,
+              listeners: {
+                scope: me,
+                afterrender: function(container){
+                  var app = this,
+                    svgObject = container.getEl().dom.querySelector('#svg-object');
+                  svgObject.addEventListener('load', function(){
+                    var svgDocument = svgObject.contentDocument;
+                    if(svgDocument){
+                      var svgElements = svgDocument.querySelectorAll("[data-event]");
+                      svgElements.forEach(function(element){
+                        var event = element.dataset.event;
+                        element.addEventListener(event, function(){
+                          console.log("Scope:", app);
+                          console.log("Clicked element:", element);
+                          alert("Clicked element: " + element.dataset.resource);
+                        });
+                      });
+                    } else{
+                      NOC.error(__("SVG Document is not loaded"));
+                    }
+                  });
+                },
+              },
             },
           ],
         };
@@ -147,7 +177,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     var me = this,
       width = me.startWidth,
       height = me.startHeight;
-    Ext.each(me.query("image"), function(img){
+    Ext.each(me.query("#image"), function(img){
       var imgEl = img.getEl().dom;
       imgEl.style.transformOrigin = "0 0";
       imgEl.style.transform = "scale(" + combo.getValue() + ")";
