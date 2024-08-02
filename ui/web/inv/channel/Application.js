@@ -127,6 +127,7 @@ Ext.define("NOC.inv.channel.Application", {
           fieldLabel: __("Name"),
           allowBlank: false,
           uiStyle: "medium",
+          autoFocus: true,
         },
         {
           name: "parent",
