@@ -323,6 +323,26 @@ Ext.define("NOC.inv.channel.Application", {
     });
     me.callParent();
   },
+  filters: [
+    {
+      title: __("By Project"),
+      name: "project",
+      ftype: "lookup",
+      lookup: "project.project",
+    },
+    {
+      title: __("By Supplier"),
+      name: "supplier",
+      ftype: "lookup",
+      lookup: "crm.supplier",
+    },
+    {
+      title: __("By Subscriber"),
+      name: "subscriber",
+      ftype: "lookup",
+      lookup: "crm.subscriber",
+    },
+  ],
   //
   onMap: function(){
     var me = this,
