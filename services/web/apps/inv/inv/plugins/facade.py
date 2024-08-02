@@ -101,7 +101,7 @@ class FacadePlugin(InvPlugin):
                 # Embed module
                 try:
                     svg.embed(
-                        slot_to_id(ro.parent_connection),
+                        slot_to_id(name),
                         mod_svg,
                         resource=ro.as_resource(),
                         event="dblclick",
