@@ -13,7 +13,6 @@ from collections import defaultdict
 
 # Third-party modules
 import orjson
-from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.models import get_model
@@ -142,23 +141,25 @@ def apply_sync_sensors(changes: List[ChangeItem]) -> None:
     from noc.inv.models.object import Object
     from noc.inv.models.sensor import sync_object
 
-    sensors_changes = defaultdict(set)
+    affected_models = set()
+    affected_ids = set()
     for item in changes:
         item = ChangeItem(**item)
         fields = {cf["field"] for cf in item.changed_fields or []}
         if item.model_id == "inv.ObjectModel" and ("sensors" in fields or not fields):
-            sensors_changes[item.model_id].add(item.item_id)
+            affected_models.add(item.item_id)
         elif item.model_id == "inv.Object" and ("data" in fields or not fields):
             # @todo ManagedObject address change
-            sensors_changes[item.model_id].add(item.item_id)
+            affected_ids.add(item.item_id)
 
-    query = Q()
-    if "inv.ObjectModel" in sensors_changes:
-        query |= Q(model__in=list(sensors_changes["inv.ObjectModel"]))
-    if "inv.Object" in sensors_changes:
-        query |= Q(id__in=list(sensors_changes["inv.Object"]))
-    if not query:
+    if not affected_models and not affected_ids:
         return
-
-    for o in Object.objects.filter(query):
+    # Build query
+    query = {}
+    if affected_models:
+        query["model__in"] = list(affected_models)
+    if affected_ids:
+        query["id__in"] = list(affected_ids)
+    # Update
+    for o in Object.objects.filter(**query):
         sync_object(o)
