@@ -122,7 +122,7 @@ class ObjectModelApplication(ExtDocApplication):
         for c in o.connections:
             # Find compatible objects
             proposals = []
-            for t, n in o.get_connection_proposals(c.name):
+            for t, n in o.iter_connection_proposals(c.name):
                 m = ObjectModel.objects.filter(id=t).first()
                 mc = m.get_model_connection(n)
                 proposals += [

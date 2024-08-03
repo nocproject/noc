@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
-# ObjectModel model
+# Object model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import operator
 from dataclasses import dataclass
 from threading import Lock
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
+import warnings
 
 # Third-party modules
 from bson import ObjectId
@@ -29,6 +30,7 @@ from mongoengine.fields import (
     DateTimeField,
 )
 from mongoengine import signals
+from mongoengine.queryset.queryset import QuerySet
 import cachetools
 from typing import Iterable, Tuple
 
@@ -53,6 +55,7 @@ from noc.pm.models.agent import Agent
 from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 from noc.inv.models.technology import Technology
+from noc.core.deprecations import RemovedInNOC2501Warning
 from .objectmodel import ObjectModel, Crossing
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -155,6 +158,23 @@ class ObjectConfigurationData(EmbeddedDocument):
         return "".join(f"@{s.code}" for s in self.contexts)
 
 
+class ObjectQuerySet(QuerySet):
+    """Fix Object.container usage"""
+
+    def __call__(self, **kwargs):
+        legacy = [k for k in kwargs if k.startswith("container")]
+        if legacy:
+            # Rewrite container queryes
+            warnings.warn(
+                "Object.container is deprecated and will be removed in NOC 25.1",
+                RemovedInNOC2501Warning,
+            )
+            for q in legacy:
+                kwargs[f"parent{q[9:]}"] = kwargs.pop(q)
+            kwargs["parent_connection__exists"] = False
+        return super().__call__(**kwargs)
+
+
 @Label.model
 @bi_sync
 @on_save
@@ -163,7 +183,7 @@ class ObjectConfigurationData(EmbeddedDocument):
     check=[
         ("sa.ManagedObject", "container"),
         ("inv.CoveredObject", "object"),
-        ("inv.Object", "container"),
+        ("inv.Object", "parent"),
     ],
     delete=[("inv.Sensor", "object")],
 )
@@ -178,18 +198,21 @@ class Object(Document):
         "auto_create_index": False,
         "indexes": [
             "data",
-            "container",
-            ("name", "container"),
+            ("parent", "parent_connection"),
+            ("name", "parent"),
             ("data.interface", "data.attr", "data.value"),
             "labels",
             "effective_labels",
         ],
+        "queryset_class": ObjectQuerySet,
     }
 
     name = StringField()
     model: "ObjectModel" = PlainReferenceField(ObjectModel)
     data: List["ObjectAttr"] = ListField(EmbeddedDocumentField(ObjectAttr))
-    container: Optional["Object"] = PlainReferenceField("self", required=False)
+    parent: Optional["Object"] = PlainReferenceField("self", required=False)
+    parent_connection = StringField(required=False)
+    additional_connections = ListField(StringField(), required=False)
     comment = GridVCSField("object_comment")
     # Configuration Param
     cfg_data: List["ObjectConfigurationData"] = ListField(
@@ -244,9 +267,9 @@ class Object(Document):
             if self.data and self.get_data("management", "managed_object"):
                 yield "managedobject", self.get_data("management", "managed_object")
             else:
-                for _, o, _ in self.iter_outer_connections():
-                    if o.data and o.get_data("management", "managed_object"):
-                        yield "managedobject", o.get_data("management", "managed_object")
+                o = self.get_box()
+                if o.data and o.get_data("management", "managed_object"):
+                    yield "managedobject", o.get_data("management", "managed_object")
 
     def clean(self):
         self.set_point()
@@ -275,7 +298,7 @@ class Object(Document):
     def on_save(self):
         def get_coordless_objects(o):
             r = {str(o.id)}
-            for co in Object.objects.filter(container=o.id):
+            for co in Object.objects.filter(parent=o.id):
                 cx, cy = co.get_data_tuple("geopoint", ("x", "y"))
                 if cx is None and cy is None:
                     r |= get_coordless_objects(co)
@@ -296,22 +319,22 @@ class Object(Document):
                     x=x, y=y, default_zoom=self.layer.default_zoom if self.layer else DEFAULT_ZOOM
                 )
         if self._created:
-            if self.container:
+            if self.parent:
                 pop = self.get_pop()
                 if pop:
                     pop.update_pop_links()
-        # Changed container
-        elif hasattr(self, "_changed_fields") and "container" in self._changed_fields:
+        # Changed parent
+        elif hasattr(self, "_changed_fields") and "parent" in self._changed_fields:
             # Old pop
-            old_container_id = getattr(self, "_old_container", None)
+            old_parent_id = getattr(self, "_old_parent", None)
             old_pop = None
-            if old_container_id:
-                c = Object.get_by_id(old_container_id)
+            if old_parent_id:
+                c = Object.get_by_id(old_parent_id)
                 while c:
                     if c.get_data("pop", "level"):
                         old_pop = c
                         break
-                    c = c.container
+                    c = c.parent
             # New pop
             new_pop = self.get_pop()
             # Check if pop moved
@@ -327,8 +350,8 @@ class Object(Document):
         Returns list of parent segment ids
         :return:
         """
-        if self.container:
-            return self.container.get_path() + [self.id]
+        if self.parent:
+            return self.parent.get_path() + [self.id]
         return [self.id]
 
     @property
@@ -337,16 +360,17 @@ class Object(Document):
         Return level
         :return:
         """
-        if not self.container:
+        if not self.parent:
             return 0
         return len(self.get_path()) - 1  # self
 
     @property
     def has_children(self) -> bool:
-        return bool(Object.objects.filter(container=self.id))
+        return bool(Object.objects.filter(parent=self.id).first())
 
     @property
     def is_wire(self) -> bool:
+        # @todo: Replace with proper implementation
         return bool(self.model.get_data("length", "length"))
 
     @property
@@ -365,6 +389,23 @@ class Object(Document):
         """
         return self.model.vendor.name == "Generic" or self.model.vendor.name == "NoName"
 
+    @property
+    def is_point(self) -> bool:
+        """
+        Check if object has coordinates
+        """
+        return (
+            self.get_data("geopoint", "x") is not None
+            and self.get_data("geopoint", "y") is not None
+        )
+
+    @property
+    def is_container(self) -> bool:
+        """
+        Check if object is container
+        """
+        return bool(self.get_data("container", "container"))
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object
@@ -373,13 +414,12 @@ class Object(Document):
         # $graphLookup hits 100Mb memory limit. Do not use it
         seen = {self.id}
         wave = {self.id}
-        max_level = 4
+        max_level = 7
         coll = Object._get_collection()
         for _ in range(max_level):
             # Get next wave
             wave = (
-                set(d["_id"] for d in coll.find({"container": {"$in": list(wave)}}, {"_id": 1}))
-                - seen
+                set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
             )
             if not wave:
                 break
@@ -600,13 +640,6 @@ class Object(Document):
         """
         self.cfg_data = [cd for cd in self.cfg_data if cd.scope not in scopes]
 
-    # def iter_model_configuration_params(self) -> Tuple["ConfigurationParam", "ParamSchema", "ScopeVariant"]:
-    #     """
-    #     Iterate over Available Configuration Param
-    #     """
-    #     # Processed configurations param
-    #     for pr in self.model.configuration_rule.param_rules:
-
     def get_effective_cfg_params(self) -> List["ParamData"]:
         """
         Get all objects param with schema
@@ -754,40 +787,31 @@ class Object(Document):
             r.append((c.name, discriminators))
         return r
 
-    def get_connection_proposals(
+    def iter_connection_proposals(
         self,
-        name,
+        name: str,
         ro: "ObjectModel",
         remote_name: Optional[str] = None,
         use_cable: bool = False,
-        only_first: bool = False,
-    ) -> List[Tuple[Optional["ObjectModel"], str]]:
+    ) -> Iterable[Tuple[Optional["ObjectModel"], str]]:
         """
-
-        :param name:
-        :param ro:
-        :param remote_name:
-        :param use_cable:
-        :param only_first:
-        :return:
+        Iterate possible connections.
         """
-        r = []
-        for model_id, c_name in self.model.get_connection_proposals(name):
+        for model_id, c_name in self.model.iter_connection_proposals(name):
             if use_cable:
                 model = ObjectModel.get_by_id(model_id)
                 if bool(model.get_data("length", "length")):
                     # Wired, Multiple Cable?
-                    r.append((model, c_name))
+                    yield model, c_name
             elif remote_name and c_name != remote_name:
                 continue
             elif ro and ro.id == model_id:
-                r.append((None, c_name))
-            if only_first and r:
-                return r
-            # Check connection
-        return r
+                yield None, c_name
 
-    def has_connection(self, name):
+    def has_connection(self, name: str) -> bool:
+        """
+        Check if object has connection.
+        """
         return self.model.has_connection(name)
 
     def get_p2p_connection(
@@ -798,7 +822,7 @@ class Object(Document):
         Returns connection, remote object, remote connection or
         None, None, None
         """
-        from .objectconnection import ObjectConnection
+        from .objectconnection import ObjectConnection, ObjectConnectionItem
 
         c = ObjectConnection.objects.filter(
             __raw__={"connection": {"$elemMatch": {"object": self.id, "name": name}}}
@@ -807,6 +831,40 @@ class Object(Document):
             for x in c.connection:
                 if x.object.id != self.id:
                     return c, x.object, x.name
+        else:
+            # Emulate legacy code
+            # Will be removed in NOC 25.1
+            mc = self.model.get_model_connection(name)
+            if mc and mc.is_outer:
+                warnings.warn(
+                    "Object.get_p2p_connection for outer connections is deprecated "
+                    "and will be removed in NOC 25.1",
+                    RemovedInNOC2501Warning,
+                )
+                if not self.parent or not self.parent_connection:
+                    return None, None, None
+                c = ObjectConnection(
+                    connection=[
+                        ObjectConnectionItem(object=self, name=name),
+                        ObjectConnectionItem(object=self.parent, name=self.parent_connection),
+                    ]
+                )
+                return c, self.parent, self.parent_connection
+            elif mc and mc.is_inner:
+                warnings.warn(
+                    "Object.get_p2p_connection for inner connections is deprecated "
+                    "and will be removed in NOC 25.1",
+                    RemovedInNOC2501Warning,
+                )
+                child = Object.objects.filter(parent=self.id, parent_connection=name).first()
+                if child:
+                    c = ObjectConnection(
+                        connection=[
+                            ObjectConnectionItem(object=self, name=self.name),
+                            ObjectConnectionItem(object=child.parent, name=child.parent_connection),
+                        ]
+                    )
+                    return c, child.parent, child.parent_connection
         # Strange things happen
         return None, None, None
 
@@ -829,13 +887,20 @@ class Object(Document):
         """
         Get container for object.
         """
-        # Direct container
-        if self.container:
-            return self.container
-        # Outer
-        for _, c, _ in self.iter_outer_connections():
-            return c.get_container()
+        c = self.parent
+        while c:
+            if not c.parent_connection:
+                return c.parent
+            c = c.parent
         return None
+
+    def get_box(self) -> Optional["Object"]:
+        """
+        Get chassis.
+        """
+        if not self.parent or not self.parent_connection:
+            return self
+        return self.parent.get_box()
 
     def disconnect_p2p(self, name: str):
         """
@@ -848,33 +913,39 @@ class Object(Document):
             Move object to the nearest container.
             """
             c = obj.get_container()
-            obj.container = c
+            obj.parent = c
+            obj.parent_connection = None
             obj.log(f"Insert into {c}", system="CORE", op="INSERT")
             obj.save()
 
-        c, o, _ = self.get_p2p_connection(name)
-        if not c:
-            return
         mc = self.model.get_model_connection(name)
-        if mc:
-            if mc.is_outer:
-                move_to_container(self)
-            elif mc.is_inner:
-                move_to_container(o)
-        self.log(f"'{name}' disconnected", system="CORE", op="DISCONNECT")
-        c.delete()
-        if o.is_wire and not ObjectConnection.objects.filter(connection__object=o.id).first():
-            # Check wire connection and remove
-            o.delete()
+        if not mc:
+            return
+        if mc.is_outer:
+            move_to_container(self)
+        elif mc.is_inner:
+            o = Object.objects.filter(parent=self, parent_connection=name).first()
+            if not o:
+                return None
+            move_to_container(o)
+        elif mc.is_same_level:
+            c, o, _ = self.get_p2p_connection(name)
+            if not c:
+                return
+            self.log(f"'{name}' disconnected", system="CORE", op="DISCONNECT")
+            c.delete()
+            if o.is_wire and not ObjectConnection.objects.filter(connection__object=o.id).first():
+                # Check wire connection and remove
+                o.delete()
 
     def connect_p2p(
         self,
         name: str,
         remote_object: "Object",
         remote_name: str,
-        data: Dict[str, Any],
+        data: Optional[Dict[str, Any]] = None,
         reconnect: bool = False,
-    ) -> Optional[Any]:
+    ) -> None:
         """
         Connect two genderless connections
         """
@@ -891,41 +962,45 @@ class Object(Document):
         valid, cause = self.model.check_connection(lc, rc)
         if not valid:
             raise ConnectionError(cause)
-        # Check existing connections
-        if lc.type.genders in ("s", "m", "f", "mf"):
-            ec, r_object, r_name = self.get_p2p_connection(name)
-            if ec is not None:
-                # Connection exists
-                if reconnect:
-                    if r_object.id == remote_object.id and r_name == remote_name:
-                        # Same connection exists
-                        n_data = deep_merge(ec.data, data)  # Merge ObjectConnection
-                        if n_data != ec.data:
-                            # Update data
-                            ec.data = n_data
-                            ec.save()
-                        return
-                    self.disconnect_p2p(name)
-                else:
-                    raise ConnectionError("Already connected")
-        # Create connection
-        c = ObjectConnection(
-            connection=[
-                ObjectConnectionItem(object=self, name=name),
-                ObjectConnectionItem(object=remote_object, name=remote_name),
-            ],
-            data=data,
-        ).save()
+        # Vertical connections
+        if lc.is_outer:
+            self.parent = remote_object
+            self.parent_connection = remote_name
+            self.save()
+        elif lc.is_inner:
+            remote_object.parent = self
+            remote_object.parent_connection = name
+            remote_object.save()
+        elif lc.is_same_level:
+            data = data or {}
+            # Check existing connections
+            if lc.type.genders in ("s", "m", "f", "mf"):
+                ec, r_object, r_name = self.get_p2p_connection(name)
+                if ec is not None:
+                    # Connection exists
+                    if reconnect:
+                        if r_object.id == remote_object.id and r_name == remote_name:
+                            # Same connection exists
+                            n_data = deep_merge(ec.data, data)  # Merge ObjectConnection
+                            if n_data != ec.data:
+                                # Update data
+                                ec.data = n_data
+                                ec.save()
+                            return
+                        self.disconnect_p2p(name)
+                    else:
+                        raise ConnectionError("Already connected")
+            # Create connection
+            ObjectConnection(
+                connection=[
+                    ObjectConnectionItem(object=self, name=name),
+                    ObjectConnectionItem(object=remote_object, name=remote_name),
+                ],
+                data=data,
+            ).save()
         self.log(
             "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
-        # Disconnect from container on o-connection
-        for obj, conn in [(self, lc), (remote_object, rc)]:
-            if obj.container and conn.is_outer:
-                obj.log("Remove from %s" % obj.container, system="CORE", op="REMOVE")
-                obj.container = None
-                obj.save()
-        return c
 
     def connect_genderless(
         self,
@@ -976,35 +1051,29 @@ class Object(Document):
             "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
 
-    def put_into(self, container: "Object"):
+    def put_into(self, container: "Object") -> None:
         """
         Put object into container
         """
-        if container and not container.get_data("container", "container"):
+        if container and not container.is_container:
             raise ValueError("Must be put into container")
-        # Disconnect all o-connections
-        for c in self.model.connections:
-            if c.direction == "o":
-                c, _, _ = self.get_p2p_connection(c.name)
-                if c:
-                    self.disconnect_p2p(c.name)
         # Connect to parent
-        self.container = container.id if container else None
+        self.parent = container.id if container else None
+        self.parent_connection = None
         # Reset previous rack position
         self.reset_data("rackmount", ("position", "side", "shift"))
-        #
         self.save()
         self.log("Insert into %s" % (container or "Root"), system="CORE", op="INSERT")
 
-    def get_content(self) -> "Object":
+    def iter_children(self) -> Iterable["Object"]:
         """
-        Returns all items directly put into container
+        Iterate through all children
         """
-        return Object.objects.filter(container=self.id)
+        yield from Object.objects.filter(parent=self.id)
 
     def get_local_name_path(self, include_chassis: bool = False) -> str:
-        for _, ro, rn in self.get_outer_connections():
-            return ro.get_local_name_path(include_chassis) + [rn]
+        if self.parent and self.parent_connection:
+            return self.parent.get_local_name_path(include_chassis) + [self.parent_connection]
         if include_chassis:
             return [self.name]
         return []
@@ -1013,16 +1082,12 @@ class Object(Document):
         """
         Return list of container names
         """
-        current = self.container
-        if current is None:
-            for _, ro, rn in self.get_outer_connections():
-                return ro.get_name_path() + [rn]
-            return [smart_text(self)]
-        np = [smart_text(self)]
-        while current:
-            np.insert(0, smart_text(current))
-            current = current.container
-        return np
+        if self.parent and self.parent_connection:
+            return self.parent.get_name_path() + [self.parent_connection]
+        elif self.parent:
+            return self.parent.get_name_path() + [self.name]
+        else:
+            return [self.name]
 
     def log(self, message, user=None, system=None, managed_object=None, op=None):
         if not user:
@@ -1048,82 +1113,51 @@ class Object(Document):
 
     def get_lost_and_found(self) -> Optional["Object"]:
         m = ObjectModel.get_by_name("Lost&Found")
-        c = self.container
+        c = self.parent
         while c:
             # Check siblings
-            lf = Object.objects.filter(container=c, model=m).first()
+            lf = Object.objects.filter(parent=c, model=m).first()
             if lf:
                 return lf
             # Up one level
-            c = c.container
+            c = c.parent
         return None
 
     @classmethod
     def detach_children(cls, sender, document, target=None):
-        if not document.get_data("container", "container"):
+        if not document.is_container:
             return
         if not target:
             target = document.get_lost_and_found()
-        for o in Object.objects.filter(container=document.id):
-            if o.get_data("container", "container"):
+        for o in Object.objects.filter(parent=document.id):
+            if o.is_container:
                 cls.detach_children(sender, o, target)
                 o.delete()
             else:
                 o.put_into(target)
 
-    def iter_connections(self, direction: Optional[str]) -> Iterable[Tuple[str, "Object", str]]:
+    def iter_connections(self) -> Iterable[Tuple[str, "Object", str]]:
         """
+        Iterate horizontal connections.
+
+        Returns:
+            Iterator of (name, remote object, remote name)
+
         Yields connections of specified direction as tuples of
         (name, remote_object, remote_name)
         """
         from .objectconnection import ObjectConnection
 
-        ic = set(c.name for c in self.model.connections if c.direction == direction)
         for c in ObjectConnection.objects.filter(connection__object=self.id):
-            sn = None
-            oc = None
+            local_name = None
+            remote_side = None
             for cc in c.connection:
                 if cc.object.id == self.id:
-                    if cc.name in ic:
-                        sn = cc.name
+                    local_name = cc.name
                 else:
-                    oc = cc
-            if sn and oc:
-                yield sn, oc.object, oc.name
-
-    def iter_inner_connections(self):
-        """
-        Yields inner connections as tuples of
-        (name, remote_object, remote_name)
-        """
-        yield from self.iter_connections("i")
-
-    def iter_outer_connections(self):
-        """
-        Yields outer connections as tuples of
-        (name, remote_object, remote_name)
-        """
-        yield from self.iter_connections("o")
-
-    def has_inner_connections(self):
-        """
-        Returns True if object has any inner connections
-        """
-        return any(self.iter_inner_connections())
-
-    def get_inner_connections(self):
-        """
-        Returns a list of inner connections as
-        (name, remote_object, remote_name)
-        """
-        return list(self.iter_inner_connections())
-
-    def get_outer_connections(self):
-        """
-        Returns a list of outer connections as
-        (name, remote_object, remote_name)
-        """
-        return list(self.iter_outer_connections())
+                    remote_side = cc
+            if local_name and remote_side:
+                yield local_name, remote_side.object, remote_side.name
 
     @classmethod
     def delete_disconnect(cls, sender, document, target=None):
@@ -1138,16 +1172,23 @@ class Object(Document):
                 c.connection = left
                 c.save()
 
+    @property
+    def is_pop(self) -> bool:
+        """
+        Check if object is point of presence
+        """
+        return bool(self.get_data("pop", "level"))
+
     def get_pop(self) -> Optional["Object"]:
         """
         Find enclosing PoP
         :returns: PoP instance or None
         """
-        c = self.container
+        c = self.parent
         while c:
-            if c.get_data("pop", "level"):
+            if c.is_pop:
                 return c
-            c = c.container
+            c = c.parent
         return None
 
     def get_coordinates_zoom(self) -> Tuple[Optional[float], Optional[float], Optional[int]]:
@@ -1162,8 +1203,8 @@ class Object(Document):
                 x, y = c.get_data_tuple("geopoint", ("x", "y"))
                 zoom = c.layer.default_zoom or DEFAULT_ZOOM
                 return x, y, zoom
-            if c.container:
-                c = Object.get_by_id(c.container.id)
+            if c.parent:
+                c = Object.get_by_id(c.parent.id)
                 if c:
                     continue
             break
@@ -1202,7 +1243,7 @@ class Object(Document):
                     "$graphLookup": {
                         "from": "noc.objects",
                         "connectFromField": "_id",
-                        "connectToField": "container",
+                        "connectToField": "parent",
                         "startWith": "$_id",
                         "as": "_path",
                         "maxDepth": 50,
@@ -1244,7 +1285,7 @@ class Object(Document):
         """
         current = None
         for p in path:
-            current = Object.objects.filter(name=p, container=current).first()
+            current = Object.objects.filter(name=p, parent=current).first()
             if not current:
                 return None
             if hints:
@@ -1256,15 +1297,6 @@ class Object(Document):
     def update_pop_links(self, delay: int = 20):
         call_later("noc.inv.util.pop_links.update_pop_links", delay, pop_id=self.id)
 
-    @classmethod
-    def _pre_init(cls, sender, document, values, **kwargs):
-        """
-        Object pre-initialization
-        """
-        # Store original container id
-        if "container" in values and values["container"]:
-            document._cache_container = values["container"]
-
     def get_address_text(self) -> Optional[str]:
         """
         Return first found address.text value upwards the path
@@ -1275,8 +1307,8 @@ class Object(Document):
             addr = current.get_data("address", "text")
             if addr:
                 return addr
-            if current.container:
-                current = Object.get_by_id(current.container.id)
+            if current.parent:
+                current = Object.get_by_id(current.parent.id)
             else:
                 break
         return None
@@ -1289,7 +1321,7 @@ class Object(Document):
         """
         serials = [self.get_data("asset", "serial")]
         if not chassis_only:
-            for sn, oo, name in self.iter_inner_connections():
+            for oo in self.iter_children():
                 serials += oo.get_object_serials(chassis_only=False)
         return serials
 
@@ -1307,9 +1339,7 @@ class Object(Document):
             return False
 
         connections = {
-            name: ro
-            for name, ro, _ in self.iter_inner_connections()
-            if ro.model.cr_context != "XCVR"
+            ro.parent_connection: ro for ro in self.iter_children() if ro.model.cr_context != "XCVR"
         }
         for c in self.model.connections:
             if is_protocol_match(c.protocols):
@@ -1397,7 +1427,7 @@ class Object(Document):
         agent = self.get_data("agent", "agent")
         modbus = self.get_data("modbus", "type")
         if modbus and modbus in {"RTU", "ASCII"}:
-            for name, remote_object, remote_name in self.iter_connections("s"):
+            for name, _, _ in self.iter_connections():
                 path = find_path(self, name, target_protocols=["<RS485-A", "<RS485-B"])
                 if not path:
                     continue
@@ -1519,7 +1549,28 @@ class Object(Document):
             return f"o:{self.id}:{path}"
         return f"o:{self.id}"
 
+    def _get_container(self) -> Optional["Object"]:
+        """
+        Emulates deprecated container property
+        """
+        warnings.warn(
+            "Object.container is deprecated and will be removed in NOC 25.1",
+            RemovedInNOC2501Warning,
+        )
+        if self.parent_connection:
+            return None
+        return self.parent
+
+    def _set_container(self, value: Optional["Object"]) -> None:
+        warnings.warn(
+            "Object.container is deprecated and will be removed in NOC 25.1",
+            RemovedInNOC2501Warning,
+        )
+        self.parent_connection = None
+        self.parent = value
+
+    container = property(fget=_get_container, fset=_set_container, doc="Legacy container attribute")
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
-signals.pre_init.connect(Object._pre_init, sender=Object)

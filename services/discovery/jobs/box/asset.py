@@ -67,9 +67,8 @@ class AssetCheck(DiscoveryCheck):
         self.sensors: Dict[Tuple[Optional[Object], str] : Dict[str, Any]] = (
             {}
         )  # object, sensor -> sensor data
-        self.to_disconnect: Set[Tuple[Object, str, Object, str]] = (
-            set()
-        )  # Save processed connection. [(in_connection, object, out_connection), ... ]
+        # Upper object, lower object
+        self.to_disconnect: Set[Tuple[Object, Object]] = set()
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
             list
         )  # Connection rule. type -> [rule1, ruleN]
@@ -274,7 +273,7 @@ class AssetCheck(DiscoveryCheck):
             if self.object.container:
                 container = self.object.container.id
             else:
-                container = self.lost_and_found
+                container = self.lost_and_found.id
             o = Object(model=m, data=o_data, container=container)
             o.save()
             o.log(
@@ -295,10 +294,8 @@ class AssetCheck(DiscoveryCheck):
                 op="CHANGE",
             )
         else:
-            # Add all connection to disconnect list
-            self.to_disconnect.update(
-                set((o, c[0], c[1], c[2]) for c in o.iter_inner_connections())
-            )
+            # Add all inner connection to disconnect list
+            self.to_disconnect.update((o, c) for c in o.iter_children())
         # Check revision
         if o.get_data("asset", "revision") != revision:
             # Update revision
@@ -596,29 +593,26 @@ class AssetCheck(DiscoveryCheck):
         Create P2P connection o1:c1 - o2:c2
         """
         try:
-            cn = o1.connect_p2p(c1, o2, c2, {}, reconnect=True)
-            if cn:
-                o1.log(
-                    "Connect %s -> %s:%s" % (c1, o2, c2),
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="CONNECT",
-                )
-                o2.log(
-                    "Connect %s -> %s:%s" % (c2, o1, c1),
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="CONNECT",
-                )
-            c_name = o2.model.get_model_connection(c2)  # If internal_name use
-            # self.logger.debug(
-            #    "[%s|%s]To disconnect object: %s", o2, c_name.name, self.to_disconnect
-            # )
-            if (o2, c_name.name, o1, c1) in self.to_disconnect:
-                # Remove if connection on system
-                self.to_disconnect.remove((o2, c_name.name, o1, c1))
+            o1.connect_p2p(c1, o2, c2)
         except ConnectionError as e:
-            self.logger.error("Failed to connect: %s", e)
+            self.logger.error("Conection error: %s", e)
+            return
+        if (
+            o1.parent
+            and o1.parent_connection
+            and o1.parent.id == o2.id
+            and (o2, o1) in self.to_disconnect
+            and o1.parent_connection == c2
+        ):
+            self.to_disconnect.remove((o2, o1))
+        elif (
+            o2.parent
+            and o2.parent_connection
+            and o2.parent.id == o1.id
+            and (o1, o2) in self.to_disconnect
+            and o2.parent_connection == c1
+        ):
+            self.to_disconnect.remove((o1, o2))
 
     def connect_twinax(self, o1: Object, c1: str, o2: Object, c2: str):
         """
@@ -992,7 +986,7 @@ class AssetCheck(DiscoveryCheck):
         if self.object.container:
             container = self.object.container.id
         else:
-            container = self.lost_and_found
+            container = self.lost_and_found.id
         data += [ObjectAttr(scope="discovery", interface="asset", attr="part_no", value=[name])]
         o = Object(
             model=model,
@@ -1042,7 +1036,7 @@ class AssetCheck(DiscoveryCheck):
             return ObjectModel.get_by_name(m)
         return None
 
-    def get_lost_and_found(self, object):
+    def get_lost_and_found(self, object) -> Object:
         lfm = ObjectModel.objects.filter(name="Lost&Found").first()
         if not lfm:
             self.logger.error("Lost&Found model not found")
@@ -1051,7 +1045,7 @@ class AssetCheck(DiscoveryCheck):
         if not lf:
             self.logger.error("Lost&Found not found")
             return None
-        return lf.id
+        return lf
 
     def get_generic_models(self) -> List[str]:
         """ """
@@ -1112,32 +1106,22 @@ class AssetCheck(DiscoveryCheck):
         return name
 
     def disconnect_connections(self):
-        for o1, c1, o2, c2 in self.to_disconnect:
-            self.logger.info("Disconnect: %s:%s ->X<- %s:%s", o1, c1, c2, o2)
-            self.disconnect_p2p(o1, c1, c2, o2)
-
-    def disconnect_p2p(self, o1: "Object", c1: str, c2: str, o2: "Object"):
-        """
-        Disconnect P2P connection o1:c1 - o2:c2
-        """
-        try:
-            cn = o1.get_p2p_connection(c1)[0]
-            if cn:
-                o1.log(
-                    "Disconnect %s -> %s:%s" % (c1, o2, c2),
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="DISCONNECT",
-                )
-                o2.log(
-                    "Disconnect %s -> %s:%s" % (c2, o1, c1),
-                    system="DISCOVERY",
-                    managed_object=self.object,
-                    op="DISCONNECT",
-                )
-                cn.delete()
-        except ConnectionError as e:
-            self.logger.error("Failed to disconnect: %s", e)
+        for o1, o2 in self.to_disconnect:
+            self.logger.info("Disconnect: %s:%s ->X<- %s", o1, o2.parent_connection, o2)
+            o1.log(
+                f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="DISCONNECT",
+            )
+            o2.log(
+                f"Disconnect {o1}:{o2.parent_connection} -> {o2}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="DISCONNECT",
+            )
+            # Move o2 to lost&found
+            o2.put_into(self.lost_and_found)
 
     def clean_serial(self, model: "ObjectModel", number: Optional[str], serial: Optional[str]):
         # Empty value

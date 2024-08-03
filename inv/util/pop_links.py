@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Rebuild pop links
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ class LinkedPoP(object):
         if not root:
             root = self.pop
         mos = set()
-        for o in root.get_content():
+        for o in root.iter_children():
             if o.get_data("management", "managed"):
                 # Managed object
                 mo = o.get_data("management", "managed_object")

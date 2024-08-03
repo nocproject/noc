@@ -42,7 +42,7 @@ class Node(object):
             object_id=str(obj.id),
             name=obj.name or "",
             model=obj.model.get_short_label(),
-            parent_connection=None,
+            parent_connection=obj.parent_connection,
             children=[],
             is_external=False,
             connections=[],
@@ -100,11 +100,6 @@ class CommutationPlugin(InvPlugin):
             Iterable of Node
         """
 
-        def get_outer(obj: Object) -> Optional[Tuple[Object, str]]:
-            for _, c, n in obj.iter_outer_connections():
-                return c, n
-            return None
-
         def add_external(obj: Object) -> Node:
             """
             Append external node and parents.
@@ -113,17 +108,14 @@ class CommutationPlugin(InvPlugin):
             node.external = True
             nodes[node.object_id] = node
             parent = None
-            if not obj.container:
-                cc = get_outer(obj)
-                if cc:
-                    oo, parent_connection = cc
-                    # Add parent
-                    parent = nodes.get(str(oo.id))
-                    if not parent:
-                        # Register parent
-                        parent = add_external(oo)
-                    parent.children.append(node)
-                    node.parent_connection = parent_connection
+            if obj.parent_connection:
+                # Add parent
+                parent = nodes.get(str(obj.parent.id))
+                if not parent:
+                    # Register parent
+                    parent = add_external(obj.parent)
+                parent.children.append(node)
+                node.parent_connection = obj.parent_connection
             if parent is None:
                 ext_nodes_roots.add(node.object_id)
             return node
@@ -138,42 +130,28 @@ class CommutationPlugin(InvPlugin):
             omap[o.id] = o
             node = Node.from_object(o)
             nodes[node.object_id] = node
-            if o.container:
-                containers.append((node.object_id, str(o.container.id)))
+            if o.parent:
+                containers.append((node.object_id, str(o.parent.id)))
         # Link containers
         for node_id, c_id in containers:
             node = nodes[node_id]
             container = nodes.get(c_id)
             if container:
                 container.children.append(node)
-        # Find vertical and horizontal connections
-        wave = list(omap)
+        # Get cable objects
         cables = {}
-        while wave:
-            new_wave = []
-            for c in ObjectConnection.objects.filter(connection__object__in=wave):
-                if len(c.connection) != 2:
-                    continue  # @todo: Process later
-                if c.connection[0].object.id in omap:
-                    local = c.connection[0]
-                    remote = c.connection[1]
-                else:
-                    local = c.connection[1]
-                    remote = c.connection[0]
-                if remote.object.id in omap:
-                    continue  # Already processed
-                if remote.object.model.get_data("length", "length"):
-                    cables[remote.object.id] = remote.object
-                else:
-                    omap[remote.object.id] = remote.object
-                    node = Node.from_object(remote.object)
-                    node.parent_connection = local.name
-                    nodes[node.object_id] = node
-                    # Add children
-                    nodes[str(local.object.id)].children.append(node)
-                    new_wave.append(remote.object.id)
-            wave = new_wave
-        # Process cables found
+        for c in ObjectConnection.objects.filter(connection__object__in=list(omap)):
+            if len(c.connection) != 2:
+                continue  # @todo: Process later
+            if c.connection[0].object.id in omap:
+                remote = c.connection[1]
+            else:
+                remote = c.connection[0]
+            if remote.object.id in omap:
+                continue  # Already processed
+            if remote.object.model.get_data("length", "length"):
+                cables[remote.object.id] = remote.object
+        # Get other side of cables
         conns: DefaultDict[ObjectId] = defaultdict(list)
         ext_nodes_roots = set()
         for c in ObjectConnection.objects.filter(connection__object__in=list(cables)):
@@ -188,6 +166,7 @@ class CommutationPlugin(InvPlugin):
             if co.object.id not in omap:
                 # External object
                 add_external(co.object)
+        # Create connections for cables
         for items in conns.values():
             if len(items) != 2:
                 continue
@@ -279,7 +258,9 @@ class CommutationPlugin(InvPlugin):
 
         def render_subgraph(node: Node, r: Dict[str, Any]) -> None:
             g = get_graph_template()
-            g["graphAttributes"]["label"] = get_label(node.name, node.model)
+            g["graphAttributes"]["label"] = get_label(
+                node.parent_connection if node.parent_connection else node.name, node.model
+            )
             g["name"] = f"cluster_{node.object_id}"
             # Attach as subgraph
             r["subgraphs"].append(g)
