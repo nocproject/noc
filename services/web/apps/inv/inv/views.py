@@ -8,7 +8,8 @@
 # Python modules
 import inspect
 import os
-from typing import Optional, Dict, List, Any, Tuple
+from typing import Optional, Dict, List, Any, Tuple, Set
+import math
 
 # Third-party modules
 from mongoengine import ValidationError
@@ -183,7 +184,7 @@ class InvApplication(ExtApplication):
     def api_attach(self, request, container: str, item: str, choice: Optional[str] = None):
         c_obj = self.get_object_or_404(Object, id=container)
         i_obj = self.get_object_or_404(Object, id=item)
-        if c_obj.is_rack and item.is_rackmount and not (choice and choice == "---"):
+        if c_obj.is_rack and i_obj.is_rackmount and not (choice and choice == "---"):
             return self._attach_rack(c_obj, i_obj, choice=choice)
         if c_obj.is_container:
             return self._attach_container(c_obj, i_obj, choice=choice)
@@ -253,14 +254,30 @@ class InvApplication(ExtApplication):
                     free -= occupied
             return free
 
+        def get_adjanced_available(free: Set[int], units: int) -> Set[int]:
+            """
+            Return only units which have at least `units` free space above.
+            """
+            r: Set[int] = set()
+            for u in free:
+                for nu in range(u, u + units):
+                    if nu not in free:
+                        break
+                else:
+                    r.add(u)
+            return r
+
         def get_choices():
             def get_side_items(side: str) -> List[Dict[str, Any]]:
                 # Generate items
                 return [
                     {"id": f"{side}-{n}", "name": str(n), "leaf": True}
-                    for n in sorted(get_side_free_items(side), reverse=True)
+                    for n in sorted(
+                        get_adjanced_available(get_side_free_units(side), units), reverse=True
+                    )
                 ]
 
+            units = math.ceil(item.get_data("rackmount", "units"))
             children = [
                 {"id": "---", "name": "Put into", "iconCls": "fa fa-download", "leaf": True}
             ]
@@ -278,7 +295,7 @@ class InvApplication(ExtApplication):
             if rear_items:
                 children.append(
                     {
-                        "name": "Front",
+                        "name": "Rear",
                         "iconCls": "fa fa-hand-o-left",
                         "expanded": True,
                         "children": rear_items,
