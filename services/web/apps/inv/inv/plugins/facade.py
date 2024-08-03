@@ -96,12 +96,13 @@ class FacadePlugin(InvPlugin):
         svg = load_svg(facade)
         # Insert nested modules
         for ro in o.iter_children():
+            # Always use front facades for nested modules
             mod_svg = self.get_svg(ro, name="front", cache=cache)
             if mod_svg:
                 # Embed module
                 try:
                     svg.embed(
-                        slot_to_id(name),
+                        slot_to_id(ro.parent_connection),
                         mod_svg,
                         resource=ro.as_resource(),
                         event="dblclick",
