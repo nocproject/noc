@@ -470,6 +470,7 @@ Ext.define("NOC.inv.inv.Application", {
                   xtype: "form",
                   bodyPadding: 10,
                   layout: "anchor",
+                  scrollable: true,
                   defaults: {
                     anchor: "100%",
                     labelWidth: 200,
@@ -478,7 +479,6 @@ Ext.define("NOC.inv.inv.Application", {
                     {
                       xtype: "treepanel",
                       displayField: "name",
-                      autoScroll: true,
                       rootVisible: false,
                       useArrows: true,
                       loadMask: true,
