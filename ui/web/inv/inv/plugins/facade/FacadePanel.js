@@ -143,9 +143,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
                         var events = element.dataset.event.split(",");
                         events.forEach(function(event){
                           element.addEventListener(event, function(){
-                            console.log("Scope:", app);
-                            console.log("Clicked element:", element);
-                            alert("Clicked element: " + element.dataset.resource);
+                            app.app.showObject(element.dataset.resource.split(":")[1]);
                           });
                         });
                       });
