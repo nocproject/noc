@@ -29,9 +29,10 @@ class InventoryPlugin(InvPlugin):
         if icon_cls:
             r["iconCls"] = icon_cls
         children = []
+        nested_children = {c.parent_connection: c for c in o.iter_children()}
         for n in o.model.connections:
             if n.direction == "i":
-                c, r_object, _ = o.get_p2p_connection(n.name)
+                c = nested_children.get(n.name)
                 if c is None:
                     children += [
                         {
@@ -45,7 +46,7 @@ class InventoryPlugin(InvPlugin):
                         }
                     ]
                 else:
-                    cc = self.get_nested_inventory(r_object)
+                    cc = self.get_nested_inventory(c)
                     cc["name"] = n.name
                     children += [cc]
             elif n.direction == "s":

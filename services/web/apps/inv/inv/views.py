@@ -8,7 +8,7 @@
 # Python modules
 import inspect
 import os
-from typing import Optional, Dict, List, Any, Tuple, Set
+from typing import Optional, Dict, List, Any, Tuple
 
 # Third-party modules
 from mongoengine import ValidationError
@@ -31,8 +31,8 @@ from noc.sa.interfaces.base import (
     DictParameter,
     FloatParameter,
 )
-from noc.core.inv.path import find_path
 from noc.core.translation import ugettext as _
+from .pbuilder import CrossingProposalsBuilder
 
 translation_map = str.maketrans("<>", "><")
 
@@ -76,15 +76,16 @@ class InvApplication(ExtApplication):
     def api_node(self, request):
         children = []
         if request.GET and "node" in request.GET:
-            container = request.GET["node"]
-            if is_objectid(container):
-                container = Object.get_by_id(container)
-                if not container:
+            parent = request.GET["node"]
+            if is_objectid(parent):
+                parent = Object.get_by_id(parent)
+                if not parent:
                     return self.response_not_found()
-                children = [(o.name, o) for o in Object.objects.filter(container=container.id)]
-                # Collect inner connections
-                children += [(name, o) for name, o, _ in container.get_inner_connections()]
-            elif container == "root":
+                children = [
+                    (o.parent_connection if o.parent_connection else o.name, o)
+                    for o in parent.iter_children()
+                ]
+            elif parent == "root":
                 cmodels = [
                     d["_id"]
                     for d in ObjectModel._get_collection().find(
@@ -103,7 +104,7 @@ class InvApplication(ExtApplication):
                 children: List[Tuple[str, "Object"]] = [
                     (o.name, o)
                     for o in Object.objects.filter(
-                        __raw__={"container": None, "model": {"$in": cmodels}}
+                        __raw__={"parent": None, "model": {"$in": cmodels}}
                     )
                 ]
 
@@ -118,12 +119,11 @@ class InvApplication(ExtApplication):
                 "id": str(o.id),
                 "name": name,
                 "plugins": [],
-                "can_add": bool(o.get_data("container", "container")),
+                "can_add": o.is_container,
                 "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
             }
             plugins = []
-            if o.get_data("container", "container") or o.has_inner_connections():
-                # n["expanded"] = Object.objects.filter(container=o.id).count() == 1
+            if o.has_children:
                 n["expanded"] = False
             else:
                 n["leaf"] = True
@@ -156,7 +156,7 @@ class InvApplication(ExtApplication):
                 self.get_plugin_data("file"),
                 self.get_plugin_data("log"),
             ]
-            if o.get_data("container", "container"):
+            if o.is_container:
                 plugins.append(self.get_plugin_data("sensor"))
             plugins.append(self.get_plugin_data("crossing"))
             # Process disabled plugins
@@ -193,7 +193,7 @@ class InvApplication(ExtApplication):
         m = ObjectModel.get_by_id(type)
         if not m:
             return self.response_not_found()
-        o = Object(name=name, model=m, container=c)
+        o = Object(name=name, model=m, parent=c)
         if serial and m.get_data("asset", "part_no0"):
             o.set_data("asset", "serial", serial)
         o.save()
@@ -239,7 +239,7 @@ class InvApplication(ExtApplication):
             for x in o:
                 x.put_into(c)
         elif position in ("before", "after"):
-            cc = self.get_object_or_404(Object, id=c.container.id) if c.container else None
+            cc = self.get_object_or_404(Object, id=c.parent.id) if c.parent else None
             for x in o:
                 x.put_into(cc)
         return True
@@ -248,16 +248,11 @@ class InvApplication(ExtApplication):
     def api_get_path(self, request, id):
         o = self.get_object_or_404(Object, id=id)
         path = [{"id": str(o.id), "name": o.name}]
-        while not o.container:
-            # Check outer connections
-            oc = next(o.iter_outer_connections(), None)
-            if not oc:
-                break
-            o = oc[1]
-            path.insert(0, {"id": str(o.id), "name": o.name})
-        while o.container:
-            o = o.container
-            path.insert(0, {"id": str(o.id), "name": o.name})
+        while o.parent:
+            o = o.parent
+            path.insert(
+                0, {"id": str(o.id), "name": o.parent_connection if o.parent_connection else o.name}
+            )
         return path
 
     @view(
@@ -310,141 +305,17 @@ class InvApplication(ExtApplication):
             cable_filter,
             internal,
         )
-        lo: Object = self.get_object_or_404(Object, id=o1)  # Left Object
-        check: List[Tuple[str, Object, str, Optional[Object], Optional[str]]] = [
-            ("left", lo, left_filter, None, None)
-        ]
-        ro: Optional[Object] = None  # Right Object
-        cable: Optional[ObjectModel] = None
-        if o2:
-            ro = self.get_object_or_404(Object, id=o2)
-            check = [
-                ("left", lo, left_filter, ro, right_filter),
-                ("right", ro, right_filter, lo, left_filter),
-            ]
-        if cable_filter:
-            cable = ObjectModel.get_by_name(cable_filter)
-        checking_ports = []
-        id_ports_map = {}  # Left ports
-        # Getting cable
-        cables = ObjectModel.objects.filter(
-            data__match={"interface": "length", "attr": "length", "value__gte": 0},
+        lo = self.get_object_or_404(Object, id=o1)  # Left Object
+        ro = self.get_object_or_404(Object, id=o2) if o2 else None  # Right object
+        builder = CrossingProposalsBuilder(
+            lo=lo,
+            ro=ro,
+            left_filter=left_filter,
+            right_filter=right_filter,
+            internal=internal,
+            cable_filter=cable_filter,
         )
-        result = {
-            "left": {"connections": [], "device": {}, "internal_connections": []},
-            "right": {
-                "connections": [],
-                "device": {},
-                "internal_connections": [],
-            },
-            "cable": [{"name": c.name, "available": True} for c in cables],
-            "valid": False,
-            "wires": [],
-        }
-        # Left and Right Object Processed
-        for key, o_from, left_filter, o_to, right_filter in check:
-            internal_used, left_cross = self.get_cross(o_from)
-
-            result[key]["internal_connections"] = left_cross
-            for c in o_from.model.connections:
-                cid = f"{str(o_from.id)}{c.name}"
-                id_ports_map[key, c.name] = cid
-                c_data = o_from.get_effective_connection_data(c.name)
-                oc, oo, _ = o_from.get_p2p_connection(c.name)
-                self.logger.debug(
-                    "[%s -> %s][%s] Checking connections: free: %s, valid: %s",
-                    o_from,
-                    o_to,
-                    cid,
-                    oc,
-                    oo,
-                )
-                # Deny same and internal <-> external
-                valid = not internal and c.type.name != "Composed"
-                if left_filter == c.name and o_from == o1:
-                    # Same connection
-                    valid = False
-                if o_to or cable_filter:
-                    cp = o_from.get_connection_proposals(
-                        c.name,
-                        cable or o_to.model,
-                        right_filter if not cable else None,
-                        only_first=True,
-                    )
-                    valid = bool(cp)
-                if oc and o_from == lo:
-                    checking_ports.append(c)
-                free = not oc
-                r = {
-                    "id": cid,
-                    "name": c.name,
-                    "type": str(c.type.id),
-                    "type__label": c.type.name,
-                    "gender": c.gender,
-                    "direction": c.direction,
-                    "protocols": [str(p) for p in c_data.protocols],
-                    "free": free,
-                    # "allow_internal": False,
-                    "internal": None,
-                    "valid": valid,
-                    "disable_reason": "",
-                }
-                if o_from.model.has_connection_cross(c.name):
-                    # Allowed crossed input
-                    r["internal"] = {
-                        "valid": c.name != left_filter and not (internal and left_filter),
-                        "free": c.name not in internal_used,
-                        "allow_discriminators": [],
-                    }
-                    if internal and left_filter:
-                        rc = o_from.get_crossing_proposals(c.name, left_filter)
-                        if rc:
-                            r["internal"].update(
-                                {"valid": True, "free": True, "allow_discriminators": rc[0][1]}
-                            )
-                if not free:
-                    rd = self.get_remote_device(c.name, c_data.protocols, o_from)
-                    if rd and rd.obj != o_to:
-                        r["remote_device"] = {
-                            "name": rd.obj.name,
-                            "id": str(rd.obj.id),
-                            "slot": rd.connection,
-                        }
-                result[key]["connections"] += [r]
-            # lcs.append(r)
-        if result["left"]["connections"] and result["right"]["connections"]:
-            result["left"]["device"] = {"id": str(lo.id), "name": lo.name}
-            result["right"]["device"] = {"id": str(ro.id), "name": ro.name}
-            result["valid"] = left_filter and right_filter
-            for p in checking_ports:
-                cable, remote = self.get_remote_slot(p, lo, ro)
-                if remote:
-                    result["wires"].append(
-                        [
-                            {
-                                "id": id_ports_map.get(("left", p.name), 0),
-                                "name": p.name,
-                                "side": "left",
-                            },
-                            {
-                                "id": id_ports_map.get(("right", remote.connection), 0),
-                                "name": remote.connection,
-                                "side": "right",
-                            },
-                        ]
-                    )
-        return result
-        # return {
-        #     "left": {"connections": lcs, "device": device_left, "internal_connections": left_cross},
-        #     "right": {
-        #         "connections": rcs,
-        #         "device": device_right,
-        #         "internal_connections": right_cross,
-        #     },
-        #     "cable": [{"name": c.name, "available": True} for c in cables],
-        #     "valid": lcs and rcs and left_filter and right_filter,
-        #     "wires": wires,
-        # }
+        return builder.build()
 
     @view(
         "^connect/$",
@@ -505,7 +376,7 @@ class InvApplication(ExtApplication):
             cable = Object(
                 name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
                 model=cable_model,
-                container=None,  # lo.container.id if lo.container else None,
+                parent=None,
             )
             cable.save()
             # Connect to cable
@@ -589,126 +460,6 @@ class InvApplication(ExtApplication):
         lo.save()
         return self.render_json({"status": True, "text": ""})
 
-    def get_remote_slot(self, left_slot, lo, ro):
-        """
-        Determine right device's slot with find_path method
-        :return:
-        """
-        wire = None
-        for path in (
-            find_path(
-                lo,
-                left_slot.name,
-                [str(p).translate(translation_map) for p in left_slot.protocols],
-                trace_wire=True,
-            )
-            or []
-        ):
-            if path.obj.model.get_data("length", "length"):
-                wire = path.obj
-            if path.obj == ro:
-                return wire, path
-        return None, None
-
-    def get_remote_device(self, slot, protocols, o):
-        """
-        Determing remote device with find_path method
-        :return:
-        """
-        for path in (
-            find_path(
-                o, slot, [str(p).translate(translation_map) for p in protocols], trace_wire=True
-            )
-            or []
-        ):
-            if path.obj != o and not path.obj.is_wire:
-                return path
-
-    def get_cs_item(
-        self,
-        id,
-        name,
-        type,
-        type__label,
-        gender,
-        direction,
-        protocols,
-        free,
-        valid,
-        disable_reason,
-        o,
-        internal_valid,
-        internal_free,
-    ):
-        """
-        Creating member of cs dict
-        :return:
-        """
-
-        cs = {
-            "id": id,
-            "name": name,
-            "type": type,
-            "type__label": type__label,
-            "gender": gender,
-            "direction": direction,
-            "protocols": protocols,
-            "free": free,
-            "allow_internal": bool(protocols),  # Allowed crossed input
-            "internal": {
-                "valid": internal_valid,
-                "free": internal_free,
-                "allow_discriminators": [],
-            },
-            "valid": valid,
-            "disable_reason": disable_reason,
-        }
-        if not free:
-            rd = self.get_remote_device(name, protocols, o)
-            if rd:
-                cs["remote_device"] = {
-                    "name": rd.obj.name,
-                    "id": str(rd.obj.id),
-                    "slot": rd.connection,
-                }
-        return cs
-
-    @staticmethod
-    def format_discriminator(d) -> str:
-        if not d:
-            return d
-        prefix, d = d.split("::", 1)
-        if prefix == "lambda":
-            return f"{chr(955)}{d}"
-        return d
-
-    def get_cross(self, o: Object) -> Tuple[Set[str], List[Dict[str, Any]]]:
-        r, used = [], set()
-        for s, ss in [("model", o.model), ("object", o)]:
-            for c in ss.cross:
-                r += [
-                    {
-                        "from": {
-                            "id": f"{str(o.id)}{c.input}",
-                            "name": c.input,
-                            "has_arrow": False,
-                            "discriminator": self.format_discriminator(c.input_discriminator or ""),
-                        },
-                        "to": {
-                            "id": f"{str(o.id)}{c.output}",
-                            "name": c.output,
-                            "has_arrow": True,
-                            "discriminator": self.format_discriminator(
-                                c.output_discriminator or ""
-                            ),
-                        },
-                        "gain_db": c.gain_db or 1.0,
-                        "is_delete": s == "object",
-                    }
-                ]
-                used |= {c.input, c.output}
-        return used, r
-
     def can_show_topo(self, o: Object) -> bool:
         """
         Check if topology-related and channel plugins
@@ -725,7 +476,7 @@ class InvApplication(ExtApplication):
         if o.model.cr_context == "CHASSIS":
             return True
         # Has outer connections
-        if any(o.iter_connections("o")):
+        if o.parent_connection:
             return True
         # Inside rack or PoP
         while o:
@@ -738,13 +489,13 @@ class InvApplication(ExtApplication):
             # PoP
             if o.get_data("pop", "level") is not None:
                 return True
-            o = o.container
+            o = o.parent
         return False
 
     @view(url=r"^(?P<oid>[0-9a-f]{24})/map_lookup/$", method=["GET"], access="read", api=True)
     def api_map_lookup(self, request, oid):
         o: Object = self.get_object_or_404(Object, id=oid)
-        if not o.get_data("container", "container"):
+        if not o.is_container:
             return []
         r = [
             {

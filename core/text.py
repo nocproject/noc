@@ -736,3 +736,25 @@ def cyr_to_lat(s: str) -> str:
             r.append(c)
 
     return "".join(r)
+
+
+def str_distance(s1: str, s2: str) -> int:
+    """
+    Get the distance between the strings.
+
+    Args:
+        s1: First string
+        s2: Second string
+
+    Returns:
+        The distance between the strings.
+    """
+    s1 = s1.lower()
+    s2 = s2.lower()
+    n = 0
+    if len(s1) != len(s2):
+        n += abs(len(s1) - len(s2))
+    for c1, c2 in zip(s1, s2):
+        if c1 != c2:
+            n += 1
+    return n
