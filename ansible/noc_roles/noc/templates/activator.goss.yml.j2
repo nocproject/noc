@@ -7,10 +7,10 @@ package:
     installed: true
 {% endif %}
 command:
-  {{ noc_root }}/bin/pip freeze | grep -e pylibssh2 -e ssh2-python:
+  {{ noc_root }}/bin/pip freeze | grep -e pylibssh2 -e ssh2-python312:
     exit-status: 0
     stdout:
-    - /(pylibssh2.+|ssh2-python.+)/
+    - /(pylibssh2.+|ssh2-python312.+)/
     stderr: []
     timeout: 10000
   {{ noc_root }}/noc ctl status |grep activator:
