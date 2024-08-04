@@ -57,16 +57,6 @@ def json_default(obj):
     raise TypeError
 
 
-@dataclass(frozen=True)
-class CheckData(object):
-    name: str
-    status: bool  # True - OK, False - Fail
-    skipped: bool = False  # Check was skipped (Example, no credential)
-    arg0: Optional[str] = None
-    error: Optional[str] = None  # Description if Fail
-    data: Optional[Dict[str, Any]] = None  # Collected check data
-
-
 class DiagnosticEvent(str, enum.Enum):
     disable = "disable"
     fail = "fail"
@@ -132,14 +122,25 @@ DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {
 
 
 class CheckStatus(BaseModel):
+    """
+    Attributes:
+        name: Check name
+        status: Check execution result, True - OK, False - Fail
+        arg0: Check params
+        skipped: Check execution was skipped
+        error: Error description for Fail status
+    """
+
     name: str
-    status: bool  # True - OK, False - Fail
+    status: bool
     arg0: Optional[str] = None
     skipped: bool = False
-    error: Optional[str] = None  # Description if Fail
+    error: Optional[str] = None
 
 
 class DiagnosticItem(BaseModel):
+    """Class for Diagnostic Result description"""
+
     diagnostic: str
     state: DiagnosticState = DiagnosticState("unknown")
     checks: Optional[List[CheckStatus]] = None
@@ -167,17 +168,17 @@ class DiagnosticItem(BaseModel):
         self.checks = []
         self.changed = datetime.datetime.now()
 
-    def iter_checks(self) -> Iterable[Check]:
-        """Iterable over configured checks"""
-        yield tuple(c for c in self.config.checks)
+    def iter_checks(self, logger=None, creds=None) -> Iterable[Tuple[Check, ...]]:
+        """Iterate over checks"""
+        yield tuple(self.config.checks)
 
-    def update_checks(self, checks: List[CheckResult]):
-        """Update check result"""
-        self.checks += checks
-
-    def get_result(self) -> Tuple[DiagnosticState, str, Dict[str, Any]]:
-        c_state = any(self.checks) if self.config.state_policy == "ANY" else all(self.checks)
-        ...
+    def get_check_status(self) -> Tuple[Optional[bool], Optional[str], Dict[str, Any]]:
+        """
+        Calculate check status, ANY or ALL policy apply
+        """
+        check_statuses = [c.status for c in self.checks if not c.skipped]
+        c_state = any(check_statuses) if self.config.state_policy == "ANY" else all(check_statuses)
+        return c_state, None, {}
 
 
 class DiagnosticHandler:
@@ -189,15 +190,18 @@ class DiagnosticHandler:
         self.config = cfg
         self.labels = labels
 
-    def iter_checks(self) -> Iterable[Check]:
+    def iter_checks(self) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
-        for c in self.config.checks:
-            yield c
+        yield tuple(self.config.checks)
 
-    def update_checks(self, checks: List[CheckData]):
-        """Set Check Result"""
+    def get_status(self, checks: List[CheckResult]) -> Tuple[Optional[bool], Optional[str]]:
+        state = any(checks) if self.config.state_policy == "ANY" else all(checks)
+        # ANY or ALL policy apply
+        return state, None
 
-    def get_result(self) -> Optional[Tuple[DiagnosticItem, Dict[str, Any]]]:
+    def get_result(
+        self, checks: List[CheckResult]
+    ) -> Optional[Tuple[DiagnosticItem, Dict[str, Any]]]:
         """Getting Diagnostic result"""
 
 
@@ -237,6 +241,7 @@ class DiagnosticHub(object):
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
         self.__object = o
+        self.__data: Dict[str, Any] = {}
         self.dry_run: bool = dry_run  # For test do not DB Sync
         self.sync_alarm = sync_alarm
         self.sync_labels = sync_labels
@@ -333,7 +338,7 @@ class DiagnosticHub(object):
                 if dc.reason:
                     r[dc.diagnostic].reason = dc.reason
             # item["config"] = dc
-            for c in dc.checks or []:
+            for c in dc.iter_checks():
                 self.__checks[(c.name, c.arg0 or "")] += [dc.diagnostic]
             for dd in dc.dependent or []:
                 self.__depended[dd] = dc.diagnostic
@@ -386,7 +391,7 @@ class DiagnosticHub(object):
             self.set_state(d.diagnostic, DiagnosticState.enabled)
         self.sync_diagnostics()
 
-    def update_checks(self, checks: List[CheckData]):
+    def update_checks(self, checks: List[CheckResult]) -> bool:
         """
         Update checks on diagnostic and calculate state
         * Map diagnostic -> checks
@@ -395,31 +400,43 @@ class DiagnosticHub(object):
         """
         now = datetime.datetime.now().replace(microsecond=0)
         affected_diagnostics: Dict[str, List[CheckStatus]] = defaultdict(list)
+        data: Dict[str, Any] = {}
         for cr in checks:
-            if (cr.name, cr.arg0 or "") not in self.__checks:
+            if (cr.check, cr.arg0 or "") not in self.__checks:
                 self.logger.debug(
-                    "[%s|%s] Diagnostic not enabled: %s", cr.name, cr.arg0, self.__checks
+                    "[%s|%s] Diagnostic not enabled: %s", cr.check, cr.arg0, self.__checks
                 )
                 continue
-            for d in self.__checks[(cr.name, cr.arg0 or "")]:
+            for d in self.__checks[(cr.check, cr.arg0 or "")]:
                 affected_diagnostics[d] += [
                     CheckStatus(
-                        name=cr.name,
+                        name=cr.check,
                         status=cr.status,
                         skipped=cr.skipped,
-                        error=cr.error,
+                        error=cr.error.message if cr.error else None,
                         arg0=cr.arg0,
                     )
                 ]
+            for d in cr.data or []:
+                # caps = Capability.get_by_name(d.name)
+                data[d.name] = d.value
+        partial_checks = False  # Partial checks flag
         # Calculate State and Update diagnostic
         for d, cs in affected_diagnostics.items():
             self[d].checks = cs
-            check_statuses = [c.status for c in cs if not c.skipped]
-            # ANY or ALL policy apply
-            c_state = (
-                any(check_statuses) if self[d].config.state_policy == "ANY" else all(check_statuses)
+            c_state, c_reason, c_data = self[d].get_check_status()
+            if c_state is None:
+                partial_checks = True
+            if c_data:
+                data |= c_data
+            self.set_state(
+                d,
+                DIAGNOSTIC_CHECK_STATE[c_state],
+                reason=c_reason,
+                changed_ts=now,
+                data=data.get(d),
             )
-            self.set_state(d, DIAGNOSTIC_CHECK_STATE[c_state], changed_ts=now)
+        return partial_checks
 
     def refresh_diagnostics(self):
         """
@@ -522,7 +539,7 @@ class DiagnosticHub(object):
             query_set += " - %s" * len(remove)
         if update:
             self.logger.debug("[%s] Update diagnostics", list(update))
-            diags = {d.diagnostic: d.dict(exclude={"config"}) for d in update}
+            diags = {d.diagnostic: d.model_dump(exclude={"config"}) for d in update}
             params += [orjson.dumps(diags, default=json_default).decode("utf-8")]
             query_set += " || %s::jsonb"
         if not params:
@@ -719,6 +736,9 @@ class DiagnosticHub(object):
                 )
             )
         # Send Notification
+
+    def sync_diagnostic_data(self):
+        """Synchronize object data with diagnostic"""
 
 
 def diagnostic(cls):

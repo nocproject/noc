@@ -13,16 +13,11 @@ from collections import defaultdict
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.checkers.base import (
-    Check,
-    CheckResult,
-    DataItem,
-    MetricValue,
-)
+from noc.core.checkers.base import Check, CheckResult, MetricValue
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.checkers.loader import loader
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, CheckData, PROFILE_DIAG
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, PROFILE_DIAG
 from noc.core.debug import error_report
 from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, SNMPv3Credential
 from noc.sa.models.profile import Profile
@@ -57,8 +52,8 @@ class DiagnosticCheck(DiscoveryCheck):
             sync_labels=config.discovery.sync_diagnostic_labels,
             logger=self.logger,
         ) as d_hub:
-            for d in d_hub:
-                dc = d.config
+            for di in d_hub:
+                dc = di.config
                 # Check on Discovery run
                 if (self.is_box and not dc.discovery_box) or (
                     self.is_periodic and not dc.discovery_periodic
@@ -70,25 +65,25 @@ class DiagnosticCheck(DiscoveryCheck):
                     # Diagnostic without checks
                     continue
                 if dc.run_policy not in {"A", "F"}:
-                    self.logger.info("[%s] Diagnostic for manual run. Skipping", d.diagnostic)
+                    self.logger.info("[%s] Diagnostic for manual run. Skipping", di.diagnostic)
                     continue
-                if dc.run_policy == "F" and d.state == DiagnosticState.enabled and d.checks:
-                    self.logger.info("[%s] Diagnostic with enabled state. Skipping", d.diagnostic)
+                if dc.run_policy == "F" and di.state == DiagnosticState.enabled and di.checks:
+                    self.logger.info("[%s] Diagnostic with enabled state. Skipping", di.diagnostic)
                     continue
                 # Get checker
-                checks: List[CheckResult] = []
                 credentials: List[
                     Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
                 ] = []
-                data: List[DataItem] = []
-                for do_checks in d.iter_checks():
+                for do_checks in di.iter_checks():
+                    checks: List[CheckResult] = []
                     for cr in self.run_checks(do_checks):
                         if cr.credential:
                             credentials += [(Protocol[cr.check], cr.credential)]
-                        if cr.data:
-                            data += cr.data
                         checks.append(cr)
-                        m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{d.diagnostic}"]
+                        m_labels = [
+                            f"noc::check::name::{cr.check}",
+                            f"noc::diagnostic::{di.diagnostic}",
+                        ]
                         if cr.arg0:
                             m_labels += [f"noc::check::arg0::{cr.arg0}"]
                         if cr.address:
@@ -99,16 +94,13 @@ class DiagnosticCheck(DiscoveryCheck):
                             ]
                         if cr.metrics:
                             metrics += cr.metrics
-                        # if cr.data:
-                        #    d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
-                    d.update_checks(checks)
-
-                dd = self.apply_data(data)
-                if dd:
-                    d_data[d.diagnostic].update(dd)
+                    # Update diagnostics
+                    r = d_hub.update_checks(checks)
+                    if r:
+                        break
                 # Apply Profile
-                if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
-                    self.set_profile(d_data[d.diagnostic]["profile"])
+                # if di.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
+                #    self.set_profile(d_data[d.diagnostic]["profile"])
                 # Apply credentials
                 if credentials and (
                     not self.object.auth_profile or self.object.auth_profile.enable_suggest
@@ -116,19 +108,7 @@ class DiagnosticCheck(DiscoveryCheck):
                     self.logger.debug("Apply credentials: %s", credentials)
                     self.apply_credentials(credentials)
                 # Update diagnostics
-                d_hub.update_checks(
-                    [
-                        CheckData(
-                            name=cr.check,
-                            arg0=cr.arg0,
-                            status=cr.status,
-                            skipped=cr.skipped,
-                            error=cr.error.message if cr.error else None,
-                            data=dd,  # Apply data
-                        )
-                        for cr in checks
-                    ],
-                )
+                # d_hub.update_checks(checks)
         if metrics:
             self.register_diagnostic_metrics(metrics)
         # self.object.diagnostic.refresh_diagnostics()
@@ -186,20 +166,6 @@ class DiagnosticCheck(DiscoveryCheck):
             r["rules"] = self.suggest_rules
         if checker == "cli":
             r["profile"] = self.object.profile
-        return r
-
-    def apply_data(self, data: List[DataItem]) -> Dict[str, Any]:
-        """
-        Apply data to ManagedObject
-        :param data:
-        :return:
-        """
-        r = {}
-        for d in data:
-            r[d.name] = d.value
-            # caps = Capability.get_by_name(d.name)
-            # if caps:
-            #     value = Capability.clean_value(d.value)
         return r
 
     def set_profile(self, profile: str) -> bool:

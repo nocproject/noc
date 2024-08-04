@@ -16,7 +16,7 @@ from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.core.checkers.http import HTTP_DIAG, HTTPS_DIAG
 from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
 from noc.core.wf.diagnostic import DiagnosticState, DiagnosticConfig
-from noc.core.checkers.base import Check
+from noc.core.checkers.base import Check, CheckResult
 
 
 class ProfileDiagnostic:
@@ -47,7 +47,7 @@ class ProfileDiagnostic:
         self.result_cache: Dict[Tuple[str, str], str] = {}
         self.profile: Optional[str] = None
         self.ignoring_snmp = False
-        self.profile_checks: List[Check] = []
+        self.profile_checks: List[Tuple[Check, ...]] = []
         self.rules: Dict[Tuple[str, str, int], List[SuggestProfile]] = self.load_rules()
 
     def iter_checks(self) -> Iterable[Tuple[Check, ...]]:
@@ -67,11 +67,7 @@ class ProfileDiagnostic:
             for d in c["data"]:
                 self.result_cache[(method, d["name"])] = d["value"]
 
-    def get_capabilities(self):
-        """Return Capabilities"""
-        ...
-
-    def get_result(self) -> Optional[Tuple[DiagnosticState, Optional[str], Optional[Dict[str, str]]]]:
+    def get_result(self, checks: List[CheckResult]) -> Optional[Tuple[DiagnosticState, Optional[str], Optional[Dict[str, str]]]]:
         """Getting Diagnostic result: State and reason"""
         if self.profile:
             return DiagnosticState.enabled, None, {"profile": self.profile}
@@ -85,6 +81,7 @@ class ProfileDiagnostic:
         r = defaultdict(list)
         oids = []
         http_checks = []
+        snmp_checks = []
         for rule in ProfileCheckRule.get_profile_check_rules():
             r[rule.query_key].append(rule)
             if rule.method == "snmp_v2c_get":
@@ -100,7 +97,7 @@ class ProfileDiagnostic:
                 if c not in http_checks:
                     http_checks.append(c)
         if oids and self.snmp_credential:
-            self.profile_checks += [
+            snmp_checks += [
                 Check(
                     name=(
                         "SNMPv2c" if isinstance(self.snmp_credential, SNMPCredential) else "SNMPv3"
@@ -110,8 +107,10 @@ class ProfileDiagnostic:
                     args={"oids": ",".join(oids)},
                 ),
             ]
+        if snmp_checks:
+            self.profile_checks += [tuple(snmp_checks)]
         if http_checks:
-            self.profile_checks += http_checks
+            self.profile_checks += [tuple(http_checks)]
         return r
 
     def find_profile(self, key, result: str) -> Optional[SuggestProfile]:
