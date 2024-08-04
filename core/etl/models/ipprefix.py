@@ -32,6 +32,7 @@ class IPPrefix(BaseModel):
     state_changed: Optional[datetime.datetime] = None
     # Workflow event
     event: Optional[str] = None
+    description: Optional[str] = None
     parent: Optional[Reference["IPPrefix"]] = None
     vrf: Optional[Reference[IPVRF]] = None
     ipv6_transition: Optional[Reference["IPPrefix"]] = None
