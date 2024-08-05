@@ -243,7 +243,7 @@ class InvApplication(ExtApplication):
                 return None
             has_shift = bool(obj.get_data("rackmount", "shift"))
             # Top position
-            top = o_pos - units
+            top = o_pos + math.ceil(units)
             if has_shift:
                 top += 1
             # Mark as occupied
