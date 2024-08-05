@@ -298,7 +298,7 @@ def test_wait():
     # Start writer thread
     event = threading.Event()
     thread = threading.Thread(target=writer, name="test_wait-writer")
-    thread.setDaemon(True)
+    thread.daemon = True
     thread.start()
     # Ensure WaitDS contains only one item
     assert WaitDS.get_total() == 1

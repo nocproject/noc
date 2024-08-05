@@ -74,7 +74,7 @@ class ThreadPoolExecutor(object):
                 # Start new thread
                 name = "worker-%s" % next(self.worker_id)
                 t = threading.Thread(target=self.worker, name=name)
-                t.setDaemon(True)
+                t.daemon = True
                 self.threads.add(t)
                 t.start()
             # Enqueue task
