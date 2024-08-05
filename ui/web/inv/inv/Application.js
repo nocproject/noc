@@ -91,7 +91,13 @@ Ext.define("NOC.inv.inv.Application", {
             menu: {},
           },
           onWidgetAttach: function(col, widget, record){
-            widget.hide();
+            var navTree = this.up("treepanel");
+            
+            if(navTree.getSelectionModel().isSelected(record)){
+              widget.show();
+            } else{
+              widget.hide();
+            }
             widget.setMenu({
               xtype: "menu",
               plain: true,
@@ -454,11 +460,11 @@ Ext.define("NOC.inv.inv.Application", {
         },
         scope: me,
         success: function(response){
-          var win, data = Ext.decode(response.responseText);
+          var data = Ext.decode(response.responseText);
           if(Object.prototype.hasOwnProperty.call(data, "choices")){
             // open popup with choices
-            win = Ext.create("Ext.window.Window", {
-              autoShow: false,
+            Ext.create("Ext.window.Window", {
+              autoShow: true,
               title: __("Attach to"),
               height: 400,
               width: 800,
@@ -485,24 +491,6 @@ Ext.define("NOC.inv.inv.Application", {
                       store: Ext.create("Ext.data.TreeStore", {
                         root: data.choices,
                       }),
-                      tbar: [
-                        {
-                          // text: __("Expand All"),
-                          glyph: NOC.glyph.plus_square,
-                          tooltip: __("Expand All"),
-                          handler: function(){
-                            this.up("treepanel").expandAll();
-                          },
-                        },
-                        {
-                          // text: __("Collapse All"),
-                          glyph: NOC.glyph.minus_square,
-                          tooltip: __("Collapse All"),
-                          handler: function(){
-                            this.up("treepanel").collapseAll();
-                          },
-                        },
-                      ],
                       listeners: {
                         beforeselect: function(tree, record){
                           return record.get("leaf");
@@ -566,8 +554,6 @@ Ext.define("NOC.inv.inv.Application", {
                 },
               ],
             });
-            win.show();
-            win.down("treepanel").expandAll();
           } else if(Object.prototype.hasOwnProperty.call(data, "status") && data.status){
             NOC.info(data.message);
           }
