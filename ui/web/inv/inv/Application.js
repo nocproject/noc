@@ -167,7 +167,7 @@ Ext.define("NOC.inv.inv.Application", {
         },
       },
     });
-    me.navTree.getView().on("drop", me.onNavDrop, me);
+    me.navTree.getView().on("beforedrop", me.onNavDrop, me);
     me.tabPanel = Ext.create("Ext.tab.Panel", {
       region: "center",
       layout: "fit",
@@ -437,7 +437,7 @@ Ext.define("NOC.inv.inv.Application", {
     i.setContainer(container);
   },
   //
-  onNavDrop: function(node, data, overModel){
+  onNavDrop: function(node, data, overModel, dropPosition, dropHandlers){
     var itemId,
       me = this;
     
@@ -526,6 +526,7 @@ Ext.define("NOC.inv.inv.Application", {
                             },
                             failure: function(response){
                               var data = Ext.decode(response.responseText);
+                              dropHandlers.cancelDrop();
                               if(data.status === false){
                                 NOC.error(__(data.message));
                                 return;
@@ -540,6 +541,7 @@ Ext.define("NOC.inv.inv.Application", {
                       text: __("Cancel"),
                       glyph: NOC.glyph.times,
                       handler: function(){
+                        dropHandlers.cancelDrop();
                         this.up("window").close();
                       },
                     },
@@ -552,7 +554,8 @@ Ext.define("NOC.inv.inv.Application", {
           }
         },
         failure: function(response){
-          var data = Ext.decode(response.responseText); 
+          var data = Ext.decode(response.responseText);
+          dropHandlers.cancelDrop();
           if(data.status === false){
             NOC.error(data.message);
             return;
