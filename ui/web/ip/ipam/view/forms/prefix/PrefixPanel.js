@@ -110,7 +110,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_ipprefix": true
+                        "allow_models": ["ip.Prefix"]
                     }
                 },
                 {
