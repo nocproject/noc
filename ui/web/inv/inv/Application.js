@@ -487,6 +487,9 @@ Ext.define("NOC.inv.inv.Application", {
                         root: data.choices,
                       }),
                       listeners: {
+                        afterrender: function(tree){
+                          tree.expandAll();
+                        },
                         beforeselect: function(tree, record){
                           return record.get("leaf");
                         },
