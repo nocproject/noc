@@ -319,10 +319,7 @@ class Object(Document):
                     x=x, y=y, default_zoom=self.layer.default_zoom if self.layer else DEFAULT_ZOOM
                 )
         if self._created:
-            if self.parent:
-                pop = self.get_pop()
-                if pop:
-                    pop.update_pop_links()
+            self.refresh_pop_links()
         # Changed parent
         elif hasattr(self, "_changed_fields") and "parent" in self._changed_fields:
             # Old pop
@@ -1548,6 +1545,14 @@ class Object(Document):
         if path:
             return f"o:{self.id}:{path}"
         return f"o:{self.id}"
+
+    def refresh_pop_links(self) -> None:
+        """
+        Update PoP links if necessary
+        """
+        pop = self.get_pop()
+        if pop:
+            pop.update_pop_links()
 
     def _get_container(self) -> Optional["Object"]:
         """

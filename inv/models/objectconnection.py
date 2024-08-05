@@ -27,6 +27,7 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.gis.models.layer import Layer
 from noc.core.comp import smart_text
 from noc.core.change.decorator import change
+from noc.core.model.decorator import on_save, on_delete
 from noc.config import config
 
 
@@ -42,6 +43,8 @@ class ObjectConnectionItem(EmbeddedDocument):
 
 
 @change
+@on_save
+@on_delete
 class ObjectConnection(Document):
     """
     Inventory object connections
@@ -74,6 +77,14 @@ class ObjectConnection(Document):
             for c in self.connection:
                 for _, mo_id in c.object.iter_changed_datastream():
                     yield _, mo_id
+
+    def on_save(self) -> None:
+        for c in self.connection:
+            c.object.refresh_pop_links()
+
+    def on_delete(self) -> None:
+        for c in self.connection:
+            c.object.refresh_pop_links()
 
     def clean(self):
         self.set_line()
