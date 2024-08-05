@@ -91,6 +91,7 @@ Ext.define("NOC.inv.inv.Application", {
             menu: {},
           },
           onWidgetAttach: function(col, widget, record){
+            widget.hide();
             widget.setMenu({
               xtype: "menu",
               plain: true,
@@ -484,6 +485,24 @@ Ext.define("NOC.inv.inv.Application", {
                       store: Ext.create("Ext.data.TreeStore", {
                         root: data.choices,
                       }),
+                      tbar: [
+                        {
+                          // text: __("Expand All"),
+                          glyph: NOC.glyph.plus_square,
+                          tooltip: __("Expand All"),
+                          handler: function(){
+                            this.up("treepanel").expandAll();
+                          },
+                        },
+                        {
+                          // text: __("Collapse All"),
+                          glyph: NOC.glyph.minus_square,
+                          tooltip: __("Collapse All"),
+                          handler: function(){
+                            this.up("treepanel").collapseAll();
+                          },
+                        },
+                      ],
                       listeners: {
                         beforeselect: function(tree, record){
                           return record.get("leaf");
