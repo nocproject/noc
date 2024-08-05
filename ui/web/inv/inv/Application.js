@@ -168,10 +168,6 @@ Ext.define("NOC.inv.inv.Application", {
       },
     });
     me.navTree.getView().on("drop", me.onNavDrop, me);
-    me.navTree.on("select", function(selModel){
-      me.selectedModel = selModel;
-    });
-
     me.tabPanel = Ext.create("Ext.tab.Panel", {
       region: "center",
       layout: "fit",
@@ -298,7 +294,7 @@ Ext.define("NOC.inv.inv.Application", {
       vwidgetColumn = rowModel.view.getHeaderCt().down('widgetcolumn'),
       widget = vwidgetColumn.getWidget(record),
       menu = widget.getMenu();
-    
+
     if(widget){
       var innerCells = widget.getEl().up(".x-grid-row");
       Ext.each(innerCells.query(".x-grid-cell-inner"), function(cell){
@@ -430,8 +426,9 @@ Ext.define("NOC.inv.inv.Application", {
     var sel,
       me = this,
       container = null;
-    if(me.selectedModel){
-      sel = me.selectedModel.getSelection();
+    
+    if(me.navTree.getSelectionModel().hasSelection()){
+      sel = me.navTree.getSelectionModel().getSelection();
     }
     if(!Ext.isEmpty(sel)){
       container = sel[0];
