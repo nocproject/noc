@@ -7,9 +7,11 @@
 
 # Python modules
 import logging
+from typing import Set
 
 # NOC modules
 from noc.inv.models.object import Object
+from noc.inv.models.objectconnection import ObjectConnection
 from noc.inv.models.interface import Interface
 from noc.gis.models.layer import Layer
 from noc.inv.models.link import Link
@@ -33,7 +35,7 @@ class LinkedPoP(object):
             layer = "pop_links%d" % (min(level, remote_level) // 10)
             yield c, remote, layer
 
-    def get_pop_objects(self, root=None):
+    def get_pop_managed_objects(self, root=None):
         """
         Get managed objects inside PoP
         """
@@ -47,12 +49,12 @@ class LinkedPoP(object):
                 if mo:
                     mos.add(mo)
             if o.get_data("container", "container"):
-                mos |= self.get_pop_objects(o)
+                mos |= self.get_pop_managed_objects(o)
         return mos
 
     def get_linked_pops(self):
         linked = set()
-        self.pops = set(self.get_pop_objects())
+        self.pops = set(self.get_pop_managed_objects())
         self_interfaces = set(
             Interface.objects.filter(managed_object__in=self.pops).values_list("id")
         )
@@ -78,7 +80,31 @@ class LinkedPoP(object):
             pop = o.get_pop()
             if pop:
                 linked.add(pop)
+        linked |= self.get_linked_pops_by_cables()
         return linked
+
+    def get_linked_pops_by_cables(self) -> Set[Object]:
+        """
+        Get PoP's tracing ObjectConnection
+        """
+        nested_ids = set(self.pop.get_nested_ids())
+        # Get cables
+        cables = set()
+        for conn in ObjectConnection.objects.filter(connection__object__in=list(nested_ids)):
+            if len(conn.connection) != 2:
+                continue
+            for cn in conn.connection:
+                if cn.object.id not in nested_ids:
+                    cables.add(cn.object.id)
+        # Resolve cable connections
+        pops = set()
+        for conn in ObjectConnection.objects.filter(connection__object__in=list(cables)):
+            for cn in conn.connection:
+                if cn.object not in nested_ids:
+                    pop = cn.object.get_pop()
+                    if pop:
+                        pops.add(pop)
+        return pops
 
     def update_links(self):
         if not self.pop:
