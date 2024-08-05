@@ -443,6 +443,7 @@ Ext.define("NOC.inv.inv.Application", {
     
     if(!Ext.isEmpty(data.records)){
       itemId = data.records[0].get("id");
+      dropHandlers.wait = true;
       Ext.Ajax.request({
         url: "/inv/inv/attach/",
         method: "POST",
