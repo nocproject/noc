@@ -458,7 +458,7 @@ Ext.define("NOC.inv.inv.Application", {
             // open popup with choices
             Ext.create("Ext.window.Window", {
               autoShow: true,
-              title: __("Attch to"),
+              title: __("Attach to"),
               height: 400,
               width: 800,
               layout: "fit",
@@ -483,11 +483,18 @@ Ext.define("NOC.inv.inv.Application", {
                       allowDeselect: true,
                       store: Ext.create("Ext.data.TreeStore", {
                         root: data.choices,
+                        listeners: {
+                          load: function(store, records, successful){
+                            if(successful){
+                              var tree = store.ownerTree;
+                              if(tree){
+                                tree.expandAll();
+                              }
+                            }
+                          },
+                        },
                       }),
                       listeners: {
-                        afterrender: function(tree){
-                          tree.expandAll();
-                        },
                         beforeselect: function(tree, record){
                           return record.get("leaf");
                         },
