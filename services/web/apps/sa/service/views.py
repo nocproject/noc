@@ -18,7 +18,7 @@ from noc.sa.models.service import Service
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.translation import ugettext as _
-from noc.core.validators import is_objectid
+from noc.core.validators import is_objectid, is_ipv4
 from noc.core.comp import smart_text
 
 
@@ -70,6 +70,9 @@ class ServiceApplication(ExtDocApplication):
     def get_Q(self, request, query):
         if is_objectid(query):
             q = Q(id=query)
+        elif is_ipv4(query.strip()):
+            svcs = ServiceInstance.objects.filter(addresses__address=query.strip()).scalar("service")
+            q = Q(id__in=svcs)
         else:
             q = super().get_Q(request, query)
         return q
