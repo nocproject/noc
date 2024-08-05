@@ -84,7 +84,14 @@ class InvApplication(ExtApplication):
                 if not parent:
                     return self.response_not_found()
                 children = [
-                    (o.parent_connection if o.parent_connection else o.name, o)
+                    (
+                        (
+                            f"{o.parent_connection} [{o.model.get_short_label()}]"
+                            if o.parent_connection
+                            else o.name
+                        ),
+                        o,
+                    )
                     for o in parent.iter_children()
                 ]
             elif parent == "root":
