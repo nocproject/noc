@@ -460,7 +460,7 @@ Ext.define("NOC.inv.inv.Application", {
             // open popup with choices
             Ext.create("Ext.window.Window", {
               autoShow: true,
-              title: __("Choices"),
+              title: __("Attch to"),
               height: 400,
               width: 800,
               layout: "fit",
@@ -504,6 +504,7 @@ Ext.define("NOC.inv.inv.Application", {
                       text: __("Attach"),
                       itemId: "attachBtn",
                       disabled: true,
+                      glyph: NOC.glyph.check,
                       handler: function(){
                         var tree = this.up("form").down("treepanel"),
                           sel = tree.getSelectionModel().getSelection();
