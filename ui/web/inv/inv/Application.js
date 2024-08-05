@@ -453,11 +453,11 @@ Ext.define("NOC.inv.inv.Application", {
         },
         scope: me,
         success: function(response){
-          var data = Ext.decode(response.responseText);
+          var win, data = Ext.decode(response.responseText);
           if(Object.prototype.hasOwnProperty.call(data, "choices")){
             // open popup with choices
-            Ext.create("Ext.window.Window", {
-              autoShow: true,
+            win = Ext.create("Ext.window.Window", {
+              autoShow: false,
               title: __("Attach to"),
               height: 400,
               width: 800,
@@ -483,16 +483,6 @@ Ext.define("NOC.inv.inv.Application", {
                       allowDeselect: true,
                       store: Ext.create("Ext.data.TreeStore", {
                         root: data.choices,
-                        listeners: {
-                          load: function(store, records, successful){
-                            if(successful){
-                              var tree = store.ownerTree;
-                              if(tree){
-                                tree.expandAll();
-                              }
-                            }
-                          },
-                        },
                       }),
                       listeners: {
                         beforeselect: function(tree, record){
@@ -557,6 +547,8 @@ Ext.define("NOC.inv.inv.Application", {
                 },
               ],
             });
+            win.show();
+            win.down("treepanel").expandAll();
           } else if(Object.prototype.hasOwnProperty.call(data, "status") && data.status){
             NOC.info(data.message);
           }
