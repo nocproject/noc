@@ -1040,19 +1040,24 @@ class ManagedObjectApplication(ExtModelApplication):
 
     @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)
     def api_action(self, request, id, action):
-        def execute(o, a, args):
-            return a.execute(o, **args)
-
-        o = self.get_object_or_404(ManagedObject, id=id)
-        if not o.has_access(request.user):
-            return self.response_forbidden("Access denied")
         a = self.get_object_or_404(Action, name=action)
-        # @todo: Check access
         if request.body:
             args = orjson.loads(request.body)
         else:
             args = {}
-        return self.submit_slow_op(o, a, request=request, **args)
+        return self.submit_slow_op(a, request=request, **args)
+
+    @view(url=r"^(?P<future_id>[0-9a-f]{24})/futures/", method=["GET"], access="read", api=True)
+    def status_futures(self, request, future_id):
+        return self.get_status_slow_op(future_id, request)
+
+    @view(url=r"^futures/$", method=["GET"], access="read", api=True)
+    def ls_futures(self, request):
+        return self.get_list_slow_op(request)
+
+    @view(url=r"^futures/statuses/$", method=["GET"], access="read", api=True)
+    def statuses_futures(self, request):
+        return self.get_statuses_slow_op(request)
 
     @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$", method=["POST"], access="change_link")
     def api_fix_links(self, request, link_id):

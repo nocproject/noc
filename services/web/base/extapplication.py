@@ -369,6 +369,18 @@ class ExtApplication(Application):
         else:
             return self.response_accepted(request.path)
 
-    def submit_slow_op(self, a, o, request, **kwargs):
-        res = SlowOp.submit(a, o, user=request.user.username, **kwargs)
+    def submit_slow_op(self, a, request, **kwargs):
+        res = SlowOp.submit(a, user=request.user.username, **kwargs)
+        return res
+
+    def get_status_slow_op(self, future_id, request):
+        res = SlowOp.status_slw(future_id, request=request)
+        return res
+
+    def get_list_slow_op(self, request):
+        res = SlowOp.list_slw(request)
+        return res
+
+    def get_statuses_slow_op(self, request):
+        res = SlowOp.statuses_slw(request)
         return res
