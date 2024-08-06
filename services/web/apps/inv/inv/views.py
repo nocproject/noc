@@ -689,7 +689,8 @@ class InvApplication(ExtApplication):
         lo.save()
         return self.render_json({"status": True, "text": ""})
 
-    def can_show_topo(self, o: Object) -> bool:
+    @staticmethod
+    def can_show_topo(o: Object) -> bool:
         """
         Check if topology-related and channel plugins
         can be used.
@@ -713,10 +714,10 @@ class InvApplication(ExtApplication):
             if o.model.name == "Sandbox":
                 return True
             # Rack
-            if o.get_data("rack", "units"):
+            if o.is_rack:
                 return True
             # PoP
-            if o.get_data("pop", "level") is not None:
+            if o.is_pop:
                 return True
             o = o.parent
         return False
