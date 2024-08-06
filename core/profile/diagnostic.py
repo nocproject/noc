@@ -41,7 +41,7 @@ class ProfileDiagnostic:
         self.labels = labels
         self.logger = logger or logging.getLogger("profilediagnostic")
         self.address = address
-        self.unsupported_checks: Set[str] = set()
+        self.unsupported_method: Set[str] = set()
         self.snmp_credential = cred
         self.reason: Optional[str] = None
         self.result_cache: Dict[Tuple[str, str], str] = {}
@@ -52,27 +52,55 @@ class ProfileDiagnostic:
 
     def iter_checks(self) -> Iterable[Tuple[Check, ...]]:
         for c in self.profile_checks:
+            if self.profile:
+                break
             yield c
 
-    def update_checks(self, checks: List[Dict[str, Any]]):
+    def parse_checks(self, checks: List[CheckResult]):
         """Update checks data"""
         for c in checks:
-            if not c["status"]:
-                self.unsupported_checks.add(c["check"])
-                continue
-            if c["check"].startswith("SNMP"):
+            if c.check.startswith("SNMP"):
                 method = "snmp_v2c_get"
             else:
-                method = {HTTP_DIAG: "http_get", HTTPS_DIAG: "https_get"}[c["check"]]
-            for d in c["data"]:
-                self.result_cache[(method, d["name"])] = d["value"]
+                method = {HTTP_DIAG: "http_get", HTTPS_DIAG: "https_get"}[c.check]
+            if not c.status:
+                self.unsupported_method.add(method)
+                continue
+            for d in c.data:
+                self.result_cache[(method, d.name)] = d.value
 
-    def get_result(self, checks: List[CheckResult]) -> Optional[Tuple[DiagnosticState, Optional[str], Optional[Dict[str, str]]]]:
+    def get_result(self, checks: List[CheckResult]) -> Optional[Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]]]]:
         """Getting Diagnostic result: State and reason"""
-        if self.profile:
-            return DiagnosticState.enabled, None, {"profile": self.profile}
+        self.parse_checks(checks)
+        snmp_result, http_result = "", ""
+        for method, param, pref in sorted(self.rules, key=lambda x: x[2]):
+            if method == "snmp_v2c_get":
+                r_key = (method, self.clean_snmp_param(param))
+            else:
+                r_key = (method, param)
+            if method in self.unsupported_method:
+                continue
+            if r_key in self.result_cache:
+                self.logger.debug("Using cached value")
+                result = self.result_cache[r_key]
+            else:
+                continue
+            rule = self.find_profile((method, param, pref), result)
+            if rule:
+                self.logger.info("Matched profile: %s (%s)", rule.profile, rule.name)
+                # @todo: process MAYBE rule
+                self.profile = rule.profile
+                return True, None, {"profile": rule.profile}
+        if snmp_result or http_result:
+            error = f"Not find profile for OID: {snmp_result} or HTTP string: {http_result}"
+        elif not snmp_result:
+            error = "Cannot fetch snmp data, check device for SNMP access"
+        elif not http_result:
+            error = "Cannot fetch HTTP data, check device for HTTP access"
+        self.logger.info("Cannot detect profile: %s", error)
+        self.reason = error
         # Data
-        return DiagnosticState.failed, self.reason, None
+        return False, self.reason, None
 
     def load_rules(self) -> Dict[Tuple[str, str, int], List[SuggestProfile]]:
         """

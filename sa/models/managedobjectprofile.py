@@ -1017,9 +1017,7 @@ class ManagedObjectProfile(NOCModel):
                 PROFILE_DIAG,
                 display_description="Check device profile",
                 show_in_display=False,
-                checks=[
-                    Check(name="PROFILE", credential=snmp_cred),
-                ],
+                diagnostic_handler="noc.core.profile.diagnostic.ProfileDiagnostic",
                 alarm_class="Discovery | Guess | Profile",
                 blocked=not self.enable_box_discovery_profile,
                 run_policy="A",

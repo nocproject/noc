@@ -48,10 +48,16 @@ class Check(object):
         ]
     ] = field(default=None, compare=False, hash=False)
 
+    def __str__(self):
+        return f"{self.name}?{self.args}"
+
     def __hash__(self):
-        if self.address or self.port:
-            return hash((self.name, self.address or "", self.port or 0, self.arg0 or ""))
-        return hash((self.name, self.arg0 or ""))
+        return hash(self.key)
+
+    @property
+    def key(self) -> str:
+        """Check key"""
+        return f"{self.name},{self.arg}"
 
     @property
     def arg0(self):
@@ -123,6 +129,28 @@ class CheckResult(object):
     credential: Optional[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]] = (
         None
     )
+
+    def __str__(self):
+        return f"{self.check}?{self.args}: {self.status}"
+
+    def __hash__(self):
+        return hash(self.key)
+
+    @property
+    def key(self) -> str:
+        """Check key"""
+        return f"{self.check},{self.arg}"
+
+    @property
+    def arg(self) -> str:
+        r = []
+        if self.address:
+            r.append(f"address={self.address}")
+        if self.port:
+            r.append(f"port={self.port}")
+        if self.arg0:
+            r.append(f"arg0={self.arg0}")
+        return "&".join(r)
 
     @property
     def arg0(self):

@@ -74,7 +74,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 credentials: List[
                     Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
                 ] = []
-                for do_checks in di.iter_checks():
+                for do_checks in d_hub.iter_active_checks(di.diagnostic):
                     checks: List[CheckResult] = []
                     for cr in self.run_checks(do_checks):
                         if cr.credential:
