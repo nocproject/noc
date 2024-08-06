@@ -51,7 +51,7 @@ class DCSRunner(object):
                 if not self.thread:
                     # Run separate DCS thread
                     self.thread = Thread(name="dcs", target=self._runner)
-                    self.thread.setDaemon(True)
+                    self.thread.daemon = True
                     self.thread.start()
                     self.ready_event.wait()
                     self.logger.debug("DCS runner thread is ready")

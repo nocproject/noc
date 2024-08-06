@@ -37,7 +37,7 @@ class ServiceStub(object):
 
     def start(self):
         t = threading.Thread(target=self._start)
-        t.setDaemon(True)
+        t.daemon = True
         t.start()
         self.is_ready.wait()
 

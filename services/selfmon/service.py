@@ -34,7 +34,7 @@ class SelfMonService(FastAPIService):
         await self.acquire_lock()
         self.reorder()
         self.runner_thread = Thread(target=self.runner)
-        self.runner_thread.setDaemon(True)
+        self.runner_thread.daemon = True
         self.runner_thread.start()
 
     def reorder(self):
