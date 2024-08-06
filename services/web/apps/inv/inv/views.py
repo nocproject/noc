@@ -298,7 +298,7 @@ class InvApplication(ExtApplication):
                         "expanded": True,
                     }
                 )
-            rear_items = get_side_items("f")
+            rear_items = get_side_items("r")
             if rear_items:
                 children.append(
                     {
