@@ -94,6 +94,7 @@ class FacadePlugin(InvPlugin):
             return None
         # Get module facade
         svg = load_svg(facade)
+        svg.enable_highlight()
         # Insert nested modules
         for ro in o.iter_children():
             # Always use front facades for nested modules

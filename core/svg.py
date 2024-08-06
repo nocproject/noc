@@ -22,9 +22,13 @@ class SVG(object):
     """
 
     DEFS = "{http://www.w3.org/2000/svg}defs"
+    STYLE = "{http://www.w3.org/2000/svg}style"
     NAMESPACES = {
         "": "http://www.w3.org/2000/svg",
         "xlink": "http://www.w3.org/1999/xlink",
+    }
+    HIGHLIGHT_STYLE = {
+        "fill": "red",
     }
 
     def __init__(self: "SVG") -> None:
@@ -201,7 +205,7 @@ class SVG(object):
 
     def embed(self: "SVG", element_id: str, source: "SVG", **kwargs) -> None:
         """
-        Embed SVG instead of element.
+        Embed SVG in place of element.
 
         Args:
             element_id: Id of the element.
@@ -407,6 +411,17 @@ class SVG(object):
             el_id = el.get("id")
             if el_id:
                 yield el_id
+
+    def enable_highlight(self) -> None:
+        """
+        Add highlight CSS
+        """
+        s = [".selectable:hover {"]
+        s.extend(f"  {k}: {v};" for k, v in self.HIGHLIGHT_STYLE.items())
+        s.append("}")
+        style = ET.Element(self.STYLE)
+        self._tree.getroot().insert(0, style)
+        style.text = "\n".join(s)
 
 
 # WARNING: Modifying global state
