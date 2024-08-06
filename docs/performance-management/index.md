@@ -215,13 +215,36 @@ Thresholds are configured in *Performance Management -> Setup -> Metric Rules*. 
 * **Actions** (`Actions`) - a list of actions to take when conditions are met.
     * `MetricAction` - manipulation with the metric (see the next chapter). When choosing transformations, the `Metric Type` is taken into account.
     * Metric Type (`MetricType`) - the type of the metric.
-    * Thresholds (`Thresholds`) - a list of thresholds; an alarm is raised when exceeded. If the alarm class is not specified, the default one is used.
+    * Thresholds (`Thresholds`) - a list of thresholds. The verification is carried out sequentially. An alarm is raised when exceeded.
+        * `Op` - the operation applied to the metric.
+        * `Value` - the threshold value for triggering.
+        * `Clear Value` - the threshold value for cleaning up an alarm. (Optional).
+        * `Alarm Class` - the class of the alarm. If the alarm class is not specified, the default one is used (`NOC | PM | Out of Thresholds`).
+        * `Alarm Labels` - a list of labels that will be assigned to the alarm.
     * `Action Param` - settings for `MetricAction`.
-* **Trigger Conditions** (`Match Condition`) - a set of labels that, when present, cause the rule to be applied to the metric.
+* **Match Rules** (`Match Rules`) - a set of labels that, when present, cause the rule to be applied to the metric.
 
 ![Metric Rules](metric-rules-thresholds1.png)
 
 When specifying a *transformation* (`Metric Action`), the *metric type* (`Metric Type`) is not considered, and thresholds are applied to the result of the transformation. To change the *severity of the alarm* (`severity`), use labels (`Labels`) in accordance with the rules (`Alarm Rules`).
+
+## A visual diagram of the thresholds
+
+![](threshold_settings_en.jpg)
+
+## Examples
+
+### Example 1
+
+It is necessary to raise an alarm on a device with a `Juniper.JUNOS` profile when the permissible temperature is exceeded. Close when the normal value is reached.
+
+![](metric-rules-thresholds2.png)
+
+### Example 2
+
+It is necessary to raise an alarm on the UPS about low or high voltage. Close when returning to normal value.
+
+![](metric-rules-thresholds3.png)
 
 ### Metric Action
 
