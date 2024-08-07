@@ -58,6 +58,7 @@ SELECT
     groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels, service_groups, clients_groups)) as all_data,
     groupUniqArrayArray(checks) as all_checks,
     groupUniqArrayArray(labels) as all_labels,
+    groupUniqArray(router_id) as router_ids,
     max(last_ts) as last_ts
 FROM (
     SELECT ip, pool, remote_system,
@@ -65,7 +66,7 @@ FROM (
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
      argMax(data, ts) as data, argMax(labels, ts) as labels,
      argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
-     argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
+     argMax(router_id, ts) as router_id, argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
     FROM noc.purgatorium
     GROUP BY ip, pool, remote_system
     )
@@ -101,6 +102,11 @@ class PurgatoriumData(object):
     service_groups: Optional[List[ObjectId]] = None
     client_groups: Optional[List[ObjectId]] = None
     data: Optional[Dict[str, str]] = None
+
+    def __str__(self):
+        if self.remote_system:
+            return f"{self.source}@{self.remote_system}: {self.data}"
+        return f"{self.source}: {self.data}"
 
 
 class CheckStatus(EmbeddedDocument):
@@ -204,6 +210,8 @@ class DiscoveredObject(Document):
     checks: List[CheckStatus] = EmbeddedDocumentListField(CheckStatus)
     data: List[DataItem] = EmbeddedDocumentListField(DataItem)
     #
+    duplicate_keys = ListField(LongField())
+    #
     managed_object: "ManagedObject" = IntField(required=False)
     # Link to agent
     agent: "Agent" = ObjectIdField(required=False)
@@ -234,11 +242,12 @@ class DiscoveredObject(Document):
           * update data, for rules
             * field
             * source_priority
-            * policy- set, replace, union (for list)
+            * policy: set, replace, union (for list)
         :return:
         """
         #
         data, labels, changed = {}, [], False
+        rids = set()
         for di in sorted(self.data, key=lambda x: self.sources.index(x.source)):
             for key, value in di.data.items():
                 if key in data or not value:
@@ -249,6 +258,8 @@ class DiscoveredObject(Document):
                     changed = True
             if di.labels:
                 labels += di.labels
+            if di.remote_system:
+                rids.add(hash(f"{di.remote_system.id}{di.remote_id}"))
         # Update Extra Labels
         if self.extra_labels:
             labels += [ll for ll in Label.merge_labels(self.extra_labels.values())]
@@ -261,6 +272,11 @@ class DiscoveredObject(Document):
         self.chassis_id = data.get("chassis_id")
         self.effective_data = data
         self.effective_labels = labels
+        # ToDO Rule Settings
+        if self.hostname:
+            self.duplicate_keys = [self.address_bin, hash(self.hostname)] + list(rids)
+        else:
+            self.duplicate_keys = [self.address_bin] + list(rids)
 
     def get_effective_data(self) -> Dict[str, str]:
         """
@@ -299,15 +315,15 @@ class DiscoveredObject(Document):
         2. Update Data obj.update_data
         3. Rules = for merge data
         4. is_dirty = True if data changed
-        :param pool: Address Pool ? default
-        :param address: Check Address
-        :param sources: List available sources ?from data
-        :param data: Source, labels, data
-        :param checks: List of checks
-        :param labels: Manual Set labels
-        :param update_ts: Last update time
-        :param rule:
-        :return:
+        Args:
+            pool: Address Pool ? default
+            address: Check Address
+            sources: List available sources ?from data
+            data: Source, labels, data
+            checks: List of checks
+            labels: Manual Set labels
+            update_ts: Last update time
+            rule:
         """
         if not isinstance(pool, Pool):
             pool = Pool.get_by_name(pool)
@@ -321,8 +337,11 @@ class DiscoveredObject(Document):
                 labels=labels or [],
                 rule=rule,
             )
-        is_dirty = False
+        elif set(o.sources).symmetric_difference(set(sources)):
+            o.sources = sources
+            o.is_dirty = True
         if not update_ts or update_ts != o.last_seen:
+            logger.debug("[%s|%s] Run update data", pool.name, address)
             o.update_data(data, checks)
         rule = rule or ObjectDiscoveryRule.get_rule(
             address,
@@ -337,14 +356,11 @@ class DiscoveredObject(Document):
                 o.fire_event("expired")  # Remove
             logger.debug("[%s|%s] Not find rule for address. Skipping", pool.name, address)
             return
-        if not o.is_dirty and o.is_dirty == is_dirty and rule == o.rule:
+        if not o.is_dirty and rule == o.rule:
             logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
             return
         if o.rule != rule:
             o.rule = rule
-            o.is_dirty = True
-        if set(o.sources).difference(set(sources)):
-            o.sources = sources
             o.is_dirty = True
         action = rule.get_action(o.checks, o.effective_labels, o.get_effective_data())
         if action == "skip":
@@ -368,7 +384,7 @@ class DiscoveredObject(Document):
         Getting Context for Synchronise object template
         """
         r = ResourceItem(
-            id=self.managed_object,
+            id=str(self.managed_object),
             labels=self.effective_labels,
             data=[
                 ResourceDataItem(name="name", value=self.hostname),
@@ -430,12 +446,15 @@ class DiscoveredObject(Document):
         from noc.inv.models.subinterface import SubInterface
         from mongoengine.queryset.visitor import Q
 
-        addresses = {address or self.address}
-        hostname = hostname or self.hostname
+        duplicate_keys = {self.address_bin}
+        if address and address != self.address:
+            duplicate_keys.add(IP.prefix(address).d)
+        if hostname or self.hostname:
+            duplicate_keys.add(hash(hostname or self.hostname))
         pool = self.pool
         if managed_object:
             pool = managed_object.pool
-            addresses.add(managed_object.address)
+            duplicate_keys.add(IP.prefix(managed_object.address).d)
             for d in SubInterface._get_collection().find(
                 {"managed_object": managed_object.id, "ipv4_addresses": {"$exists": True}},
                 {"ipv4_addresses": 1},
@@ -444,10 +463,9 @@ class DiscoveredObject(Document):
                     ip = IP.prefix(a)
                     if ip.is_internal:
                         continue
-                    addresses.add(ip.address)
+                    duplicate_keys.add(ip.d)
         return DiscoveredObject.objects.filter(
-            Q(origin=None, id__ne=self.id)
-            & (Q(address__in=addresses, pool=pool) | Q(hostname=hostname)),
+            Q(origin=None, id__ne=self.id) & Q(duplicate_keys__in=list(duplicate_keys)),
         )
 
     def sync(self, dry_run=False):
@@ -462,29 +480,37 @@ class DiscoveredObject(Document):
         if self.origin:
             logger.info("Duplicate Record. Skipping")
             return
+        if not self.rule.default_template:
+            return
         pool = self.get_pool()
         if self.managed_object:
             # Sync data
             mo = ManagedObject.objects.filter(id=self.managed_object).first()
         else:
             # Check Removed Managed Object ?
-            mo = ManagedObject.objects.filter(self.get_managed_object_query(pool))
+            mo = ManagedObject.objects.filter(self.get_managed_object_query(pool)).first()
             if not mo:
                 mo = DiscoveryID.find_object(ipv4_address=self.address)
         if dry_run:
             return mo
+        changed = False
         if not mo and self.rule.default_template:
             mo = self.rule.default_template.render(self.get_ctx())
-        elif mo and not self.managed_object:
+        elif mo and self.rule.default_template:
+            changed |= self.rule.default_template.update_instance_data(mo, self.get_ctx())
+            logger.info("[%s] Update existing ManagedObject from data", mo.name)
+        if mo and not self.managed_object:
             # Duplicate
             duplicates = self.check_duplicate(managed_object=mo)
             if duplicates:
+                logger.info("[%s] Find duplicate record by ManagedObject. Set origin", mo.name)
                 DiscoveredObject.objects.filter(id__in=[d.id for d in duplicates]).update(
                     is_dirty=True,
                     origin=self.id,
                 )
-        # mo.update_template_data(self.get_ctx())
-        mo.save()
+        if changed:
+            logger.info("[%s] Managed Object was Changed. Saving...", mo.name)
+            mo.save()
         self.managed_object = mo.id
         self.is_dirty = False
         # Send approve
@@ -626,7 +652,7 @@ def sync_purgatorium():
             ranges[p].append(r)
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True)
-    processed, updated, removed = 0, 0, 0
+    processed, updated, removed, synced = 0, 0, 0, 0
     for row in r.splitlines():
         row = orjson.loads(row)
         pool = Pool.get_by_bi_id(row["pool"])
@@ -684,14 +710,20 @@ def sync_purgatorium():
         if r:
             updated += 1
     now = datetime.datetime.now()
+    # Expired objects
     for o in DiscoveredObject.objects.filter(expired__gt=now):
         o.fire_event("expired")
     logger.debug("Removing expired objects")
+    # Removed objects
     for o in DiscoveredObject.objects.filter(state__in=list(State.objects.filter(is_wiping=True))):
         removed += 1
         o.delete()
+    # Sync objects
+    for do in DiscoveredObject.objects.filter(is_dirty=True, rule__exists=True):
+        if do.rule.allow_sync and do.rule.default_template and not do.origin and do.is_approved:
+            do.sync()
     logger.info(
-        "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s",
+        "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s/Synced: %s",
         ls,
         processed,
         updated,
