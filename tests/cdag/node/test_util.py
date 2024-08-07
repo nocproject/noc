@@ -293,7 +293,7 @@ def test_alarm_vars(config, expected):
         # Test with negative value (as attenuation in dBm)
         (
             {"thresholds": [{"op": ">=", "value": -15.0}]},
-            [-15.5, -15.0, -15.0, -14.5, -14.0],
+            [-15.5, -15.0, -15.0, -15.5, -15.5],
             [None, "raise", None, "clear", None],
             [False, True, True, False, False],
         ),
