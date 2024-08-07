@@ -290,6 +290,31 @@ def test_alarm_vars(config, expected):
             [None, "raise", None, None, "clear"],
             [False, True, True, True, False],
         ),
+        # Test with negative value (as attenuation in dBm)
+        (
+            {"thresholds": [{"op": ">=", "value": -15.0}]},
+            [-15.5, -15.0, -15.0, -14.5, -14.0],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": -15.0}]},
+            [-15.0, -14.9, -14.8, -15.0, -15.1],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": -15.0}]},
+            [-15.0, -15.1, -15.2, -15.0, -14.9],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": -15.0}]},
+            [-14.9, -15.0, -15.1, -14.9, -14.8],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
         # Test with clean_value same as value
         (
             {"thresholds": [{"op": ">=", "value": 10.0, "clear_value": 10.0}]},
