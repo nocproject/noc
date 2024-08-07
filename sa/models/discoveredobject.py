@@ -451,9 +451,9 @@ class DiscoveredObject(Document):
             duplicate_keys.add(IP.prefix(address).d)
         if hostname or self.hostname:
             duplicate_keys.add(hash(hostname or self.hostname))
-        pool = self.pool
+        # pool = self.pool
         if managed_object:
-            pool = managed_object.pool
+            # pool = managed_object.pool
             duplicate_keys.add(IP.prefix(managed_object.address).d)
             for d in SubInterface._get_collection().find(
                 {"managed_object": managed_object.id, "ipv4_addresses": {"$exists": True}},
@@ -728,4 +728,5 @@ def sync_purgatorium():
         processed,
         updated,
         removed,
+        synced,
     )
