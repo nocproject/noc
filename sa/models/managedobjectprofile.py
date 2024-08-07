@@ -39,7 +39,7 @@ from noc.core.scheduler.job import Job
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later, defer
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
-from noc.core.script.scheme import SSH
+from noc.core.script.scheme import SSH, SNMPCredential
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import (
     PROFILE_DIAG,
@@ -982,29 +982,34 @@ class ManagedObjectProfile(NOCModel):
         """
         if o:
             ac = o.get_access_preference()
-            snmp_cred = o.credentials.get_snmp_credential()
+            cred = o.credentials.get_snmp_credential()
+            snmp_cred, snmp_v3_cred = None, None
+            if isinstance(cred, SNMPCredential):
+                snmp_cred = cred
+            else:
+                snmp_v3_cred = cred
         else:
             ac = self.access_preference
-            snmp_cred = None
+            snmp_cred, snmp_v3_cred = None, None
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
                 checks=[
-                    Check(
-                        name="SNMPv1",
-                        credential=snmp_cred,
-                    ),
+                    Check(name="SNMPv1", address=o.address if o else None, credential=snmp_cred),
                     Check(
                         name="SNMPv2c",
+                        address=o.address if o else None,
                         credential=snmp_cred,
                     ),
                     Check(
                         name="SNMPv3",
-                        credential=snmp_cred,
+                        address=o.address if o else None,
+                        credential=snmp_v3_cred,
                     ),
                 ],
+                diagnostic_handler="noc.core.script.diagnostic.SNMPSuggestsDiagnostic",
                 blocked=ac == "C",
                 run_policy="F",
                 run_order="S",
@@ -1035,10 +1040,14 @@ class ManagedObjectProfile(NOCModel):
             checks = [
                 Check(
                     name="TELNET",
+                    address=o.address if o else None,
+                    port=o.port if o else None,
                     credential=cli_cred,
                 ),
                 Check(
                     name="SSH",
+                    address=o.address if o else None,
+                    port=o.port if o else None,
                     credential=cli_cred,
                 ),
             ]
@@ -1048,7 +1057,8 @@ class ManagedObjectProfile(NOCModel):
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=checks,
-                discovery_box=True,
+                diagnostic_handler="noc.core.script.diagnostic.CLISuggestsDiagnostic",
+                discovery_box=False,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
                 blocked=blocked,

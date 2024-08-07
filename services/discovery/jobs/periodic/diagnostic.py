@@ -118,9 +118,11 @@ class DiagnosticCheck(DiscoveryCheck):
     def run_checks(self, checks: Tuple[Check, ...]) -> List[CheckResult]:
         self.logger.debug("Call checks on activator: %s", checks)
         try:
-            return open_sync_rpc(
+            r = open_sync_rpc(
                 "activator", pool=self.object.pool.name, calling_service="discovery"
             ).run_checks(checks)
+            print("RESULT", r)
+            return [CheckResult.from_dict(c) for c in r]
         except RPCError as e:
             self.logger.error("RPC Error: %s", e)
         return []

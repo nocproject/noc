@@ -15,7 +15,7 @@ from noc.core.mib import mib
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.core.checkers.http import HTTP_DIAG, HTTPS_DIAG
 from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticConfig
+from noc.core.wf.diagnostic import DiagnosticConfig
 from noc.core.checkers.base import Check, CheckResult
 
 
@@ -36,6 +36,7 @@ class ProfileDiagnostic:
         logger=None,
         address: Optional[str] = None,
         cred: Optional[Union[SNMPCredential, SNMPv3Credential]] = None,
+        **kwargs,
     ):
         self.config = cfg
         self.labels = labels
@@ -69,7 +70,9 @@ class ProfileDiagnostic:
             for d in c.data:
                 self.result_cache[(method, d.name)] = d.value
 
-    def get_result(self, checks: List[CheckResult]) -> Optional[Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]]]]:
+    def get_result(
+        self, checks: List[CheckResult]
+    ) -> Optional[Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]]]]:
         """Getting Diagnostic result: State and reason"""
         self.parse_checks(checks)
         snmp_result, http_result = "", ""

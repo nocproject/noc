@@ -212,7 +212,7 @@ class DiagnosticItem(BaseModel):
         self.changed = datetime.datetime.now()
 
     def get_handler(self, **kwargs) -> DiagnosticHandler:
-        if not self._handler:
+        if not hasattr(self, "_handler"):
             h = get_handler(self.config.diagnostic_handler)
             if not h:
                 raise AttributeError("Unknown Diagnostic Handler")
@@ -221,7 +221,9 @@ class DiagnosticItem(BaseModel):
 
     def iter_checks(self, **kwargs) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
-        if not self.config.diagnostic_handler:
+        if not self.config.diagnostic_handler and not self.config.checks:
+            return
+        elif not self.config.diagnostic_handler:
             yield tuple(self.config.checks)
             return
         h = self.get_handler(**kwargs)
@@ -282,7 +284,7 @@ class DiagnosticHub(object):
     ):
         self.logger = logger or logging.getLogger(__name__)
         self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None  # Actual diagnostic state
-        self.__checks: Dict[str, List[str]] = defaultdict(list)
+        self.__checks: Dict[str, List[str]] = None
         self.__depended: Dict[str, str] = {}  # Depended diagnostics
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
@@ -389,6 +391,7 @@ class DiagnosticHub(object):
 
     def __load_checks(self):
         """"""
+        self.__checks = defaultdict(list)
         for di in self.__diagnostics.values():
             for checks in di.iter_checks(
                 cfg=di.config,
@@ -396,6 +399,8 @@ class DiagnosticHub(object):
                 logger=self.logger,
                 address=self.__object.address,
                 cred=self.__object.credentials.get_snmp_credential(),
+                pool=self.__object.pool.name,
+                profile=self.__object.profile.name,
             ):
                 if di._active_checks is None:
                     di._active_checks = []
@@ -470,7 +475,7 @@ class DiagnosticHub(object):
         for cr in checks:
             if cr.key not in self.__checks:
                 self.logger.debug(
-                    "[%s|%s] Diagnostic not enabled: %s", cr.check, cr.arg0, self.__checks
+                    "[%s|%s] Diagnostic not enabled: %s", cr.check, cr.key, self.__checks
                 )
                 continue
             for d in self.__checks[cr.key]:

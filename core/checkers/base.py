@@ -65,6 +65,7 @@ class Check(object):
             return self.args.get("arg0")
         return
 
+    @property
     def arg(self) -> str:
         r = []
         if self.address:
@@ -157,6 +158,16 @@ class CheckResult(object):
         if self.args:
             return self.args.get("arg0")
         return
+
+    @classmethod
+    def from_dict(cls, v) -> "CheckResult":
+        data = []
+        for d in v.pop("data") or []:
+            data.append(DataItem(**d))
+        if v["error"]:
+            v["error"] = CheckError(**v["error"])
+        v["data"] = data
+        return CheckResult(**v)
 
 
 class Checker(object):

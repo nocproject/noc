@@ -128,11 +128,15 @@ class SNMPProtocolChecker(Checker):
                 for c in ccs:
                     if c in result:
                         continue
+                    if not c.address:
+                        continue
                     data, error = await self.check_oids_async(
                         c.address, self.get_oids(c, cred), cred
                     )
                     result[c] = CheckResult(
                         check=c.name,
+                        address=c.address,
+                        port=c.port,
                         args=c.args,
                         status=not error,
                         data=[DataItem(name=k, value=v) for k, v in data.items()] if data else None,
@@ -147,6 +151,9 @@ class SNMPProtocolChecker(Checker):
                 else:
                     yield CheckResult(
                         check=c.name,
+                        address=c.address,
+                        port=c.port,
+                        args=c.args,
                         status=True,
                         skipped=True,
                     )
@@ -166,6 +173,8 @@ class SNMPProtocolChecker(Checker):
                     data, error = self.check_oids_sync(c.address, self.get_oids(c), cred)
                     result[c] = CheckResult(
                         check=c.name,
+                        address=c.address,
+                        port=c.port,
                         args=c.args,
                         status=not error,
                         data=[DataItem(name=k, value=v) for k, v in data.items()] if data else None,
@@ -179,6 +188,9 @@ class SNMPProtocolChecker(Checker):
                 else:
                     yield CheckResult(
                         check=c.name,
+                        address=c.address,
+                        port=c.port,
+                        args=c.args,
                         status=True,
                         skipped=True,
                     )
