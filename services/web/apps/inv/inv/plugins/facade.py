@@ -58,6 +58,7 @@ class FacadePlugin(InvPlugin):
         svg = self.get_svg(o, name)
         if svg is None:
             return self.app.response_not_found()
+        svg.enable_highlight()
         return HttpResponse(
             svg.to_string(),
             content_type="image/svg+xml",
@@ -94,7 +95,6 @@ class FacadePlugin(InvPlugin):
             return None
         # Get module facade
         svg = load_svg(facade)
-        svg.enable_highlight()
         # Insert nested modules
         for ro in o.iter_children():
             # Always use front facades for nested modules
