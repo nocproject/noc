@@ -2844,7 +2844,35 @@ class ManagedObject(NOCModel):
                 setattr(mo, field, value)
         return mo
 
-    def update_template_data(self, data, template=None): ...
+    def update_template_data(
+        self,
+        address: str,
+        pool: str,
+        name: str,
+        state: Optional[State] = None,
+        template: Optional[Any] = None,
+        labels: Optional[List[str]] = None,
+        capabilities: Optional[Dict[str, Any]] = None,
+        static_service_groups: Optional[List[ResourceGroup]] = None,
+        mappings: Optional[Dict[RemoteSystem, str]] = None,
+        **data,
+    ) -> bool:
+        """Update object data from template"""
+        changed = False
+        if capabilities:
+            self.update_caps(capabilities, source="template")
+        if static_service_groups:
+            self.static_service_groups = [str(g.id) for g in static_service_groups]
+        if state:
+            self.state = state
+        if mappings:
+            for ris, rid in mappings.items():
+                self.set_mapping(ris, rid)
+        for field, value in data.items():
+            if hasattr(self, field) and getattr(self, field) != value:
+                setattr(self, field, value)
+                changed = True
+        return changed
 
 
 @on_save

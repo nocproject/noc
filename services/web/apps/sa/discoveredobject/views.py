@@ -121,20 +121,13 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     @view(url=r"^action_lookup/$", method=["GET"], access="read", api=True)
     def api_action_lookup(self, request):
-        r = {
-            "approve": {
-                "id": "active_event",
-                "label": "Approve",
-                "is_default": True,
-                "args": {"action": "send_event", "event": "approve"},
-            }
-        }
+        r = {}
         wfs = Workflow.objects.filter(allowed_models__in=["sa.DiscoveredObject"])
-        for tr in Transition.objects.filter(workflow__in=wfs):
+        for tr in Transition.objects.filter(workflow__in=wfs, enable_manual=True):
             if not tr.event or tr.event in r:
                 continue
             r[tr.event] = {
-                "id": "active_event",
+                "id": str(tr.id),
                 "label": str(tr),
                 "is_default": False,
                 "args": {"action": "send_event", "event": tr.event},
