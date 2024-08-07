@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any, Union, Tuple
+from typing import Dict, List, Optional, Literal, Iterable, Union, Tuple
 from collections import defaultdict
 
 # NOC modules
