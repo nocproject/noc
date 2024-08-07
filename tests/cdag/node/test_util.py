@@ -240,6 +240,106 @@ def test_alarm_vars(config, expected):
             [None, None, None, "raise", None, None, "clear", None, None],
             [False, False, False, True, True, True, False, False, False],
         ),
+        # Test with specific operation
+        (
+            {"thresholds": [{"op": ">=", "value": 1.0}]},
+            [0.0, 0.5, 0.99, 1.0, 1.5, 1.0, 0.99, 0.5, 0.0],
+            [None, None, None, "raise", None, None, "clear", None, None],
+            [False, False, False, True, True, True, False, False, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 1.0}]},
+            [0.0, 0.5, 0.99, 1.0, 1.5, 1.4, 1.0, 0.99, 0.5, 0.0],
+            [None, None, None, None, "raise", None, "clear", None, None, None],
+            [False, False, False, False, True, True, False, False, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 1.0}]},
+            [1.5, 1.4, 1.0, 0.99, 0.5, 0.0, 0.5, 0.99, 1.0, 1.4, 1.5],
+            [None, None, "raise", None, None, None, None, None, None, "clear", None],
+            [False, False, True, True, True, True, True, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 1.0}]},
+            [1.5, 1.4, 1.0, 0.99, 0.5, 0.0, 0.5, 0.99, 1.0, 1.4, 1.5],
+            [None, None, None, "raise", None, None, None, None, "clear", None, None],
+            [False, False, False, True, True, True, True, True, False, False, False],
+        ),
+        # Test without clean_value
+        (
+            {"thresholds": [{"op": ">=", "value": 10.0}]},
+            [9.0, 10.0, 10.0, 10.0, 9.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 10.0}]},
+            [10.0, 11.0, 11.0, 11.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 10.0}]},
+            [10.0, 9.0, 9.0, 9.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 10.0}]},
+            [11.0, 10.0, 10.0, 10.0, 11.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        # Test with clean_value same as value
+        (
+            {"thresholds": [{"op": ">=", "value": 10.0, "clear_value": 10.0}]},
+            [9.0, 10.0, 10.0, 10.0, 9.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 10.0, "clear_value": 10.0}]},
+            [10.0, 11.0, 11.0, 11.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 10.0, "clear_value": 10.0}]},
+            [10.0, 9.0, 9.0, 9.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 10.0, "clear_value": 10.0}]},
+            [11.0, 10.0, 10.0, 10.0, 11.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        # Test with clean_value
+        (
+            {"thresholds": [{"op": ">=", "value": 1.0, "clear_value": 0.5}]},
+            [0.99, 1.0, 1.1, 1.4, 0.51, 0.5, 0.49],
+            [None, "raise", None, None, None, None, "clear"],
+            [False, True, True, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 1.0, "clear_value": 0.5}]},
+            [1.0, 1.1, 1.4, 0.51, 0.5, 0.49],
+            [None, "raise", None, None, "clear", None],
+            [False, True, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 1.0, "clear_value": 1.5}]},
+            [1.4, 1.0, 0.99, 0.5, 0.99, 1.0, 1.4, 1.5, 1.51],
+            [None, "raise", None, None, None, None, None, None, "clear"],
+            [False, True, True, True, True, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 1.0, "clear_value": 1.5}]},
+            [1.0, 0.99, 0.5, 0.99, 1.0, 1.4, 1.5, 1.51],
+            [None, "raise", None, None, None, None, "clear", None],
+            [False, True, True, True, True, True, False, False],
+        ),
         # Hysteresis
         # (
         #     {"activation_level": 1.0, "deactivation_level": 0.5},
