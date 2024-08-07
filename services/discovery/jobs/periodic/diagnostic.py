@@ -17,7 +17,7 @@ from noc.core.checkers.base import Check, CheckResult, MetricValue
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.checkers.loader import loader
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, PROFILE_DIAG
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
 from noc.core.debug import error_report
 from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, SNMPv3Credential
 from noc.sa.models.profile import Profile
@@ -43,8 +43,6 @@ class DiagnosticCheck(DiscoveryCheck):
     def handler(self):
         # Loading checkers
         metrics: List[MetricValue] = []
-        # Diagnostic Data
-        d_data: Dict[str, Any] = defaultdict(dict)  # Diagnostic -> Data
         # Processed Check ? Filter param
         with DiagnosticHub(
             self.object,
