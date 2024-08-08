@@ -430,7 +430,7 @@ class SVG(object):
             "feMorphology",
             {"in": "SourceAlpha", "operator": "dilate", "radius": "4", "result": "dilated"},
         )
-        ET.SubElement(filter_el, "feFlood", {"flood-color": "red", "result": "red"})
+        ET.SubElement(filter_el, "feFlood", {"flood-color": "#e67e22", "result": "red"})
         ET.SubElement(
             filter_el,
             "feComposite",
