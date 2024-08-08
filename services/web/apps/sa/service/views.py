@@ -97,7 +97,7 @@ class ServiceApplication(ExtDocApplication):
     def service_instance_to_dict(o: "ServiceInstance"):
         r = {
             "name": o.name,
-            "address": o.address,
+            "address": ";".join(a.address for a in o.addresses),
             "port": o.port,
             "fqdn": o.fqdn,
         }
