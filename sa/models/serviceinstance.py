@@ -163,8 +163,9 @@ class ServiceInstance(Document):
         if source and source in SOURCES:
             self.sources = list(set(self.sources or []) - {source})
             self._get_collection().update_one({"_id": self.id}, {"$pull": {"sources": source}})
-        elif not source:
+        if not source or not self.sources:
             # For empty source, clean sources
-            self.sources = []
-            self._get_collection().update_one({"_id": self.id}, {"$set": {"sources": []}})
+            self._get_collection().delete_one({"_id": self.id})
+            # self.sources = []
+            # self._get_collection().update_one({"_id": self.id}, {"$set": {"sources": []}})
             # delete
