@@ -28,7 +28,7 @@ class SVG(object):
         "xlink": "http://www.w3.org/1999/xlink",
     }
     HIGHLIGHT_STYLE = {
-        "fill": "red",
+        "filter": "url(#highlight)",
     }
 
     def __init__(self: "SVG") -> None:
@@ -416,12 +416,30 @@ class SVG(object):
         """
         Add highlight CSS
         """
-        s = [".selectable:hover {"]
+        # Add style
+        s = [".selectable:hover:not(:has(.selectable:hover)) {"]
         s.extend(f"  {k}: {v};" for k, v in self.HIGHLIGHT_STYLE.items())
         s.append("}")
         style = ET.Element(self.STYLE)
         self._tree.getroot().insert(0, style)
         style.text = "\n".join(s)
+        # Add filter
+        filter_el = ET.Element("filter", id="highlight")
+        ET.SubElement(
+            filter_el,
+            "feMorphology",
+            {"in": "SourceAlpha", "operator": "dilate", "radius": "4", "result": "dilated"},
+        )
+        ET.SubElement(filter_el, "feFlood", {"flood-color": "red", "result": "red"})
+        ET.SubElement(
+            filter_el,
+            "feComposite",
+            {"in": "red", "in2": "dilated", "operator": "in", "result": "red-border"},
+        )
+        fe_merge_el = ET.SubElement(filter_el, "feMerge")
+        ET.SubElement(fe_merge_el, "feMergeNode", {"in": "red-border"})
+        ET.SubElement(fe_merge_el, "feMergeNode", {"in": "SourceGraphic"})
+        self.append_def(filter_el)
 
 
 # WARNING: Modifying global state
