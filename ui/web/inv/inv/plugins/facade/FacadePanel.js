@@ -124,20 +124,6 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
                   svgObject.addEventListener('load', function(){
                     var svgDocument = svgObject.contentDocument;
                     if(svgDocument){
-                      var selectableElements = svgDocument.querySelectorAll('.selectable rect');
-                      if(selectableElements.length > 0){
-                        selectableElements.forEach(function(element){
-                          element.addEventListener('mouseover', function(){
-                            element.style.fill = 'blue';
-                          });
-                          element.addEventListener('mouseout', function(){
-                            element.style.fill = 'rgb(30, 112, 186)';
-                          });
-                        });
-                      } else{
-                        console.error("Selectable element not found");
-                      }
-
                       var svgElements = svgDocument.querySelectorAll("[data-event]");
                       svgElements.forEach(function(element){
                         var events = element.dataset.event.split(",");
