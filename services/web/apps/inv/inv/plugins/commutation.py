@@ -69,27 +69,25 @@ class CommutationPlugin(InvPlugin):
         super().init_plugin()
 
     def get_data(self, request, object):
-        return {"data": self.to_viz(self.get_nested_inventory(object))}
+        inv = list(self.iter_nested_inventory(object))
+        return {"viz": self.to_viz(inv), "data": self.to_data(inv)}
 
     @staticmethod
-    def iter_indent(s: Iterable[str], i: int = 0) -> Iterable[str]:
+    def c_hash(local_object: str, local_name: str, remote_object: str, remote_name: str) -> str:
         """
-        Indent iterable.
-
-        Args:
-            s: Input iterable of strings
-            i: Indentation level
-
-        Returns:
-            Indented strings
+        Get stable connection hash.
         """
-        if not i:
-            yield from s
-        else:
-            for item in s:
-                yield "  " * i + item
+        # Calculate stable hash
+        if local_object == remote_object:
+            # Loop
+            if local_name < remote_name:
+                return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
+            return f"{local_object}|{remote_name}|{remote_object}|{local_name}"
+        elif local_object < remote_object:
+            return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
+        return f"{remote_object}|{remote_name}|{local_object}|{local_name}"
 
-    def get_nested_inventory(self, obj: Object) -> Iterable[Node]:
+    def iter_nested_inventory(self, obj: Object) -> Iterable[Node]:
         """
         Fetch object and all underlying objects.
 
@@ -331,18 +329,8 @@ class CommutationPlugin(InvPlugin):
         def add_connection(
             local_object: str, local_name: str, remote_object: str, remote_name: str
         ) -> None:
-            # Calculate stable hash
-            if local_object == remote_object:
-                # Loop
-                if local_name < remote_name:
-                    c_hash = f"{local_object}|{local_name}|{remote_object}|{remote_name}"
-                else:
-                    c_hash = f"{local_object}|{remote_name}|{remote_object}|{local_name}"
-            elif local_object < remote_object:
-                c_hash = f"{local_object}|{local_name}|{remote_object}|{remote_name}"
-            else:
-                c_hash = f"{remote_object}|{remote_name}|{local_object}|{local_name}"
             # Check if we have seen this connection
+            c_hash = self.c_hash(local_object, local_name, remote_object, remote_name)
             if c_hash in seen_conns:
                 return
             # Generate connnection edge
@@ -370,3 +358,38 @@ class CommutationPlugin(InvPlugin):
                 continue  # Pruned
             render(node, top)
         return top
+
+    def to_data(self, nodes: Iterable[Node]) -> List[Dict[str, Any]]:
+        """
+        Prepare commutation table
+        """
+
+        def collect(node: Node) -> None:
+            for c in node.connections:
+                c_hash = self.c_hash(
+                    local_object=node.object_id,
+                    local_name=c.local_name,
+                    remote_object=c.remote_object,
+                    remote_name=c.remote_name,
+                )
+                if c_hash in seen:
+                    continue
+                data.append(
+                    {
+                        "local_object": node.object_id,
+                        "local_object__label": "x",
+                        "local_name": c.local_name,
+                        "remote_object": c.remote_object,
+                        "remote_object__name": "y",
+                        "remote_name": c.remote_name,
+                    }
+                )
+                seen.add(c_hash)
+            for child in node.children:
+                collect(child)
+
+        data = []
+        seen = set()
+        for node in nodes:
+            collect(node)
+        return data

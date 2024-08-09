@@ -41,14 +41,15 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   preview: function(data){
     var me = this;
+    console.log(data);
     if(typeof Viz === "undefined"){
       new_load_scripts([
         "/ui/pkg/viz-js/viz-standalone.js",
       ], me, function(){
-        me.renderScheme(data.data);
+        me.renderScheme(data.viz);
       });
     } else{
-      me.renderScheme(data.data);
+      me.renderScheme(data.viz);
     }
   },
   renderScheme: function(data){
