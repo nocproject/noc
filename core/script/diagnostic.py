@@ -10,15 +10,11 @@ import logging
 from typing import List, Iterable, Optional, Tuple, Union, Dict, Any
 
 # NOC modules
-from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
+from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.core.checkers.snmp import SNMPv1, SNMPv2c, SNMPv3
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
-from noc.sa.models.profile import GENERIC_PROFILE
 from noc.core.wf.diagnostic import DiagnosticConfig
 from noc.core.checkers.base import Check, CheckResult
-from noc.core.service.client import open_sync_rpc
-from noc.core.service.error import RPCError
-from noc.core.text import safe_shadow
 
 
 class SNMPSuggestsDiagnostic:

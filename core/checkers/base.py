@@ -15,7 +15,6 @@ from typing import List, Optional, Dict, Any, Iterable, Union
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ioloop.util import run_sync
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
-from noc.core.script.caller import ScriptCaller
 
 
 @dataclass(frozen=True)
