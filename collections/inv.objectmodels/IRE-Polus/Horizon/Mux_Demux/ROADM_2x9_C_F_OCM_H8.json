@@ -200,5 +200,6 @@
             "interface": "asset",
             "value": ["ROADM-2x9-C-F-OCM-H8"]
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | ROADM-2x9-C-F-OCM-H8 IP1537"
 }
