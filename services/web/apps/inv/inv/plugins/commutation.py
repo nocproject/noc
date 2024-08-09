@@ -28,7 +28,7 @@ class ConnectionItem(object):
 
 @dataclass
 class Node(object):
-    object_id: str
+    object: Object
     name: str
     model: str
     parent_connection: Optional[str]
@@ -39,7 +39,7 @@ class Node(object):
     @classmethod
     def from_object(cls, obj: Object) -> "Node":
         return Node(
-            object_id=str(obj.id),
+            object=obj,
             name=obj.name or "",
             model=obj.model.get_short_label(),
             parent_connection=obj.parent_connection,
@@ -47,6 +47,10 @@ class Node(object):
             is_external=False,
             connections=[],
         )
+
+    @property
+    def object_id(self) -> str:
+        return str(self.object.id)
 
     @property
     def is_chassis(self) -> bool:
@@ -364,6 +368,23 @@ class CommutationPlugin(InvPlugin):
         Prepare commutation table
         """
 
+        def update_labels(node: None) -> None:
+            if node.object_id in node_labels:
+                return
+            # Build label
+            parts = []
+            local_name = node.object.get_local_name_path(True)
+            if local_name:
+                parts.append(" > ".join(local_name))
+            else:
+                parts.append(node.name)
+            parts.append(f" [{node.object.model.get_short_label()}]")
+            label = "".join(parts)
+            node_labels[node.object_id] = label
+            # Update children
+            for child in node.children:
+                update_labels(child)
+
         def collect(node: Node) -> None:
             for c in node.connections:
                 c_hash = self.c_hash(
@@ -377,10 +398,10 @@ class CommutationPlugin(InvPlugin):
                 data.append(
                     {
                         "local_object": node.object_id,
-                        "local_object__label": "x",
+                        "local_object__label": node_labels[node.object_id],
                         "local_name": c.local_name,
                         "remote_object": c.remote_object,
-                        "remote_object__name": "y",
+                        "remote_object__name": node_labels[c.remote_object],
                         "remote_name": c.remote_name,
                     }
                 )
@@ -388,8 +409,14 @@ class CommutationPlugin(InvPlugin):
             for child in node.children:
                 collect(child)
 
+        # Collect node labels
+        node_labels: Dict[str, str] = {}
+        for node in nodes:
+            update_labels(node)
+        #
         data = []
         seen = set()
+        # Collect connections
         for node in nodes:
             collect(node)
         return data
