@@ -89,7 +89,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         {
           text: __("Kind"),
           dataIndex: "kind",
-          widht: 50,
+          width: 50,
         },
         {
           text: __("Topo"),

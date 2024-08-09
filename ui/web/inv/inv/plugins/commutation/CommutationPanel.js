@@ -10,7 +10,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   extend: "Ext.panel.Panel",
   title: __("Commutation"),
   closable: false,
-  layout: "fit",
+  layout: "auto",
   defaultListenerScope: true,
   tbar: [
     {
@@ -33,40 +33,95 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       listeners: {
         select: "onZoom",
       },    
-    }],
+    },
+    {
+      xtype: "button",
+      text: __("Hide details"),
+      glyph: NOC.glyph.eye,
+      enableToggle: true,
+      pressed: true,
+      toggleHandler: "showHideDetails",
+    },
+  ],
+  items: [
+    {
+      xtype: "grid",
+      scrollable: "y",
+      flex: 1,
+      columns: [
+        {
+          text: __("Local Object"),
+          dataIndex: "local_object",
+          flex: 1,
+        },
+        {
+          text: __("Local Name"),
+          dataIndex: "local_name",
+          flex: 1,
+        },
+        {
+          text: __("Remote Object"),
+          dataIndex: "remote_object",
+          flex: 1,
+        },
+        {
+          text: __("Remote Name"),
+          dataIndex: "remote_name",
+          flex: 1,
+        },
+      ],
+      listeners: {
+        afterlayout: "afterGridRender",
+      },
+    },
+    {
+      xtype: "container",
+      flex: 1,
+      layout: "fit",
+      scrollable: true,
+      items: [
+        {
+          xtype: "image",
+          itemId: "scheme",
+          hidden: true,
+          padding: 5,
+        },
+      ],
+    },
+  ],
+
   initComponent: function(){
     var me = this;
     me.callParent();
   },
   //
-  preview: function(data){
+  preview: function(response){
+    var me = this,
+      grid = me.down("grid"),
+      records = response.data || [];
+    grid.getStore().loadData(records);
+    me.renderScheme(response.viz);
+  },
+  //
+  _render: function(data){
     var me = this;
-    console.log(data);
+    Viz.instance().then(function(viz){ 
+      var imageComponent = me.down("[itemId=scheme]"),
+        svg = viz.renderSVGElement(data);
+      imageComponent.setHidden(false);
+      imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
+    });
+  },
+  //
+  renderScheme: function(data){
+    var me = this;
     if(typeof Viz === "undefined"){
       new_load_scripts([
         "/ui/pkg/viz-js/viz-standalone.js",
-      ], me, function(){
-        me.renderScheme(data.viz);
-      });
+      ], me, Ext.bind(me._render, me, [data]));
     } else{
-      me.renderScheme(data.viz);
+      me._render(data);
     }
-  },
-  renderScheme: function(data){
-    var me = this;
-    Viz.instance().then(function(viz){ 
-      var svg = viz.renderSVGElement(data);
-      me.removeAll();
-      me.add({
-        xtype: "container",
-        layout: "fit",
-        items: {
-          xtype: "image",
-          itemId: "scheme",
-          src: me.svgToBase64(svg.outerHTML),
-        },
-      });
-    });
   },
   //
   onReload: function(){
@@ -94,5 +149,36 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   svgToBase64: function(svgString){
     var base64String = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
     return base64String;
+  },
+  //
+  afterGridRender: function(grid){
+    var tabPanel = grid.up("tabpanel"),
+      bodyHeight = tabPanel.body.getHeight(),
+      rowCount = grid.getStore().getCount();
+          
+    if(rowCount > 0){
+      var rowHeight = Ext.fly(grid.getView().getNode(0)).getHeight(),
+        gridHeight = (rowCount + 1) * rowHeight + 0.2 * rowHeight;
+      if(gridHeight > bodyHeight * 0.5){
+        grid.setHeight(bodyHeight * 0.5);
+      } else{
+        console.log("gridHeight", gridHeight);
+        grid.setMaxHeight(gridHeight);
+      }
+    }
+  },
+  //
+  showHideDetails: function(button, pressed){
+    var me = this,
+      grid = me.down("grid");
+    if(pressed){
+      button.setText(__("Hide details"));
+      button.setGlyph(NOC.glyph.eye);
+      grid.show();
+    } else{
+      button.setText(__("Show details"));
+      button.setGlyph(NOC.glyph.eye_slash);
+      grid.hide();
+    }
   },
 });
