@@ -27,9 +27,7 @@ class SVG(object):
         "": "http://www.w3.org/2000/svg",
         "xlink": "http://www.w3.org/1999/xlink",
     }
-    HIGHLIGHT_STYLE = {
-        "filter": "url(#highlight)",
-    }
+    HIGHLIGHT_STYLE = {"opacity": "0.5"}
 
     def __init__(self: "SVG") -> None:
         self._tree: ET.ElementTree
@@ -423,23 +421,6 @@ class SVG(object):
         style = ET.Element(self.STYLE)
         self._tree.getroot().insert(0, style)
         style.text = "\n".join(s)
-        # Add filter
-        filter_el = ET.Element("filter", id="highlight")
-        ET.SubElement(
-            filter_el,
-            "feMorphology",
-            {"in": "SourceAlpha", "operator": "dilate", "radius": "4", "result": "dilated"},
-        )
-        ET.SubElement(filter_el, "feFlood", {"flood-color": "#e67e22", "result": "red"})
-        ET.SubElement(
-            filter_el,
-            "feComposite",
-            {"in": "red", "in2": "dilated", "operator": "in", "result": "red-border"},
-        )
-        fe_merge_el = ET.SubElement(filter_el, "feMerge")
-        ET.SubElement(fe_merge_el, "feMergeNode", {"in": "red-border"})
-        ET.SubElement(fe_merge_el, "feMergeNode", {"in": "SourceGraphic"})
-        self.append_def(filter_el)
 
 
 # WARNING: Modifying global state
