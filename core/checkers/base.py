@@ -39,6 +39,7 @@ class Check(object):
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
     address: str = field(default=None, compare=False)  # IP Address
     port: Optional[int] = None  # TCP/UDP port
+    script: Optional[str] = None
     credential: Optional[
         Union[
             SNMPCredential,
@@ -68,6 +69,8 @@ class Check(object):
     @property
     def arg(self) -> str:
         r = []
+        if self.script:
+            r.append(f"script={self.script}")
         if self.address:
             r.append(f"address={self.address}")
         if self.port:
@@ -119,6 +122,7 @@ class CheckResult(object):
     args: Optional[Dict[str, Any]] = None  # Checked Argument
     port: Optional[int] = None
     address: Optional[str] = None
+    script: Optional[str] = None
     skipped: bool = False  # Check was skipped (Example, no credential)
     error: Optional[CheckError] = None  # Set if fail
     data: Optional[List[DataItem]] = None  # Collected check data
@@ -145,6 +149,8 @@ class CheckResult(object):
     @property
     def arg(self) -> str:
         r = []
+        if self.script:
+            r.append(f"script={self.script}")
         if self.address:
             r.append(f"address={self.address}")
         if self.port:
@@ -188,8 +194,6 @@ class Checker(object):
         self.logger = PrefixLoggerAdapter(logger or logging.getLogger(self.name), self.name)
         self.address = kwargs.get("address")
 
-    def get_script(self, name: str) -> "ScriptCaller": ...
-
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """
         Iterate over result checks
@@ -204,19 +208,3 @@ class Checker(object):
             checks: List checks param for run
         """
         return run_sync(partial(self.iter_result, checks))
-
-
-class ObjectChecker(Checker):
-    """
-    Checkers supported ManagedObject
-    """
-
-    def __init__(self, o, **kwargs):
-        self.object = o
-        super().__init__(**kwargs)
-        # super().__init__(
-        #     logger=PrefixLoggerAdapter(
-        #         logger or logging.getLogger(self.name),
-        #         f"{self.pool or ''}][{self.o_name or ''}",
-        #     ),
-        # )

@@ -93,9 +93,7 @@ class DiagnosticCheck(DiscoveryCheck):
                         if cr.metrics:
                             metrics += cr.metrics
                     # Update diagnostics
-                    r = d_hub.update_checks(checks)
-                    if r:
-                        break
+                    d_hub.update_checks(checks)
                 # Apply Profile
                 # if di.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
                 #    self.set_profile(d_data[d.diagnostic]["profile"])
@@ -115,15 +113,26 @@ class DiagnosticCheck(DiscoveryCheck):
 
     def run_checks(self, checks: Tuple[Check, ...]) -> List[CheckResult]:
         self.logger.debug("Call checks on activator: %s", checks)
-        try:
-            r = open_sync_rpc(
-                "activator", pool=self.object.pool.name, calling_service="discovery"
-            ).run_checks(checks)
-            print("RESULT", r)
-            return [CheckResult.from_dict(c) for c in r]
-        except RPCError as e:
-            self.logger.error("RPC Error: %s", e)
-        return []
+        script_checks, do_checks = [], []
+        r = []
+        for c in checks:
+            if not c.script:
+                do_checks.append(c)
+            else:
+                script_checks.append(c)
+        if script_checks:
+            try:
+                r += self.object.scripts.run_checks(script_checks)
+            except RPCError as e:
+                self.logger.error("RPC Error: %s", e)
+        if do_checks:
+            try:
+                r += open_sync_rpc(
+                    "activator", pool=self.object.pool.name, calling_service="discovery"
+                ).run_checks(checks)
+            except RPCError as e:
+                self.logger.error("RPC Error: %s", e)
+        return [CheckResult.from_dict(c) for c in r]
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
         # Group check by checker
