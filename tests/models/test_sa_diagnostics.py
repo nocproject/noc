@@ -120,7 +120,7 @@ def test_bulk_set_state():
         d.update_checks([CheckResult(check="SNMPv1", status=False)])
         assert d.SNMP.state == DiagnosticState.failed
         d.update_checks(
-            [CheckResult(check="SNMPv1", status=False), CheckResult(check="SNMPv1", status=True)]
+            [CheckResult(check="SNMPv1", status=False), CheckResult(check="SNMPv2с", status=True)]
         )
         assert d.SNMP.state == DiagnosticState.enabled
         assert d.Access.state == DiagnosticState.enabled
