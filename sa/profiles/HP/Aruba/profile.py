@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -18,12 +21,13 @@ class Profile(BaseProfile):
     pattern_username = rb"Username: ?"
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+[^#])\s*>\s*"
     pattern_prompt = rb"^(?P<hostname>\S+[^#])\s*#"
-    pattern_syntax_error = rb"% Ambiguous command."
+    pattern_syntax_error = rb"(% Ambiguous command.|Cannot execute command.)"
     command_disable_pager = "no page"
     command_super = b"enable"
     pattern_more = [
         (rb"--\s*MORE\s*--, next page: Space, next line: Enter, quit: q", b" "),
     ]
+    rogue_chars = [re.compile(rb"\r\s+\r")]
     # -- MORE --, next page: Space, next line: Enter, quit: q
     # rogue_chars = [
     #     # re.compile(rb"\r\s+\r"),
