@@ -403,7 +403,7 @@ class DiagnosticHub(object):
                     if self.__object.credentials
                     else None
                 ),
-                profile=self.__object.profile.name,
+                profile=self.__object.profile.name if self.__object.profile else None,
             ):
                 if di._active_checks is None:
                     di._active_checks = []
