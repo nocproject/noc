@@ -11,9 +11,10 @@ from typing import List, Iterable, Optional, Tuple, Union, Dict, Any
 
 # NOC modules
 from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
-from noc.sa.models.credentialcheckrule import CredentialCheckRule
-from noc.core.wf.diagnostic import DiagnosticConfig
 from noc.core.checkers.base import Check, CheckResult
+from noc.core.wf.diagnostic import DiagnosticConfig
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
+from noc.sa.models.profile import GENERIC_PROFILE
 
 
 class SNMPSuggestsDiagnostic:
@@ -98,6 +99,9 @@ class CLISuggestsDiagnostic:
 
     def iter_checks(self) -> Iterable[Tuple[Check, ...]]:
         r = []
+        if not self.profile or self.profile == GENERIC_PROFILE:
+            self.logger.info("Generic profile not checked for CLI")
+            return
         for c in self.config.checks:
             r.append(
                 Check(
@@ -129,7 +133,6 @@ class CLISuggestsDiagnostic:
     ) -> Optional[Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]]]]:
         """Getting Diagnostic result: State and reason"""
         error = ""
-        print("Get Result", checks)
         for c in checks:
             if c.skipped:
                 continue

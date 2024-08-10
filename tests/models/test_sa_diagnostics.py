@@ -26,6 +26,7 @@ class Object(object):
     effective_labels = []
     access_preference = "S"
     address = "10.10.10.10"
+    profile = "Generic.Host"
 
     @property
     def diagnostic(self) -> "DiagnosticHub":
