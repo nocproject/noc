@@ -244,12 +244,14 @@ class DiagnosticItem(BaseModel):
         for c in self.checks:
             if c.skipped:
                 continue
-            if not c and self.config.state_policy == "ALL":
+            if not c.status and self.config.state_policy == "ALL":
                 state = False
                 break
-            if c and self.config.state_policy == "ANY":
+            if c.status and self.config.state_policy == "ANY":
                 state = True
                 break
+        if self.config.state_policy == "ANY" and checks and state is None:
+            state = False
         return state, None, data
 
 
@@ -512,7 +514,7 @@ class DiagnosticHub(object):
                 changed_ts=now,
                 data=c_data,
             )
-        if metrics:
+        if metrics and not self.dry_run:
             self.register_diagnostic_metrics(metrics)
 
     def refresh_diagnostics(self):
@@ -773,8 +775,8 @@ class DiagnosticHub(object):
             self.logger.info(
                 "[%s] Register change: %s -> %s",
                 diagnostic,
-                state,
                 from_state,
+                state,
             )
             return
         svc = get_service()
