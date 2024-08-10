@@ -7,13 +7,14 @@
 
 # Python modules
 import logging
+from functools import partial
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Iterable, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.ioloop.util import run_sync
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
-from noc.core.script.caller import ScriptCaller
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,7 @@ class Check(object):
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
     address: str = field(default=None, compare=False)  # IP Address
     port: Optional[int] = None  # TCP/UDP port
+    script: Optional[str] = None
     credential: Optional[
         Union[
             SNMPCredential,
@@ -46,10 +48,16 @@ class Check(object):
         ]
     ] = field(default=None, compare=False, hash=False)
 
+    def __str__(self):
+        return f"{self.name}?{self.args}"
+
     def __hash__(self):
-        if self.address or self.port:
-            return hash((self.name, self.address or "", self.port or 0, self.arg0 or ""))
-        return hash((self.name, self.arg0 or ""))
+        return hash(self.key)
+
+    @property
+    def key(self) -> str:
+        """Check key"""
+        return f"{self.name},{self.arg}"
 
     @property
     def arg0(self):
@@ -57,8 +65,11 @@ class Check(object):
             return self.args.get("arg0")
         return
 
+    @property
     def arg(self) -> str:
         r = []
+        if self.script:
+            r.append(f"script={self.script}")
         if self.address:
             r.append(f"address={self.address}")
         if self.port:
@@ -74,6 +85,19 @@ class Check(object):
         :param url:
         :return:
         """
+
+    @classmethod
+    def from_dict(cls, data) -> "Check":
+        credential = data.pop("credential", None)
+        if credential and "snmp_ro" in credential:
+            credential = SNMPCredential(**credential)
+        elif credential and "context" in credential:
+            credential = SNMPv3Credential(**credential)
+        elif credential and "super_password" in credential:
+            credential = CLICredential(**credential)
+        if credential:
+            data["credential"] = credential
+        return Check(**data)
 
     @property
     def snmp_credential(self) -> Optional[SNMPCredential]:
@@ -97,6 +121,7 @@ class CheckResult(object):
     args: Optional[Dict[str, Any]] = None  # Checked Argument
     port: Optional[int] = None
     address: Optional[str] = None
+    script: Optional[str] = None
     skipped: bool = False  # Check was skipped (Example, no credential)
     error: Optional[CheckError] = None  # Set if fail
     data: Optional[List[DataItem]] = None  # Collected check data
@@ -109,11 +134,45 @@ class CheckResult(object):
         None
     )
 
+    def __str__(self):
+        return f"{self.check}?{self.args}: {self.status}"
+
+    def __hash__(self):
+        return hash(self.key)
+
+    @property
+    def key(self) -> str:
+        """Check key"""
+        return f"{self.check},{self.arg}"
+
+    @property
+    def arg(self) -> str:
+        r = []
+        if self.script:
+            r.append(f"script={self.script}")
+        if self.address:
+            r.append(f"address={self.address}")
+        if self.port:
+            r.append(f"port={self.port}")
+        if self.arg0:
+            r.append(f"arg0={self.arg0}")
+        return "&".join(r)
+
     @property
     def arg0(self):
         if self.args:
             return self.args.get("arg0")
         return
+
+    @classmethod
+    def from_dict(cls, v) -> "CheckResult":
+        data = []
+        for d in v.pop("data") or []:
+            data.append(DataItem(**d))
+        if v["error"]:
+            v["error"] = CheckError(**v["error"])
+        v["data"] = data
+        return CheckResult(**v)
 
 
 class Checker(object):
@@ -124,56 +183,27 @@ class Checker(object):
     name: str
     CHECKS: List[str]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
-    PARAMS: List[str] = ["address", "object"]  # List of checker params
 
     def __init__(
         self,
         *,
         logger=None,
-        calling_service: Optional[str] = None,
-        pool: Optional[str] = None,
         **kwargs,
     ):
-        self.logger = PrefixLoggerAdapter(
-            logger or logging.getLogger(self.name),
-            f"{calling_service or self.name}]",
-        )
-        self.calling_service = calling_service or self.name
-        # Set for pooled check, Default value
-        self.pool = pool
-        self.object = kwargs.get("object")
+        self.logger = PrefixLoggerAdapter(logger or logging.getLogger(self.name), self.name)
         self.address = kwargs.get("address")
-        self._script_caller: Optional["ScriptCaller"] = None
-
-    def get_script(self, name: str) -> "ScriptCaller":
-        if not self._script_caller and not self.object:
-            raise NotImplementedError()
-        if not self._script_caller:
-            o = lambda: None  # noqa:E731
-            o.id = self.object
-            self._script_caller = ScriptCaller(o, name)
-        return self._script_caller
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """
-        Iterate over result
-        :param checks: List checks param for run
-        :return:
+        Iterate over result checks
+        Args:
+            checks: List checks param for run
         """
-        ...
 
-
-class ObjectChecker(Checker):
-    """
-    Checkers supported ManagedObject
-    """
-
-    def __init__(self, o, **kwargs):
-        self.object = o
-        super().__init__(**kwargs)
-        # super().__init__(
-        #     logger=PrefixLoggerAdapter(
-        #         logger or logging.getLogger(self.name),
-        #         f"{self.pool or ''}][{self.o_name or ''}",
-        #     ),
-        # )
+    async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
+        """
+        Iterate over result checks
+        Args:
+            checks: List checks param for run
+        """
+        return run_sync(partial(self.iter_result, checks))
