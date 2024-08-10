@@ -398,7 +398,11 @@ class DiagnosticHub(object):
                 labels=self.__object.effective_labels,
                 logger=self.logger,
                 address=self.__object.address,
-                cred=self.__object.credentials.get_snmp_credential(),
+                cred=(
+                    self.__object.credentials.get_snmp_credential()
+                    if self.__object.credentials
+                    else None
+                ),
                 profile=self.__object.profile.name,
             ):
                 if di._active_checks is None:

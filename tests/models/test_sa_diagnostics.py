@@ -35,6 +35,10 @@ class Object(object):
         self._diagnostics = DiagnosticHub(self, dry_run=True)
         return self._diagnostics
 
+    @property
+    def credentials(self):
+        return None
+
     def iter_diagnostic_configs(self):
         """
         Iterate over object diagnostics
