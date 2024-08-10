@@ -59,7 +59,7 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 if dc.run_order != self.run_order:
                     continue
-                if not dc.checks or dc.blocked:
+                if dc.blocked or not (dc.checks or dc.diagnostic_handler):
                     # Diagnostic without checks
                     continue
                 if dc.run_policy not in {"A", "F"}:
@@ -105,8 +105,8 @@ class DiagnosticCheck(DiscoveryCheck):
                     self.apply_credentials(credentials)
                 # Update diagnostics
                 # d_hub.update_checks(checks)
-        if metrics:
-            self.register_diagnostic_metrics(metrics)
+        # if metrics:
+        #     self.register_diagnostic_metrics(metrics)
         # self.object.diagnostic.refresh_diagnostics()
         self.logger.debug("Object Diagnostics: %s", self.object.diagnostics)
         # Fire workflow event diagnostic ?

@@ -25,6 +25,7 @@ class Object(object):
     diagnostics = {}
     effective_labels = []
     access_preference = "S"
+    address = "10.10.10.10"
 
     @property
     def diagnostic(self) -> "DiagnosticHub":

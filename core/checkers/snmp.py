@@ -24,9 +24,6 @@ from noc.core.mib import mib
 
 CHECK_OIDS = [mib["SNMPv2-MIB::sysObjectID.0"]]
 SUGGEST_CHECK = "SUGGEST_SNMP"
-SNMPv1 = "SNMPv1"
-SNMPv2c = "SNMPv2c"
-SNMPv3 = "SNMPv3"
 AUTH_PROTO_MAP = {
     "MD5": Md5Key,
     "SHA": Sha1Key,
@@ -44,7 +41,11 @@ class SNMPProtocolChecker(Checker):
     """
 
     name = "snmp"
-    CHECKS: List[str] = [SNMPv1, SNMPv2c, SNMPv3, SUGGEST_CHECK]
+    CHECKS: List[str] = [
+        Protocol.SNMPv1.config.check,
+        Protocol.SNMPv2c.config.check,
+        Protocol.SNMPv3.config.check,
+    ]
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
     SNMP_TIMEOUT_SEC = 3
     PARAMS = ["rules"]

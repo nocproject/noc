@@ -10,8 +10,7 @@ import logging
 from typing import List, Iterable, Optional, Tuple, Union, Dict, Any
 
 # NOC modules
-from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
-from noc.core.checkers.snmp import SNMPv1, SNMPv2c, SNMPv3
+from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.core.wf.diagnostic import DiagnosticConfig
 from noc.core.checkers.base import Check, CheckResult
@@ -47,11 +46,17 @@ class SNMPSuggestsDiagnostic:
             for c in s.credentials:
                 if isinstance(c, SNMPCredential):
                     r += [
-                        Check(name=SNMPv1, address=self.address, credential=c),
-                        Check(name=SNMPv2c, address=self.address, credential=c),
+                        Check(
+                            name=Protocol.SNMPv1.config.check, address=self.address, credential=c
+                        ),
+                        Check(
+                            name=Protocol.SNMPv2c.config.check, address=self.address, credential=c
+                        ),
                     ]
                 elif isinstance(c, SNMPv3Credential):
-                    r.append(Check(name=SNMPv3, address=self.address, credential=c))
+                    r.append(
+                        Check(name=Protocol.SNMPv3.config.check, address=self.address, credential=c)
+                    )
         yield tuple(r)
 
     def get_result(
@@ -103,6 +108,20 @@ class CLISuggestsDiagnostic:
                     credential=c.credential,
                 )
             )
+            for s in CredentialCheckRule.get_suggest_rules():
+                if not s.is_match(self.labels):
+                    continue
+                for cr in s.credentials:
+                    if isinstance(cr, CLICredential):
+                        r.append(
+                            Check(
+                                name=c.name,
+                                address=c.address,
+                                port=c.port,
+                                args={"arg0": self.profile},
+                                credential=cr,
+                            )
+                        )
         yield r
 
     def get_result(

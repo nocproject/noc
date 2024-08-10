@@ -21,7 +21,7 @@ from pydantic import BaseModel, PrivateAttr
 
 # NOC modules
 from noc.core.ioloop.util import run_sync
-from noc.core.checkers.base import Check, CheckResult
+from noc.core.checkers.base import Check, CheckResult, MetricValue
 from noc.core.handler import get_handler
 from noc.config import config
 from noc.models import is_document
@@ -471,14 +471,30 @@ class DiagnosticHub(object):
         affected_diagnostics: Dict[str, List[CheckResult]] = defaultdict(list)
         if not self.__checks:
             self.__load_checks()
+        metrics = []
         for cr in checks:
             if cr.key not in self.__checks:
                 self.logger.debug(
                     "[%s|%s] Diagnostic not enabled: %s", cr.check, cr.key, self.__checks
                 )
                 continue
+            if cr.metrics:
+                metrics += cr.metrics
+            m_labels = [f"noc::check::name::{cr.check}"]
+            if cr.args:
+                m_labels += [f"noc::check::arg0::{cr.arg}"]
+            if cr.address:
+                m_labels += [f"noc::check::address::{cr.address}"]
             for d in self.__checks[cr.key]:
                 affected_diagnostics[d] += [cr]
+                if not cr.skipped:
+                    metrics += [
+                        MetricValue(
+                            "Check | Status",
+                            value=int(cr.status),
+                            labels=m_labels + [f"noc::diagnostic::{d}"],
+                        )
+                    ]
         # Calculate State and Update diagnostic
         for d, crs in affected_diagnostics.items():
             c_state, c_reason, c_data = self[d].get_check_status(crs)
@@ -492,6 +508,8 @@ class DiagnosticHub(object):
                 changed_ts=now,
                 data=c_data,
             )
+        if metrics:
+            self.register_diagnostic_metrics(metrics)
 
     def refresh_diagnostics(self):
         """
@@ -791,6 +809,44 @@ class DiagnosticHub(object):
                 )
             )
         # Send Notification
+
+    def register_diagnostic_metrics(self, metrics: List[MetricValue]):
+        """
+        Metrics Labels:
+          noc::diagnostic::<name>
+          noc::check::<name>
+          arg0
+        :param metrics:
+        :return:
+        """
+        from noc.core.service.loader import get_service
+        from noc.pm.models.metrictype import MetricType
+
+        self.logger.debug("Register diagnostic metrics: %s", metrics)
+        svc = get_service()
+        r = {}
+        now = datetime.datetime.now()
+        # Group Metric by row
+        for m in metrics:
+            mt = MetricType.get_by_name(m.metric_type)
+            if not mt:
+                self.logger.warning("Unknown MetricType: %s", m.metric_type)
+                continue
+            if mt.scope.table_name not in r:
+                r[mt.scope.table_name] = {}
+            key = tuple(m.labels or [])
+            if key not in r[mt.scope.table_name]:
+                r[mt.scope.table_name][key] = {
+                    "date": now.date().isoformat(),
+                    "ts": now.replace(microsecond=0).isoformat(sep=" "),
+                    "managed_object": self.__object.bi_id,
+                    "labels": m.labels,
+                    mt.field_name: m.value,
+                }
+                continue
+            r[mt.scope.table_name][key][mt.field_name] = m.value
+        for table, data in r.items():
+            svc.register_metrics(table, list(data.values()), key=self.__object.bi_id)
 
     def sync_diagnostic_data(self):
         """Synchronize object data with diagnostic"""
