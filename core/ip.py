@@ -8,6 +8,7 @@
 # Python modules
 import socket
 import struct
+from typing import List
 
 # NOC Modules
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
@@ -22,7 +23,7 @@ class IP(object):
 
     afi = None
 
-    def __init__(self, prefix):
+    def __init__(self, prefix: str):
         """
         Return new prefix instance.
 
@@ -555,8 +556,21 @@ class IPv4(IP):
         return sa
 
     @property
-    def is_internal(self) -> bool:
-        return self in IP.prefix("127.0.0.0/8")
+    def is_loopback(self) -> bool:
+        return self in LOOPBACK_IPv4
+
+    @property
+    def is_private_old(self) -> bool:
+        """10.0.0.0/8,100.64.0.0/10,172.16.0.0/12,192.0.0.0/24,192.168.0.0/16"""
+        for p in PRIVATE_IPv4:
+            if self in p:
+                return True
+        return False
+
+    @property
+    def is_private(self) -> bool:
+        """10.0.0.0/8,100.64.0.0/10,172.16.0.0/12,192.0.0.0/24,192.168.0.0/16"""
+        return self in private_ips
 
 
 class IPv6(IP):
@@ -1036,3 +1050,20 @@ class PrefixDB(object):
         # walk tree
         for bits in walk_tree(c, root_bits):
             yield root.__class__.from_bits(bits)
+
+    @classmethod
+    def from_prefixes(cls, prefixes: List[IP], key) -> "PrefixDB":
+        pdb = PrefixDB()
+        for p in prefixes:
+            pdb[p] = key
+        return pdb
+
+
+LOOPBACK_IPv4 = IP.prefix("127.0.0.0/8")
+PRIVATE_IPv4 = [
+    IP.prefix("10.0.0.0/8"),
+    IP.prefix("100.64.0.0/10"),
+    IP.prefix("172.16.0.0/12"),
+    IP.prefix("192.168.0.0/16"),
+]
+private_ips = PrefixDB.from_prefixes(PRIVATE_IPv4, True)
