@@ -401,7 +401,7 @@ class CommutationPlugin(InvPlugin):
                         "local_object__label": node_labels[node.object_id],
                         "local_name": c.local_name,
                         "remote_object": c.remote_object,
-                        "remote_object__name": node_labels[c.remote_object],
+                        "remote_object__label": node_labels[c.remote_object],
                         "remote_name": c.remote_name,
                     }
                 )

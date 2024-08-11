@@ -52,22 +52,24 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
         {
           text: __("Local Object"),
           dataIndex: "local_object",
+          renderer: NOC.render.Lookup("local_object"),
           flex: 1,
         },
         {
           text: __("Local Name"),
           dataIndex: "local_name",
-          flex: 1,
+          width: 100,
         },
         {
           text: __("Remote Object"),
           dataIndex: "remote_object",
           flex: 1,
+          renderer: NOC.render.Lookup("remote_object"),
         },
         {
           text: __("Remote Name"),
           dataIndex: "remote_name",
-          flex: 1,
+          width: 100,
         },
       ],
       listeners: {
