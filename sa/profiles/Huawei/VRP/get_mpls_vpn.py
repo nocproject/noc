@@ -112,9 +112,9 @@ class Script(BaseScript):
             r += [
                 {
                     "type": "VLL",
-                    "status": p["state"] == "up",
-                    "name": p["vpn_id"],
-                    "vpn_id": p["vpn_id"],
+                    "status": p.get("state") == "up",
+                    "name": p.get("vpn_id"),
+                    "vpn_id": p.get("vpn_id"),
                     "interfaces": [self.profile.convert_interface_name(p["interface"])],
                 }
             ]
