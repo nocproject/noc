@@ -8,7 +8,7 @@
 # Python modules
 import socket
 import struct
-from typing import List
+from typing import List, Union, Iterable, Optional, Set, Type
 
 # NOC Modules
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
@@ -83,14 +83,13 @@ class IP(object):
         return self.contains(other)
 
     @classmethod
-    def get_afi(cls, prefix):
+    def get_afi(cls, prefix) -> str:
         if ":" in prefix:
             return "6"
-        else:
-            return "4"
+        return "4"
 
     @classmethod
-    def prefix(cls, prefix):
+    def prefix(cls, prefix) -> Union["IPv4", "IPv6"]:
         """
         Convert string to prefix instance.
 
@@ -101,8 +100,7 @@ class IP(object):
         """
         if ":" in prefix:
             return IPv6(prefix)
-        else:
-            return IPv4(prefix)
+        return IPv4(prefix)
 
     def iter_address(self, count=None, until=None, filter=None):
         """
@@ -133,7 +131,7 @@ class IP(object):
             if (count and n >= count) or (until and a == until):
                 return
 
-    def iter_cover(self, mask):
+    def iter_cover(self, mask: int) -> Iterable[Type["IP"]]:
         """
         Generate prefixes of size _mask_ covering basic prefix
         """
@@ -149,7 +147,7 @@ class IP(object):
             yield s
             s += dist
 
-    def iter_free(self, prefixes):
+    def iter_free(self, prefixes: List[Union[str, Type["IP"]]]):
         """
         Return generator of free prefixes.
 
@@ -263,15 +261,14 @@ class IP(object):
         """
         if ":" in addr:
             return IPv6.expand(addr)
-        else:
-            return IPv4.expand(addr)
+        return IPv4.expand(addr)
 
     @property
     def special_addresses(self):
         """
         Set of 'special' addresses for prefix. 'special' addresses, like network or broadcast
         usually can't be allocated or used
-        :return: Set of specoal addresses
+        :return: Set of special addresses
         """
         return set()
 
@@ -283,7 +280,7 @@ class IPv4(IP):
 
     afi = "4"
 
-    def __init__(self, prefix, netmask=None):
+    def __init__(self, prefix: str, netmask: Optional[str] = None):
         """
         :param prefix: String in format X.X.X.X or X.X.X.X/Y
         :type prefix: str
@@ -301,7 +298,7 @@ class IPv4(IP):
         self.d = struct.unpack("!I", socket.inet_aton(self.address))[0]
 
     @classmethod
-    def netmask_to_len(cls, netmask):
+    def netmask_to_len(cls, netmask: str) -> int:
         """
         Returns netmask mask length
         """
@@ -320,7 +317,7 @@ class IPv4(IP):
                 break
         return n
 
-    def _get_parts(self):
+    def _get_parts(self) -> List[int]:
         """
         get list of 4 integers (IPv4 octets)
 
@@ -330,7 +327,7 @@ class IPv4(IP):
         return [int(d) for d in self.address.split(".")]
 
     @classmethod
-    def _to_prefix(cls, s, mask):
+    def _to_prefix(cls, s: int, mask: int) -> "IPv4":
         """
         Convert integer and mask into new IPv4 instance
 
@@ -374,7 +371,7 @@ class IPv4(IP):
         """
         return self._to_prefix((self.d + n) & B32, self.mask)
 
-    def __sub__(self, n):
+    def __sub__(self, n) -> "IPv4":
         """
         - operator.
         If argument is integer - returns new IPv4 instance
@@ -406,7 +403,7 @@ class IPv4(IP):
             m >>= 1
 
     @classmethod
-    def from_bits(cls, bits):
+    def from_bits(cls, bits) -> "IPv4":
         """
         Create new IPv4 instance from list of bits
 
@@ -424,7 +421,7 @@ class IPv4(IP):
         return cls._to_prefix(d, n)
 
     @property
-    def size(self):
+    def size(self) -> int:
         """
         Get size of prefix (number of addresses to hold)
 
@@ -434,7 +431,7 @@ class IPv4(IP):
         return 2 ** (32 - self.mask)
 
     @property
-    def first(self):
+    def first(self) -> "IPv4":
         """
         Returns new IPv4 instance with first address of the block (network)
         :return: First address
@@ -443,7 +440,7 @@ class IPv4(IP):
         return self._to_prefix(self.d & (((1 << self.mask) - 1) << (32 - self.mask)), self.mask)
 
     @property
-    def last(self):
+    def last(self) -> "IPv4":
         """
         Returns new IPv4 instance with last address of the block (broadcast)
         :return:
@@ -453,7 +450,7 @@ class IPv4(IP):
         )
 
     @property
-    def netmask(self):
+    def netmask(self) -> "IPv4":
         """
         Returns new IPv4 instance holding netmask
         :return:
@@ -461,14 +458,14 @@ class IPv4(IP):
         return self._to_prefix(((1 << self.mask) - 1) << (32 - self.mask), 32)
 
     @property
-    def wildcard(self):
+    def wildcard(self) -> "IPv4":
         """
         Returns new IPv4 instance with Cisco-style wildcard
         :return:
         """
         return self._to_prefix((2 ** (32 - self.mask)) - 1, 32)
 
-    def contains(self, other):
+    def contains(self, other: "IPv4") -> bool:
         """
         Check if *other* contained in prefix. Returns bool
         :param other:
@@ -480,14 +477,14 @@ class IPv4(IP):
         return (self.d & m) == (other.d & m)
 
     @property
-    def normalized(self):
+    def normalized(self) -> "IPv4":
         """
         Returns new IPv4 instance in normalized minimal possible form
         :return:
         """
         return self._to_prefix(self.d & ((1 << self.mask) - 1) << (32 - self.mask), self.mask)
 
-    def set_mask(self, mask=32):
+    def set_mask(self, mask=32) -> "IPv4":
         """
         Returns new IPv4 instance with new mask value.
         If mask not set, returns with /32
@@ -497,7 +494,7 @@ class IPv4(IP):
         return self._to_prefix(self.d, mask)
 
     @classmethod
-    def range_to_prefixes(cls, first, last):
+    def range_to_prefixes(cls, first: Union[str, "IPv4"], last: Union[str, "IPv4"]):
         """
         Convert IPv4 address range to minimal list of covering prefixes
 
@@ -558,14 +555,6 @@ class IPv4(IP):
     @property
     def is_loopback(self) -> bool:
         return self in LOOPBACK_IPv4
-
-    @property
-    def is_private_old(self) -> bool:
-        """10.0.0.0/8,100.64.0.0/10,172.16.0.0/12,192.0.0.0/24,192.168.0.0/16"""
-        for p in PRIVATE_IPv4:
-            if self in p:
-                return True
-        return False
 
     @property
     def is_private(self) -> bool:
@@ -979,7 +968,7 @@ class PrefixDB(object):
         self.children = [None, None]
         self.key = key
 
-    def __getitem__(self, prefix):
+    def __getitem__(self, prefix: Union["IPv4", "IPv6"]):
         """
         Get key by prefix
         :param prefix:
@@ -996,7 +985,7 @@ class PrefixDB(object):
         else:
             raise KeyError
 
-    def __setitem__(self, prefix, key):
+    def __setitem__(self, prefix: Union["IPv4", "IPv6"], key):
         """
         Put prefix with key
         :param prefix:
@@ -1012,7 +1001,7 @@ class PrefixDB(object):
             node = c
         node.key = key
 
-    def __contains__(self, prefix) -> bool:
+    def __contains__(self, prefix: Union["IPv4", str]) -> bool:
         if isinstance(prefix, str):
             prefix = IPv4.prefix(prefix)
         node = self
@@ -1052,7 +1041,7 @@ class PrefixDB(object):
             yield root.__class__.from_bits(bits)
 
     @classmethod
-    def from_prefixes(cls, prefixes: List[IP], key) -> "PrefixDB":
+    def from_prefixes(cls, prefixes: List["IPv4"], key) -> "PrefixDB":
         pdb = PrefixDB()
         for p in prefixes:
             pdb[p] = key
