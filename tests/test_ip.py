@@ -1010,7 +1010,7 @@ def test_prefixdb_ipv6(p1, p2, p3, p4, p5, p6, p7, p8, p9):
         ("10.10.0.22", True),
         ("172.16.0.0/12", True),
         ("3.3.4.5", False),
-    ]
+    ],
 )
 def test_is_private(p, result):
     assert IP.prefix(p).is_private is result
@@ -1024,7 +1024,7 @@ def test_is_private(p, result):
         ("127.0.0.1", True),
         ("172.16.0.0/12", False),
         ("127.20.0.1", True),
-    ]
+    ],
 )
 def test_is_loopback(p, result):
     assert IP.prefix(p).is_loopback is result
