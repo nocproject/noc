@@ -8,7 +8,7 @@
 # Python modules
 import socket
 import struct
-from typing import List, Union, Iterable, Optional, Set, Type
+from typing import List, Union, Iterable, Optional, Type
 
 # NOC Modules
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
