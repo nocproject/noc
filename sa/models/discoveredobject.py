@@ -577,6 +577,7 @@ class DiscoveredObject(Document):
             d.data = data
             d.labels = labels or []
             d.last_update = last_update
+            self.is_dirty = True
             break
         else:
             self.data += [
