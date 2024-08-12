@@ -16,7 +16,7 @@ from bson import ObjectId
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.core.hash import hash_str
+from noc.core.hash import hash_int
 from .base import InvPlugin
 
 
@@ -94,7 +94,7 @@ class CommutationPlugin(InvPlugin):
                 return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
             return f"{remote_object}|{remote_name}|{local_object}|{local_name}"
 
-        return f"e_{hash_str(inner())}"
+        return f"e_{hash_int(inner())}"
 
     def iter_nested_inventory(self, obj: Object) -> Iterable[Node]:
         """
