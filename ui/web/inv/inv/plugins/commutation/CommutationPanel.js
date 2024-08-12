@@ -79,15 +79,10 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     {
       xtype: "container",
       flex: 1,
-      layout: "fit",
+      layout: "auto",
+      itemId: "scheme",
       scrollable: true,
       items: [
-        {
-          xtype: "image",
-          itemId: "scheme",
-          hidden: true,
-          padding: 5,
-        },
       ],
     },
   ],
@@ -108,10 +103,16 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
-      var imageComponent = me.down("[itemId=scheme]"),
+      var container = me.down("[itemId=scheme]"),
         svg = viz.renderSVGElement(data);
-      imageComponent.setHidden(false);
-      imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
+      
+      container.removeAll();
+      container.add({
+        xtype: "container",
+        itemId: "scheme",
+        html: svg.outerHTML,
+        padding: 5,
+      });
     });
   },
   //
