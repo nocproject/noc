@@ -461,7 +461,7 @@ class DiscoveredObject(Document):
             ):
                 for a in d.get("ipv4_addresses", []):
                     ip = IP.prefix(a)
-                    if ip.is_internal:
+                    if ip.is_loopback:
                         continue
                     duplicate_keys.add(ip.d)
         return DiscoveredObject.objects.filter(
