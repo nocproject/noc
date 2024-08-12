@@ -163,7 +163,9 @@ class DiscoveryID(Document):
         return cls._get_collection().find_one({"udld_id": device_id}, {"_id": 0, "object": 1})
 
     @classmethod
-    def find_object(cls, mac=None, ipv4_address=None, hostname: Optional[str] = None) -> Optional[ManagedObject]:
+    def find_object(
+        cls, mac=None, ipv4_address=None, hostname: Optional[str] = None
+    ) -> Optional[ManagedObject]:
         """
         Find managed object
         Args:
