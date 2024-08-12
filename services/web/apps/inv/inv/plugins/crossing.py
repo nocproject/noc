@@ -5,60 +5,80 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from itertools import chain
+# Python modules
+from typing import Dict, Any, Set
 
 # NOC modules
 from .base import InvPlugin
 from noc.inv.models.object import Object
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.objectconnection import ObjectConnection
+from noc.core.text import alnum_key
 
 
 class CrossingPlugin(InvPlugin):
     name = "crossing"
     js = "NOC.inv.inv.plugins.crossing.CrossingPanel"
 
-    def get_data(self, request, o):
-        cables_model = ObjectModel.objects.filter(
-            data__match={"interface": "length", "attr": "length", "value__gte": 0},
-        )
-        oc_ids = chain.from_iterable(
-            ObjectConnection.objects.filter(
-                __raw__={"connection": {"$elemMatch": {"object": {"$in": o.get_nested_ids()}}}}
-            ).scalar("connection")
-        )
-
-        r = []
-        for oo in Object.objects.filter(
-            model__in=cables_model, id__in=[x.object.id for x in oc_ids]
-        ):
-            # wires
-            c1, *other = ObjectConnection.objects.filter(
-                __raw__={"connection": {"$elemMatch": {"object": oo.id}}}
-            )[:2]
-            if not c1:
-                continue
-            c1 = [c for c in c1.connection if c.object != oo][0]
-            if other and other[0].connection[0].object == oo:
-                # Same connection
-                c2 = other[0].connection[0]
-            elif other:
-                c2 = [c for c in other[0].connection if c.object != oo][0]
-            else:
-                continue
-            r += [
+    def get_data(self, request, o: Object) -> Dict[str, Any]:
+        crossings = list(o.iter_effective_crossing())
+        data = [
+            {
+                "input": c.input,
+                "input_discriminator": c.input_discriminator,
+                "output": c.output,
+                "output_discriminator": c.output_discriminator,
+                "gain_db": c.gain_db,
+            }
+            for c in crossings
+        ]
+        # Build list
+        inputs: Set[str] = set()
+        outputs: Set[str] = set()
+        mixed: Set[str] = set()
+        for c in crossings:
+            # Process inputs
+            if c.input not in mixed:
+                inputs.add(c.input)
+                if c.input in outputs:
+                    inputs.remove(c.input)
+                    outputs.remove(c.input)
+                    mixed.add(c.input)
+            # Process outputs
+            if c.output not in mixed:
+                outputs.add(c.output)
+                if c.output in inputs:
+                    inputs.remove(c.output)
+                    outputs.remove(c.output)
+                    mixed.add(c.output)
+        # Build graph
+        viz = {
+            "graphAttributes": {
+                "label": "",
+                "bgcolor": "",
+                "rankdir": "LR",
+            },
+            "directed": True,
+            "nodes": [],
+            "edges": [],
+            "subgraphs": [],
+        }
+        viz["nodes"].append(self._render_node("i", inputs))
+        viz["nodes"].append(self._render_node("o", outputs))
+        if mixed:
+            viz["nodes"].append(self._render_node("m", mixed))
+        # Add edges
+        for c in crossings:
+            viz["edges"].append(
                 {
-                    "name": oo.name,
-                    "id": str(oo.id),
-                    "length": oo.get_data("length", "length"),
-                    "model": str(oo.model.id),
-                    "model__label": oo.model.name,
-                    "object_start": str(c1.object.id),
-                    "object_start_slot": c1.name,
-                    "object_start__label": c1.object.name if c1 else "",
-                    "object_end": str(c2.object.id),
-                    "object_end_slot": c2.name,
-                    "object_end__label": c2.object.name if c2 else "",
+                    "head": "o" if c.output in outputs else "m",
+                    "tail": "i" if c.input in inputs else "m",
+                    "attributes": {"headport": c.output, "tailport": c.input},
                 }
-            ]
-        return r
+            )
+        return {"id": str(o.id), "data": data, "viz": viz}
+
+    def _render_node(self, name: str, items: Set[str]) -> Dict[str, Any]:
+        """
+        Render Viz node
+        """
+        label = "|".join(f"<{n}>{n}" for n in sorted(items, key=alnum_key))
+        return {"name": name, "attributes": {"shape": "record", "label": label}}

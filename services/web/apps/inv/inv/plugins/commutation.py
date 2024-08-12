@@ -16,6 +16,7 @@ from bson import ObjectId
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
+from noc.core.hash import hash_str
 from .base import InvPlugin
 
 
@@ -81,15 +82,19 @@ class CommutationPlugin(InvPlugin):
         """
         Get stable connection hash.
         """
-        # Calculate stable hash
-        if local_object == remote_object:
-            # Loop
-            if local_name < remote_name:
+
+        def inner() -> str:
+            # Calculate stable hash
+            if local_object == remote_object:
+                # Loop
+                if local_name < remote_name:
+                    return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
+                return f"{local_object}|{remote_name}|{remote_object}|{local_name}"
+            elif local_object < remote_object:
                 return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
-            return f"{local_object}|{remote_name}|{remote_object}|{local_name}"
-        elif local_object < remote_object:
-            return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
-        return f"{remote_object}|{remote_name}|{local_object}|{local_name}"
+            return f"{remote_object}|{remote_name}|{local_object}|{local_name}"
+
+        return f"e_{hash_str(inner())}"
 
     def iter_nested_inventory(self, obj: Object) -> Iterable[Node]:
         """
@@ -342,6 +347,7 @@ class CommutationPlugin(InvPlugin):
                 "tail": q_node(local_object),
                 "head": q_node(remote_object),
                 "attributes": {
+                    "id": c_hash,
                     "tailport": q_conn_name(local_name),
                     "headport": q_conn_name(remote_name),
                 },
@@ -397,6 +403,7 @@ class CommutationPlugin(InvPlugin):
                     continue
                 data.append(
                     {
+                        "id": c_hash,
                         "local_object": node.object_id,
                         "local_object__label": node_labels[node.object_id],
                         "local_name": c.local_name,
