@@ -51,8 +51,8 @@ class DiscoveredObjectApplication(ExtDocApplication):
                 {"name": c.name, "port": c.port, "status": c.status, "label": c.name}
                 for c in o.checks
             ]
-        if "managed_object" in r:
-            r["synced"] = {"id": "", "model": "sa.ManagedObject"}
+        if "managed_object_id" in r:
+            r["synced"] = {"id": r["managed_object_id"], "model": "sa.ManagedObject"}
         # if isinstance(o, CheckStatus):
         #    if not o.port:
         #        return o.name
