@@ -350,6 +350,7 @@ class CommutationPlugin(InvPlugin):
                     "id": c_hash,
                     "tailport": q_conn_name(local_name),
                     "headport": q_conn_name(remote_name),
+                    "class": "selectable",
                 },
             }
             top["edges"].append(edge)
