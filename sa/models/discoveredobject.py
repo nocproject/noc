@@ -10,7 +10,7 @@ import datetime
 import logging
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Dict, Optional, List, Any, Union
+from typing import Dict, Optional, List, Any, Union, Tuple
 
 # Third-party modules
 import orjson
@@ -32,7 +32,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.wf.decorator import workflow
-from noc.core.bi.decorator import bi_sync
+from noc.core.bi.decorator import bi_sync, bi_hash
 from noc.core.model.decorator import on_delete_check
 from noc.core.clickhouse.connect import connection
 from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
@@ -61,14 +61,14 @@ SELECT
     groupUniqArray(router_id) as router_ids,
     max(last_ts) as last_ts
 FROM (
-    SELECT ip, pool, remote_system,
-     argMax(source, ts) as source, argMax(hostname, ts) as hostname, argMax(description, ts) as description,
+    SELECT ip, pool, remote_system, source,
+     argMax(hostname, ts) as hostname, argMax(description, ts) as description,
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
      argMax(data, ts) as data, argMax(labels, ts) as labels,
      argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
      argMax(router_id, ts) as router_id, argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
     FROM noc.purgatorium
-    GROUP BY ip, pool, remote_system
+    GROUP BY ip, pool, remote_system, source
     )
 GROUP BY ip, pool
 ORDER BY ip
@@ -212,7 +212,7 @@ class DiscoveredObject(Document):
     #
     duplicate_keys = ListField(LongField())
     #
-    managed_object: "ManagedObject" = IntField(required=False)
+    managed_object_id: int = IntField(required=False)
     # Link to agent
     agent: "Agent" = ObjectIdField(required=False)
     # Link to Rule
@@ -259,12 +259,12 @@ class DiscoveredObject(Document):
             if di.labels:
                 labels += di.labels
             if di.remote_system:
-                rids.add(hash(f"{di.remote_system.id}{di.remote_id}"))
+                rids.add(bi_hash(f"{di.remote_system.id}{di.remote_id}"))
         # Update Extra Labels
         if self.extra_labels:
             labels += [ll for ll in Label.merge_labels(self.extra_labels.values())]
-        if not changed and set(self.effective_labels) == set(labels):
-            return
+        # if not changed and set(self.effective_labels) == set(labels):
+        #    return
         self.address_bin = IP.prefix(self.address).d
         self.is_dirty = True  # if data changed
         self.hostname = data.get("hostname")
@@ -274,7 +274,7 @@ class DiscoveredObject(Document):
         self.effective_labels = labels
         # ToDO Rule Settings
         if self.hostname:
-            self.duplicate_keys = [self.address_bin, hash(self.hostname)] + list(rids)
+            self.duplicate_keys = [self.address_bin, bi_hash(self.hostname)] + list(rids)
         else:
             self.duplicate_keys = [self.address_bin] + list(rids)
 
@@ -384,7 +384,7 @@ class DiscoveredObject(Document):
         Getting Context for Synchronise object template
         """
         r = ResourceItem(
-            id=str(self.managed_object),
+            id=str(self.managed_object_id),
             labels=self.effective_labels,
             data=[
                 ResourceDataItem(name="name", value=self.hostname),
@@ -419,11 +419,15 @@ class DiscoveredObject(Document):
                 r.labels += o.effective_labels
         return r
 
-    def get_managed_object_query(self, pool: Optional[Pool] = None):
+    def get_managed_object_query(
+        self, pool: Optional[Pool] = None, addresses: Optional[List[str]] = None
+    ):
         """Query for request Managed Object"""
         q = d_Q(name=self.hostname)
         if pool:
             q |= d_Q(address=self.address, pool=pool)
+        if addresses and pool:
+            q |= d_Q(address__in=addresses, pool=pool)
         for d in self.data:
             if d.remote_system:
                 q |= d_Q(remote_system=d.remote_system, remote_id=d.remote_id)
@@ -441,7 +445,7 @@ class DiscoveredObject(Document):
         hostname: Optional[str] = None,
         address: Optional[str] = None,
         managed_object: Optional[ManagedObject] = None,
-    ) -> Optional[List["DiscoveredObject"]]:
+    ) -> List["DiscoveredObject"]:
         """Check duplicate"""
         from noc.inv.models.subinterface import SubInterface
         from mongoengine.queryset.visitor import Q
@@ -450,7 +454,7 @@ class DiscoveredObject(Document):
         if address and address != self.address:
             duplicate_keys.add(IP.prefix(address).d)
         if hostname or self.hostname:
-            duplicate_keys.add(hash(hostname or self.hostname))
+            duplicate_keys.add(bi_hash(hostname or self.hostname))
         # pool = self.pool
         if managed_object:
             # pool = managed_object.pool
@@ -461,7 +465,7 @@ class DiscoveredObject(Document):
             ):
                 for a in d.get("ipv4_addresses", []):
                     ip = IP.prefix(a)
-                    if ip.is_internal:
+                    if ip.is_loopback:
                         continue
                     duplicate_keys.add(ip.d)
         return DiscoveredObject.objects.filter(
@@ -482,42 +486,51 @@ class DiscoveredObject(Document):
             return
         if not self.rule.default_template:
             return
-        pool = self.get_pool()
-        if self.managed_object:
+        if self.managed_object_id:
             # Sync data
-            mo = ManagedObject.objects.filter(id=self.managed_object).first()
-        else:
-            # Check Removed Managed Object ?
-            mo = ManagedObject.objects.filter(self.get_managed_object_query(pool)).first()
-            if not mo:
-                mo = DiscoveryID.find_object(ipv4_address=self.address)
-        if dry_run:
-            return mo
-        changed = False
-        if not mo and self.rule.default_template:
-            mo = self.rule.default_template.render(self.get_ctx())
-        elif mo and self.rule.default_template:
-            changed |= self.rule.default_template.update_instance_data(mo, self.get_ctx())
-            logger.info("[%s] Update existing ManagedObject from data", mo.name)
-        if mo and not self.managed_object:
-            # Duplicate
+            self.sync_object_data(dry_run=dry_run)
+            return
+        # Create Managed Object instance
+        pool = self.get_pool()
+        duplicates = self.check_duplicate()
+        # Check Removed Managed Object ?
+        mo = ManagedObject.objects.filter(
+            self.get_managed_object_query(pool, addresses=[di.address for di in duplicates]),
+        ).first()
+        if not mo:
+            mo = DiscoveryID.find_object(ipv4_address=self.address, hostname=self.hostname)
+        if mo:
             duplicates = self.check_duplicate(managed_object=mo)
-            if duplicates:
-                logger.info("[%s] Find duplicate record by ManagedObject. Set origin", mo.name)
-                DiscoveredObject.objects.filter(id__in=[d.id for d in duplicates]).update(
-                    is_dirty=True,
-                    origin=self.id,
-                )
-        if changed:
-            logger.info("[%s] Managed Object was Changed. Saving...", mo.name)
+        elif not mo and self.rule.default_template:
+            mo = self.rule.default_template.render(self.get_ctx())
+        else:
+            raise AttributeError("Default object template is not Set")
+        origin = self
+        for di in duplicates:
+            if di.address == mo.address:
+                origin = di
+        if dry_run:
+            logger.info("[%s] Origin is: %s", self, origin)
+            return mo
+        if not mo.id:
             mo.save()
-        self.managed_object = mo.id
-        self.is_dirty = False
+        else:
+            origin.sync_object_data(managed_object=mo, dry_run=dry_run)
+        if not origin.managed_object_id or origin.managed_object_id != mo.id:
+            origin.managed_object_id = mo.id
+            DiscoveredObject.objects.filter(id=origin.id).update(
+                is_dirty=origin.is_dirty,
+                managed_object_id=origin.managed_object_id,
+            )
+        # Update Origin
+        duplicates = [d.id for d in duplicates if d != origin]
+        if origin.id != self.id:
+            duplicates.append(self.id)
+            self.origin = origin
+        if duplicates:
+            DiscoveredObject.objects.filter(id__in=duplicates).update(is_dirty=True, origin=origin)
+        origin.is_dirty = False
         # Send approve
-        DiscoveredObject.objects.filter(id=self.id).update(
-            is_dirty=self.is_dirty,
-            managed_object=self.managed_object,
-        )
 
     @property
     def is_approved(self) -> bool:
@@ -601,7 +614,13 @@ class DiscoveredObject(Document):
             if d.remote_system:
                 rs = RemoteSystem.get_by_name(d.remote_system)
             self.set_data(
-                d.source, d.data, d.labels, d.service_groups, d.client_groups, remote_system=rs
+                d.source,
+                d.data,
+                d.labels,
+                d.service_groups,
+                d.client_groups,
+                remote_system=rs,
+                ts=d.ts,
             )
         if not checks and not self.checks:
             return
@@ -611,6 +630,34 @@ class DiscoveredObject(Document):
         if not self.checks or set(checks).difference(set(checks)):
             self.checks = checks
             self.is_dirty = True
+
+    def sync_object_data(
+        self, managed_object: Optional["ManagedObject"] = None, dry_run=False
+    ) -> Optional[bool]:
+        if not self.managed_object_id and not managed_object:
+            logger.warning("Not exists ManagedObject. Skipping...")
+            return
+        elif not self.managed_object_id and managed_object:
+            logger.info(
+                "[%s] Update managed_object field to: %s", managed_object.name, managed_object.id
+            )
+            if not dry_run:
+                DiscoveredObject.objects.filter(id=self.id).update(
+                    is_dirty=self.is_dirty,
+                    managed_object=managed_object.id,
+                )
+            mo = managed_object
+        else:
+            mo = ManagedObject.get_by_id(int(self.managed_object_id))
+        if mo and self.rule.default_template and not dry_run:
+            logger.info("[%s] Update existing ManagedObject from data", mo.name)
+            self.rule.default_template.update_instance_data(mo, self.get_ctx(), dry_run=dry_run)
+
+    @property
+    def managed_object(self) -> Optional[ManagedObject]:
+        if not self.managed_object_id:
+            return None
+        return ManagedObject.get_by_id(self.managed_object_id)
 
 
 def sync_object():
