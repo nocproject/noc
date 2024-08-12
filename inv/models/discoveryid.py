@@ -163,12 +163,13 @@ class DiscoveryID(Document):
         return cls._get_collection().find_one({"udld_id": device_id}, {"_id": 0, "object": 1})
 
     @classmethod
-    def find_object(cls, mac=None, ipv4_address=None):
+    def find_object(cls, mac=None, ipv4_address=None, hostname: Optional[str] = None) -> Optional[ManagedObject]:
         """
         Find managed object
-        :param mac:
-        :param ipv4_address:
-        :param cls:
+        Args:
+            mac:
+            ipv4_address:
+            cls:
         :return: Managed object instance or None
         """
 
@@ -185,6 +186,12 @@ class DiscoveryID(Document):
             r = cls.get_by_mac(mac)
             if r:
                 return ManagedObject.get_by_id(r["object"])
+        if hostname:
+            metrics["discoveryid_hostname_requests"] += 1
+            d = DiscoveryID.objects.filter(hostname_id=hostname.lower()).first()
+            if d:
+                metrics["discoveryid_hostname"] += 1
+                return d.object
         if ipv4_address:
             metrics["discoveryid_ip_requests"] += 1
             # Try router_id
