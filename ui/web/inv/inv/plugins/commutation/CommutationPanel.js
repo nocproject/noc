@@ -39,10 +39,10 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     {
       xtype: "button",
       itemId: "detailsButton",
-      text: __("Hide details"),
+      text: __("Show details"),
       glyph: NOC.glyph.eye,
       enableToggle: true,
-      pressed: true,
+      pressed: false,
       toggleHandler: "showHideDetails",
     },
   ],
@@ -51,6 +51,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       xtype: "grid",
       scrollable: "y",
       flex: 1,
+      hidden: true,
       columns: [
         {
           text: __("Local Object"),
