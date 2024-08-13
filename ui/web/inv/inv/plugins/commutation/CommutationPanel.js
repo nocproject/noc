@@ -111,6 +111,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     var me = this;
     Viz.instance().then(function(viz){ 
       var container = me.down("[itemId=schemePanel]"),
+        grid = me.down("grid"),
         svg = viz.renderSVGElement(data);
       
       container.removeAll();
@@ -118,6 +119,22 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
         xtype: "container",
         layout: "fit",
         html: svg.outerHTML,
+        listeners: {
+          afterrender: function(){
+            var svgElement = container.getEl().dom.querySelector("svg"),
+              elements = svgElement.querySelectorAll(".selectable");
+
+            elements.forEach(function(element){
+              element.addEventListener("click", function(){
+                var record = grid.getStore().getById(element.id);
+                
+                if(record){
+                  grid.getSelectionModel().select(record);
+                }
+              });
+            });
+          },
+        },
       });
     });
   },
