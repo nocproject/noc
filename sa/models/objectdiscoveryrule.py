@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import datetime
 import operator
 import re
+from itertools import filterfalse
 from functools import partial
 from typing import List, Dict, Optional, Tuple, Set, Any, Union, FrozenSet
 from threading import Lock
@@ -265,6 +267,29 @@ class ObjectDiscoveryRule(Document):
         """Return required sources for rule"""
         return frozenset(s.source for s in self.sources if s.is_required)
 
+    def is_ttl(self, ts: datetime.datetime) -> bool:
+        if not self.expired_ttl:
+            return False
+        now = datetime.date.today()
+        return (now - ts.date()).seconds > self.expired_ttl
+
+    @classmethod
+    def get_effective_data(cls, sources: List[str], data: List[Any]) -> Dict[str, str]:
+        """
+        Merge data by Source Priority
+        :return:
+        """
+        r = {}
+        for di in sorted(
+            filterfalse(lambda d: d.source not in sources, data),
+            key=lambda x: sources.index(x.source),
+        ):
+            for key, value in di.data.items():
+                if key in r or not value:
+                    continue
+                r[key] = value
+        return r
+
     @classmethod
     def get_rule(
         cls,
@@ -272,7 +297,7 @@ class ObjectDiscoveryRule(Document):
         pool: Pool,
         checks: List[Any],
         labels: Optional[List[str]] = None,
-        data: Optional[Dict[str, Any]] = None,
+        data: Optional[List[Any]] = None,
         sources: Optional[List[str]] = None,
     ) -> Optional["ObjectDiscoveryRule"]:
         """
@@ -288,13 +313,13 @@ class ObjectDiscoveryRule(Document):
 
         """
         labels = labels or []
-        data = data or {}
         for rule in ObjectDiscoveryRule.objects.filter(
             is_active=True, default_action__ne="skip"
         ).order_by("preference"):
             if rule.required_sources and sources and rule.required_sources - set(sources):
                 continue
-            if rule.is_match(address, pool, checks, labels, data):
+            r_data = cls.get_effective_data([s.source for s in rule.sources] or sources, data)
+            if rule.is_match(address, pool, checks, labels, r_data):
                 return rule
         return
 

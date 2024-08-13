@@ -8,9 +8,10 @@
 # Python modules
 import datetime
 import logging
+import itertools
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Dict, Optional, List, Any, Union
+from typing import Dict, Optional, List, Any, Union, Iterable
 
 # Third-party modules
 import orjson
@@ -37,6 +38,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.clickhouse.connect import connection
 from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
 from noc.core.mongo.fields import PlainReferenceField
+from noc.config import config
 from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
@@ -68,6 +70,7 @@ FROM (
      argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
      argMax(router_id, ts) as router_id, argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
     FROM noc.purgatorium
+    WHERE date >= %s
     GROUP BY ip, pool, remote_system, source
     )
 GROUP BY ip, pool
@@ -137,6 +140,13 @@ class DataItem(EmbeddedDocument):
     service_groups: List[ObjectId] = ListField(ObjectIdField())
     client_groups: List[ObjectId] = ListField(ObjectIdField())
     data = DictField()
+
+    def __str__(self):
+        if self.remote_system:
+            return (
+                f"{self.source}#{self.remote_system.name}:{self.remote_id}: {','.join(self.data)}"
+            )
+        return f"{self.source}: {','.join(self.data)}"
 
     def __eq__(self, other: "DataItem") -> bool:
         if self.source != other.source:
@@ -248,7 +258,7 @@ class DiscoveredObject(Document):
         #
         data, labels, changed = {}, [], False
         rids = set()
-        for di in sorted(self.data, key=lambda x: self.sources.index(x.source)):
+        for di in self.iter_sorted_data():
             for key, value in di.data.items():
                 if key in data or not value:
                     # Already set by priority source
@@ -260,6 +270,7 @@ class DiscoveredObject(Document):
                 labels += di.labels
             if di.remote_system:
                 rids.add(bi_hash(f"{di.remote_system.id}{di.remote_id}"))
+        changed |= bool(self.effective_data.keys() - data.keys())
         # Update Extra Labels
         if self.extra_labels:
             labels += [ll for ll in Label.merge_labels(self.extra_labels.values())]
@@ -278,20 +289,14 @@ class DiscoveredObject(Document):
         else:
             self.duplicate_keys = [self.address_bin] + list(rids)
 
-    def get_effective_data(self) -> Dict[str, str]:
-        """
-        Merge data by Source Priority
-        :return:
-        """
-        data, labels = {}, set()
-        for di in sorted(self.data, key=lambda x: self.sources.index(x.source)):
-            for key, value in di.data.items():
-                if key in data or not value:
-                    continue
-                data[key] = value
-            if di.labels:
-                labels |= set(di.labels)
-        return data
+    def iter_sorted_data(self, sources: Optional[List[str]] = None) -> Iterable["DataItem"]:
+        """Return data sorted by source"""
+        sources = sources or self.sources
+        for di in sorted(
+            itertools.filterfalse(lambda d: d.source not in self.sources, self.data),
+            key=lambda x: sources.index(x.source),
+        ):
+            yield di
 
     def change_rule(self, rule):
         self.rule = rule
@@ -337,18 +342,15 @@ class DiscoveredObject(Document):
                 labels=labels or [],
                 rule=rule,
             )
-        elif set(o.sources).symmetric_difference(set(sources)):
-            o.sources = sources
-            o.is_dirty = True
         if not update_ts or update_ts != o.last_seen:
             logger.debug("[%s|%s] Run update data", pool.name, address)
-            o.update_data(data, checks)
+            o.update_data(data, checks)  # Remove data
         rule = rule or ObjectDiscoveryRule.get_rule(
             address,
             pool,
             o.checks,
             o.effective_labels,
-            o.get_effective_data(),
+            o.data,
             sources,
         )
         if not rule:
@@ -356,23 +358,35 @@ class DiscoveredObject(Document):
                 o.fire_event("expired")  # Remove
             logger.debug("[%s|%s] Not find rule for address. Skipping", pool.name, address)
             return
+        if rule.sources:
+            sources = [s.source for s in rule.sources if s.source in sources]
+        if o.sources != sources:
+            o.is_dirty = True
+            o.sources = sources
+        o.touch(ts=update_ts)
         if not o.is_dirty and rule == o.rule:
             logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
             return
         if o.rule != rule:
             o.rule = rule
             o.is_dirty = True
-        action = rule.get_action(o.checks, o.effective_labels, o.get_effective_data())
+        action = rule.get_action(
+            o.checks, o.effective_labels, ObjectDiscoveryRule.get_effective_data(sources, o.data)
+        )
+        if address == "10.78.2.19":
+            logger.info("[DEBUG]: Action: %s, Sources: %s, Rule: %s", action, sources, rule)
         if action == "skip":
             return
         elif action == "ignore" and not o.id:
             return
+        # Remove unused data
+        for source in set(o.sources) - set(sources):
+            o.reset_data(source)
         if not o.id or o.is_dirty:
             # Set Status, is_dirty
             o.is_dirty = False
             o.save()
         o.fire_event("seen")
-        o.touch(ts=update_ts)
         if action == "ignore":
             o.fire_event("ignore")
         elif action == "approve":
@@ -569,7 +583,7 @@ class DiscoveredObject(Document):
             if remote_system and remote_system != d.remote_system:
                 continue
             if d.last_update == last_update:
-                continue
+                break
             if set(service_groups or []) != set(d.service_groups or []):
                 d.service_groups = service_groups
             if set(client_groups or []) != set(d.client_groups or []):
@@ -592,6 +606,15 @@ class DiscoveredObject(Document):
                     last_update=last_update,
                 )
             ]
+            self.is_dirty = True
+
+    def reset_data(self, source, remote_id: Optional[str] = None):
+        self.data = [
+            item
+            for item in self.data
+            if (item.source != source and not remote_id)
+            or (remote_id and item.remote_id != remote_id)
+        ]
 
     def update_data(
         self,
@@ -623,14 +646,14 @@ class DiscoveredObject(Document):
                 remote_system=rs,
                 ts=d.ts,
             )
-        if not checks and not self.checks:
+        if not (checks or self.checks):
             return
         checks = [
             CheckStatus(name=c.check, status=c.status, port=c.port, error=c.error) for c in checks
         ]
-        if not self.checks or set(checks).difference(set(checks)):
+        if not self.checks or set(self.checks).symmetric_difference(set(checks)):
             self.checks = checks
-            self.is_dirty = True
+            self.is_dirty |= True
 
     def sync_object_data(
         self, managed_object: Optional["ManagedObject"] = None, dry_run=False
@@ -645,7 +668,7 @@ class DiscoveredObject(Document):
             if not dry_run:
                 DiscoveredObject.objects.filter(id=self.id).update(
                     is_dirty=self.is_dirty,
-                    managed_object=managed_object.id,
+                    managed_object_id=managed_object.id,
                 )
             mo = managed_object
         else:
@@ -691,17 +714,21 @@ def sync_purgatorium():
      approve ?
     :return:
     """
-    ls = DiscoveredObject.objects.filter().order_by("-last_seen").scalar("last_seen").first()
-    logger.info("Start Purgatorium Sync: %s", ls)
+    ls = (
+        DiscoveredObject.objects.filter().order_by("-last_seen").scalar("last_seen").first()
+        or datetime.datetime.now()
+    )
+    ls_ex = ls - datetime.timedelta(seconds=config.network_scan.purgatorium_ttl)
+    logger.info("Start Purgatorium Sync: %s, Expired: %s", ls, ls_ex)
     ranges = defaultdict(list)
     # ranges filter
     for r in ObjectDiscoveryRule.objects.filter(is_active=True):
         for p in r.get_prefixes():
             ranges[p].append(r)
     ch = connection()
-    r = ch.execute(PURGATORIUM_SQL, return_raw=True)
+    r = ch.execute(PURGATORIUM_SQL, return_raw=True, args=[ls_ex.date().isoformat()])
     processed, updated, removed, synced = 0, 0, 0, 0
-    for row in r.splitlines():
+    for num, row in enumerate(r.splitlines(), start=1):
         row = orjson.loads(row)
         pool = Pool.get_by_bi_id(row["pool"])
         data = defaultdict(dict)
@@ -756,6 +783,7 @@ def sync_purgatorium():
         )
         processed += 1
         if r:
+            logger.debug("Updated: %s", r)
             updated += 1
     now = datetime.datetime.now()
     # Expired objects
@@ -770,6 +798,7 @@ def sync_purgatorium():
     for do in DiscoveredObject.objects.filter(is_dirty=True, rule__exists=True):
         if do.rule.allow_sync and do.rule.default_template and not do.origin and do.is_approved:
             do.sync()
+        # DiscoveredObject.objects.filter(id=do.id).update(is_dirty=False)
     logger.info(
         "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s/Synced: %s",
         ls,
