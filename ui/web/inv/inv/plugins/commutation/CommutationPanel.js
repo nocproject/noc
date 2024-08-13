@@ -198,6 +198,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     } else{
       button.setText(__("Show details"));
       button.setGlyph(NOC.glyph.eye_slash);
+      grid.getSelectionModel().deselectAll();
       grid.hide();
     }
   },
