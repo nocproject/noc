@@ -373,8 +373,6 @@ class DiscoveredObject(Document):
         action = rule.get_action(
             o.checks, o.effective_labels, ObjectDiscoveryRule.get_effective_data(sources, o.data)
         )
-        if address == "10.78.2.19":
-            logger.info("[DEBUG]: Action: %s, Sources: %s, Rule: %s", action, sources, rule)
         if action == "skip":
             return
         elif action == "ignore" and not o.id:
