@@ -10,7 +10,7 @@ import orjson
 
 # NOC modules
 from noc.core.script.http.middleware.base import BaseMiddleware
-from noc.core.http.client import fetch_sync
+from noc.core.http.sync_client import HttpClient
 
 
 class UbiquitiAuthMiddeware(BaseMiddleware):
@@ -37,25 +37,21 @@ class UbiquitiAuthMiddeware(BaseMiddleware):
                 "password": self.http.script.credentials.get("password"),
             }
         )
-        code, resp_headers, result = fetch_sync(
-            url=self.http.get_url("/api/login"),
-            body=b,
-            method="POST",
-            headers={"Content-Type": "application/json"},
-            request_timeout=60,
-            follow_redirects=True,
+        with HttpClient(
+            headers={"Content-Type": b"application/json"},
+            timeout=60,
             allow_proxy=False,
             validate_cert=False,
-        )
-        self.http._process_cookies(resp_headers)
-        print("XXXXX", self.http.cookies)
-        headers["Cookie"] = self.http.cookies.output(header="", sep=";", attrs="value").lstrip()
-        self.http.logger.debug(
-            "[%s] Response code %s, headers %s on: %s, body: %s",
-            self.name,
-            code,
-            resp_headers,
-            url,
-            body,
-        )
-        return url, body, headers
+        ) as client:
+            code, resp_headers, result = client.post(self.http.get_url("/api/login"), b)
+            self.http._process_cookies(resp_headers, allow_multiple_header=True)
+            headers["Cookie"] = self.http.cookies.output(header="", attrs="value").lstrip().encode()
+            self.http.logger.info(
+                "[%s] Response code %s, headers %s on: %s, body: %s",
+                self.name,
+                code,
+                list(resp_headers.items()),
+                url,
+                body,
+            )
+            return url, body, headers
