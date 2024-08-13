@@ -36,6 +36,7 @@ class UDPServerProtocol(asyncio.DatagramProtocol):
 class UDPServer(object):
     def __init__(self):
         self._transports: List[asyncio.BaseTransport] = []
+        self._sockaddr: List[Tuple[str, int]] = []
 
     def iter_listen(self, cfg: str) -> Iterable[Tuple[str, int]]:
         """
@@ -74,13 +75,17 @@ class UDPServer(object):
     async def create_endpoints(self, sockets):
         loop = asyncio.get_running_loop()
         for sock in sockets:
-            transport, protocol = await loop.create_datagram_endpoint(
+            transport, _ = await loop.create_datagram_endpoint(
                 lambda: UDPServerProtocol(self), sock=sock
             )
             self._transports.append(transport)
 
     def bind_udp_sockets(
-        self, port, address: str = None, family: int = socket.AF_UNSPEC, flags: Any = None
+        self,
+        port: int,
+        address: Optional[str] = None,
+        family: int = socket.AF_UNSPEC,
+        flags: Any = None,
     ):
         """Creates listening sockets bound to the given port and address.
 
@@ -158,7 +163,9 @@ class UDPServer(object):
             sock.setblocking(False)
             self.setup_socket(sock)
             sock.bind(sockaddr)
-            bound_port = sock.getsockname()[1]
+            sa = sock.getsockname()
+            bound_port = sa[1]
+            self._sockaddr.append(sa)
             sockets.append(sock)
         return sockets
 
@@ -184,7 +191,7 @@ class UDPServer(object):
     def has_frebind(self) -> bool:
         return self.get_ip_freebind() is not None
 
-    def setup_socket(self, sock: "socket"):
+    def setup_socket(self, sock: socket.socket):
         """
         Called after socket created but before .bind().
         Can be overriden to adjust socket options in superclasses
