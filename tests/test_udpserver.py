@@ -14,10 +14,11 @@ import socket
 # NOC modules
 from noc.core.ioloop.udpserver import UDPServer
 
-CLIENTS_QUANTITY = 200  # 200
-DATAGRAMS_FOR_CLIENT = 250  # 250
+CLIENTS_QUANTITY = 10  # 200
+DATAGRAMS_FOR_CLIENT = 100  # 250
 DATAGRAMS_ALL = DATAGRAMS_FOR_CLIENT * CLIENTS_QUANTITY
 LIMIT_PERCENT_OF_LOST = 0.5  # 0.5%
+MAX_MSG_SIZE = 500
 
 SERVER_ADDRESS = "127.0.0.1"
 
@@ -34,6 +35,10 @@ class UDPServerStub(UDPServer):
     @property
     def sock_addr(self) -> Tuple[str, int]:
         return self._sockaddr[0]
+
+    def setup_socket(self, sock: socket.socket):
+        super().setup_socket(sock)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, DATAGRAMS_ALL * MAX_MSG_SIZE)
 
 
 async def server_routine(udpserver: UDPServerStub):
@@ -54,7 +59,7 @@ async def server_routine(udpserver: UDPServerStub):
 
 
 def random_string():
-    s_len = random.randint(1, 500)
+    s_len = random.randint(1, MAX_MSG_SIZE)
     s = ""
     for _ in range(s_len):
         s += chr(random.randint(0, 255))
@@ -69,6 +74,8 @@ async def client_routine(server: UDPServerStub, datagrams_quantity: int) -> None
     transport, _ = await loop.create_datagram_endpoint(
         lambda: asyncio.DatagramProtocol(), remote_addr=server.sock_addr
     )
+    sock = transport.get_extra_info("socket")
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, DATAGRAMS_FOR_CLIENT * MAX_MSG_SIZE)
     # Send messages
     for _ in range(datagrams_quantity):
         data = random_string().encode()

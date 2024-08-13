@@ -191,7 +191,7 @@ class UDPServer(object):
     def has_frebind(self) -> bool:
         return self.get_ip_freebind() is not None
 
-    def setup_socket(self, sock: "socket"):
+    def setup_socket(self, sock: socket.socket):
         """
         Called after socket created but before .bind().
         Can be overriden to adjust socket options in superclasses
