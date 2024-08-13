@@ -12,6 +12,8 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   closable: false,
   layout: "auto",
   defaultListenerScope: true,
+  scrollable: false,
+  itemId: "commutationPanel",
   tbar: [
     {
       xtype: "combobox",
@@ -36,6 +38,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     },
     {
       xtype: "button",
+      itemId: "detailsButton",
       text: __("Hide details"),
       glyph: NOC.glyph.eye,
       enableToggle: true,
@@ -77,16 +80,14 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       },
     },
     {
-      xtype: "container",
+      xtype: "panel",
       flex: 1,
       layout: "auto",
-      itemId: "scheme",
       scrollable: true,
-      items: [
-      ],
+      itemId: "schemePanel",
     },
   ],
-
+  //
   initComponent: function(){
     var me = this;
     me.callParent();
@@ -103,15 +104,14 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
-      var container = me.down("[itemId=scheme]"),
+      var container = me.down("[itemId=schemePanel]"),
         svg = viz.renderSVGElement(data);
       
       container.removeAll();
       container.add({
         xtype: "container",
-        itemId: "scheme",
+        layout: "fit",
         html: svg.outerHTML,
-        padding: 5,
       });
     });
   },
@@ -144,7 +144,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   onZoom: function(combo){
     var me = this,
-      imageComponent = me.down("#scheme");
+      imageComponent = me.down("#schemePanel");
     imageComponent.getEl().dom.style.transformOrigin = "0 0";
     imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
   },
@@ -156,19 +156,12 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   afterGridRender: function(grid){
     var tabPanel = grid.up("tabpanel"),
-      bodyHeight = tabPanel.body.getHeight(),
-      rowCount = grid.getStore().getCount();
-          
-    if(rowCount > 0){
-      var rowHeight = Ext.fly(grid.getView().getNode(0)).getHeight(),
-        gridHeight = (rowCount + 1) * rowHeight + 0.2 * rowHeight;
-      if(gridHeight > bodyHeight * 0.5){
-        grid.setHeight(bodyHeight * 0.5);
-      } else{
-        console.log("gridHeight", gridHeight);
-        grid.setMaxHeight(gridHeight);
-      }
-    }
+      imagePanel = tabPanel.down("#schemePanel");
+    
+    var {grid: gridHeight, image: imageHeight} = this.heightPanels(grid);
+
+    grid.setHeight(gridHeight);
+    imagePanel.setHeight(imageHeight);    
   },
   //
   showHideDetails: function(button, pressed){
@@ -183,5 +176,33 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       button.setGlyph(NOC.glyph.eye_slash);
       grid.hide();
     }
+  },
+  //
+  heightPanels: function(grid){
+    var tabPanel = grid.up("tabpanel"),
+      bodyHeight = tabPanel.body.getHeight(),
+      rowCount = grid.getStore().getCount();
+
+    if(rowCount === 0){
+      return {grid: null, image: null};
+    }
+
+    var rowHeight = Ext.fly(grid.getView().getNode(0)).getHeight(),
+      gridHeight = (rowCount + 1) * rowHeight + 0.2 * rowHeight,
+      dockedItemsHeight = grid.up().getDockedItems().reduce(function(totalHeight, item){
+        return totalHeight + item.getHeight();
+      }, 0),
+      halfBodyHeight = bodyHeight * 0.5,
+      imageHeight = bodyHeight - halfBodyHeight - dockedItemsHeight,
+      detailsButton = tabPanel.down("#detailsButton");
+
+    if(!detailsButton.pressed){ 
+      return {grid: null, image: bodyHeight - dockedItemsHeight};
+    }
+    if(gridHeight <= halfBodyHeight){
+      return {grid: gridHeight, image: bodyHeight - gridHeight - dockedItemsHeight};
+    }
+
+    return {grid: halfBodyHeight, image: imageHeight};
   },
 });
