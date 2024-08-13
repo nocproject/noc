@@ -40,7 +40,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       xtype: "button",
       itemId: "detailsButton",
       text: __("Show details"),
-      glyph: NOC.glyph.eye,
+      glyph: NOC.glyph.eye_slash,
       enableToggle: true,
       pressed: false,
       toggleHandler: "showHideDetails",
@@ -52,6 +52,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       scrollable: "y",
       flex: 1,
       hidden: true,
+      allowDeselect: true,
       columns: [
         {
           text: __("Local Object"),
@@ -91,14 +92,9 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       flex: 1,
       layout: "auto",
       scrollable: true,
-      itemId: "schemePanel",
+      itemId: "commutationScheme",
     },
   ],
-  //
-  initComponent: function(){
-    var me = this;
-    me.callParent();
-  },
   //
   preview: function(response){
     var me = this,
@@ -111,7 +107,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
-      var container = me.down("[itemId=schemePanel]"),
+      var container = me.down("[itemId=commutationScheme]"),
         grid = me.down("grid"),
         svg = viz.renderSVGElement(data);
       
@@ -168,21 +164,15 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   onZoom: function(combo){
     var me = this,
-      imageComponent = me.down("#schemePanel");
+      imageComponent = me.down("#commutationScheme");
     imageComponent.getEl().dom.style.transformOrigin = "0 0";
     imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
   },
   //
-  svgToBase64: function(svgString){
-    var base64String = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
-    return base64String;
-  },
-  //
   afterGridRender: function(grid){
     var tabPanel = grid.up("tabpanel"),
-      imagePanel = tabPanel.down("#schemePanel");
-    
-    var {grid: gridHeight, image: imageHeight} = this.heightPanels(grid);
+      imagePanel = tabPanel.down("#commutationScheme"),
+      {grid: gridHeight, image: imageHeight} = this.heightPanels(grid);
 
     grid.setHeight(gridHeight);
     imagePanel.setHeight(imageHeight);    
