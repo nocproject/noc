@@ -481,6 +481,9 @@ class Config(BaseConfig):
         max_threads = IntParameter(default=10)
         objectmetrics_max_interval = SecondsParameter(default="3h")
 
+    class network_scan(ConfigSection):
+        purgatorium_ttl = SecondsParameter(default="4w")
+
     class path(ConfigSection):
         smilint = StringParameter()
         smidump = StringParameter()
