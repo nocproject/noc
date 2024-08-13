@@ -80,10 +80,16 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       listeners: {
         afterlayout: "afterGridRender",
         select: function(grid, record){
-          document.querySelector("g#" + record.id + " path").style.stroke="#f1c40f";
+          var element = document.querySelector("g#" + record.id + " path");
+          if(element){
+            element.style.stroke="#f1c40f";
+          }
         },
         deselect: function(grid, record){
-          document.querySelector("g#" + record.id + " path").style.stroke="black";
+          var element = document.querySelector("g#" + record.id + " path");
+          if(element){
+            element.style.stroke="black";
+          }
         },
       },
     },
