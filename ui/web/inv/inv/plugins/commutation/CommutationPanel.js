@@ -30,6 +30,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       ],
       width: 100,
       value: 1.0,
+      editable: false,
       valueField: "zoom",
       displayField: "label",
       listeners: {
@@ -44,6 +45,56 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       enableToggle: true,
       pressed: false,
       toggleHandler: "showHideDetails",
+    },
+    {
+      xtype: "combobox",
+      itemId: "filterCombo",
+      editable: false,
+      valueField: "id",
+      hidden: true,
+      width: 200,
+      triggers: {
+        clear: {
+          cls: "x-form-clear-trigger",
+          weight: -1,
+          hidden: true,
+          handler: function(combo){
+            var grid = combo.up("panel").down("grid");
+            combo.clearValue();
+            combo.getTrigger("clear").hide();
+            grid.getStore().clearFilter();
+          },
+        },
+      },
+      listConfig: {
+        minWidth: 300,
+      },
+      listeners: {
+        select: function(combo){
+          var grid = combo.up("panel").down("grid"),
+            store = grid.getStore(),
+            value = combo.getValue();
+          store.clearFilter();
+          store.filterBy(function(record){
+            return record.get("local_object") === value || record.get("remote_object") === value;
+          });
+        },
+        change: function(combo){
+          var grid = combo.up("panel").down("grid"),
+            value = combo.getValue();
+          if(value === ""){
+            grid.getStore().clearFilter();
+            combo.getTrigger("clear").hide();
+          } else{
+            combo.getTrigger("clear").show();
+          }
+        },
+        afterrender: function(combo){
+          if(!combo.getValue()){
+            combo.getTrigger("clear").hide();
+          }
+        },
+      },
     },
   ],
   items: [
@@ -105,8 +156,17 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   preview: function(response){
     var me = this,
       grid = me.down("grid"),
-      records = response.data || [];
+      filterCombo = me.down("#filterCombo"),
+      records = response.data || [],
+      comboData = me.joinForCombo(records);
+    grid.getStore().clearFilter();
     grid.getStore().loadData(records);
+    filterCombo.setStore(Ext.create("Ext.data.Store", {
+      fields: ["id", "text"],
+      data: comboData,
+    }));
+    filterCombo.setValue("");
+    filterCombo.getTrigger("clear").hide();
     me.renderScheme(response.viz);
   },
   //
@@ -186,15 +246,18 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   showHideDetails: function(button, pressed){
     var me = this,
+      filterCombo = me.up().down("#filterCombo"),
       grid = me.down("grid");
     if(pressed){
       button.setText(__("Hide details"));
       button.setGlyph(NOC.glyph.eye);
       grid.show();
+      filterCombo.show();
     } else{
       button.setText(__("Show details"));
       button.setGlyph(NOC.glyph.eye_slash);
       grid.getSelectionModel().deselectAll();
+      filterCombo.hide();
       grid.hide();
     }
   },
@@ -225,5 +288,16 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     }
 
     return {grid: halfBodyHeight, image: imageHeight};
+  },
+  //
+  joinForCombo: function(data){
+    var result = new Set();
+    
+    data.forEach(function(item){
+      result.add(JSON.stringify({id: item.local_object, text: item.local_object__label}));
+      result.add(JSON.stringify({id: item.remote_object, text: item.remote_object__label}));
+    });
+
+    return Array.from(result).map(item => JSON.parse(item));
   },
 });

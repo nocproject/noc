@@ -40,6 +40,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       value: 1.0,
       valueField: "zoom",
       displayField: "label",
+      editable: false,
       listeners: {
         scope: me,
         select: me.onZoom,

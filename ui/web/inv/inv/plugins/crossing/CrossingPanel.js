@@ -31,6 +31,7 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
       width: 100,
       value: 1.0,
       valueField: "zoom",
+      editable: false,
       displayField: "label",
       listeners: {
         select: "onZoom",

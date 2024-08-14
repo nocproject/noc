@@ -39,6 +39,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       value: 1.0,
       valueField: "zoom",
       displayField: "label",
+      editable: false,
       listeners: {
         select: "onZoom",
       },    
