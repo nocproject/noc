@@ -101,7 +101,7 @@ class StatusTransferRules(EmbeddedDocument):
     status = EnumField(Status, required=False)
     weight = IntField(min_value=0)
     ignore = BooleanField(default=False)
-    to_status = EnumField(Status, required=True)
+    to_status = EnumField(Status, required=False)
 
 
 @Label.model
@@ -276,6 +276,9 @@ class Service(Document):
         mo = self.get_managed_object()
         if mo:
             ServiceSummary.refresh_object(mo)
+
+    def iter_adjacency_services(self):
+        ...
 
     def set_oper_status(self, status: Status, timestamp: Optional[datetime.datetime] = None):
         """

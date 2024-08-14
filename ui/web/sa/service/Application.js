@@ -21,6 +21,7 @@ Ext.define("NOC.sa.service.Application", {
     "NOC.inv.capability.LookupField",
     "NOC.inv.resourcegroup.LookupField",
     "NOC.core.label.LabelField",
+    'NOC.core.combotree.ComboTree',
     "Ext.ux.form.GridField",
   ],
   model: "NOC.sa.service.Model",
@@ -131,6 +132,13 @@ Ext.define("NOC.sa.service.Application", {
           xtype: "statefield",
           fieldLabel: __("State"),
           allowBlank: true,
+        },
+        {
+            name: "name_template",
+            xtype: "textfield",
+            fieldLabel: __("Name Template"),
+            allowBlank: true,
+            uiStyle: "large"
         },
         {
           name: "description",
@@ -338,7 +346,7 @@ Ext.define("NOC.sa.service.Application", {
               }
             },
             {
-              name: "status_transfer_rule",
+              name: "status_transfer_rules",
               fieldLabel: __("Status Transfer Rule"),
               xtype: "gridfield",
               allowBlank: true,
@@ -727,6 +735,12 @@ Ext.define("NOC.sa.service.Application", {
       name: "profile",
       ftype: "lookup",
       lookup: "sa.serviceprofile",
+    },
+    {
+        title: __("By Service Group"),
+        name: 'effective_service_groups',
+        ftype: "tree",
+        lookup: "inv.resourcegroup",
     },
     {
       title: __("By Subscriber"),

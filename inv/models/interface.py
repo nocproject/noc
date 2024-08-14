@@ -160,7 +160,7 @@ class Interface(Document):
     def service(self):
         from noc.sa.models.serviceinstance import ServiceInstance
 
-        si = ServiceInstance.objects.filter(interface_id=self.id).first()
+        si = ServiceInstance.objects.filter(resources__in=[f"i:{self.id}"]).first()
         if si:
             return si.service
         return

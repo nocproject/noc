@@ -20,6 +20,10 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
+            name: "name_template",
+            type: "string"
+        },
+        {
             name: "state",
             type: "string"
         },
