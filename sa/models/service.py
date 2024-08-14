@@ -81,6 +81,7 @@ class Service(Document):
             "static_client_groups",
             "effective_client_groups",
             "labels",
+            "state",
             "effective_labels",
         ],
     }
