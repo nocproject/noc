@@ -27,7 +27,7 @@ from noc.core.checkers.base import Check, CheckResult
 from noc.config import config
 from noc.core.jsonutils import iter_chunks
 from ..models.streaming import StreamingConfig
-
+from ..models.controller import ControllerConfig
 
 router = APIRouter()
 
@@ -62,30 +62,33 @@ class ActivatorAPI(JSONRPCAPI):
         session_idle_timeout: Optional[int] = None,
         streaming: Optional[StreamingConfig] = None,
         return_metrics: bool = False,
+        controller: Optional[ControllerConfig] = None,
     ):
         """
         Execute SA script
-        :param name: Script name (with profile)
-        :param credentials:
-            Dict containing following fields
-            * cli_protocol - CLI protocol (telnet, ssh)
-            * address - IP address
-            * cli_port (optional) - Non-standard CLI port
-            * user (optional) - Login as user
-            * password (optional) - User password
-            * super_password (optional) - Enable password
-            * snmp_version (optional) - Use SNMP version (None, v2c)
-            * snmp_ro (optional) - Use SNMP R/O community
-            * path (optional) - unstructured path
-            * snmp_rate_limit (optional) - limit of outgoing snmp requests (float, in requests per second)
-        :param capabilities: Dict of discovered capabilities
-        :param version: Dict of discovered version
-        :param timeout: Script timeout, in seconds
-        :param session: Unique session id to share CLI stream
-        :param session_idle_timeout: Hold CLI stream up to
+        Args:
+            name: Script name (with profile)
+            credentials:
+                Dict containing following fields
+                    * cli_protocol - CLI protocol (telnet, ssh)
+                    * address - IP address
+                    * cli_port (optional) - Non-standard CLI port
+                    * user (optional) - Login as user
+                    * password (optional) - User password
+                    * super_password (optional) - Enable password
+                    * snmp_version (optional) - Use SNMP version (None, v2c)
+                    * snmp_ro (optional) - Use SNMP R/O community
+                    * path (optional) - unstructured path
+                    * snmp_rate_limit (optional) - limit of outgoing snmp requests (float, in requests per second)
+            capabilities: Dict of discovered capabilities
+            version: Dict of discovered version
+            timeout: Script timeout, in seconds
+            session: Unique session id to share CLI stream
+            session_idle_timeout: Hold CLI stream up to
             session_idle_timeout seconds after script completion
-        :param streaming: Send result to stream for processed on service
-        :param return_metrics: Return execution metrics
+            streaming: Send result to stream for processed on service
+            return_metrics: Return execution metrics
+            controller: Controller device credential for execute script
         """
         script_class = loader.get_script(name)
         if not script_class:
@@ -93,6 +96,8 @@ class ActivatorAPI(JSONRPCAPI):
             raise APIError(f"Invalid script: {name}")
         if streaming:
             streaming = StreamingConfig(**streaming)
+        if controller:
+            controller = ControllerConfig(**controller)
         script = script_class(
             service=self.service,
             credentials=credentials,
@@ -104,6 +109,7 @@ class ActivatorAPI(JSONRPCAPI):
             session=session,
             session_idle_timeout=session_idle_timeout,
             streaming=streaming,
+            controller=controller,
         )
         try:
             result = script.run()

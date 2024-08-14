@@ -38,6 +38,7 @@ from noc.core.script.scheme import (
 )
 from noc.core.mongo.connection import connect
 from noc.core.comp import smart_text, smart_bytes
+from noc.services.activator.models.controller import ControllerConfig
 
 BEEF_FORMAT = "1"
 CLI_ENCODING = "quopri"
@@ -141,6 +142,7 @@ class Command(BaseCommand):
             version = None
         # Run script
         service = ServiceStub(pool=obj.pool.name)
+        controller = obj.get_controller_credentials()
         scr = script_class(
             service=service,
             credentials=credentials,
@@ -149,6 +151,7 @@ class Command(BaseCommand):
             version=version,
             timeout=3600,
             name=script,
+            controller=ControllerConfig(**controller) if controller else None,
         )
         span_sample = 1 if update_spec or beef_output else 0
         result = ""
@@ -471,6 +474,7 @@ class JSONObject(object):
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
         self.version = VersionStub(data["version"]) if "version" in data else None
         self.software_image = data["image"] if "image" in data else None
+        self.controller = None
         self.managedobjectattribute_set = data["attributes"] if "attributes" in data else None
 
     @property
@@ -501,6 +505,9 @@ class JSONObject(object):
 
     def get_access_preference(self):
         return self.access_preference
+
+    def get_controller_credentials(self):
+        return None
 
 
 class StorageStub(object):

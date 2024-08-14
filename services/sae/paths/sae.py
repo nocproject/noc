@@ -61,7 +61,7 @@ class SAEAPI(JSONRPCAPI):
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
-            mo.caps, mo.diagnostics, mo.state,
+            mo.caps, mo.diagnostics, mo.state, mo.controller_id,
             mo.snmp_security_level, mo.snmp_username, mo.snmp_auth_proto,
             mo.snmp_auth_key, mo.snmp_priv_proto, mo.snmp_priv_key,
             mo.snmp_ctx_name,
@@ -139,6 +139,7 @@ class SAEAPI(JSONRPCAPI):
                 None,  # session_timeout
                 streaming,
                 return_metrics,
+                data["controller"],
             ],
         )
 
@@ -203,6 +204,7 @@ class SAEAPI(JSONRPCAPI):
             caps,
             diagnostics,
             state,
+            controller,
             snmp_security_level,
             snmp_username,
             snmp_auth_proto,
@@ -324,12 +326,24 @@ class SAEAPI(JSONRPCAPI):
                 storage = ExtStorage.get_by_id(beef_storage_id)
                 credentials["beef_storage_url"] = storage.url
                 credentials["beef_path"] = beef_path
+        # Controller processing
+        if controller:
+            controller = ManagedObject.get_by_id(controller)
+            if controller and controller.address:
+                controller = {
+                    "local_id": "",
+                    "address": controller.address,
+                    "port": controller.port,
+                    "user": controller.credentials.user,
+                    "password": controller.credentials.password,
+                }
         return dict(
             profile=Profile.get_by_id(profile).name,
             pool_id=pool_id,
             credentials=credentials,
             capabilities=capabilities,
             version=version,
+            controller=controller,
         )
 
 

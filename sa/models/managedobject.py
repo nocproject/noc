@@ -149,7 +149,7 @@ from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 51
-CREDENTIAL_CACHE_VERSION = 7
+CREDENTIAL_CACHE_VERSION = 8
 
 
 @dataclass(frozen=True)
@@ -469,7 +469,7 @@ class ManagedObject(NOCModel):
     # Reference to CPE
     cpe_id = DocumentReferenceField("inv.CPE", null=True, blank=True)
     # Reference to controller, when object is CPE
-    controller = ForeignKey(
+    controller: "ManagedObject" = ForeignKey(
         "self", verbose_name="Controller", blank=True, null=True, on_delete=CASCADE
     )
     # Stencils
@@ -2995,6 +2995,17 @@ class ManagedObject(NOCModel):
                 setattr(self, field, value)
                 changed = True
         return changed
+
+    def get_controller_credentials(self):
+        if not self.controller:
+            return None
+        return {
+            "local_id": "",
+            "address": self.controller.address,
+            "port": self.controller.port,
+            "user": self.controller.credentials.user,
+            "password": self.controller.credentials.password,
+        }
 
 
 @on_save
