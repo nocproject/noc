@@ -494,7 +494,7 @@ class Service(Document):
     def get_managed_object(self):
         for si in ServiceInstance.objects.filter(
             service__in=self.service_path, managed_object__exists=True
-        ).first():
+        ):
             if si.managed_object:
                 return si.managed_object
         return None
