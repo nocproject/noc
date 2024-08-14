@@ -63,6 +63,7 @@ class ServiceInstance(Document):
             "managed_object",
             "addresses.address",
             "resources",
+            {"fields": ["service", "managed_object", "remote_id", "port"], "unique": True},
             ("addresses.address_bin", "port"),
         ],
     }
@@ -74,7 +75,7 @@ class ServiceInstance(Document):
     # ? discriminator
     # Sources that find sensor
     sources = ListField(StringField(choices=list(SOURCES)))
-    port = IntField(min_value=0, max_value=65536)
+    port = IntField(min_value=0, max_value=65536, default=0)
     addresses: List[AddressItem] = EmbeddedDocumentListField(AddressItem)
     # NRI port id, converted by portmapper to native name
     nri_port = StringField()

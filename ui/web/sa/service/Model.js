@@ -165,6 +165,24 @@ Ext.define("NOC.sa.service.Model", {
             type: "auto"
         },
         {
+            name: "status_transfer_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "status_transfer_rules",
+            type: "auto"
+        },
+        {
+            name: "calculate_status_function",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "calculate_status_rule",
+            type: "auto"
+        },
+        {
             name: "instances",
             type: "auto"
         },

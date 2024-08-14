@@ -27,6 +27,7 @@ from mongoengine.fields import (
     ObjectIdField,
     IntField,
     EnumField,
+    BooleanField,
 )
 from mongoengine.queryset.visitor import Q as m_q
 import cachetools
@@ -35,7 +36,7 @@ import cachetools
 from .serviceprofile import ServiceProfile, Status
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_save, on_delete, on_delete_check
+from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
@@ -67,13 +68,48 @@ class Instance(EmbeddedDocument):
     port_range = StringField()
 
 
+class CalculatedStatusRule(EmbeddedDocument):
+    weight_function = StringField(
+        choices=[
+            ("C", "Count"),
+            ("CP", "Percent"),
+            ("MIN", "Minimal"),
+            ("MAX", "Maximum"),
+        ]
+    )
+    op = StringField(choices=["=", ">=", "<="], default="=")
+    weight = IntField(min_value=0)
+    status = EnumField(Status)
+    # Capabilities
+    to_status = EnumField(Status, required=True)
+
+
+class StatusTransferRules(EmbeddedDocument):
+    service = PlainReferenceField("sa.Service", required=False)
+    resource_group = ReferenceField(ResourceGroup, required=False)
+    direction = StringField(
+        choices=[
+            ("A", "Any"),
+            ("T", "To"),
+            ("F", "From"),
+            # ("UP", "Parent")
+            # ("Children", "Parent")
+        ],
+        default="A",
+    )
+    op = StringField(choices=["=", ">=", "<="], default="=")
+    status = EnumField(Status, required=False)
+    weight = IntField(min_value=0)
+    ignore = BooleanField(default=False)
+    to_status = EnumField(Status, required=True)
+
+
 @Label.model
 @bi_sync
 @on_save
 @resourcegroup
 @change
 @workflow
-@on_delete
 @on_delete_check(
     clean=[
         ("phone.PhoneNumber", "service"),
@@ -118,6 +154,23 @@ class Service(Document):
     #
     oper_status = EnumField(Status, default=Status.UNKNOWN)
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
+    # Service oper status settings
+    status_transfer_policy = StringField(
+        choices=[("R", "By Rule"), ("T", "Transparent"), ("D", "Disable"), ("P", "Profile")],
+        default="P",
+    )
+    status_transfer_rules = EmbeddedDocumentListField(StatusTransferRules)
+    #
+    calculate_status_function = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("P", "By Profile"),
+            # MIN/MAX
+            ("R", "By Rule"),
+        ],
+        default="P",
+    )
+    calculate_status_rule = EmbeddedDocumentListField(CalculatedStatusRule)
     #
     # maintenance
     service_path = ListField(ObjectIdField())
@@ -198,15 +251,14 @@ class Service(Document):
 
     @property
     def managed_object(self):
-        si = self.get_instances()
-        return si.managed_object
+        for si in self.get_instances():
+            if si.managed_object:
+                return si.managed_object
 
     def __str__(self):
-        return str(self.id) if self.id else "new service"
-
-    def on_delete(self):
-        if self.nri_port:
-            self.unbind_interface()
+        if self.label:
+            return self.label
+        return str(self.id) if self.id else "new"
 
     def on_save(self):
         # if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
@@ -435,18 +487,17 @@ class Service(Document):
         return q
 
     def unbind_interface(self):
-        from noc.inv.models.interface import Interface
-
-        Interface._get_collection().update_many({"service": self.id}, {"$unset": {"service": ""}})
+        # from noc.inv.models.interface import Interface
+        # Interface._get_collection().update_many({"service": self.id}, {"$unset": {"service": ""}})
         self._refresh_managed_object()
 
     def get_managed_object(self):
-        from noc.sa.models.serviceinstance import ServiceInstance
-
-        si = ServiceInstance.objects.filter(
+        for si in ServiceInstance.objects.filter(
             service__in=self.service_path, managed_object__exists=True
-        ).first()
-        return si.managed_object
+        ).first():
+            if si.managed_object:
+                return si.managed_object
+        return None
 
     def get_caps(self) -> Dict[str, Any]:
         return CapsItem.get_caps(self.caps, self.profile.caps)
@@ -532,7 +583,7 @@ class Service(Document):
 
     @property
     def interface(self):
-        si = ServiceInstance.objects.filter(service=self.id, interface_id__exists=True).first()
+        si = ServiceInstance.objects.filter(service=self.id, managed_object__exists=True).first()
         if si:
             return si.interface
         return
