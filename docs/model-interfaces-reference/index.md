@@ -14,10 +14,13 @@ and how they find application in various scenarios.
 | [agent]()                   | NOC Agent's bindings                                                           |
 | [airflow](airflow.md)       | Airflow direction for cooling                                                  |
 | [asset](asset.md)           | Inventory reference, asset, and serial numbers                                 |
+| [caps](caps.md)             | Object's capabilities                                                          |
 | [contacts](contacts.md)     | Administrative, billing and technical contacts for container (PoP, Room, Rack) |
 | [container](container.md)   | Denotes object containers                                                      |
+| [cpe](cpe.md)               | CPE bindings                                                                   |
 | [cpu](cpu.md)               | CPU capabilities                                                               |
 | [dimensions](dimensions.md) | Physical dimensions, like length, width, and height                            |
+| [dwdm](dwdm.md)             | DWDM transponders capabilities                                                 |
 | [geopoint](geopoint.md)     | Geographical coordinates                                                       |
 | [hwlimits](hwlimits.md)     | Hardware limits of the devices                                                 |
 | [length](length.md)         | Cable length                                                                   |
