@@ -329,21 +329,13 @@ class SAEAPI(JSONRPCAPI):
         # Controller processing
         if controller:
             controller = ManagedObject.get_by_id(controller)
-            if controller and controller.address:
-                controller = {
-                    "local_id": "",
-                    "address": controller.address,
-                    "port": controller.port,
-                    "user": controller.credentials.user,
-                    "password": controller.credentials.password,
-                }
         return dict(
             profile=Profile.get_by_id(profile).name,
             pool_id=pool_id,
             credentials=credentials,
             capabilities=capabilities,
             version=version,
-            controller=controller,
+            controller=controller.get_controller_credentials() if controller else None,
         )
 
 

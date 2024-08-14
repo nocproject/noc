@@ -2997,10 +2997,11 @@ class ManagedObject(NOCModel):
         return changed
 
     def get_controller_credentials(self):
-        if not self.controller:
+        caps = self.get_caps()
+        if not self.controller or "Controller | LocalId" not in caps:
             return None
         return {
-            "local_id": "",
+            "local_id": caps["Controller | LocalId"],
             "address": self.controller.address,
             "port": self.controller.port,
             "user": self.controller.credentials.user,

@@ -20,6 +20,7 @@ class ControllerConfig(object):
         user: Username on controller for access
         password:
     """
+
     local_id: str
     address: str
     port: Optional[int] = None
