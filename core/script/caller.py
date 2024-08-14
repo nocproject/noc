@@ -84,6 +84,7 @@ class Session(object):
             self._idle_timeout,
             streaming,
             return_metrics,
+            data["controller"],
         )
 
     def close(self):
