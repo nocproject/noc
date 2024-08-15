@@ -1,0 +1,22 @@
+{
+    "name": "caps",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "96c34121-b434-45c0-ae65-0e0ae2c31b42",
+    "description": "Object capabiities",
+    "attrs": [
+        {
+            "name": "dynamic_crossing",
+            "type": "bool",
+            "description": "Object supports dynamic crossing",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "multi_slot",
+            "type": "int",
+            "description": "An oversized card which occupies multiple slots",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}
