@@ -134,6 +134,7 @@ class ExtDocApplication(ExtApplication):
             self.has_uuid
             and hasattr(self.model, "to_json")
             and not hasattr(self, "api_to_json")
+            and not hasattr(self, "api_save_json")
             and not hasattr(self, "api_json")
         ):
             self.add_view(
@@ -142,6 +143,14 @@ class ExtDocApplication(ExtApplication):
                 url=r"^(?P<id>[0-9a-f]{24})/json/$",
                 method=["GET"],
                 access="read",
+                api=True,
+            )
+            self.add_view(
+                "api_save_json",
+                self._api_save_json,
+                url=r"^(?P<id>[0-9a-f]{24})/json/$",
+                method=["POST"],
+                access="write",
                 api=True,
             )
             self.add_view(
@@ -577,6 +586,17 @@ class ExtDocApplication(ExtApplication):
         """
         o = self.get_object_or_404(self.model, id=id)
         return o.to_json()
+
+    def _api_save_json(self, requiest, id):
+        """
+        Overwrite json
+        """
+        o = self.get_object_or_404(self.model, id=id)
+        with open(
+            os.path.join("collections", self.model._meta["json_collection"], o.get_json_path()), "w"
+        ) as fp:
+            fp.write(o.to_json())
+        return {"status": True}
 
     def _api_share_info(self, request, id):
         """

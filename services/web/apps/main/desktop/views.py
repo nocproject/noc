@@ -7,6 +7,7 @@
 
 # NOC modules
 import datetime
+import os
 
 # Third-party modules
 from django.http import HttpResponse
@@ -140,7 +141,11 @@ class DesktopApplication(ExtApplication):
             "favicon_mime": favicon_mime,
             "favicon_url": favicon_url,
             "enable_search": enable_search,
-            "collections": {"allow_sharing": config.collections.allow_sharing},
+            "collections": {
+                "allow_sharing": config.collections.allow_sharing,
+                "allow_overwrite": config.collections.allow_overwrite
+                and os.access("collections", os.W_OK),
+            },
             "gis": {
                 "yandex_supported": config.gis.yandex_supported,
                 "base": {
