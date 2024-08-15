@@ -1,0 +1,62 @@
+{
+    "name": "Object Summary",
+    "$collection": "main.reports",
+    "uuid": "6c746d0d-1cc7-411a-a402-6647c1791846",
+    "title": "Object Summary (New)",
+    "description": "Сводка по объектам",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "objectsummaryds",
+                "json": null
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "column_format": [
+                {
+                    "name": "category",
+                    "title": "Category",
+                    "format_type": "string"
+                },
+                {
+                    "name": "quantity",
+                    "title": "Quantity",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "sa",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сводка по объектам (Новый)"
+        }
+    },
+    "parameters": [
+        {
+            "name": "report_type",
+            "description": null,
+            "choices": ["profile", "domain", "domain-profile", "label", "platform", "version"],
+            "hide": false,
+            "label": "Report Type",
+            "required": true,
+            "type": "choice"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": false,
+            "is_alterable_output": true,
+            "output_type": "csv"
+        }
+    ]
+}
