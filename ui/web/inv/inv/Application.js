@@ -91,6 +91,13 @@ Ext.define("NOC.inv.inv.Application", {
             menu: {},
           },
           onWidgetAttach: function(col, widget, record){
+            var navTree = this.up("treepanel");
+            
+            if(navTree.getSelectionModel().isSelected(record)){
+              widget.show();
+            } else{
+              widget.hide();
+            }
             widget.setMenu({
               xtype: "menu",
               plain: true,
@@ -167,11 +174,7 @@ Ext.define("NOC.inv.inv.Application", {
         },
       },
     });
-    me.navTree.getView().on("drop", me.onNavDrop, me);
-    me.navTree.on("select", function(selModel){
-      me.selectedModel = selModel;
-    });
-
+    me.navTree.getView().on("beforedrop", me.onNavDrop, me);
     me.tabPanel = Ext.create("Ext.tab.Panel", {
       region: "center",
       layout: "fit",
@@ -298,7 +301,7 @@ Ext.define("NOC.inv.inv.Application", {
       vwidgetColumn = rowModel.view.getHeaderCt().down('widgetcolumn'),
       widget = vwidgetColumn.getWidget(record),
       menu = widget.getMenu();
-    
+
     if(widget){
       var innerCells = widget.getEl().up(".x-grid-row");
       Ext.each(innerCells.query(".x-grid-cell-inner"), function(cell){
@@ -430,8 +433,9 @@ Ext.define("NOC.inv.inv.Application", {
     var sel,
       me = this,
       container = null;
-    if(me.selectedModel){
-      sel = me.selectedModel.getSelection();
+    
+    if(me.navTree.getSelectionModel().hasSelection()){
+      sel = me.navTree.getSelectionModel().getSelection();
     }
     if(!Ext.isEmpty(sel)){
       container = sel[0];
@@ -440,26 +444,131 @@ Ext.define("NOC.inv.inv.Application", {
     i.setContainer(container);
   },
   //
-  onNavDrop: function(node, data, overModel, dropPosition){
-    var me = this,
-      objects = data.records.map(function(r){
-        return r.get("id")
+  onNavDrop: function(node, data, overModel, dropPosition, dropHandlers){
+    var itemId,
+      me = this;
+    
+    if(!Ext.isEmpty(data.records)){
+      itemId = data.records[0].get("id");
+      dropHandlers.wait = true;
+      Ext.Ajax.request({
+        url: "/inv/inv/attach/",
+        method: "POST",
+        jsonData: {
+          item: itemId,
+          container: overModel.get("id"),
+        },
+        scope: me,
+        success: function(response){
+          var data = Ext.decode(response.responseText);
+          if(Object.prototype.hasOwnProperty.call(data, "choices")){
+            // open popup with choices
+            Ext.create("Ext.window.Window", {
+              autoShow: true,
+              title: __("Attach to"),
+              height: 400,
+              width: 800,
+              layout: "fit",
+              modal: true,
+              items: [
+                {
+                  xtype: "form",
+                  bodyPadding: 10,
+                  layout: "anchor",
+                  scrollable: true,
+                  defaults: {
+                    anchor: "100%",
+                    labelWidth: 200,
+                  },
+                  items: [
+                    {
+                      xtype: "treepanel",
+                      displayField: "name",
+                      rootVisible: false,
+                      useArrows: true,
+                      loadMask: true,
+                      allowDeselect: true,
+                      store: Ext.create("Ext.data.TreeStore", {
+                        root: data.choices,
+                      }),
+                      listeners: {
+                        beforeselect: function(tree, record){
+                          return record.get("leaf");
+                        },
+                        select: function(){
+                          this.up("form").down("#attachBtn").setDisabled(false);
+                        },
+                        deselect: function(){
+                          this.up("form").down("#attachBtn").setDisabled(true);
+                        },
+                      },
+                    },
+                  ],
+                  buttons: [
+                    {
+                      text: __("Attach"),
+                      itemId: "attachBtn",
+                      disabled: true,
+                      glyph: NOC.glyph.check,
+                      handler: function(){
+                        var tree = this.up("form").down("treepanel"),
+                          sel = tree.getSelectionModel().getSelection();
+                        if(sel.length > 0){
+                          Ext.Ajax.request({
+                            url: "/inv/inv/attach/",
+                            method: "POST",
+                            jsonData: {
+                              item: itemId,
+                              container: overModel.get("id"),
+                              choice: sel[0].get("id"),
+                            },
+                            scope: this,
+                            success: function(response){
+                              var data = Ext.decode(response.responseText);
+                              NOC.info(data.message); 
+                              this.up("window").close();
+                              me.onReloadNav();
+                            },
+                            failure: function(response){
+                              var data = Ext.decode(response.responseText);
+                              dropHandlers.cancelDrop();
+                              if(data.status === false){
+                                NOC.error(__(data.message));
+                                return;
+                              }
+                              NOC.error(__("HTTP request failed."));
+                            },
+                          });
+                        }
+                      },
+                    },
+                    {
+                      text: __("Cancel"),
+                      glyph: NOC.glyph.times,
+                      handler: function(){
+                        dropHandlers.cancelDrop();
+                        this.up("window").close();
+                      },
+                    },
+                  ],
+                },
+              ],
+            });
+          } else if(Object.prototype.hasOwnProperty.call(data, "status") && data.status){
+            NOC.info(data.message);
+          }
+        },
+        failure: function(response){
+          var data = Ext.decode(response.responseText);
+          dropHandlers.cancelDrop();
+          if(data.status === false){
+            NOC.error(data.message);
+            return;
+          }
+          NOC.error(__("HTTP request failed."));
+        },
       });
-    Ext.Ajax.request({
-      url: "/inv/inv/insert/",
-      method: "POST",
-      jsonData: {
-        objects: objects,
-        container: overModel.get("id"),
-        position: dropPosition,
-      },
-      scope: me,
-      success: function(){
-      },
-      failure: function(){
-        NOC.error(__("Failed to move"));
-      },
-    });
+    }
   },
   //
   onRemoveGroup: function(){
