@@ -8,13 +8,15 @@
 # Python modules
 import inspect
 import os
-from typing import Optional, Dict, List, Any, Tuple
+from typing import Optional, Dict, List, Any, Tuple, Set
+import math
 
 # Third-party modules
 from mongoengine import ValidationError
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
+from noc.core.resource import from_resource
 from noc.inv.models.object import Object
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.objectmodel import ObjectModel
@@ -82,7 +84,14 @@ class InvApplication(ExtApplication):
                 if not parent:
                     return self.response_not_found()
                 children = [
-                    (o.parent_connection if o.parent_connection else o.name, o)
+                    (
+                        (
+                            f"{o.parent_connection} [{o.model.get_short_label()}]"
+                            if o.parent_connection
+                            else o.name
+                        ),
+                        o,
+                    )
                     for o in parent.iter_children()
                 ]
             elif parent == "root":
@@ -123,13 +132,14 @@ class InvApplication(ExtApplication):
                 "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
             }
             plugins = []
-            if o.has_children:
+            if o.is_container or o.has_children:
+                # n["expanded"] = Object.objects.filter(container=o.id).count() == 1
                 n["expanded"] = False
             else:
                 n["leaf"] = True
             if o.model.front_facade or o.model.rear_facade:
                 plugins.append(self.get_plugin_data("facade"))
-            if o.get_data("rack", "units"):
+            if o.is_rack:
                 plugins.append(self.get_plugin_data("rack"))
             if o.model.connections:
                 plugins.append(self.get_plugin_data("inventory"))
@@ -167,6 +177,225 @@ class InvApplication(ExtApplication):
                 n["iconCls"] = icon_cls
             r.append(n)
         return r
+
+    @view(
+        "^attach/$",
+        method=["POST"],
+        access="create_group",
+        api=True,
+        validate={
+            "container": ObjectIdParameter(),
+            "item": ObjectIdParameter(),
+            "choice": StringParameter(required=False),
+        },
+    )
+    def api_attach(self, request, container: str, item: str, choice: Optional[str] = None):
+        c_obj = self.get_object_or_404(Object, id=container)
+        i_obj = self.get_object_or_404(Object, id=item)
+        if c_obj.is_rack and i_obj.is_rackmount and not (choice and choice == "---"):
+            return self._attach_rack(c_obj, i_obj, choice=choice)
+        if c_obj.is_container:
+            return self._attach_container(c_obj, i_obj, choice=choice)
+        if any(True for cn in c_obj.model.connections if cn.is_inner):
+            return self._attach_inner(c_obj, i_obj, choice=choice)
+        return self.render_json(
+            {"status": False, "message": "Selected objects cannot be connected"}, status=400
+        )
+
+    def _attach_rack(self, container: Object, item: Object, choice: Optional[str] = None):
+        """Insert item into rack."""
+
+        def attach():
+            # Check choice
+            try:
+                side, pos = choice.split("-")
+                pos = int(pos)
+            except ValueError:
+                return self.render_json({"status": False, "message": "Invalid position"})
+            # Check side
+            if side not in ("f", "r"):
+                return self.render_json({"status": False, "message": "Invalid side"})
+            # Get free units
+            free = get_side_free_units(side)
+            # Get occupied units
+            units = math.ceil(item.get_data("rackmount", "units"))
+            occupied = set(range(pos, pos + units + 1))
+            if not occupied.issubset(free):
+                return self.render_json({"status": False, "message": "Space is busy"})
+            # Attach to rack
+            item.parent = container
+            item.parent_connection = None
+            # Set position
+            item.set_data("rackmount", "position", pos)
+            item.set_data("rackmount", "side", side)
+            item.save()
+            return self.render_json({"status": True, "message": "Placed to rack"}, status=200)
+
+        def get_occupied_units(obj: Object) -> Optional[Set[int]]:
+            """Get units occupied by object."""
+            #  Get position
+            o_pos = obj.get_data("rackmount", "position")
+            if not o_pos:
+                return None
+            # Get size in units
+            units = obj.get_data("rackmount", "units")
+            if not units:
+                return None
+            has_shift = bool(obj.get_data("rackmount", "shift"))
+            # Top position
+            top = o_pos + math.ceil(units)
+            if has_shift:
+                top += 1
+            # Mark as occupied
+            return set(range(o_pos, top + 1))
+
+        def get_side_free_units(side: str) -> Set[int]:
+            free = set(range(1, container.get_data("rack", "units") + 1))
+            # Process nested items
+            for obj in container.iter_children():
+                # Check side
+                o_side = obj.get_data("rackmount", "side")
+                if not o_side or o_side != side:
+                    continue
+                # Occupied units
+                occupied = get_occupied_units(obj)
+                if occupied:
+                    free -= occupied
+            return free
+
+        def get_adjanced_available(free: Set[int]) -> Set[int]:
+            """
+            Return only units which have at least `units` free space above.
+            """
+            units = math.ceil(item.get_data("rackmount", "units"))
+            r: Set[int] = set()
+            for u in free:
+                for nu in range(u, u + units):
+                    if nu not in free:
+                        break
+                else:
+                    r.add(u)
+            return r
+
+        def get_choices():
+            def get_side_items(side: str) -> List[Dict[str, Any]]:
+                # Generate items
+                return [
+                    {"id": f"{side}-{n}", "name": str(n), "leaf": True}
+                    for n in sorted(get_adjanced_available(get_side_free_units(side)), reverse=True)
+                ]
+
+            children = [
+                {"id": "---", "name": "Put into", "iconCls": "fa fa-download", "leaf": True}
+            ]
+            front_items = get_side_items("f")
+            if front_items:
+                children.append(
+                    {
+                        "name": "Front",
+                        "iconCls": "fa fa-hand-o-right",
+                        "children": front_items,
+                        "expanded": True,
+                    }
+                )
+            rear_items = get_side_items("r")
+            if rear_items:
+                children.append(
+                    {
+                        "name": "Rear",
+                        "iconCls": "fa fa-hand-o-left",
+                        "children": rear_items,
+                        "expanded": True,
+                    }
+                )
+
+            return {"children": children, "expanded": True}
+
+        if choice:
+            return attach()
+        return {"choices": get_choices()}
+
+    def _attach_container(self, container: Object, item: Object, choice: Optional[str] = None):
+        """Insert item into container."""
+        item.put_into(container)
+        return {
+            "status": True,
+            "message": "Item have been moved",
+        }
+
+    def _attach_inner(self, container: Object, item: Object, choice: Optional[str] = None):
+        """Insert item into chassis/module."""
+
+        def attach():
+            # Dereference
+            obj: Object
+            obj, name = from_resource(choice)
+            if not obj:
+                return self.render_json({"status": False, "message": "Not found"}, status=400)
+            # Get connection
+            cn = obj.model.get_model_connection(name)
+            if not cn:
+                return self.render_json({"status": False, "message": "Not found"}, status=400)
+            # Check compatibility
+            is_compatible, msg = obj.model.check_connection(cn, outer)
+            if not is_compatible:
+                return self.render_json(
+                    {"status": False, "message": f"Not compatible: {msg}"}, status=400
+                )
+            # Check if free
+            if Object.objects.filter(parent=obj.id, parent_connection=name).first():
+                return self.render_json(
+                    {"status": False, "message": f"Slot {name} is occupied"}, status=400
+                )
+            # Connect
+            item.parent = obj
+            item.parent_connection = name
+            item.save()
+            return self.render_json({"status": True, "message": "Placed to rack"}, status=200)
+
+        def get_free(obj: Object) -> Optional[Dict[str, Any]]:
+            # Label
+            if obj.parent_connection:
+                label = f"{obj.parent_connection} [{obj.model.get_short_label()}]"
+            else:
+                label = obj.model.get_short_label()
+            # Prepare Node
+            r = {"iconCls": obj.model.glyph_css_class, "name": label}
+            # Get used slots
+            used_slots = {o.parent_connection for o in Object.objects.filter(parent=obj.id)}
+            # Add slots
+            c_data = []
+            for cn in obj.model.connections:
+                if not cn.is_inner or cn.name in used_slots:
+                    continue
+                # Check compatibility
+                is_compatible, _ = ObjectModel.check_connection(cn, outer)
+                if not is_compatible:
+                    continue
+                # Add candidate
+                c_data.append({"id": f"o:{obj.id}:{cn.name}", "name": cn.name, "leaf": True})
+            # Process children
+            for child in obj.iter_children():
+                cf = get_free(child)
+                if cf:
+                    c_data.append(cf)
+            # Finalize
+            if c_data:
+                r["expanded"] = True
+                r["children"] = c_data
+                return r
+            return None
+
+        outer = item.model.get_outer()
+        if not outer:
+            return self.render_json({"status": False, "message": "Cannot connect"}, status=400)
+        if choice:
+            return attach()
+        # Build choices
+        r = get_free(container)
+        if r:
+            return {"choices": {"children": [r], "expanded": True}}
+        return self.render_json({"status": False, "message": "Cannot connect"}, status=400)
 
     @view(
         "^add_group/$",

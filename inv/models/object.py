@@ -403,6 +403,16 @@ class Object(Document):
         """
         return bool(self.get_data("container", "container"))
 
+    @property
+    def is_rack(self) -> bool:
+        """Check if object is rack."""
+        return bool(self.get_data("rack", "units"))
+
+    @property
+    def is_rackmount(self) -> bool:
+        """Check if object is rack-mountable"""
+        return bool(self.get_data("rackmount", "units"))
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object
