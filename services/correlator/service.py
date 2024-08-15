@@ -55,6 +55,7 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.fm.models.alarmrule import AlarmRule
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.inv.models.channel import Channel
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
@@ -499,7 +500,7 @@ class CorrelatorService(FastAPIService):
             opening_event=ObjectId(event.id) if event else None,
             labels=labels,
             min_group_size=min_group_size,
-            base_severity=severity,
+            base_severity=severity.severity if severity else None,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -521,6 +522,7 @@ class CorrelatorService(FastAPIService):
         a.total_services = a.direct_services
         a.total_subscribers = a.direct_subscribers
         a.affected_services = Service.get_services_by_alarm(a)
+        a.affected_channels = Channel.get_channels_by_alarm(a)
         # Static groups
         alarm_groups: Dict[str, GroupItem] = {}
         if groups:
@@ -640,10 +642,27 @@ class CorrelatorService(FastAPIService):
             remote_id=event.remote_id,
         )
 
+    async def channel_rca(self, alarm: ActiveAlarm):
+        if alarm.root:
+            return
+        if alarm.affected_channels:
+            for aa in Channel.get_alarms_by_channel(
+                alarm.affected_channels,
+                alarm_class="NOC | Managed Object | Ping Failed",
+            ):
+                aa.set_root(alarm)
+            return
+        channels = Channel.get_channel_by_object(alarm.managed_object)
+        if not channels:
+            return
+        aa = ActiveAlarm.objects.filter(root__exists=False, affected_channels__in=channels).first()
+        alarm.set_root(aa)
+
     async def correlate(self, a: ActiveAlarm):
         # Topology RCA
         if a.alarm_class.topology_rca:
             await self.topology_rca(a)
+            await self.channel_rca(a)
         # Rule-based RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one
