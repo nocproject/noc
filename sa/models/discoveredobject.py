@@ -400,7 +400,7 @@ class DiscoveredObject(Document):
             labels=self.effective_labels,
             data=[
                 ResourceDataItem(name="name", value=self.hostname),
-                ResourceDataItem(name="description", value=self.description),
+                ResourceDataItem(name="description", value=self.description or ""),
                 ResourceDataItem(name="hostname", value=self.hostname),
                 ResourceDataItem(name="address", value=self.address),
                 ResourceDataItem(name="pool", value=str(self.pool.id)),

@@ -152,6 +152,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                 store: [
                                     ["etl", _("ETL")],
                                     ["network-scan", _("Network Scan")],
+                                    ["neighbor", _("Device Neighbors")],
                                     ["manual", _("Manual")]
                                 ]
                             }
