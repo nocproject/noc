@@ -152,6 +152,8 @@ class InvApplication(ExtApplication):
             if self.can_show_topo(o):
                 plugins.append(self.get_plugin_data("channel"))
                 plugins.append(self.get_plugin_data("commutation"))
+            if o.model.cross or o.cross or o.get_data("caps", "dynamic_crossing"):
+                plugins.append(self.get_plugin_data("crossing"))
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():
                 plugins.append(self.get_plugin_data("sensor"))
                 plugins.append(self.get_plugin_data("metric"))
@@ -168,7 +170,6 @@ class InvApplication(ExtApplication):
             ]
             if o.is_container:
                 plugins.append(self.get_plugin_data("sensor"))
-            plugins.append(self.get_plugin_data("crossing"))
             # Process disabled plugins
             n["plugins"] = [p for p in plugins if p["name"] not in disabled_plugins]
             # Navigation glyphs
