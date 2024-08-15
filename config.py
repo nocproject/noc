@@ -198,6 +198,7 @@ class Config(BaseConfig):
 
     class collections(ConfigSection):
         allow_sharing = BooleanParameter(default=True)
+        allow_overwrite = BooleanParameter(default=True)
 
     class consul(ConfigSection):
         token = SecretParameter()

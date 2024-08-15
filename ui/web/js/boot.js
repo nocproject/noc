@@ -25,6 +25,7 @@ if(httpRequest.status === 200) {
         gitlab_url: setup.gitlab_url,
         collections: {
             allow_sharing: setup.collections.allow_sharing,
+            allow_overwrite: setup.collections.allow_overwrite,
             project_id: setup.collections.project_id
         },
         gis: {
