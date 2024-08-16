@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-import datetime
 from typing import Optional, Iterable, Tuple, AsyncIterable, Union
 
 # Third-party modules
