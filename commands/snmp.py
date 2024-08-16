@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Pretty command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,10 +10,13 @@ import argparse
 import asyncio
 from time import perf_counter
 
+# Third-party modules
+from gufo.snmp import SnmpSession, SnmpVersion, SnmpError as GSNMPError
+from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
-from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.ioloop.util import run_sync
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.interfaces.base import MACAddressParameter
@@ -28,6 +31,10 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
         get = subparsers.add_parser("get")
         get.add_argument("--community", help="SNMP community")
+        get.add_argument(
+            "--username",
+            help="SNMPv3 credentials: <user>:<auth_proto>:<auth_key>:<priv_proto>:<prive_key>",
+        )
         get.add_argument("--address", help="Object address")
         get.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
         get.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP GET OID")
@@ -57,13 +64,10 @@ class Command(BaseCommand):
         """ """
 
         async def main():
-            r = await snmp_get(
-                address=address,
-                oids={x: x for x in oids},
-                community=community,
-                version=SNMP_v2c,
-                timeout=timeout,
+            session = SnmpSession(
+                addr=address, community=community, timeout=timeout,  # version=version,
             )
+            r = await session.get(oids)
             return r
 
         x = run_sync(main)
@@ -77,7 +81,9 @@ class Command(BaseCommand):
             # Schedule workers
             queue = asyncio.Queue()
             for _ in range(self.jobs):
-                loop.create_task(self.poll_worker(queue, community, oid, timeout, self.version))
+                loop.create_task(
+                    self.poll_worker(queue, community, oid, timeout, self.version, f"worker-{_}")
+                )
             await self.poll_task(queue)
 
         self.addresses = set()
@@ -112,21 +118,20 @@ class Command(BaseCommand):
             await queue.put(None)
         await queue.join()
 
-    async def poll_worker(self, queue, community, oid, timeout, version):
+    async def poll_worker(self, queue, community, oid, timeout, version, name):
         while True:
             a = await queue.get()
             if a:
                 for c in community:
+                    session = SnmpSession(addr=a, community=c, timeout=timeout, version=version)
                     t0 = perf_counter()
                     try:
-                        r = await snmp_get(
-                            address=a, oids=oid, community=c, version=version, timeout=timeout
-                        )
+                        r = await session.get(oid)
                         s = "OK"
                         dt = perf_counter() - t0
                         mc = c
                         break
-                    except SNMPError as e:
+                    except (TimeoutError, GSNMPError) as e:
                         s = "FAIL"
                         r = str(e)
                         dt = perf_counter() - t0
@@ -142,7 +147,7 @@ class Command(BaseCommand):
                         r = MACAddressParameter().clean(r)
                     except ValueError:
                         pass
-                self.stdout.write("%s,%s,%s,%s,%r\n" % (a, s, dt, mc, r))
+                self.stdout.write(f"[{name}] {a},{s},{dt},{mc},{r!r}\n")
             queue.task_done()
             if not a:
                 break
