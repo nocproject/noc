@@ -90,6 +90,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     cli_session_store = SessionStore()
     mml_session_store = SessionStore()
     rtsp_session_store = SessionStore()
+    vim_session_store = SessionStore()
     # In session mode when active CLI session exists
     # * True -- reuse session
     # * False -- close session and run new without session context
@@ -187,6 +188,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.rtsp_stream = None
         self._snmp: Optional[SNMP] = None
         self._http: Optional[HTTP] = None
+        self._vim: Optional[Any] = None
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
         # Store session id
@@ -194,7 +196,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
         #
         self.streaming = streaming
-        self.controller = controller
+        if self.parent:
+            self.controller = self.parent.controller
+        else:
+            self.controller = controller
         self.labels = labels or set()
         # Cache CLI and SNMP calls, if set
         self.is_cached = False
@@ -263,6 +268,18 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             else:
                 self._http = HTTP(self)
         return self._http
+
+    @property
+    def vim(self):
+        from noc.core.script.vim.base import VIM
+
+        if self._vim:
+            return self._vim
+        if self.parent:
+            self._vim = self.root.vim
+        else:
+            self._vim = VIM(self)
+        return self._vim
 
     def apply_matchers(self):
         """
