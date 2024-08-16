@@ -263,6 +263,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       filterCombo.hide();
       grid.hide();
     }
+    me.afterPanelsRender(me.down("#commutationScheme"));
   },
   //
   heightPanels: function(grid){
@@ -274,7 +275,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       return {grid: null, image: bodyHeight};
     }
 
-    var rowHeight = Ext.fly(grid.getView().getNode(0)).getHeight(),
+    var rowHeight = grid.getView().getNode(0).getHeight(),
       gridHeight = (rowCount + 1) * rowHeight + 0.2 * rowHeight,
       dockedItemsHeight = grid.up().getDockedItems().reduce(function(totalHeight, item){
         return totalHeight + item.getHeight();
