@@ -25,5 +25,5 @@ class Object(BaseModel):
     name: str
     model: str
     data: List[ObjectData] = []
-    parent: Optional[Reference["Object"]] = Field(None, serialization_alias='container')
+    parent: Optional[Reference["Object"]] = Field(None, serialization_alias="container")
     checkpoint: Optional[str] = None
