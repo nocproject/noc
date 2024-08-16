@@ -10,7 +10,7 @@ from typing import Optional, List, Any
 
 # NOC modules
 from .base import BaseModel, Reference, _BaseModel
-from pydantic import AliasPath, Field
+from pydantic import Field
 
 
 class ObjectData(_BaseModel):
