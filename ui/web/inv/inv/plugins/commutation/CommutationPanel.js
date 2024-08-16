@@ -271,11 +271,11 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       bodyHeight = tabPanel.body.getHeight(),
       rowCount = grid.getStore().getCount();
 
-    if(rowCount === 0){
+    if(rowCount === 0 || !grid.getView().getNode(0)){
       return {grid: null, image: bodyHeight};
     }
 
-    var rowHeight = grid.getView().getNode(0).getHeight(),
+    var rowHeight = Ext.fly(grid.getView().getNode(0)).getHeight(),
       gridHeight = (rowCount + 1) * rowHeight + 0.2 * rowHeight,
       dockedItemsHeight = grid.up().getDockedItems().reduce(function(totalHeight, item){
         return totalHeight + item.getHeight();
