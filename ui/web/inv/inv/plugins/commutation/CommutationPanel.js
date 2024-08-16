@@ -129,7 +129,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
         },
       ],
       listeners: {
-        afterlayout: "afterGridRender",
+        // afterrender: "afterPanelsRender",
         select: function(grid, record){
           var element = document.querySelector("g#" + record.id + " path");
           if(element){
@@ -150,6 +150,9 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       layout: "auto",
       scrollable: true,
       itemId: "commutationScheme",
+      listeners: {
+        afterrender: "afterPanelsRender",
+      },
     },
   ],
   //
@@ -230,14 +233,14 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   onZoom: function(combo){
     var me = this,
-      imageComponent = me.down("#commutationScheme");
-    imageComponent.getEl().dom.style.transformOrigin = "0 0";
-    imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
+      imageContainer = me.down("#commutationScheme container"),
+      image = imageContainer.getEl().dom.querySelector("svg");
+    image.style.transformOrigin = "0 0";
+    image.style.transform = "scale(" + combo.getValue() + ")";
   },
   //
-  afterGridRender: function(grid){
-    var tabPanel = grid.up("tabpanel"),
-      imagePanel = tabPanel.down("#commutationScheme"),
+  afterPanelsRender: function(imagePanel){
+    var grid = imagePanel.previousSibling("grid"),
       {grid: gridHeight, image: imageHeight} = this.heightPanels(grid);
 
     grid.setHeight(gridHeight);
@@ -268,7 +271,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       rowCount = grid.getStore().getCount();
 
     if(rowCount === 0){
-      return {grid: null, image: null};
+      return {grid: null, image: bodyHeight};
     }
 
     var rowHeight = Ext.fly(grid.getView().getNode(0)).getHeight(),
