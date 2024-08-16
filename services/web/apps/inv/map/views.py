@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -211,8 +211,8 @@ class MapApplication(ExtApplication):
             for i in o[mo]:
                 if i.name not in metric_map[mo]:
                     continue
-                mo_in[mo] += int(metric_map[mo][i.name]["load_in"])
-                mo_out[mo] += int(metric_map[mo][i.name]["load_out"])
+                mo_in[mo] += int(metric_map[mo][i.name]["Interface | Load | In"])
+                mo_out[mo] += int(metric_map[mo][i.name]["Interface | Load | Out"])
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
@@ -556,8 +556,12 @@ class MapApplication(ExtApplication):
                 continue
             if rq_iface not in metric_map[rq_mo]:
                 continue
-            r[pid]["Interface | Load | In"] = int(metric_map[rq_mo][rq_iface]["load_in"])
-            r[pid]["Interface | Load | Out"] = int(metric_map[rq_mo][rq_iface]["load_out"])
+            r[pid]["Interface | Load | In"] = int(
+                metric_map[rq_mo][rq_iface]["Interface | Load | In"]
+            )
+            r[pid]["Interface | Load | Out"] = int(
+                metric_map[rq_mo][rq_iface]["Interface | Load | Out"]
+            )
 
         return r
 
