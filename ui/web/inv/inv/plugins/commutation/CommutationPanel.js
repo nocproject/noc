@@ -268,10 +268,11 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   heightPanels: function(grid){
     var tabPanel = grid.up("tabpanel"),
+      isDetailShow = tabPanel.down("#detailsButton").pressed,
       bodyHeight = tabPanel.body.getHeight(),
       rowCount = grid.getStore().getCount();
 
-    if(rowCount === 0 || !grid.getView().getNode(0)){
+    if(!isDetailShow){
       return {grid: null, image: bodyHeight};
     }
 
