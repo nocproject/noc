@@ -10,6 +10,7 @@ from typing import Optional, List, Any
 
 # NOC modules
 from .base import BaseModel, Reference, _BaseModel
+from pydantic import Field
 
 
 class ObjectData(_BaseModel):
@@ -24,5 +25,5 @@ class Object(BaseModel):
     name: str
     model: str
     data: List[ObjectData] = []
-    container: Optional[Reference["Object"]] = None
+    parent: Optional[Reference["Object"]] = Field(None, serialization_alias="container")
     checkpoint: Optional[str] = None
