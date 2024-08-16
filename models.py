@@ -471,4 +471,4 @@ LABEL_MODELS = {
     "wf.State": "enable_workflowstate",
 }
 
-RESOURCE_MODELS = {"o": "inv.Object"}
+RESOURCE_MODELS = {"o": "inv.Object", "fi": "inv.Interface"}

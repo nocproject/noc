@@ -277,8 +277,7 @@ class Service(Document):
         if mo:
             ServiceSummary.refresh_object(mo)
 
-    def iter_adjacency_services(self):
-        ...
+    def iter_adjacency_services(self): ...
 
     def set_oper_status(self, status: Status, timestamp: Optional[datetime.datetime] = None):
         """
@@ -353,16 +352,17 @@ class Service(Document):
         mo = self.get_managed_object()
         if not mo:
             logger.warning("[%s] Unknown ManagedObject for Raise alarm. Skipping", self.id)
-            return
         # Raise alarm
         if self.oper_status > Status.UP >= old_status:
             msg = {
                 "$op": "raise",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
                 "timestamp": self.oper_status_change.isoformat(),
-                "managed_object": str(mo.id),
+                "managed_object": str(mo.id if mo else 1),
                 "alarm_class": SVC_AC,
                 "labels": list(self.labels),
+                "severity": 5000,
+                # "groups": [{"reference": f"{SVC_REF_PREFIX}:{svc.id}"} for svc in Service.objects.filter(parent=self.id)],
                 "vars": {
                     "title": self.description,
                     "type": self.profile.name,
@@ -374,7 +374,7 @@ class Service(Document):
             caps = self.get_caps()
             if caps and "Channel | Address" in caps:
                 msg["vars"]["address"] = caps["Channel | Address"]
-            if self.interface_id:
+            if self.interface:
                 msg["vars"]["interface"] = self.interface.name
         elif self.oper_status <= Status.UP < old_status:
             msg = {
@@ -386,7 +386,10 @@ class Service(Document):
         else:
             return
         svc = get_service()
-        stream, partition = mo.alarms_stream_and_partition
+        if mo:
+            stream, partition = mo.alarms_stream_and_partition
+        else:
+            stream, partition = "dispose.default", 0
         logger.info("[%s] Send alarm message: %s", self.id, msg)
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
 
@@ -441,6 +444,48 @@ class Service(Document):
 
     @classmethod
     def get_services_by_alarm(cls, alarm) -> List["str"]:
+        profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
+        if not profiles:
+            return []
+        # q = m_q(managed_object=alarm.managed_object)
+        resources = []
+        s_q = m_q()
+        q = m_q()
+        if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
+            q |= m_q(sla_probe=alarm.components.slaprobe.id)
+        # Check is linked class
+        # Check is linked class
+        if hasattr(alarm.components, "interface") and getattr(alarm.components, "inteface", None):
+            resources.append(f"if:{alarm.components.inteface.id}")
+            # Channel query
+        address = None
+        if "address" in alarm.vars:
+            address = alarm.vars.get("address")
+        elif "peer" in alarm.vars:
+            # BGP alarms
+            address = alarm.vars.get("peer")
+        if alarm.managed_object.effective_service_groups:
+            q |= m_q(
+                managed_object=None,
+                effective_client_groups__in=alarm.managed_object.effective_service_groups,
+            )
+        #
+        services = []
+        if address:
+            s_q |= m_q(addresses__address__in=[])
+        if resources:
+            s_q |= m_q(resources__in=resources)
+        if not q:
+            s_q |= m_q(managed_object=alarm.managed_object.id)
+        r = []
+        for s in ServiceInstance.objects.filter(s_q).scalar("service"):
+            r.append(s.id)
+            if s.parent:
+                r.append(s.parent.id)
+        return r
+
+    @classmethod
+    def get_services_by_alarm_old(cls, alarm) -> List["str"]:
         profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
         if not profiles:
             return []
@@ -613,13 +658,22 @@ class Service(Document):
         if remote_id:
             return ServiceInstance.objects.filter(service=self.id, remote_id=remote_id).first()
         si = None
-        if managed_object:
+        if managed_object and port:
             si = ServiceInstance.objects.filter(
                 service=self.id, managed_object=managed_object, port=port
             ).first()
-        if not si and addresses:
+        elif managed_object:
             si = ServiceInstance.objects.filter(
-                service=self.id, addresses__address__in=addresses, port=port
+                service=self.id,
+                managed_object=managed_object,
+            ).first()
+        if not si and addresses and port:
+            si = ServiceInstance.objects.filter(
+                service=self.id, addresses__address__in=addresses
+            ).first()
+        elif not si and addresses:
+            si = ServiceInstance.objects.filter(
+                service=self.id, addresses__address__in=addresses
             ).first()
         return si
 
@@ -674,6 +728,11 @@ class Service(Document):
         instance.seen(source=source, addresses=addresses, port=port)
         return instance
 
+    @classmethod
+    def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:
+        if service:
+            return Service.get_by_id(service)
+
 
 def refresh_service_status(svc_ids: List[str]):
     logger.info("Refresh service status: %s", svc_ids)
@@ -683,6 +742,7 @@ def refresh_service_status(svc_ids: List[str]):
         svc.refresh_status()
         if svc.parent and svc.oper_status != os:
             affected_paths.update(set(svc.parent.service_path))
+    logger.info("Affected paths: %s", affected_paths)
     # Check changed
     # Update linked
     for svc in Service.objects.filter(id__in=list(affected_paths)):

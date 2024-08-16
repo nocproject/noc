@@ -161,7 +161,7 @@ Ext.define("NOC.sa.service.Model", {
         },
         {
             name: "oper_status",
-            type: "bool",
+            type: "string",
             persist: false
         },
         {
