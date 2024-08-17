@@ -298,6 +298,13 @@ class DiscoveredObject(Document):
         ):
             yield di
 
+    def is_ttl(self, ts: Optional[datetime.datetime] = None) -> bool:
+        if not self.rule.expired_ttl:
+            return False
+        now = datetime.date.today()
+        ts = ts or self.last_seen
+        return (now - ts.date()).seconds > self.rule.expired_ttl
+
     def change_rule(self, rule):
         self.rule = rule
         self.save()
@@ -345,14 +352,7 @@ class DiscoveredObject(Document):
         if not update_ts or update_ts != o.last_seen:
             logger.debug("[%s|%s] Run update data", pool.name, address)
             o.update_data(data, checks)  # Remove data
-        rule = rule or ObjectDiscoveryRule.get_rule(
-            address,
-            pool,
-            o.checks,
-            o.effective_labels,
-            o.data,
-            sources,
-        )
+        rule = rule or o.get_rule(sources)
         if not rule:
             if o.rule and o.state:
                 o.fire_event("expired")  # Remove
@@ -390,6 +390,16 @@ class DiscoveredObject(Document):
         elif action == "approve":
             o.fire_event("approve")
         return o
+
+    def get_rule(self, sources: Optional[List[str]] = None) -> Optional["ObjectDiscoveryRule"]:
+        return ObjectDiscoveryRule.get_rule(
+            self.address,
+            self.pool,
+            self.checks,
+            self.effective_labels,
+            self.data,
+            sources or self.sources,
+        )
 
     def get_ctx(self) -> ResourceItem:
         """
@@ -726,6 +736,7 @@ def sync_purgatorium():
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True, args=[ls_ex.date().isoformat()])
     processed, updated, removed, synced = 0, 0, 0, 0
+    # New records
     for num, row in enumerate(r.splitlines(), start=1):
         row = orjson.loads(row)
         pool = Pool.get_by_bi_id(row["pool"])
@@ -792,7 +803,7 @@ def sync_purgatorium():
     for o in DiscoveredObject.objects.filter(state__in=list(State.objects.filter(is_wiping=True))):
         removed += 1
         o.delete()
-    # Sync objects
+    # Sync objects and rules
     for do in DiscoveredObject.objects.filter(is_dirty=True, rule__exists=True):
         if do.rule.allow_sync and do.rule.default_template and not do.origin and do.is_approved:
             do.sync()

@@ -205,9 +205,9 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     uiStyle: "medium"
                 },
                 {
-                    name: "allow_sync",
+                    name: "sync_approved",
                     xtype: "checkbox",
-                    boxLabel: __("Allow Sync")
+                    boxLabel: __("Sync Approved Records")
                 },
                 {
                   name: "default_template",

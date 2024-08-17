@@ -247,12 +247,12 @@ class ObjectDiscoveryRule(Document):
         default="new",
     )
     stop_processed = BooleanField(default=False)
-    allow_sync = BooleanField(default=False)  # sync record on
+    sync_approved = BooleanField(default=False)  # sync record on
     default_template: Optional[ModelTemplate] = PlainReferenceField(ModelTemplate)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _prefix_cache = cachetools.TTLCache(maxsize=10, ttl=600)
-    _rules_cache = cachetools.TTLCache(10, ttl=180)
+    _rules_cache = cachetools.TTLCache(10, ttl=90)
 
     def __str__(self) -> str:
         return self.name
@@ -267,17 +267,30 @@ class ObjectDiscoveryRule(Document):
         """Return required sources for rule"""
         return frozenset(s.source for s in self.sources if s.is_required)
 
-    def is_ttl(self, ts: datetime.datetime) -> bool:
-        if not self.expired_ttl:
-            return False
-        now = datetime.date.today()
-        return (now - ts.date()).seconds > self.expired_ttl
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
+    def get_rules_by_source(cls, sources: Optional[FrozenSet[str]] = None):
+        """
+        Return list rules match Instance for sources
+        Args:
+            sources:
+        """
+        r = []
+        for rule in ObjectDiscoveryRule.objects.filter(
+            is_active=True, default_action__ne="skip"
+        ).order_by("preference"):
+            if sources and rule.required_sources and rule.required_sources - sources:
+                continue
+            r.append(rule)
+        return r
 
     @classmethod
     def get_effective_data(cls, sources: List[str], data: List[Any]) -> Dict[str, str]:
         """
         Merge data by Source Priority
-        :return:
+        Args:
+            sources: List sources getting data
+            data: Effective data on source
         """
         r = {}
         for di in sorted(
@@ -313,15 +326,10 @@ class ObjectDiscoveryRule(Document):
 
         """
         labels = labels or []
-        for rule in ObjectDiscoveryRule.objects.filter(
-            is_active=True, default_action__ne="skip"
-        ).order_by("preference"):
-            if rule.required_sources and sources and rule.required_sources - set(sources):
-                continue
+        for rule in ObjectDiscoveryRule.get_rules_by_source(frozenset(sources)):
             r_data = cls.get_effective_data([s.source for s in rule.sources] or sources, data)
             if rule.is_match(address, pool, checks, labels, r_data):
                 return rule
-        return
 
     def on_save(self):
         """
@@ -330,7 +338,7 @@ class ObjectDiscoveryRule(Document):
         from noc.sa.models.discoveredobject import DiscoveredObject
 
         # Set record on rule is_dirty
-        DiscoveredObject.objects.filter(rule=self.id).update(is_dirty=True)
+        DiscoveredObject.objects.filter().update(is_dirty=True)
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -338,15 +346,19 @@ class ObjectDiscoveryRule(Document):
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
+            "is_active": self.is_active,
             "description": self.description,
             #
             "preference": self.preference,
-            "workflow__name": self.workflow.name,
+            "workflow__uuid": str(self.workflow.uuid),
             #
             "network_ranges": [c.json_data for c in self.network_ranges],
             "checks": [c.json_data for c in self.checks],
             #
             "sources": [c.json_data for c in self.sources],
+            "conditions": [c.json_data for c in self.conditions],
+            "enable_ip_scan_discovery": self.enable_ip_scan_discovery,
+            "ip_scan_discovery_interval": self.ip_scan_discovery_interval,
             "stop_processed": self.stop_processed,
             "default_action": self.default_action,
         }
@@ -410,9 +422,7 @@ class ObjectDiscoveryRule(Document):
 
     @cachetools.cachedmethod(operator.attrgetter("_prefix_cache"), lock=lambda _: id_lock)
     def get_prefixes(self, pool: Optional[Pool] = None) -> List["IPv4"]:
-        """
-        Return configured prefixes
-        """
+        """Return configured prefixes"""
         r = []
         for net in self.network_ranges:
             if net.exclude or (pool and pool != net.pool):
@@ -449,9 +459,9 @@ class ObjectDiscoveryRule(Document):
         """
         Return Discovered object action
         Args:
-            checks:
-            labels:
-            data:
+            checks: Discovered object checks result
+            labels: Labels list
+            data: Collected effective data
         """
         checks = self.parse_check(checks)
         action = None

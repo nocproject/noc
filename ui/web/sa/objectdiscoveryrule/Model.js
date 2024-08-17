@@ -86,7 +86,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Model", {
             defaultValue: false
         },
         {
-            name: "allow_sync",
+            name: "sync_approved",
             type: "boolean",
             defaultValue: false
         },

@@ -9,6 +9,7 @@
 import argparse
 import asyncio
 from time import perf_counter
+from typing import Tuple, Iterable
 
 # Third-party modules
 from gufo.snmp import SnmpSession, SnmpVersion, SnmpError as GSNMPError
@@ -18,14 +19,24 @@ from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
 from noc.core.ioloop.util import run_sync
-from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.sa.interfaces.base import MACAddressParameter
+
+AUTH_PROTO_MAP = {
+    "MD5": Md5Key,
+    "SHA": Sha1Key,
+}
+
+PRIV_PROTO_MAP = {
+    "DES": DesKey,
+    "AES": Aes128Key,
+}
 
 
 class Command(BaseCommand):
     DEFAULT_OID = "1.3.6.1.2.1.1.2.0"
     DEFAULT_COMMUNITY = "public"
-    VERSION_MAP = {"v1": SNMP_v1, "v2c": SNMP_v2c}
+    VERSION_MAP = {"v1": SNMP_v1, "v2c": SNMP_v2c, "v3": SNMP_v3}
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
@@ -44,6 +55,11 @@ class Command(BaseCommand):
             "--jobs", action="store", type=int, default=100, dest="jobs", help="Concurrent jobs"
         )
         poll.add_argument("--community", action="append", help="SNMP community")
+        poll.add_argument(
+            "--username",
+            action="append",
+            help="SNMPv3 credentials: <user>:<auth_proto>:<auth_key>:<priv_proto>:<prive_key>",
+        )
         poll.add_argument("--oid", default=self.DEFAULT_OID, help="SNMP GET OID")
         poll.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
         poll.add_argument("addresses", nargs=argparse.REMAINDER, help="Object name")
@@ -60,21 +76,48 @@ class Command(BaseCommand):
         cmd = options["cmd"]
         return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
 
-    def handle_get(self, address, community, timeout, oids, *args, **options):
+    @staticmethod
+    def parse_credentials(snmp_user: str):
+        user, *creds = snmp_user.split(":")
+        auth, priv = None, None
+        if len(creds) >= 2:
+            auth = AUTH_PROTO_MAP[creds[0]](creds[1].encode(), key_type=KeyType.Password)
+        if len(creds) > 2:
+            priv = PRIV_PROTO_MAP[creds[2]](creds[3].encode(), key_type=KeyType.Password)
+        return User(name=str(user), auth_key=auth, priv_key=priv)
+
+    def handle_get(self, address, community, timeout, oids, username, *args, **options):
         """ """
 
         async def main():
-            session = SnmpSession(
-                addr=address, community=community, timeout=timeout,  # version=version,
-            )
-            r = await session.get(oids)
+            async with SnmpSession(
+                addr=address,
+                community=community,
+                user=username,
+                timeout=timeout,
+                version=SnmpVersion.v3 if username else SnmpVersion.v2c,
+            ) as session:
+                r = await session.get_many(oids)
             return r
 
+        if username:
+            username = self.parse_credentials(username)
         x = run_sync(main)
         self.print(f"Result {x}")
 
     def handle_poll(
-        self, input, addresses, jobs, community, oid, timeout, convert, version, *args, **options
+        self,
+        input,
+        addresses,
+        jobs,
+        community,
+        username,
+        oid,
+        timeout,
+        convert,
+        version,
+        *args,
+        **options,
     ):
         async def main():
             loop = asyncio.get_running_loop()
@@ -82,7 +125,9 @@ class Command(BaseCommand):
             queue = asyncio.Queue()
             for _ in range(self.jobs):
                 loop.create_task(
-                    self.poll_worker(queue, community, oid, timeout, self.version, f"worker-{_}")
+                    self.poll_worker(
+                        queue, community, username, oid, timeout, self.version, f"worker-{_}"
+                    )
                 )
             await self.poll_task(queue)
 
@@ -118,30 +163,48 @@ class Command(BaseCommand):
             await queue.put(None)
         await queue.join()
 
-    async def poll_worker(self, queue, community, oid, timeout, version, name):
+    @classmethod
+    def iter_credentials(
+        cls, community, username, version
+    ) -> Iterable[Tuple[str, User, SnmpVersion]]:
+        if version != SNMP_v3:
+            for c in community:
+                yield c, None, SnmpVersion.v2c if not version else SnmpVersion.v1
+            return
+        for user in username:
+            user = cls.parse_credentials(user)
+            yield None, user, SnmpVersion.v3
+
+    async def poll_worker(self, queue, community, username, oid, timeout, version, name):
         while True:
             a = await queue.get()
             if a:
-                for c in community:
-                    session = SnmpSession(addr=a, community=c, timeout=timeout, version=version)
-                    t0 = perf_counter()
-                    try:
-                        r = await session.get(oid)
-                        s = "OK"
-                        dt = perf_counter() - t0
-                        mc = c
-                        break
-                    except (TimeoutError, GSNMPError) as e:
-                        s = "FAIL"
-                        r = str(e)
-                        dt = perf_counter() - t0
-                        mc = ""
-                    except Exception as e:
-                        s = "EXCEPTION"
-                        r = str(e)
-                        dt = perf_counter() - t0
-                        mc = ""
-                        break
+                for c, user, v in self.iter_credentials(community, username, version):
+                    async with SnmpSession(
+                        addr=a,
+                        community=c,
+                        user=user,
+                        timeout=timeout,
+                        version=v,
+                    ) as session:
+                        t0 = perf_counter()
+                        try:
+                            r = await session.get(oid)
+                            s = "OK"
+                            dt = perf_counter() - t0
+                            mc = c
+                            break
+                        except (TimeoutError, GSNMPError) as e:
+                            s = "FAIL"
+                            r = str(e)
+                            dt = perf_counter() - t0
+                            mc = ""
+                        except Exception as e:
+                            s = "EXCEPTION"
+                            r = str(e)
+                            dt = perf_counter() - t0
+                            mc = ""
+                            break
                 if self.convert:
                     try:
                         r = MACAddressParameter().clean(r)
