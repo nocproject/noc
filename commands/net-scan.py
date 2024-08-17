@@ -27,7 +27,6 @@ from noc.core.checkers.loader import loader
 from noc.core.checkers.base import Check, Checker, DataItem
 from noc.core.checkers.snmp import SNMPProtocolChecker, SUGGEST_CHECK
 from noc.core.checkers.tcp import TCP_DIAG
-from noc.core.checkers.icmp import ICMP_DIAG
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, Protocol
 from noc.core.purgatorium import ProtocolCheckResult, register
 from noc.core.mib import mib
@@ -39,6 +38,7 @@ UPTIME_OID = mib["SNMPv2-MIB::sysUpTime", 0]
 CHASSIS_OID = mib["IF-MIB::ifPhysAddress", 1]
 OIDS = [mib["SNMPv2-MIB::sysObjectID", 0], HOSTNAME_OID, DESCR_OID, UPTIME_OID, CHASSIS_OID]
 SOCKET_DEFAULT_TIMEOUT = 2
+ICMP_DIAG = "ICMP"
 
 
 class Command(BaseCommand):
