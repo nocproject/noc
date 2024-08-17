@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
 import operator
 import re
 from itertools import filterfalse
@@ -246,7 +245,7 @@ class ObjectDiscoveryRule(Document):
         ],
         default="new",
     )
-    stop_processed = BooleanField(default=False)
+    # stop_processed = BooleanField(default=False)
     sync_approved = BooleanField(default=False)  # sync record on
     default_template: Optional[ModelTemplate] = PlainReferenceField(ModelTemplate)
 
@@ -279,13 +278,15 @@ class ObjectDiscoveryRule(Document):
         for rule in ObjectDiscoveryRule.objects.filter(
             is_active=True, default_action__ne="skip"
         ).order_by("preference"):
-            if sources and rule.required_sources and rule.required_sources - sources:
+            if sources and rule.required_sources and (rule.required_sources - sources):
                 continue
             r.append(rule)
         return r
 
     @classmethod
-    def get_effective_data(cls, sources: List[str], data: List[Any]) -> Dict[str, str]:
+    def get_effective_data(
+        cls, sources: List[str], data: List[Any]
+    ) -> Tuple[Dict[str, str], Set[str]]:
         """
         Merge data by Source Priority
         Args:
@@ -293,6 +294,7 @@ class ObjectDiscoveryRule(Document):
             data: Effective data on source
         """
         r = {}
+        labels = set()
         for di in sorted(
             filterfalse(lambda d: d.source not in sources, data),
             key=lambda x: sources.index(x.source),
@@ -301,7 +303,18 @@ class ObjectDiscoveryRule(Document):
                 if key in r or not value:
                     continue
                 r[key] = value
-        return r
+            if di.labels:
+                labels |= set(di.labels)
+        return r, labels
+
+    def merge_sources(self, sources: List[str]) -> List[str]:
+        """Merge based source and Rules source ->"""
+        if not self.sources:
+            return sources
+        rs = [s.source for s in self.sources]
+        return sorted(
+            set(rs).intersection(set(sources)), key=lambda x: rs.index(x) if x in rs else 999
+        )
 
     @classmethod
     def get_rule(
@@ -309,7 +322,6 @@ class ObjectDiscoveryRule(Document):
         address,
         pool: Pool,
         checks: List[Any],
-        labels: Optional[List[str]] = None,
         data: Optional[List[Any]] = None,
         sources: Optional[List[str]] = None,
     ) -> Optional["ObjectDiscoveryRule"]:
@@ -320,15 +332,15 @@ class ObjectDiscoveryRule(Document):
             address: IP Address for record
             pool: IP Address Pool
             checks: Check Result Status
-            labels: Labels List
             data: Effective data dict
             sources: List sources for record
 
         """
-        labels = labels or []
         for rule in ObjectDiscoveryRule.get_rules_by_source(frozenset(sources)):
-            r_data = cls.get_effective_data([s.source for s in rule.sources] or sources, data)
-            if rule.is_match(address, pool, checks, labels, r_data):
+            r_data, r_labels = cls.get_effective_data(
+                [s.source for s in rule.sources] or sources, data
+            )
+            if rule.is_match(address, pool, checks, r_labels, r_data):
                 return rule
 
     def on_save(self):
@@ -359,7 +371,6 @@ class ObjectDiscoveryRule(Document):
             "conditions": [c.json_data for c in self.conditions],
             "enable_ip_scan_discovery": self.enable_ip_scan_discovery,
             "ip_scan_discovery_interval": self.ip_scan_discovery_interval,
-            "stop_processed": self.stop_processed,
             "default_action": self.default_action,
         }
         return r

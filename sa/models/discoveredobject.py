@@ -111,6 +111,12 @@ class PurgatoriumData(object):
             return f"{self.source}@{self.remote_system}: {self.data}"
         return f"{self.source}: {self.data}"
 
+    @property
+    def key(self) -> str:
+        if not self.remote_system:
+            return self.source
+        return f"{self.source}@{self.remote_system}"
+
 
 class CheckStatus(EmbeddedDocument):
     name: str = StringField(required=True)
@@ -171,6 +177,12 @@ class DataItem(EmbeddedDocument):
         return hash(
             (self.source, frozenset(self.labels), frozenset((k, v) for k, v in self.data.items()))
         )
+
+    @property
+    def key(self):
+        if not self.remote_system:
+            return self.source
+        return f"{self.source}@{self.remote_system}"
 
 
 @bi_sync
@@ -350,53 +362,50 @@ class DiscoveredObject(Document):
                 rule=rule,
             )
         if not update_ts or update_ts != o.last_seen:
-            logger.debug("[%s|%s] Run update data", pool.name, address)
+            if o.id:
+                # For New object not logging
+                logger.info(
+                    "[%s|%s] Run update data: %s/%s", pool.name, address, update_ts, o.last_seen
+                )
             o.update_data(data, checks)  # Remove data
         rule = rule or o.get_rule(sources)
+        # if address == "10.78.2.86":
+        #    logger.info("[%s|%s] Debug object: %s/%s/%s", pool.name, address, sources, data, labels)
         if not rule:
             if o.rule and o.state:
                 o.fire_event("expired")  # Remove
             logger.debug("[%s|%s] Not find rule for address. Skipping", pool.name, address)
             return
-        if rule.sources:
-            sources = [s.source for s in rule.sources if s.source in sources]
+        elif o.rule != rule:
+            logger.info(
+                "[%s|%s] Update rule: %s -> %s",
+                pool.name,
+                address,
+                o.rule.name if o.rule else "<empty>",
+                rule.name,
+            )
+            o.rule = rule
+            o.is_dirty = True
+        sources = rule.merge_sources(sources)
         if o.sources != sources:
+            # Remove unused data
+            for source in set(o.sources) - set(sources):
+                o.reset_data(source)
             o.is_dirty = True
             o.sources = sources
         o.touch(ts=update_ts)
         if not o.is_dirty and rule == o.rule:
             logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
             return
-        if o.rule != rule:
-            o.rule = rule
-            o.is_dirty = True
-        action = rule.get_action(
-            o.checks, o.effective_labels, ObjectDiscoveryRule.get_effective_data(sources, o.data)
-        )
-        if action == "skip":
-            return
-        elif action == "ignore" and not o.id:
-            return
-        # Remove unused data
-        for source in set(o.sources) - set(sources):
-            o.reset_data(source)
-        if not o.id or o.is_dirty:
-            # Set Status, is_dirty
-            o.is_dirty = False
-            o.save()
-        o.fire_event("seen")
-        if action == "ignore":
-            o.fire_event("ignore")
-        elif action == "approve":
-            o.fire_event("approve")
+        o.save()
         return o
 
     def get_rule(self, sources: Optional[List[str]] = None) -> Optional["ObjectDiscoveryRule"]:
+        """Get Discovered Object rule"""
         return ObjectDiscoveryRule.get_rule(
             self.address,
             self.pool,
             self.checks,
-            self.effective_labels,
             self.data,
             sources or self.sources,
         )
@@ -453,6 +462,11 @@ class DiscoveredObject(Document):
         for d in self.data:
             if d.remote_system:
                 q |= d_Q(remote_system=d.remote_system, remote_id=d.remote_id)
+                q |= d_Q(
+                    mappings__contains=[
+                        {"remote_system": str(d.remote_system), "remote_id": d.remote_id}
+                    ]
+                )
         return q
 
     def get_pool(self) -> Pool:
@@ -494,19 +508,46 @@ class DiscoveredObject(Document):
             Q(origin=None, id__ne=self.id) & Q(duplicate_keys__in=list(duplicate_keys)),
         )
 
-    def sync(self, dry_run=False):
+    def sync(self, dry_run: bool = False, force: bool = False, template=None):
+        """Sync"""
+
+        rule = self.get_rule(list(self.sources))
+        if not rule:
+            # Unsync object
+            self.fire_event("expired")  # Remove
+            return
+        elif rule != rule:
+            self.rule = rule
+            self.save()
+        action = rule.get_action(self.checks, self.effective_labels, self.effective_data)
+        if action == "ignore":
+            self.fire_event("ignore")
+        elif action == "approve":
+            self.fire_event("approve")
+        else:
+            self.fire_event("seen")
+        if (self.rule.sync_approved and self.is_approved) or force:
+            self.sync_object(dry_run=dry_run, template=template)
+        if dry_run:
+            return
+        self.is_dirty = False
+        DiscoveredObject.objects.filter(id=self.id).update(is_dirty=False)
+
+    def sync_object(self, dry_run=False, template=None):
         """
         Sync with ManagedObject
 
         Args:
             dry_run: Run with test
+            template: Sync object template
         """
         from noc.inv.models.discoveryid import DiscoveryID
 
         if self.origin:
             logger.info("Duplicate Record. Skipping")
             return
-        if not self.rule.default_template:
+        template = template or self.rule.default_template
+        if template:
             return
         if self.managed_object_id:
             # Sync data
@@ -523,8 +564,8 @@ class DiscoveredObject(Document):
             mo = DiscoveryID.find_object(ipv4_address=self.address, hostname=self.hostname)
         if mo:
             duplicates = self.check_duplicate(managed_object=mo)
-        elif not mo and self.rule.default_template:
-            mo = self.rule.default_template.render(self.get_ctx())
+        elif not mo and template:
+            mo = template.render(self.get_ctx())
         else:
             raise AttributeError("Default object template is not Set")
         origin = self
@@ -551,8 +592,8 @@ class DiscoveredObject(Document):
             self.origin = origin
         if duplicates:
             DiscoveredObject.objects.filter(id__in=duplicates).update(is_dirty=True, origin=origin)
-        origin.is_dirty = False
-        # Send approve
+        # Send sync
+        self.fire_event("synced")
 
     @property
     def is_approved(self) -> bool:
@@ -637,6 +678,7 @@ class DiscoveredObject(Document):
             data:
             checks: List processed checks
         """
+        processed_keys = set()
         # Merge Data
         for d in data:
             if d.source not in self.sources:
@@ -654,6 +696,9 @@ class DiscoveredObject(Document):
                 remote_system=rs,
                 ts=d.ts,
             )
+            processed_keys.add(d.key)
+        # Clear lost data
+        self.data = [d for d in self.data if d.key in processed_keys]
         if not (checks or self.checks):
             return
         checks = [
@@ -768,7 +813,7 @@ def sync_purgatorium():
                 rg = ResourceGroup.get_by_bi_id(rg)
                 if rg:
                     groups[(source, rs, "c")].append(rg.id)
-        last_ts = datetime.datetime.fromisoformat(row["last_ts"])
+        last_ts = datetime.datetime.fromisoformat(row["last_ts"]).replace(microsecond=0)
         r = DiscoveredObject.register(
             pool,
             row["address"],
@@ -804,9 +849,9 @@ def sync_purgatorium():
         removed += 1
         o.delete()
     # Sync objects and rules
+    logger.info("Sync objects and rules")
     for do in DiscoveredObject.objects.filter(is_dirty=True, rule__exists=True):
-        if do.rule.allow_sync and do.rule.default_template and not do.origin and do.is_approved:
-            do.sync()
+        do.sync()
         # DiscoveredObject.objects.filter(id=do.id).update(is_dirty=False)
     logger.info(
         "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s/Synced: %s",
