@@ -98,7 +98,8 @@ class DiscoveredObjectApplication(ExtDocApplication):
     def api_sync_action(self, request):
         req = self.parse_request_query(request)
         for do in DiscoveredObject.objects.filter(id__in=req["ids"]):
-            do.sync()
+            do.fire_event("approved")  # ?set state
+            do.sync(force=True, template=req.get("template"))
         return {"status": True}
 
     @view(url=r"actions/send_event/$", method=["POST"], access="action", api=True)

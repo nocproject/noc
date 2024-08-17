@@ -132,6 +132,10 @@ class RemoteSystem(Document):
     enable_label = BooleanField()
     enable_discoveredobject = BooleanField()
     enable_fmevent = BooleanField()
+    managed_object_loader_policy = StringField(
+        choices=[("D", "As Discovered"), ("M", "As Managed Object")],
+        default="M",
+    )
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
@@ -164,6 +168,10 @@ class RemoteSystem(Document):
         if not hasattr(self, "_config"):
             self._config = {e.key: e.value for e in self.environment}
         return self._config
+
+    @property
+    def managed_object_as_discovered(self) -> bool:
+        return self.managed_object_loader_policy == "D"
 
     def get_handler(self):
         """

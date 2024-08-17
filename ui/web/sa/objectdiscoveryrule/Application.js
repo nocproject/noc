@@ -217,11 +217,6 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                   allowBlank: true
                 },
                 {
-                    name: "stop_processed",
-                    xtype: "checkbox",
-                    boxLabel: __("Stop Processing")
-                },
-                {
                     xtype: "fieldset",
                     title: __("IP Scan Discovery"),
                     items: [
