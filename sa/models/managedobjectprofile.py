@@ -53,6 +53,7 @@ from noc.core.wf.diagnostic import (
     DiagnosticConfig,
     DiagnosticHub,
     Check,
+    CtxItem,
 )
 from noc.sa.interfaces.base import (
     DictListParameter,
@@ -1059,6 +1060,7 @@ class ManagedObjectProfile(NOCModel):
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=checks,
                 diagnostic_handler="noc.core.script.diagnostic.CLISuggestsDiagnostic",
+                diagnostic_ctx=[CtxItem(name="profile")],
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],

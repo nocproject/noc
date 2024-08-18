@@ -92,6 +92,13 @@ class DiagnosticState(str, enum.Enum):
 
 
 @dataclass(frozen=True)
+class CtxItem:
+    name: str
+    capabilities: Optional[str] = None
+    alias: Optional[str] = None
+
+
+@dataclass(frozen=True)
 class DiagnosticConfig(object):
     """
     Attributes:
@@ -122,6 +129,7 @@ class DiagnosticConfig(object):
     diagnostic_handler: Optional[str] = None
     dependent: Optional[List[str]] = None
     include_credentials: bool = False
+    diagnostic_ctx: Optional[List[CtxItem]] = None
     # Calculate State on checks.
     state_policy: str = "ANY"
     reason: Optional[str] = None
@@ -234,7 +242,10 @@ class DiagnosticItem(BaseModel):
             h = get_handler(self.config.diagnostic_handler)
             if not h:
                 raise AttributeError("Unknown Diagnostic Handler")
-            self._handler = h(config=self.config, logger=logger)
+            try:
+                self._handler = h(config=self.config, logger=logger)
+            except TypeError as e:
+                raise AttributeError(str(e))
         return self._handler
 
     def iter_checks(self, logger=None, **kwargs) -> Iterable[Tuple[Check, ...]]:
@@ -434,9 +445,14 @@ class DiagnosticHub(object):
         ctx = {
             "labels": self.__object.effective_labels,
             "address": self.__object.address,
+            "groups": self.__object.effective_service_groups,
         }
         if di.config.include_credentials and self.__object.credentials:
             ctx["cred"] = self.__object.credentials.get_snmp_credential()
+        for ci in di.config.diagnostic_ctx or []:
+            if ci.name in self.__data:
+                ctx[ci.alias or ci.name] = self.__data[ci.name]
+
         for checks in di.iter_checks(**ctx, logger=self.logger):
             for c in itertools.chain(checks):
                 self.__checks[c.key].add(di.diagnostic)
@@ -468,6 +484,8 @@ class DiagnosticHub(object):
             data: Collected checks data
         """
         d = self[diagnostic]
+        if data:
+            self.__data |= data
         if d.state.is_blocked or d.state == state:
             self.logger.debug("[%s] State is same", d.diagnostic)
             return
