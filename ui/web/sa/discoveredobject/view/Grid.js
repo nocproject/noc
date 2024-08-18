@@ -40,8 +40,22 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
     {
       text: __("Pool"),
       dataIndex: "pool",
-      width: 100,
+      width: 70,
       renderer: NOC.render.Lookup("pool"),
+    },
+    {
+        text: __("Is Dirty"),
+        dataIndex: "is_dirty",
+        width: 50,
+        renderer: NOC.render.Bool,
+        sortable: false
+    },
+    {
+        text: __("Is Synced"),
+        dataIndex: "is_synced",
+        width: 50,
+        renderer: NOC.render.Bool,
+        sortable: false
     },
     {
       text: __("Hostname"),
