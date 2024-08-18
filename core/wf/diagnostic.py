@@ -96,6 +96,7 @@ class CtxItem:
     name: str
     capabilities: Optional[str] = None
     alias: Optional[str] = None
+    set_method: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -463,7 +464,7 @@ class DiagnosticHub(object):
         """
         d = self[diagnostic]
         if data:
-            self.__data |= data
+            self.apply_context_data(d, data)
         if d.state.is_blocked or d.state == state:
             self.logger.debug("[%s] State is same", d.diagnostic)
             return
@@ -880,6 +881,15 @@ class DiagnosticHub(object):
             r[mt.scope.table_name][key][mt.field_name] = m.value
         for table, data in r.items():
             svc.register_metrics(table, list(data.values()), key=self.__object.bi_id)
+
+    def apply_context_data(self, d: DiagnosticItem, data: Dict[str, Any]):
+        self.__data |= data
+        if not d.config.diagnostic_ctx:
+            return
+        for ctx in d.config.diagnostic_ctx:
+            if ctx.name in data and ctx.set_method:
+                h = getattr(self.__object, ctx.set_method)
+                h(data[ctx.name])
 
     def sync_diagnostic_data(self):
         """Synchronize object data with diagnostic"""

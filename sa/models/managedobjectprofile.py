@@ -1025,6 +1025,7 @@ class ManagedObjectProfile(NOCModel):
                 show_in_display=False,
                 include_credentials=True,
                 diagnostic_handler="noc.core.profile.diagnostic.ProfileDiagnostic",
+                diagnostic_ctx=[CtxItem(name="profile", set_method="set_profile")],
                 alarm_class="Discovery | Guess | Profile",
                 blocked=not self.enable_box_discovery_profile,
                 run_policy="A",
