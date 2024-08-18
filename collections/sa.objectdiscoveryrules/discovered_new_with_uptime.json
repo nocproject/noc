@@ -1,0 +1,31 @@
+{
+    "name": "Discovered New (uptime more hour)",
+    "$collection": "sa.objectdiscoveryrules",
+    "uuid": "ddfba3f4-c031-4f61-9352-96961fdfbe82",
+    "description": null,
+    "checks": [],
+    "conditions": [
+        {
+            "match_checks": [{
+                "check": "SNMPv2c",
+                "match_state": "ok"
+            }],
+            "match_data": [{
+                "field": "uptime",
+                "op": "gte",
+                "value": "3600"
+            }]
+        }
+    ],
+    "default_action": "new",
+    "enable_ip_scan_discovery": false,
+    "ip_scan_discovery_interval": 0,
+    "is_active": false,
+    "network_ranges": [],
+    "preference": 100,
+    "sources": [{
+        "is_required": true,
+        "source": "network-scan"
+    }],
+    "workflow__uuid": "b56e5f4d-9a2d-47d7-8f8d-681457e900cd"
+}
