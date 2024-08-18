@@ -7,9 +7,11 @@
 
 # Python modules
 import os
+import re
 import operator
+from dataclasses import dataclass
 from threading import Lock
-from typing import Any, Dict
+from typing import Any, Dict, ClassVar, Literal, Optional
 
 # Third-party modules
 import cachetools
@@ -20,13 +22,48 @@ from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.profile.diagnostic import SuggestProfile
 from noc.sa.models.profile import Profile
 from noc.main.models.doccategory import category
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 
 rules_lock = Lock()
+
+
+@dataclass(frozen=True)
+class SuggestProfile(object):
+    method: Literal["snmp_v2c_get", "http_get", "https_get"]
+    param: str
+    match: Literal["eq", "contains", "re"]
+    value: str
+    profile: str
+    preference: int
+    name: Optional[str] = None
+
+    _re_cache: ClassVar[Dict[str, str]] = {}
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_re_cache"))
+    def get_re(cls, regexp):
+        return re.compile(regexp)
+
+    def is_match(self, result: str) -> bool:
+        """
+        Returns True when result matches value
+        """
+        if self.match == "eq":
+            return result == self.value
+        elif self.match == "contains":
+            return self.value in result
+        elif self.match == "re":
+            return bool(self.get_re(self.value).search(result))
+        else:
+            # self.logger.error("Invalid match method '%s'. Ignoring", self.method)
+            return False
+
+    @property
+    def query_key(self):
+        return self.method, self.param, self.preference
 
 
 @category

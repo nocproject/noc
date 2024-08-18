@@ -22,8 +22,8 @@ class SNMPSuggestsDiagnostic:
     Run diagnostic by config and check status
     """
 
-    def __init__(self, cfg: DiagnosticConfig, logger=None):
-        self.config = cfg
+    def __init__(self, config: DiagnosticConfig, logger=None):
+        self.config = config
         self.logger = logger or logging.getLogger("snmpsuggestsdiagnostic")
 
     def iter_checks(
@@ -72,8 +72,8 @@ class CLISuggestsDiagnostic:
     Run diagnostic by config and check status
     """
 
-    def __init__(self, cfg: DiagnosticConfig, logger=None):
-        self.config = cfg
+    def __init__(self, config: DiagnosticConfig, logger=None):
+        self.config = config
         self.logger = logger or logging.getLogger("clisuggestsdiagnostic")
 
     def iter_checks(

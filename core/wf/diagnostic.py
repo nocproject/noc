@@ -432,7 +432,6 @@ class DiagnosticHub(object):
             self.__checks = defaultdict(set)
         di = self[d]
         ctx = {
-            "logger": self.logger,
             "labels": self.__object.effective_labels,
             "address": self.__object.address,
         }
