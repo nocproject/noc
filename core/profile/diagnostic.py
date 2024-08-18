@@ -13,7 +13,7 @@ from typing import List, Iterable, Optional, Tuple, Union, Dict, Set, Any
 # NOC modules
 from noc.core.mib import mib
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
-from noc.core.checkers.http import HTTP_DIAG, HTTPS_DIAG
+from noc.core.wf.diagnostic import HTTP_DIAG, HTTPS_DIAG
 from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
 from noc.core.wf.diagnostic import DiagnosticConfig
 from noc.core.checkers.base import Check, CheckResult
@@ -29,33 +29,52 @@ class ProfileDiagnostic:
         "https_get": HTTPS_DIAG,
     }
 
-    def __init__(
-        self,
-        cfg: DiagnosticConfig,
-        labels: Optional[List[str]] = None,
-        logger=None,
-        address: Optional[str] = None,
-        cred: Optional[Union[SNMPCredential, SNMPv3Credential]] = None,
-        **kwargs,
-    ):
-        self.config = cfg
-        self.labels = labels
+    def __init__(self, config: DiagnosticConfig, logger=None):
+        self.config = config
         self.logger = logger or logging.getLogger("profilediagnostic")
-        self.address = address
         self.unsupported_method: Set[str] = set()
-        self.snmp_credential = cred
         self.reason: Optional[str] = None
         self.result_cache: Dict[Tuple[str, str], str] = {}
         self.profile: Optional[str] = None
         self.ignoring_snmp = False
-        self.profile_checks: List[Tuple[Check, ...]] = []
+        self.oids = []
+        self.urls = []
         self.rules: Dict[Tuple[str, str, int], List[SuggestProfile]] = self.load_rules()
 
-    def iter_checks(self) -> Iterable[Tuple[Check, ...]]:
-        for c in self.profile_checks:
-            if self.profile:
-                break
-            yield c
+    def iter_checks(
+        self,
+        address: str,
+        labels: Optional[List[str]] = None,
+        groups: Optional[List[str]] = None,
+        cred: Optional[Union[SNMPCredential, SNMPv3Credential]] = None,
+        **kwargs,
+    ) -> Iterable[Tuple[Check, ...]]:
+        if not cred:
+            self.ignoring_snmp = True
+        if self.oids and cred and isinstance(cred, SNMPCredential):
+            yield (
+                Check(
+                    name="SNMPv2c",
+                    address=address,
+                    credential=cred,
+                    args={"oids": ",".join(self.oids)},
+                ),
+            )
+        elif self.oids and cred and isinstance(cred, SNMPv3Credential):
+            yield (
+                Check(
+                    name="SNMPv3",
+                    address=address,
+                    credential=cred,
+                    args={"oids": ",".join(self.oids)},
+                ),
+            )
+        if self.profile or not self.urls:
+            return
+        yield (
+            Check(name=self.method_check_map[m], address=address, args={"url": url})
+            for (m, url) in self.urls
+        )
 
     def parse_checks(self, checks: List[CheckResult]):
         """Update checks data"""
@@ -110,38 +129,15 @@ class ProfileDiagnostic:
         Convert list to tree: (method, param) -> Rules
         """
         r = defaultdict(list)
-        oids = []
-        http_checks = []
-        snmp_checks = []
         for rule in ProfileCheckRule.get_profile_check_rules():
             r[rule.query_key].append(rule)
             if rule.method == "snmp_v2c_get":
                 param = self.clean_snmp_param(rule.param)
-                if param not in oids:
-                    oids.append(param)
+                if param not in self.oids:
+                    self.oids.append(param)
             elif rule.method == "http_get" or rule.method == "https_get":
-                c = Check(
-                    name=self.method_check_map[rule.method],
-                    address=self.address,
-                    args={"url": rule.param},
-                )
-                if c not in http_checks:
-                    http_checks.append(c)
-        if oids and self.snmp_credential:
-            snmp_checks += [
-                Check(
-                    name=(
-                        "SNMPv2c" if isinstance(self.snmp_credential, SNMPCredential) else "SNMPv3"
-                    ),
-                    address=self.address,
-                    credential=self.snmp_credential,
-                    args={"oids": ",".join(oids)},
-                ),
-            ]
-        if snmp_checks:
-            self.profile_checks += [tuple(snmp_checks)]
-        if http_checks:
-            self.profile_checks += [tuple(http_checks)]
+                if rule.param not in self.urls:
+                    self.urls.append((rule.method, rule.param))
         return r
 
     def find_profile(self, key, result: str) -> Optional[SuggestProfile]:
