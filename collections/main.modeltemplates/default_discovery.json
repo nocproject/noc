@@ -1,0 +1,25 @@
+{
+    "name": "default (Discovery)",
+    "$collection": "main.modeltemplates",
+    "uuid": "8ce35557-24a0-4059-9662-873d4d1a4eec",
+    "description": "Default Template for Discovered Object",
+    "allow_manual": false,
+    "params": [
+        {
+            "name": "object_profile",
+            "default_expression": "1",
+            "ignore": false,
+            "required": false
+        },
+        {
+            "name": "administrative_domain",
+            "default_expression": "1",
+            "ignore": false,
+            "required": false
+        }
+    ],
+    "params_form": [],
+    "resource_model": null,
+    "sticky": false,
+    "type": "host"
+}

@@ -943,6 +943,7 @@ nav:
       - Connection Type Restrictions: connection-type-restrictions/index.md
       - Topology Processing Features: topology-processing-features/index.md
       - Configuration Management: configuration-management/index.md
+      - Host Discovery Network: host-discovery-network/index.md
       - Fault Management: fault-management/index.md
       - Performance Management: performance-management/index.md
       - Peering Management: peering-management/index.md

@@ -141,8 +141,9 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
-            name: "enable_discoveredobject",
-            type: "boolean"
+            name: "managed_object_loader_policy",
+            type: "string",
+            defaultValue: "M"
         },
         {
             name: "enable_fmevent",

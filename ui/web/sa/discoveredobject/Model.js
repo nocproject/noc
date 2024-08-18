@@ -74,6 +74,11 @@ Ext.define("NOC.sa.discoveredobject.Model", {
       persist: false,
     },
     {
+      name: "is_synced",
+      type: "bool",
+      persist: false,
+    },
+    {
       name: "managed_object",
       type: "int",
     },

@@ -99,6 +99,16 @@ Ext.define("NOC.main.remotesystem.Application", {
                             boxLabel: __("Managed Object")
                         },
                         {
+                            name: "managed_object_loader_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Managed Object Loader Policy"),
+                            store: [
+                                ["M", __("As Managed Object")],
+                                ["D", __("As Discovered")],
+                            ],
+                            value: "M",
+                        },
+                        {
                             name: "enable_managedobjectprofile",
                             xtype: "checkbox",
                             boxLabel: __("Managed Object Profile")
@@ -197,11 +207,6 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "enable_label",
                             xtype: "checkbox",
                             boxLabel: __("Labels")
-                        },
-                        {
-                            name: "enable_discoveredobject",
-                            xtype: "checkbox",
-                            boxLabel: __("Enable Discovered")
                         },
                         {
                             name: "enable_fmevent",

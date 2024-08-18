@@ -25,6 +25,14 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/sa/objectdiscoveryrule/{id}/json/'),
+            previewName: new Ext.XTemplate('Model Template: {name}')
+        });
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
         Ext.apply(me, {
             columns: [
                 {
@@ -152,6 +160,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                 store: [
                                     ["etl", _("ETL")],
                                     ["network-scan", _("Network Scan")],
+                                    ["neighbor", _("Device Neighbors")],
                                     ["manual", _("Manual")]
                                 ]
                             }
@@ -204,9 +213,9 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     uiStyle: "medium"
                 },
                 {
-                    name: "allow_sync",
+                    name: "sync_approved",
                     xtype: "checkbox",
-                    boxLabel: __("Allow Sync")
+                    boxLabel: __("Sync Approved Records")
                 },
                 {
                   name: "default_template",
@@ -214,11 +223,6 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                   uiStyle: 'large',
                   fieldLabel: __("Default Template"),
                   allowBlank: true
-                },
-                {
-                    name: "stop_processed",
-                    xtype: "checkbox",
-                    boxLabel: __("Stop Processing")
                 },
                 {
                     xtype: "fieldset",
@@ -407,8 +411,25 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
         });
         me.callParent();
+    },
+
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
     }
+
 });

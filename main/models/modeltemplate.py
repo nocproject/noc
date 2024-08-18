@@ -230,6 +230,7 @@ class ModelTemplate(Document):
             "uuid": self.uuid,
             "description": self.description,
             "resource_model": self.resource_model,
+            "type": self.type,
             #
             "params": [f.json_data for f in self.params],
             "params_form": [f.json_data for f in self.params_form],

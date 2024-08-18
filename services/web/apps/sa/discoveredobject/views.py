@@ -51,8 +51,11 @@ class DiscoveredObjectApplication(ExtDocApplication):
                 {"name": c.name, "port": c.port, "status": c.status, "label": c.name}
                 for c in o.checks
             ]
-        if "managed_object_id" in r:
+        if r.get("managed_object_id"):
             r["synced"] = {"id": r["managed_object_id"], "model": "sa.ManagedObject"}
+            r["is_synced"] = True
+        else:
+            r["is_synced"] = False
         # if isinstance(o, CheckStatus):
         #    if not o.port:
         #        return o.name
@@ -95,7 +98,8 @@ class DiscoveredObjectApplication(ExtDocApplication):
     def api_sync_action(self, request):
         req = self.parse_request_query(request)
         for do in DiscoveredObject.objects.filter(id__in=req["ids"]):
-            do.sync()
+            do.fire_event("approved")  # ?set state
+            do.sync(force=True, template=req.get("template"))
         return {"status": True}
 
     @view(url=r"actions/send_event/$", method=["POST"], access="action", api=True)
