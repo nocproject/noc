@@ -7,16 +7,58 @@
 
 # Python modules
 import logging
+import operator
+import re
+from dataclasses import dataclass
 from collections import defaultdict
-from typing import List, Iterable, Optional, Tuple, Union, Dict, Set, Any
+from typing import List, Iterable, Optional, Tuple, Union, Dict, Set, Any, ClassVar, Literal
+
+# Third-party modules
+import cachetools
 
 # NOC modules
 from noc.core.mib import mib
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
-from noc.core.checkers.http import HTTP_DIAG, HTTPS_DIAG
-from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
+from noc.core.wf.diagnostic import HTTP_DIAG, HTTPS_DIAG
+from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.core.wf.diagnostic import DiagnosticConfig
 from noc.core.checkers.base import Check, CheckResult
+
+
+@dataclass(frozen=True)
+class SuggestProfile(object):
+    method: Literal["snmp_v2c_get", "http_get", "https_get"]
+    param: str
+    match: Literal["eq", "contains", "re"]
+    value: str
+    profile: str
+    preference: int
+    name: Optional[str] = None
+
+    _re_cache: ClassVar[Dict[str, str]] = {}
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_re_cache"))
+    def get_re(cls, regexp):
+        return re.compile(regexp)
+
+    def is_match(self, result: str) -> bool:
+        """
+        Returns True when result matches value
+        """
+        if self.match == "eq":
+            return result == self.value
+        elif self.match == "contains":
+            return self.value in result
+        elif self.match == "re":
+            return bool(self.get_re(self.value).search(result))
+        else:
+            # self.logger.error("Invalid match method '%s'. Ignoring", self.method)
+            return False
+
+    @property
+    def query_key(self):
+        return self.method, self.param, self.preference
 
 
 class ProfileDiagnostic:
@@ -29,21 +71,10 @@ class ProfileDiagnostic:
         "https_get": HTTPS_DIAG,
     }
 
-    def __init__(
-        self,
-        cfg: DiagnosticConfig,
-        labels: Optional[List[str]] = None,
-        logger=None,
-        address: Optional[str] = None,
-        cred: Optional[Union[SNMPCredential, SNMPv3Credential]] = None,
-        **kwargs,
-    ):
+    def __init__(self, cfg: DiagnosticConfig, logger=None):
         self.config = cfg
-        self.labels = labels
         self.logger = logger or logging.getLogger("profilediagnostic")
-        self.address = address
         self.unsupported_method: Set[str] = set()
-        self.snmp_credential = cred
         self.reason: Optional[str] = None
         self.result_cache: Dict[Tuple[str, str], str] = {}
         self.profile: Optional[str] = None
@@ -51,7 +82,14 @@ class ProfileDiagnostic:
         self.profile_checks: List[Tuple[Check, ...]] = []
         self.rules: Dict[Tuple[str, str, int], List[SuggestProfile]] = self.load_rules()
 
-    def iter_checks(self) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(
+        self,
+        address: str,
+        labels: Optional[List[str]] = None,
+        groups: Optional[List[str]] = None,
+        cred: Optional[Union[SNMPCredential, SNMPv3Credential]] = None,
+        **kwargs,
+    ) -> Iterable[Tuple[Check, ...]]:
         for c in self.profile_checks:
             if self.profile:
                 break

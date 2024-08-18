@@ -41,8 +41,6 @@ class DiagnosticCheck(DiscoveryCheck):
         self.suggest_rules = CredentialCheckRule.get_suggests(self.object)
 
     def handler(self):
-        # Loading checkers
-        metrics: List[MetricValue] = []
         # Processed Check ? Filter param
         with DiagnosticHub(
             self.object,
@@ -72,7 +70,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 credentials: List[
                     Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
                 ] = []
-                for do_checks in d_hub.iter_active_checks(di.diagnostic):
+                for do_checks in d_hub.iter_checks(di.diagnostic):
                     checks: List[CheckResult] = []
                     for cr in self.run_checks(do_checks):
                         if cr.credential:
@@ -86,12 +84,12 @@ class DiagnosticCheck(DiscoveryCheck):
                             m_labels += [f"noc::check::arg0::{cr.arg0}"]
                         if cr.address:
                             m_labels += [f"noc::check::address::{cr.address}"]
-                        if not cr.skipped:
-                            metrics += [
-                                MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
-                            ]
-                        if cr.metrics:
-                            metrics += cr.metrics
+                        # if not cr.skipped:
+                        #    metrics += [
+                        #        MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
+                        #    ]
+                        #if cr.metrics:
+                        #    metrics += cr.metrics
                     # Update diagnostics
                     d_hub.update_checks(checks)
                 # Apply Profile

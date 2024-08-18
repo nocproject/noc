@@ -11,7 +11,7 @@ import asyncio
 from typing import List, Iterable
 
 # NOC modules
-from .base import Checker, CheckResult, Check
+from noc.core.checkers.base import Checker, CheckResult, Check
 
 TCP_DIAG = "TCP"
 
