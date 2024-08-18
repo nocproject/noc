@@ -11,9 +11,7 @@ import asyncio
 from typing import List, Iterable
 
 # NOC modules
-from .base import Checker, CheckResult, Check
-
-TCP_DIAG = "TCP"
+from noc.core.checkers.base import Checker, CheckResult, Check, TCP_CHECK
 
 
 class TCPConnect(Checker):
@@ -22,14 +20,14 @@ class TCPConnect(Checker):
     """
 
     name = "tcp"
-    CHECKS: List[str] = [TCP_DIAG]
+    CHECKS: List[str] = [TCP_CHECK]
     SOCKET_TIMEOUT = 2
 
     async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
         for c in checks:
             if not c.port:
                 yield CheckResult(
-                    check=TCP_DIAG,
+                    check=TCP_CHECK,
                     port=c.port,
                     status=True,
                     skipped=True,
@@ -49,7 +47,7 @@ class TCPConnect(Checker):
                 avail = True
                 self.logger.debug("[%s] Port %s is open", c.address, c.port)
             yield CheckResult(
-                check=TCP_DIAG,
+                check=TCP_CHECK,
                 port=c.port,
                 status=avail,
             )
@@ -61,7 +59,7 @@ class TCPConnect(Checker):
             for c in checks:
                 if not c.port:
                     yield CheckResult(
-                        check=TCP_DIAG,
+                        check=TCP_CHECK,
                         port=c.port,
                         status=True,
                         skipped=True,
@@ -73,7 +71,7 @@ class TCPConnect(Checker):
                 else:
                     avail = False
                 yield CheckResult(
-                    check=TCP_DIAG,
+                    check=TCP_CHECK,
                     port=c.port,
                     status=avail,
                 )

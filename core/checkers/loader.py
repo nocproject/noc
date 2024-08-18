@@ -13,8 +13,7 @@ from .base import Checker
 class CheckersLoader(BaseLoader):
     name = "checkers"
     base_cls = Checker
-    base_path = ("core", "checkers")
-    ignored_names = {"loader", "base"}
+    base_path = ("services", "activator", "checkers")
 
     def __init__(self):
         super().__init__()
