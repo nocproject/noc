@@ -713,3 +713,7 @@ table {
 .noc-inv-nav-cell-inner::before { 
     border: none !important;
 }
+
+.selectable:hover path{
+    stroke: #f1c40f;
+}

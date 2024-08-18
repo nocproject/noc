@@ -1463,15 +1463,6 @@ class Object(Document):
         """
         Iterate objects all effective crossings.
         """
-
-        def iter_merge(
-            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
-        ) -> Iterable[Crossing]:
-            if i1:
-                yield from i1
-            if i2:
-                yield from i2
-
         if self.cross:
             yield from self.cross
         if self.model.cross:

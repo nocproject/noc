@@ -16,6 +16,7 @@ from bson import ObjectId
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
+from noc.core.hash import hash_int
 from .base import InvPlugin
 
 
@@ -28,7 +29,7 @@ class ConnectionItem(object):
 
 @dataclass
 class Node(object):
-    object_id: str
+    object: Object
     name: str
     model: str
     parent_connection: Optional[str]
@@ -39,7 +40,7 @@ class Node(object):
     @classmethod
     def from_object(cls, obj: Object) -> "Node":
         return Node(
-            object_id=str(obj.id),
+            object=obj,
             name=obj.name or "",
             model=obj.model.get_short_label(),
             parent_connection=obj.parent_connection,
@@ -47,6 +48,10 @@ class Node(object):
             is_external=False,
             connections=[],
         )
+
+    @property
+    def object_id(self) -> str:
+        return str(self.object.id)
 
     @property
     def is_chassis(self) -> bool:
@@ -69,27 +74,29 @@ class CommutationPlugin(InvPlugin):
         super().init_plugin()
 
     def get_data(self, request, object):
-        return {"data": self.to_viz(self.get_nested_inventory(object))}
+        inv = list(self.iter_nested_inventory(object))
+        return {"viz": self.to_viz(inv), "data": self.to_data(inv)}
 
     @staticmethod
-    def iter_indent(s: Iterable[str], i: int = 0) -> Iterable[str]:
+    def c_hash(local_object: str, local_name: str, remote_object: str, remote_name: str) -> str:
         """
-        Indent iterable.
-
-        Args:
-            s: Input iterable of strings
-            i: Indentation level
-
-        Returns:
-            Indented strings
+        Get stable connection hash.
         """
-        if not i:
-            yield from s
-        else:
-            for item in s:
-                yield "  " * i + item
 
-    def get_nested_inventory(self, obj: Object) -> Iterable[Node]:
+        def inner() -> str:
+            # Calculate stable hash
+            if local_object == remote_object:
+                # Loop
+                if local_name < remote_name:
+                    return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
+                return f"{local_object}|{remote_name}|{remote_object}|{local_name}"
+            elif local_object < remote_object:
+                return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
+            return f"{remote_object}|{remote_name}|{local_object}|{local_name}"
+
+        return f"e_{hash_int(inner())}"
+
+    def iter_nested_inventory(self, obj: Object) -> Iterable[Node]:
         """
         Fetch object and all underlying objects.
 
@@ -331,18 +338,8 @@ class CommutationPlugin(InvPlugin):
         def add_connection(
             local_object: str, local_name: str, remote_object: str, remote_name: str
         ) -> None:
-            # Calculate stable hash
-            if local_object == remote_object:
-                # Loop
-                if local_name < remote_name:
-                    c_hash = f"{local_object}|{local_name}|{remote_object}|{remote_name}"
-                else:
-                    c_hash = f"{local_object}|{remote_name}|{remote_object}|{local_name}"
-            elif local_object < remote_object:
-                c_hash = f"{local_object}|{local_name}|{remote_object}|{remote_name}"
-            else:
-                c_hash = f"{remote_object}|{remote_name}|{local_object}|{local_name}"
             # Check if we have seen this connection
+            c_hash = self.c_hash(local_object, local_name, remote_object, remote_name)
             if c_hash in seen_conns:
                 return
             # Generate connnection edge
@@ -350,8 +347,10 @@ class CommutationPlugin(InvPlugin):
                 "tail": q_node(local_object),
                 "head": q_node(remote_object),
                 "attributes": {
+                    "id": c_hash,
                     "tailport": q_conn_name(local_name),
                     "headport": q_conn_name(remote_name),
+                    "class": "selectable",
                 },
             }
             top["edges"].append(edge)
@@ -370,3 +369,62 @@ class CommutationPlugin(InvPlugin):
                 continue  # Pruned
             render(node, top)
         return top
+
+    def to_data(self, nodes: Iterable[Node]) -> List[Dict[str, Any]]:
+        """
+        Prepare commutation table
+        """
+
+        def update_labels(node: None) -> None:
+            if node.object_id in node_labels:
+                return
+            # Build label
+            parts = []
+            local_name = node.object.get_local_name_path(True)
+            if local_name:
+                parts.append(" > ".join(local_name))
+            else:
+                parts.append(node.name)
+            parts.append(f" [{node.object.model.get_short_label()}]")
+            label = "".join(parts)
+            node_labels[node.object_id] = label
+            # Update children
+            for child in node.children:
+                update_labels(child)
+
+        def collect(node: Node) -> None:
+            for c in node.connections:
+                c_hash = self.c_hash(
+                    local_object=node.object_id,
+                    local_name=c.local_name,
+                    remote_object=c.remote_object,
+                    remote_name=c.remote_name,
+                )
+                if c_hash in seen:
+                    continue
+                data.append(
+                    {
+                        "id": c_hash,
+                        "local_object": node.object_id,
+                        "local_object__label": node_labels[node.object_id],
+                        "local_name": c.local_name,
+                        "remote_object": c.remote_object,
+                        "remote_object__label": node_labels[c.remote_object],
+                        "remote_name": c.remote_name,
+                    }
+                )
+                seen.add(c_hash)
+            for child in node.children:
+                collect(child)
+
+        # Collect node labels
+        node_labels: Dict[str, str] = {}
+        for node in nodes:
+            update_labels(node)
+        #
+        data = []
+        seen = set()
+        # Collect connections
+        for node in nodes:
+            collect(node)
+        return data
