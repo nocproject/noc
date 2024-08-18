@@ -20,11 +20,11 @@ from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.profile.diagnostic import SuggestProfile
 from noc.sa.models.profile import Profile
 from noc.main.models.doccategory import category
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
-from noc.core.checkers.profile import SuggestProfile
 
 rules_lock = Lock()
 
