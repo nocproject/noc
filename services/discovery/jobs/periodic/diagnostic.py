@@ -88,7 +88,7 @@ class DiagnosticCheck(DiscoveryCheck):
                         #    metrics += [
                         #        MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
                         #    ]
-                        #if cr.metrics:
+                        # if cr.metrics:
                         #    metrics += cr.metrics
                     # Update diagnostics
                     d_hub.update_checks(checks)

@@ -421,22 +421,9 @@ class DiagnosticHub(object):
         self.__diagnostics = r
 
     def __load_checks(self):
-        """"""
-        self.__checks = defaultdict(set)
-        for di in self.__diagnostics.values():
-            ctx = {
-                "logger": self.logger,
-                "labels": self.__object.effective_labels,
-                "address": self.__object.address,
-            }
-            if di.config.include_credentials and self.__object.credentials:
-                ctx["cred"] = self.__object.credentials.get_snmp_credential()
-            for checks in di.iter_checks(**ctx):
-                if di._active_checks is None:
-                    di._active_checks = []
-                di._active_checks.append(checks)
-                for c in itertools.chain(checks):
-                    self.__checks[c.key] += [di.diagnostic]
+        """Loading all diagnostic checks"""
+        for d in self.__diagnostics:
+            list(self.iter_checks(d))
 
     def iter_checks(self, d: str) -> Iterable[Tuple[Check, ...]]:
         if self.__checks is None:
@@ -452,19 +439,10 @@ class DiagnosticHub(object):
         for ci in di.config.diagnostic_ctx or []:
             if ci.name in self.__data:
                 ctx[ci.alias or ci.name] = self.__data[ci.name]
-
         for checks in di.iter_checks(**ctx, logger=self.logger):
             for c in itertools.chain(checks):
                 self.__checks[c.key].add(di.diagnostic)
             yield checks
-
-    def iter_active_checks(self, d: str) -> Iterable[Tuple[Check, ...]]:
-        if self.__checks is None:
-            self.__load_checks()
-        di = self.get(d)
-        if not di._active_checks:
-            return
-        yield from di._active_checks
 
     def set_state(
         self,
