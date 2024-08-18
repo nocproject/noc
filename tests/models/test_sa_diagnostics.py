@@ -24,6 +24,7 @@ class Object(object):
     id = 10
     diagnostics = {}
     effective_labels = []
+    effective_service_groups = []
     access_preference = "S"
     address = "10.10.10.10"
     profile = None

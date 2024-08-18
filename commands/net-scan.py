@@ -24,9 +24,8 @@ from noc.core.perf import metrics
 from noc.core.ip import IP
 from noc.config import config
 from noc.core.checkers.loader import loader
-from noc.core.checkers.base import Check, Checker, DataItem
-from noc.core.checkers.snmp import SNMPProtocolChecker, SUGGEST_CHECK
-from noc.core.checkers.tcp import TCP_DIAG
+from noc.core.checkers.base import Check, Checker, DataItem, TCP_CHECK
+from noc.services.activator.checkers.snmp import SNMPProtocolChecker, SUGGEST_CHECK
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, Protocol
 from noc.core.purgatorium import ProtocolCheckResult, register
 from noc.core.mib import mib
@@ -424,7 +423,7 @@ class Command(BaseCommand):
                 p = int(p.strip())
             except ValueError:
                 continue
-            yield Check(name=TCP_DIAG, address=address, port=p)
+            yield Check(name=TCP_CHECK, address=address, port=p)
         if rule:
             for c in rule.checks:
                 yield Check(
