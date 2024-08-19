@@ -108,13 +108,12 @@ class AlarmCard(BaseCard):
                 if self.object.managed_object.tt_system
                 else None
             ),
-            # "tt_system_failed": (
-            #     self.object.status == "A"
-            #     and not self.object.escalation_tt
-            #     and self.object.managed_object.tt_system
-            #     and self.object.managed_object.tt_system.is_failed()
-            # ),
-            "tt_system_failed": False,
+            "tt_system_failed": (
+                self.object.status == "A"
+                and not self.object.escalation_profile
+                and self.object.managed_object.tt_system
+                and self.object.managed_object.tt_system.is_failed()
+            ),
             "escalation_ctx": self.object.escalation_ctx,
             "escalation_close_ctx": getattr(self.object, "escalation_close_ctx", None),
         }

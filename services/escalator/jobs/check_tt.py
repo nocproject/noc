@@ -105,7 +105,7 @@ class CheckTTJob(Job):
             if c.change_id:
                 last_id = last_id
         if not changes:
-            self.logger.info("Nothing changes...")
+            self.logger.debug("Nothing changes...")
             return
         for doc_id, changes in changes.items():
             doc = docs[doc_id]

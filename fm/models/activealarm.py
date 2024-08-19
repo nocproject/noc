@@ -59,7 +59,6 @@ from noc.config import config
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE, RCA_OTHER
 from noc.core.handler import get_handler
-from noc.core.scheduler.job import Job
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
@@ -133,7 +132,7 @@ class ActiveAlarm(Document):
     deferred_groups = ListField(BinaryField())
     # Escalated TT ID in form
     # <external system name>:<external tt id>
-    escalation_profile = PlainReferenceField(EscalationProfile)
+    escalation_profile: Optional["EscalationProfile"] = PlainReferenceField(EscalationProfile)
     # span context
     escalation_ctx = LongField(required=False)
     # Directly affected services summary, grouped by profiles
@@ -216,27 +215,12 @@ class ActiveAlarm(Document):
             self.register_changes()
 
     def register_changes(self):
-        from noc.fm.models.escalation import Escalation, ItemStatus, ESCALATION_JOB
+        from noc.fm.models.escalation import Escalation, ItemStatus
 
-        if not self.id:
-            return
-        if not self.escalation_profile:
-            return
-        coll = Escalation._get_collection()
-        r = coll.find_one_and_update(
-            {
-                "items.0.alarm": self.id,
-                "items.0.status": {"$in": [ItemStatus.CHANGED.value, ItemStatus.NEW.value]},
-                "is_dirty": False,
-                "end_timestamp": {"$exists": False},
-            },
-            {"$set": {"items.0.status": ItemStatus.CHANGED.value, "is_dirty": True}},
-            projection={"end_timestamp": True, "_id": True},
-        )
-        print("Register Changes", r)
-        if r:
-            # Update Job, TTSystem Shard (Set Shard on Profile)
-            Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
+        if self.escalation_profile and self.id:
+            Escalation.register_changes(
+                self.id, [ItemStatus.CHANGED, ItemStatus.NEW], ItemStatus.CHANGED,
+            )
 
     def change_severity(
         self,
@@ -305,22 +289,19 @@ class ActiveAlarm(Document):
         :param source: Source clear alarm
         """
         from .alarmdiagnosticconfig import AlarmDiagnosticConfig
-        from .escalation import Escalation, ItemStatus, ESCALATION_JOB
+        from .escalation import Escalation, ItemStatus
 
         if self.alarm_class.is_ephemeral:
             self.delete()
         ts = ts or datetime.datetime.now()
-        if self.wait_tt and not force:
-            # Wait for escalated tt to close
-            if not self.wait_ts:
-                self.wait_ts = ts
-                self.log_message("Waiting for TT to close")
-                call_later(
-                    "noc.services.escalator.wait_tt.wait_tt",
-                    scheduler="escalator",
-                    pool=self.managed_object.escalator_shard,
-                    alarm_id=self.id,
-                )
+        if self.escalation_profile and self.escalation_profile.end_condition == "CT" and not force:
+            self.log_message("Waiting for TT to close")
+            # call_later(
+            #     "noc.services.escalator.wait_tt.wait_tt",
+            #     scheduler="escalator",
+            #     pool=self.managed_object.escalator_shard,
+            #     alarm_id=self.id,
+            # )
             return
         if self.alarm_class.clear_handlers:
             # Process clear handlers
@@ -345,7 +326,7 @@ class ActiveAlarm(Document):
             ack_user=self.ack_user,
             root=self.root,
             groups=self.groups,
-            escalation_profile=self.escalation_profile,
+            escalation_profile=self.escalation_profile.id if self.escalation_profile else None,
             escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             closing_event=self.closing_event,
@@ -417,20 +398,7 @@ class ActiveAlarm(Document):
         # Close TT
         # MUST be after .delete() to prevent race conditions
         if self.escalation_profile and self.escalation_profile.end_condition == "CR":
-            coll = Escalation._get_collection()
-            r = coll.find_one_and_update(
-                {
-                    "items.0.alarm": self.id,
-                    "items.0.status": ItemStatus.NEW.value,
-                    "end_timestamp": {"$exists": False},
-                },
-                {"$set": {"items.0.status": ItemStatus.REMOVED.value, "is_dirty": True}},
-                projection={"end_timestamp": True, "_id": True},
-            )
-            if r:
-                # Update Job, TTSystem Shard (Set Shard on Profile)
-                Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
-
+            Escalation.register_changes(self.id, [ItemStatus.NEW], ItemStatus.REMOVED)
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
@@ -947,20 +915,13 @@ class ActiveAlarm(Document):
         if self.id:
             ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
 
-    def escalate(self, tt_id, close_tt=False, wait_tt=None):
-        self.escalation_tt = tt_id
-        self.escalation_ts = datetime.datetime.now()
-        self.close_tt = close_tt
-        self.wait_tt = wait_tt
-        self.log_message("Escalated to %s" % tt_id)
+    def escalate(self, escalation):
+        self.escalation_profile = escalation.profile
+        self.log_message("Escalated as %s" % escalation)
         q = {"_id": self.id}
         op = {
             "$set": {
-                "escalation_tt": self.escalation_tt,
-                "escalation_ts": self.escalation_ts,
-                "close_tt": self.close_tt,
-                "wait_tt": self.wait_tt,
-                "escalation_error": None,
+                "escalation_profile": self.escalation_profile.id,
             }
         }
         r = ActiveAlarm._get_collection().update_one(q, op)

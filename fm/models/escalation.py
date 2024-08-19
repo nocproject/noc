@@ -34,6 +34,7 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
 from noc.core.tt.types import EscalationStatus, TTAction, EscalationMember
+from noc.core.scheduler.job import Job
 from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
@@ -194,6 +195,30 @@ class Escalation(Document):
     def __str__(self) -> str:
         return f"{self.profile.name} ({self.sequence_num}): {str(self.id)}"
 
+    @classmethod
+    def ensure_job(cls, eid: str):
+        """Update Job, TTSystem Shard (Set Shard on Profile)"""
+        Job.submit("escalator", ESCALATION_JOB, key=str(eid), pool="default")
+
+    @classmethod
+    def register_changes(cls, item_id, from_statuses: List[ItemStatus], to_status: ItemStatus):
+        """Register item change"""
+        coll = Escalation._get_collection()
+        r = coll.find_one_and_update(
+            {
+                "items.0.alarm": item_id,
+                "items.0.status": {"$in": [i.value for i in from_statuses]},
+                "is_dirty": False,
+                "end_timestamp": {"$exists": False},
+            },
+            {"$set": {"items.0.status": to_status.value, "is_dirty": True}},
+            projection={"end_timestamp": True, "_id": True},
+        )
+        print("Register Changes", r)
+        if r:
+            # Update Job, TTSystem Shard (Set Shard on Profile)
+            Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
+
     def get_timestamp(self) -> datetime.datetime:
         if not self.sequence_num:
             return self.timestamp
@@ -307,9 +332,7 @@ class Escalation(Document):
         )
 
     def get_ctx(self):
-        """
-        Get escalation context
-        """
+        """Get escalation context"""
         from noc.sa.models.serviceprofile import ServiceProfile
         from noc.sa.models.managedobjectprofile import ManagedObjectProfile
         from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -548,12 +571,35 @@ class Escalation(Document):
         return None
 
     @classmethod
+    def register_escalation(
+        cls, alarm: ActiveAlarm, profile: EscalationProfile, force: bool = False
+    ):
+        """Register new alarm escalation"""
+        ed = Escalation.from_alarm(alarm, profile, force=force)
+        ed.save()
+        # ActiveAlarm.objects.filter(id=alarm.id).update(escalation_profile=profile)
+        alarm.escalate(ed)
+        Job.submit(
+            "escalator",
+            ESCALATION_JOB,
+            key=str(ed.id),
+            pool=alarm.managed_object.escalator_shard or "default",
+        )
+
+    @classmethod
     def from_alarm(
         cls,
         alarm: ActiveAlarm,
         profile: EscalationProfile,
         force: bool = False,
     ) -> "Escalation":
+        """
+        Create Escalation instance from alarm and profile
+        Args:
+            alarm: ActiveAlarm instance
+            profile: Escalation Profile
+            force: Forced escalation
+        """
         if profile.alarm_consequence_policy == "c":
             ts = datetime.datetime.now()
         else:
@@ -580,10 +626,7 @@ class Escalation(Document):
         )
 
     def update_items(self):
-        """
-        Update escalation doc items
-        Run on is_dirty
-        """
+        """Update escalation doc items. Run on is_dirty"""
 
         def update_totals_from_summary(
             t_dict: DefaultDict[ObjectId, int], t_items: Iterable[SummaryItem]
@@ -633,10 +676,7 @@ class Escalation(Document):
         ]
 
     def get_tt_ids(self) -> str:
-        """
-        Return all escalated Document with TT system
-        :return:
-        """
+        """Return all escalated Document with TT system"""
         r = []
         for i in self.escalations:
             if i.member == EscalationMember.TT_SYSTEM and i.document_id:
@@ -645,11 +685,12 @@ class Escalation(Document):
         return ";".join(r)
 
     def check_end(self) -> bool:
-        """
-        Check Escalation End Condition
-        """
+        """Check Escalation End Condition"""
         if self.end_timestamp:
             return True
+        if self.alarm.status != "A":
+            return True
+        # Check if alarm leader was closed
         if self.profile.end_condition == "CR":
             return self.leader.status == ItemStatus.REMOVED
         elif self.profile.end_condition == "CA":

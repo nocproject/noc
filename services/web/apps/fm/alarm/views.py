@@ -865,7 +865,8 @@ class AlarmApplication(ExtApplication):
                     "Alarm has been escalated by %s" % request.user.username,
                     source=request.user.username,
                 )
-                AlarmEscalation.watch_escalations(alarm, force=True)
+                Escalation.register_escalation(alarm, profile=p, force=True)
+                # AlarmEscalation.watch_escalations(alarm, force=True)
         return {"status": True}
 
     @staticmethod
