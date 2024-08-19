@@ -50,7 +50,7 @@ class ChangeLog(object):
         """
         while True:
             try:
-                return self._get_state()
+                return await self._get_state()
             except ClickhouseError as e:
                 self.logger.error("Failed to fetch state: %s", e)
                 await asyncio.sleep(random.random() * STATE_RETRY)
