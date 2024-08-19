@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # State Change Log
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,11 +12,13 @@ import orjson
 import logging
 import asyncio
 import datetime
+import random
 
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.core.hash import hash_int
 from noc.core.clickhouse.connect import connection as ch_connection
+from noc.core.clickhouse.error import ClickhouseError
 
 SQL_STATE = """
     SELECT node_id, argMax(state, ts) as state
@@ -26,6 +28,7 @@ SQL_STATE = """
     FORMAT JSONEachRow
 
 """
+STATE_RETRY = 3.0
 
 
 class ChangeLog(object):
@@ -41,6 +44,18 @@ class ChangeLog(object):
         self.service = get_service()
 
     async def get_state(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Retrieve current state snapshot.
+        Restart on failure.
+        """
+        while True:
+            try:
+                return self._get_state()
+            except ClickhouseError as e:
+                self.logger.error("Failed to fetch state: %s", e)
+                await asyncio.sleep(random.random() * STATE_RETRY)
+
+    async def _get_state(self) -> Dict[str, Dict[str, Any]]:
         """
         Retrieve current state snapshot
         """
