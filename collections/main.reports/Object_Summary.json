@@ -19,8 +19,33 @@
             "name": "Root",
             "column_format": [
                 {
-                    "name": "category",
-                    "title": "Category",
+                    "name": "profile",
+                    "title": "Profile",
+                    "format_type": "string"
+                },
+                {
+                    "name": "domain",
+                    "title": "Administrative Domain",
+                    "format_type": "string"
+                },
+                {
+                    "name": "label",
+                    "title": "Label",
+                    "format_type": "string"
+                },
+                {
+                    "name": "platform",
+                    "title": "Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "version",
+                    "title": "Version",
+                    "format_type": "string"
+                },
+                {
+                    "name": "fw_policy",
+                    "title": "Firmware Policy",
                     "format_type": "string"
                 },
                 {

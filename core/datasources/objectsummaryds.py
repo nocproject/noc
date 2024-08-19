@@ -31,7 +31,12 @@ class ObjectSummaryDS(BaseDataSource):
     name = "objectsummaryds"
 
     fields = [
-        FieldInfo(name="category", description="Category"),
+        FieldInfo(name="profile", description="Profile"),
+        FieldInfo(name="domain", description="Administrative Domain"),
+        FieldInfo(name="label", description="Label"),
+        FieldInfo(name="platform", description="Platform"),
+        FieldInfo(name="version", description="Version"),
+        FieldInfo(name="fw_policy", description="Firmware Policy"),
         FieldInfo(name="quantity", description="Quantity", type=FieldType.UINT),
     ]
 
@@ -54,6 +59,8 @@ class ObjectSummaryDS(BaseDataSource):
             str(p["_id"]): p["name"]
             for p in Profile.objects.all().as_pymongo().scalar("id", "name")
         }
+        # if user is None:
+        #     raise ValueError("'user' parameter is required")
         if user and not user.is_superuser:
             ad = tuple(UserAccess.get_domains(user))
             wr = ("WHERE administrative_domain_id in ", ad)
@@ -124,11 +131,22 @@ class ObjectSummaryDS(BaseDataSource):
             cursor.execute(query, ())
             for num, c in enumerate(cursor.fetchall()):
                 if report_type == "profile":
-                    record = (profile.get(c[0]), c[1])
+                    yield num, "profile", profile.get(c[0])
+                    yield num, "quantity", c[1]
+                if report_type == "domain":
+                    yield num, "domain", c[0]
+                    yield num, "quantity", c[1]
                 elif report_type == "domain-profile":
-                    record = (f"{c[0]} / {profile.get(c[1])}", c[2])
+                    yield num, "domain", c[0]
+                    yield num, "profile", profile.get(c[1])
+                    yield num, "quantity", c[2]
+                if report_type == "label":
+                    yield num, "label", c[0]
+                    yield num, "quantity", c[1]
                 elif report_type == "platform":
-                    record = (f"{profile.get(c[0])} / {platform.get(c[1])}", c[2])
+                    yield num, "profile", profile.get(c[0])
+                    yield num, "platform", platform.get(c[1])
+                    yield num, "quantity", c[2]
                 elif report_type == "version":
                     fw, fps = version.get(c[1]), None
                     if fw:
@@ -136,8 +154,7 @@ class ObjectSummaryDS(BaseDataSource):
                             fps = FirmwarePolicy.get_status(fw)
                         except ValueError:
                             pass
-                    record = (f"{profile.get(c[0])} / {fw} / {fp_map.get(fps, fps or '')}", c[2])
-                else:
-                    record = c
-                yield num, "category", record[0]
-                yield num, "quantity", record[1]
+                    yield num, "profile", profile.get(c[0])
+                    yield num, "version", str(fw)
+                    yield num, "fw_policy", fp_map.get(fps, fps or "")
+                    yield num, "quantity", c[2]
