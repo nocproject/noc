@@ -63,6 +63,30 @@
     "localization": {
         "title": {
             "ru": "Сводка по объектам (Новый)"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
+        },
+        "columns.domain": {
+            "ru": "З.О."
+        },
+        "columns.label": {
+            "ru": "Метка"
+        },
+        "columns.platform": {
+            "ru": "Платформа"
+        },
+        "columns.version": {
+            "ru": "Версия"
+        },
+        "columns.fw_policy": {
+            "ru": "Политика версий прошивок"
+        },
+        "columns.quantity": {
+            "ru": "Количество"
+        },
+        "parameters.report_type": {
+            "ru": "Тип отчета"
         }
     },
     "parameters": [
