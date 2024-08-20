@@ -49,7 +49,6 @@ class Group(object):
 class Action(object):
     policy: str
     notification_group: Optional[NotificationGroup] = None
-    escalation_profile: Optional[EscalationProfile] = None
     severity_action: str = "set"
     severity: int = 0
     # Sync collection Default ?
@@ -72,12 +71,12 @@ class ActionItem(object):
     severity: Optional[int] = None
     severity_action: Optional[str] = None
     notification_group: Optional[int] = None
-    escalation_profile: Optional[str] = None
 
 
 class AlarmRule(object):
     _default_alarm_class: Optional[AlarmClass] = None
     severity_policy: str = "AL"
+    escalation_profile: Optional[EscalationProfile] = None
 
     def __init__(self):
         self.match: List[Match] = []
@@ -91,6 +90,7 @@ class AlarmRule(object):
         """
         rule = AlarmRule()
         rule.severity_policy = rule_cfg.severity_policy
+        rule.escalation_profile = rule_cfg.escalation_profile
         # Add matches
         for match in rule_cfg.match:
             rule.match.append(
@@ -125,7 +125,6 @@ class AlarmRule(object):
                 Action(
                     policy=action.policy,
                     notification_group=action.notification_group,
-                    escalation_profile=action.escalation,
                     severity_action=action.severity_action,
                     severity=action.severity.severity if action.severity else None,
                 )

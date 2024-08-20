@@ -37,6 +37,12 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     renderer: NOC.render.Bool,
                     width: 100,
                     align: "left"
+                },
+                {
+                    text: __("Escalation Profile"),
+                    dataIndex: "escalation_profile",
+                    width: 200,
+                    renderer: NOC.render.Lookup("escalation_profile")
                 }
             ],
 
@@ -72,6 +78,13 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     ],
                     uiStyle: "medium",
                     value: "AL",
+                },
+                {
+                    name: "escalation_profile",
+                    xtype: "fm.escalationprofile.LookupField",
+                    fieldLabel: __("Escalation Profile"),
+                    allowBlank: true,
+                    uiStyle: "medium"
                 },
                 {
                     name: "groups",
@@ -198,13 +211,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             width: 150,
                             allowBlank: true,
                             renderer: NOC.render.Lookup("notification_group")
-                        },
-                        {
-                            text: __("Escalation Profile"),
-                            dataIndex: "escalation",
-                            editor: "fm.escalationprofile.LookupField",
-                            width: 150,
-                            renderer: NOC.render.Lookup("escalation")
                         },
                         {
                             text: __("Handler"),

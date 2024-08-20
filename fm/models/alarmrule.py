@@ -94,7 +94,6 @@ class Action(EmbeddedDocument):
     notification_group = ForeignKeyField(NotificationGroup, required=False)
     severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
     severity: AlarmSeverity = ReferenceField(AlarmSeverity)
-    escalation: EscalationProfile = ReferenceField(EscalationProfile)
     # Sync collection Default ?
     alarm_class = PlainReferenceField(AlarmClass)
 
@@ -120,6 +119,8 @@ class AlarmRule(Document):
     groups: List[Group] = ListField(EmbeddedDocumentField(Group))
     #
     actions: List[Action] = ListField(EmbeddedDocumentField(Action))
+    #
+    escalation_profile: Optional[EscalationProfile] = ReferenceField(EscalationProfile)
     #
     severity_policy = StringField(
         choices=[
@@ -157,3 +158,29 @@ class AlarmRule(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["AlarmRule"]:
         return AlarmRule.objects.filter(bi_id=bi_id).first()
+
+    def is_match(self, alarm):
+        if not self.match:
+            return True
+        lset = set(alarm.effective_labels)
+        for match in self.match:
+            # Match against labels
+            if match.exclude_labels and match.exclude_labels.issubset(lset):
+                continue
+            if not match.labels.issubset(lset):
+                continue
+            # Match against alarm class
+            if match.alarm_class and match.alarm_class != alarm.alarm_class:
+                continue
+            # Match severity
+            if match.severity and match.severity != AlarmSeverity.get_severity(alarm.severity):
+                continue
+            return True
+
+    @classmethod
+    def get_by_alarm(cls, alarm) -> List["AlarmRule"]:
+        r = []
+        for ar in AlarmRule.objects.filter(is_active=True):
+            if ar.is_match(alarm):
+                r.append(ar)
+        return r

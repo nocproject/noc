@@ -473,8 +473,8 @@ class CorrelatorService(FastAPIService):
                     for aa in rule.iter_actions(alarm):
                         if aa.severity:
                             a_severity = aa.severity
-                        if aa.escalation_profile:
-                            e_profile = aa.escalation_profile
+                    if rule.escalation_profile:
+                        e_profile = rule.escalation_profile
                 self.refresh_alarm(alarm, timestamp, a_severity or severity)
                 if alarm.escalation_profile:
                     # Repeat Escalation
@@ -548,8 +548,8 @@ class CorrelatorService(FastAPIService):
             for ai in rule.iter_actions(a):
                 if ai.severity:
                     a_severity = a.severity
-                if ai.escalation_profile:
-                    escalation_profile = ai.escalation_profile
+            if rule.escalation_profile:
+                escalation_profile = rule.escalation_profile
             if a.severity_policy != rule.severity_policy:
                 a.severity_policy = rule.severity_policy
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())

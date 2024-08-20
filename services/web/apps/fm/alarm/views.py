@@ -10,7 +10,7 @@ import os
 import inspect
 import datetime
 import operator
-from typing import Tuple, List, Dict, Any
+from typing import Tuple, List, Dict, Any, Optional
 import asyncio
 
 # Third-party modules
@@ -38,6 +38,8 @@ from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.escalation import Escalation
+from noc.fm.models.escalation import EscalationProfile
+from noc.fm.models.alarmrule import AlarmRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.gis.utils.addr.ru import normalize_division
@@ -49,6 +51,7 @@ from noc.sa.interfaces.base import (
     DateTimeParameter,
     StringParameter,
     StringListParameter,
+    ObjectIdParameter,
 )
 from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -56,7 +59,6 @@ from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
-from noc.fm.models.alarmescalation import AlarmEscalation
 
 SQL_EVENTS = f"""select
     e.event_id, e.ts,
@@ -840,33 +842,45 @@ class AlarmApplication(ExtApplication):
         method=["POST"],
         api=True,
         access="escalate",
-        validate={"ids": StringListParameter(required=True)},
+        validate={
+            "ids": StringListParameter(required=True),
+            "profile": ObjectIdParameter(required=False),
+        },
     )
-    def api_escalation_alarm(self, request, ids):
-        alarms = list(ActiveAlarm.objects.filter(id__in=ids))
+    def api_escalation_alarm(self, request, ids, profile: Optional[str] = None):
+        alarms: List["ActiveAlarm"] = list(ActiveAlarm.objects.filter(id__in=ids))
         if not alarms:
             return self.response_not_found()
+        if profile:
+            profile = EscalationProfile.get_by_id(profile)
         for alarm in alarms:
             if alarm.alarm_class.is_ephemeral:
                 # Ephemeral alarm has not escalated
                 continue
-            if alarm.escalation_tt:
+            if alarm.escalation_profile:
                 alarm.log_message(
-                    "Already escalated with TT #%s" % alarm.escalation_tt,
+                    "Already escalated with TT #%s" % alarm.escalation_profile,
                     source=request.user.username,
                 )
+                continue
             elif alarm.root:
                 alarm.log_message(
                     "Alarm is not root cause, skipping escalation",
                     source=request.user.username,
                 )
-            else:
-                alarm.log_message(
-                    "Alarm has been escalated by %s" % request.user.username,
-                    source=request.user.username,
-                )
-                Escalation.register_escalation(alarm, profile=p, force=True)
-                # AlarmEscalation.watch_escalations(alarm, force=True)
+                continue
+            p = profile
+            if not p:
+                rules = [ar for ar in AlarmRule.get_by_alarm(alarm) if ar.escalation_profile]
+                if not rules:
+                    continue
+                p = rules[0].escalation_profile
+            alarm.log_message(
+                f"Alarm has been escalated by {request.user.username}",
+                source=request.user.username,
+            )
+            Escalation.register_escalation(alarm, profile=p, force=True)
+            # AlarmEscalation.watch_escalations(alarm, force=True)
         return {"status": True}
 
     @staticmethod
