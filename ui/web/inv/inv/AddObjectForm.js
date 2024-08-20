@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.inv AddObject form
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.AddObjectForm");
@@ -11,113 +11,205 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
   requires: ["NOC.inv.objectmodel.LookupField"],
   app: null,
   padding: 4,
-
-  initComponent: function(){
-    var me = this,
-      title = __("Create new top-level object");
-
-    me.form = Ext.create("Ext.form.Panel", {
-      layout: "anchor",
-      defaults: {
-        anchor: "100%",
-        labelWidth: 40,
-      },
+  layout: "fit",
+  defaultListenerScope: true,
+  title: __("Create new top-level object"),
+  dockedItems: [
+    {
+      xtype: "toolbar",
+      dock: "top",
+      padding: "4 4 4 0",
       items: [
         {
-          xtype: "inv.objectmodel.LookupField",
-          name: "type",
-          fieldLabel: __("Type"),
-          uiStyle: "large",
-          allowBlank: false,
+          text: __("Save"),
+          glyph: NOC.glyph.save,
+          handler: "onPressAdd",
         },
         {
-          xtype: "textfield",
-          name: "name",
-          fieldLabel: __("Name"),
-          uiStyle: "medium",
-          allowBlank: false,
+          text: __("Close"),
+          glyph: NOC.glyph.arrow_left,
+          handler: "onPressClose",
+        },
+        "->",
+        {
+          text: __("Clear"),
+          tooltip: __("Clear all rows"),
+          handler: "onClearAll",
         },
         {
-          xtype: "textfield",
-          name: "serial",
-          fieldLabel: __("Serial"),
-          uiStyle: "medium",
-          allowBlank: true,
+          text: __("Add row"),
+          handler: "onAddRow",
         },
       ],
-    });
-
-    Ext.apply(me, {
-      title: title,
-      items: [me.form],
-      dockedItems: [
+    },
+  ],
+  items: [
+    {
+      xtype: "grid",
+      scrollable: true,
+      store: {
+        fields: [
+          {name: "name", type: "string", allowBlank: false},
+          {name: "model", type: "string", allowBlank: false},
+          {name: "serial", type: "string", allowBlank: true},
+        ],
+        data: [{}],
+      },
+      plugins: {
+        ptype: "cellediting",
+        clicksToEdit: 1,
+      },
+      columns: [
         {
-          xtype: "toolbar",
-          dock: "top",
-          padding: "4 4 4 0",
+          xtype: "actioncolumn",
+          width: 50,
           items: [
             {
-              text: __("Save"),
-              glyph: NOC.glyph.save,
-              scope: me,
-              handler: me.onPressAdd,
+              iconCls: "x-fa fa-trash",
+              tooltip: __("Remove"),
+              isDisabled: function(view, rowIndex, colIndex, item, record){
+                return Ext.isEmpty(record.get("model")) || Ext.isEmpty(record.get("name"));
+              },
+              handler: function(grid, rowIndex){
+                grid.getStore().removeAt(rowIndex);
+              },
             },
             {
-              text: __("Close"),
-              scope: me,
-              glyph: NOC.glyph.arrow_left,
-              handler: me.onPressClose,
+              iconCls: "x-fa fa-clone",
+              tooltip: __("Clone"),
+              isDisabled: function(view, rowIndex, colIndex, item, record){
+                return Ext.isEmpty(record.get("model")) || Ext.isEmpty(record.get("name"));
+              },
+              handler: function(grid, rowIndex){
+                var store = grid.getStore(),
+                  record = store.getAt(rowIndex).copy(),
+                  data = Ext.apply({}, record.getData()),
+                  name = record.get("name"),
+                  match = name.match(/(\d+)$/),
+                  newName = match ? name.replace(/(\d+)$/, function(num){ return parseInt(num, 10) + 1; }) : name + "2";
+    
+                var newRecord = Ext.create(record.self, {
+                  name: newName,
+                  model: data.model,
+                  serial: "",
+                });
+                store.insert(rowIndex + 1, newRecord);
+              },
             },
           ],
         },
+        {
+          text: __("Name"),
+          dataIndex: "name",
+          editor: "textfield",
+          flex: 1,
+        },
+        { 
+          text: __("Model"), 
+          dataIndex: "model", 
+          renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+            var column = view.getGridColumns()[colIndex],
+              editor = column.getEditor();
+            if(editor && editor.xtype === "inv.objectmodel.LookupField"){
+              var rec = editor.findRecordByValue(value);
+              return rec ? rec.get(editor.displayField) : value;
+            }
+            return "";
+          }, 
+          editor: {
+            xtype: "inv.objectmodel.LookupField",
+            allowBlank: false,
+            editable: false,
+          },
+          flex: 1, 
+        },
+        {
+          text: __("Serial"),
+          dataIndex: "serial",
+          editor: "textfield",
+          flex: 1,
+        },
       ],
-    });
-    me.callParent();
-  },
-
+      listeners: {
+        edit: function(editor, context){
+          var store = context.grid.getStore(),
+            lastRecord = store.last();
+    
+          if(context.record === lastRecord &&
+                (!Ext.isEmpty(lastRecord.get("name")) && !Ext.isEmpty(lastRecord.get("model")))){
+            store.add({});
+          }
+        },
+      },
+    },
+  ],
+  //
   onPressClose: function(){
     var me = this;
     me.app.showItem(me.app.ITEM_MAIN);
   },
-
+  //
   onPressAdd: function(){
     var me = this,
-      values = me.form.getValues();
+      items = this.down("grid").getStore().getData().items,
+      data = Ext.Array.map(
+        Ext.Array.filter(items, function(record){
+          return !Ext.isEmpty(record.get("name")) && !Ext.isEmpty(record.get("model"));
+        }),
+        function(record){
+          var item = {
+            name: record.get("name"),
+            model: record.get("model"),
+          }
+          if(record.get("serial")){
+            item.serial = record.get("serial");
+          } 
+          return item; 
+        });
     Ext.Ajax.request({
-      url: "/inv/inv/add_group/",
+      url: "/inv/inv/add/",
       method: "POST",
       jsonData: {
-        name: values.name,
-        type: values.type,
-        serial: values.serial,
+        items: data,
         container: me.groupContainer ? me.groupContainer.get("id") : null,
       },
       scope: me,
       success: function(response){
-        var objectId = Ext.decode(response.responseText);
+        var status = Ext.decode(response.responseText);
         me.app.showItem(me.app.ITEM_MAIN);
-        if(me.groupContainer){
-          me.app.store.reload({node: me.groupContainer});
-          me.app.showObject(objectId, false);
-          me.groupContainer.expand();
+        if(status.status){
+          NOC.info(__("Saved"));
+          if(me.groupContainer){
+            me.app.store.reload({node: me.groupContainer});
+            me.groupContainer.expand();
+            me.app.setHistoryHash(me.groupContainer);
+          }
         } else{
-          me.app.store.reload({
-            callback: function(){
-              me.app.showObject(objectId, false);
-            },
-          });
+          NOC.error(__("Failed to save"));
         }
-        me.app.setHistoryHash(objectId);
       },
       failure: function(){
         NOC.error(__("Failed to save"));
       },
     });
   },
-
+  //
   setContainer: function(container){
     var me = this;
     me.groupContainer = container;
     me.setTitle(__("Add object to ") + (container ? container.getPath("name") : __("Root")));
+  },
+  //
+  onAddRow: function(){
+    var me = this,
+      store = me.down("grid").getStore();
+    store.add({});
+  },
+  //
+  onClearAll: function(){
+    var me = this,
+      store = me.down("grid").getStore();
+    store.removeAll();
+    store.add({});
   },
 });
