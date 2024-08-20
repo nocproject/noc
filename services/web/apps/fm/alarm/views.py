@@ -11,7 +11,6 @@ import inspect
 import datetime
 import operator
 from typing import Tuple, List, Dict, Any, Optional
-import asyncio
 
 # Third-party modules
 import bson
@@ -25,7 +24,6 @@ from noc.config import config
 from noc.core.clickhouse.connect import connection
 from noc.core.tt.types import EscalationMember
 from noc.core.comp import smart_text
-from noc.core.service.loader import get_service
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment

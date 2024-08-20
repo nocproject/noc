@@ -212,7 +212,7 @@ class ActiveAlarm(Document):
 
     def refresh_escalation(self):
         # Set is_dirty,
-        from noc.fm.models.escalation import Escalation, ItemStatus
+        from noc.fm.models.escalation import Escalation
 
         if self.escalation_profile and self.id:
             Escalation.register_changes(self.id)
