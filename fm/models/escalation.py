@@ -67,6 +67,15 @@ class ItemStatus(enum.Enum):
 
 
 class EscalationItem(EmbeddedDocument):
+    """
+    Escalation affected items. First item it escalation leader
+    Attributes:
+        managed_object: Alarm managed_object
+        target_reference: Unique resource key
+        alarm: Alarm Id item
+        status: Item status
+    """
+
     meta = {"strict": False}
     managed_object = ForeignKeyField(ManagedObject)
     target_reference = BinaryField(required=False)
@@ -94,6 +103,7 @@ class EscalationItem(EmbeddedDocument):
 
 class EscalationLog(EmbeddedDocument):
     """
+    Escalation Log item
     Attributes:
         timestamp: Escalation Timestamp
         member: Escalation member
@@ -195,30 +205,6 @@ class Escalation(Document):
     def __str__(self) -> str:
         return f"{self.profile.name} ({self.sequence_num}): {str(self.id)}"
 
-    @classmethod
-    def ensure_job(cls, eid: str):
-        """Update Job, TTSystem Shard (Set Shard on Profile)"""
-        Job.submit("escalator", ESCALATION_JOB, key=str(eid), pool="default")
-
-    @classmethod
-    def register_changes(cls, item_id, from_statuses: List[ItemStatus], to_status: ItemStatus):
-        """Register item change"""
-        coll = Escalation._get_collection()
-        r = coll.find_one_and_update(
-            {
-                "items.0.alarm": item_id,
-                "items.0.status": {"$in": [i.value for i in from_statuses]},
-                "is_dirty": False,
-                "end_timestamp": {"$exists": False},
-            },
-            {"$set": {"items.0.status": to_status.value, "is_dirty": True}},
-            projection={"end_timestamp": True, "_id": True},
-        )
-        print("Register Changes", r)
-        if r:
-            # Update Job, TTSystem Shard (Set Shard on Profile)
-            Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
-
     def get_timestamp(self) -> datetime.datetime:
         if not self.sequence_num:
             return self.timestamp
@@ -238,11 +224,26 @@ class Escalation(Document):
 
     @property
     def leader(self) -> EscalationItem:
+        """Escalation Leader - First"""
         return self.items[0]
 
     @property
     def consequences(self) -> List[EscalationItem]:
         return self.items[1:]
+
+    @property
+    def alarm(self) -> Optional[ActiveAlarm]:
+        return get_alarm(self.items[0].alarm)
+
+    @property
+    def managed_object(self) -> Optional[ManagedObject]:
+        return self.items[0].managed_object
+
+    @property
+    def service(self) -> Optional[Service]:
+        if not self.affected_services:
+            return None
+        return Service.objects.filter(id=self.affected_services[0]).first()
 
     def get_next(
         self, sequence_num: Optional[int] = None, repeat: Optional[int] = None
@@ -253,7 +254,6 @@ class Escalation(Document):
         Args:
             sequence_num: Number of sequence step
             repeat: Number of repeats
-        :return:
         """
         # Check end
         if sequence_num is None:
@@ -271,10 +271,7 @@ class Escalation(Document):
         return self.timestamp + repeat_delay + seq_delay
 
     def get_repeat(self) -> int:
-        """
-        Getting Repeat number
-        :return:
-        """
+        """Getting Repeat number"""
         r = []
         for i in self.escalations:
             if not i.repeats:
@@ -299,26 +296,13 @@ class Escalation(Document):
         return sorted(r, key=operator.itemgetter("order"))
 
     def set_escalation_context(self):
+        """Set escalation SPAN Id"""
         current_context, current_span = get_current_span()
         if current_context or self.ctx_id:
             self.ctx_id = current_context
             self._get_collection().update_one(
                 {"_id": self.id}, {"$set": {"ctx_id": current_context}}
             )
-
-    @property
-    def alarm(self) -> Optional[ActiveAlarm]:
-        return get_alarm(self.items[0].alarm)
-
-    @property
-    def managed_object(self) -> Optional[ManagedObject]:
-        return self.items[0].managed_object
-
-    @property
-    def service(self) -> Optional[Service]:
-        if not self.affected_services:
-            return None
-        return Service.objects.filter(id=self.affected_services[0]).first()
 
     def has_merged_downlinks(self) -> bool:
         """
@@ -332,7 +316,7 @@ class Escalation(Document):
         )
 
     def get_ctx(self):
-        """Get escalation context"""
+        """Get escalation context for render templite"""
         from noc.sa.models.serviceprofile import ServiceProfile
         from noc.sa.models.managedobjectprofile import ManagedObjectProfile
         from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -582,6 +566,7 @@ class Escalation(Document):
         Job.submit(
             "escalator",
             ESCALATION_JOB,
+            ts=ed.timestamp,
             key=str(ed.id),
             pool=alarm.managed_object.escalator_shard or "default",
         )
@@ -625,7 +610,32 @@ class Escalation(Document):
             ],
         )
 
-    def update_items(self):
+    @classmethod
+    def ensure_job(cls, eid: str):
+        """Update Job, TTSystem Shard (Set Shard on Profile)"""
+        Job.submit("escalator", ESCALATION_JOB, key=str(eid), pool="default")
+
+    @classmethod
+    def register_item_changes(cls, item_id, from_statuses: List[ItemStatus], to_status: ItemStatus):
+        """Register item change"""
+        coll = Escalation._get_collection()
+        r = coll.find_one_and_update(
+            {
+                "items.0.alarm": item_id,
+                "items.0.status": {"$in": [i.value for i in from_statuses]},
+                # "is_dirty": False,
+                "end_timestamp": {"$exists": False},
+            },
+            {"$set": {"items.0.status": to_status.value, "is_dirty": True}},
+            projection={"end_timestamp": True, "_id": True},
+        )
+        logger.debug("[%s] Register changes on Escalation Document", r.get("_id"))
+        if r:
+            # Update Job, TTSystem Shard (Set Shard on Profile)
+            # Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
+            cls.ensure_job(r["_id"])
+
+    def update_summary(self):
         """Update escalation doc items. Run on is_dirty"""
 
         def update_totals_from_summary(
@@ -685,10 +695,14 @@ class Escalation(Document):
         return ";".join(r)
 
     def check_end(self) -> bool:
-        """Check Escalation End Condition"""
-        if self.end_timestamp:
-            return True
-        if self.alarm.status != "A":
+        """
+        Check Escalation End Condition:
+            * CR - Close Alarm Leader
+            * CA - Close All alarm on escalation
+            * CT - Close TT System Document (forced), supported get TT info
+            * M - Manual Escalation Close (from alarm forced, set end_timestamp)
+        """
+        if self.end_timestamp or self.alarm.status != "A":
             return True
         # Check if alarm leader was closed
         if self.profile.end_condition == "CR":

@@ -40,6 +40,12 @@ id_lock = Lock()
 
 
 class EscalationItem(EmbeddedDocument):
+    """
+    Escalation chain step config
+    Attributes:
+        delay: step start after start escalation time
+    """
+
     meta = {"strict": False}
     # Delay part
     delay = IntField(min_value=0)
@@ -124,6 +130,17 @@ class EscalationAction(EmbeddedDocument):
     ]
 )
 class EscalationProfile(Document):
+    """
+    Description Escalation chain
+    Attributes:
+        end_condition: Condition when escalation ended.
+            * Delay
+            * Repeat
+            * Alarm close (Event Close)
+            * Manual
+            * Close Alarm (after end)
+    """
+
     meta = {"collection": "escalationprofiles", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
@@ -143,13 +160,6 @@ class EscalationProfile(Document):
         ],
         default="a",
     )
-    # End condition
-    # * Delay
-    # * Repeat
-    # * Alarm close (Event Close)
-    # * Manual
-    # * Close Alarm (after end)
-
     end_condition = StringField(
         required=True,
         choices=[
@@ -243,3 +253,8 @@ class EscalationProfile(Document):
                 r.max_escalation_retries = item.max_escalation_retries
             break
         return r
+
+    @property
+    def alarm_wait_ended(self) -> bool:
+        """Alarm must wait escalation ended before close"""
+        return self.end_condition == "CT" or self.end_condition == "M"

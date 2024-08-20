@@ -218,8 +218,10 @@ class ActiveAlarm(Document):
         from noc.fm.models.escalation import Escalation, ItemStatus
 
         if self.escalation_profile and self.id:
-            Escalation.register_changes(
-                self.id, [ItemStatus.CHANGED, ItemStatus.NEW], ItemStatus.CHANGED,
+            Escalation.register_item_changes(
+                self.id,
+                [ItemStatus.CHANGED, ItemStatus.NEW],
+                ItemStatus.CHANGED,
             )
 
     def change_severity(
@@ -294,14 +296,8 @@ class ActiveAlarm(Document):
         if self.alarm_class.is_ephemeral:
             self.delete()
         ts = ts or datetime.datetime.now()
-        if self.escalation_profile and self.escalation_profile.end_condition == "CT" and not force:
-            self.log_message("Waiting for TT to close")
-            # call_later(
-            #     "noc.services.escalator.wait_tt.wait_tt",
-            #     scheduler="escalator",
-            #     pool=self.managed_object.escalator_shard,
-            #     alarm_id=self.id,
-            # )
+        if self.escalation_profile and self.escalation_profile.alarm_wait_ended and not force:
+            self.log_message("Waiting Escalation for TT to close")
             return
         if self.alarm_class.clear_handlers:
             # Process clear handlers
@@ -397,8 +393,8 @@ class ActiveAlarm(Document):
             )
         # Close TT
         # MUST be after .delete() to prevent race conditions
-        if self.escalation_profile and self.escalation_profile.end_condition == "CR":
-            Escalation.register_changes(self.id, [ItemStatus.NEW], ItemStatus.REMOVED)
+        if self.escalation_profile:
+            Escalation.register_item_changes(self.id, [ItemStatus.NEW], ItemStatus.REMOVED)
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived

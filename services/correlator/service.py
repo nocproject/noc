@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,8 +51,7 @@ from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.fm.models.escalation import Escalation
+from noc.fm.models.escalation import Escalation, ItemStatus
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.fm.models.alarmrule import AlarmRule
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -477,7 +476,14 @@ class CorrelatorService(FastAPIService):
                         if aa.escalation_profile:
                             e_profile = aa.escalation_profile
                 self.refresh_alarm(alarm, timestamp, a_severity or severity)
-                if config.correlator.auto_escalation:
+                if alarm.escalation_profile:
+                    # Repeat Escalation
+                    Escalation.register_item_changes(
+                        str(alarm.id),
+                        [ItemStatus.REMOVED],
+                        ItemStatus.CHANGED,
+                    )
+                elif config.correlator.auto_escalation and e_profile:
                     Escalation.register_escalation(alarm, e_profile)
                 return alarm
         if event:
@@ -603,6 +609,8 @@ class CorrelatorService(FastAPIService):
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root and escalation_profile:
             Escalation.register_escalation(a, escalation_profile)
+        elif a.root:
+            Escalation.register_item_changes(a.root)
         if a.affected_services:
             defer(
                 "noc.sa.models.service.refresh_service_status",
