@@ -205,22 +205,17 @@ class ActiveAlarm(Document):
             try:
                 self.last_update = datetime.datetime.now().replace(microsecond=0)
                 self.save(**kwargs)
-                self.register_changes()
             except SaveConditionError:
                 pass  # Race condition, closed during update
         else:
             self.save()
-            self.register_changes()
 
-    def register_changes(self):
+    def refresh_escalation(self):
+        # Set is_dirty,
         from noc.fm.models.escalation import Escalation, ItemStatus
 
         if self.escalation_profile and self.id:
-            Escalation.register_item_changes(
-                self.id,
-                [ItemStatus.CHANGED, ItemStatus.NEW],
-                ItemStatus.CHANGED,
-            )
+            Escalation.register_changes(self.id)
 
     def change_severity(
         self,
@@ -249,6 +244,7 @@ class ActiveAlarm(Document):
                 self.log_message(f"{user} has changed severity to {severity.name}")
         if to_save:
             self.safe_save()
+            self.refresh_escalation()
 
     def log_message(self, message, to_save=True, bulk=None, source=None):
         if bulk:
@@ -392,7 +388,7 @@ class ActiveAlarm(Document):
         # Close TT
         # MUST be after .delete() to prevent race conditions
         if self.escalation_profile:
-            Escalation.register_item_changes(self.id, [ItemStatus.NEW], ItemStatus.REMOVED)
+            Escalation.register_changes(self.id, ItemStatus.REMOVED)
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
@@ -491,6 +487,7 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
+        self.refresh_escalation()
 
     def unacknowledge(self, user: "User", msg=""):
         self.ack_ts = None
@@ -505,6 +502,7 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
+        self.refresh_escalation()
 
     def register_clear(
         self, msg: str, user: Optional[User] = None, timestamp: Optional[datetime.datetime] = None

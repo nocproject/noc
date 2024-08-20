@@ -477,11 +477,7 @@ class CorrelatorService(FastAPIService):
                 self.refresh_alarm(alarm, timestamp, a_severity or severity)
                 if alarm.escalation_profile:
                     # Repeat Escalation
-                    Escalation.register_item_changes(
-                        str(alarm.id),
-                        [ItemStatus.REMOVED],
-                        ItemStatus.CHANGED,
-                    )
+                    Escalation.register_changes(str(alarm.id), to_status=ItemStatus.NEW)
                 elif config.correlator.auto_escalation and e_profile:
                     Escalation.register_escalation(alarm, e_profile)
                 return alarm
@@ -608,7 +604,7 @@ class CorrelatorService(FastAPIService):
         if config.correlator.auto_escalation and not a.root and escalation_profile:
             Escalation.register_escalation(a, escalation_profile)
         elif a.root:
-            Escalation.register_item_changes(a.root)
+            Escalation.register_changes(a.root)
         if a.affected_services:
             defer(
                 "noc.sa.models.service.refresh_service_status",
@@ -1110,7 +1106,7 @@ class CorrelatorService(FastAPIService):
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source)
+        alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source, force=bool(source))
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 

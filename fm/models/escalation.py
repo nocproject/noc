@@ -616,21 +616,35 @@ class Escalation(Document):
         Job.submit("escalator", ESCALATION_JOB, key=str(eid), pool="default")
 
     @classmethod
-    def register_item_changes(cls, item_id, from_statuses: List[ItemStatus], to_status: ItemStatus):
-        """Register item change"""
+    def register_changes(
+        cls,
+        item_id,
+        to_status: Optional[ItemStatus] = None,
+        from_statuses: Optional[List[ItemStatus]] = None,
+    ):
+        """
+        Register item change
+        * for item_id - set is_dirty and ensure_job
+        * for to_state:
+            * ItemStatus.Removed - close alarm, set status, is_dirty and ensure_job
+            * ItemStatus.New - reopen alarm, set_status, is_dirty, clean end_escalation
+        """
         coll = Escalation._get_collection()
+
+        q = {"items.0.alarm": item_id, "is_dirty": False, "end_timestamp": {"$exists": False}}
+        q_set = {"is_dirty": True}
+        if to_status:
+            q_set["items.0.status"] = to_status.value
+            if to_status == ItemStatus.NEW:
+                # Reopen alarm
+                q_set = {"$unset": {"end_timestamp": True}}
         r = coll.find_one_and_update(
-            {
-                "items.0.alarm": item_id,
-                "items.0.status": {"$in": [i.value for i in from_statuses]},
-                # "is_dirty": False,
-                "end_timestamp": {"$exists": False},
-            },
-            {"$set": {"items.0.status": to_status.value, "is_dirty": True}},
-            projection={"end_timestamp": True, "_id": True},
+            q,
+            {"$set": q_set},
+            projection={"end_timestamp": True, "sequence_num": True, "_id": True},
         )
         logger.debug("[%s] Register changes on Escalation Document", r.get("_id"))
-        if r:
+        if r and r["sequence_num"]:
             # Update Job, TTSystem Shard (Set Shard on Profile)
             # Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
             cls.ensure_job(r["_id"])

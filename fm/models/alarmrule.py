@@ -165,9 +165,9 @@ class AlarmRule(Document):
         lset = set(alarm.effective_labels)
         for match in self.match:
             # Match against labels
-            if match.exclude_labels and match.exclude_labels.issubset(lset):
+            if match.exclude_labels and set(match.exclude_labels).issubset(lset):
                 continue
-            if not match.labels.issubset(lset):
+            if not set(match.labels).issubset(lset):
                 continue
             # Match against alarm class
             if match.alarm_class and match.alarm_class != alarm.alarm_class:
