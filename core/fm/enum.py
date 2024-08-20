@@ -15,6 +15,7 @@ RCA_MANUAL = 2  # Correlated manually
 RCA_RULE = 2  # Correlated via rule
 RCA_TOPOLOGY = 3  # Topology-based correlation
 RCA_DOWNLINK_MERGE = 4  # Extended topology/downlink merge
+RCA_CHANNEL = 5  # Correlated via channel
 
 
 # NOC Event Severity

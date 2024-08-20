@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, List
 import operator
 
 
@@ -33,6 +33,7 @@ from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_delete_check
 from noc.core.channel.types import ChannelKind, ChannelTopology
+from noc.core.resource import from_resource
 from .techdomain import TechDomain
 
 id_lock = Lock()
@@ -180,3 +181,44 @@ class Channel(Document):
         if changed:
             self.params = new_params
             self.save()
+
+    @classmethod
+    def get_channels_by_alarm(cls, alarm) -> List["str"]:
+        from noc.inv.models.endpoint import Endpoint
+
+        if hasattr(alarm.components, "interface") and getattr(alarm.components, "interface", None):
+            return [
+                e.channel.id
+                for e in Endpoint.objects.filter(resource=f"if:{alarm.components.interface.id}")
+            ]
+        return []
+
+    @classmethod
+    def get_channel_by_object(cls, managed_object):
+        from noc.inv.models.endpoint import Endpoint
+        from noc.inv.models.interface import Interface
+
+        resources = [
+            f"if:{iface.id}" for iface in Interface.objects.filter(managed_object=managed_object)
+        ]
+        if not resources:
+            return []
+        return list(set([e.channel.id for e in Endpoint.objects.filter(resource__in=resources)]))
+
+    @classmethod
+    def get_alarms_by_channel(cls, channels, alarm_class: Optional[str] = None):
+        from noc.fm.models.activealarm import ActiveAlarm
+        from noc.inv.models.endpoint import Endpoint
+        from noc.fm.models.alarmclass import AlarmClass
+
+        r = []
+        for ep in Endpoint.objects.filter(channel__in=channels):
+            ep = from_resource(ep.resource)
+            if hasattr(ep, "managed_object"):
+                r.append(ep.managed_object.id)
+        if not r:
+            return r
+        if alarm_class:
+            ac = AlarmClass.get_by_name(alarm_class)
+            return ActiveAlarm.objects.filter(managed_object__in=r, alarm_class=ac)
+        return ActiveAlarm.objects.filter(managed_object__in=r)
