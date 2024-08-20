@@ -41,7 +41,7 @@ class EscalationJob(SequenceJob):
 
     def __init__(self, job, attrs):
         super().__init__(job, attrs)
-        self.object = Escalation()
+        # self.object: Escalation
         self.alarm_log = []
 
     def run_action(self, action: str, key: str) -> EscalationResult:

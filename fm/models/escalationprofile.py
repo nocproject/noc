@@ -127,6 +127,7 @@ class EscalationAction(EmbeddedDocument):
     check=[
         ("fm.Escalation", "profile"),
         ("fm.ActiveAlarm", "escalation_profile"),
+        ("fm.AlarmRule", "escalation_profile"),
     ]
 )
 class EscalationProfile(Document):

@@ -151,8 +151,6 @@ class ActiveAlarm(Document):
     container_path = ListField(ObjectIdField())
     # Services
     affected_services = ListField(ObjectIdField())
-    # Channels
-    affected_channels = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
     # RCA neighbor cache, for topology_rca only
