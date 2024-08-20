@@ -635,7 +635,7 @@ class Escalation(Document):
             # Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
             cls.ensure_job(r["_id"])
 
-    def update_summary(self):
+    def update_items(self):
         """Update escalation doc items. Run on is_dirty"""
 
         def update_totals_from_summary(

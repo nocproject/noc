@@ -945,6 +945,7 @@ nav:
       - Configuration Management: configuration-management/index.md
       - Host Discovery Network: host-discovery-network/index.md
       - Fault Management: fault-management/index.md
+      - Alarm Escalation: alarm-escalation-reference/index.md
       - Performance Management: performance-management/index.md
       - Peering Management: peering-management/index.md
       - Custom: custom/index.md

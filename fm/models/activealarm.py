@@ -429,6 +429,23 @@ class ActiveAlarm(Document):
         self._components = ComponentHub(self.alarm_class, self.managed_object, self.vars)
         return self._components
 
+    @property
+    def escalation_tt(self) -> str:
+        from noc.fm.models.escalation import Escalation, EscalationMember
+
+        if not self.escalation_profile:
+            return ""
+        r = []
+        for doc in Escalation.objects.filter(
+            escalations__match={
+                "member": EscalationMember.TT_SYSTEM.value,
+            },
+            items__0__alarm=self.id,
+            end_timestamp__exists=False,
+        ):
+            r.append(doc.get_tt_ids())
+        return ";".join(r)
+
     def subscribe(self, user: "User"):
         """
         Change alarm's subscribers

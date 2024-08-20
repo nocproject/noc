@@ -7,10 +7,12 @@
 
 # Python modules
 import datetime
+import time
 from typing import Iterable, Dict, Optional, Any, List
 
 # Third-party modules
 from bson import ObjectId
+from jinja2.exceptions import UndefinedError
 
 # NOC modules
 from noc.services.escalator.jobs.base import SequenceJob
@@ -39,9 +41,10 @@ class EscalationJob(SequenceJob):
     model = Escalation
     lock = ProcessLock(category="escalator", owner="escalator")
 
-    def __init__(self, job, attrs):
+    def __init__(self, job, attrs, dry_run: bool = False):
         super().__init__(job, attrs)
         # self.object: Escalation
+        self.dry_run = dry_run
         self.alarm_log = []
 
     def run_action(self, action: str, key: str) -> EscalationResult:
@@ -126,8 +129,13 @@ class EscalationJob(SequenceJob):
                     self.log_alarm("No escalation template, skipping")
                     continue
                 # Render TT subject and body
-                subject = esc_item.template.render_subject(**ctx)
-                body = esc_item.template.render_body(**ctx)
+                try:
+                    subject = esc_item.template.render_subject(**ctx)
+                    body = esc_item.template.render_body(**ctx)
+                except UndefinedError as e:
+                    self.logger.error("Error on Create Template: %s", str(e))
+                    self.error = str(e)
+                    continue
                 # Escalate to TT
                 if (
                     esc_item.create_tt
@@ -170,6 +178,8 @@ class EscalationJob(SequenceJob):
                         template=str(esc_item.template.id),
                     )
         self.logger.info("Saving changes on: %s", self.object.sequence_num)
+        if self.dry_run:
+            return
         if self.alarm_log:
             coll = ActiveAlarm._get_collection()
             coll.bulk_write(self.alarm_log)
@@ -188,7 +198,12 @@ class EscalationJob(SequenceJob):
                 continue
             # Set current sequence
             self.object.sequence_num = num
-            if (now - self.object.get_next(num)).total_seconds() < -1:
+            if self.dry_run:
+                wait_interval = (now - self.object.get_next(num)).total_seconds()
+                self.logger.info("Dry run mode, waiting interval: %s", wait_interval)
+                # time.sleep(abs(wait_interval) + 1)
+                time.sleep(10)
+            elif (now - self.object.get_next(num)).total_seconds() < -1:
                 # if (now - self.object.get_next(num)).total_seconds() < int(item.delay):
                 break
             self.logger.info("...")
