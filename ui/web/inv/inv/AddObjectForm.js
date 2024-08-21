@@ -118,8 +118,7 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
           }, 
           editor: {
             xtype: "inv.objectmodel.LookupField",
-            allowBlank: false,
-            editable: false,
+            editable: true,
           },
           flex: 1, 
         },
