@@ -72,6 +72,7 @@ class IGetLLDPNeighbors(BaseInterface):
                     "remote_port_description": StringParameter(required=False),
                     "remote_system_name": StringParameter(required=False),
                     "remote_system_description": StringParameter(required=False),
+                    "remote_mgmt_address": IPv4Parameter(required=False),
                     # LldpSystemCapabilitiesMap TC bitmask
                     "remote_capabilities": IntParameter(default=0),
                 }
