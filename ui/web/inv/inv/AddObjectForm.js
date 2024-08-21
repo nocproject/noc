@@ -30,14 +30,16 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
           glyph: NOC.glyph.arrow_left,
           handler: "onPressClose",
         },
-        "->",
+        "|",
         {
           text: __("Clear"),
           tooltip: __("Clear all rows"),
+          glyph: NOC.glyph.minus_circle,
           handler: "onClearAll",
         },
         {
           text: __("Add row"),
+          glyph: NOC.glyph.plus,
           handler: "onAddRow",
         },
       ],
@@ -111,6 +113,7 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                 } else{
                   store.add(newRecord);
                 }
+                store.add(newRecord);
               },
             },
           ],
@@ -223,9 +226,17 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
   },
   //
   onClearAll: function(){
-    var me = this,
-      store = me.down("grid").getStore();
-    store.removeAll();
-    store.add({});
+    var me = this;
+    Ext.Msg.confirm(
+      __("Confirmation"),
+      __("Are you sure you want to delete all rows?"),
+      function(btn){
+        if(btn === "yes"){
+          var store = me.down("grid").getStore();
+          store.removeAll();
+          store.add({});
+        }
+      },
+    );
   },
 });
