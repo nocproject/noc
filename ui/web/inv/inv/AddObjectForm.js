@@ -78,19 +78,39 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                 return Ext.isEmpty(record.get("model")) || Ext.isEmpty(record.get("name"));
               },
               handler: function(grid, rowIndex){
-                var store = grid.getStore(),
+                var newName, emptyRowIndex,
+                  maxNumber = 0,
+                  store = grid.getStore(),
                   record = store.getAt(rowIndex).copy(),
                   data = Ext.apply({}, record.getData()),
                   name = record.get("name"),
-                  match = name.match(/(\d+)$/),
-                  newName = match ? name.replace(/(\d+)$/, function(num){ return parseInt(num, 10) + 1; }) : name + "2";
+                  baseName = name.replace(/(\d+)$/, "");
+                
+                store.each(function(rec){
+                  if(rec.get("name").indexOf(baseName) === 0){
+                    var num = parseInt(rec.get("name").replace(baseName, ""), 10);
+                    if(num > 0){
+                      maxNumber = Math.max(maxNumber, num);
+                    }
+                  }
+                });
+                newName = maxNumber ? baseName + (maxNumber + 1) : baseName + "2";
     
                 var newRecord = Ext.create(record.self, {
                   name: newName,
                   model: data.model,
                   serial: "",
                 });
-                store.insert(rowIndex + 1, newRecord);
+
+                emptyRowIndex = store.findBy(function(rec){
+                  return Ext.isEmpty(rec.get("name")) && Ext.isEmpty(rec.get("model"));
+                });
+
+                if(emptyRowIndex !== -1){
+                  store.insert(emptyRowIndex, newRecord);
+                } else{
+                  store.add(newRecord);
+                }
               },
             },
           ],
