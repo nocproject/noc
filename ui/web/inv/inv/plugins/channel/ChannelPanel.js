@@ -275,7 +275,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
                           if(data.status){
                             NOC.info(data.msg);
                             adHocWindow.close();
-                            me.onReload(data.channel);
+                            me.onReload(data.channel, true);
                             NOC.launch("inv.channel", "history", {"args": [data.channel]})
                           } else{
                             NOC.error(data.msg);
@@ -336,7 +336,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     }
   },
   //
-  onReload: function(channelId){
+  onReload: function(channelId, selectRow){
     var me = this,
       grid = me.down("grid");
     Ext.Ajax.request({
@@ -351,7 +351,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           grid.getSelectionModel().select(recordIndex);
         }
         store.loadData(data);
-
+        if(selectRow){
+          var selIndex = store.find("id", channelId);
+          if(selIndex !== -1){
+            grid.getSelectionModel().select(selIndex);
+          }
+        }
       },
       failure: function(response){
         NOC.error("Error status: " + response.status);
