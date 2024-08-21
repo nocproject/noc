@@ -665,8 +665,6 @@ services:
     hostname: worker
     restart: "always"
     depends_on:
-      :
-        condition: service_started
       consul:
         condition: service_healthy
     command: /usr/local/bin/python3 /opt/noc/services/worker/service.py
