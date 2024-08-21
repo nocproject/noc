@@ -268,13 +268,11 @@ class AssetCheck(DiscoveryCheck):
                 o_data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
             if mfg_date:
                 o_data += [ObjectAttr(scope="", interface="asset", attr="mfg_date", value=mfg_date)]
-            # if m_data:
-            #     o_data += m_data
-            if self.object.container:
-                container = self.object.container.id
-            else:
-                container = self.lost_and_found.id
-            o = Object(model=m, data=o_data, container=container)
+            o = Object(
+                model=m,
+                data=o_data,
+                parent=self.object.container if self.object.container else self.lost_and_found,
+            )
             o.save()
             o.log(
                 "Created by asset_discovery",
