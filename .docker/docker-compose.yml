@@ -68,14 +68,16 @@ services:
       timeout: 3s
       retries: 100
 
-  liftbridge:
-    image: liftbridge/liftbridge:latest
-    entrypoint: liftbridge --data-dir=/tmp/lift --embedded-nats --raft-bootstrap-seed
-    volumes:
-      - type: tmpfs
-        target: /tmp
-        tmpfs:
-          size: "512M"
+  kafka:
+    image: bitnami/kafka:3.6.2
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER    
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
 
   pytests:
     build:
@@ -91,7 +93,7 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_started
-      liftbridge:
+      kafka:
         condition: service_started
       telnetd:
         condition: service_started
