@@ -65,11 +65,8 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
           width: 50,
           items: [
             {
-              iconCls: "x-fa fa-trash",
+              iconCls: "x-fa fa-times",
               tooltip: __("Remove"),
-              isDisabled: function(view, rowIndex, colIndex, item, record){
-                return Ext.isEmpty(record.get("model")) || Ext.isEmpty(record.get("name"));
-              },
               handler: function(grid, rowIndex){
                 grid.getStore().removeAt(rowIndex);
               },
