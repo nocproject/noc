@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.escalation import Escalation, ItemStatus
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.fm.models.alarmrule import AlarmRule
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -467,14 +467,19 @@ class CorrelatorService(FastAPIService):
                 if event:
                     # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
-                a_severity = None
+                a_severity, e_profile = None, None
                 for rule in self.alarm_rule_set.iter_rules(alarm):
                     for aa in rule.iter_actions(alarm):
                         if aa.severity:
                             a_severity = aa.severity
+                    if rule.escalation_profile:
+                        e_profile = rule.escalation_profile
                 self.refresh_alarm(alarm, timestamp, a_severity or severity)
-                if config.correlator.auto_escalation:
-                    AlarmEscalation.watch_escalations(alarm)
+                if alarm.escalation_profile:
+                    # Repeat Escalation
+                    Escalation.register_changes(str(alarm.id), to_status=ItemStatus.NEW)
+                elif config.correlator.auto_escalation and e_profile:
+                    Escalation.register_escalation(alarm, e_profile)
                 return alarm
         if event:
             msg = f"Alarm risen from event {event.id}({event.type.event_class})"
@@ -499,7 +504,7 @@ class CorrelatorService(FastAPIService):
             opening_event=ObjectId(event.id) if event else None,
             labels=labels,
             min_group_size=min_group_size,
-            base_severity=severity,
+            base_severity=severity.severity if severity else None,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -528,6 +533,7 @@ class CorrelatorService(FastAPIService):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
         # Apply rules
+        escalation_profile = None
         a_severity: Optional[int] = None
         for rule in self.alarm_rule_set.iter_rules(a):
             for gi in rule.iter_groups(a):
@@ -536,6 +542,8 @@ class CorrelatorService(FastAPIService):
             for ai in rule.iter_actions(a):
                 if ai.severity:
                     a_severity = a.severity
+            if rule.escalation_profile:
+                escalation_profile = rule.escalation_profile
             if a.severity_policy != rule.severity_policy:
                 a.severity_policy = rule.severity_policy
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
@@ -593,8 +601,10 @@ class CorrelatorService(FastAPIService):
         # Update groups summary
         await self.update_groups_summary(a.groups)
         # Watch for escalations, when necessary
-        if config.correlator.auto_escalation and not a.root:
-            AlarmEscalation.watch_escalations(a)
+        if config.correlator.auto_escalation and not a.root and escalation_profile:
+            Escalation.register_escalation(a, escalation_profile)
+        elif a.root:
+            Escalation.register_changes(a.root)
         if a.affected_services:
             defer(
                 "noc.sa.models.service.refresh_service_status",
@@ -1096,7 +1106,7 @@ class CorrelatorService(FastAPIService):
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source)
+        alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source, force=bool(source))
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 

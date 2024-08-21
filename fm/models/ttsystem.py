@@ -7,10 +7,10 @@
 
 # Python modules
 import operator
-from threading import Lock
-from typing import Optional, Union
 import datetime
 import logging
+from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
 from bson import ObjectId
@@ -29,6 +29,7 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 from noc.core.tt.base import BaseTTSystem
+from noc.core.tt.types import TTSystemConfig
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
@@ -57,6 +58,9 @@ class TTSystem(Document):
     # Failure condition checking
     failure_cooldown = IntField(default=0)
     failed_till = DateTimeField()
+    #
+    global_limit = IntField()  # Replaced on Escalation Profile
+    max_escalation_retries = IntField(default=30)  # @fixme make it configurable
     # Threadpool settings
     shard_name = StringField(default=DEFAULT_TTSYSTEM_SHARD)
     max_threads = IntField(default=10)
@@ -72,6 +76,9 @@ class TTSystem(Document):
         ],
         default="a",
     )
+    update_handler = StringField()
+    last_update_ts = DateTimeField()
+    last_update_id = StringField()
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
@@ -93,7 +100,7 @@ class TTSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional["TTSystem"]:
         return TTSystem.objects.filter(name=name).first()
 
     def save(self, *args, **kwargs):
@@ -121,10 +128,25 @@ class TTSystem(Document):
             raise ValueError
         return h(self.name, self.connection)
 
+    def get_config(self) -> TTSystemConfig:
+        """
+        Getting TTSystem config
+        """
+        tts = self.get_system()
+        # Action
+        return TTSystemConfig(
+            login="correlator",
+            telemetry_sample=self.telemetry_sample,
+            actions=None,
+            global_limit=self.global_limit,
+            max_escalation_retries=self.max_escalation_retries,
+            promote_item=tts.processed_items,
+            promote_group_tt=tts.promote_group_tt,
+        )
+
     def is_failed(self):
         """
         Check TTSystem is in failed state
-        :return:
         """
         if not self.failed_till:
             return False
@@ -138,6 +160,23 @@ class TTSystem(Document):
         d = datetime.datetime.now() + datetime.timedelta(seconds=cooldown)
         logger.info("[%s] Setting failure status till %s", self.name, d)
         self._get_collection().update_one({"_id": self.id}, {"$set": {"failed_till": d}})
+
+    def register_update(self, last_update_ts, last_update_id: Optional[str] = None):
+        """
+        Save last fetched update info
+        Args:
+            last_update_ts: Last update timestamp
+            last_update_id: Last update sequence number
+        """
+        logger.info(
+            "[%s] Setting last Document fetch info: %s/%s",
+            self.name,
+            last_update_ts,
+            last_update_id,
+        )
+        TTSystem.objects.filter(id=self.id).update_one(
+            last_update_ts=last_update_ts, last_update_id=last_update_id
+        )
 
     @classmethod
     def iter_lazy_labels(cls, ttsystem: "TTSystem"):
