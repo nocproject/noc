@@ -15,12 +15,68 @@ from pydantic import BaseModel, PrivateAttr
 
 
 class EscalationStatus(enum.Enum):
-    OK = "ok"  # escalation success
-    TEMP = "temp"  # temporary error, repeat needed
-    FAIL = "fail"  # escalation fail
-    SKIP = "skip"  # Escalation Skipped
-    WAIT = "wait"  # Escalation Wait
+    """
+    Attributes:
+        OK: Escalation Success
+        TEMP: Temporary error, repeat needed
+        FAIL: Escalation Fail
+        SKIP: Escalation Skipped
+        WAIT: Escalation Wait
+    """
+
+    OK = "ok"
+    TEMP = "temp"
+    FAIL = "fail"
+    SKIP = "skip"
+    WAIT = "wait"
     # Ack - for acked alarm
+
+
+class TTAction(enum.Enum):
+    """
+    Attributes:
+        CREATE: Create Document on TT System
+        ACK: Acknowledge alarm
+        UN_ACK: UnAcknowledge alarm
+        CLOSE: Clear Alarm
+        LOG: Add Alarm Log
+        SUBSCRIBE: Subscribe alarm changes
+        NOTIFY: Send Notification
+    """
+
+    CREATE = "create"
+    ACK = "ack"
+    UN_ACK = "un_ack"
+    CLOSE = "clear"  # Reopen
+    LOG = "log"
+    SUBSCRIBE = "subscribe"
+    NOTIFY = "notify"
+
+
+class TTActionContext(BaseModel):
+    action: TTAction
+    label: Optional[str] = None
+
+
+class TTSystemConfig(BaseModel):
+    """
+    Attributes:
+        login: TTSystem loging
+        telemetry_sample: Telemetry Sample. 1 - all, 0 - Disable
+        max_escalation_retries: Maximum number retries TempError escalation. 0 - disable
+        global_limit: Number for create tt on 60 sec
+        actions: Supported action list
+        promote_item: Supported Escalation Item
+        promote_group_tt: Escalate Group Item (Multiple Item)
+    """
+
+    login: str
+    telemetry_sample: int = 0
+    max_escalation_retries: int = 30
+    global_limit: Optional[int] = None
+    actions: Optional[List[TTAction]] = None
+    promote_item: bool = False
+    promote_group_tt: bool = False
 
 
 class EscalationResult(BaseModel):
@@ -40,6 +96,30 @@ class EscalationResult(BaseModel):
     @property
     def is_ok(self) -> bool:
         return self.status == EscalationStatus.OK
+
+
+class TTChange(BaseModel):
+    """
+    Attributes:
+        document_id: Document ID on update
+        action: Update Action
+        user: user ID (username or id)
+        timestamp: Action timestamp
+        message: Message text
+    """
+
+    document_id: str
+    action: TTAction  # ack, n_ack, log, close, subscribe
+    user: str
+    change_id: Optional[str] = None  # Update Sequence Number
+    timestamp: Optional[datetime] = None
+    message: Optional[str] = None
+
+
+class EscalationMember(enum.Enum):
+    TT_SYSTEM = "tt_system"
+    NOTIFICATION_GROUP = "notification_group"
+    HANDLER = "handler"
 
 
 class EscalationItem(BaseModel):
@@ -94,6 +174,7 @@ class EscalationContext(BaseModel):
         login: TT system's login
         timestamp: Alarm timestamp.
         is_unavailable: Alarm triggered unavailable items
+        actions: Allowed Actions list
         items: Managed object references. Leader is first.
     """
 
@@ -105,6 +186,7 @@ class EscalationContext(BaseModel):
     queue: Optional[str] = None
     reason: Optional[str] = None
     login: Optional[str] = None
+    actions: Optional[List[TTActionContext]] = None
     is_unavailable: bool = False
 
     @property
@@ -185,15 +267,9 @@ class TTInfo(BaseModel):
 
 
 class TTCommentRequest(BaseModel):
+    id: str
     ts: Optional[datetime]
     login: Optional[str]
     subject: Optional[str]
     body: str
     reply_to: Optional[str]
-
-
-class TTConfig(BaseModel):
-    """
-    TT Config Flags: wait_tt, items, alarm_ack, run_action, clear_alarm, changes_severity, add_comment
-    Capabilities Flag
-    """

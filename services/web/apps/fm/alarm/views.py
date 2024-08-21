@@ -10,8 +10,7 @@ import os
 import inspect
 import datetime
 import operator
-from typing import Tuple, List, Dict, Any
-import asyncio
+from typing import Tuple, List, Dict, Any, Optional
 
 # Third-party modules
 import bson
@@ -23,6 +22,8 @@ from mongoengine.queryset.visitor import Q
 # NOC modules
 from noc.config import config
 from noc.core.clickhouse.connect import connection
+from noc.core.tt.types import EscalationMember
+from noc.core.comp import smart_text
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
@@ -34,6 +35,9 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.utils import get_alarm
+from noc.fm.models.escalation import Escalation
+from noc.fm.models.escalation import EscalationProfile
+from noc.fm.models.alarmrule import AlarmRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.gis.utils.addr.ru import normalize_division
@@ -45,6 +49,7 @@ from noc.sa.interfaces.base import (
     DateTimeParameter,
     StringParameter,
     StringListParameter,
+    ObjectIdParameter,
 )
 from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -52,9 +57,6 @@ from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
-from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.core.comp import smart_text
-from noc.core.service.loader import get_service
 
 SQL_EVENTS = f"""select
     e.event_id, e.ts,
@@ -350,8 +352,8 @@ class AlarmApplication(ExtApplication):
             "segment": str(o.managed_object.segment.id),
             "location_1": location1,
             "location_2": location2,
-            "escalation_tt": o.escalation_tt,
-            "escalation_error": o.escalation_error,
+            "escalation_tt": "",
+            "escalation_error": "",
             "platform": o.managed_object.platform.name if o.managed_object.platform else "",
             "address": o.managed_object.address,
             "ack_ts": self.to_json(o.ack_ts),
@@ -379,6 +381,9 @@ class AlarmApplication(ExtApplication):
                 if getattr(ll, "source", None)
             ][: config.web.api_alarm_comments_limit],
         }
+        if o.escalation_profile:
+            d["escalation_profile"] = str(o.escalation_profile.id)
+            d["escalation_profile__label"] = str(o.escalation_profile.name)
         if fields:
             d = {k: d[k] for k in fields}
         return d
@@ -726,23 +731,7 @@ class AlarmApplication(ExtApplication):
             return {"status": False, "error": "Deny clear alarm by user"}
         if alarm.status == "A":
             # Send clear signal to the correlator
-            fm_pool = alarm.managed_object.get_effective_fm_pool().name
-            stream = f"dispose.{fm_pool}"
-            service = get_service()
-            num_partitions = asyncio.run(service.get_stream_partitions(stream))
-            partition = int(alarm.managed_object.id) % num_partitions
-            service.publish(
-                orjson.dumps(
-                    {
-                        "$op": "clearid",
-                        "id": str(alarm.id),
-                        "message": msg,
-                        "source": request.user.username,
-                    }
-                ),
-                stream=stream,
-                partition=partition,
-            )
+            alarm.register_clear(f"Cleared by user: {request.user.username}", user=request.user)
         return True
 
     @view(
@@ -835,32 +824,45 @@ class AlarmApplication(ExtApplication):
         method=["POST"],
         api=True,
         access="escalate",
-        validate={"ids": StringListParameter(required=True)},
+        validate={
+            "ids": StringListParameter(required=True),
+            "profile": ObjectIdParameter(required=False),
+        },
     )
-    def api_escalation_alarm(self, request, ids):
-        alarms = list(ActiveAlarm.objects.filter(id__in=ids))
+    def api_escalation_alarm(self, request, ids, profile: Optional[str] = None):
+        alarms: List["ActiveAlarm"] = list(ActiveAlarm.objects.filter(id__in=ids))
         if not alarms:
             return self.response_not_found()
+        if profile:
+            profile = EscalationProfile.get_by_id(profile)
         for alarm in alarms:
             if alarm.alarm_class.is_ephemeral:
                 # Ephemeral alarm has not escalated
                 continue
-            if alarm.escalation_tt:
+            if alarm.escalation_profile:
                 alarm.log_message(
-                    "Already escalated with TT #%s" % alarm.escalation_tt,
+                    "Already escalated with TT #%s" % alarm.escalation_profile,
                     source=request.user.username,
                 )
+                continue
             elif alarm.root:
                 alarm.log_message(
                     "Alarm is not root cause, skipping escalation",
                     source=request.user.username,
                 )
-            else:
-                alarm.log_message(
-                    "Alarm has been escalated by %s" % request.user.username,
-                    source=request.user.username,
-                )
-                AlarmEscalation.watch_escalations(alarm, force=True)
+                continue
+            p = profile
+            if not p:
+                rules = [ar for ar in AlarmRule.get_by_alarm(alarm) if ar.escalation_profile]
+                if not rules:
+                    continue
+                p = rules[0].escalation_profile
+            alarm.log_message(
+                f"Alarm has been escalated by {request.user.username}",
+                source=request.user.username,
+            )
+            Escalation.register_escalation(alarm, profile=p, force=True)
+            # AlarmEscalation.watch_escalations(alarm, force=True)
         return {"status": True}
 
     @staticmethod
@@ -941,6 +943,31 @@ class AlarmApplication(ExtApplication):
             r += get_summary(s["service"], ServiceProfile)
         r = [x for x in r if x]
         return r
+
+    def bulk_field_escalation_tts(self, data):
+        """
+        "escalation_tt": "",
+        "escalation_error": "",
+
+        :return:
+        """
+        alarm_ids = {}
+        for d in data:
+            if "escalation_profile" not in d:
+                continue
+            alarm_ids[d["id"]] = d
+        if not alarm_ids:
+            return data
+        for doc in Escalation.objects.filter(
+            escalations__match={
+                "member": EscalationMember.TT_SYSTEM.value,
+            },
+            items__alarm__in=list(alarm_ids),
+            end_timestamp__exists=False,
+        ):
+            # Error!
+            alarm_ids[str(doc.items[0].alarm)]["escalation_tt"] = doc.get_tt_ids()
+        return data
 
     def bulk_field_total_grouped(self, data):
         if not data or data[0]["status"] != "A":
