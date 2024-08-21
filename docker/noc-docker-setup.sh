@@ -40,8 +40,7 @@ CREATEDIR() {
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-consul
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-grafana/db
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-grafana/plugins
-  mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-liftbridge/etc
-  mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-liftbridge/data
+  mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-kafka/data
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-mongo
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-mongorestore
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-nginx/ssl
@@ -73,7 +72,7 @@ CREATEDIR() {
 
 SETPERMISSION() {
   chown 101   -R "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-clickhouse/data
-  chown 1001  -R "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-liftbridge
+  chown 1001  -R "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-kafka
   chown 472   -R "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-grafana
   chown 472   -R "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-promgrafana
   chown 70    -R "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-sentry/pg
@@ -139,14 +138,6 @@ SETUPSENTRY() {
   fi
 }
 
-SETUPLIFTBRIDGE() {
-  if [ ! -f "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-liftbridge/etc/liftbridge.yml ]
-    then
-      echo "Copy liftbridge config to " "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-liftbridge/etc/
-      echo "---"
-      cp -rf "$INSTALLPATH"/docker/etc/liftbridge/liftbridge.yml "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-liftbridge/etc/
-  fi
-}
 
 # @TODO
 # need check $INSTALLPATH == $COMPOSEPATH and make warning if not
@@ -172,8 +163,7 @@ SETUPENV() {
             echo "COMPOSE_LOG_MAX_SIZE=10m"
             echo "COMPOSE_LOG_MAX_FILE=1"
             echo "GRAFANA_VERSION_TAG=9.5.1"
-            echo "LIFTBRIDGE_VERSION_TAG=v1.7.1"
-            echo "NATS_VERSION_TAG=2"
+            echo "KAFKA_VERSION_TAG=3.6.2"
             echo "### NOC env ###"
             echo "NOC_VERSION_TAG=$PARAM_TAG"
             echo "# NOC_CODE_PATH '/home' for PROD or '/opt/noc' for DEV"
@@ -220,7 +210,7 @@ SETUPENV() {
           echo "NOC_LANGUAGE_CODE=en"
           echo "NOC_LOGIN_LANGUAGE=en"
           echo "NOC_LOGLEVEL=info"
-          echo "NOC_LIFTBRIDGE_ADDRESSES=liftbridge:9292"
+          echo "NOC_REDPANDA_ADDRESSES=kafka:9092"
           echo "NOC_MONGO_USER=noc"
           echo "# Important!!! NOC_MONGO_PASSWORD must by similar in .env file"
           echo "NOC_MONGO_PASSWORD=$GENERATED_MONGO_PASSWORD"
@@ -346,7 +336,6 @@ if [ -n "$PARAM_P" ]
                 SETUPPROMGRAFANA
                 SETUPPROMRULES
                 SETUPSENTRY
-                SETUPLIFTBRIDGE
                 SETPERMISSION
         elif [ "$PARAM_P" = "perm" ]
             then
