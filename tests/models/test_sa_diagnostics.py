@@ -14,7 +14,7 @@ from noc.core.wf.diagnostic import (
     DiagnosticState,
     DiagnosticHub,
     SNMP_DIAG,
-    CheckData,
+    CheckResult,
     Check,
 )
 
@@ -24,7 +24,11 @@ class Object(object):
     id = 10
     diagnostics = {}
     effective_labels = []
+    effective_service_groups = []
     access_preference = "S"
+    address = "10.10.10.10"
+    profile = None
+    bi_id = 1_000_0000
 
     @property
     def diagnostic(self) -> "DiagnosticHub":
@@ -33,6 +37,10 @@ class Object(object):
             return diagnostics
         self._diagnostics = DiagnosticHub(self, dry_run=True)
         return self._diagnostics
+
+    @property
+    def credentials(self):
+        return None
 
     def iter_diagnostic_configs(self):
         """
@@ -70,10 +78,10 @@ def test_set_state():
     assert o.diagnostic.D2.state == DiagnosticState.failed
     o.diagnostic.set_state("D1", DiagnosticState.enabled)
     assert o.diagnostic.D1.state == DiagnosticState.enabled
-    o.diagnostic.update_checks([CheckData(name="SNMPv1", status=False)])
+    o.diagnostic.update_checks([CheckResult(check="SNMPv1", status=False)])
     assert o.diagnostic.SNMP.state == DiagnosticState.failed
     o.diagnostic.update_checks(
-        [CheckData(name="SNMPv1", status=False), CheckData(name="SNMPv1", status=True)]
+        [CheckResult(check="SNMPv1", status=False), CheckResult(check="SNMPv1", status=True)]
     )
     assert o.diagnostic.SNMP.state == DiagnosticState.enabled
     assert o.diagnostic.Access.state == DiagnosticState.enabled
@@ -110,10 +118,10 @@ def test_bulk_set_state():
         assert d.D2.state == DiagnosticState.failed
         d.set_state("D1", DiagnosticState.enabled)
         assert d.D1.state == DiagnosticState.enabled
-        d.update_checks([CheckData(name="SNMPv1", status=False)])
+        d.update_checks([CheckResult(check="SNMPv1", status=False)])
         assert d.SNMP.state == DiagnosticState.failed
         d.update_checks(
-            [CheckData(name="SNMPv1", status=False), CheckData(name="SNMPv1", status=True)]
+            [CheckResult(check="SNMPv1", status=False), CheckResult(check="SNMPv2c", status=True)]
         )
         assert d.SNMP.state == DiagnosticState.enabled
         assert d.Access.state == DiagnosticState.enabled

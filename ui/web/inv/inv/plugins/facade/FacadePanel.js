@@ -59,6 +59,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       value: 1.0,
       valueField: "zoom",
       displayField: "label",
+      editable: false,
       listeners: {
         scope: me,
         select: me.onZoom,
@@ -104,11 +105,41 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
           xtype: "container",
           layout: "fit",
           items: [
+            // {
+            // xtype: "image",
+            // itemId: "image",
+            // src: view.src,
+            // title: view.name,
+            // padding: 5,
+            // },
             {
-              xtype: "image",
-              src: view.src,
-              title: view.name,
+              xtype: "container",
+              itemId: "image",
+              html: "<object id='svg-object' data=" + view.src + "' type='image/svg+xml'></object>",
               padding: 5,
+              listeners: {
+                scope: me,
+                afterrender: function(container){
+                  var app = this,
+                    svgObject = container.getEl().dom.querySelector('#svg-object');
+                  svgObject.addEventListener('load', function(){
+                    var svgDocument = svgObject.contentDocument;
+                    if(svgDocument){
+                      var svgElements = svgDocument.querySelectorAll("[data-event]");
+                      svgElements.forEach(function(element){
+                        var events = element.dataset.event.split(",");
+                        events.forEach(function(event){
+                          element.addEventListener(event, function(){
+                            app.app.showObject(element.dataset.resource.split(":")[1]);
+                          });
+                        });
+                      });
+                    } else{
+                      NOC.error(__("SVG Document is not loaded"));
+                    }
+                  });
+                },
+              },
             },
           ],
         };
@@ -147,7 +178,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     var me = this,
       width = me.startWidth,
       height = me.startHeight;
-    Ext.each(me.query("image"), function(img){
+    Ext.each(me.query("#image"), function(img){
       var imgEl = img.getEl().dom;
       imgEl.style.transformOrigin = "0 0";
       imgEl.style.transform = "scale(" + combo.getValue() + ")";

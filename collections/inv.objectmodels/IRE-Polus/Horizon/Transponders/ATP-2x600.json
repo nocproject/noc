@@ -379,5 +379,6 @@
             "interface": "optical",
             "value": 1.0
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | ATP 2x600 QSFP28"
 }

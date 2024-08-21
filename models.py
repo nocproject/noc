@@ -410,6 +410,7 @@ COLLECTIONS = [
     "cm.ConfDBQuery",
     "main.Report",
     "main.ModelTemplate",
+    "sa.ObjectDiscoveryRule",
 ]
 
 # Model -> Setting

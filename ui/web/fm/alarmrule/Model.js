@@ -46,6 +46,15 @@ Ext.define("NOC.fm.alarmrule.Model", {
             defaultValue: "AL"
         },
         {
+            name: "escalation_profile",
+            type: "string"
+        },
+        {
+            name: "escalation_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "stop_processing",
             type: "boolean",
             defaultValue: false

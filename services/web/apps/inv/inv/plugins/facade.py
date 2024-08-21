@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import Optional, Dict
+import random
 
 # Third-party modules
 from bson import ObjectId
@@ -35,18 +36,19 @@ class FacadePlugin(InvPlugin):
 
     def get_data(self, request, o: Object):
         r = {"id": str(o.id), "views": []}
+        seed = random.randint(0, 0x7FFFFFFF)
         if o.model.front_facade:
             r["views"].append(
                 {
                     "name": "Front",
-                    "src": f"/inv/inv/{o.id}/plugin/facade/front.svg",
+                    "src": f"/inv/inv/{o.id}/plugin/facade/front.svg?_dc={seed}",
                 }
             )
         if o.model.rear_facade:
             r["views"].append(
                 {
                     "name": "Rear",
-                    "src": f"/inv/inv/{o.id}/plugin/facade/rear.svg",
+                    "src": f"/inv/inv/{o.id}/plugin/facade/rear.svg?_dc={seed}",
                 }
             )
         return r
@@ -56,7 +58,17 @@ class FacadePlugin(InvPlugin):
         svg = self.get_svg(o, name)
         if svg is None:
             return self.app.response_not_found()
-        return HttpResponse(svg.to_string(), content_type="image/svg+xml", status=200)
+        svg.enable_highlight()
+        return HttpResponse(
+            svg.to_string(),
+            content_type="image/svg+xml",
+            status=200,
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
 
     def get_svg(
         self, o: Object, name: Optional["str"] = None, cache: Optional[Dict[ObjectId, SVG]] = None
@@ -84,12 +96,18 @@ class FacadePlugin(InvPlugin):
         # Get module facade
         svg = load_svg(facade)
         # Insert nested modules
-        for name, ro, _ in o.iter_connections("i"):
+        for ro in o.iter_children():
+            # Always use front facades for nested modules
             mod_svg = self.get_svg(ro, name="front", cache=cache)
             if mod_svg:
                 # Embed module
                 try:
-                    svg.embed(slot_to_id(name), mod_svg)
+                    svg.embed(
+                        slot_to_id(ro.parent_connection),
+                        mod_svg,
+                        resource=ro.as_resource(),
+                        event="dblclick",
+                    )
                 except ValueError:
                     pass
         return svg

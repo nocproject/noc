@@ -35,6 +35,7 @@ class AlarmItem(BaseModel):
     alarm_class: str = "NOC | Managed Object | Ping Failed"
     reference: Optional[str] = None
     vars: Optional[Dict[str, Any]] = None
+    severity: Optional[int] = None
     delay: int = 1
     labels: Optional[List[str]] = None
     status: bool = False
@@ -49,6 +50,8 @@ class AlarmItem(BaseModel):
             return r
         if self.op == "raise" and self.alarm_class:
             r["alarm_class"] = self.alarm_class
+        if self.op == "raise" and self.severity:
+            r["severity"] = int(self.severity)
         if self.op == "set_status":
             return {
                 "$op": "set_status",
@@ -186,7 +189,7 @@ class Command(BaseCommand):
                     for rr in range(0, ac.repeat or 1):
                         for r in ac.alarms:
                             mo = self.resolve_object(r.managed_object)
-                            r.managed_object = mo.id
+                            r.managed_object = str(mo.id)
                             r.reference = r.reference or self.get_default_reference(
                                 managed_object=mo,
                                 alarm_class=AlarmClass.get_by_name(r.alarm_class),

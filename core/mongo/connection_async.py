@@ -47,7 +47,8 @@ def connect_async():
         try:
             logger.info("Connecting to MongoDB %s", ca)
             connection_args = config.mongo_connection_args.copy()
-            connection_args["authSource"] = connection_args.pop("authentication_source")
+            if "authentication_source" in connection_args:
+                connection_args["authSource"] = connection_args.pop("authentication_source")
             connection_args.pop("db")
             _async_connections[DEFAULT_CONNECTION_NAME] = AsyncIOMotorClient(**connection_args)
             break

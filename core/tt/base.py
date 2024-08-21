@@ -14,11 +14,14 @@ from typing import Optional, List
 from .types import (
     DeescalationContext,
     EscalationContext,
+    TTActionContext,
     TTInfo,
     TTCommentRequest,
     EscalationItem,
     EscalationStatus,
     EscalationResult,
+    TTChange,
+    TTAction,
 )
 from .error import TTError, TemporaryTTError
 
@@ -34,6 +37,8 @@ class BaseTTSystem(object):
 
     Attributes:
         promote_group_tt: Supported Group Alarm
+        processed_items: Supported processed alarm items
+        actions: List of available actions, for TTSystem
         TTError: Basic error.
         TemporaryTTError: Transient error, escalation
             can be restarted.
@@ -42,11 +47,13 @@ class BaseTTSystem(object):
     TTError = TTError
     TemporaryTTError = TemporaryTTError
     promote_group_tt = True
+    processed_items = False
+    actions: List[TTAction] = []
 
     def __init__(self, name: str, connection: str):
         self.connection = connection
         self.name = name
-        self.logger = logging.getLogger("tt.%s" % self.name)
+        self.logger = logging.getLogger(f"tt.{self.name}")
 
     def create(self, ctx: EscalationContext) -> str:
         """
@@ -146,6 +153,23 @@ class BaseTTSystem(object):
         """
         raise NotImplementedError()
 
+    def get_updates(
+        self,
+        last_run: Optional[datetime] = None,
+        last_update: Optional[str] = None,
+        tt_ids: Optional[List[str]] = None,
+    ) -> List[TTChange]:
+        """
+        Getting updates from TT system
+
+        Args:
+            last_run: timestamp last run
+            last_update: Last update sequence number
+            tt_ids: List document id for request changes
+
+        """
+        raise NotImplementedError()
+
 
 class TTSystemCtx(object):
     """
@@ -159,6 +183,7 @@ class TTSystemCtx(object):
         login: TT system's login
         timestamp: Alarm timestamp.
         id: Document id
+        actions: Available action Context
         items: Managed object references. Leader is first.
     """
 
@@ -170,8 +195,8 @@ class TTSystemCtx(object):
         queue=None,
         reason=None,
         login=None,
+        actions=None,
         items=None,
-        is_unavailable=None,
     ):
         self.tt_system: BaseTTSystem = tt_system
         self.id: Optional[str] = id
@@ -180,7 +205,7 @@ class TTSystemCtx(object):
         self.reason: Optional[str] = reason
         self.login: Optional[str] = login
         self.items: List[EscalationItem] = items or []
-        self.is_unavailable = is_unavailable
+        self.actions: List[TTActionContext] = actions or []
         self.error_code: Optional[str] = None
         self.error_text: Optional[str] = ""
 
@@ -226,12 +251,14 @@ class TTSystemCtx(object):
         """
         self.id = self.tt_system.create(
             EscalationContext(
+                id=self.id,
                 queue=self.queue,
                 reason=self.reason,
                 login=self.login,
                 timestamp=self.timestamp,
                 subject=subject,
                 body=body,
+                actions=self.actions,
                 items=self.items,
             )
         )
@@ -268,6 +295,18 @@ class TTSystemCtx(object):
             )
         )
 
+    def get_updates(
+        self, last_run: Optional[datetime] = None, last_number: Optional[str] = None
+    ) -> List[TTChange]:
+        """
+        Getting updates from TT system
+
+        Args:
+            last_run: date before getting update
+            last_number:
+        """
+        raise NotImplementedError()
+
     def __enter__(self):
         if not isinstance(self.tt_system, BaseTTSystem):
             raise AttributeError("tt_system must be BaseTTSystem instance")
@@ -276,14 +315,16 @@ class TTSystemCtx(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if isinstance(exc_type, TemporaryTTError):
+        if exc_type is TemporaryTTError:
             # "temp"
             self.set_error("temp", str(exc_val))
-        elif isinstance(exc_type, TTError):
+        elif exc_type is TTError:
             # "fail"
             self.set_error("fail", str(exc_val))
-        elif isinstance(exc_type, NotImplementedError):
+        elif exc_type is NotImplementedError:
             self.set_error("skip", str(exc_val))
+        elif exc_type:
+            self.set_error("fail", str(exc_val))
         return True
 
     def set_error(self, code: Optional[str] = None, text: Optional[str] = None) -> None:

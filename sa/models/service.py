@@ -90,6 +90,7 @@ class Service(Document):
             "parent",
             "order_id",
             "agent",
+            "state",
             "effective_service_groups",
             "effective_client_groups",
             "labels",

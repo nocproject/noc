@@ -120,7 +120,9 @@ from noc.core.script.scheme import (
     SNMPCredential,
     SNMPv3Credential,
     CLICredential,
+    HTTPCredential,
     TELNET,
+    SSH,
 )
 from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams
@@ -147,7 +149,7 @@ from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 51
-CREDENTIAL_CACHE_VERSION = 7
+CREDENTIAL_CACHE_VERSION = 8
 
 
 @dataclass(frozen=True)
@@ -353,8 +355,8 @@ class ManagedObject(NOCModel):
         db_table = "sa_managedobject"
         app_label = "sa"
 
-    name = CharField("Name", max_length=64, unique=True)
-    container: "Object" = DocumentReferenceField(Object, null=True, blank=True)
+    name: str = CharField("Name", max_length=64, unique=True)
+    container: Optional["Object"] = DocumentReferenceField(Object, null=True, blank=True)
     administrative_domain: "AdministrativeDomain" = CachedForeignKey(
         AdministrativeDomain, verbose_name="Administrative Domain", on_delete=CASCADE
     )
@@ -381,26 +383,28 @@ class ManagedObject(NOCModel):
         blank=False,
         default=Profile.get_default_profile,
     )
-    vendor: "Vendor" = DocumentReferenceField(Vendor, null=True, blank=True)
-    platform: "Platform" = DocumentReferenceField(Platform, null=True, blank=True)
-    version: "Firmware" = DocumentReferenceField(Firmware, null=True, blank=True)
+    vendor: Optional["Vendor"] = DocumentReferenceField(Vendor, null=True, blank=True)
+    platform: Optional["Platform"] = DocumentReferenceField(Platform, null=True, blank=True)
+    version: Optional["Firmware"] = DocumentReferenceField(Firmware, null=True, blank=True)
     # Firmware version to upgrade
     # Empty, when upgrade not scheduled
-    next_version = DocumentReferenceField(Firmware, null=True, blank=True)
+    next_version: Optional[Firmware] = DocumentReferenceField(Firmware, null=True, blank=True)
     object_profile: "ManagedObjectProfile" = CachedForeignKey(
         ManagedObjectProfile, verbose_name="Object Profile", on_delete=CASCADE
     )
     description = CharField("Description", max_length=256, null=True, blank=True)
     # Access
-    auth_profile: "AuthProfile" = CachedForeignKey(
+    auth_profile: Optional["AuthProfile"] = CachedForeignKey(
         AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=CASCADE
     )
     scheme = IntegerField("Scheme", choices=SCHEME_CHOICES)
-    address = CharField("Address", max_length=64)
-    port = IntegerField("Port", blank=True, null=True)
-    user = CharField("User", max_length=32, blank=True, null=True)
-    password = CharField("Password", max_length=32, blank=True, null=True)
-    super_password = CharField("Super Password", max_length=32, blank=True, null=True)
+    address: str = CharField("Address", max_length=64)
+    port: int = IntegerField("Port", blank=True, null=True)
+    user: Optional[str] = CharField("User", max_length=32, blank=True, null=True)
+    password: Optional[str] = CharField("Password", max_length=32, blank=True, null=True)
+    super_password: Optional[str] = CharField(
+        "Super Password", max_length=32, blank=True, null=True
+    )
     remote_path = CharField("Path", max_length=256, blank=True, null=True)
     trap_source_type = CharField(
         max_length=1,
@@ -431,8 +435,8 @@ class ManagedObject(NOCModel):
     )
     syslog_source_ip = INETField("Syslog Source IP", null=True, blank=True, default=None)
     trap_community = CharField("Trap Community", blank=True, null=True, max_length=64)
-    snmp_ro = CharField("RO Community", blank=True, null=True, max_length=64)
-    snmp_rw = CharField("RW Community", blank=True, null=True, max_length=64)
+    snmp_ro: Optional[str] = CharField("RO Community", blank=True, null=True, max_length=64)
+    snmp_rw: Optional[str] = CharField("RW Community", blank=True, null=True, max_length=64)
     snmp_rate_limit: int = IntegerField(default=0)
     access_preference = CharField(
         "CLI Privilege Policy",
@@ -465,7 +469,7 @@ class ManagedObject(NOCModel):
     # Reference to CPE
     cpe_id = DocumentReferenceField("inv.CPE", null=True, blank=True)
     # Reference to controller, when object is CPE
-    controller = ForeignKey(
+    controller: "ManagedObject" = ForeignKey(
         "self", verbose_name="Controller", blank=True, null=True, on_delete=CASCADE
     )
     # Stencils
@@ -728,15 +732,23 @@ class ManagedObject(NOCModel):
         default="P",
     )
     # Resource groups
-    static_service_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
-    effective_service_groups = ObjectIDArrayField(
+    static_service_groups: List[str] = ObjectIDArrayField(
         db_index=True, blank=True, null=True, default=list
     )
-    static_client_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
-    effective_client_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    effective_service_groups: List[str] = ObjectIDArrayField(
+        db_index=True, blank=True, null=True, default=list
+    )
+    static_client_groups: List[str] = ObjectIDArrayField(
+        db_index=True, blank=True, null=True, default=list
+    )
+    effective_client_groups: List[str] = ObjectIDArrayField(
+        db_index=True, blank=True, null=True, default=list
+    )
     #
-    labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
-    effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
+    labels: List[str] = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels: List[str] = ArrayField(
+        CharField(max_length=250), blank=True, null=True, default=list
+    )
     #
     caps: List[Dict[str, Any]] = PydanticField(
         "Caps Items",
@@ -780,7 +792,7 @@ class ManagedObject(NOCModel):
     # Interval
     effective_metric_discovery_interval = IntegerField(default=0, validators=[MinValueValidator(0)])
 
-    snmp_security_level = CharField(
+    snmp_security_level: str = CharField(
         "SNMP protocol security",
         max_length=12,
         choices=[
@@ -791,22 +803,24 @@ class ManagedObject(NOCModel):
         ],
         default="Community",
     )
-    snmp_username = CharField("SNMP user name", max_length=32, null=True, blank=True)
-    snmp_auth_proto = CharField(
+    snmp_username: Optional[str] = CharField("SNMP user name", max_length=32, null=True, blank=True)
+    snmp_auth_proto: str = CharField(
         "Authentication protocol",
         max_length=3,
         choices=[("MD5", "MD5"), ("SHA", "SHA")],
         default="MD5",
     )
-    snmp_auth_key = CharField("Authentication key", max_length=32, null=True, blank=True)
-    snmp_priv_proto = CharField(
+    snmp_auth_key: Optional[str] = CharField(
+        "Authentication key", max_length=32, null=True, blank=True
+    )
+    snmp_priv_proto: str = CharField(
         "Privacy protocol",
         max_length=3,
         choices=[("DES", "DES"), ("AES", "AES")],
         default="DES",
     )
-    snmp_priv_key = CharField("Privacy key", max_length=32, null=True, blank=True)
-    snmp_ctx_name = CharField("Context name", max_length=32, null=True, blank=True)
+    snmp_priv_key: Optional[str] = CharField("Privacy key", max_length=32, null=True, blank=True)
+    snmp_ctx_name: Optional[str] = CharField("Context name", max_length=32, null=True, blank=True)
 
     # Overridden objects manager
     objects = ManagedObjectManager()
@@ -2774,6 +2788,114 @@ class ManagedObject(NOCModel):
             ).encode(DEFAULT_ENCODING),
         }
 
+    def set_profile(self, profile: str) -> bool:
+        """Set SA Profile"""
+        profile = Profile.get_by_name(profile)
+        if self.profile.id == profile.id:
+            return False
+        logger.info("Changed profile: %s -> %s", self.profile.name, profile.name)
+        # self.invalidate_neighbor_cache()
+        self.profile = profile
+        self.vendor = None
+        self.platform = None
+        self.version = None
+        self.save()
+        return True
+
+    def get_cli_credential(self) -> Optional[CLICredential]:
+        """Return CLI credential for ManagedObject"""
+        if self.scheme != TELNET or self.scheme != SSH:
+            return
+        return CLICredential(
+            username=self.user,
+            password=self.password,
+            super_password=self.super_password,
+            raise_privilege=self.to_raise_privileges,
+        )
+
+    def get_snmp_credential(self) -> Optional[Union[SNMPCredential, SNMPv3Credential]]:
+        """Return SNMP Credential for object"""
+        if self.snmp_security_level == "Community" and self.snmp_ro:
+            return SNMPCredential(snmp_ro=self.snmp_ro, snmp_rw=self.snmp_rw)
+        elif self.snmp_security_level != "Community" and not self.snmp_username:
+            return
+        elif self.snmp_security_level == "noAuthNoPriv":
+            return SNMPv3Credential(username=self.snmp_username)
+        elif self.snmp_security_level == "authNoPriv":
+            return SNMPv3Credential(
+                username=self.snmp_username,
+                auth_proto=self.snmp_auth_proto,
+                auth_key=self.snmp_auth_key,
+            )
+        elif self.snmp_security_level == "authPriv":
+            return SNMPv3Credential(
+                username=self.snmp_username,
+                auth_proto=self.snmp_auth_proto,
+                auth_key=self.snmp_auth_key,
+                private_proto=self.snmp_priv_proto,
+                private_key=self.snmp_priv_key,
+            )
+        return
+
+    def set_credential(
+        self, cred: Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]
+    ):
+        """Update Managed Object Credential"""
+        if self.auth_profile and not self.auth_profile.enable_suggest:
+            return
+        changed = {}
+        if isinstance(cred, SNMPCredential) and self.get_snmp_credential() != cred:
+            changed |= {
+                "snmp_security_level": cred.security_level,
+                "snmp_ro": cred.snmp_ro,
+                "snmp_rw": cred.snmp_rw,
+            }
+            self.reset_credential(snmp=False, cli=False)
+        elif isinstance(cred, SNMPv3Credential) and self.get_snmp_credential() != cred:
+            changed |= {
+                "snmp_security_level": cred.security_level,
+                "snmp_username": cred.username,
+                "snmp_auth_proto": cred.auth_proto,
+                "snmp_auth_key": cred.auth_key,
+                "snmp_priv_proto": cred.private_proto,
+                "snmp_priv_key": cred.private_key,
+            }
+            self.reset_credential(snmp_v3=False, cli=False)
+        elif isinstance(cred, CLICredential) and self.get_cli_credential() != cred:
+            changed |= {
+                "user": cred.user,
+                "password": cred.password,
+                "super_password": cred.super_password,
+            }
+            if self.to_raise_privileges != cred.raise_privilege:
+                changed["raise_privilege"] = cred.raise_privilege
+            if self.scheme != cred.protocol:
+                changed["scheme"] = cred.protocol.value
+        if not changed:
+            logger.info("Nothing credential changed")
+            return
+        if self.auth_profile:
+            self.auth_profile = None
+            changed["auth_profile"] = None
+        for f, v in changed.items():
+            logger.info("Update field: %s", f)
+            setattr(self, f, v)
+        ManagedObject.objects.filter(id=self.id).update(**changed)
+
+    def reset_credential(self, snmp=True, snmp_v3=True, cli=True):
+        """Reset credential"""
+        if snmp:
+            self.snmp_ro = None
+            self.snmp_rw = None
+        if snmp_v3:
+            self.snmp_username = None
+            self.snmp_auth_key = None
+            self.snmp_priv_key = None
+        if cli:
+            self.user = None
+            self.password = None
+            self.super_password = None
+
     def set_mapping(self, remote_system: RemoteSystem, remote_id: str):
         """
         Set Object mapping
@@ -2844,7 +2966,47 @@ class ManagedObject(NOCModel):
                 setattr(mo, field, value)
         return mo
 
-    def update_template_data(self, data, template=None): ...
+    def update_template_data(
+        self,
+        address: str,
+        pool: str,
+        name: str,
+        state: Optional[State] = None,
+        template: Optional[Any] = None,
+        labels: Optional[List[str]] = None,
+        capabilities: Optional[Dict[str, Any]] = None,
+        static_service_groups: Optional[List[ResourceGroup]] = None,
+        mappings: Optional[Dict[RemoteSystem, str]] = None,
+        **data,
+    ) -> bool:
+        """Update object data from template"""
+        changed = False
+        if capabilities:
+            self.update_caps(capabilities, source="template")
+        if static_service_groups:
+            self.static_service_groups = [str(g.id) for g in static_service_groups]
+        if state:
+            self.state = state
+        if mappings:
+            for ris, rid in mappings.items():
+                self.set_mapping(ris, rid)
+        for field, value in data.items():
+            if hasattr(self, field) and getattr(self, field) != value:
+                setattr(self, field, value)
+                changed = True
+        return changed
+
+    def get_controller_credentials(self):
+        caps = self.get_caps()
+        if not self.controller or "Controller | LocalId" not in caps:
+            return None
+        return {
+            "local_id": caps["Controller | LocalId"],
+            "address": self.controller.address,
+            "port": self.controller.port,
+            "user": self.controller.credentials.user,
+            "password": self.controller.credentials.password,
+        }
 
 
 @on_save

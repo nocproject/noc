@@ -363,7 +363,7 @@ class CfgTrapDataStream(DataStream):
         ):
             for a in d.get("ipv4_addresses", []):
                 ip = IP.prefix(a)
-                if ip.is_internal:
+                if ip.is_loopback:
                     continue
                 if_name, if_type = if_ids.get(str(d["interface"]), (None, None))
                 yield str(ip.address), if_name, "l" if if_type == "loopback" else "a"

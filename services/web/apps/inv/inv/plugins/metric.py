@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv metric plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import datetime
@@ -205,9 +205,7 @@ class MetricPlugin(InvPlugin):
         r = []
         values = self.get_sensor_values()
         print(values)
-        for s in Sensor.objects.filter(
-            object__in=[o.id] + [x[1] for x in o.iter_inner_connections()]
-        ):
+        for s in Sensor.objects.filter(object__in=[o.id] + [x for x in o.iter_children()]):
             components = [ll for ll in s.labels]
             if s.object != o:
                 components.insert(0, f"object::{o.name}")

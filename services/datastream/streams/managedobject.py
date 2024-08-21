@@ -440,9 +440,9 @@ class ManagedObjectDataStream(DataStream):
             "slots": [],
         }
         if_map = {c.name: c.interface_name for c in o.connections if c.interface_name}
+        children = {child.parent_connection: child for child in Object.objects.filter(parent=o.id)}
         for n in o.model.connections:
-            if n.direction == "i":
-                c, r_object, _ = o.get_p2p_connection(n.name)
+            if n.is_inner:
                 r["slots"] += [
                     {
                         "name": n.name,
@@ -450,7 +450,8 @@ class ManagedObjectDataStream(DataStream):
                         "protocols": [str(p) for p in n.protocols],
                     }
                 ]
-                if c:
+                r_object = children.get(n.name)
+                if r_object:
                     r["slots"][-1]["asset"] = ManagedObjectDataStream._get_asset(r_object)
             elif n.direction == "s":
                 r["slots"] += [

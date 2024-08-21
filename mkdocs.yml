@@ -930,6 +930,7 @@ nav:
       - Upgrade Your Single-node Postgres Server: upgrade-single-postgres-howto/index.md
       - NOC Monitoring: noc-monitoring-howto/index.md
       - Reclaim Database Space: reclaim-db-space-howto/index.md
+      - Migrate Liftbridge to Kafka: liftbridge-to-kafka-howto/index.md
       - Cleaning False Config Changes: cleaning-false-config-changes-howto/index.md
       - Create Object Models:
           - Overview: create-object-models-howto/index.md
@@ -942,7 +943,9 @@ nav:
       - Connection Type Restrictions: connection-type-restrictions/index.md
       - Topology Processing Features: topology-processing-features/index.md
       - Configuration Management: configuration-management/index.md
+      - Host Discovery Network: host-discovery-network/index.md
       - Fault Management: fault-management/index.md
+      - Alarm Escalation: alarm-escalation-reference/index.md
       - Performance Management: performance-management/index.md
       - Peering Management: peering-management/index.md
       - Custom: custom/index.md

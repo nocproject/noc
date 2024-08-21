@@ -129,7 +129,7 @@ class DatastreamAPI(object):
             thread = threading.Thread(
                 target=waiter, args=(ds.get_collection(), queue), name=f"waiter-{ds.name}"
             )
-            thread.setDaemon(True)
+            thread.daemon = True
             thread.start()
 
     def _run_callbacks(self, queue):

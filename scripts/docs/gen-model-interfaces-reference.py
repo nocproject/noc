@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generate model interfaces reference
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Iterable, Dict, Any, List
 import logging
 from pathlib import Path
+import os
 
 # Third-party modules
 import jinja2
@@ -144,6 +145,9 @@ def main():
         print(f"## {mi.name}")
         # Read current file
         path = DOCS / BOOK / f"{mi.name}.md"
+        if not os.path.exists(path):
+            print(f"Missed file: {path}")
+            continue
         with open(path) as fp:
             data = fp.read()
         if not has_valid_markup(data):

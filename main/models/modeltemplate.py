@@ -230,6 +230,7 @@ class ModelTemplate(Document):
             "uuid": self.uuid,
             "description": self.description,
             "resource_model": self.resource_model,
+            "type": self.type,
             #
             "params": [f.json_data for f in self.params],
             "params_form": [f.json_data for f in self.params_form],
@@ -280,6 +281,17 @@ class ModelTemplate(Document):
         o = self.model_instance.from_template(**env)
         o.full_clean()
         return o
+
+    def update_instance_data(self, o, item: ResourceItem, dry_run: bool = False) -> bool:
+        env = self.get_env(item)
+        if not hasattr(o, "update_template_data"):
+            raise ValueError("Resource '%s' does not supported Templating" % self.model_instance)
+        changed = o.update_template_data(**env)
+        if changed:
+            o.full_clean()
+        if not dry_run:
+            o.save()
+        return changed
 
     def get_env(self, item: ResourceItem) -> Dict[str, Any]:
         """

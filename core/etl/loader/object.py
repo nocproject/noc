@@ -97,10 +97,10 @@ class ObjectLoader(BaseLoader):
             v["model"] = ObjectModel.get_by_name(v["model"])
         if "model" in v and v["model"].name != o.model.name:
             o.model = v["model"]
-        if (not o.container and v.get("container")) or (
-            v.get("container") and v["container"] != str(o.container.id)
+        if (not o.parent and v.get("parent")) or (
+            v.get("parent") and v["parent"] != str(o.parent.id)
         ):
-            o.container = v["container"]
+            o.parent = v["parent"]
         if "data" not in v or not v["data"]:
             # reset only RemoteSystem Scope
             # o.data = []

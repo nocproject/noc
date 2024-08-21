@@ -19,6 +19,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         pinNameOrig: "string",
         pinNameWidth: "number",
         labelAlign: "string",
+        labelColor: "string",
         internalLabelWidth: "number",
         hasInternalLabel: "bool",
         remoteId: "string",
@@ -47,6 +48,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         hasInternalLabel: "recalculate",
         pinName: "recalculate",
         labelAlign: "recalculate",
+        labelColor: "recalculate",
         remoteId: "recalculate",
         remoteName: "recalculate",
         remoteSlot: "recalculate",
@@ -55,6 +57,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         allowDiscriminators: "recalculate",
         enabled: "recalculate",
         masked: "recalculate",
+        pinOver: "recalculate",
         internalEnabled: "recalculate",
         x: "recalculate",
         y: "recalculate",
@@ -107,8 +110,9 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
           me.allowDiscriminators = attr.allowDiscriminators;
           me.label.setAttributes({
             text: attr.pinName,
-            fontWeight: me.getFontWeight(),
+            fontWeight: attr.pinOver ? 'bold' : me.getFontWeight(),
             textAlign: attr.labelAlign === "left" ? "end" : "start",
+            fill: attr.labelColor,
           });
           if(me.internal){
             var internalCirclePadding = me.getBoxWidth() * (attr.side === "left" ? -1 : 2);
@@ -147,10 +151,10 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
             scalingX: attr.actualScale,
             scalingY: attr.actualScale,
           });
-          me.label.setAttributes({
-            scalingX: attr.actualScale,
-            scalingY: attr.actualScale,
-          });
+          // me.label.setAttributes({
+          // scalingX: attr.actualScale,
+          // scalingY: attr.actualScale,
+          // });
           if(me.internal){
             me.internal.setAttributes({
               scalingX: attr.actualScale,
@@ -227,9 +231,9 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
       me.labelBackground = me.add({
         type: "rect",
         fill: "white",
-        hidden: true,
-        stroke: "black",
-        lineWidth: 1,
+        // hidden: true,
+        // stroke: "black",
+        // lineWidth: 1,
       })
       me.label = me.add({
         type: "text",
@@ -239,7 +243,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         textBaseline: "middle",
         x: 0,
         y: me.box.height / 2,
-        hidden: true,
+        // hidden: true,
       });
     }
   },

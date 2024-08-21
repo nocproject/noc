@@ -214,5 +214,6 @@
             "interface": "asset",
             "value": ["ROADM-9-C-F-OCM-OSC(1511)-B(50/14)-P(175/18)-H8"]
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | ROADM-9-C-F-OCM-OSC(1511)-B(50/14)-P(175/18)-H8"
 }

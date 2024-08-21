@@ -39,6 +39,7 @@ class Purgatorium(Model):
     ip = IPv4Field(description="IP Address")
     pool = ReferenceField(Pool, description=_("Pool Name"))
     source = StringField(low_cardinality=True)
+    router_id = IPv4Field(description="Router ID IP Address, user for origin")
     # network-scan
     # neighbors
     # syslog-source

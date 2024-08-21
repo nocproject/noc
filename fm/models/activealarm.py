@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import logging
+import asyncio
 from collections import defaultdict
 from itertools import chain
 from typing import (
@@ -23,6 +24,7 @@ from typing import (
 )
 
 # Third-party modules
+import orjson
 from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
@@ -34,7 +36,6 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     IntField,
     LongField,
-    BooleanField,
     ObjectIdField,
     DictField,
     BinaryField,
@@ -46,8 +47,6 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.models import get_model
 from noc.aaa.models.user import User
 from noc.main.models.style import Style
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.template import Template
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
@@ -63,6 +62,7 @@ from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
+from .escalationprofile import EscalationProfile
 
 
 @change
@@ -78,8 +78,7 @@ class ActiveAlarm(Document):
             ("alarm_class", "managed_object"),
             "#reference",
             ("timestamp", "managed_object"),
-            "escalation_tt",
-            "escalation_ts",
+            "escalation_profile",
             "adm_path",
             "segment_path",
             "container_path",
@@ -133,16 +132,9 @@ class ActiveAlarm(Document):
     deferred_groups = ListField(BinaryField())
     # Escalated TT ID in form
     # <external system name>:<external tt id>
-    escalation_ts = DateTimeField(required=False)
-    escalation_tt = StringField(required=False)
-    escalation_error = StringField(required=False)
+    escalation_profile: Optional["EscalationProfile"] = PlainReferenceField(EscalationProfile)
     # span context
     escalation_ctx = LongField(required=False)
-    # Close tt when alarm cleared
-    close_tt = BooleanField(default=False)
-    # Do not clear alarm until *wait_tt* is closed
-    wait_tt = StringField()
-    wait_ts = DateTimeField()
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
@@ -153,9 +145,6 @@ class ActiveAlarm(Document):
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
-    # Template and notification group to send close notification
-    clear_template = ForeignKeyField(Template, required=False)
-    clear_notification_group = ForeignKeyField(NotificationGroup, required=False)
     # Paths
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
@@ -214,11 +203,19 @@ class ActiveAlarm(Document):
             if "save_condition" not in kwargs:
                 kwargs["save_condition"] = {"id": self.id}
             try:
+                self.last_update = datetime.datetime.now().replace(microsecond=0)
                 self.save(**kwargs)
             except SaveConditionError:
                 pass  # Race condition, closed during update
         else:
             self.save()
+
+    def refresh_escalation(self):
+        # Set is_dirty,
+        from noc.fm.models.escalation import Escalation
+
+        if self.escalation_profile and self.id:
+            Escalation.register_changes(self.id)
 
     def change_severity(
         self,
@@ -247,6 +244,7 @@ class ActiveAlarm(Document):
                 self.log_message(f"{user} has changed severity to {severity.name}")
         if to_save:
             self.safe_save()
+            self.refresh_escalation()
 
     def log_message(self, message, to_save=True, bulk=None, source=None):
         if bulk:
@@ -287,21 +285,13 @@ class ActiveAlarm(Document):
         :param source: Source clear alarm
         """
         from .alarmdiagnosticconfig import AlarmDiagnosticConfig
+        from .escalation import Escalation, ItemStatus
 
         if self.alarm_class.is_ephemeral:
             self.delete()
         ts = ts or datetime.datetime.now()
-        if self.wait_tt and not force:
-            # Wait for escalated tt to close
-            if not self.wait_ts:
-                self.wait_ts = ts
-                self.log_message("Waiting for TT to close")
-                call_later(
-                    "noc.services.escalator.wait_tt.wait_tt",
-                    scheduler="escalator",
-                    pool=self.managed_object.escalator_shard,
-                    alarm_id=self.id,
-                )
+        if self.escalation_profile and self.escalation_profile.alarm_wait_ended and not force:
+            self.log_message("Waiting Escalation for TT to close")
             return
         if self.alarm_class.clear_handlers:
             # Process clear handlers
@@ -326,9 +316,7 @@ class ActiveAlarm(Document):
             ack_user=self.ack_user,
             root=self.root,
             groups=self.groups,
-            escalation_ts=self.escalation_ts,
-            escalation_tt=self.escalation_tt,
-            escalation_error=self.escalation_error,
+            escalation_profile=self.escalation_profile.id if self.escalation_profile else None,
             escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             closing_event=self.closing_event,
@@ -399,31 +387,8 @@ class ActiveAlarm(Document):
             )
         # Close TT
         # MUST be after .delete() to prevent race conditions
-        if a.escalation_tt or self.clear_template:
-            if self.clear_template:
-                ctx = {"alarm": a}
-                subject = self.clear_template.render_subject(**ctx)
-                body = self.clear_template.render_body(**ctx)
-            else:
-                subject = "Alarm cleared"
-                body = "Alarm has been cleared"
-            call_later(
-                "noc.services.escalator.escalation.notify_close",
-                delay=ct,
-                scheduler="escalator",
-                pool=self.managed_object.escalator_shard,
-                max_runs=config.fm.alarm_close_retries,
-                alarm_id=self.id,
-                tt_id=self.escalation_tt,
-                subject=subject,
-                body=body,
-                notification_group_id=(
-                    self.clear_notification_group.id if self.clear_notification_group else None
-                ),
-                close_tt=self.close_tt,
-                login="correlator",
-                queue=a.managed_object.tt_queue,
-            )
+        if self.escalation_profile:
+            Escalation.register_changes(self.id, ItemStatus.REMOVED)
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
@@ -459,6 +424,23 @@ class ActiveAlarm(Document):
             return components
         self._components = ComponentHub(self.alarm_class, self.managed_object, self.vars)
         return self._components
+
+    @property
+    def escalation_tt(self) -> str:
+        from noc.fm.models.escalation import Escalation, EscalationMember
+
+        if not self.escalation_profile:
+            return ""
+        r = []
+        for doc in Escalation.objects.filter(
+            escalations__match={
+                "member": EscalationMember.TT_SYSTEM.value,
+            },
+            items__0__alarm=self.id,
+            end_timestamp__exists=False,
+        ):
+            r.append(doc.get_tt_ids())
+        return ";".join(r)
 
     def subscribe(self, user: "User"):
         """
@@ -504,7 +486,8 @@ class ActiveAlarm(Document):
                 source=user.username,
             )
         ]
-        self.save()
+        self.safe_save()
+        self.refresh_escalation()
 
     def unacknowledge(self, user: "User", msg=""):
         self.ack_ts = None
@@ -518,7 +501,41 @@ class ActiveAlarm(Document):
                 source=user.username,
             )
         ]
-        self.save()
+        self.safe_save()
+        self.refresh_escalation()
+
+    def register_clear(
+        self, msg: str, user: Optional[User] = None, timestamp: Optional[datetime.datetime] = None
+    ):
+        """
+        Register Alarm Clear Request on Correlator
+        Send clear signal to the correlator
+        Args:
+            msg: Clear reason text
+            user: Set for Manual Clear
+            timestamp: Clear Timestamp
+        """
+        from noc.core.service.loader import get_service
+
+        #
+        fm_pool = self.managed_object.get_effective_fm_pool()
+        stream = f"dispose.{fm_pool.name}"
+        service = get_service()
+        num_partitions = asyncio.run(service.get_stream_partitions(stream))
+        partition = int(self.managed_object.id) % num_partitions
+        service.publish(
+            orjson.dumps(
+                {
+                    "$op": "clearid",
+                    "id": str(self.id),
+                    "message": msg,
+                    "source": user.username if user else "",
+                    "timestamp": timestamp.isoformat() if timestamp else None,
+                }
+            ),
+            stream=stream,
+            partition=partition,
+        )
 
     @property
     def duration(self) -> int:
@@ -907,20 +924,13 @@ class ActiveAlarm(Document):
         if self.id:
             ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
 
-    def escalate(self, tt_id, close_tt=False, wait_tt=None):
-        self.escalation_tt = tt_id
-        self.escalation_ts = datetime.datetime.now()
-        self.close_tt = close_tt
-        self.wait_tt = wait_tt
-        self.log_message("Escalated to %s" % tt_id)
+    def escalate(self, escalation):
+        self.escalation_profile = escalation.profile
+        self.log_message("Escalated as %s" % escalation)
         q = {"_id": self.id}
         op = {
             "$set": {
-                "escalation_tt": self.escalation_tt,
-                "escalation_ts": self.escalation_ts,
-                "close_tt": self.close_tt,
-                "wait_tt": self.wait_tt,
-                "escalation_error": None,
+                "escalation_profile": self.escalation_profile.id,
             }
         }
         r = ActiveAlarm._get_collection().update_one(q, op)

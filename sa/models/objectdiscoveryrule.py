@@ -8,6 +8,7 @@
 # Python modules
 import operator
 import re
+from itertools import filterfalse
 from functools import partial
 from typing import List, Dict, Optional, Tuple, Set, Any, Union, FrozenSet
 from threading import Lock
@@ -244,13 +245,13 @@ class ObjectDiscoveryRule(Document):
         ],
         default="new",
     )
-    stop_processed = BooleanField(default=False)
-    allow_sync = BooleanField(default=False)  # sync record on
+    # stop_processed = BooleanField(default=False)
+    sync_approved = BooleanField(default=False)  # sync record on
     default_template: Optional[ModelTemplate] = PlainReferenceField(ModelTemplate)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _prefix_cache = cachetools.TTLCache(maxsize=10, ttl=600)
-    _rules_cache = cachetools.TTLCache(10, ttl=180)
+    _rules_cache = cachetools.TTLCache(10, ttl=90)
 
     def __str__(self) -> str:
         return self.name
@@ -266,13 +267,62 @@ class ObjectDiscoveryRule(Document):
         return frozenset(s.source for s in self.sources if s.is_required)
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
+    def get_rules_by_source(cls, sources: Optional[FrozenSet[str]] = None):
+        """
+        Return list rules match Instance for sources
+        Args:
+            sources:
+        """
+        r = []
+        for rule in ObjectDiscoveryRule.objects.filter(
+            is_active=True, default_action__ne="skip"
+        ).order_by("preference"):
+            if sources and rule.required_sources and (rule.required_sources - sources):
+                continue
+            r.append(rule)
+        return r
+
+    @classmethod
+    def get_effective_data(
+        cls, sources: List[str], data: List[Any]
+    ) -> Tuple[Dict[str, str], Set[str]]:
+        """
+        Merge data by Source Priority
+        Args:
+            sources: List sources getting data
+            data: Effective data on source
+        """
+        r = {}
+        labels = set()
+        for di in sorted(
+            filterfalse(lambda d: d.source not in sources, data),
+            key=lambda x: sources.index(x.source),
+        ):
+            for key, value in di.data.items():
+                if key in r or not value:
+                    continue
+                r[key] = value
+            if di.labels:
+                labels |= set(di.labels)
+        return r, labels
+
+    def merge_sources(self, sources: List[str]) -> List[str]:
+        """Merge based source and Rules source ->"""
+        if not self.sources:
+            return sources
+        rs = [s.source for s in self.sources]
+        return sorted(
+            set(rs).intersection(set(sources)), key=lambda x: rs.index(x) if x in rs else 999
+        )
+
+    @classmethod
     def get_rule(
         cls,
         address,
         pool: Pool,
         checks: List[Any],
-        labels: Optional[List[str]] = None,
-        data: Optional[Dict[str, Any]] = None,
+        data: Optional[List[Any]] = None,
         sources: Optional[List[str]] = None,
     ) -> Optional["ObjectDiscoveryRule"]:
         """
@@ -282,21 +332,16 @@ class ObjectDiscoveryRule(Document):
             address: IP Address for record
             pool: IP Address Pool
             checks: Check Result Status
-            labels: Labels List
             data: Effective data dict
             sources: List sources for record
 
         """
-        labels = labels or []
-        data = data or {}
-        for rule in ObjectDiscoveryRule.objects.filter(
-            is_active=True, default_action__ne="skip"
-        ).order_by("preference"):
-            if rule.required_sources and sources and rule.required_sources - set(sources):
-                continue
-            if rule.is_match(address, pool, checks, labels, data):
+        for rule in ObjectDiscoveryRule.get_rules_by_source(frozenset(sources)):
+            r_data, r_labels = cls.get_effective_data(
+                [s.source for s in rule.sources] or sources, data
+            )
+            if rule.is_match(address, pool, checks, r_labels, r_data):
                 return rule
-        return
 
     def on_save(self):
         """
@@ -305,7 +350,7 @@ class ObjectDiscoveryRule(Document):
         from noc.sa.models.discoveredobject import DiscoveredObject
 
         # Set record on rule is_dirty
-        DiscoveredObject.objects.filter(rule=self.id).update(is_dirty=True)
+        DiscoveredObject.objects.filter().update(is_dirty=True)
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -313,16 +358,19 @@ class ObjectDiscoveryRule(Document):
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
+            "is_active": self.is_active,
             "description": self.description,
             #
             "preference": self.preference,
-            "workflow__name": self.workflow.name,
+            "workflow__uuid": str(self.workflow.uuid),
             #
             "network_ranges": [c.json_data for c in self.network_ranges],
             "checks": [c.json_data for c in self.checks],
             #
             "sources": [c.json_data for c in self.sources],
-            "stop_processed": self.stop_processed,
+            "conditions": [c.json_data for c in self.conditions],
+            "enable_ip_scan_discovery": self.enable_ip_scan_discovery,
+            "ip_scan_discovery_interval": self.ip_scan_discovery_interval,
             "default_action": self.default_action,
         }
         return r
@@ -385,9 +433,7 @@ class ObjectDiscoveryRule(Document):
 
     @cachetools.cachedmethod(operator.attrgetter("_prefix_cache"), lock=lambda _: id_lock)
     def get_prefixes(self, pool: Optional[Pool] = None) -> List["IPv4"]:
-        """
-        Return configured prefixes
-        """
+        """Return configured prefixes"""
         r = []
         for net in self.network_ranges:
             if net.exclude or (pool and pool != net.pool):
@@ -424,9 +470,9 @@ class ObjectDiscoveryRule(Document):
         """
         Return Discovered object action
         Args:
-            checks:
-            labels:
-            data:
+            checks: Discovered object checks result
+            labels: Labels list
+            data: Collected effective data
         """
         checks = self.parse_check(checks)
         action = None

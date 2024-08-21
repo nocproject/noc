@@ -198,6 +198,7 @@ class Config(BaseConfig):
 
     class collections(ConfigSection):
         allow_sharing = BooleanParameter(default=True)
+        allow_overwrite = BooleanParameter(default=True)
 
     class consul(ConfigSection):
         token = SecretParameter()
@@ -480,6 +481,9 @@ class Config(BaseConfig):
     class nbi(ConfigSection):
         max_threads = IntParameter(default=10)
         objectmetrics_max_interval = SecondsParameter(default="3h")
+
+    class network_scan(ConfigSection):
+        purgatorium_ttl = SecondsParameter(default="4w")
 
     class path(ConfigSection):
         smilint = StringParameter()

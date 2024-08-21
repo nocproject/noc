@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ class RackPlugin(InvPlugin):
         }
         r["rack"]["label"] = o.name
         # Fill content
-        for c in o.get_content():
+        for c in o.iter_children():
             units = c.get_data("rackmount", "units")
             pos = c.get_data("rackmount", "position")
             side = c.get_data("rackmount", "side") or "f"
@@ -75,7 +75,7 @@ class RackPlugin(InvPlugin):
     def api_set_rack_load(self, request, id, cid, position_front, position_rear, shift):
         o = self.app.get_object_or_404(Object, id=id)
         co = self.app.get_object_or_404(Object, id=cid)
-        if co.container.id != o.id:
+        if co.parent.id != o.id:
             return self.app.response_not_found()
         if position_front:
             co.set_data("rackmount", "position", position_front)

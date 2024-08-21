@@ -107,7 +107,7 @@ class TopoService(FastAPIService):
                     # Run processing in separate thread in order
                     # to avoid healhcheck blocking.
                     thread = threading.Thread(target=inner, name="process")
-                    thread.setDaemon(True)
+                    thread.daemon = True
                     thread.start()
                     # Wait until thread is complete
                     await ev_processed.wait()

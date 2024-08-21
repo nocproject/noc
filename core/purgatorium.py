@@ -55,6 +55,7 @@ def register(
     description: Optional[str] = None,
     border: Optional[int] = None,
     chassis_id: Optional[str] = None,
+    router_id: Optional[str] = None,
     hostname: Optional[str] = None,
     remote_system: Optional[int] = None,
     remote_id: Optional[str] = None,
@@ -76,6 +77,7 @@ def register(
         description: sysDescription
         border: Device, that find host on neighbors
         chassis_id: ChassisID host
+        router_id: RouterID host (IP address)
         hostname: Host Hostname
         remote_system: RemoteSystem from received host
         remote_id: Host ID on RemoteSystem
@@ -129,4 +131,6 @@ def register(
         data["service_groups"] = [int(rg) for rg in service_groups]
     if clients_groups:
         data["clients_groups"] = [int(rg) for rg in clients_groups]
+    if router_id and router_id != address:
+        data["router_id"] = struct.unpack("!I", socket.inet_aton(router_id))[0]
     svc.publish(orjson.dumps(data), f"ch.{PURGATORIUM_TABLE}")
