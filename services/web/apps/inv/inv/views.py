@@ -333,25 +333,11 @@ class InvApplication(ExtApplication):
             obj, name = from_resource(choice)
             if not obj:
                 return self.render_json({"status": False, "message": "Not found"}, status=400)
-            # Get connection
-            cn = obj.model.get_model_connection(name)
-            if not cn:
-                return self.render_json({"status": False, "message": "Not found"}, status=400)
-            # Check compatibility
-            is_compatible, msg = obj.model.check_connection(cn, outer)
-            if not is_compatible:
-                return self.render_json(
-                    {"status": False, "message": f"Not compatible: {msg}"}, status=400
-                )
-            # Check if free
-            if Object.objects.filter(parent=obj.id, parent_connection=name).first():
-                return self.render_json(
-                    {"status": False, "message": f"Slot {name} is occupied"}, status=400
-                )
-            # Connect
-            item.parent = obj
-            item.parent_connection = name
-            item.save()
+            # Attach
+            try:
+                item.attach(obj, name)
+            except ConnectionError as e:
+                return self.render_json({"status": False, "message": str(e)}, status=400)
             return self.render_json({"status": True, "message": "Placed to rack"}, status=200)
 
         def get_free(obj: Object) -> Optional[Dict[str, Any]]:
@@ -363,7 +349,9 @@ class InvApplication(ExtApplication):
             # Prepare Node
             r = {"iconCls": obj.model.glyph_css_class, "name": label}
             # Get used slots
-            used_slots = {o.parent_connection for o in Object.objects.filter(parent=obj.id)}
+            used_slots = set(obj.iter_used_connections())
+            # Oversized?
+            size = item.occupied_slots
             # Add slots
             c_data = []
             for cn in obj.model.connections:
@@ -373,6 +361,14 @@ class InvApplication(ExtApplication):
                 is_compatible, _ = ObjectModel.check_connection(cn, outer)
                 if not is_compatible:
                     continue
+                # Process oversized modules
+                if size > 1:
+                    next_conns = set(
+                        cn.name for cn in obj.model.iter_next_connections(cn.name, size - 1)
+                    )
+                    print(cn.name, "next_conns", next_conns, "used", used_slots)
+                    if len(next_conns) != size - 1 or next_conns.intersection(used_slots):
+                        continue
                 # Add candidate
                 c_data.append({"id": f"o:{obj.id}:{cn.name}", "name": cn.name, "leaf": True})
             # Process children
