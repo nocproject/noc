@@ -440,7 +440,10 @@ Ext.define("NOC.inv.inv.Application", {
     if(!Ext.isEmpty(sel)){
       container = sel[0];
     }
-    var i = me.showItem(me.ITEM_ADD);
+    var i = me.showItem(me.ITEM_ADD),
+      formStore = i.down("grid").getStore();
+    formStore.removeAll();
+    formStore.add({});
     i.setContainer(container);
   },
   //
