@@ -431,6 +431,37 @@ class InvApplication(ExtApplication):
         return str(o.id)
 
     @view(
+        "^add/$",
+        method=["POST"],
+        access="create_group",
+        api=True,
+        validate={
+            "container": ObjectIdParameter(required=False),
+            "items": DictListParameter(
+                attrs={
+                    "model": ObjectIdParameter(),
+                    "name": UnicodeParameter(),
+                    "serial": UnicodeParameter(required=False),
+                }
+            ),
+        },
+    )
+    def api_add(self, request, container: Optional[str], items: List[Dict[str, str]]):
+        if container:
+            parent = self.get_object_or_404(Object, id=container)
+        else:
+            parent = None
+        for item in items:
+            model = self.get_object_or_404(ObjectModel, id=item["model"])
+            obj = Object(name=item["name"], model=model, parent=parent)
+            serial = item.get("serial")
+            if serial and model.get_data("asset", "part_no0"):
+                obj.set_data("asset", "serial", serial)
+            obj.save()
+            obj.log("Created", user=request.user.username, system="WEB", op="CREATE")
+        return {"status": True}
+
+    @view(
         "^remove_group/$",
         method=["DELETE"],
         access="remove_group",
