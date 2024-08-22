@@ -1,0 +1,8 @@
+{
+    "name": "VMWare",
+    "uuid": "acda3753-0a60-41c9-9902-25abf859f6bf",
+    "full_name": "VMWare",
+    "code": ["VMWARE"],
+    "site": "https://www.vmware.com/",
+    "$collection": "inv.vendors"
+}

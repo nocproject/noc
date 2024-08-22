@@ -22,6 +22,9 @@ class VIMError(NOCError):
     default_code = ERR_HTTP_UNKNOWN
 
 
+vim.vm.device
+
+
 class VIM(object):
     VIMError = VIMError
 
@@ -54,13 +57,17 @@ class VIM(object):
 
     def shutdown_session(self):
         print("Shutdown Session")
-        self.connection.content.sessionManager.Logout()
-        Disconnect(self.connection)
         self.connection = None
 
     def get_connection(self) -> "vim.ServiceInstance":
         self.ensure_session()
         return self.connection
+
+    def close(self):
+        print("Close connection")
+        # self.connection.content.sessionManager.Logout()
+        if self.connection:
+            Disconnect(self.connection)
 
     @property
     def content(self):
@@ -79,7 +86,9 @@ class VIM(object):
     def get_host_by_id(self, hid: str) -> vim.HostSystem:
         """Getting vCenter host by id, example: 'host-5260'"""
         host_view = self.content.viewManager.CreateContainerView(
-            self.content.rootFolder, [vim.HostSystem], True,
+            self.content.rootFolder,
+            [vim.HostSystem],
+            True,
         )
         try:
             hosts = [h for h in host_view.view if h._moId == hid]

@@ -13,6 +13,5 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "VMWare.vHost"
 
-    @classmethod
-    def get_host_id(cls, script) -> str:
-        return script.capabilities["VM | HostID"]
+    def convert_interface_name(self, s):
+        return s

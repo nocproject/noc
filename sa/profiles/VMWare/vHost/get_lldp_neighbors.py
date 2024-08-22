@@ -27,8 +27,5 @@ class Script(BaseScript):
             for param in q.lldpInfo.parameter:
                 if param.key == "System Name":
                     nei["remote_system_name"] = param.value.strip()
-            result += [{
-                "local_interface": q.device,
-                "neighbors": [nei]
-            }]
+            result += [{"local_interface": q.device, "neighbors": [nei]}]
         return result

@@ -362,6 +362,9 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                         self.close_rtsp_stream()
                         # Close HTTP Client
                         self.http.close()
+                        # Close VIM Client
+                        if self.vim:
+                            self.vim.close()
             # Clean result
             result = self.clean_output(result)
             self.logger.debug("Result: %s", result)

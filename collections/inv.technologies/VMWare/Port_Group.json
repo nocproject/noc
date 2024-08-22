@@ -1,0 +1,10 @@
+{
+    "name": "VMWare | Port Group",
+    "$collection": "inv.technologies",
+    "uuid": "c9545898-ed3c-45b1-ab96-2546c9771662",
+    "description": "VMWare Port Group",
+    "service_model": "inv.Interface",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}
