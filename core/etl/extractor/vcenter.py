@@ -18,7 +18,7 @@ from noc.core.etl.models.typing import ETLMapping
 from noc.core.etl.remotesystem.base import BaseRemoteSystem
 from noc.core.etl.models.managedobject import ManagedObject, CapsItem
 from noc.core.etl.models.resourcegroup import ResourceGroup
-from noc.core.etl.models.object import Object  # , ObjectData
+from noc.core.etl.models.object import Object, ObjectData
 
 
 class VCenterRemoteSystem(BaseRemoteSystem):
@@ -71,13 +71,21 @@ class VCenterObjectExtractor(VCenterExtractor):
         vm_view = content.viewManager.CreateContainerView(
             content.rootFolder, [vim.HostSystem], True
         )
+        yield Object(id="vcenter.root", name="VCenter vMachines", model="Group")
         for vm in vm_view.view:
             yield Object(
                 id=vm.config.uuid,
                 name=vm.config.name,
-                model="",
-                data=[],
-                parent=None,
+                model="VMWare | Virtual Platform | VMX19",
+                data=[
+                    ObjectData(
+                        interface="asset",
+                        attr="serial",
+                        value=vm.config.uuid,
+                        scope=self.system.remote_system.name,
+                    ),
+                ],
+                parent="vcenter.root",
             )
 
 

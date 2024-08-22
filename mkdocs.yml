@@ -479,6 +479,11 @@ nav:
           - Vitesse:
               - Overview: profiles-reference/Vitesse/index.md
               - Vitesse.VSC: profiles-reference/Vitesse/VSC.md
+          - VMWare:
+              - Overview: profiles-reference/VMWare/index.md
+              - VMWare.vCenter: profiles-reference/VMWare/vCenter.md
+              - VMWare.vHost: profiles-reference/VMWare/vCenter.md
+              - VMWare.vMachine: profiles-reference/VMWare/vCenter.md
           - Vyatta:
               - Overview: profiles-reference/Vyatta/index.md
               - Vyatta.Vyatta: profiles-reference/Vyatta/Vyatta.md

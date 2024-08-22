@@ -1,0 +1,21 @@
+{
+    "name": "VMWare | Virtual Platform | VMX19",
+    "$collection": "inv.objectmodels",
+    "uuid": "8d64d3e1-c998-4638-9d28-2581f30de45f",
+    "vendor__code": "VMWARE",
+    "description": null,
+    "cr_context": "CHASSIS",
+    "connections": [],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["vmx19"]
+        }
+    ]
+}
