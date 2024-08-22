@@ -64,7 +64,6 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
       columns: [
         {
           xtype: "actioncolumn",
-          width: 50,
           items: [
             {
               iconCls: "x-fa fa-times",
@@ -79,42 +78,15 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
               isDisabled: function(view, rowIndex, colIndex, item, record){
                 return Ext.isEmpty(record.get("model")) || Ext.isEmpty(record.get("name"));
               },
-              handler: function(grid, rowIndex){
-                var newName,
-                  toRemove = [],
-                  maxNumber = 0,
-                  store = grid.getStore(),
-                  record = store.getAt(rowIndex).copy(),
-                  data = Ext.apply({}, record.getData()),
-                  name = record.get("name"),
-                  baseName = name.replace(/(\d+)$/, "");
-                
-                store.each(function(rec){
-                  if(rec.get("name").indexOf(baseName) === 0){
-                    var num = parseInt(rec.get("name").replace(baseName, ""), 10);
-                    if(num > 0){
-                      maxNumber = Math.max(maxNumber, num);
-                    }
-                  }
-                });
-                newName = maxNumber ? baseName + (maxNumber + 1) : baseName + "2";
-    
-                var newRecord = Ext.create(record.self, {
-                  name: newName,
-                  model: data.model,
-                  serial: "",
-                });
-
-                store.each(function(rec){
-                  if(Ext.isEmpty(rec.get("name")) && Ext.isEmpty(rec.get("model"))){
-                    toRemove.push(rec);
-                  }
-                });
-                
-                store.remove(toRemove);
-                store.add(newRecord);
-                store.add({});
+              handler: "onCloneRow",
+            },
+            {
+              iconCls: "x-fa fa-plus-circle",
+              tooltip: __("Clone N times"),
+              isDisabled: function(view, rowIndex, colIndex, item, record){
+                return Ext.isEmpty(record.get("model")) || Ext.isEmpty(record.get("name"));
               },
+              handler: "onCloneN",
             },
           ],
         },
@@ -238,5 +210,73 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
         }
       },
     );
+  },
+  //
+  onCloneRow: function(grid, rowIndex){
+    this.cloneRows(grid, rowIndex, 1);
+  },
+  //
+  onCloneN: function(grid, rowIndex){
+    this.promptCloneCount(grid, rowIndex);
+  },
+  //
+  promptCloneCount: function(grid, rowIndex){
+    var me = this;
+    Ext.Msg.prompt(
+      __("Clone Rows"),
+      __("Enter the number of rows to clone:"),
+      function(btn, text){
+        if(btn === "ok"){
+          var count = parseInt(text, 10);
+          if(!/^\d+$/.test(text) || isNaN(count) || count <= 0){
+            Ext.Msg.alert(__("Invalid Input"), __("Please enter a valid number."), function(){
+              me.promptCloneCount(grid, rowIndex);
+            });
+            return;
+          }
+          me.cloneRows(grid, rowIndex, count);
+        }
+      },
+      this,
+      false,
+      "1",
+    );
+  },
+  //
+  cloneRows: function(grid, rowIndex, count){
+    var store = grid.getStore(),
+      record = store.getAt(rowIndex),
+      data = Ext.apply({}, record.getData()),
+      name = record.get("name"),
+      baseName = name.replace(/(\d+)$/, ""),
+      maxNumber = 0,
+      toRemove = [];
+
+    store.each(function(rec){
+      if(rec.get("name").indexOf(baseName) === 0){
+        var num = parseInt(rec.get("name").replace(baseName, ""), 10);
+        if(num > 0){
+          maxNumber = Math.max(maxNumber, num);
+        }
+      }
+    });
+
+    for(var i = 1; i <= count; i++){
+      var newName = maxNumber ? baseName + (maxNumber + i) : baseName + "2",
+        newRecord = Ext.create(record.self, {
+          name: newName,
+          model: data.model,
+          serial: "",
+        });
+      store.add(newRecord);
+    }
+
+    store.each(function(rec){
+      if(Ext.isEmpty(rec.get("name")) && Ext.isEmpty(rec.get("model"))){
+        toRemove.push(rec);
+      }
+    });
+    store.remove(toRemove);
+    store.add({});
   },
 });
