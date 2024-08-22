@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# VMWare.vHost.get_interfaces
+# VMWare.vMachine.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -11,7 +11,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "VMWare.vHost.get_interfaces"
+    name = "VMWare.vMachine.get_interfaces"
     interface = IGetInterfaces
 
     def execute_controller(self, hid: str):
