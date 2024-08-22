@@ -19,8 +19,8 @@ class Script(BaseScript):
         vm = self.vim.get_vm_by_id(hid)
         return {
             "vendor": "VMWare",
-            "platform": str(vm.summary.ConfigSummary.product),
-            "version": vm.config.version,
+            "platform": str(vm.config.guestId),
+            "version": vm.config.guestFullName,
         }
 
     def execute(self, **kwargs):

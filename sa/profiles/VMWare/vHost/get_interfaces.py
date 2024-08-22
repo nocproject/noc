@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from pyVmomi import vim
-
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -137,7 +134,7 @@ class Script(BaseScript):
                 ]
         for vm in h.vm:
             for d in vm.config.hardware.device:
-                if isinstance(d, vim.vm.device.VirtualEthernetCard) and d.backing.port:
+                if self.vim.has_internet_adapter(d) and d.backing.port:
                     name = f"vmnic-{d.backing.port.portKey}"
                     interfaces[name] = {
                         "name": name,

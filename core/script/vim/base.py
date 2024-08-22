@@ -112,3 +112,7 @@ class VIM(object):
             return vms[0]
         else:
             raise VIMError("Host %s Not found" % vid)
+
+    @staticmethod
+    def has_internet_adapter(item) -> bool:
+        return isinstance(item, vim.vm.device.VirtualEthernetCard)

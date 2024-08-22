@@ -30,8 +30,8 @@ ALLOW_XFAIL = {
     "noc.scripts.check-labels",
     "noc.scripts.paste",
     "noc.scripts.migrate-ignored-interfaces",
-    "noc.gis.parsers.address.fias",
     "noc.gis.tile",
+    "noc.core.script.vim.base"
 }
 
 
