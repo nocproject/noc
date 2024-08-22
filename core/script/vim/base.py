@@ -6,23 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Optional, Any
+from typing import Optional, Any
 
 # Third-party modules
 from pyVim.connect import Disconnect, SmartConnect
-from pyVmomi import vmodl, vim
+from pyVmomi import vim
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
-from noc.core.http.sync_client import HttpClient
 
 
 class VIMError(NOCError):
     default_code = ERR_HTTP_UNKNOWN
-
-
-vim.vm.device
 
 
 class VIM(object):
@@ -102,4 +98,17 @@ class VIM(object):
 
     def get_vm_by_id(self, vid: str) -> Optional[vim.VirtualMachine]:
         """Getting vMachine by id, example: 'vm-1030'"""
-        ...
+        vm_view = self.content.viewManager.CreateContainerView(
+            self.content.rootFolder,
+            [vim.VirtualMachine],
+            True,
+        )
+        try:
+            vms = [h for h in vm_view.view if h._moId == vid]
+        except vim.fault.NotAuthenticated:
+            raise VIMError("Not Authenticated")
+        vm_view.Destroy()
+        if vms:
+            return vms[0]
+        else:
+            raise VIMError("Host %s Not found" % vid)

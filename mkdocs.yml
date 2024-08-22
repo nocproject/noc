@@ -937,6 +937,7 @@ nav:
           - Connection Rules: create-object-models-howto/connection-rule.md
           - Facades: facades-howto/index.md
       - Writing NOC Command: writing-noc-command-howto/index.md
+      - Configure vCenter on NOC as Device Source: howto-add-vcenter-to-noc/index.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md

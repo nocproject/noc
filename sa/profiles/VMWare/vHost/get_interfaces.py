@@ -5,10 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from typing import Dict, List
-from collections import defaultdict
-
 # Third-party modules
 from pyVmomi import vim
 
