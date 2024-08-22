@@ -363,7 +363,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                         # Close HTTP Client
                         self.http.close()
                         # Close VIM Client
-                        if self.vim:
+                        if self._vim:
                             self.vim.close()
             # Clean result
             result = self.clean_output(result)

@@ -52,7 +52,7 @@ class VIM(object):
             )
 
     def shutdown_session(self):
-        print("Shutdown Session")
+        self.logger.debug("Shutdown VIM session")
         self.connection = None
 
     def get_connection(self) -> "vim.ServiceInstance":
@@ -60,7 +60,7 @@ class VIM(object):
         return self.connection
 
     def close(self):
-        print("Close connection")
+        self.logger.debug("Close VIM connection")
         # self.connection.content.sessionManager.Logout()
         if self.connection:
             Disconnect(self.connection)
