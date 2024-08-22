@@ -80,7 +80,8 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                 return Ext.isEmpty(record.get("model")) || Ext.isEmpty(record.get("name"));
               },
               handler: function(grid, rowIndex){
-                var newName, emptyRowIndex,
+                var newName,
+                  toRemove = [],
                   maxNumber = 0,
                   store = grid.getStore(),
                   record = store.getAt(rowIndex).copy(),
@@ -104,16 +105,15 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                   serial: "",
                 });
 
-                emptyRowIndex = store.findBy(function(rec){
-                  return Ext.isEmpty(rec.get("name")) && Ext.isEmpty(rec.get("model"));
+                store.each(function(rec){
+                  if(Ext.isEmpty(rec.get("name")) && Ext.isEmpty(rec.get("model"))){
+                    toRemove.push(rec);
+                  }
                 });
-
-                if(emptyRowIndex !== -1){
-                  store.insert(emptyRowIndex, newRecord);
-                } else{
-                  store.add(newRecord);
-                }
+                
+                store.remove(toRemove);
                 store.add(newRecord);
+                store.add({});
               },
             },
           ],
