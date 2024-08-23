@@ -12,7 +12,7 @@ from typing import Optional, Iterable, Tuple, AsyncIterable
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, BaseDataSource
 from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
