@@ -277,14 +277,13 @@ class ReportDsAlarms(BaseDataSource):
             elif name == "alarm_class":
                 match["alarm_class"] = bson.ObjectId(value)
             elif name == "segment":
-                match["segment_path"] = bson.ObjectId(value.id)
+                match["segment_path"] = value.id
             elif name == "resource_group":
-                resource_group = ResourceGroup.get_by_id(value.id)
                 mos_filter["effective_service_groups__overlap"] = ResourceGroup.get_nested_ids(
-                    resource_group
+                    value
                 )
             if name == "ex_resource_group":
-                ex_resource_group = ResourceGroup.get_by_id(value.id)
+                ex_resource_group = value
         if match_duration:
             match_middle["duration"] = match_duration
         if mos_filter:
