@@ -1,0 +1,192 @@
+{
+    "name": "Discovery Problem",
+    "$collection": "main.reports",
+    "uuid": "de60b3ab-282f-435e-a8e5-c4522e1d3f56",
+    "title": "Discovery Problem (New)",
+    "description": "Отчет по проблемам дискавери",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "discoveryproblemds",
+                "json": null
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "column_format": [
+                {
+                    "name": "managed_object",
+                    "title": "Managed Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile",
+                    "format_type": "string"
+                },
+                {
+                    "name": "domain",
+                    "title": "Administrative Domain",
+                    "format_type": "string"
+                },
+                {
+                    "name": "avail",
+                    "title": "Avail",
+                    "format_type": "string"
+                },
+                {
+                    "name": "last_success_discovery",
+                    "title": "Last successful discovery",
+                    "format_type": "string"
+                },
+                {
+                    "name": "discovery",
+                    "title": "Discovery",
+                    "format_type": "string"
+                },
+                {
+                    "name": "error",
+                    "title": "Error",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "sa",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Отчет по проблемам дискавери (Новый)"
+        },
+        "columns.managed_object": {
+            "ru": "Объект управления"
+        },
+        "columns.address": {
+            "ru": "Адрес"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
+        },
+        "columns.domain": {
+            "ru": "Зона ответственности"
+        },
+        "columns.avail": {
+            "ru": "Доступность"
+        },
+        "columns.last_success_discovery": {
+            "ru": "Время последнего запуска"
+        },
+        "columns.discovery": {
+            "ru": "Опрос"
+        },
+        "columns.error": {
+            "ru": "Ошибка"
+        },
+        "parameters.pool": {
+            "ru": "Пул объекта"
+        },
+        "parameters.mo_profile": {
+            "ru": "Профиль объекта"
+        },
+        "parameters.resource_group": {
+            "ru": "Группа устройств (Селектор)"
+        },
+        "parameters.filter_no_ping": {
+            "ru": "Отфильтрвовать недоступные (не пингуются)"
+        },
+        "parameters.profile_check_only": {
+            "ru": "Вывести только проблемы доступа"
+        },
+        "parameters.failed_discovery_only": {
+            "ru": "Исключить из вывода проблемы доступа"
+        },
+        "parameters.filter_pending_links": {
+            "ru": "Отфильтровать неподтверждённые линки"
+        },
+        "parameters.filter_none_problems": {
+            "ru": "Отфильтровать незаполненные проблемы"
+        },
+        "parameters.filter_view_other": {
+            "ru": "Отобразить неклассифицированные проблемы"
+        }
+    },
+    "parameters": [
+        {
+            "name": "pool",
+            "description": null,
+            "label": "Pool",
+            "model_id": "main.Pool",
+            "required": true,
+            "type": "model"
+        },
+        {
+            "name": "mo_profile",
+            "description": null,
+            "label": "MO Profile",
+            "model_id": "sa.ManagedObjectProfile",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "label": "Resource Group (Selector)",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        },
+        {
+            "name": "filter_no_ping",
+            "description": null,
+            "label": "Filter by Ping status",
+            "type": "bool"
+        },
+        {
+            "name": "profile_check_only",
+            "description": null,
+            "label": "Profile check only",
+            "type": "bool"
+        },
+        {
+            "name": "failed_discovery_only",
+            "description": null,
+            "label": "Failed discovery only",
+            "type": "bool"
+        },
+        {
+            "name": "filter_pending_links",
+            "description": null,
+            "label": "Filter Pending links",
+            "type": "bool"
+        },
+        {
+            "name": "filter_none_problems",
+            "description": null,
+            "label": "Filter None problems",
+            "type": "bool"
+        },
+        {
+            "name": "filter_view_other",
+            "description": null,
+            "label": "Show other problems",
+            "type": "bool"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": false,
+            "is_alterable_output": true,
+            "output_type": "csv"
+        }
+    ]
+}
