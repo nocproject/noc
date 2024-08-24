@@ -25,10 +25,9 @@ class VCenterRemoteSystem(BaseRemoteSystem):
     """
 
     Configuration variables (Main -> Setup -> Remote System -> Environments)
-    API_URL - URL zabbix web interface
+    API_URL - host address of fqdn for vCenter
     API_USER - username for ro access to device
     API_PASSWORD - password for user access
-    GROUPS_FILTER - list groups for extract
     """
 
 
