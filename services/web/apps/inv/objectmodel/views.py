@@ -40,6 +40,7 @@ class ObjectModelApplication(ExtDocApplication):
         "description__icontains",
         "uuid",
     ]
+    default_ordering = ["name"]
 
     def get_Q(self, request, query):
         q = super().get_Q(request, query)
