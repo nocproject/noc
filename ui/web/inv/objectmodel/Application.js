@@ -274,7 +274,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
             {
               text: __("Interface"),
               dataIndex: "interface",
-              flex: 2,
+              width: 150,
               editor: {
                 xtype: "inv.modelinterface.LookupField",
                 forceSelection: true,
@@ -284,7 +284,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
             {
               text: __("Key"),
               dataIndex: "attr",
-              flex: 1,
+              width: 150,
               editor: "textfield",
             },
             {
