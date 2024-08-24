@@ -23,10 +23,32 @@
             "direction": "s",
             "gender": "s",
             "group": "1",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "OTUC2"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC6"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC5"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC3"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC1"
+                }
+            ],
             "type__name": "Composed"
         },
         {
@@ -52,10 +74,32 @@
             "direction": "s",
             "gender": "s",
             "group": "2",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "OTUC2"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC6"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC5"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC3"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTUC1"
+                }
+            ],
             "type__name": "Composed"
         },
         {
@@ -84,14 +128,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT2",
@@ -103,14 +147,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT3",
@@ -122,14 +166,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT4",
@@ -141,14 +185,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT5",
@@ -160,14 +204,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT6",
@@ -179,14 +223,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT7",
@@ -198,14 +242,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT8",
@@ -217,14 +261,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT9",
@@ -236,14 +280,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT10",
@@ -255,14 +299,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT11",
@@ -274,14 +318,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT12",
@@ -293,14 +337,14 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "protocol__code": "TransEth100G"
                 },
                 {
                     "direction": "*",
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         }
     ],
     "data": [
