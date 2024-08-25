@@ -989,7 +989,7 @@ class AssetCheck(DiscoveryCheck):
         o = Object(
             model=model,
             data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)] + data,
-            container=container,
+            parent=container,
         )
         o.save()
         o.log(
