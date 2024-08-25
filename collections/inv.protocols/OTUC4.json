@@ -1,0 +1,12 @@
+{
+    "name": "OTUC4",
+    "code": "OTUC4",
+    "$collection": "inv.protocols",
+    "uuid": "77b5f910-7e53-439f-aa79-fec6d64d4503",
+    "description": "400Gbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODUC4",
+    "technology__name": "OTN"
+}
