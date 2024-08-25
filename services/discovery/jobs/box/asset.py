@@ -981,15 +981,11 @@ class AssetCheck(DiscoveryCheck):
             return o
         # Create object
         self.logger.info("Creating new object. model='%s', serial='%s'", m, serial)
-        if self.object.container:
-            container = self.object.container.id
-        else:
-            container = self.lost_and_found.id
         data += [ObjectAttr(scope="discovery", interface="asset", attr="part_no", value=[name])]
         o = Object(
             model=model,
             data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)] + data,
-            parent=container,
+            parent=self.object.container if self.object.container else self.lost_and_found,
         )
         o.save()
         o.log(
