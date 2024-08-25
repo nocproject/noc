@@ -162,7 +162,9 @@ class Script(BaseScript):
             r[match.group("pname")] = match.group("pvalue").strip()
         return r
 
-    def get_crossings(self, config: Dict[str, Any], crate_num: int, slot: int) -> List[Dict[str, str]]:
+    def get_crossings(
+        self, config: Dict[str, Any], crate_num: int, slot: int
+    ) -> List[Dict[str, str]]:
         def get_default_datatype(mode: str, port: str) -> str:
             DEFAULT_DATATYPE_MAP = {
                 "AGG-200": {
@@ -190,7 +192,7 @@ class Script(BaseScript):
                     "CLIENT18": "OTU2",
                     "CLIENT19": "OTU2",
                     "CLIENT20": "OTU2",
-                }
+                },
             }
             datatype = ""
             if mode in DEFAULT_DATATYPE_MAP:
@@ -217,7 +219,7 @@ class Script(BaseScript):
                 "OTU2": "ODU2",
                 "OTU1": "ODU1",
             }
-            
+
             if datatype in OTU_MAP:
                 odu = OTU_MAP[datatype]
             else:
@@ -225,7 +227,7 @@ class Script(BaseScript):
                 self.logger.debug("datatype %s is not in map", datatype)
 
             return odu
-        
+
         def get_outer_odu(card_mode: str, dst_port: str, dst_datatype: str) -> str:
             if not dst_datatype:
                 dst_datatype = get_default_datatype(card_mode, dst_port)
@@ -234,7 +236,7 @@ class Script(BaseScript):
 
         def get_raw_port(n: str) -> str:
             t, n, _ = n.split("_", 2)
-            return "_".join([t,n])
+            return "_".join([t, n])
 
         def get_port(n: str) -> str:
             t, n = n.split("_", 1)
@@ -258,8 +260,8 @@ class Script(BaseScript):
 
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
-        datatypes : Dict[str, str] = {}
-        port_states : Dict[str, str] = {}
+        datatypes: Dict[str, str] = {}
+        port_states: Dict[str, str] = {}
         mode: Optional[str] = None
         enable_oduflex = set()
 
@@ -309,13 +311,22 @@ class Script(BaseScript):
                 continue
             if port_states[input] and port_states[output]:
                 crossings.append(
-                    {"input": input, "output": output, "output_discriminator": get_discriminator(outer_odu, rest_dst)}
+                    {
+                        "input": input,
+                        "output": output,
+                        "output_discriminator": get_discriminator(outer_odu, rest_dst),
+                    }
                 )
             else:
-                self.logger.debug("One of the ports is offline %s:%s,%s:%s", input, port_states[input], output, port_states[output])
+                self.logger.debug(
+                    "One of the ports is offline %s:%s,%s:%s",
+                    input,
+                    port_states[input],
+                    output,
+                    port_states[output],
+                )
 
         return crossings
-
 
     def execute_http(self, **kwargs):
         r = []
@@ -389,7 +400,7 @@ class Script(BaseScript):
                 ]
                 adapters.append(adapter)
 
-            crossings = self.get_crossings(config, d.crate_id-1, slot)
+            crossings = self.get_crossings(config, d.crate_id - 1, slot)
             self.logger.debug("==|CROSS|==\n%s\n", crossings)
 
             params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"]]
