@@ -84,16 +84,6 @@ ODU_LIMITS = {
     "ODU3e2": {"ODU0": 32, "ODU1": 16, "ODU2": 4, "ODU2e": 3, "ODU25": 1, "ODU3": 1},
     "ODU50": {"ODU0": 40, "ODU1": 20, "ODU2": 5, "ODU2e": 5, "ODU25": 2, "ODU3": 1},
     "ODU4": {"ODU0": 80, "ODU1": 40, "ODU2": 10, "ODU2e": 10, "ODU3": 2, "ODU25": 2, "ODU50": 2},
-    "ODUC1": {
-        "ODU0": 80,
-        "ODU1": 40,
-        "ODU2": 10,
-        "ODU2e": 10,
-        "ODU3": 2,
-        "ODU25": 2,
-        "ODU50": 2,
-        "ODU4": 1,
-    },
     "ODUC2": {"ODU2": 20, "ODU2e": 20, "ODU3": 4, "ODU25": 4, "ODU50": 4, "ODU4": 2, "ODUC1": 1},
     "ODUC3": {"ODU2": 30, "ODU2e": 30, "ODU3": 6, "ODU25": 6, "ODU50": 6, "ODU4": 3, "ODUC2": 1},
     "ODUC4": {

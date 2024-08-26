@@ -46,7 +46,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTUC1"
+                    "protocol__code": "OTU4"
                 }
             ],
             "type__name": "Composed"
@@ -97,7 +97,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTUC1"
+                    "protocol__code": "OTU4"
                 }
             ],
             "type__name": "Composed"
