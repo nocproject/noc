@@ -105,6 +105,11 @@ class FacadePlugin(InvPlugin):
                     svg.embed(
                         slot_to_id(ro.parent_connection),
                         mod_svg,
+                        additional=(
+                            [slot_to_id(a) for a in ro.additional_connections if a]
+                            if ro.additional_connections
+                            else None
+                        ),
                         resource=ro.as_resource(),
                         event="dblclick",
                     )
