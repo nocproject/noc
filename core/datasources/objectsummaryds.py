@@ -124,8 +124,8 @@ class ObjectSummaryDS(BaseDataSource):
 
         with pg_connection.cursor() as cursor:
             if user and not user.is_superuser:
-                ad = UserAccess.get_domains(user)
-                cursor.execute(query, [ad])
+                ads = UserAccess.get_domains(user)
+                cursor.execute(query, [ads])
             else:
                 cursor.execute(query)
             for num, c in enumerate(cursor.fetchall()):
