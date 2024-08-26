@@ -13,6 +13,7 @@ from pymongo import ReadPreference
 
 # NOC modules
 from .base import FieldInfo, BaseDataSource
+from noc.aaa.models.user import User
 from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
@@ -114,20 +115,23 @@ class DiscoveryProblemDS(BaseDataSource):
 
     @classmethod
     async def iter_query(
-        cls, fields: Optional[Iterable[str]] = None, *args, user=None, **kwargs
+        cls,
+        fields: Optional[Iterable[str]] = None,
+        pool: Optional[Pool] = None,
+        mo_profile: Optional[ManagedObjectProfile] = None,
+        resource_group: Optional[ResourceGroup] = None,
+        filter_no_ping: bool = False,
+        profile_check_only: bool = False,
+        failed_discovery_only: bool = False,
+        filter_pending_links: bool = False,
+        filter_none_problems: bool = False,
+        filter_view_other: bool = False,
+        user: Optional[User] = None,
+        *args,
+        **kwargs,
     ) -> AsyncIterable[Tuple[str, str]]:
-        if "pool" not in kwargs:
+        if not pool:
             raise ValueError("'pool' parameter is required")
-        pool = kwargs.get("pool")
-        mo_profile = kwargs.get("mo_profile")
-        resource_group = kwargs.get("resource_group")
-        filter_no_ping = "filter_no_ping" in kwargs
-        profile_check_only = "profile_check_only" in kwargs
-        failed_discovery_only = "failed_discovery_only" in kwargs
-        filter_pending_links = "filter_pending_links" in kwargs
-        filter_none_problems = "filter_none_problems" in kwargs
-        filter_view_other = "filter_view_other" in kwargs
-
         match = None
         if resource_group:
             mos = ManagedObject.objects.filter(
