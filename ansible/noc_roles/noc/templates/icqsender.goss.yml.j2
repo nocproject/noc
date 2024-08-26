@@ -1,7 +1,0 @@
-command:
-  {{ noc_root }}/noc ctl status |grep icqsender:
-    exit-status: 0
-    stdout:
-    - /icqsender:.+RUNNING/
-    stderr: []
-    timeout: 10000

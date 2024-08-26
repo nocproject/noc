@@ -39,7 +39,6 @@
     - role: grafanads
     - role: mailsender
     - role: tgsender
-    - role: icqsender
     - role: chwriter
     - role: classifier
     - role: correlator

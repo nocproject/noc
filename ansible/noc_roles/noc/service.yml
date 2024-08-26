@@ -250,24 +250,6 @@
       vars:
         goss_service_name: tgsender
 
-- name: Install NOC icqsender
-  hosts: svc-icqsender-exec
-  become: "True"
-  strategy: "free"
-  gather_facts: "True"
-  tags:
-    - noc
-    - icqsender
-  vars_files:
-    - "../../vars/main.yml"
-    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
-  roles:
-    - role: icqsender
-    - role: goss
-      tags: [goss]
-      vars:
-        goss_service_name: icqsender
-
 - name: Install NOC chwriter
   hosts: svc-chwriter-exec
   become: "True"
