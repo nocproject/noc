@@ -68,16 +68,10 @@ volumes:
       device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-grafana/plugins
       o: bind
       type: bind
-  liftbridge_etc:
+  kafka_data:
     driver: local
     driver_opts:
-      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-liftbridge/etc
-      o: bind
-      type: bind
-  liftbridge_data:
-    driver: local
-    driver_opts:
-      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-liftbridge/data
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-kafka/data
       o: bind
       type: bind
   noc_custom:
@@ -569,7 +563,7 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
-      liftbridge:
+      kafka:
         condition: service_started
     command: >
       sh -c "set -xe
@@ -640,7 +634,7 @@ services:
     hostname: mx
     restart: "always"
     depends_on:
-      liftbridge:
+      kafka:
         condition: service_started
       consul:
         condition: service_healthy
@@ -671,8 +665,6 @@ services:
     hostname: worker
     restart: "always"
     depends_on:
-      liftbridge:
-        condition: service_started
       consul:
         condition: service_healthy
     command: /usr/local/bin/python3 /opt/noc/services/worker/service.py
@@ -1091,19 +1083,20 @@ services:
       GF_INSTALL_PLUGINS: grafana-simple-json-datasource,
                           vertamedia-clickhouse-datasource
 
-  liftbridge:
-    image: liftbridge/liftbridge:${LIFTBRIDGE_VERSION_TAG}
-    hostname: liftbridge
+  kafka:
+    image: bitnami/kafka:${KAFKA_VERSION_TAG}
+    hostname: kafka
     volumes:
-      - liftbridge_data:/data
-      - liftbridge_etc:/etc/liftbridge
-    depends_on:
-      - nats
-    entrypoint: >
-      liftbridge
-      --config /etc/liftbridge/liftbridge.yml
-      --data-dir=/data
-      --raft-bootstrap-seed
+      - kafka_data:/bitnami
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
+      - KAFKA_CFG_DELETE_TOPIC_ENABLE=true
 #    healthcheck:
 #      test: [ "CMD", "wget", "--spider", "-q", "localhost:9292/ping" ]
 #      interval: 10s
