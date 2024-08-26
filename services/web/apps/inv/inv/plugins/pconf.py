@@ -37,13 +37,24 @@ class PConfPlugin(InvPlugin):
                 name = row.get("nam")
                 if not name:
                     continue
-                conf.append(
-                    {
-                        "name": name,
-                        "value": row.get("val") or "",
-                        "description": row.get("dsc") or "",
-                        "units": row.get("unt") or "",
-                        "read_only": (row.get("acs") or "") != "W",
-                    }
-                )
+                # Determinee type
+                options = row.get("EM")
+                t = row.get("typ")
+                if options:
+                    dt = "enum"
+                elif t == 32:
+                    dt = "string"
+                else:
+                    dt = "string"
+                c = {
+                    "name": name,
+                    "value": row.get("val") or "",
+                    "description": row.get("dsc") or "",
+                    "units": row.get("unt") or "",
+                    "read_only": (row.get("acs") or "") != "W",
+                    "type": dt,
+                }
+                if options:
+                    c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
+                conf.append(c)
         return {"id": str(o.id), "conf": conf}
