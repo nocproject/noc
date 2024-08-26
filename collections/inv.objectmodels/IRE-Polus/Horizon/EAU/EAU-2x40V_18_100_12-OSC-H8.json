@@ -1,5 +1,5 @@
 {
-    "name": "IRE-Polus | Horizon | EAU | EAU-2x(40V+100)-H8",
+    "name": "IRE-Polus | Horizon | EAU | EAU-2x(40V/18+100/12)-OSC-H8",
     "$collection": "inv.objectmodels",
     "uuid": "0d48fa8c-370d-4817-98c1-7a229fcd17e1",
     "vendor__code": "IRE-POLUS",
@@ -245,7 +245,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["EAU-2x(40V+100)-H8"]
+            "value": ["EAU-2x(40V/18+100/12)-OSC-H8"]
         }
     ]
 }
