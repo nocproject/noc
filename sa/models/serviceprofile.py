@@ -7,6 +7,7 @@
 
 # Python modules
 import operator
+import re
 from enum import IntEnum
 from threading import Lock
 from typing import Optional, Union, Tuple, List
@@ -43,6 +44,7 @@ from noc.core.hash import hash_int
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.alarmclass import AlarmClass
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 
@@ -71,34 +73,28 @@ condition_map = {
 }
 
 
-class StatusTransferRule(EmbeddedDocument):
-    service_profile = PlainReferenceField("sa.ServiceProfile", required=False)
-    op = StringField(choices=["=", ">=", "<="], default="=")
-    status = EnumField(Status, required=False)
-    weight = IntField(min_value=0)
-    ignore = BooleanField(default=False)
-    to_status = EnumField(Status, required=True)
-
-    def is_match(
-        self,
-        profile: Optional[str] = None,
-        status: Optional[Status] = None,
-        weight: Optional[int] = None,
-    ) -> bool:
-        if self.service_profile and profile != self.service_profile:
-            return False
-        if self.status and status == self.status:
-            return False
-        if self.op and self.weight and weight < self.weight:
-            return False
-        return True
-
-
-class StatusMapRule(EmbeddedDocument):
+class CalculatedStatusRule(EmbeddedDocument):
+    weight_function = StringField(
+        choices=[
+            ("C", "Count"),
+            ("CP", "Percent"),
+            ("MIN", "Minimal"),
+            ("MAX", "Maximum"),
+        ]
+    )
     op = StringField(choices=["=", ">=", "<="], default="=")
     weight = IntField(min_value=0)
-    status = EnumField(Status)
-    to_status = EnumField(Status, required=True)
+    # Value
+    # Capabilities, check int Type
+    min_status = EnumField(Status)
+    max_status = EnumField(Status)
+    # For instance ?
+    set_status = EnumField(Status, required=True)
+
+    def get_status(self, statuses: List[Tuple[Status, int]]) -> Status:
+        return Status.UNKNOWN
+
+    # calculate_status - statuses - List[(status, weight)]
 
     def is_match(self, status, weight) -> bool:
         if not self.status and not self.weight:
@@ -111,49 +107,59 @@ class StatusMapRule(EmbeddedDocument):
             weight, self.weight
         )
 
+    # def get_status(
+    #     self, severities: List[int], max_services: Optional[int] = None
+    # ) -> Optional[AlarmSeverity]:
+    #     severity = 0
+    #     if self.transfer_function == "max":
+    #         severity = max(severities)
+    #     elif self.transfer_function == "min":
+    #         severity = min(severities)
+    #     elif self.transfer_function == "percent" and self.percent:
+    #         c = Counter(sorted(severities, reverse=True))
+    #         r = 0
+    #         r_max = max_services or sum(c.values())
+    #         for s, count in c.items():
+    #             r += count
+    #             if (r / r_max) * 100 >= self.percent:
+    #                 if not self.severity:
+    #                     severity = s
+    #                     break
+    #                 if self.severity and AlarmSeverity.get_severity(s) >= self.severity:
+    #                     severity = s
+    #                     break
+    #     if not severity:
+    #         return None
+    #     return self.status
 
-class AlarmFilter(EmbeddedDocument):
-    alarm_class = PlainReferenceField(AlarmSeverity)
+
+class AlarmStatusRule(EmbeddedDocument):
+    """
+    Mapping Alarm to Service Status
+    Attributes:
+        alarm_class_template: Condition by Alarm Class Name Regex
+        min_severity: Minimum Alarm Severity for match
+        max_severity: Maximum Alarm Severity for match
+        status: Set Service Status
+    """
+
+    alarm_class_template: Optional[str] = StringField(required=False)
     include_labels = ListField(StringField())
     exclude_labels = ListField(StringField())
-    include_object = BooleanField(default=False)  # Include ManagedObject to filter
-    # resource_group
-    # Vars ?
-
-
-class AlarmStatusMap(EmbeddedDocument):
-    # alarm_class = PlainReferenceField(AlarmClass)  # Name RE
-    transfer_function = StringField(choices=["min", "max", "percent", "sum"])  # Handler ?
-    op = StringField(choices=["<=", ">=", "="])
-    percent = IntField(min_value=0)
-    severity = PlainReferenceField(AlarmSeverity)  # Min Severity
-    # weight = IntField()
+    affected_instance = BooleanField(default=False)  # Include ServiceInstance to
+    min_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Min Severity
+    max_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Max Severity
+    # set_weight
     status = EnumField(Status, required=True)
 
-    def get_status(
-        self, severities: List[int], max_services: Optional[int] = None
-    ) -> Optional[AlarmSeverity]:
-        severity = 0
-        if self.transfer_function == "max":
-            severity = max(severities)
-        elif self.transfer_function == "min":
-            severity = min(severities)
-        elif self.transfer_function == "percent" and self.percent:
-            c = Counter(sorted(severities, reverse=True))
-            r = 0
-            r_max = max_services or sum(c.values())
-            for s, count in c.items():
-                r += count
-                if (r / r_max) * 100 >= self.percent:
-                    if not self.severity:
-                        severity = s
-                        break
-                    if self.severity and AlarmSeverity.get_severity(s) >= self.severity:
-                        severity = s
-                        break
-        if not severity:
-            return None
-        return self.status
+    def get_status(self, alarm_class: AlarmClass, severity: AlarmSeverity) -> Optional[Status]:
+        if self.alarm_class_template:
+            return re.match(self.alarm_class_template, alarm_class.name)
+        return Status.UNKNOWN
+
+    def is_match(self, status, weight) -> bool:
+        """"""
+        return True
 
 
 @Label.match_labels("serviceprofile", allowed_op={"="})
@@ -161,7 +167,10 @@ class AlarmStatusMap(EmbeddedDocument):
 @bi_sync
 @change
 @on_save
-@on_delete_check(check=[("sa.Service", "profile")], clean_lazy_labels="serviceprofile")
+@on_delete_check(
+    check=[("sa.Service", "profile")],
+    clean_lazy_labels="serviceprofile",
+)
 class ServiceProfile(Document):
     meta = {
         "collection": "noc.serviceprofiles",
@@ -188,8 +197,17 @@ class ServiceProfile(Document):
     interface_profile: "InterfaceProfile" = ReferenceField(InterfaceProfile)
     # Alarm weight
     weight: int = IntField(default=0)
-    #
+    # Status Policies
     status_transfer_policy = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("T", "Transparent"),
+            ("S", "Self"),
+        ],
+        default="S",
+    )
+    # From Parent
+    parent_status_policy = StringField(
         choices=[
             ("D", "Disable"),
             ("T", "Transparent"),
@@ -197,29 +215,28 @@ class ServiceProfile(Document):
         ],
         default="T",
     )
-    # For Wight and Percent
-    status_transfer_rule: List[StatusTransferRule] = EmbeddedDocumentListField(StatusTransferRule)
-    status_transfer_function = StringField(
+    calculate_status_function = StringField(
         choices=[
-            ("P", "By percent count"),
-            ("MIN", "Minimal on all Children"),
-            ("MAX", "Maximum on all children"),
-            ("SUM", "Sum Weight"),
+            ("D", "Disable"),
+            ("MX", "Max status"),
+            ("MN", "Min status"),
+            ("R", "By Rule"),
         ],
-        default="MIN",
+        default="MX",
     )
-    status_transfer_map: List[StatusMapRule] = EmbeddedDocumentListField(StatusMapRule)
+    calculate_status_rule: List["CalculatedStatusRule"] = EmbeddedDocumentListField(
+        CalculatedStatusRule
+    )
     # Alarm Binding
     alarm_affected_policy = StringField(
         choices=[
             ("D", "Disable"),
-            ("A", "Any"),
+            ("A", "By Instance"),
             ("O", "By Filter"),
         ],
         default="D",
     )
-    alarm_filter: List["AlarmFilter"] = EmbeddedDocumentListField(AlarmFilter)
-    alarm_status_map: List["AlarmStatusMap"] = EmbeddedDocumentListField(AlarmStatusMap)
+    alarm_status_rules: List["AlarmStatusRule"] = EmbeddedDocumentListField(AlarmStatusRule)
     # Capabilities
     caps = ListField(EmbeddedDocumentField(CapsSettings))
     # Integration with external NRI and TT systems
@@ -301,8 +318,6 @@ class ServiceProfile(Document):
                 status = Status(4 - num)
                 if s == alarm_sev and status > Status.SLIGHTLY_DEGRADED:
                     return status
-                else:
-                    break
         for rule in self.alarm_status_map:
             s = rule.get_status(severities, max_services=max_object)
             if s:

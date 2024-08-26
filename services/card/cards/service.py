@@ -116,7 +116,7 @@ class ServiceCard(BaseCard):
     def get_interface(self):
         svc = self.object
         while svc:
-            iface = Interface.objects.filter(service=svc).first()
+            iface = svc.interface
             if iface:
                 return iface
             svc = svc.parent

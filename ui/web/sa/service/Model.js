@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.service Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.service.Model");
@@ -174,7 +174,7 @@ Ext.define("NOC.sa.service.Model", {
             defaultValue: "P"
         },
         {
-            name: "status_transfer_rules",
+            name: "status_dependencies",
             type: "auto"
         },
         {
@@ -183,7 +183,7 @@ Ext.define("NOC.sa.service.Model", {
             defaultValue: "P"
         },
         {
-            name: "calculate_status_rule",
+            name: "calculate_status_rules",
             type: "auto"
         },
         {

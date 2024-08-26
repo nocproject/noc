@@ -33,7 +33,7 @@ from mongoengine.queryset.visitor import Q as m_q
 import cachetools
 
 # NOC modules
-from .serviceprofile import ServiceProfile, Status
+from .serviceprofile import ServiceProfile, Status, CalculatedStatusRule
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete_check
@@ -63,45 +63,64 @@ SVC_AC = "Service | Status | Change"
 
 
 class Instance(EmbeddedDocument):
-    name = StringField()
+    name_template = StringField()
     pool: "Pool" = PlainReferenceField(Pool, required=False)
     port_range = StringField()
+    address_range = StringField()
+    # Prefix Profile
+    # weight ?
 
 
-class CalculatedStatusRule(EmbeddedDocument):
-    weight_function = StringField(
-        choices=[
-            ("C", "Count"),
-            ("CP", "Percent"),
-            ("MIN", "Minimal"),
-            ("MAX", "Maximum"),
-        ]
-    )
-    op = StringField(choices=["=", ">=", "<="], default="=")
-    weight = IntField(min_value=0)
-    status = EnumField(Status)
-    # Capabilities
-    to_status = EnumField(Status, required=True)
+class ServiceStatusDependency(EmbeddedDocument):
+    """
+    Service dependency status
+    Attributes:
+        service: Service from dependent status
+        resource_group: Group for dependent status (client)
+        type: Dependency type:
+            * service - for dependent service or group as client
+            * group - for aggregating service or service group
+            * parent - for overwrite parent dependent
+            * children - for overwrite children dependent
+        min_status: Min Status value receive
+        max_status: Max Status value receive
+        set_status: Overwrite dependent status
+        weight: Dependent weight (used for calculate own status)
+        ignore: Ignore Dependent for calculate own status
+    """
 
-
-class StatusTransferRules(EmbeddedDocument):
     service = PlainReferenceField("sa.Service", required=False)
+    # Add to effective group, check group of client
     resource_group = ReferenceField(ResourceGroup, required=False)
-    direction = StringField(
+    type = StringField(
         choices=[
-            ("A", "Any"),
-            ("T", "To"),
-            ("F", "From"),
-            # ("UP", "Parent")
-            # ("Children", "Parent")
+            ("S", "Service (Using)"),
+            ("G", "Group (UP)"),
+            ("P", "Parent (UP)"),
+            ("C", "Children (Down)"),
         ],
-        default="A",
+        default="S",
     )
-    op = StringField(choices=["=", ">=", "<="], default="=")
-    status = EnumField(Status, required=False)
-    weight = IntField(min_value=0)
+    min_status = EnumField(Status, required=False)
+    max_status = EnumField(Status, required=False)
+    set_status = EnumField(Status, required=False)
     ignore = BooleanField(default=False)
-    to_status = EnumField(Status, required=False)
+    weight = IntField(min_value=0)
+    # Propagate admin status
+
+    # def is_match(
+    #     self,
+    #     profile: Optional[str] = None,
+    #     status: Optional[Status] = None,
+    #     weight: Optional[int] = None,
+    # ) -> bool:
+    #     if self.service_profile and profile != self.service_profile:
+    #         return False
+    #     if self.status and status == self.status:
+    #         return False
+    #     if self.op and self.weight and weight < self.weight:
+    #         return False
+    #     return True
 
 
 @Label.model
@@ -148,29 +167,40 @@ class Service(Document):
     # Last state change
     state_changed = DateTimeField()
     # Parent service
-    parent = ReferenceField("self", required=False)
+    parent: "Service" = ReferenceField("self", required=False)
     # Subscriber information
-    subscriber = ReferenceField(Subscriber)
+    subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
     #
-    oper_status = EnumField(Status, default=Status.UNKNOWN)
+    oper_status: EnumField = EnumField(Status, default=Status.UNKNOWN)
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
     # Service oper status settings
     status_transfer_policy = StringField(
-        choices=[("R", "By Rule"), ("T", "Transparent"), ("D", "Disable"), ("P", "Profile")],
+        choices=[
+            ("D", "Disable"),  # Disable transfer status
+            ("T", "Transparent"),  # Not transfer self status
+            ("S", "Self"),  # Transfer self status
+            ("P", "Profile"),
+        ],
         default="P",
     )
-    status_transfer_rules = EmbeddedDocumentListField(StatusTransferRules)
+    status_dependencies: List["ServiceStatusDependency"] = EmbeddedDocumentListField(
+        ServiceStatusDependency
+    )
     #
     calculate_status_function = StringField(
         choices=[
             ("D", "Disable"),
             ("P", "By Profile"),
             # MIN/MAX
+            ("MX", "MAX"),
+            ("MN", "MIN"),
             ("R", "By Rule"),
         ],
         default="P",
     )
-    calculate_status_rule = EmbeddedDocumentListField(CalculatedStatusRule)
+    calculate_status_rules: List["CalculatedStatusRule"] = EmbeddedDocumentListField(
+        CalculatedStatusRule
+    )
     #
     # maintenance
     service_path = ListField(ObjectIdField())
