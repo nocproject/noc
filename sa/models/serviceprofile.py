@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 from enum import IntEnum
 from threading import Lock
 from typing import Optional, Union, Tuple, List
-from collections import Counter
 from functools import partial
 
 # Third-party modules
@@ -44,7 +43,6 @@ from noc.core.hash import hash_int
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.fm.models.alarmclass import AlarmClass
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 
@@ -318,13 +316,13 @@ class ServiceProfile(Document):
         yield f"noc::serviceprofile::{service_profile.name}::="
 
     @classmethod
-    def get_status_by_severity(cls, severity: AlarmSeverity) -> Status:
+    def get_status_by_severity(cls, severity: int) -> Status:
         """Calculate Status by Alarm Severity"""
         for num, s in enumerate(AlarmSeverity.objects.filter().order_by("-severity")):
             if num > 3:
                 break
             status = Status(4 - num)
-            if s == severity and status > Status.SLIGHTLY_DEGRADED:
+            if s.severity <= severity and status > Status.SLIGHTLY_DEGRADED:
                 return status
         return Status.UNKNOWN
 
@@ -334,6 +332,8 @@ class ServiceProfile(Document):
         Attrs:
             aa: Active Alarm Instance
         """
+        if not self.alarm_status_rules:
+            return self.get_status_by_severity(aa.severity)
         for r in self.alarm_status_rules:
             if not r.is_match(aa):
                 continue

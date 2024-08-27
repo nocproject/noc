@@ -71,7 +71,12 @@ class ServiceApplication(ExtDocApplication):
         if is_objectid(query):
             q = Q(id=query)
         elif is_ipv4(query.strip()):
-            svcs = ServiceInstance.objects.filter(addresses__address=query.strip()).scalar("service")
+            svcs = [
+                s.id
+                for s in ServiceInstance.objects.filter(addresses__address=query.strip()).scalar(
+                    "service"
+                )
+            ]
             q = Q(id__in=svcs)
         else:
             q = super().get_Q(request, query)
