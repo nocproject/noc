@@ -10,7 +10,7 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Any, Dict, Optional, Iterable, List, Union
+from typing import Any, Dict, Optional, Iterable, List, Union, Tuple
 
 # Third-party modules
 import orjson
@@ -49,7 +49,6 @@ from noc.main.models.pool import Pool
 from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
-from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
@@ -89,9 +88,9 @@ class ServiceStatusDependency(EmbeddedDocument):
         ignore: Ignore Dependent for calculate own status
     """
 
-    service = PlainReferenceField("sa.Service", required=False)
+    service: Optional["Service"] = PlainReferenceField("sa.Service", required=False)
     # Add to effective group, check group of client
-    resource_group = ReferenceField(ResourceGroup, required=False)
+    resource_group: Optional["ResourceGroup"] = ReferenceField(ResourceGroup, required=False)
     type = StringField(
         choices=[
             ("S", "Service (Using)"),
@@ -107,6 +106,15 @@ class ServiceStatusDependency(EmbeddedDocument):
     ignore = BooleanField(default=False)
     weight = IntField(min_value=0)
     # Propagate admin status
+
+    def is_match(self) -> bool:
+        if not self.service:
+            return False
+        if self.min_status and self.service.oper_status < self.min_status:
+            return False
+        if self.max_status and self.service.oper_status > self.max_status:
+            return False
+        return True
 
     # def is_match(
     #     self,
@@ -149,11 +157,9 @@ class Service(Document):
             "sla_probe",
             "parent",
             "order_id",
-            "agent",
             "state",
             "effective_service_groups",
             "effective_client_groups",
-            "labels",
             "effective_labels",
             "service_path",
         ],
@@ -171,7 +177,7 @@ class Service(Document):
     # Subscriber information
     subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
     #
-    oper_status: EnumField = EnumField(Status, default=Status.UNKNOWN)
+    oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
     # Service oper status settings
     status_transfer_policy = StringField(
@@ -280,10 +286,40 @@ class Service(Document):
         return si.service if si else None
 
     @property
+    def service_instances(self) -> List["ServiceInstance"]:
+        return list(ServiceInstance.objects.filter(service=self.id))
+
+    @property
     def managed_object(self):
-        for si in self.get_instances():
+        for si in self.service_instances:
             if si.managed_object:
                 return si.managed_object
+
+    @property
+    def weight(self) -> int:
+        return self.profile.weight
+
+    @property
+    def label(self) -> str:
+        """Service text label"""
+        if self.name_template:
+            return self.name_template
+        return self.description
+
+    @property
+    def interface(self):
+        si = ServiceInstance.objects.filter(service=self.id, managed_object__exists=True).first()
+        if si:
+            return si.interface
+        return
+
+    @property
+    def in_maintenance(self):
+        """
+        Check service in maintenance
+        :return:
+        """
+        return False
 
     def __str__(self):
         if self.label:
@@ -307,14 +343,30 @@ class Service(Document):
         if mo:
             ServiceSummary.refresh_object(mo)
 
-    def iter_adjacency_services(self): ...
+    def iter_adjacency_services(self):
+        """Iterate over service topology, with affected statuses"""
+
+    def iter_dependency_status(self) -> Iterable[Tuple[Status, int]]:
+        """Iterate over dependency services status"""
+        for svc in Service.objects.filter(parent=self):
+            if svc.status_transfer_policy == "S":
+                yield svc.oper_status, svc.profile.weight
+            elif svc.status_transfer_policy == "T":
+                # Transparent
+                # yield from svc.iter_dependency_status("self_only")
+                ...
+
+        for item in self.status_dependencies:
+            if not item.is_match():
+                continue
+            yield item.service, item.service.profile.weight
 
     def set_oper_status(self, status: Status, timestamp: Optional[datetime.datetime] = None):
         """
-
-        :param status:
-        :param timestamp: Time when status changed
-        :return:
+        Set Operational Status for Service
+        Args:
+            status: New status
+            timestamp: Time when status changed
         """
         # Check state on is_productive
         # if not self.state.is_productive:
@@ -376,8 +428,7 @@ class Service(Document):
     def register_alarm(self, old_status: Status):
         """
         Register Group alarm when changed Oper Status
-        :param old_status:
-        :return:
+        old_status: Previous status
         """
         mo = self.get_managed_object()
         if not mo:
@@ -424,145 +475,105 @@ class Service(Document):
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
 
     def refresh_status(self):
+        """Calculate Operative Status, maximum over Directed and Affected Status"""
         status = self.get_direct_status()
         status = max(status, self.get_affected_status())
         self.set_oper_status(status)
 
-    def get_direct_status(self) -> Status:
+    def get_alarm_status(self) -> Status:
         """
-        Getting oper_status from Alarm and Event by alarm_filter
-        :return:
+        Calculate alarm status for service
+        1. If alarm affected policy is Disabled. Return UNKNOWN
+        2. Filter ActiveAlarm by affected_services field for self ID
+        3. If Active Alarms is empty status UP
+        4. Map ServiceInstance -> Alarms
+        5. Other (w/o ServiceInstance) alarm if affected policy is 'O'
+        6. Calculate Service Instance status: ServiceInstance -> (status, weight)
+        7. Calculate affected alarm status: statuses -> calculate rules
+        ? Default Managed Object status for Resource Group, get_status API ?
         """
         from noc.fm.models.activealarm import ActiveAlarm
 
-        # if not self.state.is_productive:
-        #    return Status.UNKNOWN
-        # Max objects
-        max_object = None
-        if self.effective_client_groups:
-            max_object = sum(
-                rg.resource_count
-                for rg in ResourceGroup.objects.filter(id__in=self.effective_client_groups)
+        if self.profile.alarm_affected_policy == "D":
+            return Status.UNKNOWN
+        statuses = {}
+        # Calculate Alarm status
+        for aa in ActiveAlarm.objects.filter(affected_services=self.id):
+            status = self.profile.calculate_alarm_status(aa)
+            if status != Status.UNKNOWN:
+                statuses[aa] = status
+        if not statuses:
+            return Status.UP
+        r = []
+        # Calculate Service Instance Status
+        for si in ServiceInstance.objects.filter(service=self.id):
+            si_statuses = [s for aa, s in statuses.items() if si.is_match_alarm(aa)]
+            (
+                r.append((max(si_statuses), si.weight))
+                if si_statuses
+                else r.append((Status.UP, si.weight))
             )
-        # Calculate Severity - group by object, max severity
-        r = ActiveAlarm.objects.filter(affected_services=self.id).scalar("severity")
-        return self.profile.calculate_alarm_status(r, max_object=max_object)
+        # Calculate affected status
+        return self.calculate_status(r)
+
+    def get_direct_status(self) -> Status:
+        """Getting oper_status from Alarm and Diagnostics"""
+        return self.get_alarm_status()
+
+    def get_calculate_status_function(self) -> str:
+        """"""
+        if self.calculate_status_function == "P":
+            return self.profile.calculate_status_function
+        return self.calculate_status_function
+
+    def calculate_status(self, statuses: List[Tuple[Status, int]]) -> Status:
+        """Calculate status by Policy"""
+        if not statuses:
+            return Status.UNKNOWN
+        f = self.get_calculate_status_function()
+        if f == "MN":
+            return min(status for status, _ in statuses)
+        elif f == "MX":
+            return max(status for status, _ in statuses)
+        # Add Profile Rules
+        for r in self.calculate_status_rules:
+            status = r.get_status(statuses)
+            if status:
+                return status
+        return Status.UNKNOWN
 
     def get_affected_status(self) -> Status:
-        """
-        Getting oper_status from children services
-        :return:
-        """
+        """Getting operational status from dependencies services"""
         r = []
-        if self.profile.status_transfer_policy == "D":
+        if self.profile.calculate_status_function == "D":
             return Status.UNKNOWN
-        for svc in Service.objects.filter(parent=self):
-            if self.profile.status_transfer_policy == "T" or not self.profile.status_transfer_rule:
-                if svc.oper_status == Status.UNKNOWN:
-                    # Skip Unknown status
-                    continue
-                r.append((svc.oper_status, svc.profile.weight))
+        for status, weight in self.iter_dependency_status():
+            if status == Status.UNKNOWN:
                 continue
-            for rule in self.profile.status_transfer_rule:
-                if rule.is_match(svc.profile, svc.oper_status, svc.profile.weight) and rule.ignore:
-                    break
-                elif rule.is_match(svc.profile, svc.oper_status, svc.profile.weight):
-                    r.append((rule.to_status, svc.profile.weight))
+            r.append((status, weight))
         if not r:
             return Status.UNKNOWN
-        return self.profile.calculate_status(r)
+        return self.calculate_status(r)
 
     @classmethod
-    def get_services_by_alarm(cls, alarm) -> List["str"]:
+    def get_services_by_alarm(cls, alarm) -> List[str]:
+        """Return service Ids for requested alarm"""
         profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
         if not profiles:
             return []
-        # q = m_q(managed_object=alarm.managed_object)
-        resources = []
-        s_q = m_q()
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
-        # Check is linked class
-        # Check is linked class
-        if hasattr(alarm.components, "interface") and getattr(alarm.components, "inteface", None):
-            resources.append(f"if:{alarm.components.inteface.id}")
-            # Channel query
-        address = None
-        if "address" in alarm.vars:
-            address = alarm.vars.get("address")
-        elif "peer" in alarm.vars:
-            # BGP alarms
-            address = alarm.vars.get("peer")
+        # Check dependency
         if alarm.managed_object.effective_service_groups:
             q |= m_q(
-                managed_object=None,
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
         #
-        services = []
-        if address:
-            s_q |= m_q(addresses__address__in=[])
-        if resources:
-            s_q |= m_q(resources__in=resources)
-        if not q:
-            s_q |= m_q(managed_object=alarm.managed_object.id)
-        r = []
-        for s in ServiceInstance.objects.filter(s_q).scalar("service"):
-            r.append(s.id)
-            if s.parent:
-                r.append(s.parent.id)
-        return r
-
-    @classmethod
-    def get_services_by_alarm_old(cls, alarm) -> List["str"]:
-        profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
-        if not profiles:
-            return []
-        # q = m_q(managed_object=alarm.managed_object)
-        q = m_q()
-        if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
-            q |= m_q(sla_probe=alarm.components.slaprobe.id)
-        # Check is linked class
-        if hasattr(alarm.components, "interface") and getattr(alarm.components, "inteface", None):
-            # q |= m_q(managed_object=alarm.managed_object, interface=alarm.components.inteface)
-            # q |= m_q(id=alarm.components.inteface.serivce)
-            q |= m_q(interface_id=alarm.components.inteface.id)
-            q |= m_q(subinterface_id=alarm.components.inteface.id)
-        # For CPE component
-        address = None
-        if "address" in alarm.vars:
-            address = alarm.vars.get("address")
-        elif "peer" in alarm.vars:
-            # BGP alarms
-            address = alarm.vars.get("peer")
-        if address:
-            c = Capability.get_by_name("Channel | Address")
-            # managed_object=alarm.managed_object,
-            q |= m_q(caps__match={"capability": c.id, "value": address})
-        if alarm.managed_object.effective_service_groups:
-            q |= m_q(
-                managed_object=None,
-                effective_client_groups__in=alarm.managed_object.effective_service_groups,
-            )
-        if not q:
-            q = m_q(managed_object=alarm.managed_object.id)
-        q = m_q(profile__in=profiles) & q
-        logger.info("Get services by alarm: %s/%s", alarm, q)
-        return list(Service.objects.filter(q).scalar("id"))
-
-    def get_alarm_filter(self) -> m_q:
-        """
-        Getting queryset Alarm filter
-        :return:
-        """
-        q = m_q()
-        if self.managed_object:
-            q &= m_q(managed_object=self.managed_object)
-        if self.sla_probe:
-            q &= m_q(vars__slaprobe=self.sla_probe.id)
-        # Interfaceiface = I
-        return q
+        services = ServiceInstance.get_services_by_alarm(alarm)
+        if q:
+            services += list(Service.objects.filter(q).scalar("service"))
+        return list(set(s.id for s in services))
 
     def unbind_interface(self):
         # from noc.inv.models.interface import Interface
@@ -635,36 +646,6 @@ class Service(Document):
             "agreement_id": self.agreement_id,
             "caps": self.get_caps(),
         }
-
-    @property
-    def in_maintenance(self):
-        """
-        Check service in maintenance
-        :return:
-        """
-        return False
-
-    @property
-    def weight(self) -> int:
-        return self.profile.weight
-
-    @property
-    def label(self) -> str:
-        """Service text label"""
-        if self.name_template:
-            return self.name_template
-        return self.description
-
-    def get_instances(self) -> List["ServiceInstance"]:
-        """Get Service instances"""
-        return list(ServiceInstance.objects.filter(service=self.id))
-
-    @property
-    def interface(self):
-        si = ServiceInstance.objects.filter(service=self.id, managed_object__exists=True).first()
-        if si:
-            return si.interface
-        return
 
     def find_instance(
         self,

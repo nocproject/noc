@@ -74,6 +74,16 @@ condition_map = {
 
 
 class CalculatedStatusRule(EmbeddedDocument):
+    """
+    Calculate status rule
+    1. Input - List[Tuple[Status, <weight>]]
+    2. Filter input list by min/max status
+    3. Filtered weights - calculate weights
+    4. Compare calculate value with condition
+    5. if match - return set_status
+    6. Without match - return
+    """
+
     weight_function = StringField(
         choices=[
             ("C", "Count"),
@@ -91,21 +101,40 @@ class CalculatedStatusRule(EmbeddedDocument):
     # For instance ?
     set_status = EnumField(Status, required=True)
 
-    def get_status(self, statuses: List[Tuple[Status, int]]) -> Status:
-        return Status.UNKNOWN
+    def get_status(self, statuses: List[Tuple[Status, int]]) -> Optional[Status]:
+        weights = (w for s, w in statuses if self.is_match_status(s))
+        weight = self.calculate_weight(weights)
+        if condition_map[self.op](weight, self.weight):
+            return self.set_status
+        return None
 
     # calculate_status - statuses - List[(status, weight)]
 
-    def is_match(self, status, weight) -> bool:
-        if not self.status and not self.weight:
-            return self.to_status
-        if not self.status:
+    def is_match_status(self, status: Status) -> bool:
+        if not self.min_status and status < self.min_status:
+            return False
+        elif self.max_status and status >= self.max_status:
+            return False
+        return True
+
+    def is_match(self, status: Status, weight: int) -> bool:
+        if not self.min_status and status < self.min_status:
+            return False
+        elif self.max_status and status >= self.max_status:
+            return False
+        if self.weight:
             return condition_map[self.op](weight, self.weight)
-        if not self.weight:
-            return condition_map[self.op](status, self.status)
-        return condition_map[self.op](status, self.status) and condition_map[self.op](
-            weight, self.weight
-        )
+        return True
+
+    def calculate_weight(self, weights: Tuple[int, ...]) -> float:
+        if self.weight_function == "C":
+            return len(weights)
+        elif self.weight_function == "MIN":
+            return min(weights)
+        elif self.weight_function == "MAX":
+            return max(weights)
+        # filter by min/max status
+        return round(sum(weights) / len(weights) * 100, 2)
 
     # def get_status(
     #     self, severities: List[int], max_services: Optional[int] = None
@@ -150,15 +179,16 @@ class AlarmStatusRule(EmbeddedDocument):
     min_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Min Severity
     max_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Max Severity
     # set_weight
-    status = EnumField(Status, required=True)
+    status = EnumField(Status, required=False)  # Default status by Severity
 
-    def get_status(self, alarm_class: AlarmClass, severity: AlarmSeverity) -> Optional[Status]:
-        if self.alarm_class_template:
-            return re.match(self.alarm_class_template, alarm_class.name)
-        return Status.UNKNOWN
-
-    def is_match(self, status, weight) -> bool:
+    def is_match(self, alarm) -> bool:
         """"""
+        if self.min_severity and alarm.severity < self.min_severity:
+            return False
+        if self.max_severity and alarm.severity > self.max_severity:
+            return False
+        if self.alarm_class_template:
+            return bool(re.match(self.alarm_class_template, alarm.alarm_class.name))
         return True
 
 
@@ -172,6 +202,14 @@ class AlarmStatusRule(EmbeddedDocument):
     clean_lazy_labels="serviceprofile",
 )
 class ServiceProfile(Document):
+    """
+    Attributes:
+        status_transfer_policy: Configure Transfer status to dependencies
+            * D - Disable Status Transfer
+            * T - Transfer received status, without changes
+            * S - transfer self Status
+    """
+
     meta = {
         "collection": "noc.serviceprofiles",
         "strict": False,
@@ -279,50 +317,30 @@ class ServiceProfile(Document):
     def iter_lazy_labels(cls, service_profile: "ServiceProfile"):
         yield f"noc::serviceprofile::{service_profile.name}::="
 
-    def calculate_status(self, statuses: List[Tuple[Status, int]]) -> Status:
-        if not statuses:
-            return Status.UNKNOWN
-        status = (status for status, _ in statuses)
-        weight = (weight for _, weight in statuses)
-        if self.status_transfer_function == "MIN":
-            status = min(status)
-            weight = min(weight)
-        elif self.status_transfer_function == "MAX":
-            status = max(status)
-            weight = max(weight)
-        elif self.status_transfer_function == "SUM":
-            weight = sum(weight for status, weight in statuses if status == Status.DOWN)
-            status = sum(status)
-        if not self.status_transfer_map:
-            return status
-        for rule in self.status_transfer_map:
-            if rule.is_match(status, weight):
-                return rule.to_status
+    @classmethod
+    def get_status_by_severity(cls, severity: AlarmSeverity) -> Status:
+        """Calculate Status by Alarm Severity"""
+        for num, s in enumerate(AlarmSeverity.objects.filter().order_by("-severity")):
+            if num > 3:
+                break
+            status = Status(4 - num)
+            if s == severity and status > Status.SLIGHTLY_DEGRADED:
+                return status
         return Status.UNKNOWN
 
-    def calculate_alarm_status(self, severities, max_object: Optional[int] = None) -> Status:
+    def calculate_alarm_status(self, aa) -> Status:
         """
-
-        :param severities: List of alarms severities
-        :param max_object: Max objects that may be alarmed
-        :return:
+        Calculate Alarm status by rule
+        Attrs:
+            aa: Active Alarm Instance
         """
-        if not severities:
-            return Status.UP
-        if not self.alarm_status_map:
-            # Default behaviour
-            alarm_sev = AlarmSeverity.get_severity(max(severities))
-            for num, s in enumerate(AlarmSeverity.objects.filter().order_by("-severity")):
-                if num > 3:
-                    break
-                status = Status(4 - num)
-                if s == alarm_sev and status > Status.SLIGHTLY_DEGRADED:
-                    return status
-        for rule in self.alarm_status_map:
-            s = rule.get_status(severities, max_services=max_object)
-            if s:
-                return rule.status
-        return Status.UP
+        for r in self.alarm_status_rules:
+            if not r.is_match(aa):
+                continue
+            if r.status:
+                return r.status
+            return self.get_status_by_severity(aa.severity)
+        return Status.UNKNOWN
 
     @classmethod
     def get_alarm_service_filter(cls): ...

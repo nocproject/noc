@@ -20,10 +20,12 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentListField,
 )
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.ip import IP
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
 
@@ -88,7 +90,45 @@ class ServiceInstance(Document):
     last_seen = DateTimeField()
     uptime = FloatField(default=0)
     # used by
+    # weight ?
     # labels ?
+
+    @property
+    def weight(self) -> int:
+        """
+        Instance weight, by resource.
+            * interface/sub - interface profile
+            * object - Managed Object Profile
+            * alarm - ?
+        """
+        return 1
+
+    def is_match_alarm(self, alarm: ActiveAlarm) -> bool:
+        """Check alarm applying to instance"""
+        if self.resources and alarm.is_link_alarm:
+            return f"if:{alarm.components.interface.id}" in self.resources
+        elif self.managed_object and self.managed_object.id == alarm.managed_object.id:
+            return True
+        elif self.addresses and "address" in alarm.vars and alarm.vars["address"] == self.address:
+            return True
+        return False
+
+    @classmethod
+    def get_services_by_alarm(cls, alarm: ActiveAlarm) -> List["Service"]:
+        """Getting Service Instance by alarm"""
+        q = Q(managed_object=alarm.managed_object.id)
+        if alarm.is_link_alarm and getattr(alarm.components, "interface", None):
+            q |= Q(resources=f"if:{alarm.components.inteface.id}")
+        address = None
+        if "address" in alarm.vars:
+            address = alarm.vars.get("address")
+        elif "peer" in alarm.vars:
+            # BGP alarms
+            address = alarm.vars.get("peer")
+        if address:
+            q |= Q(addresses__address=address)
+        # Name, port
+        return ServiceInstance.objects.filter(q).scalar("service")
 
     def __str__(self) -> str:
         name = self.name or self.service.label
