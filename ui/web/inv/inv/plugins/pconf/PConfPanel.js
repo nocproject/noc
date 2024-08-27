@@ -13,15 +13,14 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   ],
   title: __("Config"),
   closable: false,
+  defaultListenerScope: true,
   layout: "fit",
   tbar: [
     {
       glyph: NOC.glyph.refresh,
       text: __("Reload"),
       tooltip: __("Reload"),
-      handler: function(){
-        console.log("Reload not implemented");
-      },
+      handler: "onReload",
     },
     "|",
     {
@@ -127,12 +126,26 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       ],
     },
   ],
-
+  //
   preview: function(data){
     var me = this;
     me.currentId = data.id;
-    console.log(">>>", data);
-    console.log(">>>", data.conf.filter(e=>e.type === "enum"));
     me.down("gridpanel").store.loadData(data.conf);
+  },
+  //
+  onReload: function(){
+    var me = this;
+    Ext.Ajax.request({
+      url: "/inv/inv/" + me.currentId + "/plugin/pconf/",
+      method: "GET",
+      scope: me,
+      success: function(response){
+        var data = Ext.decode(response.responseText);
+        this.preview(data);
+      },
+      failure: function(){
+        NOC.error(__("Failed to load data"));
+      },
+    });
   },
 });
