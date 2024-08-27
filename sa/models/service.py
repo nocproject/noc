@@ -343,15 +343,22 @@ class Service(Document):
         if mo:
             ServiceSummary.refresh_object(mo)
 
+    def get_status_transfer_policy(self) -> str:
+        """"""
+        if self.status_transfer_policy == "P":
+            return self.profile.status_transfer_policy
+        return self.status_transfer_policy
+
     def iter_adjacency_services(self):
         """Iterate over service topology, with affected statuses"""
 
     def iter_dependency_status(self) -> Iterable[Tuple[Status, int]]:
         """Iterate over dependency services status"""
         for svc in Service.objects.filter(parent=self):
-            if svc.status_transfer_policy == "S":
+            p = svc.get_status_transfer_policy()
+            if p == "S":
                 yield svc.oper_status, svc.profile.weight
-            elif svc.status_transfer_policy == "T":
+            elif p == "T":
                 # Transparent
                 # yield from svc.iter_dependency_status("self_only")
                 ...
@@ -504,6 +511,7 @@ class Service(Document):
                 statuses[aa] = status
         if not statuses:
             return Status.UP
+        logger.debug("[%s] Alarm statuses: %s", self.id, statuses)
         r = []
         # Calculate Service Instance Status
         for si in ServiceInstance.objects.filter(service=self.id):
