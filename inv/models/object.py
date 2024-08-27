@@ -1072,6 +1072,77 @@ class Object(Document):
         self.save()
         self.log("Insert into %s" % (container or "Root"), system="CORE", op="INSERT")
 
+    def iter_used_connections(self) -> Iterable[str]:
+        """
+        Iterates used connections.
+        """
+        seen: Set[str] = set()
+        for doc in Object._get_collection().find(
+            {"parent": self.id}, {"_id": 0, "parent_connection": 1, "additional_connections": 1}
+        ):
+            parent_connection = doc.get("parent_connection")
+            if parent_connection and parent_connection not in seen:
+                yield parent_connection
+                seen.add(parent_connection)
+            additional_connections = doc.get("additional_connections")
+            if additional_connections:
+                for c in additional_connections:
+                    if c not in seen:
+                        yield c
+                        seen.add(c)
+
+    def attach(self, parent: "Object", parent_connection: str) -> None:
+        """
+        Attach object to parent slot.
+
+        Args:
+            parent: Parent object.
+            parent_connection: Connection name.
+
+        Raises:
+            ConnectionError: When unable to connect.
+        """
+        # Check object is a module
+        outer = self.model.get_outer()
+        if not outer:
+            raise ConnectionError("Object is not a module")
+        # Check connection is exists
+        cn = parent.model.get_model_connection(parent_connection)
+        if not cn:
+            msg = f"Parent connection is not found: {parent_connection}"
+            raise ConnectionError(msg)
+        # Check compatibility
+        is_compatible, msg = parent.model.check_connection(cn, outer)
+        if not is_compatible:
+            msg = f"Not compatible: {msg}"
+            raise ConnectionError(msg)
+        # Process oversized objects
+        size = self.occupied_slots
+        additional = []
+        if size > 1:
+            additional = [
+                cn.name
+                for cn in parent.model.iter_next_connections(parent_connection, size - 1)
+                if parent.model.check_connection(cn, outer)
+            ]
+            if len(additional) != size - 1:
+                raise ConnectionError("Cannot be placed here")
+        # Check if all slots is free
+        used = set(parent.iter_used_connections())
+        if used:
+            if parent_connection is used:
+                msg = f"Connection is used:{parent_connection}"
+                raise ConnectionError(msg)
+            if additional:
+                s = used.intersection(set(additional))
+                if s:
+                    msg = f"Connection is used: {', '.join(s)}"
+                    raise ConnectionError(msg)
+        self.parent = parent
+        self.parent_connection = parent_connection
+        self.additional_connections = additional
+        self.save()
+
     def iter_children(self) -> Iterable["Object"]:
         """
         Iterate through all children
@@ -1576,6 +1647,26 @@ class Object(Document):
         self.parent = value
 
     container = property(fget=_get_container, fset=_set_container, doc="Legacy container attribute")
+
+    @property
+    def occupied_slots(self) -> int:
+        """
+        Returns amount of occupied slots.
+
+        Returns:
+            0: For cards without outer connections.
+            1: For standard-sized cards.
+            2+: For oversized cards.
+        """
+        # Check we have outer connection
+        if not self.model.get_outer():
+            return 0
+        # Chec if we have oversized card
+        size = self.model.get_data("caps", "multi_slot")
+        if size:
+            return size
+        # Standard size
+        return 1
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

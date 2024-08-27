@@ -1,9 +1,9 @@
 {
-    "name": "IRE-Polus | Horizon | Mux_Demux | OD-96-50-H13-OSC(1511)-H8",
+    "name": "IRE-Polus | Horizon | Mux_Demux | OM-96-50-H13-OSC(1511)VP-H8",
     "$collection": "inv.objectmodels",
-    "uuid": "1777a6a3-7546-48c8-bec2-c9693d207493",
+    "uuid": "4ef97220-12fc-4df7-9be3-98a79a080ed5",
     "vendor__code": "IRE-POLUS",
-    "description": "Оптический демультиплексор OD-96 предназначен для выделения из одного спектрально-уплотненного оптического сигнала до 96 отдельных DWDM каналов на выделенных длинах волн с межканальным интервалом 50 ГГц в соответствии с МСЭ-Т G.692, РД 45.286-2002 (ITU сетка частот).",
+    "description": "96-канальный оптический мультиплексор со встроенными аттенюаторами предназначен для объединения отдельных DWDM каналов в один спектрально-уплотненный оптический сигнал.",
     "cr_context": "LINECARD",
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
@@ -16,49 +16,49 @@
             "type__name": "IRE-Polus | Horizon | H8 Card"
         },
         {
-            "name": "LINE_IN",
-            "description": "Вход со стороны оптической линии",
+            "name": "LINE_OUT",
+            "description": "Выход в сторону оптоволоконной линии",
             "direction": "s",
             "gender": "f",
             "protocols": [{
-                "direction": ">",
+                "direction": "<",
                 "protocol__code": "DWDM"
             }],
             "type__name": "Optical | LC"
         },
         {
-            "name": "P1",
+            "name": "B1",
             "description": "Выход на предусилитель",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "P2",
+            "name": "B2",
             "description": "Вход с предусилителя",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "OSC_OUT",
-            "description": "Выход служебного канала OSC",
+            "name": "OSC_IN",
+            "description": "Вход служебного канала  OSC",
             "direction": "s",
             "gender": "f",
             "protocols": [{
-                "direction": "<",
+                "direction": ">",
                 "protocol__code": "OSC"
             }],
             "type__name": "Optical | LC"
         },
         {
             "name": "H13",
-            "description": "Выход канала H13",
+            "description": "Вход канала H13",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H13",
                     "protocol__code": "DWDM"
                 }
@@ -67,12 +67,12 @@
         },
         {
             "name": "C14",
-            "description": "Выход канала C14",
+            "description": "Вход канала C14",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C14",
                     "protocol__code": "DWDM"
                 }
@@ -81,12 +81,12 @@
         },
         {
             "name": "H14",
-            "description": "Выход канала H14",
+            "description": "Вход канала H14",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H14",
                     "protocol__code": "DWDM"
                 }
@@ -95,12 +95,12 @@
         },
         {
             "name": "C15",
-            "description": "Выход канала C15",
+            "description": "Вход канала C15",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C15",
                     "protocol__code": "DWDM"
                 }
@@ -109,12 +109,12 @@
         },
         {
             "name": "H15",
-            "description": "Выход канала H15",
+            "description": "Вход канала H15",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H15",
                     "protocol__code": "DWDM"
                 }
@@ -123,12 +123,12 @@
         },
         {
             "name": "C16",
-            "description": "Выход канала C16",
+            "description": "Вход канала C16",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C16",
                     "protocol__code": "DWDM"
                 }
@@ -137,12 +137,12 @@
         },
         {
             "name": "H16",
-            "description": "Выход канала H16",
+            "description": "Вход канала H16",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H16",
                     "protocol__code": "DWDM"
                 }
@@ -151,12 +151,12 @@
         },
         {
             "name": "C17",
-            "description": "Выход канала C17",
+            "description": "Вход канала C17",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C17",
                     "protocol__code": "DWDM"
                 }
@@ -165,12 +165,12 @@
         },
         {
             "name": "H17",
-            "description": "Выход канала H17",
+            "description": "Вход канала H17",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H17",
                     "protocol__code": "DWDM"
                 }
@@ -179,12 +179,12 @@
         },
         {
             "name": "C18",
-            "description": "Выход канала C18",
+            "description": "Вход канала C18",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C18",
                     "protocol__code": "DWDM"
                 }
@@ -193,12 +193,12 @@
         },
         {
             "name": "H18",
-            "description": "Выход канала H18",
+            "description": "Вход канала H18",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H18",
                     "protocol__code": "DWDM"
                 }
@@ -207,12 +207,12 @@
         },
         {
             "name": "C19",
-            "description": "Выход канала C19",
+            "description": "Вход канала C19",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C19",
                     "protocol__code": "DWDM"
                 }
@@ -221,12 +221,12 @@
         },
         {
             "name": "H19",
-            "description": "Выход канала H19",
+            "description": "Вход канала H19",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H19",
                     "protocol__code": "DWDM"
                 }
@@ -235,12 +235,12 @@
         },
         {
             "name": "C20",
-            "description": "Выход канала C20",
+            "description": "Вход канала C20",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C20",
                     "protocol__code": "DWDM"
                 }
@@ -249,12 +249,12 @@
         },
         {
             "name": "H20",
-            "description": "Выход канала H20",
+            "description": "Вход канала H20",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H20",
                     "protocol__code": "DWDM"
                 }
@@ -263,12 +263,12 @@
         },
         {
             "name": "C21",
-            "description": "Выход канала C21",
+            "description": "Вход канала C21",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C21",
                     "protocol__code": "DWDM"
                 }
@@ -277,12 +277,12 @@
         },
         {
             "name": "H21",
-            "description": "Выход канала H21",
+            "description": "Вход канала H21",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H21",
                     "protocol__code": "DWDM"
                 }
@@ -291,12 +291,12 @@
         },
         {
             "name": "C22",
-            "description": "Выход канала C22",
+            "description": "Вход канала C22",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C22",
                     "protocol__code": "DWDM"
                 }
@@ -305,12 +305,12 @@
         },
         {
             "name": "H22",
-            "description": "Выход канала H22",
+            "description": "Вход канала H22",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H22",
                     "protocol__code": "DWDM"
                 }
@@ -319,12 +319,12 @@
         },
         {
             "name": "C23",
-            "description": "Выход канала C23",
+            "description": "Вход канала C23",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C23",
                     "protocol__code": "DWDM"
                 }
@@ -333,12 +333,12 @@
         },
         {
             "name": "H23",
-            "description": "Выход канала H23",
+            "description": "Вход канала H23",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H23",
                     "protocol__code": "DWDM"
                 }
@@ -347,12 +347,12 @@
         },
         {
             "name": "C24",
-            "description": "Выход канала C24",
+            "description": "Вход канала C24",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C24",
                     "protocol__code": "DWDM"
                 }
@@ -361,12 +361,12 @@
         },
         {
             "name": "H24",
-            "description": "Выход канала H24",
+            "description": "Вход канала H24",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H24",
                     "protocol__code": "DWDM"
                 }
@@ -375,12 +375,12 @@
         },
         {
             "name": "C25",
-            "description": "Выход канала C25",
+            "description": "Вход канала C25",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C25",
                     "protocol__code": "DWDM"
                 }
@@ -389,12 +389,12 @@
         },
         {
             "name": "H25",
-            "description": "Выход канала H25",
+            "description": "Вход канала H25",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H25",
                     "protocol__code": "DWDM"
                 }
@@ -403,12 +403,12 @@
         },
         {
             "name": "C26",
-            "description": "Выход канала C26",
+            "description": "Вход канала C26",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C26",
                     "protocol__code": "DWDM"
                 }
@@ -417,12 +417,12 @@
         },
         {
             "name": "H26",
-            "description": "Выход канала H26",
+            "description": "Вход канала H26",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H26",
                     "protocol__code": "DWDM"
                 }
@@ -431,12 +431,12 @@
         },
         {
             "name": "C27",
-            "description": "Выход канала C27",
+            "description": "Вход канала C27",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C27",
                     "protocol__code": "DWDM"
                 }
@@ -445,12 +445,12 @@
         },
         {
             "name": "H27",
-            "description": "Выход канала H27",
+            "description": "Вход канала H27",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H27",
                     "protocol__code": "DWDM"
                 }
@@ -459,12 +459,12 @@
         },
         {
             "name": "C28",
-            "description": "Выход канала C28",
+            "description": "Вход канала C28",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C28",
                     "protocol__code": "DWDM"
                 }
@@ -473,12 +473,12 @@
         },
         {
             "name": "H28",
-            "description": "Выход канала H28",
+            "description": "Вход канала H28",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H28",
                     "protocol__code": "DWDM"
                 }
@@ -487,12 +487,12 @@
         },
         {
             "name": "C29",
-            "description": "Выход канала C29",
+            "description": "Вход канала C29",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C29",
                     "protocol__code": "DWDM"
                 }
@@ -501,12 +501,12 @@
         },
         {
             "name": "H29",
-            "description": "Выход канала H29",
+            "description": "Вход канала H29",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H29",
                     "protocol__code": "DWDM"
                 }
@@ -515,12 +515,12 @@
         },
         {
             "name": "C30",
-            "description": "Выход канала C30",
+            "description": "Вход канала C30",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C30",
                     "protocol__code": "DWDM"
                 }
@@ -529,12 +529,12 @@
         },
         {
             "name": "H30",
-            "description": "Выход канала H30",
+            "description": "Вход канала H30",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H30",
                     "protocol__code": "DWDM"
                 }
@@ -543,12 +543,12 @@
         },
         {
             "name": "C31",
-            "description": "Выход канала C31",
+            "description": "Вход канала C31",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C31",
                     "protocol__code": "DWDM"
                 }
@@ -557,12 +557,12 @@
         },
         {
             "name": "H31",
-            "description": "Выход канала H31",
+            "description": "Вход канала H31",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H31",
                     "protocol__code": "DWDM"
                 }
@@ -571,12 +571,12 @@
         },
         {
             "name": "C32",
-            "description": "Выход канала C32",
+            "description": "Вход канала C32",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C32",
                     "protocol__code": "DWDM"
                 }
@@ -585,12 +585,12 @@
         },
         {
             "name": "H32",
-            "description": "Выход канала H32",
+            "description": "Вход канала H32",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H32",
                     "protocol__code": "DWDM"
                 }
@@ -599,12 +599,12 @@
         },
         {
             "name": "C33",
-            "description": "Выход канала C33",
+            "description": "Вход канала C33",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C33",
                     "protocol__code": "DWDM"
                 }
@@ -613,12 +613,12 @@
         },
         {
             "name": "H33",
-            "description": "Выход канала H33",
+            "description": "Вход канала H33",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H33",
                     "protocol__code": "DWDM"
                 }
@@ -627,12 +627,12 @@
         },
         {
             "name": "C34",
-            "description": "Выход канала C34",
+            "description": "Вход канала C34",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C34",
                     "protocol__code": "DWDM"
                 }
@@ -641,12 +641,12 @@
         },
         {
             "name": "H34",
-            "description": "Выход канала H34",
+            "description": "Вход канала H34",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H34",
                     "protocol__code": "DWDM"
                 }
@@ -655,12 +655,12 @@
         },
         {
             "name": "C35",
-            "description": "Выход канала C35",
+            "description": "Вход канала C35",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C35",
                     "protocol__code": "DWDM"
                 }
@@ -669,12 +669,12 @@
         },
         {
             "name": "H35",
-            "description": "Выход канала H35",
+            "description": "Вход канала H35",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H35",
                     "protocol__code": "DWDM"
                 }
@@ -683,12 +683,12 @@
         },
         {
             "name": "C36",
-            "description": "Выход канала C36",
+            "description": "Вход канала C36",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C36",
                     "protocol__code": "DWDM"
                 }
@@ -697,12 +697,12 @@
         },
         {
             "name": "H36",
-            "description": "Выход канала H36",
+            "description": "Вход канала H36",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H36",
                     "protocol__code": "DWDM"
                 }
@@ -711,12 +711,12 @@
         },
         {
             "name": "C37",
-            "description": "Выход канала C37",
+            "description": "Вход канала C37",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C37",
                     "protocol__code": "DWDM"
                 }
@@ -725,12 +725,12 @@
         },
         {
             "name": "H37",
-            "description": "Выход канала H37",
+            "description": "Вход канала H37",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H37",
                     "protocol__code": "DWDM"
                 }
@@ -739,12 +739,12 @@
         },
         {
             "name": "C38",
-            "description": "Выход канала C38",
+            "description": "Вход канала C38",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C38",
                     "protocol__code": "DWDM"
                 }
@@ -753,12 +753,12 @@
         },
         {
             "name": "H38",
-            "description": "Выход канала H38",
+            "description": "Вход канала H38",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H38",
                     "protocol__code": "DWDM"
                 }
@@ -767,12 +767,12 @@
         },
         {
             "name": "C39",
-            "description": "Выход канала C39",
+            "description": "Вход канала C39",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C39",
                     "protocol__code": "DWDM"
                 }
@@ -781,12 +781,12 @@
         },
         {
             "name": "H39",
-            "description": "Выход канала H39",
+            "description": "Вход канала H39",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H39",
                     "protocol__code": "DWDM"
                 }
@@ -795,12 +795,12 @@
         },
         {
             "name": "C40",
-            "description": "Выход канала C40",
+            "description": "Вход канала C40",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C40",
                     "protocol__code": "DWDM"
                 }
@@ -809,12 +809,12 @@
         },
         {
             "name": "H40",
-            "description": "Выход канала H40",
+            "description": "Вход канала H40",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H40",
                     "protocol__code": "DWDM"
                 }
@@ -823,12 +823,12 @@
         },
         {
             "name": "C41",
-            "description": "Выход канала C41",
+            "description": "Вход канала C41",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C41",
                     "protocol__code": "DWDM"
                 }
@@ -837,12 +837,12 @@
         },
         {
             "name": "H41",
-            "description": "Выход канала H41",
+            "description": "Вход канала H41",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H41",
                     "protocol__code": "DWDM"
                 }
@@ -851,12 +851,12 @@
         },
         {
             "name": "C42",
-            "description": "Выход канала C42",
+            "description": "Вход канала C42",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C42",
                     "protocol__code": "DWDM"
                 }
@@ -865,12 +865,12 @@
         },
         {
             "name": "H42",
-            "description": "Выход канала H42",
+            "description": "Вход канала H42",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H42",
                     "protocol__code": "DWDM"
                 }
@@ -879,12 +879,12 @@
         },
         {
             "name": "C43",
-            "description": "Выход канала C43",
+            "description": "Вход канала C43",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C43",
                     "protocol__code": "DWDM"
                 }
@@ -893,12 +893,12 @@
         },
         {
             "name": "H43",
-            "description": "Выход канала H43",
+            "description": "Вход канала H43",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H43",
                     "protocol__code": "DWDM"
                 }
@@ -907,12 +907,12 @@
         },
         {
             "name": "C44",
-            "description": "Выход канала C44",
+            "description": "Вход канала C44",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C44",
                     "protocol__code": "DWDM"
                 }
@@ -921,12 +921,12 @@
         },
         {
             "name": "H44",
-            "description": "Выход канала H44",
+            "description": "Вход канала H44",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H44",
                     "protocol__code": "DWDM"
                 }
@@ -935,12 +935,12 @@
         },
         {
             "name": "C45",
-            "description": "Выход канала C45",
+            "description": "Вход канала C45",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C45",
                     "protocol__code": "DWDM"
                 }
@@ -949,12 +949,12 @@
         },
         {
             "name": "H45",
-            "description": "Выход канала H45",
+            "description": "Вход канала H45",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H45",
                     "protocol__code": "DWDM"
                 }
@@ -963,12 +963,12 @@
         },
         {
             "name": "C46",
-            "description": "Выход канала C46",
+            "description": "Вход канала C46",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C46",
                     "protocol__code": "DWDM"
                 }
@@ -977,12 +977,12 @@
         },
         {
             "name": "H46",
-            "description": "Выход канала H46",
+            "description": "Вход канала H46",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H46",
                     "protocol__code": "DWDM"
                 }
@@ -991,12 +991,12 @@
         },
         {
             "name": "C47",
-            "description": "Выход канала C47",
+            "description": "Вход канала C47",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C47",
                     "protocol__code": "DWDM"
                 }
@@ -1005,12 +1005,12 @@
         },
         {
             "name": "H47",
-            "description": "Выход канала H47",
+            "description": "Вход канала H47",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H47",
                     "protocol__code": "DWDM"
                 }
@@ -1019,12 +1019,12 @@
         },
         {
             "name": "C48",
-            "description": "Выход канала C48",
+            "description": "Вход канала C48",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C48",
                     "protocol__code": "DWDM"
                 }
@@ -1033,12 +1033,12 @@
         },
         {
             "name": "H48",
-            "description": "Выход канала H48",
+            "description": "Вход канала H48",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H48",
                     "protocol__code": "DWDM"
                 }
@@ -1047,12 +1047,12 @@
         },
         {
             "name": "C49",
-            "description": "Выход канала C49",
+            "description": "Вход канала C49",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C49",
                     "protocol__code": "DWDM"
                 }
@@ -1061,12 +1061,12 @@
         },
         {
             "name": "H49",
-            "description": "Выход канала H49",
+            "description": "Вход канала H49",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H49",
                     "protocol__code": "DWDM"
                 }
@@ -1075,12 +1075,12 @@
         },
         {
             "name": "C50",
-            "description": "Выход канала C50",
+            "description": "Вход канала C50",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C50",
                     "protocol__code": "DWDM"
                 }
@@ -1089,12 +1089,12 @@
         },
         {
             "name": "H50",
-            "description": "Выход канала H50",
+            "description": "Вход канала H50",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H50",
                     "protocol__code": "DWDM"
                 }
@@ -1103,12 +1103,12 @@
         },
         {
             "name": "C51",
-            "description": "Выход канала C51",
+            "description": "Вход канала C51",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C51",
                     "protocol__code": "DWDM"
                 }
@@ -1117,12 +1117,12 @@
         },
         {
             "name": "H51",
-            "description": "Выход канала H51",
+            "description": "Вход канала H51",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H51",
                     "protocol__code": "DWDM"
                 }
@@ -1131,12 +1131,12 @@
         },
         {
             "name": "C52",
-            "description": "Выход канала C52",
+            "description": "Вход канала C52",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C52",
                     "protocol__code": "DWDM"
                 }
@@ -1145,12 +1145,12 @@
         },
         {
             "name": "H52",
-            "description": "Выход канала H52",
+            "description": "Вход канала H52",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H52",
                     "protocol__code": "DWDM"
                 }
@@ -1159,12 +1159,12 @@
         },
         {
             "name": "C53",
-            "description": "Выход канала C53",
+            "description": "Вход канала C53",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C53",
                     "protocol__code": "DWDM"
                 }
@@ -1173,12 +1173,12 @@
         },
         {
             "name": "H53",
-            "description": "Выход канала H53",
+            "description": "Вход канала H53",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H53",
                     "protocol__code": "DWDM"
                 }
@@ -1187,12 +1187,12 @@
         },
         {
             "name": "C54",
-            "description": "Выход канала C54",
+            "description": "Вход канала C54",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C54",
                     "protocol__code": "DWDM"
                 }
@@ -1201,12 +1201,12 @@
         },
         {
             "name": "H54",
-            "description": "Выход канала H54",
+            "description": "Вход канала H54",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H54",
                     "protocol__code": "DWDM"
                 }
@@ -1215,12 +1215,12 @@
         },
         {
             "name": "C55",
-            "description": "Выход канала C55",
+            "description": "Вход канала C55",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C55",
                     "protocol__code": "DWDM"
                 }
@@ -1229,12 +1229,12 @@
         },
         {
             "name": "H55",
-            "description": "Выход канала H55",
+            "description": "Вход канала H55",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H55",
                     "protocol__code": "DWDM"
                 }
@@ -1243,12 +1243,12 @@
         },
         {
             "name": "C56",
-            "description": "Выход канала C56",
+            "description": "Вход канала C56",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C56",
                     "protocol__code": "DWDM"
                 }
@@ -1257,12 +1257,12 @@
         },
         {
             "name": "H56",
-            "description": "Выход канала H56",
+            "description": "Вход канала H56",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H56",
                     "protocol__code": "DWDM"
                 }
@@ -1271,12 +1271,12 @@
         },
         {
             "name": "C57",
-            "description": "Выход канала C57",
+            "description": "Вход канала C57",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C57",
                     "protocol__code": "DWDM"
                 }
@@ -1285,12 +1285,12 @@
         },
         {
             "name": "H57",
-            "description": "Выход канала H57",
+            "description": "Вход канала H57",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H57",
                     "protocol__code": "DWDM"
                 }
@@ -1299,12 +1299,12 @@
         },
         {
             "name": "C58",
-            "description": "Выход канала C58",
+            "description": "Вход канала C58",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C58",
                     "protocol__code": "DWDM"
                 }
@@ -1313,12 +1313,12 @@
         },
         {
             "name": "H58",
-            "description": "Выход канала H58",
+            "description": "Вход канала H58",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H58",
                     "protocol__code": "DWDM"
                 }
@@ -1327,12 +1327,12 @@
         },
         {
             "name": "C59",
-            "description": "Выход канала C59",
+            "description": "Вход канала C59",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C59",
                     "protocol__code": "DWDM"
                 }
@@ -1341,12 +1341,12 @@
         },
         {
             "name": "H59",
-            "description": "Выход канала H59",
+            "description": "Вход канала H59",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H59",
                     "protocol__code": "DWDM"
                 }
@@ -1355,12 +1355,12 @@
         },
         {
             "name": "C60",
-            "description": "Выход канала C60",
+            "description": "Вход канала C60",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C60",
                     "protocol__code": "DWDM"
                 }
@@ -1369,12 +1369,12 @@
         },
         {
             "name": "H60",
-            "description": "Выход канала H60",
+            "description": "Вход канала H60",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "H60",
                     "protocol__code": "DWDM"
                 }
@@ -1383,12 +1383,12 @@
         },
         {
             "name": "C61",
-            "description": "Выход канала C61",
+            "description": "Вход канала C61",
             "direction": "s",
             "gender": "f",
             "protocols": [
                 {
-                    "direction": "<",
+                    "direction": ">",
                     "discriminator": "C61",
                     "protocol__code": "DWDM"
                 }
@@ -1398,495 +1398,500 @@
     ],
     "cross": [
         {
-            "input": "LINE_IN",
-            "output": "P1"
+            "input": "OSC_IN",
+            "output": "LINE_OUT"
         },
         {
-            "input": "P2",
-            "output": "OSC_OUT"
+            "input": "B2",
+            "output": "LINE_OUT"
         },
         {
-            "input": "P2",
-            "output": "H13",
-            "input_discriminator": "lambda::191350-50"
+            "input": "H13",
+            "input_discriminator": "lambda::191350-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C14",
-            "input_discriminator": "lambda::191400-50"
+            "input": "C14",
+            "input_discriminator": "lambda::191400-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H14",
-            "input_discriminator": "lambda::191450-50"
+            "input": "H14",
+            "input_discriminator": "lambda::191450-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C15",
-            "input_discriminator": "lambda::191500-50"
+            "input": "C15",
+            "input_discriminator": "lambda::191500-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H15",
-            "input_discriminator": "lambda::191550-50"
+            "input": "H15",
+            "input_discriminator": "lambda::191550-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C16",
-            "input_discriminator": "lambda::191600-50"
+            "input": "C16",
+            "input_discriminator": "lambda::191600-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H16",
-            "input_discriminator": "lambda::191650-50"
+            "input": "H16",
+            "input_discriminator": "lambda::191650-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C17",
-            "input_discriminator": "lambda::191700-50"
+            "input": "C17",
+            "input_discriminator": "lambda::191700-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H17",
-            "input_discriminator": "lambda::191750-50"
+            "input": "H17",
+            "input_discriminator": "lambda::191750-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C18",
-            "input_discriminator": "lambda::191800-50"
+            "input": "C18",
+            "input_discriminator": "lambda::191800-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H18",
-            "input_discriminator": "lambda::191850-50"
+            "input": "H18",
+            "input_discriminator": "lambda::191850-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C19",
-            "input_discriminator": "lambda::191900-50"
+            "input": "C19",
+            "input_discriminator": "lambda::191900-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H19",
-            "input_discriminator": "lambda::191950-50"
+            "input": "H19",
+            "input_discriminator": "lambda::191950-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C20",
-            "input_discriminator": "lambda::192000-50"
+            "input": "C20",
+            "input_discriminator": "lambda::192000-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H20",
-            "input_discriminator": "lambda::192050-50"
+            "input": "H20",
+            "input_discriminator": "lambda::192050-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C21",
-            "input_discriminator": "lambda::192100-50"
+            "input": "C21",
+            "input_discriminator": "lambda::192100-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H21",
-            "input_discriminator": "lambda::192150-50"
+            "input": "H21",
+            "input_discriminator": "lambda::192150-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C22",
-            "input_discriminator": "lambda::192200-50"
+            "input": "C22",
+            "input_discriminator": "lambda::192200-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H22",
-            "input_discriminator": "lambda::192250-50"
+            "input": "H22",
+            "input_discriminator": "lambda::192250-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C23",
-            "input_discriminator": "lambda::192300-50"
+            "input": "C23",
+            "input_discriminator": "lambda::192300-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H23",
-            "input_discriminator": "lambda::192350-50"
+            "input": "H23",
+            "input_discriminator": "lambda::192350-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C24",
-            "input_discriminator": "lambda::192400-50"
+            "input": "C24",
+            "input_discriminator": "lambda::192400-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H24",
-            "input_discriminator": "lambda::192450-50"
+            "input": "H24",
+            "input_discriminator": "lambda::192450-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C25",
-            "input_discriminator": "lambda::192500-50"
+            "input": "C25",
+            "input_discriminator": "lambda::192500-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H25",
-            "input_discriminator": "lambda::192550-50"
+            "input": "H25",
+            "input_discriminator": "lambda::192550-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C26",
-            "input_discriminator": "lambda::192600-50"
+            "input": "C26",
+            "input_discriminator": "lambda::192600-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H26",
-            "input_discriminator": "lambda::192650-50"
+            "input": "H26",
+            "input_discriminator": "lambda::192650-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C27",
-            "input_discriminator": "lambda::192700-50"
+            "input": "C27",
+            "input_discriminator": "lambda::192700-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H27",
-            "input_discriminator": "lambda::192750-50"
+            "input": "H27",
+            "input_discriminator": "lambda::192750-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C28",
-            "input_discriminator": "lambda::192800-50"
+            "input": "C28",
+            "input_discriminator": "lambda::192800-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H28",
-            "input_discriminator": "lambda::192850-50"
+            "input": "H28",
+            "input_discriminator": "lambda::192850-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C29",
-            "input_discriminator": "lambda::192900-50"
+            "input": "C29",
+            "input_discriminator": "lambda::192900-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H29",
-            "input_discriminator": "lambda::192950-50"
+            "input": "H29",
+            "input_discriminator": "lambda::192950-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C30",
-            "input_discriminator": "lambda::193000-50"
+            "input": "C30",
+            "input_discriminator": "lambda::193000-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H30",
-            "input_discriminator": "lambda::193050-50"
+            "input": "H30",
+            "input_discriminator": "lambda::193050-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C31",
-            "input_discriminator": "lambda::193100-50"
+            "input": "C31",
+            "input_discriminator": "lambda::193100-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H31",
-            "input_discriminator": "lambda::193150-50"
+            "input": "H31",
+            "input_discriminator": "lambda::193150-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C32",
-            "input_discriminator": "lambda::193200-50"
+            "input": "C32",
+            "input_discriminator": "lambda::193200-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H32",
-            "input_discriminator": "lambda::193250-50"
+            "input": "H32",
+            "input_discriminator": "lambda::193250-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C33",
-            "input_discriminator": "lambda::193300-50"
+            "input": "C33",
+            "input_discriminator": "lambda::193300-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H33",
-            "input_discriminator": "lambda::193350-50"
+            "input": "H33",
+            "input_discriminator": "lambda::193350-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C34",
-            "input_discriminator": "lambda::193400-50"
+            "input": "C34",
+            "input_discriminator": "lambda::193400-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H34",
-            "input_discriminator": "lambda::193450-50"
+            "input": "H34",
+            "input_discriminator": "lambda::193450-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C35",
-            "input_discriminator": "lambda::193500-50"
+            "input": "C35",
+            "input_discriminator": "lambda::193500-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H35",
-            "input_discriminator": "lambda::193550-50"
+            "input": "H35",
+            "input_discriminator": "lambda::193550-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C36",
-            "input_discriminator": "lambda::193600-50"
+            "input": "C36",
+            "input_discriminator": "lambda::193600-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H36",
-            "input_discriminator": "lambda::193650-50"
+            "input": "H36",
+            "input_discriminator": "lambda::193650-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C37",
-            "input_discriminator": "lambda::193700-50"
+            "input": "C37",
+            "input_discriminator": "lambda::193700-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H37",
-            "input_discriminator": "lambda::193750-50"
+            "input": "H37",
+            "input_discriminator": "lambda::193750-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C38",
-            "input_discriminator": "lambda::193800-50"
+            "input": "C38",
+            "input_discriminator": "lambda::193800-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H38",
-            "input_discriminator": "lambda::193850-50"
+            "input": "H38",
+            "input_discriminator": "lambda::193850-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C39",
-            "input_discriminator": "lambda::193900-50"
+            "input": "C39",
+            "input_discriminator": "lambda::193900-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H39",
-            "input_discriminator": "lambda::193950-50"
+            "input": "H39",
+            "input_discriminator": "lambda::193950-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C40",
-            "input_discriminator": "lambda::194000-50"
+            "input": "C40",
+            "input_discriminator": "lambda::194000-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H40",
-            "input_discriminator": "lambda::194050-50"
+            "input": "H40",
+            "input_discriminator": "lambda::194050-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C41",
-            "input_discriminator": "lambda::194100-50"
+            "input": "C41",
+            "input_discriminator": "lambda::194100-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H41",
-            "input_discriminator": "lambda::194150-50"
+            "input": "H41",
+            "input_discriminator": "lambda::194150-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C42",
-            "input_discriminator": "lambda::194200-50"
+            "input": "C42",
+            "input_discriminator": "lambda::194200-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H42",
-            "input_discriminator": "lambda::194250-50"
+            "input": "H42",
+            "input_discriminator": "lambda::194250-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C43",
-            "input_discriminator": "lambda::194300-50"
+            "input": "C43",
+            "input_discriminator": "lambda::194300-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H43",
-            "input_discriminator": "lambda::194350-50"
+            "input": "H43",
+            "input_discriminator": "lambda::194350-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C44",
-            "input_discriminator": "lambda::194400-50"
+            "input": "C44",
+            "input_discriminator": "lambda::194400-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H44",
-            "input_discriminator": "lambda::194450-50"
+            "input": "H44",
+            "input_discriminator": "lambda::194450-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C45",
-            "input_discriminator": "lambda::194500-50"
+            "input": "C45",
+            "input_discriminator": "lambda::194500-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H45",
-            "input_discriminator": "lambda::194550-50"
+            "input": "H45",
+            "input_discriminator": "lambda::194550-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C46",
-            "input_discriminator": "lambda::194600-50"
+            "input": "C46",
+            "input_discriminator": "lambda::194600-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H46",
-            "input_discriminator": "lambda::194650-50"
+            "input": "H46",
+            "input_discriminator": "lambda::194650-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C47",
-            "input_discriminator": "lambda::194700-50"
+            "input": "C47",
+            "input_discriminator": "lambda::194700-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H47",
-            "input_discriminator": "lambda::194750-50"
+            "input": "H47",
+            "input_discriminator": "lambda::194750-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C48",
-            "input_discriminator": "lambda::194800-50"
+            "input": "C48",
+            "input_discriminator": "lambda::194800-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H48",
-            "input_discriminator": "lambda::194850-50"
+            "input": "H48",
+            "input_discriminator": "lambda::194850-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C49",
-            "input_discriminator": "lambda::194900-50"
+            "input": "C49",
+            "input_discriminator": "lambda::194900-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H49",
-            "input_discriminator": "lambda::194950-50"
+            "input": "H49",
+            "input_discriminator": "lambda::194950-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C50",
-            "input_discriminator": "lambda::195000-50"
+            "input": "C50",
+            "input_discriminator": "lambda::195000-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H50",
-            "input_discriminator": "lambda::195050-50"
+            "input": "H50",
+            "input_discriminator": "lambda::195050-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C51",
-            "input_discriminator": "lambda::195100-50"
+            "input": "C51",
+            "input_discriminator": "lambda::195100-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H51",
-            "input_discriminator": "lambda::195150-50"
+            "input": "H51",
+            "input_discriminator": "lambda::195150-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C52",
-            "input_discriminator": "lambda::195200-50"
+            "input": "C52",
+            "input_discriminator": "lambda::195200-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H52",
-            "input_discriminator": "lambda::195250-50"
+            "input": "H52",
+            "input_discriminator": "lambda::195250-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C53",
-            "input_discriminator": "lambda::195300-50"
+            "input": "C53",
+            "input_discriminator": "lambda::195300-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H53",
-            "input_discriminator": "lambda::195350-50"
+            "input": "H53",
+            "input_discriminator": "lambda::195350-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C54",
-            "input_discriminator": "lambda::195400-50"
+            "input": "C54",
+            "input_discriminator": "lambda::195400-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H54",
-            "input_discriminator": "lambda::195450-50"
+            "input": "H54",
+            "input_discriminator": "lambda::195450-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C55",
-            "input_discriminator": "lambda::195500-50"
+            "input": "C55",
+            "input_discriminator": "lambda::195500-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H55",
-            "input_discriminator": "lambda::195550-50"
+            "input": "H55",
+            "input_discriminator": "lambda::195550-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C56",
-            "input_discriminator": "lambda::195600-50"
+            "input": "C56",
+            "input_discriminator": "lambda::195600-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H56",
-            "input_discriminator": "lambda::195650-50"
+            "input": "H56",
+            "input_discriminator": "lambda::195650-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C57",
-            "input_discriminator": "lambda::195700-50"
+            "input": "C57",
+            "input_discriminator": "lambda::195700-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H57",
-            "input_discriminator": "lambda::195750-50"
+            "input": "H57",
+            "input_discriminator": "lambda::195750-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C58",
-            "input_discriminator": "lambda::195800-50"
+            "input": "C58",
+            "input_discriminator": "lambda::195800-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H58",
-            "input_discriminator": "lambda::195850-50"
+            "input": "H58",
+            "input_discriminator": "lambda::195850-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C59",
-            "input_discriminator": "lambda::195900-50"
+            "input": "C59",
+            "input_discriminator": "lambda::195900-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H59",
-            "input_discriminator": "lambda::195950-50"
+            "input": "H59",
+            "input_discriminator": "lambda::195950-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C60",
-            "input_discriminator": "lambda::196000-50"
+            "input": "C60",
+            "input_discriminator": "lambda::196000-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "H60",
-            "input_discriminator": "lambda::196050-50"
+            "input": "H60",
+            "input_discriminator": "lambda::196050-50",
+            "output": "B1"
         },
         {
-            "input": "P2",
-            "output": "C61",
-            "input_discriminator": "lambda::196100-50"
+            "input": "C61",
+            "input_discriminator": "lambda::196100-50",
+            "output": "B1"
         }
     ],
     "data": [
+        {
+            "attr": "multi_slot",
+            "interface": "caps",
+            "value": 2
+        },
         {
             "attr": "power",
             "interface": "power",
@@ -1915,7 +1920,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["OD-96-50-H13-OSC(1511)-H8"]
+            "value": ["OM-96-50-H13-OSC(1511)VP-H8"]
         },
         {
             "attr": "min_rx_tx_frequency",
@@ -1928,5 +1933,5 @@
             "value": 196.1
         }
     ],
-    "front_facade__name": "RBS | iData | OD-96-50-H13-OSC(1511) IP1550"
+    "front_facade__name": "RBS | iData | OM-96-50-H13-OSC(1511) IP1550"
 }
