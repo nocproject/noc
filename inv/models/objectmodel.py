@@ -664,6 +664,41 @@ class ObjectModel(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_objectmodel")
 
+    def iter_next_connections(self, start: str, n: int) -> Iterable[ObjectModelConnection]:
+        """
+        Iterate up to n compatible next connections.
+
+        Connections will be compatible with `start`.
+
+        Attributes:
+            start: Starting connection name.
+            n: Amount of next connections.
+
+        Returns:
+            Yields connection objects.
+        """
+        scn: Optional[ObjectModelConnection] = None
+        for cn in self.connections:
+            # Wait for start
+            if not scn:
+                if cn.name == start:
+                    scn = cn
+                continue
+            # Check compatibility
+            # @todo: Consider compatible types
+            if not (
+                cn.direction == scn.direction
+                and cn.gender == scn.gender
+                and cn.type.id == scn.type.id
+            ):
+                return
+            # Compatible
+            yield cn
+            n -= 1
+            # Check for finish
+            if not n:
+                return
+
     @property
     def glyph_css_class(self) -> Optional[str]:
         # Explicitly defined glyph

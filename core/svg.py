@@ -201,13 +201,20 @@ class SVG(object):
         defs.append(el)
         self._defs[el_id] = el
 
-    def embed(self: "SVG", element_id: str, source: "SVG", **kwargs) -> None:
+    def embed(
+        self: "SVG",
+        element_id: str,
+        source: "SVG",
+        additional: Optional[Iterable[str]] = None,
+        **kwargs,
+    ) -> None:
         """
         Embed SVG in place of element.
 
         Args:
             element_id: Id of the element.
             source: Source SVG instance.
+            additional: Names of the slots to be overlapped.
             kwargs: Optional data-* attributes
 
         Raises:
@@ -228,6 +235,20 @@ class SVG(object):
             source._tree.getroot().remove(src_defs)
         # Get transform attributes
         attrs = {"transform": self.get_transform(el)}
+        # Remove additional slots
+        if additional:
+            # Actually, get transform from last elemeent
+            a_el = self._tree.find(f".//*[@id='{additional[-1]}']") or el
+            attrs = {"transform": self.get_transform(a_el)}
+            # Remove overlapped elements
+            for a in additional:
+                a_el = self._tree.find(f".//*[@id='{a}']")
+                if a_el:
+                    a_parent = self._tree.find(f".//*[@id='{a}']/..")
+                    if a_parent:
+                        a_parent.remove(a_el)
+        else:
+            attrs = {"transform": self.get_transform(el)}
         # Add id if present
         el_id = el.get("id")
         if el_id:
