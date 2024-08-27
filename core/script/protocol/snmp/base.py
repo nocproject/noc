@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from functools import partial
+from functools import partial, cached_property
 from typing import Optional, Dict, Callable, List, Union, Tuple, Any
 import weakref
 
@@ -542,3 +542,21 @@ class SNMP(object):
                 return None
 
         return run_sync(run, close_all=False)
+
+
+class SNMPProtocol(object):
+    @cached_property
+    def snmp(self) -> SNMP:
+        # Always use root protocol
+        if self.parent:
+            return self.root.snmp
+        # Beef?
+        if self.is_beefed:
+            return BeefSNMP(self)
+        # Plain snmp
+        if snmp_rate_limit is None:
+            snmp_rate_limit = self.profile.get_snmp_rate_limit(self)
+        snmp = SNMP(self, rate=snmp_rate_limit)
+        # Install handler
+        self.on_cleanup(snmp.close)
+        return snmp

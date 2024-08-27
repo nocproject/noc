@@ -13,7 +13,7 @@ import operator
 from functools import reduce
 from collections import defaultdict
 from time import perf_counter
-from typing import Any, Optional, Set, Union
+from typing import Any, Optional, Set, Union, List, Callable
 
 # Third-party modules
 from atomicl import AtomicLong
@@ -40,9 +40,8 @@ from .error import (
     NotSupportedError,
     UnexpectedResultError,
 )
-from .snmp.base import SNMP
-from .snmp.beef import BeefSNMP
-from .http.base import HTTP
+from .protocol.snmp.base import SNMPProtocol
+from .protocol.http.base import HTTPProtocol
 from .sessionstore import SessionStore
 
 
@@ -59,7 +58,7 @@ class BaseScriptMetaclass(type):
         return n
 
 
-class BaseScript(object, metaclass=BaseScriptMetaclass):
+class BaseScript(object, SNMPProtocol, HTTPProtocol, metaclass=BaseScriptMetaclass):
     """
     Service Activation script base class
     """
@@ -185,8 +184,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.cli_stream = None
         self.mml_stream = None
         self.rtsp_stream = None
-        self._snmp: Optional[SNMP] = None
-        self._http: Optional[HTTP] = None
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
         # Store session id
@@ -205,7 +202,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Cached results of self.cli calls
         self.cli_cache = {}
         #
-        self.http_cache = {}
         self.partial_result = None
         # @todo: Get native encoding from ManagedObject
         self.native_encoding = "utf8"
@@ -236,33 +232,23 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.profile.setup_script(self)
         # Script perf metrics
         self.script_metrics = defaultdict(lambda: AtomicLong(0))
+        # Cleanup protocols
+        self._on_cleanup: List[Callable[[], None]] = []
 
     def __call__(self, *args, **kwargs):
         self.args = kwargs
         return self.run()
 
-    @property
-    def snmp(self) -> SNMP:
-        if not self._snmp:
-            if self.parent:
-                self._snmp = self.root.snmp
-            elif self.is_beefed:
-                self._snmp = BeefSNMP(self)
-            else:
-                snmp_rate_limit = self.credentials.get("snmp_rate_limit", None) or None
-                if snmp_rate_limit is None:
-                    snmp_rate_limit = self.profile.get_snmp_rate_limit(self)
-                self._snmp = SNMP(self, rate=snmp_rate_limit)
-        return self._snmp
+    def on_cleanup(self, cb: Callable[[], None]) -> None:
+        """
+        Install callable which will be executed on cleanup.
 
-    @property
-    def http(self) -> HTTP:
-        if not self._http:
-            if self.parent:
-                self._http = self.root.http
-            else:
-                self._http = HTTP(self)
-        return self._http
+        To be used in protocol mixins.
+
+        Args:
+            cb: Callable
+        """
+        self._on_cleanup.append(cb)
 
     def apply_matchers(self):
         """
@@ -334,17 +320,20 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                         self.logger.info("Caching result")
                         self.set_cache(self.name, self.args, result)
                 finally:
+                    # Close all protocols.
+                    # It depends on protocol to close on instance
+                    # or on root script. So we consider the protocol
+                    # will install handlers properly
+                    for cb in self._on_cleanup:
+                        cb()
                     if not self.parent:
-                        # Close SNMP socket when necessary
-                        self.close_snmp()
+                        # Legacy. To be removed later
                         # Close CLI socket when necessary
                         self.close_cli_stream()
                         # Close MML socket when necessary
                         self.close_mml_stream()
                         # Close RTSP socket when necessary
                         self.close_rtsp_stream()
-                        # Close HTTP Client
-                        self.http.close()
             # Clean result
             result = self.clean_output(result)
             self.logger.debug("Result: %s", result)
@@ -975,13 +964,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 self.cli_stream.shutdown_session()
                 self.cli_stream.close()
             self.cli_stream = None
-
-    def close_snmp(self):
-        if self.parent:
-            return
-        if self._snmp:
-            self._snmp.close()
-            self._snmp = None
 
     def mml(self, cmd, **kwargs):
         """

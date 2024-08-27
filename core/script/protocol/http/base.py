@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict
+from typing import Dict, Any
 from http.cookies import SimpleCookie
+from functools import cached_property
 
 # Third-party modules
 import orjson
@@ -76,7 +77,7 @@ class HTTP(object):
         self.logger.debug("GET %s", path)
         if cached:
             cache_key = "get_%s" % path
-            r = self.script.root.http_cache.get(cache_key)
+            r = self.script.root._http_cache.get(cache_key)
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
@@ -112,7 +113,7 @@ class HTTP(object):
                 result = result.decode(DEFAULT_ENCODING, errors="ignore")
             self.logger.debug("Result: %r", result)
             if cached:
-                self.script.root.http_cache[cache_key] = result
+                self.script.root._http_cache[cache_key] = result
             return result
 
     def post(
@@ -141,7 +142,7 @@ class HTTP(object):
         self.logger.debug("POST %s %s", path, data)
         if cached:
             cache_key = "post_%s" % path
-            r = self.script.root.http_cache.get(cache_key)
+            r = self.script.root._http_cache.get(cache_key)
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
@@ -176,7 +177,7 @@ class HTTP(object):
                 result = result.decode(DEFAULT_ENCODING, errors="ignore")
             self.logger.debug("Result: %r", result)
             if cached:
-                self.script.root.http_cache[cache_key] = result
+                self.script.root._http_cache[cache_key] = result
             return result
 
     def close(self):
@@ -289,3 +290,19 @@ class HTTP(object):
                 # Middleware name
                 mw_cls = loader.get_class(name)
             self.request_middleware += [mw_cls(self, **cfg)]
+
+
+class HTTPProtocol(object):
+    """Adds .http property."""
+
+    @cached_property
+    def http(self) -> HTTP:
+        # Always use root protocol
+        if self.parent:
+            return self.root.http
+        # Plain http
+        http = HTTP(self)
+        self.on_cleaup(http.close)
+        # Cache
+        self._http_cache: Dict[str, Any] = {}
+        return http
