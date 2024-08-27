@@ -558,6 +558,7 @@ Ext.define("NOC.inv.inv.Application", {
               ],
             });
           } else if(Object.prototype.hasOwnProperty.call(data, "status") && data.status){
+            me.onReloadNav(); 
             NOC.info(data.message);
           }
         },
