@@ -86,10 +86,9 @@ class ServiceSummary(Document):
         :return: dict of interface id -> {service: ..., subscriber: ....}
             interface None means unbound or box-wise services
         """
-        from noc.inv.models.interface import Interface
-        from noc.inv.models.subinterface import SubInterface
         from noc.sa.models.service import Service
         from noc.wf.models.state import State
+        from noc.sa.models.serviceinstance import ServiceInstance
 
         def iter_services(sd):
             yield sd
@@ -111,43 +110,22 @@ class ServiceSummary(Document):
 
         # Productive states
         productive_states = list(State.objects.filter(is_productive=True).values_list("id"))
-
-        # service -> interface bindings
-        svc_interface = {
-            x["service"]: x["_id"]
-            for x in Interface._get_collection().find(
-                {"managed_object": managed_object, "service": {"$exists": True}},
-                {"_id": 1, "service": 1},
-                comment="[servicesummary.build_summary_for_object] Getting services for interfaces",
-            )
-        }
-        # service -> subinterface bindings
-        svc_subinterface = {}
-        for x in SubInterface._get_collection().find(
-            {"managed_object": managed_object, "service": {"$exists": True}},
-            {"_id": 1, "interface": 1, "service": 1},
-            comment="[servicesummary.build_summary_for_object] Getting services for subinterface",
-        ):
-            svc_interface[x["service"]] = x["interface"]
-            svc_subinterface[x["service"]] = x["_id"]
-
         # Iterate over object's services
         # And walk underlying tree
         ri = {}
-        for svc in Service._get_collection().find(
-            {
-                "$or": [{"managed_object": managed_object}, {"_id": {"$in": list(svc_interface)}}],
-                "state": {"$in": productive_states},
-            },
-            {"_id": 1, "subscriber": 1, "profile": 1},
-            comment="[servicesummary.build_summary_for_object] Getting object services for object",
-        ):
+        for si in ServiceInstance.objects.filter(managed_object=managed_object):
             # All subscribers for underlying tree
             subscribers = set()
             # profile_id -> count
             svc_profiles = defaultdict(int)
-            for s in iter_services(svc):
-                if "subscriber" in s:
+            for s in iter_services(
+                {
+                    "_id": si.service.id,
+                    "profile": si.service.profile.id,
+                    "subscriber": si.service.subscriber.id if si.service.subscriber else None,
+                }
+            ):
+                if s["subscriber"]:
                     subscribers.add(s["subscriber"])
                 svc_profiles[s["profile"]] += 1
             # Get subscriber profiles count
@@ -160,7 +138,7 @@ class ServiceSummary(Document):
             subscriber_profiles = {x["_id"]: x["total"] for x in ra}
             # Bind to interface
             # None for unbound services
-            iface = svc_interface.get(svc["_id"])
+            iface = si.interface.id
             if iface in ri:
                 add_dict(ri[iface]["service"], svc_profiles)
                 add_dict(ri[iface]["subscriber"], subscriber_profiles)
