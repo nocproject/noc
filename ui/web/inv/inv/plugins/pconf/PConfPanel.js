@@ -10,19 +10,31 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   extend: "Ext.panel.Panel",
   requires: [
     "NOC.inv.inv.plugins.pconf.PConfModel",
+    "NOC.inv.inv.plugins.pconf.Controller",
   ],
   title: __("Config"),
   closable: false,
-  defaultListenerScope: true,
   layout: "fit",
+  viewModel: {
+    stores: {
+      gridStore: {
+        model: "NOC.inv.inv.plugins.pconf.PConfModel",
+        listeners: {
+          datachanged: "onDataChanged",
+        },
+      },
+    },
+    data: {
+      totalCount: 0,
+    },
+  },
+  controller: "pconf",
   tbar: [
     {
       glyph: NOC.glyph.refresh,
-      text: __("Reload"),
       tooltip: __("Reload"),
       handler: "onReload",
     },
-    "|",
     {
       xtype: "textfield",
       emptyText: __("Search..."),
@@ -53,6 +65,13 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         },
       },
     },
+    "->",
+    {
+      xtype: "tbtext",
+      bind: {
+        html: __("Total") + ": {totalCount}",
+      },
+    },
   ],
   items: [
     {
@@ -60,14 +79,14 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       border: false,
       autoScroll: true,
       stateful: true,
-      store: {
-        model: "NOC.inv.inv.plugins.pconf.PConfModel",
+      bind: {
+        store: "{gridStore}",
       },
       columns: [
         {
           text: __("Name"),
           dataIndex: "name",
-          width: 150,
+          width: 250,
         },
         {
           text: __("Value"),
@@ -130,22 +149,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   preview: function(data){
     var me = this;
     me.currentId = data.id;
-    me.down("gridpanel").store.loadData(data.conf);
-  },
-  //
-  onReload: function(){
-    var me = this;
-    Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/pconf/",
-      method: "GET",
-      scope: me,
-      success: function(response){
-        var data = Ext.decode(response.responseText);
-        this.preview(data);
-      },
-      failure: function(){
-        NOC.error(__("Failed to load data"));
-      },
-    });
+    me.getViewModel().get("gridStore").loadData(data.conf);
   },
 });
