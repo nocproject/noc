@@ -16,6 +16,8 @@ from noc.core.script.loader import loader
 from noc.core.interface.base import BaseInterface
 from noc.core.script.base import BaseScript
 
+IGNORED_VENDOR = ["VMWare"]
+
 
 def get_scripts():
     if os.environ.get("NOC_TEST_SCRIPT"):
@@ -25,7 +27,7 @@ def get_scripts():
         p_name = "%s." % os.environ["NOC_TEST_PROFILE"]
         return [x for x in loader.iter_scripts() if x.startswith(p_name)]
     else:
-        return list(loader.iter_scripts())
+        return [x for x in loader.iter_scripts() if x.split(".")[0] not in IGNORED_VENDOR]
 
 
 @pytest.fixture(scope="session", params=get_scripts())

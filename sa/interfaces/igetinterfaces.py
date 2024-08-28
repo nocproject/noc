@@ -378,6 +378,7 @@ class IGetInterfaces(BaseInterface):
                             "noc::topology::direction",
                             "noc::interface::role",
                             "noc::interface::hints",
+                            "noc::interface::port_group",
                             "technology::pon",
                             "technology::ethernet",
                             "technology::dsl",
