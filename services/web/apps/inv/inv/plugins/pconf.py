@@ -71,7 +71,7 @@ class PConfPlugin(InvPlugin):
                 conf.append(c)
         return {"id": str(o.id), "conf": conf}
 
-    def api_set(self, request, id:str,,name:str,value:str):
+    def api_set(self, request, id:str, name:str, value:str):
         o = self.app.get_object_or_404(Object, id=id)
         print(f">>> name={name}, value={value}")
         return {
