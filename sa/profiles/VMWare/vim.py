@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from functools import cached_property
 from typing import Optional, Any
 
 # Third-party modules
@@ -120,19 +121,17 @@ class VIM(object):
 
 
 class VIMScript(BaseScript):
-    @property
-    def vim(self):
-        if hasattr(self, "_vim"):
-            return self._vim
-        if self.parent and hasattr(self.parent, "vim"):
-            self._vim = self.root.vim
-        else:
-            self._vim = VIM(self)
-        return self._vim
 
-    def close_cli_stream(self):
-        super().close_cli_stream()
-        if hasattr(self, "_vim"):
+    @cached_property
+    def vim(self):
+        if self.parent and hasattr(self.parent, "vim"):
+            return self.root.vim
+        vim = VIM(self)
+        self.on_cleanup(vim.close)
+        return vim
+
+    def close_vim(self):
+        if hasattr(self, "vim"):
             # Close VIM Client
             self.vim.close()
-            delattr(self, "_vim")
+            delattr(self, "vim")
