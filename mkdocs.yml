@@ -479,6 +479,11 @@ nav:
           - Vitesse:
               - Overview: profiles-reference/Vitesse/index.md
               - Vitesse.VSC: profiles-reference/Vitesse/VSC.md
+          - VMWare:
+              - Overview: profiles-reference/VMWare/index.md
+              - VMWare.vCenter: profiles-reference/VMWare/vCenter.md
+              - VMWare.vHost: profiles-reference/VMWare/vCenter.md
+              - VMWare.vMachine: profiles-reference/VMWare/vCenter.md
           - Vyatta:
               - Overview: profiles-reference/Vyatta/index.md
               - Vyatta.Vyatta: profiles-reference/Vyatta/Vyatta.md
@@ -937,6 +942,7 @@ nav:
           - Connection Rules: create-object-models-howto/connection-rule.md
           - Facades: facades-howto/index.md
       - Writing NOC Command: writing-noc-command-howto/index.md
+      - Configure vCenter on NOC as Device Source: howto-add-vcenter-to-noc/index.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md

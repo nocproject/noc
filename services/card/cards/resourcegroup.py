@@ -18,6 +18,7 @@ class ResourceGroupCard(BaseCard):
     model = ResourceGroup
 
     CARD_MAP = {
+        "inv.Interface": "interface",
         "sa.ManagedObject": "managedobject",
         "phone.PhoneRange": "phonerange",
         "phone.PhoneNumber": "phonenumber",

@@ -73,6 +73,7 @@ class ManagedObject(BaseModel):
     syslog_source_ip: Optional[str] = None
     description: Optional[str] = None
     auth_profile: Optional[Reference["AuthProfile"]] = None
+    controller: Optional[Reference["ManagedObject"]] = None
     l2_domain: Optional[Reference["L2Domain"]] = None
     labels: Optional[List[str]] = None
     tt_system: Optional[Reference["TTSystem"]] = None

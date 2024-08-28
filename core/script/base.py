@@ -194,7 +194,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
         #
         self.streaming = streaming
-        self.controller = controller
+        if self.parent:
+            self.controller = self.parent.controller
+        else:
+            self.controller = controller
         self.labels = labels or set()
         # Cache CLI and SNMP calls, if set
         self.is_cached = False
@@ -345,6 +348,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                         self.close_rtsp_stream()
                         # Close HTTP Client
                         self.http.close()
+
             # Clean result
             result = self.clean_output(result)
             self.logger.debug("Result: %s", result)

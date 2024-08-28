@@ -22,6 +22,7 @@ from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.authprofile import AuthProfile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
 from noc.inv.models.networksegment import NetworkSegment
@@ -44,6 +45,7 @@ class ManagedObjectLoader(BaseLoader):
         "segment": NetworkSegment,
         "objectprofile": ManagedObjectProfile,
         "adm_domain": AdministrativeDomain,
+        "auth_profile": AuthProfile,
     }
 
     def __init__(self, *args, **kwargs):
@@ -63,7 +65,7 @@ class ManagedObjectLoader(BaseLoader):
         """
         Import new data
         """
-        if not self.system.remote_system.enable_discoveredobject:
+        if not self.system.remote_system.managed_object_as_discovered:
             return super().load()
         self.logger.info("Importing")
         ns = self.get_new_state()
@@ -94,8 +96,9 @@ class ManagedObjectLoader(BaseLoader):
                 elif isinstance(v, (Document, Model)):
                     v = v.id
                 data[k] = str(v)
+            address = data.pop("address")
             register(
-                address=data.pop("address"),
+                address=address,
                 pool=pool.bi_id,
                 source="etl",
                 description=description,

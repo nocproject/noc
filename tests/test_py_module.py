@@ -30,8 +30,8 @@ ALLOW_XFAIL = {
     "noc.scripts.check-labels",
     "noc.scripts.paste",
     "noc.scripts.migrate-ignored-interfaces",
-    "noc.gis.parsers.address.fias",
     "noc.gis.tile",
+    "noc.core.etl.extractor.vcenter",
 }
 
 
@@ -41,7 +41,11 @@ def _allow_xfail(module: str) -> bool:
     :param module: Module name
     :return:
     """
-    return module in ALLOW_XFAIL or module.startswith("noc.ansible.")
+    return (
+        module in ALLOW_XFAIL
+        or module.startswith("noc.ansible.")
+        or module.startswith("noc.sa.profiles.VMWare")
+    )
 
 
 @cachetools.cached(cache={})
