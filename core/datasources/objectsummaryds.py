@@ -48,7 +48,7 @@ class ObjectSummaryDS(BaseDataSource):
             raise ValueError("'report_type' parameter is required")
         report_type = kwargs.get("report_type")[0]
 
-        wr, wr_and = "", ""
+        wr, wr_and, ads = "", "", None
         platform = {
             str(p["_id"]): p["name"]
             for p in Platform.objects.all().as_pymongo().scalar("id", "name")
@@ -63,6 +63,7 @@ class ObjectSummaryDS(BaseDataSource):
         if user and not user.is_superuser:
             wr = "WHERE administrative_domain_id = ANY(%s::INT[])"
             wr_and = "AND administrative_domain_id = ANY(%s::INT[])"
+            ads = UserAccess.get_domains(user)
         # By Profile
         if report_type == "profile":
             query = (
@@ -123,8 +124,7 @@ class ObjectSummaryDS(BaseDataSource):
             raise Exception("Invalid report type: %s" % report_type)
 
         with pg_connection.cursor() as cursor:
-            if user and not user.is_superuser:
-                ads = UserAccess.get_domains(user)
+            if ads is not None:
                 cursor.execute(query, [ads])
             else:
                 cursor.execute(query)
