@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from noc.core.script.base import BaseScript
+from ..vim import VIMScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
-class Script(BaseScript):
+class Script(VIMScript):
     name = "VMWare.vHost.get_chassis_id"
     cache = True
     interface = IGetChassisID

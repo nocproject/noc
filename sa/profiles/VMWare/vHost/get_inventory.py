@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from ..vim import VIMScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
-class Script(BaseScript):
+class Script(VIMScript):
     name = "VMWare.vHost.get_inventory"
     interface = IGetInventory
 

@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from noc.core.script.base import BaseScript
+from ..vim import VIMScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(BaseScript):
+class Script(VIMScript):
     name = "VMWare.vMachine.get_interfaces"
     interface = IGetInterfaces
 

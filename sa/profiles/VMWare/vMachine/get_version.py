@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from noc.core.script.base import BaseScript
+from ..vim import VIMScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(BaseScript):
+class Script(VIMScript):
     name = "VMWare.vMachine.get_version"
     cache = True
     interface = IGetVersion

@@ -90,7 +90,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     cli_session_store = SessionStore()
     mml_session_store = SessionStore()
     rtsp_session_store = SessionStore()
-    vim_session_store = SessionStore()
     # In session mode when active CLI session exists
     # * True -- reuse session
     # * False -- close session and run new without session context
@@ -188,7 +187,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.rtsp_stream = None
         self._snmp: Optional[SNMP] = None
         self._http: Optional[HTTP] = None
-        self._vim: Optional[Any] = None
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
         # Store session id
@@ -268,18 +266,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             else:
                 self._http = HTTP(self)
         return self._http
-
-    @property
-    def vim(self):
-        from noc.core.script.vim.base import VIM
-
-        if self._vim:
-            return self._vim
-        if self.parent:
-            self._vim = self.root.vim
-        else:
-            self._vim = VIM(self)
-        return self._vim
 
     def apply_matchers(self):
         """
@@ -362,9 +348,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                         self.close_rtsp_stream()
                         # Close HTTP Client
                         self.http.close()
-                        # Close VIM Client
-                        if self._vim:
-                            self.vim.close()
+
             # Clean result
             result = self.clean_output(result)
             self.logger.debug("Result: %s", result)

@@ -14,6 +14,7 @@ from pyVmomi import vim
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.script.base import BaseScript
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
 
 
@@ -116,3 +117,22 @@ class VIM(object):
     @staticmethod
     def has_internet_adapter(item) -> bool:
         return isinstance(item, vim.vm.device.VirtualEthernetCard)
+
+
+class VIMScript(BaseScript):
+    @property
+    def vim(self):
+        if hasattr(self, "_vim"):
+            return self._vim
+        if self.parent:
+            self._vim = self.root.vim
+        else:
+            self._vim = VIM(self)
+        return self._vim
+
+    def close_cli_stream(self):
+        super().close_cli_stream()
+        if hasattr(self, "_vim"):
+            # Close VIM Client
+            self.vim.close()
+            delattr(self, "_vim")

@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
+from ..vim import VIMScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
-class Script(BaseScript):
+class Script(VIMScript):
     name = "VMWare.vHost.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
@@ -29,3 +29,6 @@ class Script(BaseScript):
                     nei["remote_system_name"] = param.value.strip()
             result += [{"local_interface": q.device, "neighbors": [nei]}]
         return result
+
+    def execute(self, **kwargs):
+        return self.execute_controller(hid=self.controller.local_id)

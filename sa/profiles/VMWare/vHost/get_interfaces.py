@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from noc.core.script.base import BaseScript
+from ..vim import VIMScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 
 
-class Script(BaseScript):
+class Script(VIMScript):
     name = "VMWare.vHost.get_interfaces"
     interface = IGetInterfaces
 

@@ -31,7 +31,7 @@ ALLOW_XFAIL = {
     "noc.scripts.paste",
     "noc.scripts.migrate-ignored-interfaces",
     "noc.gis.tile",
-    "noc.core.script.vim.base",
+    "noc.sa.profiles.VMWare.vim",
     "noc.core.etl.extractor.vcenter",
 }
 
