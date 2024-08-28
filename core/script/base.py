@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SA Script base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,8 @@ import operator
 from functools import reduce
 from collections import defaultdict
 from time import perf_counter
-from typing import Any, Optional, Set, Union
+from typing import Any, Optional, Set, Union, Callable, Optional, List
+from functools import cached_property, partial
 
 # Third-party modules
 from atomicl import AtomicLong
@@ -164,7 +165,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.tos = config.activator.tos
         self.pool = config.pool
         self.parent = parent
-        self._motd = None
         name = name or self.name
         self.logger = PrefixLoggerAdapter(
             self.base_logger, "%s] [%s" % (self.name, credentials.get("address", "-"))
@@ -182,12 +182,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.start_time = None
         self._interface = self.interface()
         self.args = self.clean_input(args) if args else {}
-        self.cli_stream = None
         self.mml_stream = None
         self.rtsp_stream = None
-        self._snmp: Optional[SNMP] = None
-        self._http: Optional[HTTP] = None
-        self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
         # Store session id
         self.session = session
@@ -236,33 +232,95 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.profile.setup_script(self)
         # Script perf metrics
         self.script_metrics = defaultdict(lambda: AtomicLong(0))
+        # Cleanup handlers
+        self._on_cleanup: Optional[List[Callable[[], None]]] = None
 
     def __call__(self, *args, **kwargs):
         self.args = kwargs
         return self.run()
 
-    @property
-    def snmp(self) -> SNMP:
-        if not self._snmp:
-            if self.parent:
-                self._snmp = self.root.snmp
-            elif self.is_beefed:
-                self._snmp = BeefSNMP(self)
-            else:
-                snmp_rate_limit = self.credentials.get("snmp_rate_limit", None) or None
-                if snmp_rate_limit is None:
-                    snmp_rate_limit = self.profile.get_snmp_rate_limit(self)
-                self._snmp = SNMP(self, rate=snmp_rate_limit)
-        return self._snmp
+    def on_cleanup(self, cb: Callable[[], None]) -> None:
+        """
+        Install handler which be called on script finalization.
 
-    @property
-    def http(self) -> HTTP:
-        if not self._http:
-            if self.parent:
-                self._http = self.root.http
+        Intended to use with protocols.
+
+        Args:
+            cb: Callback which will be called on cleanup.
+        """
+        if self._on_cleanup is None:
+            self._on_cleanup = [cb]
+        else:
+            self._on_cleanup.append(cb)
+
+    @cached_property
+    def _cli(self) -> CLI:
+        if self.parent:
+            return self.root._cli
+        # Try to reuse session
+        if self.session:
+            cli = self.cli_session_store.get(self.session)
+            if cli:
+                if self.to_reuse_cli_session():
+                    self.logger.debug("Using cached session's CLI")
+                    cli.set_script(self)
+                    return cli
+                self.logger.debug("Script cannot reuse existing CLI session, starting new one")
+                self.close_cli_stream()
+        # Initialize
+        protocol = self.credentials.get("cli_protocol", "telnet")
+        self.logger.debug("Open %s CLI", protocol)
+        cli = get_handler(self.cli_protocols[protocol])(self, tos=self.tos)
+        # Store to the sessions
+        cleaned = False
+        if self.session:
+            self.cli_session_store.put(self.session, cli)
+            if self.to_keep_cli_session():
+                # Schedule to return cli to pool
+                self.on_cleanup(
+                    partial(
+                        self.cli_session_store.put, self.session, cli, self.session_idle_timeout
+                    )
+                )
+                cleaned = True
+        if not cleaned:
+            # Schedule cleanup
+            self.on_cleanup(cli.shutdown_session)
+            self.on_cleanup(cli.close)
+        cli.setup_session()
+        # Disable pager when necessary
+        if self.profile.command_disable_pager:
+            self.logger.debug("Disable paging")
+            if isinstance(self.profile.command_disable_pager, str):
+                cli.push_prelude(self.profile.command_disable_pager, ignore_errors=True)
+            elif isinstance(self.profile.command_disable_pager, list):
+                for cmd in self.profile.command_disable_pager:
+                    cli.push_prelude(cmd, ignore_errors=True)
             else:
-                self._http = HTTP(self)
-        return self._http
+                msg = "Invalid command_disable_pager"
+                raise UnexpectedResultError(msg)
+        return cli
+
+    @cached_property
+    def snmp(self) -> SNMP:
+        if self.parent:
+            return self.root.snmp
+        if self.is_beefed:
+            return BeefSNMP(self)
+        snmp_rate_limit = self.credentials.get("snmp_rate_limit", None) or None
+        if snmp_rate_limit is None:
+            snmp_rate_limit = self.profile.get_snmp_rate_limit(self)
+        snmp = SNMP(self, rate=snmp_rate_limit)
+        self.on_cleanup(snmp.close)
+        return snmp
+
+    @cached_property
+    def http(self) -> HTTP:
+        if self.parent:
+            return self.root.http
+        http = HTTP(self)
+        self.on_cleanup(http.close)
+        return http
 
     def apply_matchers(self):
         """
@@ -334,17 +392,14 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                         self.logger.info("Caching result")
                         self.set_cache(self.name, self.args, result)
                 finally:
+                    if self._on_cleanup:
+                        for cb in self._on_cleanup:
+                            cb()
                     if not self.parent:
-                        # Close SNMP socket when necessary
-                        self.close_snmp()
-                        # Close CLI socket when necessary
-                        self.close_cli_stream()
                         # Close MML socket when necessary
                         self.close_mml_stream()
                         # Close RTSP socket when necessary
                         self.close_rtsp_stream()
-                        # Close HTTP Client
-                        self.http.close()
             # Clean result
             result = self.clean_output(result)
             self.logger.debug("Result: %s", result)
@@ -658,8 +713,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         """Get root script"""
         if self.parent:
             return self.parent.root
-        else:
-            return self
+        return self
 
     def get_cache(self, key1, key2):
         """Get cached result or raise KeyError"""
@@ -716,17 +770,12 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         if self.parent:
             self.parent.schedule_to_save()
 
-    def set_motd(self, motd):
-        self._motd = motd
-
-    @property
+    @cached_property
     def motd(self):
         """
         Return message of the day
         """
-        if self._motd:
-            return self._motd
-        return self.get_cli_stream().get_motd()
+        return self._cli.get_motd()
 
     def re_search(self, rx, s, flags=0):
         """
@@ -801,10 +850,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         return "".join(self.hexbin[c] for c in "".join("%02x" % ord(d) for d in s))
 
     def push_prompt_pattern(self, pattern):
-        self.get_cli_stream().push_prompt_pattern(pattern)
+        self._cli.push_prompt_pattern(pattern)
 
     def pop_prompt_pattern(self):
-        self.get_cli_stream().pop_prompt_pattern()
+        self._cli.pop_prompt_pattern()
 
     def has_oid(self, oid):
         """
@@ -833,6 +882,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         cmd_next: Any = None,
         cmd_stop: Any = None,
         labels: Optional[Union[str, Set[str]]] = None,
+        no_prelude: bool = False,
     ) -> str:
         """
         Execute CLI command and return result. Initiate cli session
@@ -860,17 +910,20 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 for line in result.splitlines():
                     match = list_re.match(line.strip())
                     if match:
-                        x += [match.groupdict()]
+                        x.append(match.groupdict())
                 return x
-            else:
-                return result
+            return result
 
+        # Execute collected prelude
+        if not no_prelude:
+            for prelude in self._cli.iter_prelude():
+                self.cli(prelude.cmd, ignore_errors=prelude.ignore_errors, no_prelude=True)
+        # Read from file
         if file:
-            # Read from file
             with open(file) as f:
                 return format_result(f.read())
+        # Cached result
         if cached:
-            # Cached result
             r = self.root.cli_cache.get(cmd)
             if r is not None:
                 self.logger.debug("Use cached result")
@@ -881,10 +934,9 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Encode submitted command
         submitted_cmd = smart_bytes(cmd, encoding=self.native_encoding) + command_submit
         # Run command
-        stream = self.get_cli_stream()
         if self.to_track:
             self.cli_tracked_command = cmd
-        r = stream.execute(
+        r = self._cli.execute(
             submitted_cmd,
             obj_parser=obj_parser,
             cmd_next=cmd_next,
@@ -929,60 +981,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 r = r[len(cmd) :]
         return r
 
-    def get_cli_stream(self):
-        if self.parent:
-            return self.root.get_cli_stream()
-        if not self.cli_stream and self.session:
-            # Try to get cached session's CLI
-            self.cli_stream = self.cli_session_store.get(self.session)
-            if self.cli_stream:
-                if self.to_reuse_cli_session():
-                    self.logger.debug("Using cached session's CLI")
-                    self.cli_stream.set_script(self)
-                else:
-                    self.logger.debug("Script cannot reuse existing CLI session, starting new one")
-                    self.close_cli_stream()
-        if not self.cli_stream:
-            protocol = self.credentials.get("cli_protocol", "telnet")
-            self.logger.debug("Open %s CLI", protocol)
-            self.cli_stream = get_handler(self.cli_protocols[protocol])(self, tos=self.tos)
-            # Store to the sessions
-            if self.session:
-                self.cli_session_store.put(self.session, self.cli_stream)
-            self.cli_stream.setup_session()
-            # Disable pager when necessary
-            # @todo: Move to CLI
-            if self.to_disable_pager:
-                self.logger.debug("Disable paging")
-                self.to_disable_pager = False
-                if isinstance(self.profile.command_disable_pager, str):
-                    self.cli(self.profile.command_disable_pager, ignore_errors=True)
-                elif isinstance(self.profile.command_disable_pager, list):
-                    for cmd in self.profile.command_disable_pager:
-                        self.cli(cmd, ignore_errors=True)
-                else:
-                    raise UnexpectedResultError
-        return self.cli_stream
-
-    def close_cli_stream(self):
-        if self.parent:
-            return
-        if self.cli_stream:
-            if self.session and self.to_keep_cli_session():
-                # Return cli stream to pool
-                self.cli_session_store.put(self.session, self.cli_stream, self.session_idle_timeout)
-            else:
-                self.cli_stream.shutdown_session()
-                self.cli_stream.close()
-            self.cli_stream = None
-
-    def close_snmp(self):
-        if self.parent:
-            return
-        if self._snmp:
-            self._snmp.close()
-            self._snmp = None
-
     def mml(self, cmd, **kwargs):
         """
         Execute MML command and return result. Initiate MML session when necessary
@@ -1024,7 +1022,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 self.mml_session_store.put(self.session, self.mml_stream, self.session_idle_timeout)
             else:
                 self.mml_stream.close()
-            self.cli_stream = None
+            self.mml_stream = None
 
     def rtsp(self, method, path, **kwargs):
         """
@@ -1162,12 +1160,14 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
 
     def iter_pairs(self, g, offset=0):
         """
-        Convert iterable g to a pairs
+        Convert iterable g to a pairs.
+
         i.e.
         [1, 2, 3, 4] -> [(1, 2), (3, 4)]
-        :param g: Iterable
-        :param offset: Skip first recirds
-        :return:
+
+        Args:
+            g: Iterable
+            offset: Skip first records.
         """
         g = iter(g)
         if offset:
@@ -1175,10 +1175,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 next(g)
         return zip(g, g)
 
-    def to_reuse_cli_session(self):
+    def to_reuse_cli_session(self) -> bool:
         return self.reuse_cli_session
 
-    def to_keep_cli_session(self):
+    def to_keep_cli_session(self) -> bool:
         return self.keep_cli_session
 
     def start_tracking(self):
@@ -1302,14 +1302,12 @@ class ScriptsHub(object):
     def __getattr__(self, item):
         if item.startswith("_"):
             return self.__dict__[item]
-        else:
-            from .loader import loader as script_loader
+        from .loader import loader as script_loader
 
-            sc = script_loader.get_script("%s.%s" % (self._script.profile.name, item))
-            if sc:
-                return self._CallWrapper(sc, self._script)
-            else:
-                raise AttributeError(item)
+        sc = script_loader.get_script("%s.%s" % (self._script.profile.name, item))
+        if sc:
+            return self._CallWrapper(sc, self._script)
+        raise AttributeError(item)
 
     def __contains__(self, item):
         """
