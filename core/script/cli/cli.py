@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CLI FSM
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,8 @@ import re
 import functools
 from functools import reduce
 import asyncio
-from typing import Optional, Any, Type, Callable, Dict, Set, Union
+from typing import Optional, Any, Type, Callable, Dict, Set, Union, Iterable
+from dataclasses import dataclass
 
 # NOC modules
 from noc.core.text import replace_re_group
@@ -35,6 +36,12 @@ from .error import (
     CLISuperPasswordTimeout,
 )
 from .base import BaseCLI
+
+
+@dataclass
+class Prelude(object):
+    cmd: str
+    ignore_errors: bool
 
 
 class CLI(BaseCLI):
@@ -123,7 +130,7 @@ class CLI(BaseCLI):
             await self.on_start()
             motd = await self.read_until_prompt()
             self.motd = smart_text(motd, errors="ignore", encoding=self.native_encoding)
-            self.script.set_motd(self.motd)
+            self.script.motd = self.motd
             self.is_started = True
 
     async def submit(self, parser=None):
@@ -616,16 +623,10 @@ class CLI(BaseCLI):
         self.patterns["prompt"] = pattern
         self.pattern_table[self.patterns["prompt"]] = self.on_prompt
 
-    def get_motd(self):
-        """
-        Return collected message of the day
-        """
-        return self.motd
-
     def set_script(self, script):
         super().set_script(script)
         if self.motd:
-            self.script.set_motd(self.motd)
+            self.script.motd = self.motd
 
     def setup_session(self):
         if self.profile.setup_session:
@@ -657,3 +658,23 @@ class CLI(BaseCLI):
             else:
                 seq = seq(self, command, error_text)
                 await self.stream.write(seq)
+
+    def push_prelude(self, cmd: str, ignore_errors=False) -> None:
+        """
+        Append prelude.
+
+        Prelude is a command which to be executed on next .
+        """
+        self._prelude.append(Prelude(cmd=cmd, ignore_errors=ignore_errors))
+
+    def iter_prelude(self) -> Iterable[Prelude]:
+        """
+        Iterate collected preludes.
+
+        Drops prelude after iteration.
+
+        Returns:
+            Prelude items
+        """
+        while self._prelude:
+            yield self._prelude.pop(0)
