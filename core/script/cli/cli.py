@@ -10,7 +10,7 @@ import re
 import functools
 from functools import reduce
 import asyncio
-from typing import Optional, Any, Type, Callable, Dict, Set, Union, Iterable
+from typing import Optional, Any, Type, Callable, Dict, Set, Union, Iterable, List
 from dataclasses import dataclass
 
 # NOC modules
@@ -81,6 +81,7 @@ class CLI(BaseCLI):
         # State retries
         self.super_password_retries = self.profile.cli_retries_super_password
         self.cli_retries_unprivileged_mode = self.profile.cli_retries_unprivileged_mode
+        self._prelude: Optional[List[Prelude]] = []
 
     def set_state(self, state):
         self.logger.debug("Changing state to <%s>", state)
@@ -665,7 +666,11 @@ class CLI(BaseCLI):
 
         Prelude is a command which to be executed on next .
         """
-        self._prelude.append(Prelude(cmd=cmd, ignore_errors=ignore_errors))
+        pre = Prelude(cmd=cmd, ignore_errors=ignore_errors)
+        if self._prelude is None:
+            self._prelude = [pre]
+        else:
+            self._prelude.append(pre)
 
     def iter_prelude(self) -> Iterable[Prelude]:
         """
@@ -676,5 +681,6 @@ class CLI(BaseCLI):
         Returns:
             Prelude items
         """
-        while self._prelude:
-            yield self._prelude.pop(0)
+        if self._prelude:
+            while self._prelude:
+                yield self._prelude.pop(0)
