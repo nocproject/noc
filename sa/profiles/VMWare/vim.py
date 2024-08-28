@@ -124,7 +124,7 @@ class VIMScript(BaseScript):
     def vim(self):
         if hasattr(self, "_vim"):
             return self._vim
-        if self.parent:
+        if self.parent and hasattr(self.parent, "vim"):
             self._vim = self.root.vim
         else:
             self._vim = VIM(self)
