@@ -13,7 +13,7 @@ import operator
 from functools import reduce
 from collections import defaultdict
 from time import perf_counter
-from typing import Any, Optional, Set, Union, Callable, Optional, List
+from typing import Any, Set, Union, Callable, List, Optional
 from functools import cached_property, partial
 
 # Third-party modules
@@ -45,6 +45,7 @@ from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
 from .http.base import HTTP
 from .sessionstore import SessionStore
+from .cli.cli import CLI
 
 
 class BaseScriptMetaclass(type):
