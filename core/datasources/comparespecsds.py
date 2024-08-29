@@ -9,7 +9,7 @@
 from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, BaseDataSource
 from noc.inv.models.objectmodel import ObjectModel
 
 
