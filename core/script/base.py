@@ -779,7 +779,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         """
         Return message of the day
         """
-        return self._cli.get_motd()
+        return self._cli.motd
 
     def re_search(self, rx, s, flags=0):
         """
