@@ -139,7 +139,7 @@ class Script(BaseScript):
             if self.is_cloud_engine_switch:
                 v = self.cli("display vlan", cached=True, allow_empty_response=False)
             else:
-                v = self.cli("display vlan", cached=True)
+                v = self.cli("display vlan", cached=True, allow_empty_response=False)
         except self.CLISyntaxError:
             return result
         if self.rx_vlan_port_check.match(v):
@@ -359,8 +359,6 @@ class Script(BaseScript):
         return vrrps
 
     def execute_cli(self):
-        # Clear output after previous script
-        self.cli("")
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = self.get_switchport_cli()
         # Get portchannels
