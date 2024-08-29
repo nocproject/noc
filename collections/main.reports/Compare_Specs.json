@@ -80,6 +80,21 @@
     "localization": {
         "title": {
             "ru": "Сравнить спецификации (Новый)"
+        },
+        "columns.model": {
+            "ru": "Модель"
+        },
+        "columns.width": {
+            "ru": "Ширина"
+        },
+        "columns.height": {
+            "ru": "Высота"
+        },
+        "columns.depth": {
+            "ru": "Глубина"
+        },
+        "columns.weight": {
+            "ru": "Вес (кг)"
         }
     },
     "templates": [
