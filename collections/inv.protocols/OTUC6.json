@@ -1,0 +1,12 @@
+{
+    "name": "OTUC6",
+    "code": "OTUC6",
+    "$collection": "inv.protocols",
+    "uuid": "77521e62-789e-4cae-860f-1f53357c60f8",
+    "description": "600Gbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODUC6",
+    "technology__name": "OTN"
+}
