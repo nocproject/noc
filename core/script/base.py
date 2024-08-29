@@ -191,7 +191,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
         #
         self.streaming = streaming
-        self.controller = controller
+        if self.parent:
+            self.controller = self.parent.controller
+        else:
+            self.controller = controller
         self.labels = labels or set()
         # Cache CLI and SNMP calls, if set
         self.is_cached = False

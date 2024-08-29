@@ -1,0 +1,6 @@
+{
+    "name": "VMWare.vCenter",
+    "uuid": "bbab0d57-bae7-410e-ad59-ebb1bb69400b",
+    "description": "VMWare.vCenter Controller profile",
+    "$collection": "sa.profiles"
+}

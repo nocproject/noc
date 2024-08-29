@@ -230,7 +230,7 @@ class SAEAPI(JSONRPCAPI):
         if caps:
             for c in caps:
                 cc = Capability.get_by_id(c["capability"])
-                if cc and not c.get("scope"):
+                if cc:
                     capabilities[cc.name] = c.get("value")
         if auth_profile_id and ap_preferred_profile_credential:
             user = ap_user
@@ -327,8 +327,17 @@ class SAEAPI(JSONRPCAPI):
                 credentials["beef_storage_url"] = storage.url
                 credentials["beef_path"] = beef_path
         # Controller processing
-        if controller:
+        if controller and "Controller | LocalId" in capabilities:
             controller = ManagedObject.get_by_id(controller)
+            controller = {
+                "local_id": capabilities["Controller | LocalId"],
+                "address": controller.address,
+                "port": controller.port,
+                "user": controller.credentials.user,
+                "password": controller.credentials.password,
+            }
+        else:
+            controller = None
         return dict(
             profile=Profile.get_by_id(profile).name,
             pool_id=pool_id,
