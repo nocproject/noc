@@ -32,7 +32,7 @@
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "LINE1",
@@ -70,7 +70,7 @@
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "CLIENT3",
@@ -89,11 +89,11 @@
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "LINE2",
-            "description": "Линейный порт 1",
+            "description": "Линейный порт 2",
             "cross_direction": "o",
             "direction": "i",
             "gender": "f",
@@ -127,7 +127,7 @@
                     "protocol__code": "OTU4"
                 }
             ],
-            "type__name": "Transceiver | QSFP+"
+            "type__name": "Transceiver | QSFP28"
         },
         {
             "name": "SC1",
