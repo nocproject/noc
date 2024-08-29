@@ -36,7 +36,7 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.pm.models.metrictype import MetricType
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
-from noc.core.change.decorator import change
+from noc.core.change.decorator import change, save_initial_state
 from noc.core.model.decorator import on_delete_check
 from noc.wf.models.workflow import Workflow
 from noc.config import config
@@ -81,6 +81,7 @@ class InterfaceProfileMetrics(EmbeddedDocument):
         return self.metric_type.name
 
 
+@save_initial_state
 @Label.match_labels("interface_profile", allowed_op={"="})
 @bi_sync
 @change

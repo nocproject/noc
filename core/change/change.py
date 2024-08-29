@@ -7,6 +7,8 @@
 
 # Python modules
 import time
+import uuid
+import json
 from logging import getLogger
 from typing import Optional, List, Set, DefaultDict, Tuple, Dict
 from collections import defaultdict
@@ -15,12 +17,33 @@ from collections import defaultdict
 import orjson
 
 # NOC modules
+from noc.core.middleware.tls import get_user
 from noc.models import get_model
 from noc.core.service.loader import get_service
 from noc.core.change.model import ChangeItem
 from noc.config import config
 
 logger = getLogger(__name__)
+
+
+def dispose_change(changes):
+    from noc.core.service.pub import publish
+
+    for op, model_id, item_id, changed_fields, ts in changes:
+        model_cls = get_model(model_id)
+        item = model_cls.get_by_id(item_id)
+        user = item.user if hasattr(item, "user") else str(get_user())
+        item_name = item.name if hasattr(item, "name") else str(item_id)
+        dc_new = {
+            "change_id": str(uuid.uuid4()),
+            "timestamp": ts.strftime("%Y-%m-%d %H:%M:%S"),
+            "user": user,
+            "model_name": model_id,
+            "object_name": item_name,
+            "op": op[0].upper(),
+            "changes": json.dumps(changed_fields),
+        }
+        publish(orjson.dumps(dc_new), stream="ch.changes", partition=0)
 
 
 def on_change(
@@ -39,6 +62,7 @@ def on_change(
     bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]] = defaultdict(set)
     # Sensors object
     sensors_changes: DefaultDict[str, Set[str]] = defaultdict(set)
+    dispose_change(changes)
     # Iterate over changes
     for op, model_id, item_id, changed_fields, ts in changes:
         # Resolve item

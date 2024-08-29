@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
 from logging import getLogger
 from typing import Optional, List, Tuple
 
@@ -13,6 +14,7 @@ from typing import Optional, List, Tuple
 from noc.models import is_document, get_model_id
 from .policy import change_tracker
 from .model import ChangeField
+from .change import on_change
 
 logger = getLogger(__name__)
 
@@ -71,7 +73,8 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         :param field_name:
         :return:
         """
-        ov, key = None, None
+        key = None
+        ov = document.initial_data[field_name] if hasattr(document, "initial_data") else None
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
         elif hasattr(ov, "_instance"):
@@ -82,6 +85,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
             field_name, key = field_name.split(".", 1)
         elif ov:
             ov = str(ov)
+
         nv = getattr(document, field_name)
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
@@ -104,6 +108,16 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         cf = get_changed(f_name)
         if cf:
             changed_fields.append(cf)
+    change_list = [
+        (
+            op,
+            model_id,
+            document.id,
+            [{"field": cf.field, "old": cf.old, "new": cf.new} for cf in changed_fields],
+            datetime.datetime.now(),
+        )
+    ]
+    on_change(change_list)
     logger.debug("[%s|%s] Change detected: %s;%s", model_id, document.id, op, changed_fields)
     change_tracker.register(
         op=op,
@@ -125,6 +139,16 @@ def _on_document_delete(sender, document, *args, **kwargs):
         fields=None,
         datastreams=get_datastreams(document),
     )
+    change_list = [
+        (
+            op,
+            model_id,
+            document.id,
+            [{"field": None, "old": None, "new": None}],
+            datetime.datetime.now(),
+        )
+    ]
+    on_change(change_list)
     if not hasattr(document, "get_changed_instance"):
         return
     document = document.get_changed_instance()
@@ -166,6 +190,16 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
     # Register change
     model_id = get_model_id(instance)
     op = "create" if created else "update"
+    change_list = [
+        (
+            op,
+            model_id,
+            instance.id,
+            [{"field": cf.field, "old": cf.old, "new": cf.new} for cf in changed_fields],
+            datetime.datetime.now(),
+        )
+    ]
+    on_change(change_list)
     logger.debug("[%s|%s] Change detected: %s; %s", model_id, instance.id, op, changed_fields)
     change_tracker.register(
         op=op,
@@ -187,6 +221,16 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         fields=None,
         datastreams=get_datastreams(instance),
     )
+    change_list = [
+        (
+            op,
+            model_id,
+            instance.id,
+            [{"field": None, "old": None, "new": None}],
+            datetime.datetime.now(),
+        )
+    ]
+    on_change(change_list)
     if not hasattr(instance, "get_changed_instance"):
         return
     instance = instance.get_changed_instance()
@@ -197,3 +241,47 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         fields=None,
         datastreams=get_datastreams(instance),
     )
+
+
+def save_initial_state(model):
+    """
+    Декоратор для сохранения начального состояния полей документа MongoDB.
+
+    :param model: Модель MongoDB
+    :return: Модель с подключенным отслеживанием начального состояния
+    """
+    from mongoengine import signals as mongo_signals
+
+    if not hasattr(model, "get_by_id"):
+        raise ValueError("[%s] Missed .get_by_id, save_initial_state()", get_model_id(model))
+
+    mongo_signals.pre_save.connect(_on_pre_save, sender=model, weak=False)
+    return model
+
+
+def _on_pre_save(sender, document, **kwargs):
+    """
+    Обработчик сигнала pre_save для сохранения начального состояния документа.
+
+    :param sender: Модель, отправившая сигнал
+    :param document: Экземпляр документа
+    """
+    if not hasattr(document, "initial_data"):
+        document.initial_data = {}
+
+    if document.id:
+        try:
+            existing_document = sender.objects.get(id=document.id)
+            document.initial_data = existing_document.to_mongo().to_dict()
+            logger.debug(
+                "[%s|%s] Initial state saved, _on_pre_save(): %s",
+                get_model_id(document),
+                document.id,
+                document.initial_data,
+            )
+        except sender.DoesNotExist:
+            logger.warning(
+                f"Document with id {document.id} does not exist. Skipping initial state saving."
+            )
+    else:
+        document.initial_data = {}
