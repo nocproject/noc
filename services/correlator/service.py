@@ -654,6 +654,7 @@ class CorrelatorService(FastAPIService):
         )
 
     async def channel_rca(self, alarm: ActiveAlarm):
+        """For topology alarm, check it to Channel problems"""
         # Channel RCA
         if alarm.root:
             return
@@ -674,7 +675,8 @@ class CorrelatorService(FastAPIService):
         # Topology RCA
         if a.alarm_class.topology_rca:
             await self.topology_rca(a)
-            await self.channel_rca(a)
+            if config.features.enable_channel_rca:
+                await self.channel_rca(a)
         # Rule-based RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one

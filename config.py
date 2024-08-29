@@ -297,6 +297,9 @@ class Config(BaseConfig):
             default=True, help="Permit consul self registration"
         )
         forensic = BooleanParameter(default=False)
+        enable_channel_rca = BooleanParameter(
+            default=False, help="Experimental. Check channel status for topology Alarm",
+        )
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")

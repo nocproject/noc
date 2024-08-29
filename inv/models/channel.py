@@ -184,17 +184,25 @@ class Channel(Document):
 
     @classmethod
     def get_channels_by_alarm(cls, alarm) -> List["str"]:
+        """
+        Getting alarm for channel:
+         * getting channel by interface/subinterface resources
+         * BGP Peer ?
+        """
         from noc.inv.models.endpoint import Endpoint
 
-        if hasattr(alarm.components, "interface") and getattr(alarm.components, "interface", None):
+        if alarm.is_link_alarm and alarm.components.interface:
             return [
                 e.channel.id
-                for e in Endpoint.objects.filter(resource=f"if:{alarm.components.interface.id}")
+                for e in Endpoint.objects.filter(
+                    resource=f"if:{alarm.components.interface.id}"
+                ).scalar("channel")
             ]
         return []
 
     @classmethod
     def get_channel_by_object(cls, managed_object):
+        """Return channels using requested MangedObject resources"""
         from noc.inv.models.endpoint import Endpoint
         from noc.inv.models.interface import Interface
 
@@ -203,10 +211,18 @@ class Channel(Document):
         ]
         if not resources:
             return []
-        return list(set([e.channel.id for e in Endpoint.objects.filter(resource__in=resources)]))
+        return list(
+            set(
+                [
+                    e.channel.id
+                    for e in Endpoint.objects.filter(resource__in=resources).scalar("channel")
+                ]
+            )
+        )
 
     @classmethod
     def get_alarms_by_channel(cls, channels, alarm_class: Optional[str] = None):
+        """Get Alarms affected by Channel"""
         from noc.fm.models.activealarm import ActiveAlarm
         from noc.inv.models.endpoint import Endpoint
         from noc.fm.models.alarmclass import AlarmClass
