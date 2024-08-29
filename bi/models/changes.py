@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model, NestedModel
+from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
     DateTimeField,
     StringField,
