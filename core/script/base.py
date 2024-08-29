@@ -774,7 +774,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         if self.parent:
             self.parent.schedule_to_save()
 
-    @cached_property
+    @property
     def motd(self):
         """
         Return message of the day

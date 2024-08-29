@@ -131,7 +131,6 @@ class CLI(BaseCLI):
             await self.on_start()
             motd = await self.read_until_prompt()
             self.motd = smart_text(motd, errors="ignore", encoding=self.native_encoding)
-            self.script.motd = self.motd
             self.is_started = True
 
     async def submit(self, parser=None):
@@ -623,11 +622,6 @@ class CLI(BaseCLI):
         pattern = self.prompt_stack.pop(-1)
         self.patterns["prompt"] = pattern
         self.pattern_table[self.patterns["prompt"]] = self.on_prompt
-
-    def set_script(self, script):
-        super().set_script(script)
-        if self.motd:
-            self.script.motd = self.motd
 
     def setup_session(self):
         if self.profile.setup_session:
