@@ -8,7 +8,6 @@
 # Python modules
 import time
 import uuid
-import json
 from logging import getLogger
 from typing import Optional, List, Set, DefaultDict, Tuple, Dict
 from collections import defaultdict
@@ -41,7 +40,7 @@ def dispose_change(changes):
             "model_name": model_id,
             "object_name": item_name,
             "op": op[0].upper(),
-            "changes": json.dumps(changed_fields),
+            "changes":  orjson.dumps(changed_fields).decode("utf-8"),
         }
         publish(orjson.dumps(dc_new), stream="ch.changes", partition=0)
 
