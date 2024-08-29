@@ -298,7 +298,8 @@ class Config(BaseConfig):
         )
         forensic = BooleanParameter(default=False)
         enable_channel_rca = BooleanParameter(
-            default=False, help="Experimental. Check channel status for topology Alarm",
+            default=False,
+            help="Experimental. Check channel status for topology Alarm",
         )
 
     class fm(ConfigSection):
