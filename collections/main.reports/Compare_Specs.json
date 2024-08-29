@@ -1,0 +1,93 @@
+{
+    "name": "Compare Specs",
+    "$collection": "main.reports",
+    "uuid": "93afc46c-2819-4b2f-870f-750851d5adfc",
+    "title": "Compare Specs (New)",
+    "description": "Сравнить спецификации",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "comparespecsds",
+                "json": null
+            }]
+        },
+        {
+            "name": "master_data",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select vendor from Root group by vendor order by vendor"
+                }
+            ]
+        },
+        {
+            "name": "detail_data",
+            "orientation": "H",
+            "parent": "master_data",
+            "queries": [
+                {
+                    "ds_query": "select model, width, height, depth, ru, weight from Root where vendor = '{{ vendor }}' order by model"
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "title_template": "Compare Specs"
+        },
+        {
+            "name": "master_data",
+            "title_template": "{{ vendor }}"
+        },
+        {
+            "name": "detail_data",
+            "column_format": [
+                {
+                    "name": "model",
+                    "title": "Model"
+                },
+                {
+                    "name": "width",
+                    "title": "Width"
+                },
+                {
+                    "name": "height",
+                    "title": "Height"
+                },
+                {
+                    "name": "depth",
+                    "title": "Depth"
+                },
+                {
+                    "name": "ru",
+                    "title": "RU"
+                },
+                {
+                    "name": "weight",
+                    "title": "Weight (kg)"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сравнить спецификации (Новый)"
+        }
+    },
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
