@@ -189,7 +189,8 @@ class SubInterface(Document):
         Returns:
             Resource reference
         """
-        # return f"if:{self.interface.id}:{self.id}"
+        if path:
+            return f"si:{self.id}:{path}"
         return f"si:{self.id}"
 
     def get_matcher_ctx(self) -> Dict[str, Any]:

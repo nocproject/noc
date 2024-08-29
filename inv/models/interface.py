@@ -238,6 +238,20 @@ class Interface(Document):
         for si in ServiceInstance.objects.filter(resources=self.as_resource()):
             si.clean_resource(self.as_resource())
 
+    def as_resource(self, path: Optional[str] = None) -> str:
+        """
+        Convert instance or connection to the resource reference.
+
+        Args:
+            path: Optional connection name
+
+        Returns:
+            Resource reference
+        """
+        if path:
+            return f"if:{self.id}:{path}"
+        return f"if:{self.id}"
+
     @property
     def link(self):
         """

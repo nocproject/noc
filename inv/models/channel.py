@@ -195,7 +195,7 @@ class Channel(Document):
             return [
                 e.channel.id
                 for e in Endpoint.objects.filter(
-                    resource=f"if:{alarm.components.interface.id}"
+                    resource=alarm.components.interface.as_resource()
                 ).scalar("channel")
             ]
         return []
@@ -207,7 +207,7 @@ class Channel(Document):
         from noc.inv.models.interface import Interface
 
         resources = [
-            f"if:{iface.id}" for iface in Interface.objects.filter(managed_object=managed_object)
+            iface.as_resource() for iface in Interface.objects.filter(managed_object=managed_object)
         ]
         if not resources:
             return []
