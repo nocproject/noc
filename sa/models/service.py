@@ -66,6 +66,7 @@ class Instance(EmbeddedDocument):
     pool: "Pool" = PlainReferenceField(Pool, required=False)
     port_range = StringField()
     address_range = StringField()
+    # allow_create - create instance on discovery
     # Prefix Profile
     # weight ?
 
@@ -349,8 +350,16 @@ class Service(Document):
             return self.profile.status_transfer_policy
         return self.status_transfer_policy
 
-    def iter_adjacency_services(self):
+    def iter_dependency_services(self, filter_match_status: bool = False) -> Iterable["Service"]:
         """Iterate over service topology, with affected statuses"""
+        for item in self.status_dependencies:
+            if filter_match_status and not item.is_match():
+                continue
+            if item.service:
+                yield item.service
+            if item.resource_group and item.resource_group.technology.service_model == "sa.Service":
+                for svc in Service.objects.filter(effective_service_groups=item.resource_group):
+                    yield svc
 
     def iter_dependency_status(self) -> Iterable[Tuple[Status, int]]:
         """Iterate over dependency services status"""
@@ -580,7 +589,7 @@ class Service(Document):
         #
         services = ServiceInstance.get_services_by_alarm(alarm)
         if q:
-            services += list(Service.objects.filter(q).scalar("service"))
+            services += list(Service.objects.filter(q))
         return list(set(s.id for s in services))
 
     def unbind_interface(self):

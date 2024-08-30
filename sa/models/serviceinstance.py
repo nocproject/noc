@@ -7,9 +7,10 @@
 
 # Python modules
 import datetime
-from typing import Optional, List
+from typing import Optional, List, Iterable
 
 # Third-party modules
+from pymongo import UpdateOne
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -25,6 +26,7 @@ from mongoengine.queryset.visitor import Q
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.ip import IP
+from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
@@ -210,3 +212,49 @@ class ServiceInstance(Document):
             # self.sources = []
             # self._get_collection().update_one({"_id": self.id}, {"$set": {"sources": []}})
             # delete
+
+    def set_object(self, o, bulk=None):
+        """Set instance ManagedObject instance"""
+        if self.managed_object and self.managed_object.id == o.id:
+            return
+        self.managed_object = o
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$set": {"managed_object": o.id}})]
+        else:
+            ServiceInstance.objects.filter(id=self.id).update(managed_object=o)
+
+    def add_resource(self, o, bulk=None):
+        """Add Resource to ServiceInstance"""
+        if not hasattr(o, "as_resource"):
+            raise AttributeError("Model %s not Supported Resource Method" % get_model_id(o))
+        rid = o.as_resource()
+        if rid in self.resources:
+            return
+        self.resources.append(rid)
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$addToSet": {"resources": rid}})]
+        else:
+            ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+
+    def clean_resource(self, code: str, bulk=None):
+        """Clean resource by Key"""
+        if not self.resources:
+            return
+        resources = [c for c in self.resources if not c.startswith(code)]
+        if len(self.resources) == len(resources):
+            return
+        self.resources = resources
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$set": resources})]
+        else:
+            ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+
+    @classmethod
+    def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
+        q = Q(managed_object=managed_object.id)
+        if managed_object.remote_system and managed_object.remote_id:
+            q |= Q(remote_id=managed_object.remote_id)
+        if managed_object.address:
+            q |= Q(addresses__address=managed_object.address)
+        for si in ServiceInstance.objects.filter(q):
+            yield si

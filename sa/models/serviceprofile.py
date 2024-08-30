@@ -71,6 +71,33 @@ condition_map = {
 }
 
 
+class InstanceResourceRule(EmbeddedDocument):
+    """
+    Rules for Resource to Instance map.
+    Attributes:
+        resource_type: System resource code
+        capability: Used capability value for resource request
+        send_seen: Send seen signal when resource find
+        resource_filter:
+            * By Instance Address
+            * By Capability values
+            * By All
+        update_status: Set Instance Status when resource status chaned
+        allow_manual: Allow changed manual map
+    """
+
+    resource_type = StringField(choices=[("si", "SubInterface"), ("if", "Interface")])
+    capability = ReferenceField(Capability)
+    # resource_field = StringField(required=False)
+    resource_filter = StringField(
+        choices=[("A", "By All"), ("C", "By Capability"), ("I", "By Instance")]
+    )
+    send_seen = BooleanField(default=True)
+    update_status = BooleanField(default=False)
+    # allow_manual = BooleanField(default=True)
+    # allow_create = - create instance when resource founded
+
+
 class CalculatedStatusRule(EmbeddedDocument):
     """
     Calculate status rule
@@ -273,6 +300,10 @@ class ServiceProfile(Document):
         default="D",
     )
     alarm_status_rules: List["AlarmStatusRule"] = EmbeddedDocumentListField(AlarmStatusRule)
+    # Instance Resources
+    instance_resource_rules: List[InstanceResourceRule] = EmbeddedDocumentListField(
+        InstanceResourceRule
+    )
     # Capabilities
     caps = ListField(EmbeddedDocumentField(CapsSettings))
     # Integration with external NRI and TT systems

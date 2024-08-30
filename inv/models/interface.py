@@ -662,6 +662,20 @@ class Interface(Document):
         r = next(r, {})
         return r.get("interval", 0)
 
+    def as_resource(self, path: Optional[str] = None) -> str:
+        """
+        Convert instance or connection to the resource reference.
+
+        Args:
+            path: Optional connection name
+
+        Returns:
+            Resource reference
+        """
+        if path:
+            return f"if:{self.id}:{path}"
+        return f"if:{self.id}"
+
 
 # Avoid circular references
 from noc.sa.models.servicesummary import ServiceSummary
