@@ -34,6 +34,7 @@ from .error import (
     CLISuperUsernameTimeout,
     CLISuperPasswordTimeout,
 )
+from ..error import UnexpectedResultError
 from .base import BaseCLI
 
 
