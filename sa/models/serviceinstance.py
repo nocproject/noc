@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Iterable
+from typing import Optional, List
 
 # Third-party modules
 from pymongo import UpdateOne
@@ -26,6 +26,7 @@ from mongoengine.queryset.visitor import Q
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.ip import IP
+from noc.core.resource import from_resource
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -55,7 +56,8 @@ class ServiceInstance(Document):
 
     Attributes:
         service: Reference to Service
-        resources: Resource Id
+        managed_object: Object for resource binded
+        resources: Resource Id List
     """
 
     meta = {
@@ -108,7 +110,7 @@ class ServiceInstance(Document):
     def is_match_alarm(self, alarm: ActiveAlarm) -> bool:
         """Check alarm applying to instance"""
         if self.resources and alarm.is_link_alarm:
-            return f"if:{alarm.components.interface.id}" in self.resources
+            return alarm.components.interface.as_resource() in self.resources
         elif self.managed_object and self.managed_object.id == alarm.managed_object.id:
             return True
         elif self.addresses and "address" in alarm.vars and alarm.vars["address"] == self.address:
@@ -120,7 +122,7 @@ class ServiceInstance(Document):
         """Getting Service Instance by alarm"""
         q = Q(managed_object=alarm.managed_object.id)
         if alarm.is_link_alarm and getattr(alarm.components, "interface", None):
-            q |= Q(resources=f"if:{alarm.components.inteface.id}")
+            q |= Q(resources=alarm.components.inteface.as_resource())
         address = None
         if "address" in alarm.vars:
             address = alarm.vars.get("address")
@@ -151,14 +153,11 @@ class ServiceInstance(Document):
         from noc.inv.models.interface import Interface
         from noc.inv.models.subinterface import SubInterface
 
-        if not self.resources:
-            return None
         for r in self.resources:
-            r_code, rid, *path = r.split(":")
-            if r_code.startswith("si"):
-                return SubInterface.objects.filter(id=rid).first()
-            elif r_code.startswith("if"):
-                return Interface.objects.filter(id=rid).first()
+            # filter by code ?
+            r = from_resource(r)
+            if r and isinstance(r, (Interface, SubInterface)):
+                return r
         return None
 
     @property
@@ -198,6 +197,7 @@ class ServiceInstance(Document):
                 AddressItem(address=a, address_bin=IP.prefix(a).d, sources=[source], pool=pool),
             )
         ServiceInstance.objects(id=self.id).update(addresses=self.addresses, port=port)
+        self.service.fire("seen")
 
     def unseen(self, source: Optional[str] = None):
         """
@@ -250,11 +250,5 @@ class ServiceInstance(Document):
             ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
 
     @classmethod
-    def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
-        q = Q(managed_object=managed_object.id)
-        if managed_object.remote_system and managed_object.remote_id:
-            q |= Q(remote_id=managed_object.remote_id)
-        if managed_object.address:
-            q |= Q(addresses__address=managed_object.address)
-        for si in ServiceInstance.objects.filter(q):
-            yield si
+    def get_object_resources(self, o):
+        """Return all resources used by object"""

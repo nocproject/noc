@@ -160,7 +160,7 @@ class Interface(Document):
     def service(self):
         from noc.sa.models.serviceinstance import ServiceInstance
 
-        si = ServiceInstance.objects.filter(resources__in=[f"if:{self.id}"]).first()
+        si = ServiceInstance.objects.filter(resources=self.as_resource()).first()
         if si:
             return si.service
         return
@@ -187,6 +187,20 @@ class Interface(Document):
         if si:
             return si.interface
 
+    def as_resource(self, path: Optional[str] = None) -> str:
+        """
+        Convert instance or connection to the resource reference.
+
+        Args:
+            path: Optional connection name
+
+        Returns:
+            Resource reference
+        """
+        if path:
+            return f"if:{self.id}:{path}"
+        return f"if:{self.id}"
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             yield "managedobject", self.managed_object.id
@@ -201,8 +215,6 @@ class Interface(Document):
             super().save(*args, **kwargs)
         except Exception as e:
             raise ValueError(f"{e.__doc__}: {str(e)}")
-        if not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
-            ServiceSummary.refresh_object(self.managed_object)
 
     def on_delete(self):
         from .macdb import MACDB
@@ -472,8 +484,7 @@ class Interface(Document):
         """
         if self.aggregated_interface:
             return self.aggregated_interface
-        else:
-            return self
+        return self
 
     def get_profile(self) -> InterfaceProfile:
         if self.profile:
@@ -529,6 +540,7 @@ class Interface(Document):
         :return:
         """
         from noc.inv.models.subinterface import SubInterface
+        from noc.sa.models.serviceinstance import ServiceInstance
 
         caps = mo.get_caps()
         iface_count = caps.get("DB | Interfaces")
@@ -536,6 +548,9 @@ class Interface(Document):
             return
         buckets = 1
         d_interval = d_interval or mo.get_metric_discovery_interval()
+        s_map = {}
+        if config.discovery.interface_metric_service:
+            s_map = ServiceInstance.get_object_resources(mo)
         for i in (
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -548,7 +563,6 @@ class Interface(Document):
                     "oper_status": 1,
                     "ifindex": 1,
                     "profile": 1,
-                    "service": 1,
                 },
             )
         ):
@@ -597,8 +611,8 @@ class Interface(Document):
                 continue
             ifindex = i.get("ifindex")
             service = None
-            if config.discovery.interface_metric_service and i.get("service"):
-                service = Service.get_bi_id_by_id(str(i["service"]))
+            if i["_id"] in s_map:
+                service = Service.get_bi_id_by_id(str(s_map[i["_id"]]))
             yield MetricCollectorConfig(
                 collector="managed_object",
                 metrics=tuple(metrics),
@@ -611,14 +625,12 @@ class Interface(Document):
             for si in (
                 SubInterface._get_collection()
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .find(
-                    {"interface": i["_id"]}, {"name": 1, "interface": 1, "ifindex": 1, "service": 1}
-                )
+                .find({"interface": i["_id"]}, {"name": 1, "interface": 1, "ifindex": 1})
             ):
                 ifindex = si.get("ifindex")
                 service = None
-                if config.discovery.interface_metric_service and si.get("service"):
-                    service = Service.get_bi_id_by_id(str(si["service"]))
+                if si["_id"] in s_map:
+                    service = Service.get_bi_id_by_id(str(s_map[si["_id"]]))
                 yield MetricCollectorConfig(
                     collector="managed_object",
                     metrics=tuple(metrics),
@@ -662,21 +674,6 @@ class Interface(Document):
         r = next(r, {})
         return r.get("interval", 0)
 
-    def as_resource(self, path: Optional[str] = None) -> str:
-        """
-        Convert instance or connection to the resource reference.
-
-        Args:
-            path: Optional connection name
-
-        Returns:
-            Resource reference
-        """
-        if path:
-            return f"if:{self.id}:{path}"
-        return f"if:{self.id}"
-
 
 # Avoid circular references
-from noc.sa.models.servicesummary import ServiceSummary
 from .link import Link
