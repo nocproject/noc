@@ -60,6 +60,24 @@
     "localization": {
         "title": {
             "ru": "Опрошенные свойства оборудования (Новый)"
+        },
+        "columns.managed_object": {
+            "ru": "Объект управления"
+        },
+        "columns.address": {
+            "ru": "Адрес"
+        },
+        "columns.object": {
+            "ru": "Объект"
+        },
+        "columns.capabilities": {
+            "ru": "Свойства"
+        },
+        "parameters.pool": {
+            "ru": "Пул объекта"
+        },
+        "parameters.mo_profile": {
+            "ru": "Профиль объекта"
         }
     },
     "parameters": [
