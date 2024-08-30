@@ -276,7 +276,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.logger.debug("Open %s CLI", protocol)
         cli = get_handler(self.cli_protocols[protocol])(self, tos=self.tos)
         # Store to the sessions
-        cleaned = False
         if self.session:
             self.cli_session_store.put(self.session, cli)
             if self.to_keep_cli_session():
@@ -286,23 +285,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                         self.cli_session_store.put, self.session, cli, self.session_idle_timeout
                     )
                 )
-                cleaned = True
-        if not cleaned:
-            # Schedule cleanup
-            self.on_cleanup(cli.shutdown_session)
-            self.on_cleanup(cli.close)
-        cli.setup_session()
-        # Disable pager when necessary
-        if self.profile.command_disable_pager:
-            self.logger.debug("Disable paging")
-            if isinstance(self.profile.command_disable_pager, str):
-                cli.push_prelude(self.profile.command_disable_pager, ignore_errors=True)
-            elif isinstance(self.profile.command_disable_pager, list):
-                for cmd in self.profile.command_disable_pager:
-                    cli.push_prelude(cmd, ignore_errors=True)
-            else:
-                msg = "Invalid command_disable_pager"
-                raise UnexpectedResultError(msg)
+                return
+        # Schedule cleanup
+        self.on_cleanup(cli.shutdown_session)
+        self.on_cleanup(cli.close)
         return cli
 
     @cached_property
@@ -886,7 +872,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         cmd_next: Any = None,
         cmd_stop: Any = None,
         labels: Optional[Union[str, Set[str]]] = None,
-        no_prelude: bool = False,
     ) -> str:
         """
         Execute CLI command and return result. Initiate cli session
@@ -918,10 +903,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 return x
             return result
 
-        # Execute collected prelude
-        if not no_prelude:
-            for prelude in self._cli.iter_prelude():
-                self.cli(prelude.cmd, ignore_errors=prelude.ignore_errors, no_prelude=True)
+        # Perform session setup and disable pager
+        self._cli.prepare()
         # Read from file
         if file:
             with open(file) as f:

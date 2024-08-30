@@ -10,8 +10,7 @@ import re
 import functools
 from functools import reduce
 import asyncio
-from typing import Optional, Any, Type, Callable, Dict, Set, Union, Iterable, List
-from dataclasses import dataclass
+from typing import Optional, Any, Type, Callable, Dict, Set, Union
 
 # NOC modules
 from noc.core.text import replace_re_group
@@ -36,12 +35,6 @@ from .error import (
     CLISuperPasswordTimeout,
 )
 from .base import BaseCLI
-
-
-@dataclass
-class Prelude(object):
-    cmd: str
-    ignore_errors: bool
 
 
 class CLI(BaseCLI):
@@ -81,7 +74,10 @@ class CLI(BaseCLI):
         # State retries
         self.super_password_retries = self.profile.cli_retries_super_password
         self.cli_retries_unprivileged_mode = self.profile.cli_retries_unprivileged_mode
-        self._prelude: Optional[List[Prelude]] = []
+        #
+        self._to_setup_session = bool(self.profile.setup_session)
+        self._to_disable_pager = bool(self.profile.command_disable_pager)
+        self._in_setup = False
 
     def set_state(self, state):
         self.logger.debug("Changing state to <%s>", state)
@@ -623,10 +619,31 @@ class CLI(BaseCLI):
         self.patterns["prompt"] = pattern
         self.pattern_table[self.patterns["prompt"]] = self.on_prompt
 
-    def setup_session(self):
-        if self.profile.setup_session:
+    def prepare(self) -> None:
+        """
+        Perform preparation and initialization.
+
+        May be called recursive during session setup
+        """
+        if self._to_setup_session:
+            # Allow only first time
             self.logger.debug("Setup session")
+            self._to_setup_session = False
+            self._in_setup = True
             self.profile.setup_session(self.script)
+            self._to_setup = False
+        # Do not disable pager during setup phase
+        if self._to_disable_pager and not self._in_setup:
+            self._to_disable_pager = False
+            self.logger.debug("Disable paging")
+            if isinstance(self.profile.command_disable_pager, str):
+                self.script.cli(self.profile.command_disable_pager, ignore_errors=True)
+            elif isinstance(self.profile.command_disable_pager, list):
+                for cmd in self.profile.command_disable_pager:
+                    self.script.cli(cmd, ignore_errors=True)
+            else:
+                msg = "Invalid command_disable_pager"
+                raise UnexpectedResultError(msg)
 
     def shutdown_session(self):
         if self.profile.shutdown_session:
@@ -653,28 +670,3 @@ class CLI(BaseCLI):
             else:
                 seq = seq(self, command, error_text)
                 await self.stream.write(seq)
-
-    def push_prelude(self, cmd: str, ignore_errors=False) -> None:
-        """
-        Append prelude.
-
-        Prelude is a command which to be executed on next .
-        """
-        pre = Prelude(cmd=cmd, ignore_errors=ignore_errors)
-        if self._prelude is None:
-            self._prelude = [pre]
-        else:
-            self._prelude.append(pre)
-
-    def iter_prelude(self) -> Iterable[Prelude]:
-        """
-        Iterate collected preludes.
-
-        Drops prelude after iteration.
-
-        Returns:
-            Prelude items
-        """
-        if self._prelude:
-            while self._prelude:
-                yield self._prelude.pop(0)
