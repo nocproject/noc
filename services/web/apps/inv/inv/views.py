@@ -442,7 +442,7 @@ class InvApplication(ExtApplication):
             ),
         },
     )
-    def api_add(self, request, items: List[Dict[str, str]], container: Optional[str]=None):
+    def api_add(self, request, items: List[Dict[str, str]], container: Optional[str] = None):
         if container:
             parent = self.get_object_or_404(Object, id=container)
         else:
