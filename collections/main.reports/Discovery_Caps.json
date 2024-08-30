@@ -1,0 +1,90 @@
+{
+    "name": "Discovery Caps",
+    "$collection": "main.reports",
+    "uuid": "cd503926-86c7-40cf-8069-61eeec179619",
+    "title": "Discovery Object Caps (New)",
+    "description": "Опрошенные свойства оборудования",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "discoverycapsds",
+                "json": null
+            }]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select * from Root order by managed_object, record_type desc, object"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "title_template": ""
+        },
+        {
+            "name": "master",
+            "column_format": [
+                {
+                    "name": "managed_object",
+                    "title": "Managed Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object",
+                    "title": "Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "capabilities",
+                    "title": "Capabilities",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Опрошенные свойства оборудования (Новый)"
+        }
+    },
+    "parameters": [
+        {
+            "name": "pool",
+            "description": null,
+            "label": "Pool",
+            "model_id": "main.Pool",
+            "required": true,
+            "type": "model"
+        },
+        {
+            "name": "mo_profile",
+            "description": null,
+            "label": "MO Profile",
+            "model_id": "sa.ManagedObjectProfile",
+            "type": "model"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
