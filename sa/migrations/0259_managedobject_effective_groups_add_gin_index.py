@@ -20,7 +20,7 @@ class Migration(BaseMigration):
         self.db.execute(
             """
             CREATE INDEX x_sa_managedobject_effective_client_groups_gin
-            ON "sa_managedobject" USING GIN("client_groups")
+            ON "sa_managedobject" USING GIN("effective_client_groups")
         """
         )
         self.db.execute("DROP INDEX sa_managedobject_static_client_groups")
