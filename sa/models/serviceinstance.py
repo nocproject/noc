@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional, List
+from typing import Optional, List, Iterable
 
 # Third-party modules
 from pymongo import UpdateOne
@@ -143,7 +143,7 @@ class ServiceInstance(Document):
         return name
 
     def on_save(self):
-        if not hasattr(self, "_changed_fields") or "resources" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
             pass
         #    self.unbind_interface()
 
@@ -155,7 +155,7 @@ class ServiceInstance(Document):
 
         for r in self.resources:
             # filter by code ?
-            r = from_resource(r)
+            r, _ = from_resource(r)
             if r and isinstance(r, (Interface, SubInterface)):
                 return r
         return None
@@ -250,5 +250,15 @@ class ServiceInstance(Document):
             ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
 
     @classmethod
-    def get_object_resources(self, o):
+    def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
+        q = Q(managed_object=managed_object.id)
+        if managed_object.remote_system and managed_object.remote_id:
+            q |= Q(remote_id=managed_object.remote_id)
+        if managed_object.address:
+            q |= Q(addresses__address=managed_object.address)
+        for si in ServiceInstance.objects.filter(q):
+            yield si
+
+    @classmethod
+    def get_object_resources(cls, o):
         """Return all resources used by object"""
