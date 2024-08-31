@@ -23,5 +23,5 @@ class Migration(BaseMigration):
             ON "sa_managedobject" USING GIN("effective_client_groups")
         """
         )
-        self.db.execute("DROP CONCURRENTLY  INDEX IF EXISTS sa_managedobject_static_client_groups")
-        self.db.execute("DROP CONCURRENTLY  INDEX IF EXISTS sa_managedobject_static_service_groups")
+        self.db.execute("DROP INDEX CONCURRENTLY IF EXISTS sa_managedobject_static_client_groups")
+        self.db.execute("DROP INDEX CONCURRENTLY IF EXISTS sa_managedobject_static_service_groups")
