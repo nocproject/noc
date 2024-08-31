@@ -709,7 +709,6 @@ class ResourceGroup(Document):
             # Clean
             cursor.execute(SQL_UNSYNC, [orjson.dumps(r).decode("utf-8")])
 
-
     @property
     def resource_count(self) -> int:
         """

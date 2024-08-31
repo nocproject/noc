@@ -186,7 +186,9 @@ class Workflow(Document):
             if s.is_wiping and s.id != state.id:
                 logger.info("[%s] Removing wiping status from: %s", self.name, s.name)
                 s.is_wiping = False
-        State.objects.filter(workflow=self.id, is_wiping=True, id__ne=state.id).update(is_wiping=False)
+        State.objects.filter(workflow=self.id, is_wiping=True, id__ne=state.id).update(
+            is_wiping=False
+        )
         # Invalidate caches
         key = str(self.id)
         if key in _wiping_state_cache:
@@ -203,7 +205,9 @@ class Workflow(Document):
             if s.is_default and s.id != state.id:
                 logger.info("[%s] Removing default status from: %s", self.name, s.name)
                 s.is_default = False
-        State.objects.filter(workflow=self.id, is_default=True, id__ne=state.id).update(is_default=False)
+        State.objects.filter(workflow=self.id, is_default=True, id__ne=state.id).update(
+            is_default=False
+        )
         # Invalidate caches
         key = str(self.id)
         if key in _default_state_cache:
