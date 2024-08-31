@@ -11,6 +11,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   requires: [
     "NOC.inv.inv.plugins.pconf.PConfModel",
     "NOC.inv.inv.plugins.pconf.Controller",
+    "NOC.inv.inv.plugins.pconf.PConfEditPlugin",
   ],
   title: __("Config"),
   closable: false,
@@ -91,12 +92,14 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         {
           text: __("Value"),
           dataIndex: "value",
-          editor: "textfield",
-          width: 150,
+          editor: {
+            xtype: "textfield",
+          },
+          width: 200,
           renderer: function(value, metaData, record){
             if(record.get("type") === "enum"){
-              var options = record.get("options") || [];
-              var option = options.find(opt => opt.id === value);
+              var options = record.get("options") || [],
+                option = options.find(opt => opt.id === value);
               return option ? option.label : value;
             }
             return value;
@@ -114,34 +117,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         },
       ],
       plugins: [
-        Ext.create("Ext.grid.plugin.CellEditing", {
+        {
+          ptype: "valueedit",
           clicksToEdit: 1,
-          listeners: {
-            beforeedit: function(editor, context){
-              var record = context.record,
-                column = context.column;
-                    
-              if(column.dataIndex === "value"){
-                if(record.get("type") === "enum"){
-                  column.setEditor({
-                    xtype: "combobox",
-                    store: {
-                      fields: ["id", "label"],
-                      data: record.get("options") || [],
-                    },
-                    valueField: "id",
-                    displayField: "label",
-                    queryMode: "local",
-                  });
-                } else{
-                  column.setEditor({
-                    xtype: "textfield",
-                  });
-                }
-              }
-            },
-          },
-        }),
+        },
       ],
     },
   ],
