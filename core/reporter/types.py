@@ -130,6 +130,7 @@ class BandFormat(BaseModel):
 
     title_template: Optional[str] = None  # Title format for Section row
     columns: Optional[List[ColumnFormat]] = None  # ColumnName -> ColumnFormat
+    header_only: bool = False
 
 
 class Template(BaseModel):

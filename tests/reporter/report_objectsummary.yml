@@ -5,8 +5,9 @@ templates:
     formatter: simplereport
     output_type: html
     bands_format:
-      Root:
+      header:
         title_template: Discovery Summary
+        header_only: true
         columns:
           - name: name
             title:

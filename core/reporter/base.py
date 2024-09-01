@@ -183,7 +183,9 @@ class ReportEngine(object):
         t = report.get_template(None)
         r = []
         for b, f in t.bands_format.items():
-            for c in f.columns:
+            if f.header_only:
+                continue
+            for c in f.columns or []:
                 r.append(c.name)
         return r
 
@@ -232,8 +234,10 @@ class ReportEngine(object):
         if report_band.source:
             # For Source based report
             s = r_source_loader[report_band.source]()
-            root.format = s.get_format()
-            root.add_children(s.get_data(**params))
+            band = BandData(name="rows")
+            band.format = s.get_format()
+            band.add_children(s.get_data(**params))
+            root.add_child(band)
             return root
         root.rows = self.get_rows(report_band.queries, params)
         # Extract data from ReportBand

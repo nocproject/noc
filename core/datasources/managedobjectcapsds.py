@@ -34,7 +34,7 @@ class ManagedObjectCapsDS(BaseDataSource):
     name = "managedobjectcapsds"
     row_index = "managed_object_id"
 
-    fields = [FieldInfo(name="managed_object_id", type=FieldType.UINT)]
+    fields = [FieldInfo(name="managed_object_id", type=FieldType.UINT), FieldInfo(name="all_caps")]
 
     @classmethod
     def iter_ds_fields(cls):
@@ -44,20 +44,27 @@ class ManagedObjectCapsDS(BaseDataSource):
 
     @classmethod
     async def iter_caps(
-        cls, caps: List[Dict[str, Any]], requested_caps: Dict[str, Any] = None
+        cls,
+        caps: List[Dict[str, Any]],
+        requested_caps: Dict[str, Any] = None,
+        include_all: bool = False,
     ) -> AsyncIterable[Tuple[str, Any]]:
         """
         Consolidate capabilities list and return resulting dict of
         caps name -> caps value. First appearance of capability
         overrides later ones.
-
-        :param caps:
-        :param requested_caps:
-        :return:
+        Attrs:
+            caps: Object Capabilities
+            requested_caps: Requested Capabilities
+            include_all: Include all_caps field
         """
         caps = {c["capability"]: c["value"] for c in caps}
         for cid, (f_name, f_default) in requested_caps.items():
             yield f_name, caps.get(cid, f_default)
+        if include_all:
+            yield "all_caps", ";".join(
+                Capability.get_by_id(c).name for c in caps if Capability.get_by_id(c)
+            )
 
     @staticmethod
     def get_caps_default(caps: Capability):
@@ -92,5 +99,7 @@ class ManagedObjectCapsDS(BaseDataSource):
             ManagedObject.objects.filter().values_list("id", "caps").iterator()
         ):
             yield num, "managed_object_id", mo_id
-            async for c in cls.iter_caps(caps or [], requested_caps=q_caps):
+            async for c in cls.iter_caps(
+                caps or [], requested_caps=q_caps, include_all="all_caps" in fields
+            ):
                 yield num, c[0], c[1]

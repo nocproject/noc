@@ -28,15 +28,16 @@ from noc.services.web.base.simplereport import (
 class SimpleReportFormatter(DataFormatter):
     def render_document(self):
         """ """
+        band = list(self.root_band.iter_all_bands())[0]
         if self.report_template.output_type != OutputType.HTML:
-            self.render_table(list(self.root_band.iter_all_bands())[0])
+            self.render_table(band)
             return
         report = Report()
-        rband_format = self.get_band_format(self.root_band)
+        rband_format = self.get_band_format(band)
         report.append_section(
             TextSection(title=rband_format.title_template if rband_format else "")
         )
-        columns, fields = self.get_columns()
+        columns, fields = self.get_columns(band)
         report.append_section(
             TableSection(
                 columns=list(columns),
@@ -117,9 +118,7 @@ class SimpleReportFormatter(DataFormatter):
     def get_report_data(self, columns: List[str] = None) -> List[Any]:
         """Convert Report Band to Report Data Section"""
         r = []
-        print("GRD", 1)
         for rb in self.root_band.iter_all_bands():
-            print("GRD", rb)
             # Section Row
             if not rb.is_root:  # Section
                 bf = self.get_band_format(rb)
