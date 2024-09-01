@@ -20,6 +20,8 @@ from pydantic import BaseModel, ConfigDict
 # NOC modules
 from noc.models import get_model, is_document
 
+ROOT_BAND = "Root"
+
 
 class BandOrientation(enum.Enum):
     HORIZONTAL = "H"
@@ -66,6 +68,14 @@ class ReportQuery(BaseModel):
 ReportBand = ForwardRef("ReportBand")
 
 
+class BandCondition(BaseModel):
+    param: str
+    value: str
+
+    def __str__(self):
+        return f"{self.param} == {self.value}"
+
+
 class ReportBand(BaseModel):
     name: str
     queries: Optional[List[ReportQuery]] = None
@@ -73,6 +83,7 @@ class ReportBand(BaseModel):
     parent: Optional["ReportBand"] = None  # Parent Band
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
     children: Optional[List["ReportBand"]] = None
+    conditions: Optional[List[BandCondition]] = None
 
     def __str__(self):
         return self.name
@@ -92,11 +103,17 @@ class ReportBand(BaseModel):
             yield c
             yield from c.iter_nester()
 
+    def is_match(self, params: Dict[str, Any]) -> bool:
+        if not self.conditions:
+            return True
+        for c in self.conditions:
+            if c.param in params:
+                return c.value in params[c.param]
+        return True
+
 
 class ColumnFormat(BaseModel):
-    """
-    Format settings for column
-    """
+    """Format settings for column"""
 
     name: str
     title: Optional[str] = None

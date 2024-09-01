@@ -76,6 +76,7 @@
         {
             "name": "start",
             "description": null,
+            "hide": false,
             "label": "From",
             "required": true,
             "type": "date"
@@ -83,6 +84,7 @@
         {
             "name": "end",
             "description": null,
+            "hide": false,
             "label": "To",
             "required": true,
             "type": "date"

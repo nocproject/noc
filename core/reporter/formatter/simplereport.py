@@ -28,11 +28,9 @@ from noc.services.web.base.simplereport import (
 class SimpleReportFormatter(DataFormatter):
     def render_document(self):
         """
-
-        :return:
         """
         if self.report_template.output_type != OutputType.HTML:
-            self.render_table()
+            self.render_table(list(self.root_band.iter_all_bands())[0])
             return
         report = Report()
         rband_format = self.get_band_format(self.root_band)
@@ -66,18 +64,17 @@ class SimpleReportFormatter(DataFormatter):
             raise NotImplementedError(f"Output Type {self.output_type} not supported")
         self.output_stream.write(r.encode("utf8"))
 
-    def render_table(self):
+    def render_table(self, band):
         """
         Format for Root Band data as table
-        :return:
         """
-        r_format = self.report_template.bands_format["Root"]
+        r_format = self.report_template.bands_format[band.name]
         # Column title map
         HEADER_ROW = {}
         for col in r_format.columns:
             *_, col_name = col.name.rsplit(".", 1)
             HEADER_ROW[col_name] = col.title
-        data = self.root_band.rows
+        data = band.rows
         if data is None:
             return
         out_columns = [c for c in data.columns]
@@ -87,8 +84,8 @@ class SimpleReportFormatter(DataFormatter):
                 # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                 # columns=out_columns,
                 separator=self.csv_delimiter,
-                quote='"',
-                has_header=False,
+                quote_char='"',
+                include_header=False,
             )
             self.output_stream.write(r.encode("utf8"))
         elif self.output_type == OutputType.XLSX:
@@ -119,12 +116,11 @@ class SimpleReportFormatter(DataFormatter):
         return r
 
     def get_report_data(self, columns: List[str] = None) -> List[Any]:
-        """
-        Convert Report Band to Report Data Section
-        :return:
-        """
+        """Convert Report Band to Report Data Section"""
         r = []
+        print("GRD", 1)
         for rb in self.root_band.iter_all_bands():
+            print("GRD", rb)
             # Section Row
             if not rb.is_root:  # Section
                 bf = self.get_band_format(rb)
@@ -156,14 +152,11 @@ class SimpleReportFormatter(DataFormatter):
             return
         return self.report_template.bands_format[band.name]
 
-    def get_columns(self) -> Tuple[List[Any], Optional[List[str]]]:
-        """
-        Return columns format and fields list
-        :return:
-        """
+    def get_columns(self, band: Optional[BandData] = None) -> Tuple[List[Any], Optional[List[str]]]:
+        """Return columns format and fields list"""
         # Try Root config first
-        band_format = self.get_band_format(self.root_band)
-        band = self.root_band.get_data_band()
+        band = band or self.root_band.get_data_band()
+        band_format = self.get_band_format(band)
         fields = None
         # Try DataBand
         if not band_format or not band_format.columns:

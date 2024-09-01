@@ -149,11 +149,7 @@ class ReportEngine(object):
         params: Dict[str, Any],
         band_data: BandData,
     ):
-        """
-        Render document
-        :return:
-        """
-        #
+        """Render document"""
         from noc.core.reporter.formatter.loader import loader as df_loader
 
         formatter = df_loader[template.formatter]
@@ -168,6 +164,7 @@ class ReportEngine(object):
         :return:
         """
         # clean_params = params.copy()
+        logger.info("Clean params: %s", params)
         clean_params = {}
         for p in report.parameters or []:
             name = p.name
@@ -177,17 +174,29 @@ class ReportEngine(object):
             elif not value:
                 continue
             clean_params[name] = p.clean_value(value)
+        if report.root_band.queries and "fields" not in params:
+            clean_params["fields"] = self.get_root_fields(report, params)
         return clean_params
 
+    def get_root_fields(self, report: "ReportConfig", params) -> List[str]:
+        """Build all root fields"""
+        t = report.get_template(None)
+        r = []
+        for b, f in t.bands_format.items():
+            for c in f.columns:
+                r.append(c.name)
+        return r
+
     def iter_bands_data(
-        self, report_band: ReportBand, root_band: BandData, root
+        self, report_band: ReportBand, root_band: BandData, root, params: Dict[str, Any]
     ) -> Iterable[BandData]:
         """
-
-        :param report_band:
-        :param root_band:
-        :return:
+        Attrs:
+            report_band:
+            root_band:
         """
+        if not report_band.is_match(params):
+            return
         rows: Optional[pl.DataFrame] = self.get_rows(
             report_band.queries, root_band.get_data(), root_band=root
         )
@@ -212,15 +221,16 @@ class ReportEngine(object):
     def load_data(self, report: ReportConfig, params: Dict[str, Any]) -> BandData:
         """
         Generate BandData from ReportBand
-        :param report:
-        :param params:
-        :return:
+        Attrs:
+            report:
+            params:
         """
         report_band = report.get_root_band()
         # Create Root BandData
         root = BandData(BandData.ROOT_BAND_NAME)
         root.set_data(params)
         if report_band.source:
+            # For Source based report
             s = r_source_loader[report_band.source]()
             root.format = s.get_format()
             root.add_children(s.get_data(**params))
@@ -235,10 +245,10 @@ class ReportEngine(object):
             if bd_parent.parent:
                 # Fill parent DataBand children row
                 for c in bd_parent.parent.get_children_by_name(rb.parent.name):
-                    for band in self.iter_bands_data(rb, c, root):
+                    for band in self.iter_bands_data(rb, c, root, params):
                         c.add_child(band)
                 continue
-            for band in self.iter_bands_data(rb, bd_parent, root):
+            for band in self.iter_bands_data(rb, bd_parent, root, params):
                 bd_parent.add_child(band)
         return root
 
@@ -250,10 +260,10 @@ class ReportEngine(object):
     ) -> Tuple[Dict[str, Any], Set[str]]:
         """
         Merge Query context
-        :param ctx:
-        :param query:
-        :param joined:
-        :return:
+        Args:
+            ctx: Query context (from param)
+            query: Query instance
+            joined: Joined query flag
         """
         q_ctx = ctx.copy()
         if query.params:
@@ -276,11 +286,10 @@ class ReportEngine(object):
     ) -> Optional[pl.DataFrame]:
         """
         Getting Band rows
-        :param queries:
-        :param ctx:
-        :param root_band:
-        :return:
-
+        Attrs:
+            queries:
+            ctx:
+            root_band:
         """
         if not queries:
             return None
@@ -293,6 +302,7 @@ class ReportEngine(object):
                 data = pl.DataFrame(orjson.loads(query.json_data))
             elif num and query.datasource and query.datasource not in dss:
                 # Skip not requested DataSource
+                logger.warning("[%s] Skipping not registered DataSource", query.datasource)
                 continue
             elif query.datasource:
                 logger.info("[%s] Query DataSource", query.datasource)
@@ -311,6 +321,7 @@ class ReportEngine(object):
                     data = data.transpose(include_header=True)
             if num and (data is None or data.is_empty()):
                 # for join query check data exists
+                logger.info("Skipping empty data")
                 continue
             elif data is None:
                 raise ValueError("First query without result")

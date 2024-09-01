@@ -197,6 +197,7 @@ Ext.define('NOC.main.reportconfig.Application', {
                                     fieldLabel: __("Bands"),
                                     labelAlign: "top",
                                     items: [
+
                                         {
                                             name: "name",
                                             xtype: "textfield",
@@ -221,6 +222,18 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                 ["C", __("Cross")],
                                                 ["U", __("Undefined")]
                                             ]
+                                        },
+                                        {
+                                            name: "condition_param",
+                                            xtype: "textfield",
+                                            fieldLabel: __("Condition Param"),
+                                            allowBlank: true
+                                        },
+                                        {
+                                            name: "condition_value",
+                                            xtype: "textfield",
+                                            fieldLabel: __("Condition Value"),
+                                            allowBlank: true
                                         },
                                         {
                                             name: "queries",
@@ -351,19 +364,19 @@ Ext.define('NOC.main.reportconfig.Application', {
                                         {
                                             text: __('Name'),
                                             dataIndex: 'name',
-                                            width: 100,
+                                            width: 200,
                                             editor: 'textfield'
                                         },
                                         {
                                             text: __('Label'),
                                             dataIndex: 'label',
-                                            width: 100,
+                                            width: 200,
                                             editor: 'textfield'
                                         },
                                         {
                                             text: __("Type"),
                                             dataIndex: "type",
-                                            width: 100,
+                                            width: 150,
                                             editor: {
                                                 xtype: "combobox",
                                                 store: [
@@ -371,7 +384,8 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                     ["string", __("String")],
                                                     ["date", __("Date")],
                                                     ["bool", __("Bool")],
-                                                    ["choice", __("Choice")],
+                                                    ["choice", __("Choice (radio)")],
+                                                    ["combo-choice", __("Choice (combo)")],
                                                     ["fields_selector", __("Fields Selector")],
                                                     ["model", __("Model Lookup")]
                                                 ]
@@ -382,6 +396,7 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                 "date": __("Date"),
                                                 "bool": __("Bool"),
                                                 "choice": __("Choice"),
+                                                "combo-choice": __("Choice (combo)"),
                                                 "fields_selector": __("Fields Selector"),
                                                 "model": __("Model Lookup")
                                             })
