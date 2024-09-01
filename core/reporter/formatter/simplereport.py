@@ -27,8 +27,7 @@ from noc.services.web.base.simplereport import (
 
 class SimpleReportFormatter(DataFormatter):
     def render_document(self):
-        """
-        """
+        """ """
         if self.report_template.output_type != OutputType.HTML:
             self.render_table(list(self.root_band.iter_all_bands())[0])
             return
