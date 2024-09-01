@@ -46,6 +46,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
         var data = Ext.decode(response.responseText);
         if(data.status){
           NOC.info(__("Parameter has been set"));
+          me.getView().down("grid").findPlugin("valueedit").cancelEdit();
           me.onReload();
         } else{
           NOC.error(data.message);
