@@ -18,16 +18,41 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   },
   onReload: function(){
     var me = this;
+    me.getView().mask(__("Loading..."));
     Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/pconf/",
+      url: "/inv/inv/" + me.getView().currentId + "/plugin/pconf/",
       method: "GET",
       scope: me,
       success: function(response){
-        var data = Ext.decode(response.responseText);
-        this.preview(data);
+        var data = Ext.decode(response.responseText),
+          view = me.getView();
+        view.preview(data);
+        view.unmask();
       },
       failure: function(){
         NOC.error(__("Failed to load data"));
+        me.getView().unmask();
+      },
+    });
+  },
+  onValueChanged: function(data){
+    var me = this;
+    console.log("Value changed", this.getView().currentId, data);
+    Ext.Ajax.request({
+      url: "/inv/inv/" + this.getView().currentId + "/plugin/pconf/set/",
+      method: 'POST',
+      jsonData: data,
+      success: function(response){
+        var data = Ext.decode(response.responseText);
+        if(data.status){
+          NOC.info(__("Parameter has been set"));
+          me.onReload();
+        } else{
+          NOC.error(data.message);
+        }
+      },
+      failure: function(){
+        NOC.error(__("Failed to set parameter"));
       },
     });
   },

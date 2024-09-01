@@ -122,6 +122,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           clicksToEdit: 1,
         },
       ],
+      listeners: {
+        valuechanged: "onValueChanged",
+      },
     },
   ],
   //
