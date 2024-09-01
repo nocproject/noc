@@ -663,14 +663,29 @@ class ResourceGroup(Document):
         where = ""
         if table_filter:
             where = "AND " + " AND ".join(f"update_t.{t[0]} = %s" for t in table_filter)
+        # Needed for not used LEFT JOIN
+        SQL_UNSYNC = f"""
+            UPDATE {table} AS update_t
+            SET effective_service_groups = update_t.static_service_groups
+            FROM (
+                (SELECT id FROM {table})
+                EXCEPT
+                (SELECT t.id as id FROM {table} AS t
+                    JOIN jsonb_to_recordset(%s::jsonb) AS rgs(rg bpchar, ml character varying[])
+                    ON t.effective_labels @> rgs.ml
+                GROUP BY t.id)
+            ) AS sq
+            WHERE effective_service_groups <> update_t.static_service_groups AND sq.id = update_t.id
+        """
         SQL_SYNC = f"""
             UPDATE {table} AS update_t
-            SET effective_service_groups = update_t.static_service_groups || array_remove(sq.erg, NULL)
+            SET effective_service_groups = update_t.static_service_groups || sq.erg
             FROM (
-             SELECT t.id as id, array_agg(rgs.rg) AS erg FROM {table} AS t
-             LEFT JOIN (SELECT * FROM jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs
-             ON t.effective_labels::text[] @> rgs.ml GROUP BY t.id
-             HAVING t.effective_service_groups != t.static_service_groups || array_remove(array_agg(rgs.rg), NULL)
+             SELECT t.id as id, array_remove(array_agg(rgs.rg), NULL) AS erg FROM {table} AS t
+                 JOIN jsonb_to_recordset(%s::jsonb) AS rgs(rg bpchar, ml character varying[])
+                 ON t.effective_labels @> rgs.ml
+             GROUP BY t.id
+             HAVING NOT t.effective_service_groups @> array_remove(array_agg(rgs.rg), NULL)
              ) AS sq
             WHERE sq.id = update_t.id {where}
             """
@@ -686,8 +701,12 @@ class ResourceGroup(Document):
         params = [orjson.dumps(r).decode("utf-8")]
         if table_filter:
             params += [v[1] for v in table_filter]
+        # print("Group", SQL_SYNC, params)
         with pg_connection.cursor() as cursor:
+            # Update groups
             cursor.execute(SQL_SYNC, params)
+            # Clean
+            cursor.execute(SQL_UNSYNC, [orjson.dumps(r).decode("utf-8")])
 
     @property
     def resource_count(self) -> int:
