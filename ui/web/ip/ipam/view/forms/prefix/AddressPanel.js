@@ -103,8 +103,8 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_ipaddress": true
-                    },
+                        "allow_models": ["ip.Address"]
+                    }
                 },
                 {
                     name: "tt",

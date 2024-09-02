@@ -175,8 +175,8 @@ Ext.define("NOC.vc.l2domain.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_l2domainprofile": true
-                    },
+                        "allow_models": ["vc.L2Domain"]
+                    }
                 }
             ]
         });
