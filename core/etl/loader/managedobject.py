@@ -26,6 +26,7 @@ from noc.sa.models.authprofile import AuthProfile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
 from noc.inv.models.networksegment import NetworkSegment
+from noc.ip.models.vrf import VRF
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -46,6 +47,7 @@ class ManagedObjectLoader(BaseLoader):
         "objectprofile": ManagedObjectProfile,
         "adm_domain": AdministrativeDomain,
         "auth_profile": AuthProfile,
+        "vrf": VRF,
     }
 
     def __init__(self, *args, **kwargs):
