@@ -37,7 +37,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   },
   onValueChanged: function(data){
     var me = this;
-    console.log("Value changed", this.getView().currentId, data);
     Ext.Ajax.request({
       url: "/inv/inv/" + this.getView().currentId + "/plugin/pconf/set/",
       method: 'POST',
