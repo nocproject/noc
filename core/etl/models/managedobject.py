@@ -24,6 +24,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .networksegment import NetworkSegment
 from .resourcegroup import ResourceGroup
 from .l2domain import L2Domain
+from .ipvrf import IPVRF
 from .ttsystem import TTSystem
 from .project import Project
 
@@ -75,6 +76,7 @@ class ManagedObject(BaseModel):
     auth_profile: Optional[Reference["AuthProfile"]] = None
     controller: Optional[Reference["ManagedObject"]] = None
     l2_domain: Optional[Reference["L2Domain"]] = None
+    vrf: Optional[Reference["IPVRF"]] = None
     labels: Optional[List[str]] = None
     tt_system: Optional[Reference["TTSystem"]] = None
     tt_queue: Optional[str] = None
