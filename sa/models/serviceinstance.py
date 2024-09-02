@@ -197,7 +197,7 @@ class ServiceInstance(Document):
                 AddressItem(address=a, address_bin=IP.prefix(a).d, sources=[source], pool=pool),
             )
         ServiceInstance.objects(id=self.id).update(addresses=self.addresses, port=port)
-        self.service.fire("seen")
+        self.service.fire_event("seen")
 
     def unseen(self, source: Optional[str] = None):
         """
