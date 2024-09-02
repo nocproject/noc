@@ -25,9 +25,10 @@ class Profile(BaseProfile):
     command_disable_pager = "no page"
     command_super = b"enable"
     pattern_more = [
-        (rb"--\s*MORE\s*--, next page: Space, next line: Enter, quit: q", b" "),
+        (rb"\s--\s*MORE\s*--, next page: Space, next line: Enter, quit: q", b" "),
     ]
-    rogue_chars = [re.compile(rb"\r\s+\r")]
+    rogue_chars = [re.compile(rb"\r +\r"), b"\r"]
+    command_exit = "exit"
     # -- MORE --, next page: Space, next line: Enter, quit: q
     # rogue_chars = [
     #     # re.compile(rb"\r\s+\r"),
