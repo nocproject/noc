@@ -167,8 +167,8 @@ Ext.define("NOC.ip.vrf.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_vrf": true
-                    },
+                        "allow_models": ["ip.VRF"]
+                    }
                 },
                 {
                     name: "allocated_till",
