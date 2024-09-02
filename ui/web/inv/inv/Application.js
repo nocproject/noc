@@ -131,6 +131,12 @@ Ext.define("NOC.inv.inv.Application", {
                   handler: me.onOpenDashboard,
                 },
                 {
+                  glyph: NOC.glyph.copy,
+                  text: __("Clone"),
+                  scope: me,
+                  handler: me.onClone,
+                },
+                {
                   itemId: "invNavContextMenuMap",
                   text: __("Show Map"),
                   glyph: NOC.glyph.globe,
@@ -653,5 +659,62 @@ Ext.define("NOC.inv.inv.Application", {
     if(container){
       window.open("/ui/grafana/dashboard/script/noc.js?dashboard=container&id=" + container.get("id") + "&orgId=1");
     }
+  },
+  //
+  onClone: function(){
+    var me = this,
+      dialog = Ext.create("Ext.window.Window", {
+        title: __("Clone object?"),
+        modal: true,
+        width: 250,
+        height: 160,
+        layout: "vbox",
+        autoShow: true,
+        items: [
+          {
+            xtype: "checkbox",
+            boxLabel: __("Clone connections"),
+            padding: 10,
+            itemId: "cloneConnectionsCheckbox",
+          },
+        ],
+        buttons: [
+          {
+            text: __("Clone"),
+            handler: function(){
+              var sel, cloneConnections = dialog.down("#cloneConnectionsCheckbox").checked,
+                container = null;
+              if(me.navTree.getSelectionModel().hasSelection()){
+                sel = me.navTree.getSelectionModel().getSelection();
+              }
+              if(!Ext.isEmpty(sel)){
+                container = sel[0];
+              }
+              Ext.Ajax.request({
+                url: "/inv/inv/clone/",
+                method: "POST",
+                jsonData: {
+                  container: container.id,
+                  clone_connections: cloneConnections,
+                },
+                success: function(response){
+                  NOC.info(__("Object cloned successfully."));
+                },
+                failure: function(response){
+                  NOC.error(__("Failed to clone object."));
+                },
+              });
+
+              dialog.close();
+            },
+          },
+          {
+            text: __("Cancel"),
+            handler: function(){
+              dialog.close();
+            },
+          },
+        ],
+      });
   },
 });
