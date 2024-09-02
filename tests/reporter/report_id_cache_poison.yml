@@ -5,6 +5,11 @@ templates:
     formatter: simplereport
     output_type: html
     bands_format:
+      header:
+        columns:
+          - name: name
+          - name: address
+          - name: pool
       master_data:
         title_template: '{{ mac }} {{ reason }}'
 root_band:

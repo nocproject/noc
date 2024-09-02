@@ -122,12 +122,12 @@ class SimpleReportFormatter(DataFormatter):
             # Section Row
             if not rb.is_root:  # Section
                 bf = self.get_band_format(rb)
-                if bf and bf.title_template:
+                if bf and bf.title_template and not bf.header_only:
                     r.append(SectionRow(self.get_title(rb, bf.title_template)))
                     if rb.rows is None:
                         continue
             # Out data
-            if not rb.has_children and rb.rows is not None and not rb.rows.is_empty():
+            if not rb.has_children and rb.has_rows:
                 row_columns = columns or rb.rows.columns
                 for row in rb.rows.to_dicts():
                     r.append([row.get(c, "") for c in row_columns])
@@ -155,13 +155,12 @@ class SimpleReportFormatter(DataFormatter):
         # Try Root config first
         band = band or self.root_band.get_data_band()
         band_format = self.get_band_format(band)
-        fields = None
         # Try DataBand
-        if not band_format or not band_format.columns:
-            band_format = self.get_band_format(band)
-            fields = [c.name for c in band_format.columns] if band_format else None
-        if not band_format:
+        if not (band_format and band_format.columns) and band.rows is not None:
             return ([fn for fn in band.rows.columns],) * 2
+        elif not band_format or not band_format.columns:
+            return [], None
+        fields = [c.name for c in band_format.columns] if band_format else None
         columns = []
         for c in band_format.columns:
             if c.format_type or c.total:
@@ -175,7 +174,7 @@ class SimpleReportFormatter(DataFormatter):
                     )
                 ]
             else:
-                columns += [c.title or ""]
+                columns += [c.title or c.name or ""]
         return columns, fields
 
     @staticmethod

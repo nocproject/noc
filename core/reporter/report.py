@@ -69,6 +69,10 @@ class BandData(object):
     def has_children(self) -> bool:
         return bool(self.children_bands)
 
+    @property
+    def has_rows(self) -> bool:
+        return self.rows is not None and not self.rows.is_empty()
+
     def iter_children_bands(self) -> Iterable["BandData"]:
         """
         Iterate over children bands
@@ -160,7 +164,6 @@ class BandData(object):
     def get_data_band(self) -> "BandData":
         """
         Return Leaf Band. First Band without children
-        :return:
         """
         if not self.has_children:
             return self

@@ -22,6 +22,7 @@ class ReportClassificationRule(ReportSource):
     def get_format(self) -> BandFormat:
         return BandFormat(
             title_template="Classification Rules",
+            header_only=True,
             columns=[
                 ColumnFormat(name="key_re", title="Key RE"),
                 ColumnFormat(name="value_re", title="Value RE"),
