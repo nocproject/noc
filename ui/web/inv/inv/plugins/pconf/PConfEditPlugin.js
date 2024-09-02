@@ -66,21 +66,21 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfEditPlugin", {
           },
         });
       }
+      editor.field.excludeForm = true;
+      if(editor.column !== column){
+        editor.column = column;
+      }
+      editors.add(editor);
+      editor.ownerCmp = me.grid.ownerGrid;
+      if(column.isTreeColumn){
+        editor.isForTree = column.isTreeColumn;
+        editor.addCls(Ext.baseCSSPrefix + 'tree-cell-editor');
+      }
+      editor.setGrid(me.grid);
+      editor.editingPlugin = me;
+      me.editor = editor;
+      return editor;
     }            
-    editor.field.excludeForm = true;
-    if(editor.column !== column){
-      editor.column = column;
-    }
-    editors.add(editor);
-    editor.ownerCmp = me.grid.ownerGrid;
-    if(column.isTreeColumn){
-      editor.isForTree = column.isTreeColumn;
-      editor.addCls(Ext.baseCSSPrefix + 'tree-cell-editor');
-    }
-    editor.setGrid(me.grid);
-    editor.editingPlugin = me;
-    me.editor = editor;
-    return editor;
   },
   
   getEditorType: function(record){
