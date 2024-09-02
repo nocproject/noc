@@ -97,12 +97,16 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           },
           width: 200,
           renderer: function(value, metaData, record){
+            var displayValue = value;
             if(record.get("type") === "enum"){
               var options = record.get("options") || [],
                 option = options.find(opt => opt.id === value);
-              return option ? option.label : value;
+              displayValue = option ? option.label : value;
             }
-            return value;
+            if(record.get("read_only")){
+              displayValue = "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
+            }
+            return displayValue;
           },
         },
         {

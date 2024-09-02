@@ -39,7 +39,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfEditPlugin", {
         },
       };
  
-    if(column.dataIndex === "value"){
+    if(column.dataIndex === "value" && record.get("read_only") === false){
       if(editorType === "text"){
         editor = new Ext.grid.CellEditor({
           floating: true,
