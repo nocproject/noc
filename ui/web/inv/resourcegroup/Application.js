@@ -118,8 +118,8 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     allowBlank: true,
                     uiStyle: "extra",
                     query: {
-                        "enable_resourcegroup": true
-                    },
+                        "allow_models": ["inv.ResourceGroup"]
+                    }
                 },
                 {
                     name: "dynamic_service_labels",
