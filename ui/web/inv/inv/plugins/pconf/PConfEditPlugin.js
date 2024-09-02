@@ -47,6 +47,15 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfEditPlugin", {
           field: {
             xtype: "textfield",
             triggers: editorTriggers,
+            listeners: {
+              specialkey: function(field, e){
+                if(e.getKey() == e.ENTER){
+                  var value = field.getValue();
+                  me.context.record.set("value", value);
+                  me.grid.fireEvent("valuechanged", {name: me.context.record.get("name"), value: value});
+                }
+              },
+            },
           },
         });
       } else if(editorType === "combo"){
