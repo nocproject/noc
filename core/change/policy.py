@@ -25,6 +25,7 @@ BI_APPLY_HANDLER = "noc.core.change.change.apply_ch_dictionary"
 # inv.ObjectModel and sensors, inv.Object and data
 SYNC_SENSOR_HANDLER = "noc.core.change.change.apply_sync_sensors"
 
+SENSOR_AUDIT_CHANGE = "noc.core.change.change.audit_change"
 
 cv_policy: ContextVar[Optional["BaseChangeTrackerPolicy"]] = ContextVar("cv_policy", default=None)
 cv_policy_stack: ContextVar[Optional[List["BaseChangeTrackerPolicy"]]] = ContextVar(
@@ -55,6 +56,8 @@ class ChangeTracker(object):
             CHANGE_HANDLERS[bi_dict_model._meta.source_model].add(BI_APPLY_HANDLER)
         CHANGE_HANDLERS["inv.ObjectModel"].add(SYNC_SENSOR_HANDLER)
         CHANGE_HANDLERS["inv.Object"].add(SYNC_SENSOR_HANDLER)
+        CHANGE_HANDLERS["inv.InterfaceProfile"].add(SENSOR_AUDIT_CHANGE)
+        CHANGE_HANDLERS["sa.ManagedObject"].add(SENSOR_AUDIT_CHANGE)
 
     @staticmethod
     def get_policy() -> "BaseChangeTrackerPolicy":
@@ -159,13 +162,16 @@ class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
     Base class for change tracker policies
     """
 
-    def __init__(self): ...
+    def __init__(self):
+        ...
 
     @abstractmethod
-    def register(self, item: ChangeItem) -> None: ...
+    def register(self, item: ChangeItem) -> None:
+        ...
 
     @abstractmethod
-    def register_ds(self, items: List[Tuple[str, str]]) -> None: ...
+    def register_ds(self, items: List[Tuple[str, str]]) -> None:
+        ...
 
 
 class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):

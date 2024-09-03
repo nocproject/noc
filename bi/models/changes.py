@@ -24,6 +24,7 @@ class Changes(Model):
     timestamp = DateTimeField(description="Timestamp")
     user = StringField(description="User")
     model_name = StringField(description="Model Name")
+    object_id = StringField(description=("Object ID"))
     object_name = StringField(description="Object Name")
     op = StringField(description="Operation")
     changes = StringField(description="Changes Details")

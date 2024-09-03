@@ -81,7 +81,6 @@ class InterfaceProfileMetrics(EmbeddedDocument):
         return self.metric_type.name
 
 
-@save_initial_state
 @Label.match_labels("interface_profile", allowed_op={"="})
 @bi_sync
 @change
