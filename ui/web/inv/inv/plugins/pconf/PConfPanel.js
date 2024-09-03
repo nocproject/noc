@@ -38,6 +38,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     },
     {
       xtype: "textfield",
+      itemId: "searchText",
       emptyText: __("Search..."),
       width: 400,
       triggers: {
@@ -54,16 +55,26 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         },
       },
       listeners: {
-        change: function(field, newValue){
-          var grid = field.up("panel").down("gridpanel"),
-            store = grid.getStore();
-          
-          store.clearFilter();
-          store.filterBy(function(record){
-            return record.get("name").toLowerCase().includes(newValue.toLowerCase());
-          });
-          field.getTrigger("clear")[newValue.length > 0 ? "show" : "hide"]();
-        },
+        change: "onSearch",
+      },
+    },
+    {
+      xtype: "combo",
+      itemId: "tabType",
+      store: [
+        [1, "Info"],
+        [2, "Status"],
+        [3, "Config"],
+        [4, "Thresholds"],
+        [5, "Metrics"],
+      ],
+      queryMode: "local",
+      displayField: "text",
+      valueField: "value",
+      value: 1,
+      editable: false,
+      listeners: {
+        select: "onSearch",
       },
     },
     "->",
