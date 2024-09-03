@@ -12,7 +12,7 @@ from typing import Optional, Iterable, Tuple, AsyncIterable
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.aaa.models.user import User
 from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
@@ -101,13 +101,10 @@ class ReportDiscoveryProblem(object):
 
 class DiscoveryProblemDS(BaseDataSource):
     name = "discoveryproblemds"
+    row_index = "managed_object_id"
 
     fields = [
-        FieldInfo(name="managed_object"),
-        FieldInfo(name="address"),
-        FieldInfo(name="profile"),
-        FieldInfo(name="domain"),
-        FieldInfo(name="avail"),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
         FieldInfo(name="last_success_discovery"),
         FieldInfo(name="discovery"),
         FieldInfo(name="error"),
@@ -173,7 +170,6 @@ class DiscoveryProblemDS(BaseDataSource):
             exclude_method += ["lldp", "lacp", "cdp", "huawei_ndp"]
         row_num = 0
         for discovery in rdp:
-            mo = ManagedObject.get_by_id(discovery["key"])
             for method in [x for x in discovery["job"][0]["problems"] if x not in exclude_method]:
                 problem = discovery["job"][0]["problems"][method]
                 if filter_none_problems and not problem:
@@ -185,11 +181,7 @@ class DiscoveryProblemDS(BaseDataSource):
                 if isinstance(problem, str):
                     problem = problem.replace("\n", " ").replace("\r", " ")
                 row_num += 1
-                yield row_num, "managed_object", mo.name
-                yield row_num, "address", mo.address
-                yield row_num, "profile", mo.profile.name
-                yield row_num, "domain", mo.administrative_domain.name
-                yield row_num, "avail", _("Yes") if mo.get_status() else _("No")
+                yield row_num, "managed_object_id", discovery["key"]
                 yield row_num, "last_success_discovery", (
                     discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else ""
                 )

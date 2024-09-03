@@ -8,10 +8,16 @@
         {
             "name": "Root",
             "orientation": "H",
-            "queries": [{
-                "datasource": "discoveryproblemds",
-                "json": null
-            }]
+            "queries": [
+                {
+                    "datasource": "discoveryproblemds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
         }
     ],
     "bands_format": [
@@ -19,27 +25,27 @@
             "name": "Root",
             "column_format": [
                 {
-                    "name": "managed_object",
+                    "name": "managedobjectds.name",
                     "title": "Managed Object",
                     "format_type": "string"
                 },
                 {
-                    "name": "address",
+                    "name": "managedobjectds.address",
                     "title": "Address",
                     "format_type": "string"
                 },
                 {
-                    "name": "profile",
+                    "name": "managedobjectds.profile",
                     "title": "Profile",
                     "format_type": "string"
                 },
                 {
-                    "name": "domain",
+                    "name": "managedobjectds.administrativedomain",
                     "title": "Administrative Domain",
                     "format_type": "string"
                 },
                 {
-                    "name": "avail",
+                    "name": "managedobjectds.avail_status",
                     "title": "Avail",
                     "format_type": "string"
                 },
@@ -69,7 +75,7 @@
         "title": {
             "ru": "Отчет по проблемам дискавери (Новый)"
         },
-        "columns.managed_object": {
+        "columns.name": {
             "ru": "Объект управления"
         },
         "columns.address": {
@@ -78,10 +84,10 @@
         "columns.profile": {
             "ru": "Профиль"
         },
-        "columns.domain": {
+        "columns.administrativedomain": {
             "ru": "Зона ответственности"
         },
-        "columns.avail": {
+        "columns.avail_status": {
             "ru": "Доступность"
         },
         "columns.last_success_discovery": {
@@ -179,6 +185,14 @@
             "description": null,
             "label": "Show other problems",
             "type": "bool"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "managedobjectds.name,managedobjectds.address,managedobjectds.profile,managedobjectds.administrativedomain,managedobjectds.avail_status,last_success_discovery,discovery,error",
+            "hide": false,
+            "label": "Fields",
+            "type": "fields_selector"
         }
     ],
     "templates": [
