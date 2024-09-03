@@ -59,15 +59,4 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   onTabSelect: function(){
     console.log("onTabSelect");
   },
-  onSearch: function(field){
-    var searchText = field.up().down("#searchText").getValue(),
-      tableType = field.up().down("#tabType").getValue(),
-      grid = field.up("panel").down("gridpanel"),
-      store = grid.getStore();
-    store.clearFilter();
-    store.filterBy(function(record){
-      return record.get("name").toLowerCase().includes(searchText.toLowerCase())
-              && record.get("table") === tableType;
-    });
-  },
 });

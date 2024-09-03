@@ -23,9 +23,20 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         listeners: {
           datachanged: "onDataChanged",
         },
+        filters: [{
+          property: "name",
+          value: "{searchText}",
+          anyMatch: true,
+          caseSensitive: false,
+        }, {
+          property: "table",
+          value: "{tabType}",
+        }],
       },
     },
     data: {
+      searchText: "",
+      tabType: 1,
       totalCount: 0,
     },
   },
@@ -41,6 +52,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       itemId: "searchText",
       emptyText: __("Search..."),
       width: 400,
+      bind: {
+        value: "{searchText}",
+      },
       triggers: {
         clear: {
           cls: "x-form-clear-trigger",
@@ -53,9 +67,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
             field.getTrigger("clear").hide();
           },
         },
-      },
-      listeners: {
-        change: "onSearch",
       },
     },
     {
@@ -71,11 +82,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       queryMode: "local",
       displayField: "text",
       valueField: "value",
+      bind: {
+        value: "{tabType}",
+      },
       value: 1,
       editable: false,
-      listeners: {
-        select: "onSearch",
-      },
     },
     "->",
     {
