@@ -22,7 +22,6 @@ from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
 
 CODE_MAP = {
     "1": "Unknown error",
