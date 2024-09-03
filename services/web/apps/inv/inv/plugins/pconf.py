@@ -65,15 +65,14 @@ class PConfPlugin(InvPlugin):
                     "units": row.get("unt") or "",
                     "read_only": (row.get("acs") or "") != "W",
                     "type": dt,
+                    "table": row.get("tbl", 1),
                 }
                 if options:
                     c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
                 conf.append(c)
         return {"id": str(o.id), "conf": conf}
 
-    def api_set(self, request, id:str, name:str, value:str):
+    def api_set(self, request, id: str, name: str, value: str):
         o = self.app.get_object_or_404(Object, id=id)
         print(f">>> name={name}, value={value}")
-        return {
-            "status": True
-        }
+        return {"status": True}
