@@ -1,7 +1,7 @@
 # Black section
 [tool.black]
 line-length = 100 # Must be same as tool.ruff.line-length
-target-version = ['py39'] 
+target-version = ['py310'] 
 
 [tool.coverage.run]
 omit = ['*tests*']
@@ -16,8 +16,8 @@ directory = "build/coverage"
 # Exclude a variety of commonly ignored directories.
 exclude = [".git", "build", "dist", "var", "share", "collections"] 
 line-length = 100 # Must be same as tool.black.line-length
-# Assume Python 3.9
-target-version = "py39"
+# Assume Python 3.10
+target-version = "py310"
 # Enable
 select = [
   # "E", # Pycodestyle Error
