@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Report Engine Base Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -252,6 +252,7 @@ class ReportEngine(object):
         if not queries:
             return []
         fields_map = defaultdict(list)
+        joined_field = None
         for f in fields:
             f, *ds = f.split(".")
             if not ds:
@@ -277,9 +278,16 @@ class ReportEngine(object):
                 fields = fields_map[query.datasource] if query.datasource in fields_map else fields
                 logger.info("[%s] Query DataSource with fields: %s", query.datasource, ds_f)
                 data, key_field = cls.query_datasource(query, q_ctx, fields=ds_f)
-            r.append(
-                DataSet(name=query.name, data=data, query=query.query, transpose=query.transpose)
-            )
+                if key_field:
+                    joined_field = key_field
+            if num and joined_field:
+                r[-1].data = r[-1].data.join(data, on=joined_field, how="left")
+            else:
+                r.append(
+                    DataSet(
+                        name=query.name, data=data, query=query.query, transpose=query.transpose
+                    )
+                )
         return r
 
     @classmethod
@@ -306,11 +314,11 @@ class ReportEngine(object):
             # Joined is not supported
             logger.warning("[%s] Joined field '%s' not available", ds.name, joined_field)
             return None, ""
-        elif joined_field and ctx.get("fields"):
-            ctx["fields"] += [joined_field]
+        elif joined_field and fields:
+            fields += [joined_field]
             # Check not row_index
-        elif not joined_field and ctx.get("fields"):
-            ctx["fields"] += [ds.row_index]
+        elif not joined_field and fields:
+            fields += [ds.row_index]
         row = ds.query_sync(fields=fields, **ctx)
         return row, ds.row_index
 
