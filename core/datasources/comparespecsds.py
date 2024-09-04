@@ -29,14 +29,20 @@ class CompareSpecsDS(BaseDataSource):
 
     @classmethod
     async def iter_query(
-        cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
+        cls,
+        fields: Optional[Iterable[str]] = None,
+        managed_only: Optional[bool] = True,
+        *args,
+        **kwargs,
     ) -> AsyncIterable[Tuple[str, str]]:
         row_num = 0
-        for m in ObjectModel.objects.filter(
+        if managed_only:
             # old style (for version 23)
-            # data__management__managed=True
-            data__match={"interface": "management", "attr": "managed", "value": True}
-        ):
+            # filters = {"data__management__managed": True}
+            filters = {"data__match": {"interface": "management", "attr": "managed", "value": True}}
+        else:
+            filters = {}
+        for m in ObjectModel.objects.filter(**filters):
             ru = m.get_data("rackmount", "units")
             ru = f"{ru}U" if ru else ""
             weight = m.get_data("weight", "weight")
