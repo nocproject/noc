@@ -1,15 +1,15 @@
 # ----------------------------------------------------------------------
 # Report Source Base Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List
+from typing import List, Dict
 
 # Python Modules
-from .report import BandData
+from .report import Band
 from .types import BandFormat
 
 
@@ -20,7 +20,7 @@ class ReportSource(object):
 
     name = None
 
-    def get_format(self) -> BandFormat:
+    def get_formats(self) -> Dict[str, BandFormat]:
         """
         Report Format describe
         :return:
@@ -34,7 +34,7 @@ class ReportSource(object):
         """
         ...
 
-    def get_data(self, request, **kwargs) -> List[BandData]:
+    def get_data(self, request, **kwargs) -> List[Band]:
         """
         Return Report Data
         :param request:

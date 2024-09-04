@@ -7,7 +7,6 @@ templates:
     bands_format:
       header:
         title_template: Discovery Summary
-        header_only: true
         columns:
           - name: name
             title:
@@ -27,35 +26,34 @@ templates:
       jobs_per_seconds:
         title_template: Jobs per second
 
-root_band:
-  name: Root
-  children:
-    - name: header
-    - name: managed_object
-      queries:
-        - name: q1
-          query: select profile, sum(discovered_managed_object_all) as count from Root group by profile order by count desc, profile
-    - name: interfaces
-      queries:
-        - name: q2
-          datasource: interfaceprofilestatsds
-          query: select profile, count from interfaceprofilestatsds order by count desc
-    - name: links
-      queries:
-        - name: q3
-          datasource: linkedmethodstatds
-          query: select method, count from linkedmethodstatds order by count desc
-    - name: jobs_summary
-      queries:
-        - name: q4
-          query: select sum(discovered_managed_object_box) as Box, sum(discovered_managed_object_periodic) as Periodic from Root
-          transpose: true
-    - name: jobs_per_seconds
-      queries:
-        - name: q5
-          query: select sum(discovered_managed_object_box_per_second) as Box, sum(discovered_managed_object_periodic_per_second) as Periodic from Root
-          transpose: true
-      orientation: H
-  queries:
-    - name: discovery
-      datasource: discoverysummary
+bands:
+  - name: Root
+    queries:
+      - name: discovery
+        datasource: discoverysummary
+  - name: header
+  - name: managed_object
+    queries:
+      - name: q1
+        query: select profile, sum(discovered_managed_object_all) as count from Root group by profile order by count desc, profile
+  - name: interfaces
+    queries:
+      - name: q2
+        datasource: interfaceprofilestatsds
+        query: select profile, count from self order by count desc
+  - name: links
+    queries:
+      - name: q3
+        datasource: linkedmethodstatds
+        query: select method, count from self order by count desc
+  - name: jobs_summary
+    queries:
+      - name: q4
+        query: select sum(discovered_managed_object_box) as Box, sum(discovered_managed_object_periodic) as Periodic from Root
+        transpose: true
+  - name: jobs_per_seconds
+    queries:
+      - name: q5
+        query: select sum(discovered_managed_object_box_per_second) as Box, sum(discovered_managed_object_periodic_per_second) as Periodic from Root
+        transpose: true
+    orientation: H

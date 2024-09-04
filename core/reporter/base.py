@@ -9,7 +9,7 @@
 import logging
 import datetime
 from io import BytesIO
-from typing import Dict, Any, Optional, List, Iterable, Tuple, Set
+from typing import Dict, Any, Optional, List, Tuple
 
 # Third-party modules
 import orjson
@@ -27,10 +27,10 @@ from .types import (
     RunParams,
     ReportConfig,
     ReportQuery,
-    ReportBand,
     OutputDocument,
+    ROOT_BAND,
 )
-from .report import BandData
+from .report import Band, DataSet
 
 
 logger = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 class ReportEngine(object):
     """
     Reporting Engine implementation. Report Pipeline:
-    RunParams -> ReportEngine -> load_data -> DataBand -> Formatter -> DocumentFile
+    RunParams -> ReportEngine -> load_data -> Band -> Formatter -> DocumentFile
     """
 
     def __init__(self, report_execution_history: bool = False, report_print_error: bool = False):
@@ -66,8 +66,8 @@ class ReportEngine(object):
         error, start = None, datetime.datetime.now()
         self.logger.info("[%s] Running report with parameter: %s", report.name, cleaned_param)
         try:
-            data = self.load_data(report, cleaned_param)
-            self.generate_report(report, template, out_type, out, cleaned_param, data)
+            band = self.load_bands(report, cleaned_param, template)
+            self.generate_report(report, template, out_type, out, cleaned_param, band)
         except Exception as e:
             error = str(e)
             if self.report_print_error:
@@ -87,7 +87,7 @@ class ReportEngine(object):
             )
             raise ValueError(error)
         self.logger.info("[%s] Finished report with parameter: %s", report.name, cleaned_param)
-        output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
+        output_name = self.resolve_output_filename(run_params=r_params, root_band=band)
         return OutputDocument(
             content=out.getvalue(), document_name=output_name, output_type=out_type
         )
@@ -147,13 +147,17 @@ class ReportEngine(object):
         output_type: OutputType,
         output_stream: bytes,
         params: Dict[str, Any],
-        band_data: BandData,
+        band: Band,
     ):
-        """Render document"""
+        """
+        Render document
+        :return:
+        """
+        #
         from noc.core.reporter.formatter.loader import loader as df_loader
 
         formatter = df_loader[template.formatter]
-        fmt = formatter(band_data, template, output_type, output_stream)
+        fmt = formatter(band, template, output_type, output_stream)
         fmt.render_document()
 
     def clean_param(self, report: ReportConfig, params: Dict[str, Any]):
@@ -164,7 +168,6 @@ class ReportEngine(object):
         :return:
         """
         # clean_params = params.copy()
-        logger.info("Clean params: %s", params)
         clean_params = {}
         for p in report.parameters or []:
             name = p.name
@@ -174,172 +177,76 @@ class ReportEngine(object):
             elif not value:
                 continue
             clean_params[name] = p.clean_value(value)
-        if report.root_band.queries and "fields" not in params:
-            clean_params["fields"] = self.get_root_fields(report, params)
         return clean_params
 
-    def get_root_fields(self, report: "ReportConfig", params) -> List[str]:
-        """Build all root fields"""
-        t = report.get_template(None)
-        r = []
-        for b, f in t.bands_format.items():
-            if f.header_only:
-                continue
-            for c in f.columns or []:
-                r.append(c.name)
-        return r
-
-    def iter_bands_data(
-        self, report_band: ReportBand, root_band: BandData, root, params: Dict[str, Any]
-    ) -> Iterable[BandData]:
+    def load_bands(self, report: ReportConfig, params: Dict[str, Any], template) -> Band:
         """
+        Generate Report Bands from Config
         Attrs:
-            report_band:
-            root_band:
+            report: Report configuration
+            params: Running params
         """
-        if not report_band.is_match(params):
-            return
-        rows: Optional[pl.DataFrame] = self.get_rows(
-            report_band.queries, root_band.get_data(), root_band=root
-        )
-        if not report_band.has_children:
-            band = BandData(
-                report_band.name,
-                root_band,
-                report_band.orientation,
-            )
-            band.rows = rows
-            yield band
-            return
-        for d in rows.to_dicts():
-            band = BandData(
-                report_band.name,
-                root_band,
-                report_band.orientation,
-            )
-            band.set_data(d)
-            yield band
-
-    def load_data(self, report: ReportConfig, params: Dict[str, Any]) -> BandData:
-        """
-        Generate BandData from ReportBand
-        Attrs:
-            report:
-            params:
-        """
-        report_band = report.get_root_band()
+        r = report.get_root_band()
+        root = Band.from_report(r, params)
         # Create Root BandData
-        root = BandData(BandData.ROOT_BAND_NAME)
-        root.set_data(params)
-        if report_band.source:
-            # For Source based report
-            s = r_source_loader[report_band.source]()
-            band = BandData(name="rows")
-            band.format = s.get_format()
-            band.add_children(s.get_data(**params))
-            root.add_child(band)
+        if r.source:
+            s = r_source_loader[r.source]()
+            template.bands_format = s.get_formats()
+            # root.format =
+            root.add_children(s.get_data(**params))
             return root
-        root.rows = self.get_rows(report_band.queries, params)
-        # Extract data from ReportBand
-        for rb in report_band.iter_nester():
-            bd_parent = root.find_band_recursively(rb.parent.name)
-            logger.info(
-                "Processed ReportBand: %s; Parent BandData: %s", rb.name, bd_parent
-            )  # Level needed ?
-            if bd_parent.parent:
-                # Fill parent DataBand children row
-                for c in bd_parent.parent.get_children_by_name(rb.parent.name):
-                    for band in self.iter_bands_data(rb, c, root, params):
-                        c.add_child(band)
+        deferred = []
+        for b in report.bands:
+            if b.name == ROOT_BAND:
+                band = root
+            else:
+                band = Band.from_report(b)
+            for num, d in enumerate(self.get_dataset(b.queries, params, [])):
+                band.add_dataset(d, name=b.name if not num else None)
+            if band.name == ROOT_BAND:
                 continue
-            for band in self.iter_bands_data(rb, bd_parent, root, params):
-                bd_parent.add_child(band)
+            elif b.parent == ROOT_BAND or not b.parent:
+                root.add_child(band)
+                continue
+            r = root.find_band_recursively(b.parent)
+            if not r:
+                print(f"Unknown parent '{b.parent}'")
+                deferred.append((b.parent, band))
+                continue
+            r.add_child(band)
+        for parent, band in deferred:
+            r = root.find_band_recursively(parent)
+            if not r:
+                raise ValueError("Unknown parent: %s", parent)
+            r.add_child(band)
         return root
 
-    @staticmethod
-    def merge_ctx(
-        ctx: Dict[str, Any],
-        query: ReportQuery,
-        joined: bool = False,
-    ) -> Tuple[Dict[str, Any], Set[str]]:
-        """
-        Merge Query context
-        Args:
-            ctx: Query context (from param)
-            query: Query instance
-            joined: Joined query flag
-        """
-        q_ctx = ctx.copy()
-        if query.params:
-            q_ctx.update(query.params)
-        q_ctx["fields"], dss = [], set()
-        for f in ctx.get("fields", []):
-            ff, *field = f.split(".", 1)
-            if not field and not joined:
-                # Base datasource
-                q_ctx["fields"].append(ff)
-            elif field and ff == query.datasource and field[0] != "all":
-                q_ctx["fields"] += field
-            if field:
-                dss.add(ff)
-        return q_ctx, dss
-
     @classmethod
-    def get_rows(
-        cls, queries: List[ReportQuery], ctx: Dict[str, Any], root_band: Optional[BandData] = None
-    ) -> Optional[pl.DataFrame]:
+    def get_dataset(
+        cls, queries: List[ReportQuery], ctx: Dict[str, Any], fields: List[str]
+    ) -> List[DataSet]:
         """
-        Getting Band rows
         Attrs:
-            queries:
-            ctx:
-            root_band:
+            queries: Configuration dataset
+            ctx: Report params
         """
+        r = []
         if not queries:
-            return None
-        rows, joined, joined_field = None, len(queries) > 1, None
+            return []
         for num, query in enumerate(queries):
-            q_ctx, dss = cls.merge_ctx(ctx, query, joined=bool(num))
-            data, key_field = None, None
+            data = None
+            q_ctx = ctx.copy()
+            if query.params:
+                q_ctx.update(query.params)
             if query.json_data:
-                # return join fields (last DS)
                 data = pl.DataFrame(orjson.loads(query.json_data))
-            elif num and query.datasource and query.datasource not in dss:
-                # Skip not requested DataSource
-                logger.warning("[%s] Skipping not registered DataSource", query.datasource)
-                continue
             elif query.datasource:
                 logger.info("[%s] Query DataSource", query.datasource)
-                data, key_field = cls.query_datasource(query, q_ctx, joined_field=joined_field)
-                if not joined_field:
-                    joined_field = key_field
-            if query.query:
-                logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)
-                sql = pl.SQLContext()
-                sql.register(
-                    query.datasource or root_band.name,
-                    data.lazy() if data is not None else root_band.rows.lazy(),
-                )
-                data = sql.execute(Jinja2Template(query.query).render(q_ctx), eager=True)
-                if query.transpose:
-                    data = data.transpose(include_header=True)
-            if num and (data is None or data.is_empty()):
-                # for join query check data exists
-                logger.info("Skipping empty data")
-                continue
-            elif data is None:
-                raise ValueError("First query without result")
-            elif data.is_empty():
-                # If first query is empty, nothing to join
-                return data
-            if rows is not None and joined_field:
-                # df_left_join = df_customers.join(df_orders, on="customer_id", how="left")
-                rows = rows.join(data, on=joined_field, how="left")
-            else:
-                rows = data
-        if joined and joined_field:
-            rows = rows.drop(joined_field)
-        return rows
+                data, key_field = cls.query_datasource(query, q_ctx, fields=fields)
+            r.append(
+                DataSet(name=query.name, data=data, query=query.query, transpose=query.transpose)
+            )
+        return r
 
     @classmethod
     def query_datasource(
@@ -347,13 +254,14 @@ class ReportEngine(object):
         query: ReportQuery,
         ctx: Dict[str, Any],
         joined_field: Optional[str] = None,
+        fields: Optional[List[str]] = None,
     ) -> Tuple[Optional[pl.DataFrame], str]:
         """
         Resolve Datasource for Query
-        :param query:
-        :param ctx:
-        :param joined_field:
-        :return:
+        Attrs:
+            query:
+            ctx:
+            fields:
         """
         from noc.core.datasources.loader import loader as ds_loader
 
@@ -369,10 +277,10 @@ class ReportEngine(object):
             # Check not row_index
         elif not joined_field and ctx.get("fields"):
             ctx["fields"] += [ds.row_index]
-        row = ds.query_sync(**ctx)
+        row = ds.query_sync(fields=fields, **ctx)
         return row, ds.row_index
 
-    def resolve_output_filename(self, run_params: RunParams, root_band: BandData) -> str:
+    def resolve_output_filename(self, run_params: RunParams, root_band: Band) -> str:
         """
         Return document filename by
         :return:

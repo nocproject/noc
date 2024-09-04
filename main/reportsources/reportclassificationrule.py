@@ -1,17 +1,17 @@
 # ---------------------------------------------------------------------
 # Classification Rules Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-from typing import List
+from typing import List, Dict
 
 # NOC modules
 from noc.core.reporter.reportsource import ReportSource
-from noc.core.reporter.report import BandData
+from noc.core.reporter.report import Band
 from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 
@@ -19,17 +19,22 @@ from noc.fm.models.eventclassificationrule import EventClassificationRule
 class ReportClassificationRule(ReportSource):
     name = "reportclassificationrule"
 
-    def get_format(self) -> BandFormat:
-        return BandFormat(
-            title_template="Classification Rules",
-            header_only=True,
-            columns=[
-                ColumnFormat(name="key_re", title="Key RE"),
-                ColumnFormat(name="value_re", title="Value RE"),
-            ],
-        )
+    def get_formats(self) -> Dict[str, BandFormat]:
+        return {
+            "header": BandFormat(title_template="Classification Rules"),
+            "rule": BandFormat(
+                # title_template="Classification Rules",
+                title_template="{{ name }} ({{ preference }})",
+            ),
+            "row": BandFormat(
+                columns=[
+                    ColumnFormat(name="key_re", title="Key RE"),
+                    ColumnFormat(name="value_re", title="Value RE"),
+                ],
+            ),
+        }
 
-    def get_data(self, request=None, **kwargs) -> List[BandData]:
+    def get_data(self, request=None, **kwargs) -> List[Band]:
         def get_profile(r):
             for p in r.patterns:
                 if p.key_re in ("profile", "^profile$"):
@@ -49,18 +54,17 @@ class ReportClassificationRule(ReportSource):
                 # Skip
                 continue
             # d1
-            b = BandData(name="row")
-            b.set_data({"name": r.name, "preference": r.preference})
-            b.format = BandFormat(title_template="{{ name }} ({{ preference }})")
-            data.append(b)
+            rb = Band(name="rule", data={"name": r.name, "preference": r.preference})
             # d2
-            b = BandData(name="row")
-            b.set_data({"key_re": "Event Class", "value_re": r.event_class.name})
-            data.append(b)
+            rb.add_child(
+                Band(
+                    name="row",
+                    data={"key_re": "Event Class", "value_re": r.event_class.name},
+                )
+            )
             # data += [SectionRow("%s (%s)" % (r.name, r.preference))]
             # data += [["Event Class", r.event_class.name]]
             for p in r.patterns:
-                b = BandData(name="row")
-                b.set_data({"key_re": p.key_re, "value_re": p.value_re})
-                data.append(b)
+                rb.add_child(Band(name="row", data={"key_re": p.key_re, "value_re": p.value_re}))
+            data.append(rb)
         return data

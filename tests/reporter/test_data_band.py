@@ -9,7 +9,7 @@
 import polars as pl
 
 # NOC modules
-from noc.core.reporter.report import BandData
+from noc.core.reporter.report import Band, ROOT_BAND, DataSet
 
 
 def test_get_children():
@@ -28,7 +28,7 @@ def test_get_children():
 def test_find_band_recursively():
     root = create_band_data()
 
-    f_root = root.find_band_recursively(BandData.ROOT_BAND_NAME)
+    f_root = root.find_band_recursively(ROOT_BAND)
     assert f_root is root
 
     band1 = root.find_band_recursively("Band1")
@@ -48,14 +48,14 @@ def test_get_band_data():
 
 
 def create_band_data():
-    root = BandData(BandData.ROOT_BAND_NAME)
+    root = Band(ROOT_BAND)
 
     for b1 in range(1, 4):
-        bd = BandData(f"Band{b1}", root)
+        bd = Band(f"Band{b1}", root)
         root.add_child(bd)
         for b2 in range(1, 5):
-            cb = BandData(f"Band{b1}{b2}", bd)
+            cb = Band(f"Band{b1}{b2}", bd)
             bd.add_child(cb)
             if cb.name == "Band11":
-                cb.rows = pl.DataFrame([{"col1": 1, "col2": 2}])
+                cb.add_dataset(DataSet(data=pl.DataFrame([{"col1": 1, "col2": 2}]), name=cb.name))
     return root

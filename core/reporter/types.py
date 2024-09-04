@@ -12,7 +12,7 @@ from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Any, Iterable, ForwardRef
+from typing import Dict, List, Optional, Any, ForwardRef
 
 # Third-party modules
 from pydantic import BaseModel, ConfigDict
@@ -65,9 +65,6 @@ class ReportQuery(BaseModel):
     transpose: bool = False
 
 
-ReportBand = ForwardRef("ReportBand")
-
-
 class BandCondition(BaseModel):
     param: str
     value: str
@@ -76,32 +73,20 @@ class BandCondition(BaseModel):
         return f"{self.param} == {self.value}"
 
 
+ReportBand = ForwardRef("ReportBand")
+
+
 class ReportBand(BaseModel):
     name: str
     queries: Optional[List[ReportQuery]] = None
     source: Optional[str] = None
-    parent: Optional["ReportBand"] = None  # Parent Band
+    parent: Optional[str] = None  # Parent Band
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
-    children: Optional[List["ReportBand"]] = None
     conditions: Optional[List[BandCondition]] = None
+    # children: Optional[List["ReportBand"]] = None
 
     def __str__(self):
         return self.name
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        self.children = self.children or []
-        for c in self.children:
-            c.parent = self
-
-    @property
-    def has_children(self) -> bool:
-        return bool(self.children)
-
-    def iter_nester(self) -> Iterable["ReportBand"]:
-        for c in self.children:
-            yield c
-            yield from c.iter_nester()
 
     def is_match(self, params: Dict[str, Any]) -> bool:
         if not self.conditions:
@@ -110,6 +95,21 @@ class ReportBand(BaseModel):
             if c.param in params:
                 return c.value in params[c.param]
         return True
+
+    # def __init__(self, **data):
+    #     super().__init__(**data)
+    #     self.children = self.children or []
+    #     for c in self.children:
+    #         c.parent = self
+
+    # @property
+    # def has_children(self) -> bool:
+    #     return bool(self.children)
+
+    # def iter_nester(self) -> Iterable["ReportBand"]:
+    #     for c in self.children:
+    #         yield c
+    #         yield from c.iter_nester()
 
 
 class ColumnFormat(BaseModel):
@@ -124,13 +124,10 @@ class ColumnFormat(BaseModel):
 
 
 class BandFormat(BaseModel):
-    """
-    Configuration for autogenerate template
-    """
+    """Configuration for autogenerate template"""
 
     title_template: Optional[str] = None  # Title format for Section row
     columns: Optional[List[ColumnFormat]] = None  # ColumnName -> ColumnFormat
-    header_only: bool = False
 
 
 class Template(BaseModel):
@@ -197,13 +194,13 @@ class ReportConfig(BaseModel):
     """
 
     name: str  # Report Name
-    root_band: ReportBand  # Report Band (Band Configuration)
+    bands: List[ReportBand]  # Report Band (Band Configuration)
     templates: Dict[str, Template]  # Report Templates: template_code -> Template
     parameters: Optional[List[Parameter]] = None  # Report Parameters
     # field_format: Optional[List[ReportField]] = None  # Field Formatter
 
     def get_root_band(self) -> ReportBand:
-        return self.root_band
+        return [b for b in self.bands if b.name == ROOT_BAND][0]
 
     def get_template(self, code: str) -> "Template":
         code = code or "DEFAULT"

@@ -10,7 +10,7 @@ from io import BytesIO
 
 # NOC modules
 from ..types import Template, OutputType
-from noc.core.reporter.report import BandData
+from noc.core.reporter.report import Band
 from noc.config import config
 
 
@@ -22,7 +22,7 @@ class DataFormatter(object):
 
     def __init__(
         self,
-        root_band: BandData,
+        root_band: Band,
         template: Template,
         output_type: OutputType,
         output_stream: BytesIO,

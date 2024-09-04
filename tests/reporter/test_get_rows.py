@@ -44,12 +44,12 @@ def dataframe_from(query):
 )
 def test_get_rows(queries, expected):
     report_engine = ReportEngine()
-    res = report_engine.get_rows(queries, {})
+    res = report_engine.get_dataset(queries, {}, []) or None
     if res is None:
         assert expected is None
-    elif isinstance(res, pl.DataFrame):
+    elif isinstance(res[0].data, pl.DataFrame):
         if isinstance(expected, pl.DataFrame):
-            assert_frame_equal(res, expected)
+            assert_frame_equal(res[0].data, expected)
         else:
             assert False
     else:

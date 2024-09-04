@@ -4,28 +4,27 @@ templates:
     code: DEFAULT
     formatter: simplereport
     output_type: html
-root_band:
-    name: Root
-    children:
-      - name: header
+bands:
+  - name: Root
+  - name: header
+  - name: master_data
+    orientation: H
+    queries:
       - name: master_data
-        orientation: H
-        queries:
-          - name: master_data
-            json_data: '[
-            {
-                "administrativedomain": "(006005)",
-                "profile": "Huawei.VRP",
-                "value": 1
-            },
-            {
-                "administrativedomain": "(084088)",
-                "profile": "Generic.Host",
-                "value": 2
-            },
-            {
-                "administrativedomain": "(207029)",
-                "profile": "Generic.Host",
-                "value": 2
-            }
-        ]'
+        json_data: '[
+        {
+            "administrativedomain": "(006005)",
+            "profile": "Huawei.VRP",
+            "value": 1
+        },
+        {
+            "administrativedomain": "(084088)",
+            "profile": "Generic.Host",
+            "value": 2
+        },
+        {
+            "administrativedomain": "(207029)",
+            "profile": "Generic.Host",
+            "value": 2
+        }
+    ]'
