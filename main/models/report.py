@@ -348,7 +348,7 @@ class Report(Document):
         if self.report_source:
             return ReportConfig(
                 name=self.name,
-                bands=[ReportBand(name="Root", children=[], source=self.report_source)],
+                bands=[ReportBand(name="Root", source=self.report_source)],
                 templates={
                     "DEFAULT": TemplateCfg(
                         code="DEFAULT",
@@ -375,7 +375,6 @@ class Report(Document):
                         ReportQuery(name=b.name, datasource=q.datasource, query=q.ds_query)
                         for q in b.queries
                     ],
-                    children=[],
                     conditions=(
                         [BandCondition(param=b.condition_param, value=b.condition_value)]
                         if b.condition_param
@@ -384,8 +383,8 @@ class Report(Document):
                 )
             if b.name != ROOT_BAND:
                 parent = b.parent or ROOT_BAND
-                bands[b.name].parent = bands[parent]
-                bands[parent].children += [bands[b.name]]
+                bands[b.name].parent = bands[parent].name
+                # bands[parent].children += [bands[b.name]]
 
         return ReportConfig(
             name=self.name,

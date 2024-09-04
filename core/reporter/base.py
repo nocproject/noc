@@ -26,6 +26,7 @@ from .types import (
     OutputType,
     RunParams,
     ReportConfig,
+    ReportBand,
     ReportQuery,
     OutputDocument,
     ROOT_BAND,
@@ -179,7 +180,21 @@ class ReportEngine(object):
             clean_params[name] = p.clean_value(value)
         return clean_params
 
-    def load_bands(self, report: ReportConfig, params: Dict[str, Any], template) -> Band:
+    def get_fields(self, band: ReportBand, template: Template) -> List[str]:
+        """Return fields list for query"""
+        logger.info("[%s] Request datasource fields for band", band.name)
+        if not template.bands_format:
+            return []
+        r = set()
+        for bf in template.bands_format.values():
+            if not bf.columns:
+                continue
+            r |= set(c.name for c in bf.columns)
+        return list(r)
+
+    def load_bands(
+        self, report: ReportConfig, params: Dict[str, Any], template: Optional[Template] = None
+    ) -> Band:
         """
         Generate Report Bands from Config
         Attrs:
@@ -192,16 +207,18 @@ class ReportEngine(object):
         if r.source:
             s = r_source_loader[r.source]()
             template.bands_format = s.get_formats()
-            # root.format =
             root.add_children(s.get_data(**params))
             return root
         deferred = []
         for b in report.bands:
+            if not b.is_match(params):
+                continue
             if b.name == ROOT_BAND:
                 band = root
             else:
                 band = Band.from_report(b)
-            for num, d in enumerate(self.get_dataset(b.queries, params, [])):
+            fields = self.get_fields(b, template)
+            for num, d in enumerate(self.get_dataset(b.queries, params, fields)):
                 band.add_dataset(d, name=b.name if not num else None)
             if band.name == ROOT_BAND:
                 continue
@@ -241,7 +258,7 @@ class ReportEngine(object):
             if query.json_data:
                 data = pl.DataFrame(orjson.loads(query.json_data))
             elif query.datasource:
-                logger.info("[%s] Query DataSource", query.datasource)
+                logger.info("[%s] Query DataSource with fields: %s", query.datasource, fields)
                 data, key_field = cls.query_datasource(query, q_ctx, fields=fields)
             r.append(
                 DataSet(name=query.name, data=data, query=query.query, transpose=query.transpose)
