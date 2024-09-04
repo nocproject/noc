@@ -53,8 +53,8 @@ py-lint:
     - black --target-version py310 --check --diff . 2>&1 | ./scripts/ci/black-junit.py --tee --output=build/reports/junit-black.xml
     - STATUS_BLACK=$?
     # Ruff linter
-    - ruff check --diff -q -e . # To see stdout in joblog
-    - ruff check -q -- --format=junit . > build/reports/junit-ruff.xml
+    - ruff check --diff -q . || true  # To see stdout in joblog
+    - ruff check -q --output-format=junit . > build/reports/junit-ruff.xml
     - STATUS_RUFF=$?
     # Final result
     - test $STATUS_BLACK -a $STATUS_RUFF
