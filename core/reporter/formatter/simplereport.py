@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SimpleReport DataFormatter
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,10 +27,7 @@ from noc.services.web.base.simplereport import (
 
 class SimpleReportFormatter(DataFormatter):
     def render_document(self):
-        """
-
-        :return:
-        """
+        """"""
         if self.report_template.output_type != OutputType.HTML:
             self.render_table()
             return
@@ -75,15 +72,16 @@ class SimpleReportFormatter(DataFormatter):
         Format for Root Band data as table
         :return:
         """
-        r_format = self.report_template.bands_format["Root"]
+        band = self.root_band.children_bands[0]
+        r_format = self.report_template.bands_format[band.name]
         # Column title map
         HEADER_ROW = {}
         for col in r_format.columns:
             *_, col_name = col.name.rsplit(".", 1)
             HEADER_ROW[col_name] = col.title
-        data = self.root_band.rows
-        if data is None:
+        if not self.root_band.has_rows:
             return
+        data = self.root_band.get_rows()[0]
         out_columns = [c for c in data.columns]
         if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
             r = self.csv_delimiter.join(HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
@@ -91,8 +89,8 @@ class SimpleReportFormatter(DataFormatter):
                 # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                 # columns=out_columns,
                 separator=self.csv_delimiter,
-                quote='"',
-                has_header=False,
+                quote_char='"',
+                include_header=False,
             )
             self.output_stream.write(r.encode("utf8"))
         elif self.output_type == OutputType.XLSX:

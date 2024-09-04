@@ -9,6 +9,7 @@
 import logging
 import datetime
 from io import BytesIO
+from collections import defaultdict
 from typing import Dict, Any, Optional, List, Tuple
 
 # Third-party modules
@@ -186,8 +187,8 @@ class ReportEngine(object):
         if not template.bands_format:
             return []
         r = set()
-        for bf in template.bands_format.values():
-            if not bf.columns:
+        for name, bf in template.bands_format.items():
+            if not bf.columns or name == "header":
                 continue
             r |= set(c.name for c in bf.columns)
         return list(r)
@@ -211,13 +212,13 @@ class ReportEngine(object):
             return root
         deferred = []
         for b in report.bands:
-            if not b.is_match(params):
+            if b.conditions and not b.is_match(params):
                 continue
             if b.name == ROOT_BAND:
                 band = root
             else:
                 band = Band.from_report(b)
-            fields = self.get_fields(b, template)
+            fields = params.pop("fields", None) or self.get_fields(b, template)
             for num, d in enumerate(self.get_dataset(b.queries, params, fields)):
                 band.add_dataset(d, name=b.name if not num else None)
             if band.name == ROOT_BAND:
@@ -250,16 +251,32 @@ class ReportEngine(object):
         r = []
         if not queries:
             return []
+        fields_map = defaultdict(list)
+        for f in fields:
+            f, *ds = f.split(".")
+            if not ds:
+                fields_map["*"].append(f)
+            elif ds and ds[0] == "all":
+                fields_map[f] = []
+            elif ds and ds[0] != "all":
+                fields_map[f].append(ds[0])
         for num, query in enumerate(queries):
-            data = None
+            data, ds_f = None, []
             q_ctx = ctx.copy()
+            if not num and "*" in fields_map:
+                ds_f = fields_map["*"]
+            elif query.datasource and query.datasource in fields_map:
+                ds_f = fields_map[query.datasource]
             if query.params:
                 q_ctx.update(query.params)
             if query.json_data:
                 data = pl.DataFrame(orjson.loads(query.json_data))
+            elif num and query.datasource and fields_map and query.datasource not in fields_map:
+                continue
             elif query.datasource:
-                logger.info("[%s] Query DataSource with fields: %s", query.datasource, fields)
-                data, key_field = cls.query_datasource(query, q_ctx, fields=fields)
+                fields = fields_map[query.datasource] if query.datasource in fields_map else fields
+                logger.info("[%s] Query DataSource with fields: %s", query.datasource, ds_f)
+                data, key_field = cls.query_datasource(query, q_ctx, fields=ds_f)
             r.append(
                 DataSet(name=query.name, data=data, query=query.query, transpose=query.transpose)
             )
