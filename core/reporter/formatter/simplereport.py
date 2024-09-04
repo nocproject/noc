@@ -179,7 +179,7 @@ class SimpleReportFormatter(DataFormatter):
                         )
                     )
                 else:
-                    columns += [c.title or c.name or ""]
+                    columns += [c.title or ""]
             return columns, None
         band_format = self.get_band_format(band)
         # Try DataBand

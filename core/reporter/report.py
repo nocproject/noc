@@ -174,7 +174,9 @@ class Band(object):
 
     def get_child_by_name(self, name: str) -> Optional["Band"]:
         """Getting Band by name"""
-        return self.children_bands.get(name)
+        for c in self.children_bands:
+            if c.name == name:
+                return c
 
     def find_band_recursively(self, name: str) -> Optional["Band"]:
         """Find Band from"""
