@@ -6,17 +6,19 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List,Callable
 from enum import IntEnum, Enum
 from dataclasses import dataclass
 
 # Third-party modules
 import orjson
+from pymongo.collection import Collection
 
 # NOC modules
 from noc.inv.models.object import Object, Crossing
 from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.mongo.connection import get_db
 from .base import InvPlugin
 
 
@@ -82,6 +84,45 @@ class PConfPlugin(InvPlugin):
         if mo is None:
             return self.get_headless(o)
         return self.get_managed(o, mo)
+
+    @staticmethod
+    def get_nvram_collection()->Collection:
+        """
+        Get collection for NVRAM storage.
+
+        Returns:
+            Mongo collection instance.
+        """
+        return get_db()["pconf_nvram"]
+
+    def get_nvram(self, obj:Object, defaults: Dict[str,Any])->Dict[str,Any]:
+        """
+        Get headless NVRAM config.
+
+        Args:
+            obj: Object instance.
+            defailts: Map of defaults
+        """
+        coll = self.get_nvram_collection()
+        data = coll.find_one({"_id": obj.id})
+        cfg = defaults.copy()
+        if data:
+            d = data.get("config")
+            if d:
+                cfg.update(d)
+        return cfg
+
+    def set_nvram(self, obj:Object, name:str, value:Any)->None:
+        """
+        Save config value to NVRAM.
+
+        Args:
+            obj: Object reference.
+            name: Parameter name.
+            value: Parameter value.
+        """
+        coll = self.get_nvram_collection()
+        coll.update_one({"_id": obj.id}, {"$set": {f"config.{name}":value}}, upsert=True)
 
     def get_managed(self, obj: Object, mo: ManagedObject) -> Dict[str, Any]:
         """
@@ -149,11 +190,25 @@ class PConfPlugin(InvPlugin):
         Generate headless config for ADM200
         """
         conf: List[Item] = []
+        nvram = self.get_nvram(obj, {
+            "SetMode": "AGG-200"
+        })
+        # pId
+        conf.append(
+            Item(
+                name="pId",
+                value=obj.get_data("asset", "part_no"),
+                description="Идентификатор блока",
+                type=Type.STRING,
+                table=Table.INFO,
+                read_only=True,
+            )
+        )
         # SetMode
         conf.append(
             Item(
                 name="SetMode",
-                value="AGG-200",
+                value=nvram["SetMode"],
                 description="Установка режима",
                 type=Type.ENUM,
                 table=Table.CONFIG,
@@ -161,7 +216,6 @@ class PConfPlugin(InvPlugin):
                 options={k: v for k, v in ADM200_VMAP.items()},
             )
         )
-        #
         return {"id": str(obj.id), "conf": [c.to_json() for c in conf]}
 
     def api_set(self, request, id: str, name: str, value: str):
@@ -220,12 +274,17 @@ class PConfPlugin(InvPlugin):
         """
         if not isinstance(mode, str):
             return self.error_response("Invalid mode")
+        # Check mode name
         mode_name = ADM200_VMAP.get(mode)
         if mode_name is None:
             return self.error_response(f"Unsupported mode: {mode}")
+        # Check crossings are available
         crossings = ADM200_MAP.get(mode_name)
         if crossings is None:
             return self.error_response(f"Unsupported mode: {mode}")
+        # Save to NVRAM
+        self.set_nvram(obj, "SetMode", mode_name)
+        # Set crossing
         obj.cross = [
             Crossing(
                 input=item["input"],
