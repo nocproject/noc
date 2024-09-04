@@ -54,7 +54,7 @@ py-lint:
     - STATUS_BLACK=$?
     # Ruff linter
     - ruff check --diff -q . # To see stdout in joblog
-    - ruff -q --format=junit . > build/reports/junit-ruff.xml
+    - ruff check -q -- --format=junit . > build/reports/junit-ruff.xml
     - STATUS_RUFF=$?
     # Final result
     - test $STATUS_BLACK -a $STATUS_RUFF
