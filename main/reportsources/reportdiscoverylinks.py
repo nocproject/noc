@@ -34,7 +34,7 @@ class ReportDiscoveryLinks(ReportSource):
 
     def get_formats(self) -> Dict[str, BandFormat]:
         return {
-            "header": BandFormat(title_template="Profile Check Summary"),
+            "header": BandFormat(title_template="Discovery Links Summary"),
             "pool": BandFormat(title_template="{{ name }}"),
             "row": BandFormat(
                 columns=[

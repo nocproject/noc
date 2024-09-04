@@ -35,8 +35,8 @@ class ReportUnclassifiedTrapOIDs(ReportSource):
 
     def get_formats(self) -> Dict[str, BandFormat]:
         return {
-            "header": BandFormat(title_template="Unclassified Trap OIDs"),
-            "row": BandFormat(
+            "header": BandFormat(
+                title_template="Unclassified Trap OIDs",
                 columns=[
                     ColumnFormat(name="oid", title="OID"),
                     ColumnFormat(name="name", title="NAME"),

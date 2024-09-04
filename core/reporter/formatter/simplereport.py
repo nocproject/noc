@@ -42,7 +42,8 @@ class SimpleReportFormatter(DataFormatter):
             TextSection(title=header_format.title_template if header_format else "")
         )
         # columns, fields = self.get_columns()
-        columns, _ = self.get_columns(list(self.root_band.iter_nested_bands())[-1], header_format)
+        band = list(self.root_band.iter_nested_bands())
+        columns, _ = self.get_columns(band[-1] if band else None, header_format)
         report.append_section(
             TableSection(
                 columns=list(columns),
@@ -128,6 +129,8 @@ class SimpleReportFormatter(DataFormatter):
         """
         r = []
         for rb in self.root_band.iter_report_bands():
+            if rb.name == "header":
+                continue
             # Section Row
             if not rb.is_root:  # Section
                 bf = self.get_band_format(rb)

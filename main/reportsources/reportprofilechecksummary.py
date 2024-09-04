@@ -72,9 +72,8 @@ class ReportProfileCheckSummary(ReportSource):
 
     def get_formats(self) -> Dict[str, BandFormat]:
         return {
-            "header": BandFormat(title_template="Profile Check Summary"),
-            "pool": BandFormat(title_template="{{ name }}"),
-            "row": BandFormat(
+            "header": BandFormat(
+                title_template="Profile Check Summary",
                 columns=[
                     ColumnFormat(name="pp", title=_("PP")),
                     ColumnFormat(name="status", title=_("Status")),
@@ -83,6 +82,7 @@ class ReportProfileCheckSummary(ReportSource):
                     ColumnFormat(name="detail", title=_("Detail"), format_type="url"),
                 ],
             ),
+            "pool": BandFormat(title_template="{{ name }}"),
         }
 
     def get_data(self, request=None, **kwargs) -> List[Band]:
@@ -130,8 +130,11 @@ class ReportProfileCheckSummary(ReportSource):
             else:
                 b = Band(name="pool", data={"name": "Summary"})
                 query = f"SELECT {condition} FROM mo"
-            data.append(b)
-            for row in sql.execute(query, eager=True).transpose(include_header=True).to_dicts():
+            rows = sql.execute(query, eager=True)
+            if rows.is_empty():
+                data.append(b)
+                continue
+            for row in rows.transpose(include_header=True).to_dicts():
                 if row["column"] == "1.2" and row["column_0"] == 0:
                     data.pop()
                     break
