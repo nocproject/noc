@@ -35,7 +35,6 @@ class SimpleReportFormatter(DataFormatter):
             self.render_table()
             return
         report = Report()
-        title = ""
         header_format = None
         if self.report_template.bands_format and "header" in self.report_template.bands_format:
             header_format = self.report_template.bands_format["header"]
