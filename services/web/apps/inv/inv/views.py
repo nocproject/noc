@@ -35,6 +35,7 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.translation import ugettext as _
 from .pbuilder import CrossingProposalsBuilder
+from .utils.clone import clone
 
 translation_map = str.maketrans("<>", "><")
 
@@ -366,7 +367,6 @@ class InvApplication(ExtApplication):
                     next_conns = set(
                         cn.name for cn in obj.model.iter_next_connections(cn.name, size - 1)
                     )
-                    print(cn.name, "next_conns", next_conns, "used", used_slots)
                     if len(next_conns) != size - 1 or next_conns.intersection(used_slots):
                         continue
                 # Add candidate
@@ -773,3 +773,25 @@ class InvApplication(ExtApplication):
                 }
             ]
         return r
+
+    @view(
+        "^clone/$",
+        method=["POST"],
+        access="create_group",
+        api=True,
+        validate=DictParameter(
+            attrs={
+                "container": ObjectIdParameter(required=True),
+                "clone_connections": StringParameter(required=True),
+            }
+        ),
+    )
+    def api_clone(
+        self,
+        request,
+        container: str,
+        clone_connections: bool,
+    ):
+        obj = self.get_object_or_404(Object, id=container)
+        cloned = clone(obj, clone_connections=clone_connections)
+        return {"status": True, "object": str(cloned.id), "message": "Object cloned successfully"}
