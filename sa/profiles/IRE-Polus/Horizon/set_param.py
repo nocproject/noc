@@ -17,11 +17,11 @@ from noc.sa.interfaces.base import BooleanParameter, StringParameter, IntParamet
 
 class ISetParam(BaseInterface):
     # Chassis id
-    chassis = IntParameter(default=0)
+    chassis = IntParameter(default=1)
     # Card id
-    card = IntParameter()
+    card = IntParameter(required=True)
     # Param name
-    name = StringParameter()
+    name = StringParameter(required=True)
     # Param value
     value = StringParameter()
     returns = BooleanParameter()
