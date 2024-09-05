@@ -11,7 +11,20 @@ import orjson
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.core.script.http.base import HTTPError
-from .interfaces.isetparam import ISetParam
+from noc.core.interface.base import BaseInterface
+from noc.sa.interfaces.base import BooleanParameter, StringParameter, FloatParameter, IntParameter
+
+
+class ISetParam(BaseInterface):
+    # Chassis id
+    chassis = IntParameter(default=0)
+    # Card id
+    card = IntParameter()
+    # Param name
+    name = StringParameter()
+    # Param value
+    value = IntParameter() | FloatParameter() | StringParameter()
+    returns = BooleanParameter()
 
 
 class Script(BaseScript):
