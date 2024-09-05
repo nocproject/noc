@@ -7,12 +7,12 @@
 
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import BooleanParameter, StringParameter, FloatParameter, IntParameter
+from noc.sa.interfaces.base import BooleanParameter, StringParameter, FloatParameter, IntParameter
 
 
 class ISetParam(BaseInterface):
     # Chassis id
-    chassis = IntParameter()
+    chassis = IntParameter(default=0)
     # Card id
     card = IntParameter()
     # Param name

@@ -11,7 +11,7 @@ import orjson
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.core.script.http.base import HTTPError
-from noc.sa.interfaces.isetparam import ISetParam
+from .interfaces.isetparam import ISetParam
 
 
 class Script(BaseScript):
