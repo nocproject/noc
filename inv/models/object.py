@@ -897,7 +897,7 @@ class Object(Document):
         c = self.parent
         while c:
             if not c.parent_connection:
-                return c.parent
+                return c
             c = c.parent
         return None
 
