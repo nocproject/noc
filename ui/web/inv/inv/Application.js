@@ -749,7 +749,21 @@ Ext.define("NOC.inv.inv.Application", {
                 success: function(response){
                   var data = Ext.decode(response.responseText);
                   if(data.status){
-                    me.onReloadNav();
+                    var sm = me.navTree.getSelectionModel(),
+                      sel = sm.getSelection(),
+                      path = sel[0].getPath();
+
+                    sm.deselect(sel[0]);
+                    me.store.reload({
+                      node: me.store.getRootNode(),
+                      callback: function(){
+                        if(!Ext.isEmpty(sel)){
+                          me.navTree.selectPath(path.replace(me.selectedObjectId, data.object), "id");
+                          me.selectedObjectId = data.object;
+                        }
+                      },
+                      scope: me,
+                    });
                     NOC.info(data.message);
                   } else{
                     NOC.error(data.message);
