@@ -808,6 +808,7 @@ Ext.define("NOC.inv.inv.Application", {
             node: me.store.getRootNode(),
             callback: function(){
               var path = container.getPath().replace("/" + container.id, "");
+              me.navTree.expandPath(path, "id");
               me.navTree.selectPath(path, "id");
             },
             scope: me,
