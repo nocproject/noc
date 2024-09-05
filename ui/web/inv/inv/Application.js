@@ -800,8 +800,14 @@ Ext.define("NOC.inv.inv.Application", {
           me.tabPanel.removeAll();
           me.setHistoryHash();
         } else{
-          me.showObject(parentId, false);
-          me.store.remove(container);
+          me.store.reload({
+            node: me.store.getRootNode(),
+            callback: function(){
+              var path = container.getPath().replace("/" + container.id, "");
+              me.navTree.selectPath(path, "id");
+            },
+            scope: me,
+          });
           me.setHistoryHash(parentId);
         }
         if(dialog){
