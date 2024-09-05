@@ -649,7 +649,8 @@ Ext.define("NOC.inv.inv.Application", {
           ],
           buttons: [
             {
-              text: __("Delete"),
+              text: __("Remove Group"),
+              glyph: NOC.glyph.minus,
               itemId: "removeBtn",
               disabled: true,
               handler: function(){
@@ -666,6 +667,7 @@ Ext.define("NOC.inv.inv.Application", {
             },
             {
               text: __("Cancel"),
+              glyph: NOC.glyph.times,
               handler: function(){
                 dialog.close();
               },
@@ -730,6 +732,7 @@ Ext.define("NOC.inv.inv.Application", {
         buttons: [
           {
             text: __("Clone"),
+            glyph: NOC.glyph.copy,
             handler: function(){
               var sel, cloneConnections = dialog.down("#cloneConnectionsCheckbox").checked,
                 container = null;
@@ -779,6 +782,7 @@ Ext.define("NOC.inv.inv.Application", {
           },
           {
             text: __("Cancel"),
+            glyph: NOC.glyph.times,
             handler: function(){
               dialog.close();
             },
