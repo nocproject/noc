@@ -746,8 +746,14 @@ Ext.define("NOC.inv.inv.Application", {
                   container: container.id,
                   clone_connections: cloneConnections,
                 },
-                success: function(){
-                  NOC.info(__("Object cloned successfully."));
+                success: function(response){
+                  var data = Ext.decode(response.responseText);
+                  if(data.status){
+                    me.onReloadNav();
+                    NOC.info(data.message);
+                  } else{
+                    NOC.error(data.message);
+                  }
                 },
                 failure: function(){
                   NOC.error(__("Failed to clone object."));
