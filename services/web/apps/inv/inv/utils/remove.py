@@ -45,9 +45,6 @@ def remove_root(root: Object, parent: Object, /, keep_connections: bool = False)
     Returns:
         Number of deleted objects.
     """
-    print("remove_root", root, parent)
-    if not parent:
-        raise ValueError("empty parent")
     # Drop necessary connections
     if keep_connections:
         _drop_connections([root])
@@ -55,13 +52,10 @@ def remove_root(root: Object, parent: Object, /, keep_connections: bool = False)
         _drop_connections(_iter_all(root))
     # Reconnect children
     for child in root.iter_children():
-        print("update parent", child)
         child.parent = parent
         child.parent_connection = None
         child.save()
-        print("->", child, "-->", child.parent)
     # Delete root
-    print("delete", root)
     root.delete()
     return 1
 
