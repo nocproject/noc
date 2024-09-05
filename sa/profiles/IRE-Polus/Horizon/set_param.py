@@ -23,7 +23,7 @@ class ISetParam(BaseInterface):
     # Param name
     name = StringParameter()
     # Param value
-    value = IntParameter() | FloatParameter() | StringParameter()
+    value = StringParameter()
     returns = BooleanParameter()
 
 
@@ -40,10 +40,10 @@ class Script(BaseScript):
         }
 
         try:
-            self.http.post("/api/devices/params/set", orjson.dumps(req_data), json=True)
+            self.http.post("/api/devices/params/set", orjson.dumps(req_data), headers={"Content-Type": b"application/json"}, json=True)
         except HTTPError as e:
             self.logger.warning(
-                "Error core %s received while set_param. Message is |%s|", e.code, e.msg
+                "Error core %s received while set_param. Message is |%s|", e.code, e
             )
             return False
 
