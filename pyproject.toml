@@ -1,7 +1,7 @@
 # Black section
 [tool.black]
 line-length = 100 # Must be same as tool.ruff.line-length
-target-version = ['py39'] 
+target-version = ['py310'] 
 
 [tool.coverage.run]
 omit = ['*tests*']
@@ -16,10 +16,10 @@ directory = "build/coverage"
 # Exclude a variety of commonly ignored directories.
 exclude = [".git", "build", "dist", "var", "share", "collections"] 
 line-length = 100 # Must be same as tool.black.line-length
-# Assume Python 3.9
-target-version = "py39"
+# Assume Python 3.10
+target-version = "py310"
 # Enable
-select = [
+lint.select = [
   # "E", # Pycodestyle Error
   "F", # Pyflakes
   "W", # Pycodestyle Warning
@@ -48,7 +48,7 @@ select = [
 ]
 # Always autofix, but never try to fix `F401` (unused imports).
 fix = false #fix = true
-ignore = [
+lint.ignore = [
   "A001", # A001 Variable `{name}` is shadowing a python builtin
   "A002", # A002 Argument `{name}` is shadowing a python builtin
   "A003", # Class attribute `{name}` is shadowing a python builtin"
@@ -60,22 +60,31 @@ ignore = [
   "PLR0913", # Too many arguments to function call
   "PLR0915", # Too many statements
   "PLR2004", # Magic value used in comparison, consider replacing {v} with a constant variable
+  "PLR2044", # Line with empty comment
+  "PLR5501", # Use `elif` instead of `else` then `if`, to reduce indentation
+  "PLR1714", # Consider merging multiple comparisons: `f1 not in (f0, f2)`. Use a `set` if the elements are hashable.
+  "PLR1730", # Replace `if` statement with `width = max(width, max_column_data_length[c])`
+  "PLR1704", # Redefining argument with the local name `name`
+  "PLR1711", # Useless `return` statement at end of function
+  "PLE1205", # Too many arguments for `logging` format string
+  "PLE1206", # Not enough arguments for `logging` format string
+  "F811", # Redefinition of unused `ReportBand` from line 66
 ] 
-unfixable = [
+lint.unfixable = [
   "F401",
   "F841", # unused-variable
 ] 
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 12
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "*/migrations/*.py" = [
   "D100", # Missing docstring in public module
   "D101", # Missing docstring in public class

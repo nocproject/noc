@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,6 @@ class Script(BaseScript):
     rx_serial = re.compile(r"^\s*Serial number :\s*(?P<serial>\S+)?")
 
     PLATFORM = {
-        (0, 2, 8): "2O-8E",
         (0, 2, 8): "2O-8E",
         (0, 4, 8): "4O-8E",
         (0, 2, 16): "2O-16E",

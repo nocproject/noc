@@ -231,15 +231,12 @@ class DiscoveredObject(Document):
     # checks
     checks: List[CheckStatus] = EmbeddedDocumentListField(CheckStatus)
     data: List[DataItem] = EmbeddedDocumentListField(DataItem)
-    #
     duplicate_keys = ListField(LongField())
-    #
     managed_object_id: int = IntField(required=False)
     # Link to agent
     agent: "Agent" = ObjectIdField(required=False)
     # Link to Rule
     rule: "ObjectDiscoveryRule" = PlainReferenceField(ObjectDiscoveryRule, required=False)
-    #
     effective_data: Dict[str, str] = DictField()
     # Labels
     extra_labels: Dict[str, List[str]] = DictField()
@@ -267,7 +264,6 @@ class DiscoveredObject(Document):
             * policy: set, replace, union (for list)
         :return:
         """
-        #
         data, labels, changed = {}, [], False
         rids = set()
         for di in self.iter_sorted_data():
@@ -516,7 +512,7 @@ class DiscoveredObject(Document):
             # Unsync object
             self.fire_event("expired")  # Remove
             return
-        elif rule != rule:
+        elif self.rule != rule:
             self.rule = rule
             self.save()
         action = rule.get_action(self.checks, self.effective_labels, self.effective_data)
@@ -802,9 +798,7 @@ def sync_purgatorium():
                 rs = rs.name
             # Check timestamp
             data[(source, rs)].update(d1 | d2)
-            #
             d_labels[(source, rs)] = labels
-            #
             for rg in s_groups or []:
                 rg = ResourceGroup.get_by_bi_id(rg)
                 if rg:
