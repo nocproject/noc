@@ -646,7 +646,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
               text: __("SNMP OID"),
               dataIndex: "snmp_oid",
               flex: 1,
-              editor: "textfield",
+              editor: {
+                xtype: "textfield",
+                vtype: "SensorOID",
+              },
             },
           ],
         },
