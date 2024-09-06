@@ -193,7 +193,7 @@ class PConfPlugin(InvPlugin):
             # with open(self.SAMPLE_PATH) as fp:
             #    return orjson.loads(fp.read())
             # Get from MO
-            return orjson.loads(mo.scripts.get_params())
+            return mo.scripts.get_params()
 
         slot = int(obj.parent_connection)
         conf = self._parse_for_slot(get_data(), slot)
