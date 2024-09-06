@@ -446,6 +446,7 @@ Ext.define("NOC.inv.inv.Application", {
     if(!Ext.isEmpty(sel)){
       container = sel[0];
     }
+    
     var i = me.showItem(me.ITEM_ADD),
       formStore = i.down("grid").getStore();
     formStore.removeAll();
@@ -803,6 +804,7 @@ Ext.define("NOC.inv.inv.Application", {
           me.store.reload({node: me.store.getRootNode()});
           me.tabPanel.removeAll();
           me.setHistoryHash();
+          me.down("#addObjectDock").show(); 
         } else{
           me.store.reload({
             node: me.store.getRootNode(),
