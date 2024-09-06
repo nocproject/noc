@@ -35,6 +35,8 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.translation import ugettext as _
 from .pbuilder import CrossingProposalsBuilder
+from .utils.clone import clone
+from .utils.remove import remote_all, remove_root
 
 translation_map = str.maketrans("<>", "><")
 
@@ -366,7 +368,6 @@ class InvApplication(ExtApplication):
                     next_conns = set(
                         cn.name for cn in obj.model.iter_next_connections(cn.name, size - 1)
                     )
-                    print(cn.name, "next_conns", next_conns, "used", used_slots)
                     if len(next_conns) != size - 1 or next_conns.intersection(used_slots):
                         continue
                 # Add candidate
@@ -462,12 +463,26 @@ class InvApplication(ExtApplication):
         method=["DELETE"],
         access="remove_group",
         api=True,
-        validate={"container": ObjectIdParameter(required=True)},
+        validate={
+            "container": ObjectIdParameter(required=True),
+            "action": StringParameter(choices=["p", "l", "r"]),
+            "keep_connections": BooleanParameter(required=False),
+        },
     )
-    def api_remove_group(self, request, container=None):
-        c = self.get_object_or_404(Object, id=container)
-        c.delete()
-        return True
+    def api_remove_group(
+        self, request, container: str, action: str, keep_connections: bool = False
+    ):
+        obj = self.get_object_or_404(Object, id=container)
+        match action:
+            case "p":
+                n = remove_root(obj, obj.get_container(), keep_connections=keep_connections)
+            case "l":
+                n = 0
+            case "r":
+                n = remote_all(obj)
+            case _:
+                raise NotImplementedError
+        return {"status": True, "message": f"{n} objects deleted"}
 
     @view(
         "^insert/$",
@@ -773,3 +788,25 @@ class InvApplication(ExtApplication):
                 }
             ]
         return r
+
+    @view(
+        "^clone/$",
+        method=["POST"],
+        access="create_group",
+        api=True,
+        validate=DictParameter(
+            attrs={
+                "container": ObjectIdParameter(required=True),
+                "clone_connections": StringParameter(required=True),
+            }
+        ),
+    )
+    def api_clone(
+        self,
+        request,
+        container: str,
+        clone_connections: bool,
+    ):
+        obj = self.get_object_or_404(Object, id=container)
+        cloned = clone(obj, clone_connections=clone_connections)
+        return {"status": True, "object": str(cloned.id), "message": "Object cloned successfully"}

@@ -174,6 +174,8 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
             me.app.store.reload({node: me.groupContainer});
             me.groupContainer.expand();
             me.app.setHistoryHash(me.groupContainer);
+          } else{
+            me.app.store.reload(); 
           }
         } else{
           NOC.error(__("Failed to save"));

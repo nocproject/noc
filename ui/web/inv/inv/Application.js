@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.inv application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.Application");
@@ -129,6 +129,12 @@ Ext.define("NOC.inv.inv.Application", {
                   scope: me,
                   disabled: false,
                   handler: me.onOpenDashboard,
+                },
+                {
+                  glyph: NOC.glyph.copy,
+                  text: __("Clone"),
+                  scope: me,
+                  handler: me.onClone,
                 },
                 {
                   itemId: "invNavContextMenuMap",
@@ -440,6 +446,7 @@ Ext.define("NOC.inv.inv.Application", {
     if(!Ext.isEmpty(sel)){
       container = sel[0];
     }
+    
     var i = me.showItem(me.ITEM_ADD),
       formStore = i.down("grid").getStore();
     formStore.removeAll();
@@ -584,40 +591,91 @@ Ext.define("NOC.inv.inv.Application", {
       container = sel[0];
     }
     if(container){
-      Ext.Msg.show({
-        title: __("Remove group '") + container.get("name") + "'?",
-        msg: "Would you like to remove group. All nested groups will be removed. All nested objects will be moved to Lost&Found folder",
-        buttons: Ext.Msg.YESNO,
-        glyph: NOC.glyph.question_circle,
-        fn: function(rec){
-          if(rec === "yes"){
-            Ext.Ajax.request({
-              url: "/inv/inv/remove_group/",
-              method: "DELETE",
-              jsonData: {
-                container: container.id,
+      var hasNoChildren = container.get("expandable") === false,
+        parent= container.parentNode,
+        hasNoParent = Ext.isEmpty(parent.get("name")),
+        title = __("Remove group '") + container.get("name") + "'?";
+      
+      if(hasNoChildren){
+        Ext.Msg.show({
+          title: title,
+          msg: __("Would you like to remove group?"),
+          buttons: Ext.Msg.YESNO,
+          glyph: NOC.glyph.question_circle,
+          fn: function(rec){
+            if(rec === "yes"){
+              sm.deselect(container);
+              me.removeGroup(container, {container: container.id, action: "r"}, me);
+            }
+          },
+        });
+      } else{
+      // Object has children
+        var dialog = Ext.create("Ext.window.Window", {
+          autoShow: true,
+          title: title,
+          height: 250,
+          width: 500,
+          layout: "form",
+          modal: true,
+          items: [
+            {
+              xtype: "radiogroup",
+              columns: 1,
+              vertical: true,
+              items: [
+                {
+                  boxLabel: __("Move nested objects to") + " " + parent.get("name"),
+                  name: "action",
+                  inputValue: "p",
+                  disabled: hasNoParent,
+                },
+                {boxLabel: __("Move nested objects to Lost&Found"), name: "action", inputValue: "l"},
+                {boxLabel: __("Remove nested objects"), name: "action", inputValue: "r"},
+              ],
+              listeners: {
+                change: function(radio, newValue){
+                  dialog.down("#removeBtn").setDisabled(false);
+                  dialog.down("#keepConnections").setDisabled(
+                    !["p", "l"].includes(newValue.action));
+                },
               },
-              scope: me,
-              success: function(){
-                var parentId = container.get("parentId");
-                sm.deselect(container);
-                if(parentId === "root"){
-                  me.store.reload({node: me.store.getRootNode()});
-                  me.tabPanel.removeAll();
-                  me.setHistoryHash();
-                } else{
-                  me.showObject(parentId, false);
-                  me.store.remove(container);
-                  me.setHistoryHash(parentId);
+            },
+            {
+              xtype: "checkbox",
+              itemId: "keepConnections",
+              disabled: true,
+              boxLabel: __("Keep connections"),
+            },
+          ],
+          buttons: [
+            {
+              text: __("Remove Group"),
+              glyph: NOC.glyph.minus,
+              itemId: "removeBtn",
+              disabled: true,
+              handler: function(){
+                var options = {
+                    container: container.id,
+                    action: dialog.down("radiogroup").getValue().action,
+                  },
+                  keepConnectionsField = dialog.down("#keepConnections");
+                if(!keepConnectionsField.isDisabled()){
+                  options.keep_connections = keepConnectionsField.checked;
                 }
+                me.removeGroup(container, dialog, options, me);
               },
-              failure: function(){
-                NOC.error(__("Failed to delete group"));
+            },
+            {
+              text: __("Cancel"),
+              glyph: NOC.glyph.times,
+              handler: function(){
+                dialog.close();
               },
-            });
-          }
-        },
-      });
+            },
+          ],
+        }); 
+      }
     }
   },
   //
@@ -653,5 +711,122 @@ Ext.define("NOC.inv.inv.Application", {
     if(container){
       window.open("/ui/grafana/dashboard/script/noc.js?dashboard=container&id=" + container.get("id") + "&orgId=1");
     }
+  },
+  //
+  onClone: function(){
+    var me = this,
+      dialog = Ext.create("Ext.window.Window", {
+        title: __("Clone object?"),
+        modal: true,
+        width: 250,
+        height: 160,
+        layout: "vbox",
+        autoShow: true,
+        items: [
+          {
+            xtype: "checkbox",
+            boxLabel: __("Clone connections"),
+            padding: 10,
+            itemId: "cloneConnectionsCheckbox",
+          },
+        ],
+        buttons: [
+          {
+            text: __("Clone"),
+            glyph: NOC.glyph.copy,
+            handler: function(){
+              var sel, cloneConnections = dialog.down("#cloneConnectionsCheckbox").checked,
+                container = null;
+              if(me.navTree.getSelectionModel().hasSelection()){
+                sel = me.navTree.getSelectionModel().getSelection();
+              }
+              if(!Ext.isEmpty(sel)){
+                container = sel[0];
+              }
+              Ext.Ajax.request({
+                url: "/inv/inv/clone/",
+                method: "POST",
+                jsonData: {
+                  container: container.id,
+                  clone_connections: cloneConnections,
+                },
+                success: function(response){
+                  var data = Ext.decode(response.responseText);
+                  if(data.status){
+                    var sm = me.navTree.getSelectionModel(),
+                      sel = sm.getSelection(),
+                      path = sel[0].getPath();
+
+                    sm.deselect(sel[0]);
+                    me.store.reload({
+                      node: me.store.getRootNode(),
+                      callback: function(){
+                        if(!Ext.isEmpty(sel)){
+                          me.navTree.selectPath(path.replace(me.selectedObjectId, data.object), "id");
+                          me.selectedObjectId = data.object;
+                        }
+                      },
+                      scope: me,
+                    });
+                    NOC.info(data.message);
+                  } else{
+                    NOC.error(data.message);
+                  }
+                },
+                failure: function(){
+                  NOC.error(__("Failed to clone object."));
+                },
+              });
+
+              dialog.close();
+            },
+          },
+          {
+            text: __("Cancel"),
+            glyph: NOC.glyph.times,
+            handler: function(){
+              dialog.close();
+            },
+          },
+        ],
+      });
+  },
+  //
+  removeGroup: function(container, dialog, data, me){
+    Ext.Ajax.request({
+      url: "/inv/inv/remove_group/",
+      method: "DELETE",
+      jsonData: data,
+      scope: me,
+      success: function(){
+        var parentId = container.get("parentId");
+        if(parentId === "root"){
+          me.store.reload({node: me.store.getRootNode()});
+          me.tabPanel.removeAll();
+          me.setHistoryHash();
+          me.down("#addObjectDock").show(); 
+        } else{
+          me.store.reload({
+            node: me.store.getRootNode(),
+            callback: function(){
+              var path = container.getPath().replace("/" + container.id, "");
+              me.navTree.expandPath(path, "id");
+              me.navTree.selectPath(path, "id");
+            },
+            scope: me,
+          });
+          me.setHistoryHash(parentId);
+        }
+        if(dialog){
+          dialog.close();
+        }
+      },
+      failure: function(){
+        if(dialog){
+          dialog.close();
+        }
+        NOC.error(__("Failed to delete group"));
+      },
+    });
   },
 });
