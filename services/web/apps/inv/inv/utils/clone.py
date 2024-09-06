@@ -76,7 +76,7 @@ def clone(root: Object, /, clone_connections: bool = False) -> Object:
                 continue  # @todo: Process later
             x, y = conn.connection
             cable = y.object if x.object in c_map else x.object
-            if cable.model.get_data("length", "length"):
+            if cable.is_wire:
                 cables[cable.id] = []
         # Process cable connections
         for conn in ObjectConnection.objects.filter(connection__object__in=list(cables)):

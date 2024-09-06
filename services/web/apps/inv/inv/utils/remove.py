@@ -68,20 +68,20 @@ def _drop_connections(objects: Iterable[Object]) -> None:
         objects: Iterable of objects
     """
     locals = {o.id for o in objects}
-    cables: set[Object] = set()
+    wires: set[Object] = set()
     # Get all connections
     for conn in ObjectConnection.objects.filter(connection__object__in=list(locals)):
         if len(conn.connection) != 2:
             continue  # @todo: Process later
         x, y = conn.connection
-        if x.object.id in locals:
-            cables.add(y.object)
-        elif y.object.id in locals:
-            cables.add(x.object)
+        if x.object.id in locals and y.object.is_wire:
+            wires.add(y.object)
+        elif y.object.id in locals and x.object.is_wire:
+            wires.add(x.object)
         # Drop connnection
         conn.delete()
     # Drop cables
-    for obj in cables:
+    for obj in wires:
         obj.delete()
 
 
