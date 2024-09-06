@@ -178,6 +178,19 @@ class PConfPlugin(InvPlugin):
             conf.append(c)
         return conf
 
+    @staticmethod
+    def _get_card(obj: Object) -> int:
+        """
+        Get `card` parameter for API call.
+
+        Args:
+            obj: Object.
+        Returns:
+            Card number according to API.
+        """
+        # @todo: Incomplete, consider half-sized cards
+        return (int(obj.parent_connection) - 1) * 2 + 1
+
     def get_managed(self, obj: Object, mo: ManagedObject) -> Dict[str, Any]:
         """
         Get config from managed object.
@@ -197,8 +210,7 @@ class PConfPlugin(InvPlugin):
             # Get from MO
             return mo.scripts.get_params()
 
-        slot = int(obj.parent_connection) + 1
-        conf = self._parse_for_slot(get_data(), slot)
+        conf = self._parse_for_slot(get_data(), self._get_card(obj))
         return {"id": str(obj.id), "conf": conf}
 
     def get_headless(self, obj: Object) -> Dict[str, Any]:
@@ -334,9 +346,8 @@ class PConfPlugin(InvPlugin):
         Returns:
             Dict for response.
         """
-        slot = int(obj.parent_connection) + 1
         # @todo: Wrap to catch errors
-        mo.scripts.set_param(card=slot, name=name, value=value)
+        mo.scripts.set_param(card=self._get_card(obj), name=name, value=value)
         return {"status": True}
 
     @classmethod
