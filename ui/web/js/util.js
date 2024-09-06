@@ -578,6 +578,14 @@ Ext.form.Field.prototype.msgTarget = 'side';
 Ext.define("NOC.form.field.VTypes", {
   override: "Ext.form.field.VTypes",
 
+  // OID sensor checking
+  SensorOID: function(val, field){
+    var oidRegex = /^1\.3\.6(\.\d+)$/;
+    console.log(val, field);
+    return oidRegex.test(val);
+  },
+  SensorOIDText: "Must be a OID",
+
   // VLAN ID checking
   VlanID: function(val){
     try{
