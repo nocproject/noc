@@ -92,15 +92,24 @@ class Script(BaseScript):
         """
         Getting FRU from component info
         """
+
+        def fix_fru(s: str) -> str:
+            """
+            Fix FRU.
+
+            One morbid vendor tends to mix latin with cyrillic.
+            Fix and relax.
+            """
+            return s.replace("C", "С").replace("с", "c")
+
         r = FRU("", "")
         for p in c.info_params:
             if p.code == "PtNumber" or p.code == "pId":
                 if p.value.startswith("RBS-"):
                     r.is_rbs = True
-                    r.part_no = p.value[4:]
+                    r.part_no = fix_fru(p.value[4:])
                 else:
-                    r.part_no = p.value
-
+                    r.part_no = fix_fru(p.value)
                 r.type = p.component_type
             elif p.code == "SrNumber":
                 r.serial = p.value
