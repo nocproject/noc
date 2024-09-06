@@ -11,7 +11,7 @@ from enum import IntEnum, Enum
 from dataclasses import dataclass
 
 # Third-party modules
-import orjson
+# import orjson
 from pymongo.collection import Collection
 
 # NOC modules
@@ -197,7 +197,7 @@ class PConfPlugin(InvPlugin):
             # Get from MO
             return mo.scripts.get_params()
 
-        slot = int(obj.parent_connection) - 1
+        slot = int(obj.parent_connection) + 1
         conf = self._parse_for_slot(get_data(), slot)
         return {"id": str(obj.id), "conf": conf}
 
@@ -334,7 +334,7 @@ class PConfPlugin(InvPlugin):
         Returns:
             Dict for response.
         """
-        slot = int(obj.parent_connection) - 1
+        slot = int(obj.parent_connection) + 1
         # @todo: Wrap to catch errors
         mo.scripts.set_param(card=slot, name=name, value=value)
         return {"status": True}
