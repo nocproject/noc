@@ -580,7 +580,7 @@ Ext.define("NOC.form.field.VTypes", {
 
   // OID sensor checking
   SensorOID: function(val, field){
-    var oidRegex = /^1\.3\.6(\.\d+)$/;
+    var oidRegex = /^1\.3\.6(\.\d+)+$/;
     console.log(val, field);
     return oidRegex.test(val);
   },
