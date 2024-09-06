@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any, List,Callable
+from typing import Optional, Dict, Any, List, Callable
 from enum import IntEnum, Enum
 from dataclasses import dataclass
 
@@ -67,8 +67,6 @@ class PConfPlugin(InvPlugin):
     name = "pconf"
     js = "NOC.inv.inv.plugins.pconf.PConfPanel"
 
-    PATH = "var/adm200/AGG-200.json"
-
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
@@ -86,7 +84,7 @@ class PConfPlugin(InvPlugin):
         return self.get_managed(o, mo)
 
     @staticmethod
-    def get_nvram_collection()->Collection:
+    def get_nvram_collection() -> Collection:
         """
         Get collection for NVRAM storage.
 
@@ -95,7 +93,7 @@ class PConfPlugin(InvPlugin):
         """
         return get_db()["pconf_nvram"]
 
-    def get_nvram(self, obj:Object, defaults: Dict[str,Any])->Dict[str,Any]:
+    def get_nvram(self, obj: Object, defaults: Dict[str, Any]) -> Dict[str, Any]:
         """
         Get headless NVRAM config.
 
@@ -112,7 +110,7 @@ class PConfPlugin(InvPlugin):
                 cfg.update(d)
         return cfg
 
-    def set_nvram(self, obj:Object, name:str, value:Any)->None:
+    def set_nvram(self, obj: Object, name: str, value: Any) -> None:
         """
         Save config value to NVRAM.
 
@@ -122,37 +120,40 @@ class PConfPlugin(InvPlugin):
             value: Parameter value.
         """
         coll = self.get_nvram_collection()
-        coll.update_one({"_id": obj.id}, {"$set": {f"config.{name}":value}}, upsert=True)
+        coll.update_one({"_id": obj.id}, {"$set": {f"config.{name}": value}}, upsert=True)
 
-    def get_managed(self, obj: Object, mo: ManagedObject) -> Dict[str, Any]:
+    @staticmethod
+    def _parse_for_slot(data: dict[str, Any], slot: int) -> list[dict[str, Any]]:
         """
-        Get config from managed object.
+        Extract config for given slot.
 
         Args:
-            obj: Object instance.
-            mo: Managed object instance.
+            data: Input data.
+            slot: Slot number.
+
         Returns:
-            Response data.
+            Parsed config.
         """
-        # @todo: Temporary
-        with open(self.PATH) as fp:
-            data = orjson.loads(fp.read())
-        # Parse data
-        conf = []
-        for item in data["RK"][0]["DV"]:
-            # Iterate cards
-            # >>>
-            if item["cls"] != "adm200":
-                continue
-            # <<<
+
+        def filter_slot() -> list[dict[str, Any]]:
+            for item in data["RK"][0]["DV"]:
+                s = item.get("slt")
+                if not s:
+                    continue
+                if s == slot:
+                    return item
+            return []
+
+        conf: list[dict[str, Any]] = []
+        for item in filter_slot():
             pm = item.get("PM")
-            if not item:
+            if not pm:
                 continue
             for row in pm:
                 name = row.get("nam")
                 if not name:
                     continue
-                # Determinee type
+                # Determine type
                 options = row.get("EM")
                 t = row.get("typ")
                 if options:
@@ -173,6 +174,29 @@ class PConfPlugin(InvPlugin):
                 if options:
                     c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
                 conf.append(c)
+        return conf
+
+    def get_managed(self, obj: Object, mo: ManagedObject) -> Dict[str, Any]:
+        """
+        Get config from managed object.
+
+        Args:
+            obj: Object instance.
+            mo: Managed object instance.
+        Returns:
+            Response data.
+        """
+
+        def get_data() -> dict[str, Any]:
+            # Debugging:
+            # Get from JSON
+            # with open(self.SAMPLE_PATH) as fp:
+            #    return orjson.loads(fp.read())
+            # Get from MO
+            return orjson.loads(mo.scripts.get_params())
+
+        slot = int(obj.parent_connection)
+        conf = self._parse_for_slot(get_data(), slot)
         return {"id": str(obj.id), "conf": conf}
 
     def get_headless(self, obj: Object) -> Dict[str, Any]:
@@ -190,9 +214,7 @@ class PConfPlugin(InvPlugin):
         Generate headless config for ADM200
         """
         conf: List[Item] = []
-        nvram = self.get_nvram(obj, {
-            "SetMode": "AGG-200"
-        })
+        nvram = self.get_nvram(obj, {"SetMode": "AGG-200"})
         # pId
         conf.append(
             Item(
@@ -310,7 +332,9 @@ class PConfPlugin(InvPlugin):
         Returns:
             Dict for response.
         """
-        print(f">>> name={name}, value={value}")
+        slot = int(obj.parent_connection)
+        # @todo: Wrap to catch errors
+        mo.scripts.set_param(card=slot, name=name, value=value)
         return {"status": True}
 
     @classmethod
