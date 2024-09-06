@@ -188,7 +188,9 @@ class PConfPlugin(InvPlugin):
         Returns:
             Card number according to API.
         """
-        # @todo: Incomplete, consider half-sized cards
+        if obj.parent and obj.parent.model.name.endswith("HS-H8"):
+            # Half-sized card
+            return (int(obj.parent.parent_connection) - 1) * 2 + int(obj.parent_connection)
         return (int(obj.parent_connection) - 1) * 2 + 1
 
     def get_managed(self, obj: Object, mo: ManagedObject) -> Dict[str, Any]:
