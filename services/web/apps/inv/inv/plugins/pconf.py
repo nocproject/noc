@@ -135,45 +135,47 @@ class PConfPlugin(InvPlugin):
             Parsed config.
         """
 
-        def filter_slot() -> list[dict[str, Any]]:
+        def filter_slot() -> dict[str, Any] | None:
             for item in data["RK"][0]["DV"]:
                 s = item.get("slt")
                 if not s:
                     continue
                 if s == slot:
                     return item
-            return []
+            return None
 
         conf: list[dict[str, Any]] = []
-        for item in filter_slot():
-            pm = item.get("PM")
-            if not pm:
+        slot_cfg = filter_slot()
+        if not slot_cfg:
+            return []
+        pm = slot_cfg.get("PM")
+        if not pm:
+            return []
+        for row in pm:
+            name = row.get("nam")
+            if not name:
                 continue
-            for row in pm:
-                name = row.get("nam")
-                if not name:
-                    continue
-                # Determine type
-                options = row.get("EM")
-                t = row.get("typ")
-                if options:
-                    dt = "enum"
-                elif t == 32:
-                    dt = "string"
-                else:
-                    dt = "string"
-                c = {
-                    "name": name,
-                    "value": row.get("val") or "",
-                    "description": row.get("dsc") or "",
-                    "units": row.get("unt") or "",
-                    "read_only": (row.get("acs") or "") != "W",
-                    "type": dt,
-                    "table": row.get("tbl", 1),
-                }
-                if options:
-                    c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
-                conf.append(c)
+            # Determine type
+            options = row.get("EM")
+            t = row.get("typ")
+            if options:
+                dt = "enum"
+            elif t == 32:
+                dt = "string"
+            else:
+                dt = "string"
+            c = {
+                "name": name,
+                "value": row.get("val") or "",
+                "description": row.get("dsc") or "",
+                "units": row.get("unt") or "",
+                "read_only": (row.get("acs") or "") != "W",
+                "type": dt,
+                "table": row.get("tbl", 1),
+            }
+            if options:
+                c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
+            conf.append(c)
         return conf
 
     def get_managed(self, obj: Object, mo: ManagedObject) -> Dict[str, Any]:
