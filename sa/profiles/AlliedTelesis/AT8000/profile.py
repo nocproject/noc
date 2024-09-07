@@ -37,5 +37,5 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
-        if s.startswith("Ethernet"):
+        if name.startswith("Ethernet"):
             return "physical"
