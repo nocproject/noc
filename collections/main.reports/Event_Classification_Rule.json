@@ -20,6 +20,7 @@
         {
             "name": "profile",
             "description": null,
+            "hide": false,
             "label": "Profile",
             "model_id": "sa.Profile",
             "required": true,

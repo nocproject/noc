@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SimpleReport DataFormatter
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from xlsxwriter.workbook import Workbook
 # NOC modules
 from .base import DataFormatter
 from ..types import OutputType, BandFormat
-from ..report import BandData
+from ..report import Band
 from noc.services.web.base.simplereport import (
     Report,
     TextSection,
@@ -27,23 +27,24 @@ from noc.services.web.base.simplereport import (
 
 class SimpleReportFormatter(DataFormatter):
     def render_document(self):
-        """
-
-        :return:
-        """
+        """"""
         if self.report_template.output_type != OutputType.HTML:
             self.render_table()
             return
         report = Report()
-        rband_format = self.get_band_format(self.root_band)
+        header_format = None
+        if self.report_template.bands_format and "header" in self.report_template.bands_format:
+            header_format = self.report_template.bands_format["header"]
         report.append_section(
-            TextSection(title=rband_format.title_template if rband_format else "")
+            TextSection(title=header_format.title_template if header_format else "")
         )
-        columns, fields = self.get_columns()
+        # columns, fields = self.get_columns()
+        band = list(self.root_band.iter_nested_bands())
+        columns, _ = self.get_columns(band[-1] if band else None, header_format)
         report.append_section(
             TableSection(
                 columns=list(columns),
-                data=self.get_report_data(fields),
+                data=self.get_report_data(),
                 enumerate=False,
             )
         )
@@ -71,15 +72,16 @@ class SimpleReportFormatter(DataFormatter):
         Format for Root Band data as table
         :return:
         """
-        r_format = self.report_template.bands_format["Root"]
+        band = self.root_band.children_bands[0]
+        r_format = self.report_template.bands_format[band.name]
         # Column title map
         HEADER_ROW = {}
         for col in r_format.columns:
             *_, col_name = col.name.rsplit(".", 1)
             HEADER_ROW[col_name] = col.title
-        data = self.root_band.rows
-        if data is None:
+        if not self.root_band.has_rows:
             return
+        data = self.root_band.get_rows()[0]
         out_columns = [c for c in data.columns]
         if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
             r = self.csv_delimiter.join(HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
@@ -87,8 +89,8 @@ class SimpleReportFormatter(DataFormatter):
                 # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                 # columns=out_columns,
                 separator=self.csv_delimiter,
-                quote='"',
-                has_header=False,
+                quote_char='"',
+                include_header=False,
             )
             self.output_stream.write(r.encode("utf8"))
         elif self.output_type == OutputType.XLSX:
@@ -118,37 +120,37 @@ class SimpleReportFormatter(DataFormatter):
             return [idx_max] + r
         return r
 
-    def get_report_data(self, columns: List[str] = None) -> List[Any]:
+    def get_report_data(self) -> List[Any]:
         """
         Convert Report Band to Report Data Section
         :return:
         """
         r = []
-        for rb in self.root_band.iter_all_bands():
+        for rb in self.root_band.iter_report_bands():
+            if rb.name == "header":
+                continue
             # Section Row
             if not rb.is_root:  # Section
                 bf = self.get_band_format(rb)
                 if bf and bf.title_template:
                     r.append(SectionRow(self.get_title(rb, bf.title_template)))
-                    if rb.rows is None:
+                    if not rb.has_rows:
                         continue
             # Out data
-            if not rb.has_children and rb.rows is not None and not rb.rows.is_empty():
-                row_columns = columns or rb.rows.columns
-                for row in rb.rows.to_dicts():
+            if not rb.has_children and rb.has_rows:
+                row_columns = rb.get_columns()
+                for row in rb.iter_rows():
                     r.append([row.get(c, "") for c in row_columns])
             elif not rb.has_children and rb.data:
-                row_columns = columns or list(rb.data)
+                row_columns = list(rb.data)
                 r.append([rb.data.get(c, "") for c in row_columns])
         return r
 
-    def get_band_format(self, band: BandData) -> Optional[BandFormat]:
+    def get_band_format(self, band: Band) -> Optional[BandFormat]:
         """
 
         :return:
         """
-        if band.format:
-            return band.format
         if (
             not self.report_template.bands_format
             or band.name not in self.report_template.bands_format
@@ -156,21 +158,37 @@ class SimpleReportFormatter(DataFormatter):
             return
         return self.report_template.bands_format[band.name]
 
-    def get_columns(self) -> Tuple[List[Any], Optional[List[str]]]:
-        """
-        Return columns format and fields list
-        :return:
-        """
+    def get_columns(
+        self, band: Optional[Band] = None, header: Optional[BandFormat] = None
+    ) -> Tuple[List[Any], Optional[List[str]]]:
+        """Return columns format and fields list"""
         # Try Root config first
-        band_format = self.get_band_format(self.root_band)
-        band = self.root_band.get_data_band()
-        fields = None
+        band = band or self.root_band.get_data_band()
+        if not band and not header:
+            return [], None
+        elif header and header.columns:
+            columns = []
+            for c in header.columns:
+                if c.format_type or c.total:
+                    columns.append(
+                        TableColumn(
+                            c.title or "",
+                            align=c.align.name.lower(),
+                            format=c.format_type,
+                            total=c.total,
+                            total_label=c.total_label,
+                        )
+                    )
+                else:
+                    columns += [c.title or ""]
+            return columns, None
+        band_format = self.get_band_format(band)
         # Try DataBand
-        if not band_format or not band_format.columns:
-            band_format = self.get_band_format(band)
-            fields = [c.name for c in band_format.columns] if band_format else None
-        if not band_format:
-            return ([fn for fn in band.rows.columns],) * 2
+        if not (band_format and band_format.columns) and band.get_columns():
+            return ([fn for fn in band.get_columns()],) * 2
+        elif not band_format or not band_format.columns:
+            return [], None
+        fields = [c.name for c in band_format.columns] if band_format else None
         columns = []
         for c in band_format.columns:
             if c.format_type or c.total:
@@ -184,7 +202,7 @@ class SimpleReportFormatter(DataFormatter):
                     )
                 ]
             else:
-                columns += [c.title or ""]
+                columns += [c.title or c.name or ""]
         return columns, fields
 
     @staticmethod

@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # Discovery Links Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import List
+from typing import List, Dict
 
 # Third-party modules
 import polars as pl
@@ -15,7 +15,7 @@ import polars as pl
 from noc.main.models.pool import Pool
 from noc.main.models.report import Report
 from noc.core.reporter.reportsource import ReportSource
-from noc.core.reporter.report import BandData
+from noc.core.reporter.report import Band
 from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.core.datasources.loader import loader
 from noc.core.translation import ugettext as _
@@ -32,18 +32,21 @@ class ReportDiscoveryLinks(ReportSource):
         ("status = False", _("More 3"), "1.1"),  # 2is1.6is1.3hs4
     ]
 
-    def get_format(self) -> BandFormat:
-        return BandFormat(
-            title_template="Profile Check Summary",
-            columns=[
-                ColumnFormat(name="links_count", title=_("Links count")),
-                ColumnFormat(name="mo_count", title=_("MO Count")),
-                ColumnFormat(name="percent_at_all", title=_("Percent at All")),
-                ColumnFormat(name="detail", title=_("Detail"), format_type="url"),
-            ],
-        )
+    def get_formats(self) -> Dict[str, BandFormat]:
+        return {
+            "header": BandFormat(title_template="Discovery Links Summary"),
+            "pool": BandFormat(title_template="{{ name }}"),
+            "row": BandFormat(
+                columns=[
+                    ColumnFormat(name="links_count", title=_("Links count")),
+                    ColumnFormat(name="mo_count", title=_("MO Count")),
+                    ColumnFormat(name="percent_at_all", title=_("Percent at All")),
+                    ColumnFormat(name="detail", title=_("Detail"), format_type="url"),
+                ],
+            ),
+        }
 
-    def get_data(self, request=None, **kwargs) -> List[BandData]:
+    def get_data(self, request=None, **kwargs) -> List[Band]:
         data = []
         ds = loader["managedobjectds"]
         sql = pl.SQLContext()
@@ -76,10 +79,7 @@ class ReportDiscoveryLinks(ReportSource):
             if not row["all"]:
                 continue
             pool = Pool.get_by_name(row["pool"])
-            b = BandData(name="row")
-            b.format = BandFormat(title_template="{{ name }}")
-            b.set_data({"name": pool.name})
-            data.append(b)
+            b = Band(name="pool", data={"name": pool.name})
             for x, condition in [
                 ("all", ""),
                 ("0", "and link_count = 0"),
@@ -87,20 +87,22 @@ class ReportDiscoveryLinks(ReportSource):
                 ("2", "and link_count = 2"),
                 ("More 3", "and link_count > 2"),
             ]:
-                b = BandData(name="row")
-                b.set_data(
-                    {
-                        "links_count": x,
-                        "mo_count": row[x],
-                        "percent_at_all": (
-                            f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
-                        ),
-                        "detail": url
-                        % (
-                            f"select * from mo where status = True and enable_ping = True and enable_box = True {condition}",
-                            str(pool.id),
-                        ),
-                    }
+                b.add_child(
+                    Band(
+                        name="row",
+                        data={
+                            "links_count": x,
+                            "mo_count": row[x],
+                            "percent_at_all": (
+                                f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
+                            ),
+                            "detail": url
+                            % (
+                                f"select * from mo where status = True and enable_ping = True and enable_box = True {condition}",
+                                str(pool.id),
+                            ),
+                        },
+                    )
                 )
-                data.append(b)
+            data.append(b)
         return data
