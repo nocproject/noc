@@ -350,7 +350,45 @@ class PConfPlugin(InvPlugin):
         """
         # @todo: Wrap to catch errors
         mo.scripts.set_param(card=self._get_card(obj), name=name, value=value)
+        # Check if we must refetch crossings
+        if self._to_refresh_crossings(obj, name):
+            self._refresh_crossings(mo, obj)
         return {"status": True}
+
+    def _refresh_crossings(self, mo: ManagedObject, _obj: Object) -> None:
+        """
+        Refresh crossings.
+        """
+        # @todo: Run asset check
+        mo.run_discovery(delta=0)
+
+    def _to_refresh_crossings(self, obj: Object, cmd: str) -> bool:
+        """
+        Check if we need to refetch crossings after command.
+
+        Args:
+            obj: Object instance.
+            cmd: Issued commands.
+
+        Returns:
+            True: if the crossings needs to be refreshed.
+            False: if crossings are untouched.
+        """
+        match self.get_model_name(obj):
+            case "ADM-200":
+                return self._to_refresh_crossings_adm200(cmd)
+            case _:
+                return False
+
+    def _to_refresh_crossings_adm200(self, cmd: str) -> bool:
+        """
+        Check if ADM-200 command must refresh crossings.
+        """
+        match cmd:
+            case "SetMode":
+                return True
+            case _:
+                return False
 
     @classmethod
     def get_managed_object(cls, obj: Object) -> Optional[ManagedObject]:
