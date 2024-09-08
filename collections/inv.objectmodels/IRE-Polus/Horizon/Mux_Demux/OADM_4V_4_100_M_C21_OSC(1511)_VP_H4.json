@@ -5,6 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "OADM-4V/4-100-M-C21-OSC(xxxx)V-H4 – Оптический мультиплексор ввода/вывода.",
     "cr_context": "LINECARDH4",
+    "plugins": ["pconf"],
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
     "connections": [
@@ -269,5 +270,6 @@
             "interface": "dwdm",
             "value": 192.4
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | OADM-4V/4-100-M-C21-OSC(1511) IP1550"
 }
