@@ -100,7 +100,7 @@ class Script(BaseScript):
             One morbid vendor tends to mix latin with cyrillic.
             Fix and relax.
             """
-            return s.replace("C", "С").replace("с", "c")
+            return s.replace("С", "C").replace("с", "c")
 
         r = FRU("", "")
         for p in c.info_params:
