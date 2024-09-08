@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # Profile Check Summary Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import List
+from typing import List, Dict
 
 # Third-party modules
 import polars as pl
@@ -15,7 +15,7 @@ import polars as pl
 from noc.main.models.pool import Pool
 from noc.main.models.report import Report
 from noc.core.reporter.reportsource import ReportSource
-from noc.core.reporter.report import BandData
+from noc.core.reporter.report import Band
 from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.core.datasources.loader import loader
 from noc.core.translation import ugettext as _
@@ -70,19 +70,22 @@ class ReportProfileCheckSummary(ReportSource):
         ),  # 2is1.6is2
     ]
 
-    def get_format(self) -> BandFormat:
-        return BandFormat(
-            title_template="Profile Check Summary",
-            columns=[
-                ColumnFormat(name="pp", title=_("PP")),
-                ColumnFormat(name="status", title=_("Status")),
-                ColumnFormat(name="quantity", title=_("Quantity")),
-                ColumnFormat(name="percent", title=_("Percent")),
-                ColumnFormat(name="detail", title=_("Detail"), format_type="url"),
-            ],
-        )
+    def get_formats(self) -> Dict[str, BandFormat]:
+        return {
+            "header": BandFormat(
+                title_template="Profile Check Summary",
+                columns=[
+                    ColumnFormat(name="pp", title=_("PP")),
+                    ColumnFormat(name="status", title=_("Status")),
+                    ColumnFormat(name="quantity", title=_("Quantity")),
+                    ColumnFormat(name="percent", title=_("Percent")),
+                    ColumnFormat(name="detail", title=_("Detail"), format_type="url"),
+                ],
+            ),
+            "pool": BandFormat(title_template="{{ name }}"),
+        }
 
-    def get_data(self, request=None, **kwargs) -> List[BandData]:
+    def get_data(self, request=None, **kwargs) -> List[Band]:
         data = []
         ds = loader["managedobjectds"]
         sql = pl.SQLContext()
@@ -121,22 +124,23 @@ class ReportProfileCheckSummary(ReportSource):
         pools = [p for p in Pool.objects.filter().order_by("name")] + ["Summary"]
         # Main Loop
         for pool in pools:
-            b = BandData(name="row")
-            b.format = BandFormat(title_template="{{ name }}")
             if pool != "Summary":
-                b.set_data({"name": pool.name})
+                b = Band(name="pool", data={"name": pool.name})
                 query = f"SELECT {condition} FROM mo WHERE pool = '{pool.name}' GROUP BY pool"
             else:
-                b.set_data({"name": "Summary"})
+                b = Band(name="pool", data={"name": "Summary"})
                 query = f"SELECT {condition} FROM mo"
-            data.append(b)
-            for row in sql.execute(query, eager=True).transpose(include_header=True).to_dicts():
+            rows = sql.execute(query, eager=True)
+            if rows.is_empty():
+                data.append(b)
+                continue
+            for row in rows.transpose(include_header=True).to_dicts():
                 if row["column"] == "1.2" and row["column_0"] == 0:
                     data.pop()
                     break
-                b = BandData(name="row")
-                b.set_data(
-                    {
+                x = Band(
+                    name="row",
+                    data={
                         "pp": row["column"],
                         "status": title_map[row["column"]],
                         "quantity": row["column_0"],
@@ -146,10 +150,11 @@ class ReportProfileCheckSummary(ReportSource):
                             f"select * from mo where {condition_map[row['column']]}",
                             str(pool.id) if pool != "Summary" else "",
                         ),
-                    }
+                    },
                 )
                 if row["column"] == "1.2.1":
                     p = round(row["column_0"] / data[-1].data["quantity"] * 100.0, 2)
-                    b.data["percent"] = f"{p} %"
-                data.append(b)
+                    x.data["percent"] = f"{p} %"
+                b.add_child(x)
+            data.append(b)
         return data

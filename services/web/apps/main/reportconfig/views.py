@@ -189,6 +189,9 @@ class ReportConfigApplication(ExtDocApplication):
                     {"boxLabel": x, "inputValue": x, "checked": x == param.default}
                     for x in param.choices
                 ]
+            elif param.type == "combo-choice":
+                cfg["xtype"] = "combobox"
+                cfg["store"] = [[x, x] for x in param.choices]
             elif param.type == "bool":
                 cfg["xtype"] = "checkbox"
                 cfg["uiStyle"] = "small"

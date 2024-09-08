@@ -10,6 +10,6 @@ templates:
   DEFAULT:
     formatter: simplereport
     output_type: html
-root_band:
-  name: Root
-  source: reportclassificationrule
+bands:
+  - name: Root
+    source: reportclassificationrule

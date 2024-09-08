@@ -22,7 +22,7 @@ def test_report(report):
     with open(os.path.join(path, f"{report}.yml"), "rb") as f:
         cfg = yaml.safe_load(f)
     # r = yaml.safe_load(report_config)
-    report_engine = ReportEngine()
+    report_engine = ReportEngine(report_print_error=True)
     rp = RunParams(report=ReportConfig(**cfg), output_type=OutputType.CSV)
     connect()
     out_doc = report_engine.run_report(r_params=rp)

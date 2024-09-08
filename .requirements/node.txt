@@ -33,7 +33,7 @@ numpy==1.26.2
 orjson==3.9.10
 progressbar2==4.2.0
 psycopg2-binary==2.9.9
-polars-lts-cpu==0.19.17
+polars-lts-cpu==1.6.0
 pydantic==2.5.2
 pymongo==4.6.1
 pyproj==3.6.1

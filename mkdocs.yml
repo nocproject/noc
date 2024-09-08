@@ -953,6 +953,7 @@ nav:
       - Fault Management: fault-management/index.md
       - Alarm Escalation: alarm-escalation-reference/index.md
       - Performance Management: performance-management/index.md
+      - Working with Report: reference-report-configuration/index.md
       - Peering Management: peering-management/index.md
       - Custom: custom/index.md
       - Cards: card/index.md

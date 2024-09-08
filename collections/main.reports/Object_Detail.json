@@ -34,11 +34,16 @@
                     "json": null
                 }
             ]
+        },
+        {
+            "name": "objects",
+            "orientation": "H",
+            "parent": "Root"
         }
     ],
     "bands_format": [
         {
-            "name": "Root",
+            "name": "objects",
             "column_format": [
                 {
                     "name": "id",
@@ -235,9 +240,6 @@
         "columns.interfacesstatusstatds.all": {
             "ru": "Кол-во интерфейсов по скорости"
         },
-        "columns.physical_iface_count": {
-            "ru": "Кол-во интерфейсов"
-        },
         "columns.link_count": {
             "ru": "Кол-во линков"
         },
@@ -263,6 +265,9 @@
             "ru": "Профиль объекта"
         },
         "columns.phys_interface_count": {
+            "ru": "Кол-во интерфейсов"
+        },
+        "columns.physical_iface_count": {
             "ru": "Кол-во интерфейсов"
         },
         "columns.profile": {

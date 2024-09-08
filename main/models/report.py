@@ -24,15 +24,25 @@ from mongoengine.fields import (
     DictField,
     FileField,
     MapField,
+    EnumField,
 )
 import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
-from noc.core.reporter.types import ReportConfig, Parameter, ReportBand, ReportQuery
-from noc.core.reporter.types import Template as TemplateCfg
-from noc.core.reporter.types import BandFormat as BandFormatCfg
+from noc.core.reporter.types import (
+    ReportConfig,
+    Parameter,
+    ReportBand,
+    ReportQuery,
+    Template as TemplateCfg,
+    BandCondition,
+    BandFormat as BandFormatCfg,
+    ROOT_BAND,
+    BandOrientation,
+)
 from noc.core.prettyjson import to_json
+from noc.core.text import quote_safe_path
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 
@@ -53,6 +63,7 @@ class ReportParam(EmbeddedDocument):
             "model",
             "model_multi",
             "choice",
+            "combo-choice",
             "bool",
             "fields_selector",
         ],
@@ -132,11 +143,13 @@ class BandFormat(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField(required=True)
     title_template = StringField()
+    # Do not in table print
+    is_header = BooleanField(default=False)
     column_format = ListField(DictField())
 
     @property
     def is_root(self) -> bool:
-        return self.name == "Root"
+        return self.name == ROOT_BAND
 
     def __str__(self):
         return self.name
@@ -149,6 +162,8 @@ class BandFormat(EmbeddedDocument):
         }
         if self.column_format:
             r["column_format"] = [x for x in self.column_format]
+        if self.is_header:
+            r["is_header"] = self.is_header
         return r
 
 
@@ -156,23 +171,28 @@ class Band(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
     parent = StringField()
-    orientation = StringField(choices=["H", "V", "C", "U"])
+    orientation: "BandOrientation" = EnumField(BandOrientation)
     queries = EmbeddedDocumentListField(Query)
+    condition_param = StringField(required=False)
+    condition_value = StringField(required=False)
 
     @property
     def is_root(self) -> bool:
-        return self.name == "Root"
+        return self.name == ROOT_BAND
 
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
-            "orientation": self.orientation,
+            "orientation": self.orientation.value,
         }
         if self.parent:
             r["parent"] = self.parent
         if self.queries:
             r["queries"] = [x.json_data for x in self.queries]
+        if self.condition_param and self.condition_value:
+            r["condition_param"] = self.condition_param
+            r["condition_value"] = self.condition_value
         return r
 
 
@@ -284,6 +304,9 @@ class Report(Document):
             ],
         )
 
+    def get_json_path(self) -> str:
+        return quote_safe_path(self.name.strip("*")) + ".json"
+
     @property
     def config(self) -> ReportConfig:
         return self.get_config()
@@ -325,7 +348,7 @@ class Report(Document):
         if self.report_source:
             return ReportConfig(
                 name=self.name,
-                root_band=ReportBand(name="Root", children=[], source=self.report_source),
+                bands=[ReportBand(name="Root", source=self.report_source)],
                 templates={
                     "DEFAULT": TemplateCfg(
                         code="DEFAULT",
@@ -338,41 +361,47 @@ class Report(Document):
                 parameters=params,
             )
 
-        bands = {"Root": ReportBand(name="Root", children=[])}
+        bands = {ROOT_BAND: ReportBand(name=ROOT_BAND, children=[])}
         for b in self.bands:
             if b.name in bands:
                 bands[b.name].queries = [
-                    ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
+                    ReportQuery(name=b.name, datasource=q.datasource, query=q.ds_query)
                     for q in b.queries
                 ]
             else:
                 bands[b.name] = ReportBand(
                     name=b.name,
                     queries=[
-                        ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
+                        ReportQuery(name=b.name, datasource=q.datasource, query=q.ds_query)
                         for q in b.queries
                     ],
-                    children=[],
+                    conditions=(
+                        [BandCondition(param=b.condition_param, value=b.condition_value)]
+                        if b.condition_param
+                        else None
+                    ),
                 )
-            if b.name != "Root":
-                parent = b.parent or "Root"
-                bands[b.name].parent = bands[parent]
-                bands[parent].children += [bands[b.name]]
+            if b.name != ROOT_BAND:
+                parent = b.parent or ROOT_BAND
+                bands[b.name].parent = bands[parent].name
+                # bands[parent].children += [bands[b.name]]
 
         return ReportConfig(
             name=self.name,
-            root_band=bands["Root"],
+            bands=list(bands.values()),
             templates=templates,
             parameters=params,
         )
 
-    def get_band_format(self, band: str = "Root") -> "BandFormat":
+    def get_band_format(self, band: Optional[str] = None) -> "BandFormat":
         for bf in self.bands_format:
-            if bf.name == band:
+            if not band:
+                return bf
+            elif bf.name == band:
                 return bf
         return None
 
-    def get_band_columns(self, band: str = "Root") -> Dict[str, List[str]]:
+    def get_band_columns(self, band: str = ROOT_BAND) -> Dict[str, List[str]]:
         from noc.core.datasources.loader import loader
 
         r = defaultdict(list)

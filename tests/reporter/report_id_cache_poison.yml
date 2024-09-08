@@ -7,56 +7,55 @@ templates:
     bands_format:
       master_data:
         title_template: '{{ mac }} {{ reason }}'
-root_band:
-  name: Root
-  children:
-    - name: header
-    - name: master_data
-      orientation: H
-      queries:
-        - name: q1
-          query: select mac, first(reason) from Root group by mac order by mac
-      children:
-        - name: duplicate_detail
-          orientation: H
-          queries:
-           - name: detail
-             query: select name, address, pool from Root where mac = '{{ mac }}'
-  queries:
-    - name: duplicate
-      json_data: '[{"address": "10.0.0.11",
-              "pool": "58d6cbbfc165cf2ea8edc242",
-              "name": "91#995686",
-              "mac": "00:0E:5E:00:01:02",
-              "reason": "Other"},
-             {"address": "10.0.0.15",
-              "pool": "58d6cbbfc165cf2ea8edc242",
-              "name": "111#995706",
-              "mac": "00:0E:5E:00:01:02",
-              "reason": "Other"},
-             {"address": "10.0.0.40",
-              "pool": "58d6cbbfc165cf2ea8edc242",
-              "name": "192#1229613",
-              "mac": "00:1F:CE:00:01:02",
-              "reason": "Other"},
-             {"address": "10.0.0.161",
-              "pool": "58d6cbbfc165cf2ea8edc242",
-              "name": "51#1232468",
-              "mac": "00:1F:CE:00:01:02",
-              "reason": "Other"},
-             {"address": "10.0.0.47",
-              "pool": "58d6cbbfc165cf2ea8edc242",
-              "name": "21#1036646",
-              "mac": "00:00:00:00:00:00",
-              "reason": "Other"},
-             {"address": "10.0.0.254",
-              "pool": "58d6cbbfc165cf2ea8edc242",
-              "name": "6/1#1045306",
-              "mac": "00:00:00:00:00:00",
-              "reason": "Other"},
-             {"address": "11.0.0.25",
-              "pool": "58d6cbbfc165cf2ea8edc242",
-              "name": "cx300#1051006",
-              "mac": "00:00:00:00:00:00",
-              "reason": "Other"}
-            ]'
+bands:
+  - name: Root
+    queries:
+      - name: duplicate
+        json_data: '[{"address": "10.0.0.11",
+                "pool": "58d6cbbfc165cf2ea8edc242",
+                "name": "91#995686",
+                "mac": "00:0E:5E:00:01:02",
+                "reason": "Other"},
+               {"address": "10.0.0.15",
+                "pool": "58d6cbbfc165cf2ea8edc242",
+                "name": "111#995706",
+                "mac": "00:0E:5E:00:01:02",
+                "reason": "Other"},
+               {"address": "10.0.0.40",
+                "pool": "58d6cbbfc165cf2ea8edc242",
+                "name": "192#1229613",
+                "mac": "00:1F:CE:00:01:02",
+                "reason": "Other"},
+               {"address": "10.0.0.161",
+                "pool": "58d6cbbfc165cf2ea8edc242",
+                "name": "51#1232468",
+                "mac": "00:1F:CE:00:01:02",
+                "reason": "Other"},
+               {"address": "10.0.0.47",
+                "pool": "58d6cbbfc165cf2ea8edc242",
+                "name": "21#1036646",
+                "mac": "00:00:00:00:00:00",
+                "reason": "Other"},
+               {"address": "10.0.0.254",
+                "pool": "58d6cbbfc165cf2ea8edc242",
+                "name": "6/1#1045306",
+                "mac": "00:00:00:00:00:00",
+                "reason": "Other"},
+               {"address": "11.0.0.25",
+                "pool": "58d6cbbfc165cf2ea8edc242",
+                "name": "cx300#1051006",
+                "mac": "00:00:00:00:00:00",
+                "reason": "Other"}
+              ]'
+  - name: header
+  - name: master_data
+    orientation: H
+    queries:
+      - name: q1
+        query: select mac, first(reason) from Root group by mac order by mac
+  - name: duplicate_detail
+    parent: master_data
+    orientation: H
+    queries:
+     - name: detail
+       query: select name, address, pool from Root where mac = '{{ mac }}'

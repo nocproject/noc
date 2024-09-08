@@ -12,11 +12,16 @@
                 "datasource": "reportdsalarms",
                 "json": null
             }]
+        },
+        {
+            "name": "alarms",
+            "orientation": "H",
+            "parent": "Root"
         }
     ],
     "bands_format": [
         {
-            "name": "Root",
+            "name": "alarms",
             "column_format": [
                 {
                     "name": "alarm_id",
@@ -253,6 +258,7 @@
             "description": "",
             "choices": ["active", "both", "archived"],
             "default": "both",
+            "hide": false,
             "label": "Alarm Source",
             "required": true,
             "type": "choice"
@@ -260,6 +266,7 @@
         {
             "name": "start",
             "description": null,
+            "hide": false,
             "label": "From",
             "required": true,
             "type": "date"
@@ -267,6 +274,7 @@
         {
             "name": "end",
             "description": null,
+            "hide": false,
             "label": "To",
             "required": true,
             "type": "date"
@@ -274,6 +282,7 @@
         {
             "name": "segment",
             "description": null,
+            "hide": false,
             "label": "Segment",
             "model_id": "inv.NetworkSegment",
             "type": "model"
@@ -281,6 +290,7 @@
         {
             "name": "administrative_domain",
             "description": null,
+            "hide": false,
             "label": "By Adm. domain",
             "model_id": "sa.AdministrativeDomain",
             "type": "model"
@@ -288,6 +298,7 @@
         {
             "name": "resource_group",
             "description": null,
+            "hide": false,
             "label": "By Resource Group",
             "model_id": "inv.ResourceGroup",
             "type": "model"
@@ -295,6 +306,7 @@
         {
             "name": "ex_resource_group",
             "description": null,
+            "hide": false,
             "label": "Exclude MO by Resource Group",
             "model_id": "inv.ResourceGroup",
             "type": "model"
@@ -303,6 +315,7 @@
             "name": "min_duration",
             "description": null,
             "default": "300",
+            "hide": false,
             "label": "Min. Duration",
             "required": true,
             "type": "integer"
@@ -311,6 +324,7 @@
             "name": "max_duration",
             "description": null,
             "default": "0",
+            "hide": false,
             "label": "Max. Duration",
             "required": true,
             "type": "integer"
@@ -319,6 +333,7 @@
             "name": "min_objects",
             "description": null,
             "default": "0",
+            "hide": false,
             "label": "Min. Objects",
             "type": "integer"
         },
@@ -326,6 +341,7 @@
             "name": "min_subscribers",
             "description": null,
             "default": "0",
+            "hide": false,
             "label": "Min. Subscribers",
             "type": "integer"
         },
@@ -333,6 +349,7 @@
             "name": "fields",
             "description": null,
             "default": "alarm_id,root_id,from_ts,to_ts,duration_sec,object_name,object_address,object_profile,object_object_profile,object_admdomain,object_platform,object_version,object_project,alarm_class,maintenance,objects,subscribers,tt,escalation_ts,location,object_hostname",
+            "hide": false,
             "label": "Fields",
             "type": "fields_selector"
         }

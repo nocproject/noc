@@ -7,6 +7,7 @@
 
 # Python modules
 import enum
+from time import perf_counter
 from dataclasses import dataclass
 from functools import partial
 from collections import defaultdict
@@ -123,8 +124,10 @@ class BaseDataSource(object):
         :return:
         """
         r = defaultdict(list)
+        started = perf_counter()
         async for _, f_name, value in cls.iter_query(fields, *args, **kwargs):
             r[f_name].append(value)
+        print(f"Execute query: {perf_counter() - started:.2f} sec.")
         fields = set(fields or [])
         if not r:
             return pl.DataFrame(
@@ -135,13 +138,14 @@ class BaseDataSource(object):
                     if cls.is_out_field(c, fields)
                 ],
             )
-        return pl.DataFrame(
-            [
-                pl.Series(c.name, r[c.name], dtype=c.type.value)
-                for c in cls.iter_ds_fields()
-                if len(r[c.name]) and (cls.is_out_field(c, fields) or (c.is_vector and c.name in r))
-            ]
-        )
+        series = []
+        for c in cls.iter_ds_fields():
+            if len(r[c.name]) and (cls.is_out_field(c, fields) or (c.is_vector and c.name in r)):
+                try:
+                    series.append(pl.Series(c.name, r[c.name], dtype=c.type.value))
+                except TypeError:
+                    print(f"Type Error on column: {c.name}. Will be skipping")
+        return pl.DataFrame(series)
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 
     @classmethod
