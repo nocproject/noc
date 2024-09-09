@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+import orjson
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -31,13 +32,6 @@ class Script(BaseScript):
         r"(?P<part_no>\d{3}-\d{6}|NON-JNPR|UNKNOWN|BUILTIN)\s+"
         r"(?P<serial>\S+)\s+"
         r"(?P<rest>.+)$",
-        re.IGNORECASE,
-    )
-
-    env_part = re.compile(
-        r"^(?P<type>(?:(?:Power|Temp|Fans))?\s+)?"
-        r"(?P<name>(?:FPC(?:.\S+)+)\s+)"
-        r"(?P<status>.\S+.)",
         re.IGNORECASE,
     )
 
@@ -113,20 +107,67 @@ class Script(BaseScript):
                     rev = match.group("revision")
                     yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
+    #    {
+    #        "environment-information" : [
+    #        {
+    #            "attributes" : {"xmlns" : "http://xml.juniper.net/junos/15.1R7/junos-chassis"},
+    #            "environment-item" : [
+    #            {
+    #                "name" : [
+    #                {
+    #                    "data" : "FPC 0 Power Supply 0"
+    #                }
+    #                ],
+    #                "class" : [
+    #                {
+    #                    "data" : "Power"
+    #                }
+    #                ],
+    #                "status" : [
+    #                {
+    #                    "data" : "OK"
+    #                }
+    #                ]
+    #            },
+    #            ],
+    #        }
+    #        ]
+    #    }
+
     def parse_chassis_environment(self, response):
-        for line in response.splitlines():
-            line = line.strip()
-            if not line:
+        # Juniper add prompt to response
+        response = "\n".join(response.split("\n")[1:])
+        data = {}
+        try:
+            data = orjson.loads(response)
+        except orjson.JSONDecodeError as e:
+            self.logger.info("Error while parsing chassis environment %s", e)
+            return
+
+        env_info = data.get("environment-information")
+        if not env_info:
+            self.logger.info("environment-information is empty")
+
+        env_items = env_info[0].get("environment-item")
+        if not env_items:
+            self.logger.info("environment-item is empty")
+
+        for item in env_items:
+            item_name = item["name"][0]["data"]
+            item_status = item["status"][0]["data"]
+
+            if item.get("class"):
+                item_class = item["class"][0]["data"]
+            else:
                 continue
 
-            match = self.env_part.search(line)
-
-            if match:
-                yield match.groups()
+            yield item_class, item_name, item_status
 
     def get_sensors_cli(self):
         res = {}
-        chassis_environment_response = self.cli("show chassis environment", cached=True)
+        chassis_environment_response = self.cli(
+            "show chassis environment | display json", cached=True
+        )
 
         p_chassis_environment = self.parse_chassis_environment(chassis_environment_response)
 
@@ -164,7 +205,7 @@ class Script(BaseScript):
         self.virtual_chassis = None
         v = self.cli("show chassis hardware", cached=True)
         objects = []
-        sensors = self.get_sensors()
+        sensors = self.get_sensors_cli()
         chassis_sn = set()
         p_hardware = self.parse_hardware(v)
 
