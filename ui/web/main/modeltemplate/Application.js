@@ -212,14 +212,12 @@ Ext.define("NOC.main.modeltemplate.Application", {
             },
           ],
           onBeforeEdit: function(editor, context){
-            console.log("onBeforeEdit ", editor, context);
             if(context.field === "default_dictionary"){
               var form = context.view.up("form"), 
                 templateType = form.down("#templateType"),
                 params = form.down("#fieldsGrid"),
                 selection = params.grid.getSelectionModel().getSelection()[0],
                 value = templateType.getValue();
-              console.log("name : ", context.record.get("name"));
               Ext.Ajax.request({
                 url: `/main/modeltemplate/directory/${value}/fields/${context.record.get("name")}/`,
                 method: "GET",
