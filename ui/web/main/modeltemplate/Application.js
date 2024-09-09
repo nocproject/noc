@@ -26,8 +26,8 @@ Ext.define("NOC.main.modeltemplate.Application", {
 
     me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
-      restUrl: new Ext.XTemplate('/main/modeltemplate/{id}/json/'),
-      previewName: new Ext.XTemplate('Model Template: {name}'),
+      restUrl: new Ext.XTemplate("/main/modeltemplate/{id}/json/"),
+      previewName: new Ext.XTemplate("Model Template: {name}"),
     });
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -86,23 +86,54 @@ Ext.define("NOC.main.modeltemplate.Application", {
         {
           name: "type",
           xtype: "combobox",
+          itemId: "templateType",
           fieldLabel: __("Type"),
-          uiStyle: 'medium',
+          uiStyle: "medium",
           allowBlank: true,
-          store: [
-            ["host", __("Managed Object")],
-          ],
+          valueField: "id",
+          triggers: {
+            clear: {
+              cls: 'x-form-clear-trigger',
+              hidden: true,
+              weight: -1,
+              handler: function(field){
+                field.setValue(null);
+                field.fireEvent("select", field);
+              },
+            },
+          },
+          store: {
+            fields: ["id", "text"],
+            data: [
+              {id: "host", text: __("Managed Object")},
+            ],
+          },
+          listeners: {
+            select: function(field){
+              var form = field.up("form"),
+                params = form.down("#fieldsGrid");
+              params.store.removeAll();
+            },
+            change: function(field, newValue){
+              if(newValue){
+                field.getTrigger("clear").show();
+              } else{
+                field.getTrigger("clear").hide();
+              }
+            },
+          },
         },
         {
           name: "default_state",
           xtype: "wf.state.LookupField",
-          uiStyle: 'large',
+          uiStyle: "large",
           fieldLabel: __("Default State"),
           allowBlank: true,
         },
         {
           name: "params",
           xtype: "gridfield",
+          itemId: "fieldsGrid",
           fieldLabel: __("Fields"),
           columns: [
             {
@@ -110,6 +141,7 @@ Ext.define("NOC.main.modeltemplate.Application", {
               dataIndex: "name",
               width: 200,
               sortable: false,
+              renderer: NOC.render.Lookup("name"), 
               editor: {
                 xtype: "textfield",
               },
@@ -138,8 +170,33 @@ Ext.define("NOC.main.modeltemplate.Application", {
               },
             },
             {
+              text: __("Dictionary"),
+              dataIndex: "default_dictionary",
+              itemId: "paramDictionary",
+              renderer: function(value, metaData, record){
+                if(value === __("Select dictionary")){
+                  return value;
+                }
+                if(record && record.get("default_dictionary__label")){
+                  return record.get("default_dictionary__label");
+                }
+                var field = this.down("#paramDictionary"),
+                  editor = field.getEditor();
+                if(editor.xtype === "combo"){
+                  var store = editor.getStore(),
+                    r = store.getById(value);
+                  return r ? r.get("label") : "-";
+                }
+                return "-";
+              },
+              editor: {
+                xtype: "textfield",
+              },
+            },
+            {
               text: __("Default expression"),
               dataIndex: "default_expression",
+              itemId: "paramExpression",
               width: 200,
               sortable: false,
               editor: {
@@ -154,6 +211,103 @@ Ext.define("NOC.main.modeltemplate.Application", {
               editor: "inv.capability.LookupField",
             },
           ],
+          onBeforeEdit: function(editor, context){
+            console.log("onBeforeEdit ", editor, context);
+            if(context.field === "default_dictionary"){
+              var form = context.view.up("form"), 
+                templateType = form.down("#templateType"),
+                params = form.down("#fieldsGrid"),
+                selection = params.grid.getSelectionModel().getSelection()[0],
+                value = templateType.getValue();
+              console.log("name : ", context.record.get("name"));
+              Ext.Ajax.request({
+                url: `/main/modeltemplate/directory/${value}/fields/${context.record.get("name")}/`,
+                method: "GET",
+                async: false,
+                success: function(response){
+                  var data = Ext.decode(response.responseText);
+                  if(Ext.isEmpty(data)){
+                    NOC.error(__("Dictionary not found"));
+                    return;
+                  }
+                  if(data.type === "lookup"){
+                    context.column.setEditor({
+                      xtype: "combo",
+                      displayField: "label",
+                      valueField: "id",
+                      queryParam: null,
+                      store: {
+                        fields: ["id", "label"],
+                        proxy: {
+                          type: "rest",
+                          url: data.rest_url,
+                          pageParam: null,
+                          startParam: null,
+                          limitParam: null,
+                          reader: {
+                            type: "json",
+                          },
+                        },
+                      },
+
+                      listeners: {
+                        select: function(field, record){
+                          selection.set("default_expression", record.id);
+                        },
+                      },  
+                    });
+                    context.column.getEditor().setDisabled(false);
+                  } else{
+                    context.column.setEditor({
+                      xtype: "textfield",
+                    });
+                    context.column.getEditor().setDisabled(true);
+                    selection.set("default_dictionary", "-");
+                  }
+                },
+                failure: function(response){
+                  NOC.error(__("Server-side failed to get default dictionary") + " : " + response.status);
+                },
+              });
+            } else if(context.field === "name"){
+              context.column.setEditor({
+                xtype: "combobox",
+                displayField: "label",
+                valueField: "id",
+                listeners: {
+                  beforequery: function(queryPlan){
+                    var field = queryPlan.combo,
+                      form = field.up("form"),
+                      templateType = form.down("#templateType"),
+                      value = templateType.getValue();
+                    Ext.Ajax.request({
+                      url: `/main/modeltemplate/directory/${value}/fields`,
+                      method: "GET",
+                      success: function(response){
+                        field.getStore().loadData(Ext.decode(response.responseText));
+                      },
+                      failure: function(response){
+                        NOC.error(__("Server-side failed to get fields") + " : " + response.status);
+                      },
+                    });
+                  },
+                  select: function(field, record){
+                    var form = field.up("form"),
+                      params = form.down("#fieldsGrid"),
+                      selection = params.grid.getSelectionModel().getSelection()[0];
+                    if(record && record.get("type") === "lookup"){
+                      selection.set("default_dictionary", __("Select dictionary"));
+                      selection.set("default_dictionary__label", __("Select dictionary"));
+                    } else{
+                      selection.set("default_dictionary", "-");
+                      selection.set("default_dictionary__label", "-");
+                    }
+                    selection.set("default_expression", "");
+                  },
+                },
+              });
+            }
+          },
         },
         {
           name: "groups",
@@ -231,10 +385,10 @@ Ext.define("NOC.main.modeltemplate.Application", {
               editor: "checkbox",
             },
             {
-              text: __('ModelID'),
-              dataIndex: 'model_id',
-              renderer: NOC.render.Lookup('model_id'),
-              editor: 'main.ref.modelid.LookupField',
+              text: __("ModelID"),
+              dataIndex: "model_id",
+              renderer: NOC.render.Lookup("model_id"),
+              editor: "main.ref.modelid.LookupField",
               width: 150,
             },
             {
