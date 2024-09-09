@@ -36,20 +36,20 @@ def audit_change(changes: List[ChangeItem]) -> None:
 
     for item in changes:
         item = ChangeItem(**item)
-        if hasattr(item, "user"):
-            o = get_object(item.model_id, item.item_id)
-            dt_object = datetime.datetime.fromtimestamp(item.ts)
-            dc_new = {
-                "change_id": str(uuid.uuid4()),
-                "timestamp": dt_object.strftime("%Y-%m-%d %H:%M:%S"),
-                "user": item.user,
-                "model_name": item.model_id,
-                "object_name": o.name,
-                "object_id": item.item_id,
-                "op": item.op[0].upper(),
-                "changes": json.dumps(item.changed_fields),
-            }
-            publish(orjson.dumps(dc_new), stream="ch.changes", partition=0)
+        o = get_object(item.model_id, item.item_id)
+        dt_object = datetime.datetime.fromtimestamp(item.ts)
+        user = item.user if hasattr(item, "user") else None
+        dc_new = {
+            "change_id": str(uuid.uuid4()),
+            "timestamp": dt_object.strftime("%Y-%m-%d %H:%M:%S"),
+            "user": user,
+            "model_name": item.model_id,
+            "object_name": o.name,
+            "object_id": item.item_id,
+            "op": item.op[0].upper(),
+            "changes": json.dumps(item.changed_fields),
+        }
+        publish(orjson.dumps(dc_new), stream="ch.changes", partition=0)
 
 
 def on_change(

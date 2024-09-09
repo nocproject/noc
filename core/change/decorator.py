@@ -31,6 +31,8 @@ def change(model):
     """
     if not hasattr(model, "get_by_id"):
         raise ValueError("[%s] Missed .get_by_id", get_model_id(model))
+    if not hasattr(model, "flag_audit"):
+        model.flag_audit = True
     if is_document(model):
         _track_document(model)
     else:
