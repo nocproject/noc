@@ -11,6 +11,8 @@ import random
 # NOC modules
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import ObjectIdParameter, IntParameter
+from noc.core.facade.rack import get_svg_for_rack
+from noc.core.facade.response import svg_response
 from .base import InvPlugin
 
 
@@ -23,7 +25,7 @@ class RackPlugin(InvPlugin):
         self.add_view(
             "api_plugin_%s_set_rackload" % self.name,
             self.api_set_rack_load,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/rackload/$" % self.name,
+            url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/rackload/$",
             method=["POST"],
             validate={
                 "cid": ObjectIdParameter(),
@@ -31,6 +33,12 @@ class RackPlugin(InvPlugin):
                 "position_rear": IntParameter(),
                 "shift": IntParameter(),
             },
+        )
+        self.add_view(
+            f"api_plugin_{self.name}_facade",
+            self.api_facade_svg,
+            url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/(?P<name>front|rear).svg$",
+            method=["GET"],
         )
 
     def get_data(self, request, o):
@@ -133,3 +141,10 @@ class RackPlugin(InvPlugin):
                 system="WEB",
                 op="CHANGE",
             )
+
+    def api_facade_svg(self, request, id: str, name: str):
+        obj = self.app.get_object_or_404(Object, id=id)
+        # Get SVG
+        svg = get_svg_for_rack(obj, name=name)
+        svg.enable_highlight()
+        return svg_response(svg)
