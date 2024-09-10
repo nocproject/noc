@@ -255,12 +255,10 @@ class ReportDsAlarms(BaseDataSource):
             match["adm_path"] = {"$in": list(ads)}
             mos_filter["administrative_domain__in"] = list(ads)
         # Main filters
-        for name in filters:
-            # name, values = ff["name"], ff["values"]
-            value, values = filters[name], [filters[name]]
-            if isinstance(filters[name], list):
-                values = filters[name]
-                value = values[0]
+        for name, values in filters.items():
+            if not isinstance(values, list):
+                values = [values]
+            value = values[0]
             if name == "source":
                 if "active" in values or "both" in values:
                     alarm_collections += [ActiveAlarm]
@@ -279,14 +277,13 @@ class ReportDsAlarms(BaseDataSource):
             elif name == "alarm_class":
                 match["alarm_class"] = bson.ObjectId(value)
             elif name == "segment":
-                match["segment_path"] = bson.ObjectId(value)
+                match["segment_path"] = value.id
             elif name == "resource_group":
-                resource_group = ResourceGroup.get_by_id(value)
                 mos_filter["effective_service_groups__overlap"] = ResourceGroup.get_nested_ids(
-                    resource_group
+                    value
                 )
             if name == "ex_resource_group":
-                ex_resource_group = ResourceGroup.get_by_id(values[0])
+                ex_resource_group = value
         if match_duration:
             match_middle["duration"] = match_duration
         if mos_filter:
