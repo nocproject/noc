@@ -21,7 +21,7 @@ import cachetools
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.main.models.label import Label
 from noc.inv.models.modelinterface import ModelInterface, ModelDataError
-from noc.inv.models.objectmodel import ObjectModel, ConnectionRule
+from noc.inv.models.objectmodel import ObjectModel, ConnectionRule, Crossing
 from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
@@ -149,7 +149,7 @@ class AssetCheck(DiscoveryCheck):
         sa_data: List[Dict[str, Any]] = None,
         param_data: List[Dict[str, Any]] = None,
         cpe_id: Optional[str] = None,
-        crossing: List[Dict[str, str]] = None,
+        crossing: List[Dict[str, str]] | None = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -369,25 +369,7 @@ class AssetCheck(DiscoveryCheck):
         self.sync_data(o, data)
         if param_data:
             self.object_param_artifacts[str(o.id)] = param_data
-        if not crossing:
-            return
-        for c in crossing:
-            if not o.has_connection(c["input"]):
-                self.logger.warning("[%s] Unkown crossing input: %s", o.model.name, c["input"])
-                continue
-            if not o.has_connection(c["output"]):
-                self.logger.warning("[%s] Unkown crossing output: %s", o.model.name, c["output"])
-                continue
-            o.set_internal_connection(
-                o.model.get_model_connection(c["input"]).name,
-                o.model.get_model_connection(c["output"]).name,
-                data={
-                    "gain_db": c["gain"] or 1.0,
-                    "input_discriminator": c.get("input_discriminator"),
-                    "output_discriminator": c.get("output_discriminator"),
-                },
-            )
-        o.save()
+        self.sync_crossing(o, crossing)
 
     def clean_sa_data(
         self, data: List[Dict[str, str]]
@@ -1163,6 +1145,33 @@ class AssetCheck(DiscoveryCheck):
                 )
                 return new_serial
         return serial
+
+    def sync_crossing(self, obj: Object, crossing: list[dict[str, str]] | None = None) -> None:
+        """
+        Synchronize crossing.
+        """
+
+        def check_port(name: str) -> None:
+            x = obj.model.get_model_connection(name)
+            if not x:
+                msg = f"invalid connection: {x}"
+                raise ValueError(msg)
+
+        def cross_item(item: dict[str, str]) -> Crossing:
+            check_port(item["input"])
+            check_port(item["output"])
+            return Crossing(
+                input=item["input"],
+                output=item["output"],
+                input_discriminator=item.get("input_discrimiator"),
+                output_discriminator=item.get("output_discriminator"),
+                gain_db=item.get("gain_db"),
+            )
+
+        crossing = crossing or []
+        self.logger.info("Set crossing: %s", crossing)
+        obj.cross = [cross_item(x) for x in crossing]
+        obj.save()
 
     @cachetools.cachedmethod(
         operator.attrgetter("_serial_masks"), lock=operator.attrgetter("_serial_masks_lock")
