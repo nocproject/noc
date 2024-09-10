@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Message Stream Config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -120,7 +120,6 @@ STREAMS: List[StreamConfig] = [
     ),
     # Sender
     StreamConfig(name="tgsender"),
-    StreamConfig(name="icqsender"),
     StreamConfig(name="mailsender"),
     StreamConfig(
         name="kafkasender",
