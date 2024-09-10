@@ -26,6 +26,7 @@ class FieldType(enum.Enum):
     FLOAT = pl.Float32
     BOOL = pl.Boolean
     DATETIME = pl.Datetime
+    LIST_STRING = pl.List(pl.Utf8)
 
 
 @dataclass
