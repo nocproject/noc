@@ -901,7 +901,7 @@ class Object(Document):
             c = c.parent
         return None
 
-    def get_box(self) -> Optional["Object"]:
+    def get_box(self) -> "Object":
         """
         Get chassis.
         """
