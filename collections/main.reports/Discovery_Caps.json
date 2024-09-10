@@ -8,30 +8,34 @@
         {
             "name": "Root",
             "orientation": "H",
-            "queries": [{
-                "datasource": "discoverycapsds",
-                "json": null
-            }]
+            "queries": [
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectcapsds",
+                    "json": null
+                }
+            ]
         },
         {
             "name": "master",
             "orientation": "H",
             "parent": "Root",
-            "queries": [{
-                "ds_query": "select * from Root order by managed_object, record_type desc, object"
-            }]
+            "queries": [
+                {
+                    "ds_query": "select name, address, 'Main' as object, all_caps from Root"
+                }
+            ]
         }
     ],
     "bands_format": [
         {
-            "name": "Root",
-            "title_template": ""
-        },
-        {
             "name": "master",
             "column_format": [
                 {
-                    "name": "managed_object",
+                    "name": "name",
                     "title": "Managed Object",
                     "format_type": "string"
                 },
@@ -46,7 +50,7 @@
                     "format_type": "string"
                 },
                 {
-                    "name": "capabilities",
+                    "name": "managedobjectcapsds.all_caps",
                     "title": "Capabilities",
                     "format_type": "string"
                 }
@@ -61,29 +65,30 @@
         "title": {
             "ru": "Опрошенные свойства оборудования (Новый)"
         },
-        "columns.managed_object": {
-            "ru": "Объект управления"
-        },
         "columns.address": {
             "ru": "Адрес"
-        },
-        "columns.object": {
-            "ru": "Объект"
         },
         "columns.capabilities": {
             "ru": "Свойства"
         },
-        "parameters.pool": {
-            "ru": "Пул объекта"
+        "columns.managed_object": {
+            "ru": "Объект управления"
+        },
+        "columns.object": {
+            "ru": "Объект"
         },
         "parameters.mo_profile": {
             "ru": "Профиль объекта"
+        },
+        "parameters.pool": {
+            "ru": "Пул объекта"
         }
     },
     "parameters": [
         {
             "name": "pool",
             "description": null,
+            "hide": false,
             "label": "Pool",
             "model_id": "main.Pool",
             "required": true,
@@ -92,6 +97,7 @@
         {
             "name": "mo_profile",
             "description": null,
+            "hide": false,
             "label": "MO Profile",
             "model_id": "sa.ManagedObjectProfile",
             "type": "model"
@@ -100,7 +106,7 @@
     "templates": [
         {
             "code": "DEFAULT",
-            "has_preview": true,
+            "has_preview": false,
             "is_alterable_output": true,
             "output_type": "html"
         }
