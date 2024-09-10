@@ -115,7 +115,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
             {
               xtype: "container",
               itemId: "image",
-              html: "<object id='svg-object' data=" + view.src + "' type='image/svg+xml'></object>",
+              html: "<object id='svg-object' data='" + view.src + "' type='image/svg+xml'></object>",
               padding: 5,
               listeners: {
                 scope: me,
