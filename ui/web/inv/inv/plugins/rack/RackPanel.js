@@ -214,7 +214,6 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     var me = this,
       padding = 5,
       viewPanel = me.down("#viewPanel"),
-      zoomButton = me.down("#zoomButton"),
       vm = me.getViewModel(),
       url = "/inv/inv/" + data.id + "/plugin/rack/" + vm.get("side") + ".svg";
     vm.get("gridStore").loadData(data.load);
@@ -229,7 +228,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         afterrender: "onAfterRender",
       },
     });
-    zoomButton.setValue(1.0);
     viewPanel.down("#image").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
+    me.getController().onZoom(me.down("#zoomButton"));
   },
 });
