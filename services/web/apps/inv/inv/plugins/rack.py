@@ -5,8 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import random
 
 # NOC modules
 from noc.inv.models.object import Object
@@ -45,7 +43,6 @@ class RackPlugin(InvPlugin):
         r = {
             "id": str(o.id),
             "rack": {k: o.get_data("rack", k) for k in ("units", "width", "depth")},
-            "content": [],
             "load": [],
         }
         r["rack"]["label"] = o.name
@@ -56,15 +53,6 @@ class RackPlugin(InvPlugin):
             pos = c.get_data("rackmount", "position")
             side = c.get_data("rackmount", "side") or "f"
             # Facades
-            seed = random.randint(0, 0x7FFFFFFF)
-            if c.model.front_facade:
-                front_facade = f"/inv/inv/{c.id}/plugin/facade/front.svg?_dc={seed}"
-            else:
-                front_facade = None
-            if c.model.rear_facade:
-                rear_facade = f"/inv/inv/{c.id}/plugin/facade/rear.svg?_dc={seed}"
-            else:
-                rear_facade = None
             # Rack content
             r["load"] += [
                 {
@@ -75,29 +63,8 @@ class RackPlugin(InvPlugin):
                     "position_front": pos if units and side == "f" else None,
                     "position_rear": pos if units and side == "r" else None,
                     "shift": c.get_data("rackmount", "shift") or 0,
-                    "front_facade": front_facade,
-                    "read_facade": rear_facade,
                 }
             ]
-            # Mounted units
-            if units and pos:
-                if c.get_data("management", "managed"):
-                    mo = c.get_data("management", "managed_object")
-                else:
-                    mo = None
-                r["content"] += [
-                    {
-                        "id": str(c.id),
-                        "units": units,
-                        "pos": pos,
-                        "name": c.name,
-                        "managed_object_id": mo,
-                        "side": side,
-                        "shift": c.get_data("rackmount", "shift") or 0,
-                        "front_facade": front_facade,
-                        "read_facade": rear_facade,
-                    }
-                ]
         return r
 
     def api_set_rack_load(self, request, id, cid, position_front, position_rear, shift):
