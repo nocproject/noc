@@ -544,7 +544,6 @@ nav:
           - discovery: services-reference/discovery.md
           - escalator: services-reference/escalator.md
           - grafanads: services-reference/grafanads.md
-          - icqsender: services-reference/icqsender/index.md
           - kafkasender: services-reference/kafkasender.md
           - login: services-reference/login.md
           - mailsender: services-reference/mailsender.md
@@ -597,7 +596,6 @@ nav:
           - "[grafanads] section": config-reference/grafanads.md
           - "[help] section": config-reference/help.md
           - "[http_client] section": config-reference/http_client.md
-          - "[icqsender] section": config-reference/icqsender.md
           - "[initial] section": config-reference/initial.md
           - "[kafkasender] section": config-reference/kafkasender.md
           - "[layout] section": config-reference/layout.md

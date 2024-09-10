@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # mx utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ MESSAGE_HEADERS = {
     MX_METRICS_SCOPE,
 }
 # Method -> Sender stream map, ?autoregister
-NOTIFICATION_METHODS = {"mail": b"mailsender", "tg": b"tgsender", "icq": b"icqsender"}
+NOTIFICATION_METHODS = {"mail": b"mailsender", "tg": b"tgsender"}
 
 _mx_partitions: Optional[int] = None
 _mx_lock = Lock()

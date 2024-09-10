@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -724,12 +724,6 @@ class Config(BaseConfig):
         enable_freebind = BooleanParameter(default=False)
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
-
-    class icqsender(ConfigSection):
-        token = SecretParameter()
-        retry_timeout = IntParameter(default=2)
-        use_proxy = BooleanParameter(default=False)
-        proxy_address = StringParameter()
 
     class tgsender(ConfigSection):
         token = SecretParameter()
