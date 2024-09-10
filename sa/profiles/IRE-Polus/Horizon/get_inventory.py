@@ -273,10 +273,12 @@ class Script(BaseScript):
         port_states: Dict[str, str] = {}
         mode: Optional[str] = None
         enable_oduflex = set()
+        is_oadm = False
 
         for o in config["RK"][crate_num]["DV"]:
             if o["slt"] != slot:
                 continue
+            is_oadm = "oadm" in o["cls"]
             for oo in o["PM"]:
                 if "nam" not in oo or "val" not in oo:
                     continue
@@ -318,7 +320,8 @@ class Script(BaseScript):
                 continue
             if cname not in enable_oduflex and rest_dst == "ODUFlex":
                 continue
-            if port_states[input] and port_states[output]:
+
+            if (not is_oadm) or (port_states[input] and port_states[output]):
                 crossings.append(
                     {
                         "input": input,
