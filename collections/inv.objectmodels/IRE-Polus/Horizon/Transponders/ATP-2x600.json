@@ -7,6 +7,7 @@
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
     "labels": ["noc::inv::lc"],
+    "plugins": ["pconf"],
     "configuration_rule__name": "ATP_2x600",
     "connections": [
         {

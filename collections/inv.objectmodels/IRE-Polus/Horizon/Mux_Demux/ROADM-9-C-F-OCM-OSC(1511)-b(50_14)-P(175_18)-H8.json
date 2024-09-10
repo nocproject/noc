@@ -6,6 +6,7 @@
     "description": "Карта ROADM-9 является реконфигурируемым оптическим мультиплексором ввода/вывода ROADM с внутренними оптическими усилителями",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
+    "plugins": ["pconf"],
     "connections": [
         {
             "name": "in",
