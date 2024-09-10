@@ -36,6 +36,8 @@ RULER_GAP = (RULER_SIZE - RULER_LABEL_SIZE) / 2.0
 
 # Colors
 RACK_BODY_COLOR = "#000000"
+RACK_BODY_LIGHT = "#95a5a6"
+RACK_BODY_SHADE = "#7f8c8d"
 FONT_COLOR = "#c0c0c0"
 RULER_COLOR = "#202020"
 INNER_COLOR = "#808080"
@@ -66,6 +68,20 @@ def get_rack_svg(units: int, title: str | None = None) -> SVG:
     svg.height = outer_height
     # Root SVG element
     root = svg.root
+    # Add gradient
+    defs = ET.Element("defs")
+    root.append(defs)
+    grad = ET.Element("linearGradient", {"id": "rack-gradient"})
+    defs.append(grad)
+    for stop, color in [
+        (0.0, RACK_BODY_COLOR),
+        (0.3, RACK_BODY_SHADE),
+        (0.375, RACK_BODY_LIGHT),
+        (0.45, RACK_BODY_SHADE),
+        (1.0, RACK_BODY_COLOR),
+    ]:
+        el = ET.Element("stop", {"offset": str(stop), "style": f"stop-color: {color}"})
+        grad.append(el)
     # Add bounding box
     root.append(
         ET.Element(
@@ -75,7 +91,7 @@ def get_rack_svg(units: int, title: str | None = None) -> SVG:
                 "y": "0",
                 "width": str(outer_width),
                 "height": str(outer_height),
-                "style": f"fill: {RACK_BODY_COLOR}; stroke-width: 0px",
+                "style": "fill: url(#rack-gradient); stroke-width: 0px",
             },
         )
     )
