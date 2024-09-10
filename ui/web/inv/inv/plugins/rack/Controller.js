@@ -52,7 +52,7 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
   },
   //
   onAfterRender: function(container){
-    var app = this,
+    var app = this.getView().up("[appId=inv.inv]"),
       svgObject = container.getEl().dom.querySelector("#svg-object");
     svgObject.addEventListener("load", function(){
       var svgDocument = svgObject.contentDocument;
@@ -62,7 +62,7 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
           var events = element.dataset.event.split(",");
           events.forEach(function(event){
             element.addEventListener(event, function(){
-              app.app.showObject(element.dataset.resource.split(":")[1]);
+              app.showObject(element.dataset.resource.split(":")[1]);
             });
           });
         });
