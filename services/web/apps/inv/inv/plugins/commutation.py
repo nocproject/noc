@@ -73,8 +73,8 @@ class CommutationPlugin(InvPlugin):
     def init_plugin(self):
         super().init_plugin()
 
-    def get_data(self, request, object):
-        inv = list(self.iter_nested_inventory(object))
+    def get_data(self, request, obj):
+        inv = list(self.iter_nested_inventory(obj))
         return {"viz": self.to_viz(inv), "data": self.to_data(inv)}
 
     @staticmethod
@@ -188,10 +188,14 @@ class CommutationPlugin(InvPlugin):
                 )
             )
         # Root node
-        yield self.prune_node(nodes[root])
+        node = self.prune_node(nodes[root])
+        if node:
+            yield node
         # External nodes
         for ext in ext_nodes_roots:
-            yield self.prune_node(nodes[ext])
+            node = self.prune_node(nodes[ext])
+            if node:
+                yield node
 
     def prune_node(self, node: Node) -> Node:
         """
@@ -207,7 +211,7 @@ class CommutationPlugin(InvPlugin):
             Pruned node
         """
 
-        def pruned_child(n: Node) -> Optional[None]:
+        def pruned_child(n: Node) -> Optional[Node]:
             if not n.children and not n.connections:
                 return None
             if not n.children and n.connections:
