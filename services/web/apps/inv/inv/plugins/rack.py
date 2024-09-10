@@ -5,9 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import ObjectIdParameter, IntParameter
+from noc.core.facade.rack import get_svg_for_rack
+from noc.core.facade.response import svg_response
 from .base import InvPlugin
 
 
@@ -20,7 +23,7 @@ class RackPlugin(InvPlugin):
         self.add_view(
             "api_plugin_%s_set_rackload" % self.name,
             self.api_set_rack_load,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/rackload/$" % self.name,
+            url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/rackload/$",
             method=["POST"],
             validate={
                 "cid": ObjectIdParameter(),
@@ -29,20 +32,28 @@ class RackPlugin(InvPlugin):
                 "shift": IntParameter(),
             },
         )
+        self.add_view(
+            f"api_plugin_{self.name}_facade",
+            self.api_facade_svg,
+            url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/(?P<name>front|rear).svg$",
+            method=["GET"],
+        )
 
     def get_data(self, request, o):
         r = {
             "id": str(o.id),
             "rack": {k: o.get_data("rack", k) for k in ("units", "width", "depth")},
-            "content": [],
             "load": [],
         }
         r["rack"]["label"] = o.name
         # Fill content
         for c in o.iter_children():
+            # Rack position
             units = c.get_data("rackmount", "units")
             pos = c.get_data("rackmount", "position")
             side = c.get_data("rackmount", "side") or "f"
+            # Facades
+            # Rack content
             r["load"] += [
                 {
                     "id": str(c.id),
@@ -54,22 +65,6 @@ class RackPlugin(InvPlugin):
                     "shift": c.get_data("rackmount", "shift") or 0,
                 }
             ]
-            if units and pos:
-                if c.get_data("management", "managed"):
-                    mo = c.get_data("management", "managed_object")
-                else:
-                    mo = None
-                r["content"] += [
-                    {
-                        "id": str(c.id),
-                        "units": units,
-                        "pos": pos,
-                        "name": c.name,
-                        "managed_object_id": mo,
-                        "side": side,
-                        "shift": c.get_data("rackmount", "shift") or 0,
-                    }
-                ]
         return r
 
     def api_set_rack_load(self, request, id, cid, position_front, position_rear, shift):
@@ -113,3 +108,10 @@ class RackPlugin(InvPlugin):
                 system="WEB",
                 op="CHANGE",
             )
+
+    def api_facade_svg(self, request, id: str, name: str):
+        obj = self.app.get_object_or_404(Object, id=id)
+        # Get SVG
+        svg = get_svg_for_rack(obj, name=name)
+        svg.enable_highlight()
+        return svg_response(svg)

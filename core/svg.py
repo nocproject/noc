@@ -34,6 +34,18 @@ class SVG(object):
         self._defs: Dict[str, ET.Element] = {}
 
     @classmethod
+    def init(cls: Type["SVG"]) -> "SVG":
+        """
+        Create root if necessary.
+
+        It's recommended to set width and height before.
+        """
+        svg = SVG()
+        root = ET.Element("svg", viewBox="0 0 500 500")
+        svg._tree = ET.ElementTree(element=root)
+        return svg
+
+    @classmethod
     def read(cls: Type["SVG"], fp: TextIO) -> "SVG":
         """
         Read from open file.
@@ -268,6 +280,30 @@ class SVG(object):
         for c in src._tree.getroot():
             el.append(c)
 
+    def place(self: "SVG", source: "SVG", /, x: float, y: float) -> None:
+        """
+        Place item to the end of SVG.
+
+        Args:
+            source: Placed item.
+            x: X coordinate.
+            y: Y coordinate.
+        """
+        source = source.clone()
+        # Merge defs
+        src_defs = source.get_defs()
+        if src_defs:
+            for c in src_defs:
+                self.append_def(c)
+            # Remove defs from source
+            source._tree.getroot().remove(src_defs)
+        # Group element
+        g = ET.Element("g", {"transform": f"translate({x}, {y})"})
+        self.root.append(g)
+        # Copy content from source
+        for c in source.root:
+            g.append(c)
+
     def add_prefix(self: "SVG", prefix: str) -> None:
         """
         Add prefix to `id` of all nested elements.
@@ -397,6 +433,23 @@ class SVG(object):
         parts = vb.split()
         return float(parts[2])
 
+    @width.setter
+    def width(self, value: float) -> None:
+        """
+        Set width
+        """
+        el = self._tree.getroot()
+        if el.get("width") is not None:
+            el.set("width", str(value))
+            return
+        vb = el.get("viewBox")
+        if vb is not None:
+            parts = vb.split()
+            parts[2] = str(value)
+            el.set("viewBox", " ".join(parts))
+            return
+        el.set("viewBox", f"0 0 {value} 0")
+
     @property
     def height(self) -> float:
         """
@@ -414,6 +467,23 @@ class SVG(object):
             return 0.0
         parts = vb.split()
         return float(parts[3])
+
+    @height.setter
+    def height(self, value: float) -> None:
+        """
+        Set height
+        """
+        el = self._tree.getroot()
+        if el.get("height") is not None:
+            el.set("height", str(value))
+            return
+        vb = el.get("viewBox")
+        if vb is not None:
+            parts = vb.split()
+            parts[3] = str(value)
+            el.set("viewBox", " ".join(parts))
+            return
+        el.set("viewBox", f"0 0 0 {value}")
 
     @property
     def root(self) -> ET.Element:

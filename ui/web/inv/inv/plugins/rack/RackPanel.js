@@ -1,110 +1,63 @@
 //---------------------------------------------------------------------
-// inv.inv.plugins.inventory InventoryPanel
+// inv.inv.plugins.rack RackPanel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.plugins.rack.RackPanel");
 
 Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   extend: "NOC.core.ApplicationPanel",
-  requires: ["NOC.core.Rack", "NOC.inv.inv.plugins.rack.RackLoadModel"],
+  requires: [
+    "NOC.inv.inv.plugins.rack.RackLoadModel",
+    "NOC.inv.inv.plugins.rack.Controller",
+  ],
   app: null,
   scrollable: true,
   title: __("Rack"),
   layout: "border",
-
-  initComponent: function(){
-    var me = this;
-
-    me.reloadButton = Ext.create("Ext.button.Button", {
-      glyph: NOC.glyph.refresh,
-      scope: me,
-      tooltip: __("Reload"),
-      handler: me.onReload,
-    });
-
-    me.zoomButton = Ext.create("Ext.form.ComboBox", {
-      store: [
-        [0.25, "25%"],
-        [0.5, "50%"],
-        [0.75, "75%"],
-        [1.0, "100%"],
-        [1.25, "125%"],
-        [1.5, "150%"],
-        [2.0, "200%"],
-        [3.0, "300%"],
-        [4.0, "400%"],
-      ],
-      width: 100,
-      value: 1.0,
-      valueField: "zoom",
-      displayField: "label",
-      editable: false,
-      listeners: {
-        scope: me,
-        select: me.onZoom,
-      },
-    });
-
-    me.sideFrontButton = Ext.create("Ext.button.Button", {
-      glyph: NOC.glyph.hand_o_right,
-      text: __("Front"),
-      scope: me,
-      toggleGroup: "side",
-      pressed: true,
-      handler: me.onReload,
-    });
-
-    me.sideRearButton = Ext.create("Ext.button.Button", {
-      glyph: NOC.glyph.hand_o_left,
-      text: __("Rear"),
-      scope: me,
-      toggleGroup: "side",
-      handler: me.onReload,
-    });
-
-    me.segmentedButton = Ext.create("Ext.button.Segmented", {
-      items: [me.sideFrontButton, me.sideRearButton],
-    });
-
-    me.editLoadButton = Ext.create("Ext.button.Button", {
-      text: __("Edit"),
-      glyph: NOC.glyph.edit,
-      scope: me,
-      handler: me.onEdit,
-      enableToggle: true,
-    });
-
-    me.drawPanel = Ext.create("Ext.draw.Container", {
-      scrollable: true,
-      plugins: ["spriteevents"],
-      listeners: {
-        spriteclick: function(sprite){
-          if(sprite.sprite.managed_object_id){
-            window.open(
-              "/api/card/view/managedobject/" + sprite.sprite.managed_object_id + "/",
-            );
-          }
+  controller: "rack",
+  viewModel: {
+    stores: {
+      gridStore: {
+        model: "NOC.inv.inv.plugins.rack.RackLoadModel",
+        listeners: {
+          datachanged: "onDataChanged",
         },
       },
-    });
+    },
+    data: {
+      currentId: null,
+      side: "front",
+      edit: false,
+      totalCount: 0,
+    },
+    formulas: {
+      isFrontPressed: function(get){
+        return get("side") === "front";
+      },
+      isRearPressed: function(get){
+        return get("side") === "rear";
+      },
+    },
 
-    me.rackViewPanel = Ext.create("Ext.container.Container", {
+  },
+  items: [
+    {
+      xtype: "container",
+      itemId: "viewPanel",
+      layout: "auto",
       scrollable: true,
       region: "center",
-      items: me.drawPanel,
-    });
-
-    me.rackLoadStore = Ext.create("Ext.data.Store", {
-      model: "NOC.inv.inv.plugins.rack.RackLoadModel",
-    });
-
-    me.rackLoadPanel = Ext.create("Ext.grid.Panel", {
-      store: me.rackLoadStore,
+    },
+    {
+      xtype: "grid",
+      bind: {
+        store: "{gridStore}",
+        hidden: "{!edit}",
+      },
       region: "east",
       width: 500,
-      hidden: true,
       columns: [
         {
           text: __("Name"),
@@ -181,118 +134,101 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       selType: "cellmodel",
       plugins: [
         Ext.create("Ext.grid.plugin.CellEditing", {
-          clicksToEdit: 2,
+          clicksToEdit: 1,
         }),
       ],
       listeners: {
-        scope: me,
-        validateedit: Ext.bind(me.onCellValidateEdit, me),
-        edit: Ext.bind(me.onCellEdit, me),
+        validateedit: "onCellValidateEdit",
+        edit: "onCellEdit",
       },
-    });
-
-    Ext.apply(me, {
-      items: [me.rackViewPanel, me.rackLoadPanel],
-      dockedItems: [
+    },
+  ],
+  tbar: [
+    {
+      glyph: NOC.glyph.refresh,
+      tooltip: __("Reload"),
+      handler: "onReload",
+    },
+    "-",
+    {
+      xtype: "segmentedbutton",
+      items: [
         {
-          xtype: "toolbar",
-          dock: "top",
-          items: [me.reloadButton, "-", me.segmentedButton, me.zoomButton, "-", me.editLoadButton],
+          glyph: NOC.glyph.hand_o_right,
+          text: __("Front"),
+          toggleGroup: "side",
+          bind: {
+            pressed: "{isFrontPressed}",
+          },
+          handler: "onFrontPressed",
+        },
+        {
+          glyph: NOC.glyph.hand_o_left,
+          text: __("Rear"),
+          toggleGroup: "side",
+          bind: {
+            pressed: "{isRearPressed}",
+          },
+          handler: "onRearPressed", 
         },
       ],
-    });
-
-    me.callParent();
-  },
-  //
+    },
+    "-",
+    {
+      xtype: "combo",
+      itemId: "zoomButton",
+      store: [
+        [0.25, "25%"],
+        [0.5, "50%"],
+        [0.75, "75%"],
+        [1.0, "100%"],
+        [1.25, "125%"],
+        [1.5, "150%"],
+        [2.0, "200%"],
+        [3.0, "300%"],
+        [4.0, "400%"],
+      ],
+      width: 100,
+      value: 1.0,
+      valueField: "zoom",
+      displayField: "label",
+      editable: false,
+      listeners: {
+        select: "onZoom",
+      },
+    },
+    {
+      text: __("Edit"),
+      glyph: NOC.glyph.edit,
+      enableToggle: true,
+      bind: {
+        pressed: "{edit}",
+      },
+      handler: function(){
+        var vm = this.up("panel").getViewModel();
+        vm.set("edit", !vm.get("edit"));
+      },
+    },
+  ],
   preview: function(data){
     var me = this,
-      {sprites, height} = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide());
-    me.drawPanelHeight = height;
-    me.zoomButton.setValue(1.0);
-    me.drawPanel.getSurface().removeAll();
-    me.drawPanel.getSurface().add(sprites);
-    me.drawPanel.renderFrame();
-    me.drawPanel.setHeight(height);
-    me.currentId = data.id;
-    me.rackLoadStore.loadData(data.load);
-  },
-  //
-  getSide: function(){
-    var me = this;
-    return me.sideRearButton.pressed ? "r" : "f";
-  },
-  //
-  onReload: function(){
-    var me = this;
-    Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/rack/",
-      method: "GET",
-      scope: me,
-      success: function(response){
-        me.preview(Ext.decode(response.responseText));
-      },
-      failure: function(){
-        NOC.error(__("Failed to get data"));
+      padding = 5,
+      viewPanel = me.down("#viewPanel"),
+      vm = me.getViewModel(),
+      url = "/inv/inv/" + data.id + "/plugin/rack/" + vm.get("side") + ".svg";
+    vm.get("gridStore").loadData(data.load);
+    vm.set("currentId", data.id);
+    viewPanel.removeAll();
+    viewPanel.add({
+      xtype: "container",
+      itemId: "image",
+      html: "<object id='svg-object' data='" + url + "' type='image/svg+xml'></object>",
+      padding: padding,
+      listeners: {
+        afterrender: "onAfterRender",
       },
     });
-  },
-  //
-  onEdit: function(){
-    var me = this;
-
-    if(me.editLoadButton.pressed){
-      me.rackLoadPanel.show();
-    } else{
-      me.rackLoadPanel.hide();
-    }
-  },
-  onCellValidateEdit: function(){
-    return true;
-  },
-  //
-  onCellEdit: function(editor, e){
-    var me = this;
-    if(e.field === "position_front"){
-      e.record.set("position_rear", 0);
-    }
-    if(e.field === "position_rear"){
-      e.record.set("position_front", 0);
-    }
-    // Submit
-    Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/rack/rackload/",
-      method: "POST",
-      scope: me,
-      jsonData: {
-        cid: e.record.get("id"),
-        position_front: e.record.get("position_front"),
-        position_rear: e.record.get("position_rear"),
-        shift: e.record.get("shift"),
-      },
-      loadMask: me,
-      success: function(){
-        me.onReload();
-      },
-      failure: function(){
-        NOC.error(__("Failed to save"));
-      },
-    });
-  },
-  //
-  onObjectSelect: function(objectId){
-    var me = this;
-    me.app.showObject(objectId);
-  },
-  //
-  onZoom: function(field){
-    var me = this,
-      zoom = field.getValue();
-    
-    Ext.each(me.drawPanel.getSurface().getItems(), function(sprite){
-      sprite.setTransform([zoom, 0, 0, zoom, 0, 0]);
-    });
-    me.drawPanel.setHeight(parseInt(me.drawPanelHeight * zoom));
-    me.drawPanel.renderFrame();
+    viewPanel.down("#image").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
+    me.getController().onZoom(me.down("#zoomButton"));
   },
 });
