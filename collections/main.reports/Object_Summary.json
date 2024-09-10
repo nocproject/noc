@@ -9,14 +9,86 @@
             "name": "Root",
             "orientation": "H",
             "queries": [{
-                "datasource": "objectsummaryds",
+                "datasource": "managedobjectds",
                 "json": null
             }]
+        },
+        {
+            "name": "profile",
+            "condition_param": "report_type",
+            "condition_value": "profile",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select profile, count() as quantity from Root group by profile order by quantity desc"
+                }
+            ]
+        },
+        {
+            "name": "domain",
+            "condition_param": "report_type",
+            "condition_value": "domain",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select administrativedomain, count() as quantity from Root group by administrativedomain order by quantity desc"
+                }
+            ]
+        },
+        {
+            "name": "domain-profile",
+            "condition_param": "report_type",
+            "condition_value": "domain-profile",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select administrativedomain, profile, count() as quantity from Root group by administrativedomain, profile order by quantity desc"
+                }
+            ]
+        },
+        {
+            "name": "platform",
+            "condition_param": "report_type",
+            "condition_value": "platform",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select model, count() as quantity from Root group by model order by quantity desc"
+                }
+            ]
+        },
+        {
+            "name": "version",
+            "condition_param": "report_type",
+            "condition_value": "version",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select sw_version, count() as quantity from Root group by sw_version order by quantity desc"
+                }
+            ]
+        },
+        {
+            "name": "label",
+            "condition_param": "report_type",
+            "condition_value": "label",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select t.label, count(*) as count from (select unnest(object_labels) as label from Root where ARRAY_LENGTH(object_labels) > 1) as t group by t.label order by count desc"
+                }
+            ]
         }
     ],
     "bands_format": [
         {
-            "name": "Root",
+            "name": "profile",
             "column_format": [
                 {
                     "name": "profile",
@@ -24,34 +96,94 @@
                     "format_type": "string"
                 },
                 {
+                    "name": "quantity",
+                    "title": "Quantity",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "domain",
+            "column_format": [
+                {
                     "name": "domain",
                     "title": "Administrative Domain",
                     "format_type": "string"
                 },
                 {
-                    "name": "label",
-                    "title": "Label",
+                    "name": "quantity",
+                    "title": "Quantity",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "domain-profile",
+            "column_format": [
+                {
+                    "name": "profile",
+                    "title": "Profile",
                     "format_type": "string"
                 },
                 {
-                    "name": "platform",
-                    "title": "Platform",
-                    "format_type": "string"
-                },
-                {
-                    "name": "version",
-                    "title": "Version",
-                    "format_type": "string"
-                },
-                {
-                    "name": "fw_policy",
-                    "title": "Firmware Policy",
+                    "name": "administrativedomain",
+                    "title": "Domain",
                     "format_type": "string"
                 },
                 {
                     "name": "quantity",
                     "title": "Quantity",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "label",
+            "column_format": [
+                {
+                    "name": "object_labels",
+                    "title": "Label",
                     "format_type": "string"
+                },
+                {
+                    "name": "quantity",
+                    "title": "Quantity",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "platform",
+            "column_format": [
+                {
+                    "name": "model",
+                    "title": "Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "quantity",
+                    "title": "Quantity",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "version",
+            "column_format": [
+                {
+                    "name": "sw_version",
+                    "title": "Version",
+                    "format_type": "string"
+                },
+                {
+                    "name": "quantity",
+                    "title": "Quantity",
+                    "format_type": "integer"
                 }
             ],
             "title_template": ""
@@ -64,9 +196,6 @@
         "title": {
             "ru": "Сводка по объектам (Новый)"
         },
-        "columns.profile": {
-            "ru": "Профиль"
-        },
         "columns.domain": {
             "ru": "З.О."
         },
@@ -76,14 +205,14 @@
         "columns.platform": {
             "ru": "Платформа"
         },
-        "columns.version": {
-            "ru": "Версия"
-        },
-        "columns.fw_policy": {
-            "ru": "Политика версий прошивок"
+        "columns.profile": {
+            "ru": "Профиль"
         },
         "columns.quantity": {
             "ru": "Количество"
+        },
+        "columns.version": {
+            "ru": "Версия"
         },
         "parameters.report_type": {
             "ru": "Тип отчета"
@@ -97,15 +226,15 @@
             "hide": false,
             "label": "Report Type",
             "required": true,
-            "type": "choice"
+            "type": "combo-choice"
         }
     ],
     "templates": [
         {
             "code": "DEFAULT",
-            "has_preview": false,
+            "has_preview": true,
             "is_alterable_output": true,
-            "output_type": "csv"
+            "output_type": "html"
         }
     ]
 }

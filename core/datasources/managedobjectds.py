@@ -153,6 +153,7 @@ class ManagedObjectDS(BaseDataSource):
                 name="object_labels",
                 description="Object Labels",
                 internal_name="labels",
+                type=FieldType.LIST_STRING,
             ),
             FieldInfo(
                 name="physical_iface_count",
@@ -466,7 +467,7 @@ class ManagedObjectDS(BaseDataSource):
                     Project.get_by_id(mo["project"]).name if mo["project"] else None
                 )
             if "labels" in mo:
-                yield num, "object_labels", ",".join(mo["labels"])
+                yield num, "object_labels", mo["labels"]
             if "container" in mo:
                 yield num, "container", ""
             # Discovery
