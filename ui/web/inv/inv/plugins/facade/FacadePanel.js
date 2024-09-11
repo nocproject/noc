@@ -126,7 +126,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
                 afterrender: function(container){
                   var app = this,
                     svgObject = container.getEl().dom.querySelector('#svg-object');              
-                  me.addLoadEvents(svgObject, app.app.showObject.bind(app.app));
+                  me.addInteractionEvents(svgObject, app.app.showObject.bind(app.app));
                 },
               },
             },
