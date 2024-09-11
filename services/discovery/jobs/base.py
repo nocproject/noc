@@ -691,7 +691,7 @@ class DiscoveryCheck(object):
         """
         self.logger.info("Cleaning links")
         for i in Interface.objects.filter(
-            managed_object=self.object.id, type__in=["physical", "aggregated"]
+            managed_object=self.object.id, type__in=["physical", "aggregated", "virtual"]
         ):
             link = i.link
             if link:
