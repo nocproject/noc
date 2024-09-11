@@ -13,6 +13,7 @@ from noc.inv.models.object import Object
 from noc.core.svg import SVG
 from .load import get_svg_for_facade
 from .utils import slot_to_id
+from .interaction import Interaction, InteractionAction, InteractionEvent, InteractionItem
 
 
 def get_svg_for_box(
@@ -56,8 +57,15 @@ def get_svg_for_box(
                     if ro.additional_connections
                     else None
                 ),
-                resource=ro.as_resource(),
-                event="dblclick",
+                interaction=Interaction(
+                    actions=[
+                        InteractionItem(
+                            event=InteractionEvent.DBLCLICK,
+                            action=InteractionAction.GO,
+                            resource=ro.as_resource(),
+                        )
+                    ]
+                ).to_str(),
             )
         except ValueError:
             pass
