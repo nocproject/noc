@@ -8,7 +8,9 @@ console.debug("Defining NOC.inv.inv.plugins.facade.FacadePanel");
 
 Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   extend: "Ext.panel.Panel",
-  requires: [],
+  mixins: [
+    "NOC.core.mixins.SVGInteraction",
+  ],
   title: __("Facade"),
   closable: false,
   scrollable: true,
@@ -123,23 +125,8 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
                 scope: me,
                 afterrender: function(container){
                   var app = this,
-                    svgObject = container.getEl().dom.querySelector('#svg-object');
-                  svgObject.addEventListener('load', function(){
-                    var svgDocument = svgObject.contentDocument;
-                    if(svgDocument){
-                      var svgElements = svgDocument.querySelectorAll("[data-event]");
-                      svgElements.forEach(function(element){
-                        var events = element.dataset.event.split(",");
-                        events.forEach(function(event){
-                          element.addEventListener(event, function(){
-                            app.app.showObject(element.dataset.resource.split(":")[1]);
-                          });
-                        });
-                      });
-                    } else{
-                      NOC.error(__("SVG Document is not loaded"));
-                    }
-                  });
+                    svgObject = container.getEl().dom.querySelector('#svg-object');              
+                  me.addLoadEvents(svgObject, app.app.showObject.bind(app.app));
                 },
               },
             },
