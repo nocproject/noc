@@ -321,8 +321,8 @@ class Interface(Document):
             raise ValueError("Already linked")
         if self.id == other.id:
             raise ValueError("Cannot link with self")
-        if self.type in ("physical", "management"):
-            if other.type in ("physical", "management"):
+        if self.type in ("physical", "management", "virtual"):
+            if other.type in ("physical", "management", "virtual"):
                 # Refine LAG
                 if el:
                     left_ifaces = [i for i in el.interfaces if i not in (self, other)]
@@ -499,7 +499,7 @@ class Interface(Document):
             ]
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
-        if instance.parent.id and instance.type == "physical" and instance.is_linked:
+        if instance.parent.id and instance.type in ("physical", "virtiual") and instance.is_linked:
             # Idle Discovery When create Aggregate interface (fixed not use lag_members)
             yield ["noc::is_linked::="]
         if instance.type == "aggregated":
