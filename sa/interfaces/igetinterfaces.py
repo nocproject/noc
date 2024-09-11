@@ -339,6 +339,7 @@ class IGetInterfaces(BaseInterface):
                             "dry",  # Dry contact
                             "internal",
                             "unknown",
+                            "physical",
                         ]
                     ),
                     "admin_status": BooleanParameter(default=False),
