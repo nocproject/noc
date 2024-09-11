@@ -859,29 +859,39 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_interface,
             )
             candidates[remote_object].add((li, remote_interface))
-
         # Checking candidates from remote side
         for remote_object in candidates:
-            if self.required_script and self.required_script not in remote_object.scripts:
+            if self.allow_asymmetric(remote_object):
                 self.logger.info(
-                    "Remote object '%s' does not support %s script. " "Cannot confirm links",
+                    "Remote object '%s' allowed asymmetric link for method: %s",
+                    remote_object.name,
+                    self.name,
+                )
+                remote_neighbors, confirmed = [], candidates[remote_object]
+            elif self.required_script and self.required_script not in remote_object.scripts:
+                self.logger.info(
+                    "Remote object '%s' does not support %s script. Cannot confirm links",
                     remote_object.name,
                     self.required_script,
                 )
                 continue
-            try:
-                rn_key = "mo-neighbors-%s-%s" % (self.name, remote_object.id)
-                remote_neighbors = self.cached_neighbors(remote_object, rn_key, self.iter_neighbors)
-            except Exception as e:
-                self.logger.error(
-                    "Cannot get neighbors from candidate %s: %s", remote_object.name, e
-                )
-                self.set_problem(
-                    path=list(candidates[remote_object])[0][0],
-                    message="Cannot get neighbors from candidate %s: %s" % (remote_object.name, e),
-                )
-                continue
-            confirmed = set()
+            else:
+                try:
+                    rn_key = "mo-neighbors-%s-%s" % (self.name, remote_object.id)
+                    remote_neighbors = self.cached_neighbors(
+                        remote_object, rn_key, self.iter_neighbors
+                    )
+                except Exception as e:
+                    self.logger.error(
+                        "Cannot get neighbors from candidate %s: %s", remote_object.name, e
+                    )
+                    self.set_problem(
+                        path=list(candidates[remote_object])[0][0],
+                        message="Cannot get neighbors from candidate %s: %s"
+                        % (remote_object.name, e),
+                    )
+                    continue
+                confirmed = set()
             for li, ro_id, ri in remote_neighbors:
                 ro = self.get_neighbor(ro_id)
                 if not ro or ro.id != self.object.id:
@@ -969,6 +979,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :returns: yield (local interface, remote id, remote interface)
         """
         return iter(())
+
+    def allow_asymmetric(self, obj) -> bool:
+        """Allow asymmetric link"""
+        return obj.get_profile().allow_allow_asymmetric_link(self.name)
 
     def get_neighbor_by_hostname(self, hostname):
         """
