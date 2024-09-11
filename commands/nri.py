@@ -38,7 +38,7 @@ class Command(BaseCommand):
                 if not o.remote_system:
                     self.stdout.write("%s (%s, %s) NRI: N/A\n" % (o.name, o.address, o.platform))
                     continue
-                portmapper = loader.get_loader(o.remote_system.name)(o)
+                portmapper = loader[o.remote_system.name](o)
                 nri = o.remote_system.name
                 self.stdout.write("%s (%s, %s) NRI: %s\n" % (o.name, o.address, o.platform, nri))
                 r = []

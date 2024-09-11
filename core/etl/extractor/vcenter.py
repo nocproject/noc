@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Optional
+from typing import Iterable, Optional, List
 
 # Third-party modules
 from pyVmomi import vim
@@ -19,6 +19,7 @@ from noc.core.etl.remotesystem.base import BaseRemoteSystem
 from noc.core.etl.models.managedobject import ManagedObject, CapsItem
 from noc.core.etl.models.resourcegroup import ResourceGroup
 from noc.core.etl.models.object import Object, ObjectData
+from noc.core.etl.models.link import Link
 
 
 class VCenterRemoteSystem(BaseRemoteSystem):
@@ -54,10 +55,38 @@ class VCenterExtractor(BaseExtractor):
             disableSslCertValidation=True,
         )
 
+    @staticmethod
+    def has_internet_adapter(item) -> bool:
+        return isinstance(item, vim.vm.device.VirtualEthernetCard)
+
     # def list_vms(self):
     #     content = self.connection.content
     #     container = content.viewManager.CreateContainerView(content.rootFolder, [vim.VirtualMachine], True)
     #     return [VirtualMachine(managed_object_ref) for managed_object_ref in container.view]
+
+
+@VCenterRemoteSystem.extractor
+class VCenterLinkExtractor(BaseExtractor):
+    name = "link"
+    model = Link
+
+    def __init__(
+        self,
+        system: "VCenterRemoteSystem",
+        config=None,
+        links: List[Link] = None,
+    ):
+        super().__init__(system)
+        self.links = links or []
+
+    def extract(self, incremental: bool = False, **kwargs) -> None:
+        return
+
+    def extract_data(self, incremental=False):
+        super().extract(incremental=incremental)
+
+    def iter_data(self, *, checkpoint: Optional[str] = None, **kwargs) -> Iterable[Link]:
+        yield from self.links
 
 
 @VCenterRemoteSystem.extractor
@@ -128,12 +157,18 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
     name = "managedobject"
     model = ManagedObject
 
+    def __init__(self, system):
+        super().__init__(system)
+        self.links = []
+
     def iter_data(self, checkpoint=None, **kwargs) -> Iterable[ManagedObject]:
+        host_map = {}
         content = self.connection.content
         host_view = content.viewManager.CreateContainerView(
             content.rootFolder, [vim.HostSystem], True
         )
         vcenter_uuid = content.about.instanceUuid
+        names = set()
         yield ManagedObject(
             id=vcenter_uuid,
             name=self.url,
@@ -150,6 +185,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
             if h.runtime.powerState != "poweredOn":
                 continue
             name, *domains = h.summary.config.name.split(".", 1)
+            host_map[h._moId] = h.summary.hardware.uuid
             yield ManagedObject(
                 id=h.summary.hardware.uuid,
                 name=name,
@@ -167,24 +203,56 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
             )
         host_view.Destroy()
         vm_view = content.viewManager.CreateContainerView(
-            content.rootFolder, [vim.HostSystem], True
+            content.rootFolder, [vim.VirtualMachine], True
         )
         for vm in vm_view.view:
             address = "0.0.0.0"
+            op = ETLMapping(value="host.default", scope="objectprofile")
+            if not vm.config:
+                self.logger.warning("[%s] VM without config", vm._moId)
+                continue
             if vm.guest and vm.guest.ipAddress:
                 address = vm.guest.ipAddress
+            else:
+                op = ETLMapping(value="host.vm.disabled", scope="objectprofile")
+            name = vm.config.name
+            if name in names:
+                name = f"{name}#{vm._moId}"
             yield ManagedObject(
                 id=vm.config.uuid,
-                name=vm.config.name,
+                name=name,
                 address=address,
                 # description=description,
                 profile="VMWare.vMachine",
                 administrative_domain=ETLMapping(value="default", scope="adm_domain"),
-                object_profile=ETLMapping(value="host.default", scope="objectprofile"),
+                object_profile=op,
                 pool="default",
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
                 capabilities=[CapsItem(name="Controller | LocalId", value=vm._moId)],
             )
+            names.add(name)
+            for d in vm.config.hardware.device:
+                if (
+                    self.has_internet_adapter(d)
+                    and hasattr(d.backing, "port")
+                    and d.backing.port.portKey
+                ):
+                    self.links.append(
+                        Link(
+                            id=f"{d.key}_{vm.runtime.host._moId}_{d.backing.port.portKey}",
+                            source=self.system.remote_system.name,
+                            src_mo=vm.config.uuid,
+                            src_interface=f"vmnic-{d.key}",
+                            dst_mo=host_map[vm.runtime.host._moId],
+                            dst_interface=f"vmnic-{d.backing.port.portKey}",
+                        )
+                    )
         Disconnect(self.connection)
+
+    def extract(self, incremental: bool = False, **kwargs) -> None:
+        """Override default behavior, do not clear import file"""
+        super().extract(incremental=incremental)
+        mol = VCenterLinkExtractor(self.system, links=self.links)
+        mol.extract_data(incremental=incremental)
