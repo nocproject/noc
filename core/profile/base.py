@@ -932,6 +932,14 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         """
         return neighbor
 
+    def get_lacp_port_by_id(self, port_id: int) -> Optional[str]:
+        """
+        Return possible port aliases by LACP Port id,
+        i.e. for LACP discovery method without script support
+        Can be overriden to achieve desired behavior
+        """
+        return None
+
     @staticmethod
     def add_script_method(script, name, method):
         f = functools.partial(method, script)
@@ -990,6 +998,11 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     @classmethod
     def get_telnet_naws(cls) -> bytes:
         return cls.telnet_naws
+
+    @classmethod
+    def allow_allow_asymmetric_link(cls, method: str) -> bool:
+        """Allow create asymmetric link for method"""
+        return False
 
     @classmethod
     def allow_cli_session(cls, platform, version):
