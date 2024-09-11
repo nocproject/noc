@@ -32,10 +32,12 @@ class LACPCheck(TopologyDiscoveryCheck):
     get_neighbor = TopologyDiscoveryCheck.get_neighbor_by_mac
 
     def get_remote_interface(self, remote_object, remote_interface):
-        """
-        Real values are set by set_interface alias
-        :param remote_object:
-        :param remote_interface:
-        :return:
-        """
+        """Real values are set by get_lacp_port_by_id alias"""
+        port = remote_object.get_profile().get_lacp_port_by_id(remote_interface)
+        if port:
+            self.set_interface_alias(
+                remote_object,
+                port,
+                remote_interface,
+            )
         return remote_interface
