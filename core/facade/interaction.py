@@ -8,6 +8,7 @@
 # Python modules
 from dataclasses import dataclass
 from enum import Enum
+from urllib.parse import quote
 
 
 class InteractionEvent(Enum):
@@ -54,7 +55,7 @@ class InteractionItem(object):
 
     def to_str(self) -> str:
         """Serialize to string."""
-        return f"{self.event.value}:{self.action.value}:{self.resource}"
+        return f"{self.event.value}:{self.action.value}:{quote(self.resource)}"
 
 
 @dataclass
