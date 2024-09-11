@@ -8,7 +8,7 @@
 console.debug("Defining NOC.core.mixins.SVGInteraction");
 
 Ext.define("NOC.core.mixins.SVGInteraction", {
-  addLoadEvents: function(svgObject, showObject){
+  addInteractionEvents: function(svgObject, showObject){
     svgObject.addEventListener('load', function(){
       var svgDocument = svgObject.contentDocument;
       if(svgDocument){
@@ -16,9 +16,10 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
         svgElements.forEach(function(element){
           var events = element.dataset.interaction.split(",");
           events.forEach(function(e){
-            var [event, action, , value] = e.split(":");
+            var [event, action, resource] = e.split(":");
             if(action === "go"){
               element.addEventListener(event, function(){
+                var value = decodeURIComponent(resource).split(":")[1];
                 showObject(value);
               });
             }
