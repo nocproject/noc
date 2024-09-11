@@ -382,12 +382,25 @@ class Component:
         return not self.name or self.name == "common"
 
     @property
+    def is_line(self) -> bool:
+        return self.name.startswith("Ln")
+
+    @property
+    def is_client(self) -> bool:
+        return self.name.startswith("Cl")
+
+    @property
     def num(self) -> str:
         if not self.name:
             return ""
         match = rx_num.match(self.name)
         if match:
-            return match.groups()[0]
+            n = match.groups()[0]
+            if self.is_line:
+                return f"LINE{n}"
+            if self.is_client:
+                return f"CLIENT{n}"
+            return n
         return ""
 
     def add_cross(self, p: PolusParam):
