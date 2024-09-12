@@ -26,6 +26,7 @@ class FieldType(enum.Enum):
     FLOAT = pl.Float32
     BOOL = pl.Boolean
     DATETIME = pl.Datetime
+    LIST_STRING = pl.List(pl.Utf8)
 
 
 @dataclass
@@ -145,6 +146,8 @@ class BaseDataSource(object):
                     series.append(pl.Series(c.name, r[c.name], dtype=c.type.value))
                 except TypeError:
                     print(f"Type Error on column: {c.name}. Will be skipping")
+                except OverflowError:
+                    print(f"OverflowError on column: {c.name}. Will be skipping")
         return pl.DataFrame(series)
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 

@@ -28,6 +28,18 @@
                     "ds_query": "select name, address, 'Main' as object, all_caps from Root"
                 }
             ]
+        },
+        {
+            "name": "interface",
+            "orientation": "H",
+            "parent": "master",
+            "queries": [
+                {
+                    "datasource": "interfacedetailds",
+                    "ds_query": "select interface_name, protocols from self where managed_object_id = managed_object_id",
+                    "json": null
+                }
+            ]
         }
     ],
     "bands_format": [
@@ -53,6 +65,28 @@
                     "name": "managedobjectcapsds.all_caps",
                     "title": "Capabilities",
                     "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "interface",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object"
+                },
+                {
+                    "name": "address",
+                    "title": "Address"
+                },
+                {
+                    "name": "interfacedetailds.interface_name",
+                    "title": "Object"
+                },
+                {
+                    "name": "interfacedetailds.protocols",
+                    "title": "Capabilities"
                 }
             ],
             "title_template": ""
