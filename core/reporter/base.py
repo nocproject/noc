@@ -181,17 +181,31 @@ class ReportEngine(object):
             clean_params[name] = p.clean_value(value)
         return clean_params
 
-    def get_fields(self, band: ReportBand, template: Template) -> List[str]:
-        """Return fields list for query"""
+    def parse_fields(
+        self, band: ReportBand, template: Template, fields: Optional[List[str]] = None
+    ) -> Dict[str, List[str]]:
+        """"""
         logger.info("[%s] Request datasource fields for band", band.name)
-        if not template.bands_format:
-            return []
-        r = set()
-        for name, bf in template.bands_format.items():
-            if not bf.columns or name == "header":
-                continue
-            r |= set(c.name for c in bf.columns)
-        return list(r)
+        if not template.bands_format and not fields:
+            return {}
+        elif fields:
+            fields = set(fields)
+        else:
+            fields = set()
+            for name, bf in template.bands_format.items():
+                if not bf.columns or name == "header":
+                    continue
+                fields |= set(c.name for c in bf.columns)
+        r = defaultdict(list)
+        for f in fields:
+            f, *ds = f.split(".")
+            if not ds:
+                r["*"].append(f)
+            elif ds and ds[0] == "all":
+                r[f] = []
+            elif ds and ds[0] != "all":
+                r[f].append(ds[0])
+        return r
 
     def load_bands(
         self, report: ReportConfig, params: Dict[str, Any], template: Optional[Template] = None
@@ -218,8 +232,8 @@ class ReportEngine(object):
                 band = root
             else:
                 band = Band.from_report(b)
-            fields = params.pop("fields", None) or self.get_fields(b, template)
-            for num, d in enumerate(self.get_dataset(b.queries, params, fields)):
+            f_map = self.parse_fields(b, template, params.pop("fields", None))
+            for num, d in enumerate(self.get_dataset(b.queries, params, f_map)):
                 band.add_dataset(d, name=b.name if not num else None)
             if band.name == ROOT_BAND:
                 continue
@@ -228,7 +242,7 @@ class ReportEngine(object):
                 continue
             r = root.find_band_recursively(b.parent)
             if not r:
-                print(f"Unknown parent '{b.parent}'")
+                self.logger.warning(f"Unknown parent '{b.parent}'")
                 deferred.append((b.parent, band))
                 continue
             r.add_child(band)
@@ -241,7 +255,7 @@ class ReportEngine(object):
 
     @classmethod
     def get_dataset(
-        cls, queries: List[ReportQuery], ctx: Dict[str, Any], fields: List[str]
+        cls, queries: List[ReportQuery], ctx: Dict[str, Any], fields_map: Dict[str, List[str]]
     ) -> List[DataSet]:
         """
         Attrs:
@@ -251,23 +265,14 @@ class ReportEngine(object):
         r = []
         if not queries:
             return []
-        fields_map = defaultdict(list)
         joined_field = None
-        for f in fields:
-            f, *ds = f.split(".")
-            if not ds:
-                fields_map["*"].append(f)
-            elif ds and ds[0] == "all":
-                fields_map[f] = []
-            elif ds and ds[0] != "all":
-                fields_map[f].append(ds[0])
         for num, query in enumerate(queries):
             data, ds_f = None, []
             q_ctx = ctx.copy()
-            if not num and "*" in fields_map:
-                ds_f = fields_map["*"]
-            elif query.datasource and query.datasource in fields_map:
+            if query.datasource and query.datasource in fields_map:
                 ds_f = fields_map[query.datasource]
+            elif not num and "*" in fields_map:
+                ds_f = fields_map["*"]
             if query.params:
                 q_ctx.update(query.params)
             if query.json_data:
@@ -275,7 +280,7 @@ class ReportEngine(object):
             elif num and query.datasource and fields_map and query.datasource not in fields_map:
                 continue
             elif query.datasource:
-                fields = fields_map[query.datasource] if query.datasource in fields_map else fields
+                # fields = fields_map[query.datasource] if query.datasource in fields_map else []
                 logger.info("[%s] Query DataSource with fields: %s", query.datasource, ds_f)
                 data, key_field = cls.query_datasource(query, q_ctx, fields=ds_f)
                 if key_field:

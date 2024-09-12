@@ -25,7 +25,7 @@
             "parent": "Root",
             "queries": [
                 {
-                    "ds_query": "select name, address, 'Main' as object, all_caps from Root"
+                    "ds_query": "select name, address, 'Main' as object, all_caps, managed_object_id from Root"
                 }
             ]
         },
@@ -36,7 +36,7 @@
             "queries": [
                 {
                     "datasource": "interfacedetailds",
-                    "ds_query": "select interface_name, protocols from self where managed_object_id = managed_object_id",
+                    "ds_query": "select interface_name, protocols from self where managed_object_id = {{ managed_object_id }}",
                     "json": null
                 }
             ]
@@ -142,7 +142,7 @@
             "code": "DEFAULT",
             "has_preview": false,
             "is_alterable_output": true,
-            "output_type": "html"
+            "output_type": "csv"
         }
     ]
 }

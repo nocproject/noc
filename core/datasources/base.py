@@ -110,6 +110,8 @@ class BaseDataSource(object):
         if not fields:
             # Not filtered field
             return True
+        elif cls.row_index and f.name == cls.row_index:
+            return True
         elif f.name not in fields:
             # Not filtered field
             return False
