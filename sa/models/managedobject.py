@@ -3008,11 +3008,6 @@ class ManagedObject(NOCModel):
             "password": self.controller.credentials.password,
         }
 
-    @classmethod
-    def get_templating_fields(cls) -> List[Tuple[str, str]]:
-        """Return fields set for templating
-        """
-
 
 @on_save
 class ManagedObjectAttribute(NOCModel):
