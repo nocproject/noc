@@ -10,7 +10,10 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   extend: "Ext.panel.Panel",
   title: __("Commutation"),
   closable: false,
-  layout: "auto",
+  layout: {
+    type: "vbox",
+    align: "stretch",
+  },
   defaultListenerScope: true,
   scrollable: false,
   itemId: "commutationPanel",
@@ -104,6 +107,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       flex: 1,
       hidden: true,
       allowDeselect: true,
+      split: true,
       columns: [
         {
           text: __("Local Object"),
@@ -143,6 +147,9 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
           }
         },
       },
+    },
+    {
+      xtype: "splitter",
     },
     {
       xtype: "panel",
