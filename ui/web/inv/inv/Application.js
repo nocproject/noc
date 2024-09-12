@@ -24,7 +24,6 @@ Ext.define("NOC.inv.inv.Application", {
 
     me.store = Ext.create("Ext.data.TreeStore", {
       model: "NOC.inv.inv.NavModel",
-      sorters: "name",
       proxy: {
         type: "ajax",
         reader: "json",

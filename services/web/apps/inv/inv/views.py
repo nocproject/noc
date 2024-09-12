@@ -34,6 +34,7 @@ from noc.sa.interfaces.base import (
     FloatParameter,
 )
 from noc.core.translation import ugettext as _
+from noc.core.text import alnum_key
 from .pbuilder import CrossingProposalsBuilder
 from .utils.clone import clone
 from .utils.remove import remote_all, remove_root
@@ -85,6 +86,13 @@ class InvApplication(ExtApplication):
                 parent = Object.get_by_id(parent)
                 if not parent:
                     return self.response_not_found()
+                if parent.is_container:
+                    # Sort by alnum key
+                    sort_key = lambda x: alnum_key(x.name)
+                else:
+                    # Sort by parent's model
+                    conn_rank = {conn.name: n for n, conn in enumerate(parent.model.connections)}
+                    sort_key = lambda x: conn_rank.get(x.parent_connection, 999)
                 children = [
                     (
                         (
@@ -94,7 +102,7 @@ class InvApplication(ExtApplication):
                         ),
                         o,
                     )
-                    for o in parent.iter_children()
+                    for o in sorted(parent.iter_children(), key=sort_key)
                 ]
             elif parent == "root":
                 cmodels = [
