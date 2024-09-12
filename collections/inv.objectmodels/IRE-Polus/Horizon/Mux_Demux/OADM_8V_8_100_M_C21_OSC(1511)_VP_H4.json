@@ -341,6 +341,124 @@
             "type__name": "Optical | LC"
         }
     ],
+    "cross": [
+        {
+            "input": "LINE_IN",
+            "output": "MON_IN"
+        },
+        {
+            "input": "LINE_IN",
+            "output": "OSC_OUT"
+        },
+        {
+            "input": "LINE_IN",
+            "output": "MON_IN"
+        },
+        {
+            "input": "LINE_IN",
+            "output": "P_OUT"
+        },
+        {
+            "input": "P_IN",
+            "output": "EXT_OUT"
+        },
+        {
+            "input": "P_IN",
+            "output": "C21_OUT",
+            "input_discriminator": "lambda::192100-50"
+        },
+        {
+            "input": "P_IN",
+            "output": "C22_OUT",
+            "input_discriminator": "lambda::192200-50"
+        },
+        {
+            "input": "P_IN",
+            "output": "C23_OUT",
+            "input_discriminator": "lambda::192300-50"
+        },
+        {
+            "input": "P_IN",
+            "output": "C24_OUT",
+            "input_discriminator": "lambda::192400-50"
+        },
+        {
+            "input": "P_IN",
+            "output": "C25_OUT",
+            "input_discriminator": "lambda::192500-50"
+        },
+        {
+            "input": "P_IN",
+            "output": "C26_OUT",
+            "input_discriminator": "lambda::192600-50"
+        },
+        {
+            "input": "P_IN",
+            "output": "C27_OUT",
+            "input_discriminator": "lambda::192700-50"
+        },
+        {
+            "input": "P_IN",
+            "output": "C28_OUT",
+            "input_discriminator": "lambda::192800-50"
+        },
+        {
+            "input": "EXT_IN",
+            "output": "B_OUT"
+        },
+        {
+            "input": "C21_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192100-50"
+        },
+        {
+            "input": "C22_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192200-50"
+        },
+        {
+            "input": "C23_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192300-50"
+        },
+        {
+            "input": "C24_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192400-50"
+        },
+        {
+            "input": "C25_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192500-50"
+        },
+        {
+            "input": "C26_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192600-50"
+        },
+        {
+            "input": "C27_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192700-50"
+        },
+        {
+            "input": "C28_IN",
+            "output": "B_OUT",
+            "input_discriminator": "lambda::192800-50"
+        },
+        {
+            "input": "OSC_IN",
+            "output": "LINE_OUT"
+        },
+        {
+            "input": "B_IN",
+            "output": "MON_OUT"
+        },
+        {
+            "input": "B_IN",
+            "output": "LINE_OUT"
+        }
+    ],
     "data": [
         {
             "attr": "power",
