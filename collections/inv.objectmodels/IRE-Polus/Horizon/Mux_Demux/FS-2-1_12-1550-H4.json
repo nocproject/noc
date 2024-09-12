@@ -5,6 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "FS-2-1/12-1550-H4 – волоконно-оптический разветвитель.",
     "cr_context": "LINECARDH4",
+    "plugins": ["pconf"],
     "connections": [
         {
             "name": "in",

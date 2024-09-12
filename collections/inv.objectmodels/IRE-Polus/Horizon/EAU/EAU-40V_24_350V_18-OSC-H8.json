@@ -5,6 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "EAU-(40V/xx+350V/yy)-OSC-H8 – эрбиевый волоконно-оптический усилитель.",
     "cr_context": "LINECARD",
+    "plugins": ["pconf"],
     "connections": [
         {
             "name": "in",

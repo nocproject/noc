@@ -5,6 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "IL-2-50/100-C-M-H4 – компактный сдвоенный оптический интерливер",
     "cr_context": "LINECARDH4",
+    "plugins": ["pconf"],
     "connections": [
         {
             "name": "in",

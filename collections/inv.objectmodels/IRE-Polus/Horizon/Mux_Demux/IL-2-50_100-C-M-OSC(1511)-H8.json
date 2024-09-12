@@ -5,6 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "IL-2-50/100-C-M-OSC(xxxx)-H8 – оптический интерливер.",
     "cr_context": "LINECARD",
+    "plugins": ["pconf"],
     "connections": [
         {
             "name": "in",

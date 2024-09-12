@@ -5,6 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "96-канальный оптический мультиплексор со встроенными аттенюаторами предназначен для объединения отдельных DWDM каналов в один спектрально-уплотненный оптический сигнал.",
     "cr_context": "LINECARD",
+    "plugins": ["pconf"],
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
     "connections": [
