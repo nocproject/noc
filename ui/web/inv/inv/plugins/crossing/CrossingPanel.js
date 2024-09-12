@@ -212,4 +212,11 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
 
     return {grid: halfBodyHeight, image: imageHeight};
   },
+  onZoom: function(combo){
+    var me = this,
+      imagePanel = me.down("#crossingScheme"),
+      imageStyle = imagePanel.down("container").getEl().dom.style;
+    imageStyle.transformOrigin = "0 0";
+    imageStyle.transform = "scale(" + combo.getValue() + ")";
+  },
 });
