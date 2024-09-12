@@ -439,7 +439,7 @@ class ManagedObject(NOCModel):
     snmp_rw: Optional[str] = CharField("RW Community", blank=True, null=True, max_length=64)
     snmp_rate_limit: int = IntegerField(default=0)
     access_preference = CharField(
-        "CLI Privilege Policy",
+        "Access Preference",
         max_length=8,
         choices=[
             ("P", "Profile"),
