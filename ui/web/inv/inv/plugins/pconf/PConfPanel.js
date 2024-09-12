@@ -83,7 +83,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       displayField: "text",
       valueField: "value",
       fieldLabel: __("Mode"),
-      labelStyle: "color: red;",
+      allowBlank: false,
       labelAlign: "right",
       bind: {
         value: "{tabType}",
