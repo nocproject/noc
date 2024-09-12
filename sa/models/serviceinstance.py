@@ -262,3 +262,4 @@ class ServiceInstance(Document):
     @classmethod
     def get_object_resources(cls, o):
         """Return all resources used by object"""
+        return {}

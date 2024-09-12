@@ -138,10 +138,12 @@ class ServiceSummary(Document):
             subscriber_profiles = {x["_id"]: x["total"] for x in ra}
             # Bind to interface
             # None for unbound services
-            iface = si.interface.id
+            iface = si.interface
+            if not iface:
+                continue
             if iface in ri:
-                add_dict(ri[iface]["service"], svc_profiles)
-                add_dict(ri[iface]["subscriber"], subscriber_profiles)
+                add_dict(ri[iface.id]["service"], svc_profiles)
+                add_dict(ri[iface.id]["subscriber"], subscriber_profiles)
             else:
                 ri[iface] = {
                     "service": dict(svc_profiles),  # defaultdict -> dict
