@@ -5,14 +5,24 @@
     "description": "IRE-Polus Horizon connection rules",
     "context": [
         {
-            "reset_scopes": ["linecard"],
+            "reset_scopes": ["linecard", "adapter"],
             "scope": "chassis",
             "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": ["linecard"],
+            "scope": "adapter",
+            "type": "ADAPTER"
         },
         {
             "reset_scopes": [],
             "scope": "linecard",
             "type": "LINECARD"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "linecard",
+            "type": "LINECARDH4"
         },
         {
             "reset_scopes": [],
@@ -28,6 +38,22 @@
             "target_connection": "{N}",
             "target_number": "",
             "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "ADAPTER",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "LINECARDH4",
+            "scope": "adapter",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "ADAPTER"
         },
         {
             "match_connection": "in",
@@ -57,16 +83,8 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "linecard",
-            "target_connection": "LINE{N}",
-            "target_number": "",
-            "target_type": "LINECARD"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "XCVR",
-            "scope": "linecard",
-            "target_connection": "CLIENT{N}",
-            "target_number": "",
+            "target_connection": "{N}",
+            "target_number": null,
             "target_type": "LINECARD"
         }
     ]
