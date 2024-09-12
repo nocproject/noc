@@ -82,6 +82,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       queryMode: "local",
       displayField: "text",
       valueField: "value",
+      fieldLabel: __("Mode"),
+      allowBlank: false,
+      labelAlign: "right",
       bind: {
         value: "{tabType}",
       },
