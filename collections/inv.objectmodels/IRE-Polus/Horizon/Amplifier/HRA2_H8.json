@@ -6,6 +6,7 @@
     "description": "HRA2-H8/HRA2B-H8 – комбинированный волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель) и эрбиевого усилителя.",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
+    "plugins": ["pconf"],
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
     "connections": [

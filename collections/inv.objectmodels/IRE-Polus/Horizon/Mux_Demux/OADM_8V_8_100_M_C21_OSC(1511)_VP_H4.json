@@ -5,6 +5,7 @@
     "vendor__code": "IRE-POLUS",
     "description": "OADM-8V/8– Оптический мультиплексор ввода/вывода",
     "cr_context": "LINECARDH4",
+    "plugins": ["pconf"],
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
     "connections": [

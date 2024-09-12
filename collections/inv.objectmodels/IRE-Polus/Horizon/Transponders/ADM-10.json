@@ -6,6 +6,7 @@
     "description": "Карта ADM-10 предназначена для объединения 16 клиентских потоков до 2.5G (1GE/STM1/STM4/STM16) в 2 линейных независимых сигнала с общей полосой пропускания до 10G. На лицевой панели карты ADM-10 размещаются 16 клиентских портов SFP и 4 линейных порта SFP+",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
+    "plugins": ["pconf"],
     "configuration_rule__name": "ADM-10",
     "connections": [
         {

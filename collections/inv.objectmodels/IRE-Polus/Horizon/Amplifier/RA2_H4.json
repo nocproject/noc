@@ -6,6 +6,7 @@
     "description": "RA2-H4 – волоконно-оптический усилитель на основе эффекта вынужденного комбинационного рассеяния (рамановский усилитель).",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARDH4",
+    "plugins": ["pconf"],
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
     "connections": [
@@ -104,5 +105,6 @@
             "interface": "asset",
             "value": ["RA2-H4"]
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | RBS-RA2-H4 IP1456"
 }
