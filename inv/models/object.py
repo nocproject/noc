@@ -865,13 +865,14 @@ class Object(Document):
                 )
                 child = Object.objects.filter(parent=self.id, parent_connection=name).first()
                 if child:
+                    o_name = child.model.get_outer().name
                     c = ObjectConnection(
                         connection=[
-                            ObjectConnectionItem(object=self, name=self.name),
-                            ObjectConnectionItem(object=child.parent, name=child.parent_connection),
+                            ObjectConnectionItem(object=self, name=name),
+                            ObjectConnectionItem(object=child, name=o_name),
                         ]
                     )
-                    return c, child.parent, child.parent_connection
+                    return c, child, o_name
         # Strange things happen
         return None, None, None
 
