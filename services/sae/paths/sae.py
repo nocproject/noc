@@ -344,7 +344,7 @@ class SAEAPI(JSONRPCAPI):
             credentials=credentials,
             capabilities=capabilities,
             version=version,
-            controller=controller.get_controller_credentials() if controller else None,
+            controller=controller,
         )
 
 
