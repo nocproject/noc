@@ -56,6 +56,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     {
       xtype: "grid",
       scrollable: "y",
+      split: true,
       columns: [
         {
           xtype: 'glyphactioncolumn',
@@ -117,6 +118,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         afterlayout: "afterGridRender",
         selectionchange: "onChangeSelection", 
       },
+    },
+    {
+      xtype: "splitter",
     },
     {
       xtype: "container",

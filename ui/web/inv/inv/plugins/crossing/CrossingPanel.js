@@ -10,7 +10,10 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
   extend: "Ext.panel.Panel",
   title: __("Crossing"),
   closable: false,
-  layout: "fit",
+  layout: {
+    type: "vbox",
+    align: "stretch",
+  },
   defaultListenerScope: true,
   scrollable: false,
   itemId: "crossingPanel",
@@ -53,6 +56,7 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
       scrollable: "y",
       allowDeselect: true,
       flex: 1,
+      split: true,
       columns: [
         {
           dataIndex: "input",
@@ -95,6 +99,9 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
           }
         },
       },
+    },
+    {
+      xtype: "splitter",
     },
     {
       xtype: "panel",
@@ -204,5 +211,12 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
     }
 
     return {grid: halfBodyHeight, image: imageHeight};
+  },
+  onZoom: function(combo){
+    var me = this,
+      imagePanel = me.down("#crossingScheme"),
+      imageStyle = imagePanel.down("container").getEl().dom.style;
+    imageStyle.transformOrigin = "0 0";
+    imageStyle.transform = "scale(" + combo.getValue() + ")";
   },
 });
