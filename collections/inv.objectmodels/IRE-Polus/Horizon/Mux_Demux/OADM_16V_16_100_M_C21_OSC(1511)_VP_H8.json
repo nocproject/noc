@@ -583,86 +583,86 @@
             "output": "P1"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "EXT_OUT"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C21_OUT",
             "input_discriminator": "lambda::192100-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C22_OUT",
             "input_discriminator": "lambda::192200-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C23_OUT",
             "input_discriminator": "lambda::192300-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C24_OUT",
             "input_discriminator": "lambda::192400-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C25_OUT",
             "input_discriminator": "lambda::192500-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C26_OUT",
             "input_discriminator": "lambda::192600-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C27_OUT",
             "input_discriminator": "lambda::192700-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C28_OUT",
             "input_discriminator": "lambda::192800-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C29_OUT",
             "input_discriminator": "lambda::192900-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C30_OUT",
             "input_discriminator": "lambda::193000-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C31_OUT",
             "input_discriminator": "lambda::193100-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C32_OUT",
             "input_discriminator": "lambda::193200-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C33_OUT",
             "input_discriminator": "lambda::193300-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C34_OUT",
             "input_discriminator": "lambda::193400-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C35_OUT",
             "input_discriminator": "lambda::193500-50"
         },
         {
-            "input": "P1",
+            "input": "P2",
             "output": "C36_OUT",
             "input_discriminator": "lambda::193600-50"
         },
