@@ -69,6 +69,9 @@ Ext.define("NOC.inv.inv.Application", {
           xtype: "treecolumn", // Это обязательная колонка для отображения дерева
           dataIndex: "name",
           flex: 1,
+          style: {
+            backgroundColor: "#ECECEC",
+          },
         },
         {
           xtype: "widgetcolumn",
