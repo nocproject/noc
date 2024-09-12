@@ -43,7 +43,7 @@ class Script(VIMScript):
                     "admin_status": True,
                     "oper_status": True,
                     "mac": d.macAddress,
-                    "type": "SVI",
+                    "type": "virtual",
                     "enabled_afi": [],
                     "subinterfaces": [],
                 }

@@ -36,7 +36,7 @@ class NRIPortmapperCheck(DiscoveryCheck):
             self.logger.info("No interfaces discovered. " "Skipping interface status check")
             return
         # Get portmapper instance
-        pm_cls = portmapper_loader.get_loader(self.object.remote_system.name)
+        pm_cls = portmapper_loader[self.object.remote_system.name]
         if not pm_cls:
             self.logger.info("[%s] No portmapper for NRI. Skipping checks", nri)
             return
@@ -47,12 +47,12 @@ class NRIPortmapperCheck(DiscoveryCheck):
         ifaces_hints = tuple(
             IFHint(name=iface["name"], ifindex=iface.get("ifindex"))
             for iface in icol.find(
-                {"managed_object": self.object.id, "type": "physical"},
+                {"managed_object": self.object.id, "type": {"$in": ["physical", "virtual"]}},
                 {"_id": 1, "name": 1, "ifindex": 1},
             )
         )
         for d in icol.find(
-            {"managed_object": self.object.id, "type": "physical"},
+            {"managed_object": self.object.id, "type": {"$in": ["physical", "virtual"]}},
             {"_id": 1, "name": 1, "nri_name": 1},
         ):
             try:
