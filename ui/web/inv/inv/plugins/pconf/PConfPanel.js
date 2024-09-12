@@ -129,9 +129,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
               displayValue = option ? option.label : value;
             }
             if(record.get("read_only")){
-              displayValue = "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
+              return "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
             }
-            return displayValue;
+            return "<i class='fas fa fa-pencil' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
           },
         },
         {
@@ -159,6 +159,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   //
   preview: function(data){
     var me = this;
+    if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
+      NOC.error(data.message);
+      return
+    }
     me.currentId = data.id;
     me.getViewModel().get("gridStore").loadData(data.conf);
   },
