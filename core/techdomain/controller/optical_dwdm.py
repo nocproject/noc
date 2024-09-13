@@ -58,31 +58,43 @@ class OpticalDWDMController(BaseController):
                 return False
             return False
 
+        def iter_candidates(ep: Endpoint) -> Iterable[tuple[Endpoint, PathItem]]:
+            for cc in ep.object.iter_cross(ep.name, [discriminator]):
+                yield Endpoint(object=ep.object, name=cc.output), PathItem(
+                    object=ep.object, input=ep.name, output=cc.output
+                )
+
+        def trace_path(ep: Endpoint) -> Iterable[PathItem]:
+            r = []
+            while True:
+                pi = prev.get(ep)
+                if not pi:
+                    break
+                r.append(pi)
+                ep = Endpoint(object=pi.object, name=pi.input)
+            yield from reversed(r)
+
         self.logger.info("Tracing from %s", start)
         discriminator = get_discriminator(start)
         if not discriminator:
             self.logger.info("No discriminator")
             return None
         self.logger.debug("Discriminator: %s", discriminator)
-        ep = start
-        while ep:
-            self.logger.debug("Tracing %s", ep)
-            # From input to output
-            candidates = []  # We may found real exit on next step
-            for cc in ep.object.iter_cross(ep.name, [discriminator]):
-                # Check if output is satisfactory
-                oep = Endpoint(object=ep.object, name=cc.output)
+
+        queue = [start]
+        prev: dict[Endpoint, PathItem] = {}
+        while queue:
+            ep = queue.pop(0)
+            for oep, pi in iter_candidates(ep):
                 if is_exit(oep):
                     self.logger.debug("Traced to %s", oep)
-                    yield PathItem(object=ep.object, input=ep.name, output=oep.name)
-                candidates.append(oep)
-            for oep in candidates:
-                # Next step trough cable
-                pi = PathItem(object=ep.object, input=ep.name, output=oep.name)
-                ep = self.get_peer(oep)
-                if ep:
+                    yield from trace_path(ep)
                     yield pi
-                break
+                nep = self.get_peer(oep)
+                if nep:
+                    prev[nep] = pi
+                    queue.append(nep)
+
         self.logger.debug("Failed to trace")
         return None
 

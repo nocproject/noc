@@ -142,10 +142,12 @@ class ChannelPlugin(InvPlugin):
             controller = controller_loader[controller_name]()
             for no in nested_objects:
                 for sep, eep in controller.iter_adhoc_endpoints(no):
-                    h = ep_hash(controller.name, sep, eep)
-                    if h in seen:
-                        continue
-                    seen.add(h)
+                    if controller.topology.is_bidirectional:
+                        # Supress duplicates in other direction
+                        h = ep_hash(controller.name, sep, eep)
+                        if h in seen:
+                            continue
+                        seen.add(h)
                     r += [
                         {
                             "start_endpoint": sep.as_resource(),
