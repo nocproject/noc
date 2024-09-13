@@ -88,7 +88,7 @@ class InvApplication(ExtApplication):
                     return self.response_not_found()
                 if parent.is_container:
                     # Sort by alnum key
-                    sort_key = lambda x: alnum_key(x.name)
+                    sort_key = lambda x: alnum_key(x.name or "")
                 else:
                     # Sort by parent's model
                     conn_rank = {conn.name: n for n, conn in enumerate(parent.model.connections)}
