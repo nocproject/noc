@@ -67,14 +67,14 @@
             "type__name": "Optical | LC"
         },
         {
-            "name": "EXT IN",
+            "name": "EXT_IN",
             "description": "Порт входа расширения",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "EXT OUT",
+            "name": "EXT_OUT",
             "description": "Порт выхода расширения",
             "direction": "s",
             "gender": "f",
@@ -103,14 +103,14 @@
             "type__name": "Optical | LC"
         },
         {
-            "name": "MON_P",
+            "name": "MON_IN",
             "description": "Порт мониторинга выхода P1 в сторону предусилителя",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
-            "name": "MON_B",
+            "name": "MON_OUT",
             "description": "Порт мониторинга излучения, приходящего со стороны входа B2",
             "direction": "s",
             "gender": "f",
@@ -138,7 +138,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C22",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -152,7 +152,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C23",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -166,7 +166,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C24",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -180,7 +180,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C25",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -194,7 +194,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C26",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -208,7 +208,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C27",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -222,7 +222,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C28",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -236,7 +236,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C29",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -250,7 +250,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C30",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -264,7 +264,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C31",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -278,7 +278,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C32",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -292,7 +292,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C33",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -306,7 +306,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C34",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -320,7 +320,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C35",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -334,7 +334,7 @@
             "protocols": [
                 {
                     "direction": ">",
-                    "discriminator": "C21",
+                    "discriminator": "C36",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -362,7 +362,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C22",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -376,7 +376,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C23",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -390,7 +390,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C24",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -404,7 +404,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C25",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -418,7 +418,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C26",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -432,7 +432,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C27",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -446,7 +446,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C28",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -460,7 +460,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C29",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -474,7 +474,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C30",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -488,7 +488,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C31",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -502,7 +502,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C32",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -516,7 +516,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C33",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -530,7 +530,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C34",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -544,7 +544,7 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C35",
                     "protocol__code": "DWDM"
                 }
             ],
@@ -558,11 +558,209 @@
             "protocols": [
                 {
                     "direction": "<",
-                    "discriminator": "C21",
+                    "discriminator": "C36",
                     "protocol__code": "DWDM"
                 }
             ],
             "type__name": "Optical | LC"
+        }
+    ],
+    "cross": [
+        {
+            "input": "LINE_IN",
+            "output": "MON_IN"
+        },
+        {
+            "input": "LINE_IN",
+            "output": "OSC_OUT"
+        },
+        {
+            "input": "LINE_IN",
+            "output": "MON_IN"
+        },
+        {
+            "input": "LINE_IN",
+            "output": "P1"
+        },
+        {
+            "input": "P2",
+            "output": "EXT_OUT"
+        },
+        {
+            "input": "P2",
+            "output": "C21_OUT",
+            "input_discriminator": "lambda::192100-50"
+        },
+        {
+            "input": "P2",
+            "output": "C22_OUT",
+            "input_discriminator": "lambda::192200-50"
+        },
+        {
+            "input": "P2",
+            "output": "C23_OUT",
+            "input_discriminator": "lambda::192300-50"
+        },
+        {
+            "input": "P2",
+            "output": "C24_OUT",
+            "input_discriminator": "lambda::192400-50"
+        },
+        {
+            "input": "P2",
+            "output": "C25_OUT",
+            "input_discriminator": "lambda::192500-50"
+        },
+        {
+            "input": "P2",
+            "output": "C26_OUT",
+            "input_discriminator": "lambda::192600-50"
+        },
+        {
+            "input": "P2",
+            "output": "C27_OUT",
+            "input_discriminator": "lambda::192700-50"
+        },
+        {
+            "input": "P2",
+            "output": "C28_OUT",
+            "input_discriminator": "lambda::192800-50"
+        },
+        {
+            "input": "P2",
+            "output": "C29_OUT",
+            "input_discriminator": "lambda::192900-50"
+        },
+        {
+            "input": "P2",
+            "output": "C30_OUT",
+            "input_discriminator": "lambda::193000-50"
+        },
+        {
+            "input": "P2",
+            "output": "C31_OUT",
+            "input_discriminator": "lambda::193100-50"
+        },
+        {
+            "input": "P2",
+            "output": "C32_OUT",
+            "input_discriminator": "lambda::193200-50"
+        },
+        {
+            "input": "P2",
+            "output": "C33_OUT",
+            "input_discriminator": "lambda::193300-50"
+        },
+        {
+            "input": "P2",
+            "output": "C34_OUT",
+            "input_discriminator": "lambda::193400-50"
+        },
+        {
+            "input": "P2",
+            "output": "C35_OUT",
+            "input_discriminator": "lambda::193500-50"
+        },
+        {
+            "input": "P2",
+            "output": "C36_OUT",
+            "input_discriminator": "lambda::193600-50"
+        },
+        {
+            "input": "EXT_IN",
+            "output": "B1"
+        },
+        {
+            "input": "C21_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192100-50"
+        },
+        {
+            "input": "C22_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192200-50"
+        },
+        {
+            "input": "C23_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192300-50"
+        },
+        {
+            "input": "C24_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192400-50"
+        },
+        {
+            "input": "C25_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192500-50"
+        },
+        {
+            "input": "C26_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192600-50"
+        },
+        {
+            "input": "C27_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192700-50"
+        },
+        {
+            "input": "C28_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192800-50"
+        },
+        {
+            "input": "C29_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::192900-50"
+        },
+        {
+            "input": "C30_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::193000-50"
+        },
+        {
+            "input": "C31_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::193100-50"
+        },
+        {
+            "input": "C32_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::193200-50"
+        },
+        {
+            "input": "C33_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::193300-50"
+        },
+        {
+            "input": "C34_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::193400-50"
+        },
+        {
+            "input": "C35_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::193500-50"
+        },
+        {
+            "input": "C36_IN",
+            "output": "B1",
+            "input_discriminator": "lambda::193600-50"
+        },
+        {
+            "input": "OSC_IN",
+            "output": "LINE_OUT"
+        },
+        {
+            "input": "B2",
+            "output": "MON_OUT"
+        },
+        {
+            "input": "B2",
+            "output": "LINE_OUT"
         }
     ],
     "data": [

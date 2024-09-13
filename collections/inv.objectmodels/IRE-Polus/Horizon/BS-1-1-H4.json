@@ -60,6 +60,16 @@
             "type__name": "Optical | LC"
         }
     ],
+    "cross": [
+        {
+            "input": "LINE_1_IN",
+            "output": "CLIENT_OUT"
+        },
+        {
+            "input": "CLIENT_IN",
+            "output": "LINE_1_OUT"
+        }
+    ],
     "data": [
         {
             "attr": "power",
