@@ -32,6 +32,16 @@ class ChannelTopology(Enum):
     UP2MP = "up2mp"
     STAR = "star"
 
+    @property
+    def is_unidirectional(self) -> bool:
+        """Check if topology is unidirectional."""
+        return self in (ChannelTopology.UP2P, ChannelTopology.UBUNCH, ChannelTopology.UP2MP)
+
+    @property
+    def is_bidirectional(self) -> bool:
+        """Check if topology is bidirectional."""
+        return not self.is_unidirectional
+
 
 class ChannelKind(Enum):
     """
