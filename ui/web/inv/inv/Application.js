@@ -72,85 +72,32 @@ Ext.define("NOC.inv.inv.Application", {
           style: {
             backgroundColor: "#ECECEC",
           },
-        },
-        {
-          xtype: "widgetcolumn",
-          width: 70,
-          widget: {
-            xtype: "button",
-            text: "...",
-            hidden: true,
-            arrowVisible: false,
-            hideMode: "visibility",
-            style: {
-              backgroundColor: "#ECECEC",
-            },
-            listeners: {
-              afterrender: function(button){
-                button.getEl().down(".x-btn-inner").setStyle("color", "black");
-              },
-            },
-            menu: {},
-          },
-          onWidgetAttach: function(col, widget, record){
-            var navTree = this.up("treepanel");
-            
-            if(navTree.getSelectionModel().isSelected(record)){
-              widget.show();
-            } else{
-              widget.hide();
-            }
-            widget.setMenu({
-              xtype: "menu",
-              plain: true,
-              items: [
-                {
-                  glyph: NOC.glyph.plus,
-                  text: __("Add objects"),
-                  disabled: !record.get("can_add"),
-                  scope: me,
-                  handler: me.onAddObject,
-                },
-                {
-                  glyph: NOC.glyph.minus,
-                  text: __("Remove group"),
-                  scope: me,
-                  disabled: !record.get("can_delete"),
-                  handler: me.onRemoveGroup,
-                },
-                {
-                  glyph: NOC.glyph.plug,
-                  text: __("Create connection"),
-                  scope: me,
-                  disabled: false,
-                  handler: me.onCreateConnection,
-                },
-                {
-                  glyph: NOC.glyph.line_chart,
-                  text: __("Open Dashboard"),
-                  scope: me,
-                  disabled: false,
-                  handler: me.onOpenDashboard,
-                },
-                {
-                  glyph: NOC.glyph.copy,
-                  text: __("Clone"),
-                  scope: me,
-                  handler: me.onClone,
-                },
-                {
-                  itemId: "invNavContextMenuMap",
-                  text: __("Show Map"),
-                  glyph: NOC.glyph.globe,
-                  scope: me,
-                  handler: me.onShowMap,
-                  // arrowVisible: false,
-                  disabled: true,
-                  menu: [], // Dynamically add items, after select node in navigation, method 'onSelectNav'
-                },
-              ],
-            });
-          },
+          cellTpl: [
+            '<div style="display:flex;justify-content:space-between;">',
+            '  <div style="text-overflow: ellipsis;overflow: hidden;">',
+            '    <tpl for="lines">',
+            '    <div class="{parent.childCls} {parent.elbowCls}-img ',
+            '    {parent.elbowCls}-<tpl if=".">line<tpl else>empty</tpl>" role="presentation"></div>',
+            '  </tpl>',
+            '  <div class="{childCls} {elbowCls}-img {elbowCls}',
+            '    <tpl if="isLast">-end</tpl><tpl if="expandable">-plus {expanderCls}</tpl>" role="presentation"></div>',
+            '  <tpl if="checked !== null">',
+            '    <div role="button" {ariaCellCheckboxAttr}',
+            '       class="{childCls} {checkboxCls}<tpl if="checked"> {checkboxCls}-checked</tpl>"></div>',
+            '   </tpl>',
+            '  <tpl if="icon"><img src="{blankUrl}"<tpl else><div</tpl>',
+            '     role="presentation" class="{childCls} {baseIconCls} {customIconCls} ',
+            '    {baseIconCls}-<tpl if="leaf">leaf<tpl else><tpl if="expanded">parent-expanded<tpl else>parent</tpl></tpl> {iconCls}" ',
+            '    <tpl if="icon">style="background-image:url({icon})"/><tpl else>></div></tpl>',
+            '   <tpl if="href">',
+            '     <a href="{href}" role="link" target="{hrefTarget}" class="{textCls} {childCls}">{value}</a>',
+            '   <tpl else>',
+            '     <span class="{textCls} {childCls}">{value}</span>',
+            '  </tpl>',
+            '  </div>',
+            '  <button class="cell-button" style="display: none;">...</button>',
+            '</div>',
+          ],
         },
       ],
       dockedItems: [{
@@ -174,6 +121,119 @@ Ext.define("NOC.inv.inv.Application", {
         scope: me,
         select: me.onSelectNav,
         deselect: me.onDeselect,
+        afterrender: function(treePanel){
+          treePanel.getEl().on("click", function(event, target){
+            if(Ext.fly(target).hasCls("cell-button")){
+              var record = treePanel.getView().getRecord(target.closest(".x-grid-row")),
+                objectId = record.get("id"),
+                menu = Ext.create("Ext.menu.Menu", {
+                  plain: true,
+                  items: [
+                    {
+                      glyph: NOC.glyph.plus,
+                      text: __("Add objects"),
+                      disabled: !record.get("can_add"),
+                      scope: me,
+                      handler: me.onAddObject,
+                    },
+                    {
+                      glyph: NOC.glyph.minus,
+                      text: __("Remove group"),
+                      scope: me,
+                      disabled: !record.get("can_delete"),
+                      handler: me.onRemoveGroup,
+                    },
+                    {
+                      glyph: NOC.glyph.plug,
+                      text: __("Create connection"),
+                      scope: me,
+                      disabled: false,
+                      handler: me.onCreateConnection,
+                    },
+                    {
+                      glyph: NOC.glyph.line_chart,
+                      text: __("Open Dashboard"),
+                      scope: me,
+                      disabled: false,
+                      handler: me.onOpenDashboard,
+                    },
+                    {
+                      glyph: NOC.glyph.copy,
+                      text: __("Clone"),
+                      scope: me,
+                      handler: me.onClone,
+                    },
+                  ],
+                });
+              setTimeout(function(){
+                Ext.Ajax.request({
+                  url: "/inv/inv/" + objectId + "/map_lookup/",
+                  method: "GET",
+                  success: function(response){
+                    var defaultHandler, menuItems,
+                      data = Ext.decode(response.responseText);
+
+                    if(Ext.isEmpty(data)){
+                      menu.add({
+                        itemId: "invNavContextMenuMap",
+                        text: __("Show Map"),
+                        glyph: NOC.glyph.globe,
+                        disabled: true,
+                      });
+                      return;
+                    }
+                    defaultHandler = data.filter(function(el){
+                      return el.is_default
+                    })[0];
+                    menuItems = data.filter(function(el){
+                      return !el.is_default
+                    }).map(function(el){
+                      return {
+                        text: el.label,
+                        handler: function(){
+                          NOC.launch("inv.map", "history", {
+                            args: el.args,
+                          })
+                        },
+                      }
+                    });
+                    // mapMenuItem
+                    if(menuItems.length){
+                      menu.add({
+                        itemId: "invNavContextMenuMap",
+                        text: __("Show Map"),
+                        glyph: NOC.glyph.globe,
+                        menu: menuItems,
+                      });
+                    } else{
+                      menu.add({
+                        itemId: "invNavContextMenuMap",
+                        text: __("Show Map"),
+                        glyph: NOC.glyph.globe,
+                        handler: function(){
+                          NOC.launch("inv.map", "history", {
+                            args: defaultHandler.args,
+                          });
+                        },
+                      });
+                    }
+                  },
+                  failure: function(){
+                    NOC.error(__("Failed get map menu"));
+                  },
+                });
+                me.tabPanel.unmask();
+              }, 0);
+              menu.showAt(event.getXY());
+            }
+          }, null, {delegate: ".cell-button"});
+        },
+        beforecellclick: function(treePanel, td, cellIndex, record, tr, rowIndex, e){
+          return !Ext.fly(e.target).hasCls("cell-button");
+        },
+        beforecelldblclick: function(){
+          return false;
+        },
       },
       viewConfig: {
         plugins: {
@@ -303,104 +363,32 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   onSelectNav: function(rowModel, record){
-    var mapMenuItem, me = this,
+    var me = this,
       objectId = record.get("id"),
-      plugins = record.get("plugins"),
-      vwidgetColumn = rowModel.view.getHeaderCt().down('widgetcolumn'),
-      widget = vwidgetColumn.getWidget(record),
-      menu = widget.getMenu();
-
-    if(widget){
-      var innerCells = widget.getEl().up(".x-grid-row");
-      Ext.each(innerCells.query(".x-grid-cell-inner"), function(cell){
-        cell.classList.add("noc-inv-nav-cell-inner");
-      });
-      me.down("#addObjectDock").hide();
-      widget.show();
-      mapMenuItem = widget.down("#invNavContextMenuMap");
-      if(mapMenuItem){
-        menu.remove(mapMenuItem);
-      }
-      me.selectedObjectId = objectId;
-      me.tabPanel.mask(__("Loading..."));
-      setTimeout(function(){
-        Ext.Ajax.request({
-          url: "/inv/inv/" + objectId + "/map_lookup/",
-          method: "GET",
-          success: function(response){
-            var defaultHandler, menuItems,
-              data = Ext.decode(response.responseText);
-
-            if(Ext.isEmpty(data)){
-              menu.add({
-                itemId: "invNavContextMenuMap",
-                text: __("Show Map"),
-                glyph: NOC.glyph.globe,
-                disabled: true,
-              });
-              return;
-            }
-            defaultHandler = data.filter(function(el){
-              return el.is_default
-            })[0];
-            menuItems = data.filter(function(el){
-              return !el.is_default
-            }).map(function(el){
-              return {
-                text: el.label,
-                handler: function(){
-                  NOC.launch("inv.map", "history", {
-                    args: el.args,
-                  })
-                },
-              }
-            });
-            // mapMenuItem
-            if(menuItems.length){
-              menu.add({
-                itemId: "invNavContextMenuMap",
-                text: __("Show Map"),
-                glyph: NOC.glyph.globe,
-                menu: menuItems,
-              });
-            } else{
-              menu.add({
-                itemId: "invNavContextMenuMap",
-                text: __("Show Map"),
-                glyph: NOC.glyph.globe,
-                handler: function(){
-                  NOC.launch("inv.map", "history", {
-                    args: defaultHandler.args,
-                  });
-                },
-              });
-            }
-          },
-          failure: function(){
-            NOC.error(__("Failed get map menu"));
-          },
-        });
-        me.invPlugins = {};
-        me.tabPanel.removeAll();
-        Ext.each(plugins, function(p){
-          me.runPlugin(objectId, p);
-        });
-        me.tabPanel.setActiveTab(0);
-        me.setHistoryHash(objectId);
-        me.tabPanel.unmask();
-      }, 0);
+      node = rowModel.view.getNode(record),
+      plugins = record.get("plugins");
+    if(node){
+      node.querySelector("button").style.display = "block";
     }
+    me.down("#addObjectDock").hide();
+    me.selectedObjectId = objectId;
+    me.invPlugins = {};
+    me.tabPanel.removeAll();
+    Ext.each(plugins, function(p){
+      me.runPlugin(objectId, p);
+    });
+    me.tabPanel.setActiveTab(0);
+    me.setHistoryHash(objectId);
   },
   //
   onDeselect: function(rowModel, record){
-    var vwidgetColumn, widget, me = this;
+    var me = this;
 
     me.down("#addObjectDock").show();
     if(rowModel){
-      vwidgetColumn = rowModel.view.getHeaderCt().down('widgetcolumn');
-      widget = vwidgetColumn.getWidget(record);
-      if(widget){
-        widget.hide();
+      var node = rowModel.view.getNode(record);
+      if(node){
+        node.querySelector("button").style.display = "none";
       }
     }
     me.tabPanel.removeAll();
