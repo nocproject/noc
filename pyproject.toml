@@ -66,8 +66,6 @@ lint.ignore = [
   "PLR1730", # Replace `if` statement with `width = max(width, max_column_data_length[c])`
   "PLR1704", # Redefining argument with the local name `name`
   "PLR1711", # Useless `return` statement at end of function
-  "PLE1205", # Too many arguments for `logging` format string
-  "PLE1206", # Not enough arguments for `logging` format string
   "F811", # Redefinition of unused `ReportBand` from line 66
 ] 
 lint.unfixable = [

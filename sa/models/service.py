@@ -216,7 +216,7 @@ class Service(Document):
         # if not self.state.is_productive:
         #    return
         if self.oper_status == status:
-            logger.debug("[%s] Status is same. Skipping", self.id, self.oper_status)
+            logger.debug("[%s] Status is same. Skipping", self.id)
             return
         logger.info(
             "[%s] Change service status: %s -> %s",

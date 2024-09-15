@@ -88,7 +88,7 @@ class Script(BaseScript):
             elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
                 # Some old switches or switches with old firmware
                 self.logger.debug(
-                    "'%s' We cannot match local interface by MAC. Use '%s' as local ifname",
+                    "Cannot match local interface by MAC. Use '%s' as local ifname",
                     port_num,
                 )
                 local_interface = port_num

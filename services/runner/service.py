@@ -93,7 +93,9 @@ class RunnerService(FastAPIService):
                 t0 = perf_counter_ns()
                 await coll.bulk_write(bulk)
                 dt = perf_counter_ns() - t0
-                self.logger.debug("%d changes written in %.2fms", float(dt) / 1_000_000.0)
+                self.logger.debug(
+                    "%d changes written in %.2fms", len(bulk), float(dt) / 1_000_000.0
+                )
                 metrics["sync_changes"] += len(bulk)
             asyncio.sleep(1.0)
 
