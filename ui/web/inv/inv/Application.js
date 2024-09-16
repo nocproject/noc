@@ -52,6 +52,58 @@ Ext.define("NOC.inv.inv.Application", {
       handler: me.onReloadNav,
     });
 
+    me.menu = Ext.create("Ext.menu.Menu", {
+      plain: true,
+      items: [
+        {
+          glyph: NOC.glyph.plus,
+          itemId: "invNavContextMenuAdd",
+          text: __("Add objects"),
+          scope: me,
+          handler: me.onAddObject,
+        },
+        {
+          glyph: NOC.glyph.minus,
+          itemId: "invNavContextMenuRemove",
+          text: __("Remove group"),
+          scope: me,
+          handler: me.onRemoveGroup,
+        },
+        {
+          glyph: NOC.glyph.plug,
+          text: __("Create connection"),
+          scope: me,
+          disabled: false,
+          handler: me.onCreateConnection,
+        },
+        {
+          glyph: NOC.glyph.line_chart,
+          text: __("Open Dashboard"),
+          scope: me,
+          disabled: false,
+          handler: me.onOpenDashboard,
+        },
+        {
+          glyph: NOC.glyph.copy,
+          text: __("Clone"),
+          scope: me,
+          handler: me.onClone,
+        },
+      ],
+      listeners: {
+        afterrender: function(menu){
+          menu.getEl().on('keydown', function(e){
+            if(e.getKey() === e.ESC){
+              me.isMenuShow = false;
+              menu.hide();
+            }
+          });
+        },
+      },
+    });
+
+    me.isMenuShow = false;
+
     me.navTree = Ext.create("Ext.tree.Panel", {
       store: me.store,
       autoScroll: true,
@@ -125,56 +177,32 @@ Ext.define("NOC.inv.inv.Application", {
           treePanel.getEl().on("click", function(event, target){
             if(Ext.fly(target).hasCls("cell-button")){
               var record = treePanel.getView().getRecord(target.closest(".x-grid-row")),
-                objectId = record.get("id"),
-                menu = Ext.create("Ext.menu.Menu", {
-                  plain: true,
-                  items: [
-                    {
-                      glyph: NOC.glyph.plus,
-                      text: __("Add objects"),
-                      disabled: !record.get("can_add"),
-                      scope: me,
-                      handler: me.onAddObject,
-                    },
-                    {
-                      glyph: NOC.glyph.minus,
-                      text: __("Remove group"),
-                      scope: me,
-                      disabled: !record.get("can_delete"),
-                      handler: me.onRemoveGroup,
-                    },
-                    {
-                      glyph: NOC.glyph.plug,
-                      text: __("Create connection"),
-                      scope: me,
-                      disabled: false,
-                      handler: me.onCreateConnection,
-                    },
-                    {
-                      glyph: NOC.glyph.line_chart,
-                      text: __("Open Dashboard"),
-                      scope: me,
-                      disabled: false,
-                      handler: me.onOpenDashboard,
-                    },
-                    {
-                      glyph: NOC.glyph.copy,
-                      text: __("Clone"),
-                      scope: me,
-                      handler: me.onClone,
-                    },
-                  ],
-                });
+                objectId = record.get("id");
+ 
+              if(me.isMenuShow){
+                me.isMenuShow = !me.isMenuShow;
+                me.menu.hide();
+                return;
+              }
               setTimeout(function(){
                 Ext.Ajax.request({
                   url: "/inv/inv/" + objectId + "/map_lookup/",
                   method: "GET",
                   success: function(response){
                     var defaultHandler, menuItems,
-                      data = Ext.decode(response.responseText);
+                      data = Ext.decode(response.responseText),
+                      mapMenuItem = me.menu.down("#invNavContextMenuMap"),
+                      addMenuItem = me.menu.down("#invNavContextMenuAdd"),
+                      removeMenuItem = me.menu.down("#invNavContextMenuRemove");
+                    
+                    addMenuItem.setDisabled(!record.get("can_add"));
+                    removeMenuItem.setDisabled(!record.get("can_delete"));
+                    if(mapMenuItem){
+                      me.menu.remove(mapMenuItem);
+                    }
 
                     if(Ext.isEmpty(data)){
-                      menu.add({
+                      me.menu.add({
                         itemId: "invNavContextMenuMap",
                         text: __("Show Map"),
                         glyph: NOC.glyph.globe,
@@ -199,14 +227,14 @@ Ext.define("NOC.inv.inv.Application", {
                     });
                     // mapMenuItem
                     if(menuItems.length){
-                      menu.add({
+                      me.menu.add({
                         itemId: "invNavContextMenuMap",
                         text: __("Show Map"),
                         glyph: NOC.glyph.globe,
                         menu: menuItems,
                       });
                     } else{
-                      menu.add({
+                      me.menu.add({
                         itemId: "invNavContextMenuMap",
                         text: __("Show Map"),
                         glyph: NOC.glyph.globe,
@@ -224,7 +252,8 @@ Ext.define("NOC.inv.inv.Application", {
                 });
                 me.tabPanel.unmask();
               }, 0);
-              menu.showAt(event.getXY());
+              me.isMenuShow = true;
+              me.menu.showAt(event.getXY());
             }
           }, null, {delegate: ".cell-button"});
         },
@@ -377,6 +406,7 @@ Ext.define("NOC.inv.inv.Application", {
     Ext.each(plugins, function(p){
       me.runPlugin(objectId, p);
     });
+    me.isMenuShow = false;
     me.tabPanel.setActiveTab(0);
     me.setHistoryHash(objectId);
   },
