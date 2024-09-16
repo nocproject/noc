@@ -8,7 +8,7 @@
 # Python modules
 import inspect
 import os
-from typing import Optional, Dict, List, Any, Tuple
+from typing import Optional, Dict, List, Any, Tuple, Iterable
 from collections import defaultdict
 
 # Third-party modules
@@ -16,7 +16,6 @@ from mongoengine import ValidationError
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
-from noc.core.resource import from_resource
 from noc.inv.models.object import Object
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.objectmodel import ObjectModel
@@ -30,6 +29,11 @@ from noc.core.inv.attach.rack import (
     RackPosition,
     RackSide,
     iter_choices as iter_rack_choices,
+)
+from noc.core.inv.attach.module import (
+    attach as attach_module,
+    ModulePosition,
+    get_free as get_free_for_module,
 )
 from noc.sa.interfaces.base import (
     StringParameter,
@@ -264,71 +268,56 @@ class InvApplication(ExtApplication):
     def _attach_inner(self, container: Object, item: Object, choice: Optional[str] = None):
         """Insert item into chassis/module."""
 
-        def attach():
-            # Dereference
-            obj: Object
-            obj, name = from_resource(choice)
-            if not obj:
-                return self.render_json({"status": False, "message": "Not found"}, status=400)
-            # Attach
-            try:
-                item.attach(obj, name)
-            except ConnectionError as e:
-                return self.render_json({"status": False, "message": str(e)}, status=400)
-            return self.render_json({"status": True, "message": "Placed to rack"}, status=200)
+        def to_tree(iter: Iterable[ModulePosition]) -> dict[str, Any] | None:
+            def from_obj(obj: Object) -> dict[str, Any]:
+                if obj.parent_connection:
+                    label = f"{obj.parent_connection} [{obj.model.get_short_label()}]"
+                else:
+                    label = obj.model.get_short_label()
+                # Prepare Node
+                return {"iconCls": obj.model.glyph_css_class, "name": label}
 
-        def get_free(obj: Object) -> Optional[Dict[str, Any]]:
-            # Label
-            if obj.parent_connection:
-                label = f"{obj.parent_connection} [{obj.model.get_short_label()}]"
-            else:
-                label = obj.model.get_short_label()
-            # Prepare Node
-            r = {"iconCls": obj.model.glyph_css_class, "name": label}
-            # Get used slots
-            used_slots = set(obj.iter_used_connections())
-            # Oversized?
-            size = item.occupied_slots
-            # Add slots
-            c_data = []
-            for cn in obj.model.connections:
-                if not cn.is_inner or cn.name in used_slots:
-                    continue
-                # Check compatibility
-                is_compatible, _ = ObjectModel.check_connection(cn, outer)
-                if not is_compatible:
-                    continue
-                # Process oversized modules
-                if size > 1:
-                    next_conns = set(
-                        cn.name for cn in obj.model.iter_next_connections(cn.name, size - 1)
-                    )
-                    if len(next_conns) != size - 1 or next_conns.intersection(used_slots):
-                        continue
-                # Add candidate
-                c_data.append({"id": f"o:{obj.id}:{cn.name}", "name": cn.name, "leaf": True})
-            # Process children
-            for child in obj.iter_children():
-                cf = get_free(child)
-                if cf:
-                    c_data.append(cf)
-            # Finalize
-            if c_data:
-                r["expanded"] = True
-                r["children"] = c_data
-                return r
+            def prepare_children(item: dict[str, Any]) -> None:
+                if "children" not in item:
+                    item["expanded"] = True
+                    item["children"] = []
+
+            def build_hierarchy(obj: Object) -> None:
+                if not obj.parent:
+                    return
+                if obj.parent != container:
+                    build_hierarchy(obj.parent)
+                prepare_children(items[obj.parent])
+                items[obj.parent]["children"].append(items[obj])
+
+            items: dict[Object, dict[str, Any]] = {container: from_obj(container)}
+            # Consume iterator
+            for pos in iter:
+                if pos.obj not in items:
+                    items[pos.obj] = from_obj(pos.obj)
+                    build_hierarchy(pos.obj)
+                current = items[pos.obj]
+                prepare_children(current)
+                current["children"].append(
+                    {"id": pos.as_resource(), "name": pos.name, "leaf": True}
+                )
+            if "children" in items[container]:
+                return items[container]
             return None
 
         outer = item.model.get_outer()
         if not outer:
-            return self.render_json({"status": False, "message": "Cannot connect"}, status=400)
+            return Result(status=False, message="Cannot connnect").as_response()
         if choice:
-            return attach()
+            pos = ModulePosition.from_resource(choice)
+            if pos is None:
+                return Result(status=False, message="Not found").as_response()
+            return attach_module(item, position=pos).as_response()
         # Build choices
-        r = get_free(container)
+        r = to_tree(get_free_for_module(container, item))
         if r:
             return {"choices": {"children": [r], "expanded": True}}
-        return self.render_json({"status": False, "message": "Cannot connect"}, status=400)
+        return Result(status=False, message="Cannot connect").as_response()
 
     @view(
         "^add_group/$",
