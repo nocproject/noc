@@ -87,19 +87,20 @@ class ReportDiscoveryLinks(ReportSource):
                 ("2", "and link_count = 2"),
                 ("More 3", "and link_count > 2"),
             ]:
-                rows.append({
-                            "links_count": x,
-                            "mo_count": row[x],
-                            "percent_at_all": (
-                                f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
-                            ),
-                            "detail": url
-                            % (
-                                f"select * from mo where status = True and enable_ping = True and enable_box = True {condition}",
-                                str(pool.id),
-                            ),
-                        },
-                    )
+                rows.append(
+                    {
+                        "links_count": x,
+                        "mo_count": row[x],
+                        "percent_at_all": (
+                            f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
+                        ),
+                        "detail": url
+                        % (
+                            f"select * from mo where status = True and enable_ping = True and enable_box = True {condition}",
+                            str(pool.id),
+                        ),
+                    },
+                )
             b = Band(name="pool", data={"name": pool.name})
             b.add_dataset(DataSet(name="row", rows=rows, data=None))
             data.append(b)
