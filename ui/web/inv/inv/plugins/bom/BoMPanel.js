@@ -26,4 +26,4 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPannel", {
     me.currentId = objectId;
     grid.getStore().loadData(records);
   },
-);
+});
