@@ -1103,6 +1103,13 @@ class Object(Document):
         Raises:
             ConnectionError: When unable to connect.
         """
+        if (
+            self.parent
+            and self.parent == parent
+            and self.parent_connection
+            and self.parent_connection == parent_connection
+        ):
+            return  # Already connected
         # Check object is a module
         outer = self.model.get_outer()
         if not outer:
