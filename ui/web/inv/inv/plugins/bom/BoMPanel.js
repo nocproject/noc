@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.plugins.bom.BoMPanel");
 
-Ext.define("NOC.inv.inv.plugins.bom.BoMPannel", {
+Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
   extend: "Ext.panel.Panel",
   title: __("BoM"),
   closable: false,
