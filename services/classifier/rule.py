@@ -109,11 +109,10 @@ class Rule(object):
                     if not (self.chain == "syslog" and x_key == "message"):
                         c1 += ["'%s' in vars" % x_key]
                     c2[x_key] = self.get_rx(rx_value)
+            elif x_value:
+                c3 += [(self.get_rx(rx_key), x_value)]
             else:
-                if x_value:
-                    c3 += [(self.get_rx(rx_key), x_value)]
-                else:
-                    c4 += [(self.get_rx(rx_key), self.get_rx(rx_value))]
+                c4 += [(self.get_rx(rx_key), self.get_rx(rx_value))]
         self.to_drop = self.event_class.action == "D"
         self.compile(c1, c2, c3, c4)
 

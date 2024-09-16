@@ -110,11 +110,10 @@ class Script(BaseScript):
                                     objects += [t]
                                     # rewrite number
                                     objects[-1]["number"] = objects[-1]["number"].split("/")[-1]
-                        else:
-                            if int(t["number"].split("/")[0]) == int(number_c):
-                                if int(t["number"].split("/")[1]) == int(number):
-                                    objects += [t]
-                                    objects[-1]["number"] = objects[-1]["number"].split("/")[-1]
+                        elif int(t["number"].split("/")[0]) == int(number_c):
+                            if int(t["number"].split("/")[1]) == int(number):
+                                objects += [t]
+                                objects[-1]["number"] = objects[-1]["number"].split("/")[-1]
         return objects
 
     def get_type(self, name, pid, descr, lo):

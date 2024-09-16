@@ -306,23 +306,22 @@ class BaseLoader(object):
                 # Removed
                 yield o, None
                 o = next(old, None)
+            elif n.id == o.id:
+                # Changed
+                if n.dict(include=include_fields, exclude={self.checkpoint_field}) != o.dict(
+                    include=include_fields, exclude={self.checkpoint_field}
+                ):
+                    yield o, n
+                n = next(new, None)
+                o = next(old, None)
+            elif n.id < o.id:
+                # Added
+                yield None, n
+                n = next(new, None)
             else:
-                if n.id == o.id:
-                    # Changed
-                    if n.dict(include=include_fields, exclude={self.checkpoint_field}) != o.dict(
-                        include=include_fields, exclude={self.checkpoint_field}
-                    ):
-                        yield o, n
-                    n = next(new, None)
-                    o = next(old, None)
-                elif n.id < o.id:
-                    # Added
-                    yield None, n
-                    n = next(new, None)
-                else:
-                    # Removed
-                    yield o, None
-                    o = next(old, None)
+                # Removed
+                yield o, None
+                o = next(old, None)
 
     def load(self):
         """

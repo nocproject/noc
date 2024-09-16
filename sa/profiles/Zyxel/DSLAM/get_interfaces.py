@@ -109,10 +109,9 @@ class Script(BaseScript):
             }
             if (match.group("vid") is not None) and (match.group("vid") != "-"):
                 iface["subinterfaces"][0]["vlan_ids"] = [int(match.group("vid"))]
-            else:
-                if match.group("vid") is None:
-                    match = self.rx_ipif_vlan.search(self.cli("switch vlan cpu show"))
-                    iface["subinterfaces"][0]["vlan_ids"] = [int(match.group("vid"))]
+            elif match.group("vid") is None:
+                match = self.rx_ipif_vlan.search(self.cli("switch vlan cpu show"))
+                iface["subinterfaces"][0]["vlan_ids"] = [int(match.group("vid"))]
             for m in iface_mac:
                 if ifname == m["ifname"]:
                     iface["mac"] = m["mac"]

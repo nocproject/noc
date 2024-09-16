@@ -156,32 +156,31 @@ class Script(BaseScript):
                 iface["subinterfaces"] = [sub]
                 ifaces += [iface]
                 changed = True
-            else:
-                if "." in l_iface:
-                    v = self.cli("show interface %s" % l_iface)
-                    match = self.rx_iface1.search(v)
-                    if match:
-                        ifname = match.group("interface")
-                        parent_iface, vlan_tag = ifname.split(".")
-                        sub = {
-                            "name": ifname,
-                            "admin_status": match.group("admin_status") == "Up",
-                            "oper_status": match.group("oper_status") == "Up",
-                            "vlan_ids": [match.group("vlan_id")],
-                        }
-                        for i in ifaces:
-                            if i["name"] == parent_iface:
-                                if i["subinterfaces"][0]["name"] != sub["name"]:
-                                    i["subinterfaces"] += [sub]
-                                else:
-                                    sub["enabled_afi"] += i["subinterfaces"][0]["enabled_afi"]
-                                    sub["enabled_protocols"] += i["subinterfaces"][0][
-                                        "enabled_protocols"
-                                    ]
-                                    i["subinterfaces"][0].update(sub)
-                                # Need more examples
-                                # changed = True
-                                break
+            elif "." in l_iface:
+                v = self.cli("show interface %s" % l_iface)
+                match = self.rx_iface1.search(v)
+                if match:
+                    ifname = match.group("interface")
+                    parent_iface, vlan_tag = ifname.split(".")
+                    sub = {
+                        "name": ifname,
+                        "admin_status": match.group("admin_status") == "Up",
+                        "oper_status": match.group("oper_status") == "Up",
+                        "vlan_ids": [match.group("vlan_id")],
+                    }
+                    for i in ifaces:
+                        if i["name"] == parent_iface:
+                            if i["subinterfaces"][0]["name"] != sub["name"]:
+                                i["subinterfaces"] += [sub]
+                            else:
+                                sub["enabled_afi"] += i["subinterfaces"][0]["enabled_afi"]
+                                sub["enabled_protocols"] += i["subinterfaces"][0][
+                                    "enabled_protocols"
+                                ]
+                                i["subinterfaces"][0].update(sub)
+                            # Need more examples
+                            # changed = True
+                            break
 
         if changed:
             return ifaces

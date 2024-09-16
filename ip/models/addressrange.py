@@ -168,39 +168,37 @@ class AddressRange(NOCModel):
             # New
             if self.action == "G":
                 generate_fqdns()
-        else:
-            # Changed
-            if old.action == "G" and self.action != "G":
-                # Drop all auto-generated IPs
+        elif old.action == "G" and self.action != "G":
+            # Drop all auto-generated IPs
+            Address.objects.filter(
+                vrf=self.vrf,
+                afi=self.afi,
+                address__gte=self.from_address,
+                address__lte=self.to_address,
+            ).delete()
+        elif old.action != "G" and self.action == "G":
+            # Generate IPs
+            generate_fqdns()
+        elif self.action == "G":
+            # Check for boundaries change
+            if IP.prefix(old.from_address) < IP.prefix(self.from_address):
+                # Lower boundary raised up. Clean up addresses falled out of range
                 Address.objects.filter(
                     vrf=self.vrf,
                     afi=self.afi,
-                    address__gte=self.from_address,
-                    address__lte=self.to_address,
+                    address__gte=old.from_address,
+                    address__lt=self.to_address,
                 ).delete()
-            elif old.action != "G" and self.action == "G":
-                # Generate IPs
-                generate_fqdns()
-            elif self.action == "G":
-                # Check for boundaries change
-                if IP.prefix(old.from_address) < IP.prefix(self.from_address):
-                    # Lower boundary raised up. Clean up addresses falled out of range
-                    Address.objects.filter(
-                        vrf=self.vrf,
-                        afi=self.afi,
-                        address__gte=old.from_address,
-                        address__lt=self.to_address,
-                    ).delete()
-                if IP.prefix(old.to_address) > IP.prefix(self.to_address):
-                    # Upper boundary is lowered. Clean up addressess falled out of range
-                    Address.objects.filter(
-                        vrf=self.vrf,
-                        afi=self.afi,
-                        address__gt=self.to_address,
-                        address__lte=old.to_address,
-                    ).delete()
-                    # Finally recheck FQDNs
-                generate_fqdns()
+            if IP.prefix(old.to_address) > IP.prefix(self.to_address):
+                # Upper boundary is lowered. Clean up addressess falled out of range
+                Address.objects.filter(
+                    vrf=self.vrf,
+                    afi=self.afi,
+                    address__gt=self.to_address,
+                    address__lte=old.to_address,
+                ).delete()
+                # Finally recheck FQDNs
+            generate_fqdns()
 
     @property
     def short_description(self):

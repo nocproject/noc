@@ -40,18 +40,16 @@ class Script(BaseScript):
         for match in rx_line.finditer(self.cli(cmd)):
             if match.group("type") == "Learned":
                 mtype = "D"
+            elif match.group("type") == "Management":
+                mtype = "C"
             else:
-                if match.group("type") == "Management":
-                    mtype = "C"
-                else:
-                    mtype = "S"
+                mtype = "S"
             if vlan is not None:
                 _vlan = vlan
+            elif len(match.group("vlan_id")) == 5:
+                _vlan = int((match.group("vlan_id")).replace(":", ""), 16)
             else:
-                if len(match.group("vlan_id")) == 5:
-                    _vlan = int((match.group("vlan_id")).replace(":", ""), 16)
-                else:
-                    _vlan = int(match.group("vlan_id"))
+                _vlan = int(match.group("vlan_id"))
             if interface is not None:
                 _iface = interface
             else:

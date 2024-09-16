@@ -870,9 +870,8 @@ class RDParameter(Parameter):
             if left > 65535:
                 if right > 65535:  # 4-byte ASN
                     self.raise_error(value)
-            else:
-                if right > 0xFFFFFFFF:  # 2-byte ASN
-                    self.raise_error(value)
+            elif right > 0xFFFFFFFF:  # 2-byte ASN
+                self.raise_error(value)
         return "%s:%s" % (left, right)
 
 

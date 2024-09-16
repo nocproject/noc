@@ -311,12 +311,10 @@ class PrefixCheck(DiscoveryCheck):
                 self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.vpn_id)
                 vrf.afi_ipv6 = True
                 vrf.save()
-        else:
-            # IPv4
-            if not vrf.afi_ipv4:
-                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
-                vrf.afi_ipv4 = True
-                vrf.save()
+        elif not vrf.afi_ipv4:
+            self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
+            vrf.afi_ipv4 = True
+            vrf.save()
 
     def is_ignored_prefix(self, prefix):
         """

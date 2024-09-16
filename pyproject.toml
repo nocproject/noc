@@ -61,7 +61,6 @@ lint.ignore = [
   "PLR0915", # Too many statements
   "PLR2004", # Magic value used in comparison, consider replacing {v} with a constant variable
   "PLR2044", # Line with empty comment
-  "PLR5501", # Use `elif` instead of `else` then `if`, to reduce indentation
   "PLR1714", # Consider merging multiple comparisons: `f1 not in (f0, f2)`. Use a `set` if the elements are hashable.
   "PLR1730", # Replace `if` statement with `width = max(width, max_column_data_length[c])`
   "PLR1704", # Redefining argument with the local name `name`

@@ -128,11 +128,10 @@ class Script(BaseScript):
                                 sub = iface["subinterfaces"][0]
                                 if vlan_type == "u":
                                     sub["untagged_vlan"] = vlan_id
+                                elif "tagged" in sub:
+                                    sub["tagged_vlans"] += [vlan_id]
                                 else:
-                                    if "tagged" in sub:
-                                        sub["tagged_vlans"] += [vlan_id]
-                                    else:
-                                        sub["tagged_vlans"] = [vlan_id]
+                                    sub["tagged_vlans"] = [vlan_id]
                                 break
                         else:
                             iface = {"name": ifname, "type": "physical"}

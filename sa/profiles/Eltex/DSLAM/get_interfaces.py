@@ -85,11 +85,10 @@ class Script(BaseScript):
                     vlan_type = items1[ii][column].upper()
                     if vlan_type == "DISC":
                         sub["untagged_vlan"] = vlan_id
+                    elif "tagged_vlans" in sub:
+                        sub["tagged_vlans"] += [vlan_id]
                     else:
-                        if "tagged_vlans" in sub:
-                            sub["tagged_vlans"] += [vlan_id]
-                        else:
-                            sub["tagged_vlans"] = [vlan_id]
+                        sub["tagged_vlans"] = [vlan_id]
                 iface["subinterfaces"] = [sub]
                 interfaces += [iface]
         cmd = self.cli("adsl show port oper status")

@@ -32,11 +32,10 @@ class Script(BaseScript):
                         role = "superuser"
                     if "class" not in cu:
                         cu["class"] = role
+                    elif cu["class"] == "superuser":
+                        continue
                     else:
-                        if cu["class"] == "superuser":
-                            continue
-                        else:
-                            cu["class"] = role
+                        cu["class"] = role
         if cu:
             r += [cu]
         return r

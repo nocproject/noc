@@ -98,16 +98,14 @@ class Script(BaseScript):
 
                 if id != id_last and map[name2] == "local_interface":
                     neighbors += [{map[name2]: value.strip("'"), "neighbors": [remotehost]}]
+                elif map[name2] == "remote_capabilities":
+                    remotehost.update({map[name2]: "30"})
+                elif map[name2] == "remote_port":
+                    # try convert to Cisco format
+                    remotehost.update({"remote_port_subtype": 5})
+                    remotehost.update({map[name2]: value.strip("'")})
                 else:
-                    # chech capabilites
-                    if map[name2] == "remote_capabilities":
-                        remotehost.update({map[name2]: "30"})
-                    elif map[name2] == "remote_port":
-                        # try convert to Cisco format
-                        remotehost.update({"remote_port_subtype": 5})
-                        remotehost.update({map[name2]: value.strip("'")})
-                    else:
-                        remotehost.update({map[name2]: value.strip("'")})
+                    remotehost.update({map[name2]: value.strip("'")})
 
                 id_last = id
 

@@ -40,12 +40,11 @@ class Script(BaseScript):
                 "first_chassis_mac": match.group("mac1"),
                 "last_chassis_mac": match.group("mac2"),
             }
+        elif "Paradyne DSLAM" in v or "Zhone DSLAM" in v:
+            v = self.cli("show slot-information", cached=True)
+            match = self.rx_mac.search(v)
+            base = match.group("mac")
+            count = int(match.group("count"))
+            return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
         else:
-            if "Paradyne DSLAM" in v or "Zhone DSLAM" in v:
-                v = self.cli("show slot-information", cached=True)
-                match = self.rx_mac.search(v)
-                base = match.group("mac")
-                count = int(match.group("count"))
-                return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
-            else:
-                return {}
+            return {}

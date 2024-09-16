@@ -388,11 +388,10 @@ class AlarmClass(Document):
                 return self.config.control_time1 or None
             else:
                 return self.control_time1 or None
+        elif self.config:
+            return self.config.control_timeN or None
         else:
-            if self.config:
-                return self.config.control_timeN or None
-            else:
-                return self.control_timeN or None
+            return self.control_timeN or None
 
     def get_labels_map(self):
         """

@@ -29,13 +29,12 @@ class Script(BaseScript):
         if oid[-3:] == "2.4":
             # 3528M-SFP OID (v1.4.x.x)
             v = self.snmp.get(oid[:-3] + "1.4.1.1.3.1.6.1", cached=True)
+        elif oid[-3:] == "101":
+            # 3528MV2-Style OID
+            v = self.snmp.get(oid[:-3] + "1.1.3.1.6.1", cached=True)
         else:
-            if oid[-3:] == "101":
-                # 3528MV2-Style OID
-                v = self.snmp.get(oid[:-3] + "1.1.3.1.6.1", cached=True)
-            else:
-                # 3526-Style OID
-                v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
+            # 3526-Style OID
+            v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
         if v == "":
             # 4626-Style OID
             v = self.snmp.get(oid + ".100.1.3.0", cached=True)

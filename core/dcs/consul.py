@@ -427,11 +427,10 @@ class ConsulDCS(DCSBase):
                     cas = e["ModifyIndex"]
                     # @todo: Handle errors
                     manifest = orjson.loads(e["Value"])
+                elif "Session" in e:
+                    seen_sessions.add(e["Session"])
                 else:
-                    if "Session" in e:
-                        seen_sessions.add(e["Session"])
-                    else:
-                        dead_contenders.add(e["Key"])
+                    dead_contenders.add(e["Key"])
             if manifest:
                 total_slots = int(manifest.get("Limit", 0))
                 holders = [

@@ -142,12 +142,11 @@ class Profile(BaseProfile):
     def valid_interface_name(self, script, name):
         if script.is_olive:
             internal = self.internal_interfaces_olive
+        elif script.is_work_em:
+            # em - is a working interface
+            internal = self.internal_interfaces_without_em
         else:
-            if script.is_work_em:
-                # em - is a working interface
-                internal = self.internal_interfaces_without_em
-            else:
-                internal = self.internal_interfaces
+            internal = self.internal_interfaces
         # Skip internal interfaces
         if internal.search(name):
             return False

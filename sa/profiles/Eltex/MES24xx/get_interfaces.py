@@ -72,11 +72,10 @@ class Script(BaseScript):
                         continue
                     if i[2] == "Untagged":
                         sub["untagged_vlan"] = vlan_id
+                    elif "tagged_vlans" in sub:
+                        sub["tagged_vlans"] += [vlan_id]
                     else:
-                        if "tagged_vlans" in sub:
-                            sub["tagged_vlans"] += [vlan_id]
-                        else:
-                            sub["tagged_vlans"] = [vlan_id]
+                        sub["tagged_vlans"] = [vlan_id]
             if iface["name"].startswith("vlan"):
                 sub["vlan_ids"] = iface["name"][4:]
             if match.group("mac"):

@@ -159,11 +159,9 @@ class MIB(Document):
                     if syntax:
                         o.syntax = MIB.parse_syntax(syntax)
                     o.save()
-                else:
-                    # Append to aliases
-                    if oid_name not in o.aliases:
-                        o.aliases = sorted(o.aliases + [oid_name])
-                        o.save()
+                elif oid_name not in o.aliases:
+                    o.aliases = sorted(o.aliases + [oid_name])
+                    o.save()
             else:
                 # No OID collision found, save
                 syntax = v.get("syntax")

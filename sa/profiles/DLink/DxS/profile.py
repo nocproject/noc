@@ -587,10 +587,8 @@ def get_platform(platform, hw_revision):
         if hw_revision is not None:
             if platform.endswith("/%s" % hw_revision):
                 return platform
-        else:
-            # Found in DES-1210-28/ME/A1 with SNMP
-            if platform.startswith("DES-1210-"):
-                hw_revision = "A1"
+        elif platform.startswith("DES-1210-"):
+            hw_revision = "A1"
         return "%s/%s" % (platform, hw_revision)
     else:
         return platform

@@ -190,15 +190,14 @@ class Site(object):
                                 for k, v in request.GET.lists()
                                 if k != "_dc"
                             }
+                        elif self.is_json(request.META.get("CONTENT_TYPE")):
+                            try:
+                                g = orjson.loads(request.body)
+                            except ValueError as e:
+                                logger.error("Unable to decode JSON: %s", e)
+                                errors = "Unable to decode JSON: %s" % e
                         else:
-                            if self.is_json(request.META.get("CONTENT_TYPE")):
-                                try:
-                                    g = orjson.loads(request.body)
-                                except ValueError as e:
-                                    logger.error("Unable to decode JSON: %s", e)
-                                    errors = "Unable to decode JSON: %s" % e
-                            else:
-                                g = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+                            g = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
                         if not errors:
                             try:
                                 kwargs.update(v.validate.clean(g))

@@ -59,11 +59,10 @@ class Script(BaseScript):
                 vlan_id = int(match.group("vlan_id"))
                 if match.group("mode") == "Untagged":
                     i["subinterfaces"][0]["untagged_vlan"] = vlan_id
+                elif "tagged_vlans" in i["subinterfaces"][0]:
+                    i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
                 else:
-                    if "tagged_vlans" in i["subinterfaces"][0]:
-                        i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
-                    else:
-                        i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
+                    i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
             interfaces += [i]
         v = self.cli("protocol ip interface summary all")
         for match in self.rx_ipif.finditer(v):
@@ -88,12 +87,11 @@ class Script(BaseScript):
                 i["subinterfaces"][0]["vlan_ids"] = [vlan_id]
                 i["mac"] = mac
                 i["subinterfaces"][0]["mac"] = mac
-            else:
-                if match.group("name") == "SLIP":
-                    i["type"] = "tunnel"
-                    i["tunnel"] = {}
-                    i["tunnel"]["type"] = "SLIP"
-                    i["tunnel"]["local_address"] = match.group("ip")
+            elif match.group("name") == "SLIP":
+                i["type"] = "tunnel"
+                i["tunnel"] = {}
+                i["tunnel"]["type"] = "SLIP"
+                i["tunnel"]["local_address"] = match.group("ip")
             addr = match.group("ip")
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))

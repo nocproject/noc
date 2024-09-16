@@ -281,9 +281,8 @@ class DataPlugin(InvPlugin):
                 o.model = m
                 o.log(message="Changing model to %s" % m.name, user=request.user, system="WEB")
                 o.save()
+        elif value is None or value == "":
+            o.reset_data(interface, key)
         else:
-            if value is None or value == "":
-                o.reset_data(interface, key)
-            else:
-                o.set_data(interface, key, value)
+            o.set_data(interface, key, value)
         o.save()

@@ -446,16 +446,15 @@ class Command(BaseCommand):
                         enclosed_line = []
                     else:
                         enclosed_line += [item]
+                elif cls.has_unquoted(item, "("):
+                    # Starting (
+                    p = item.split("(", 1)
+                    enclosed_line += [p[0] + " "]
+                    if len(p) > 1:
+                        enclosed_line += [p[1] + " "]
                 else:
-                    if cls.has_unquoted(item, "("):
-                        # Starting (
-                        p = item.split("(", 1)
-                        enclosed_line += [p[0] + " "]
-                        if len(p) > 1:
-                            enclosed_line += [p[1] + " "]
-                    else:
-                        # Plain item
-                        collected += [item]
+                    # Plain item
+                    collected += [item]
             if collected and not enclosed_line:
                 line = "".join(collected)
                 if line.strip():

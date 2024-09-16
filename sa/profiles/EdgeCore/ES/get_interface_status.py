@@ -125,16 +125,15 @@ class Script(BaseScript):
                     interface = match.group("interface")
                     if interface.startswith("VLAN"):
                         linestatus = "up"
-                    else:
-                        if match.group("block"):
-                            block = match.group("block")
-                            submatch = self.rx_interface_intstatus_3526.search(block)
-                            if submatch:
-                                descr = submatch.group("descr")
-                            linestatus = "down"
-                            submatch = self.rx_interface_linestatus_3526.search(block)
-                            if submatch:
-                                linestatus = submatch.group("linestatus").lower()
+                    elif match.group("block"):
+                        block = match.group("block")
+                        submatch = self.rx_interface_intstatus_3526.search(block)
+                        if submatch:
+                            descr = submatch.group("descr")
+                        linestatus = "down"
+                        submatch = self.rx_interface_linestatus_3526.search(block)
+                        if submatch:
+                            linestatus = submatch.group("linestatus").lower()
                     r += [
                         {
                             "interface": interface,
