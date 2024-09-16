@@ -760,6 +760,7 @@ class ClassifierService(FastAPIService):
                 event.target.name,
                 event.target.address,
                 event,
+                event.vars,
             )
             metrics[EventMetrics.CR_IGNORED] += 1
             return

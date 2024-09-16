@@ -79,7 +79,7 @@ class FMEventLoader(BaseLoader):
         else:
             le = self.system.remote_system.last_extract_event + datetime.timedelta(days=1)
             self.system.remote_system.last_extract_event = min(le, now)
-        self.logger.info("Last extract event TS", self.system.remote_system.last_extract_event)
+        self.logger.info("Last extract event TS: %s", self.system.remote_system.last_extract_event)
         self.logger.info("Send FM Event: %s", num)
 
     def check(self, chain):

@@ -308,7 +308,7 @@ class EscalationSequence(BaseSequence):
                 )
             return
         if alarm == "A" and not alarm.escalation_tt and tt_id:
-            self.logger.error("[%s] Alarm without escalation TT: %s", tt_id)
+            self.logger.error("[%s] Alarm without escalation TT: %s", alarm.id, tt_id)
 
     def has_merged_downlinks(self):
         """

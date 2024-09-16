@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CPE
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -253,7 +253,7 @@ class CPE(Document):
         """
         Unseen sensor
         """
-        logger.info("[%s] CPE is missed on '%s'", controller)
+        logger.info("[%s] CPE is missed on '%s'", self.global_id, controller)
         if controller:
             self.controllers = [c for c in self.controllers if c.managed_object != controller]
             self._get_collection().update_one(
