@@ -129,10 +129,16 @@ class Band(object):
             if b.name not in b.datasets:
                 continue
             ds = b.datasets[b.name]
+            if ds.rows:
+                r.append(pl.DataFrame(ds.rows))
+                continue
             if ds.query and ds.data is None:
                 rows = sql.execute(Jinja2Template(ds.query).render(ctx), eager=True)
             elif ds.query and ds.data is not None:
-                rows = ds.data.sql(Jinja2Template(ds.query).render(ctx))
+                try:
+                    rows = ds.data.sql(Jinja2Template(ds.query).render(ctx))
+                except pl.exceptions.ColumnNotFoundError:
+                    continue
             elif not ds.query and ds.data is not None:
                 rows = ds.data
             else:
@@ -145,10 +151,18 @@ class Band(object):
                 sql.register(b.name, rows.lazy())
         return r
 
-    def iter_rows(self) -> Iterable[Dict[str, Any]]:
+    def iter_rows(self, fields: Optional[List[str]] = None) -> Iterable[Dict[str, Any]]:
         """iterate row dataset"""
+        if not fields:
+            for r in self.get_rows():
+                yield from r.to_dicts()
+            return
         for r in self.get_rows():
-            yield from r.to_dicts()
+            for row in r.to_dicts():
+                d = {}
+                for f in fields:
+                    d[f] = row.get(f) or ""
+                yield d
 
     def add_dataset(self, data: DataSet, name: Optional[str] = None):
         """

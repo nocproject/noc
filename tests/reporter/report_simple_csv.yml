@@ -5,7 +5,6 @@ templates:
     formatter: simplereport
     output_type: html
 bands:
-  - name: Root
   - name: header
   - name: master_data
     orientation: H

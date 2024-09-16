@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Any, Optional, Tuple
+from typing import List, Optional
 
 # Third-party modules
 from jinja2 import Template as Jinja2Template
@@ -14,7 +14,7 @@ from xlsxwriter.workbook import Workbook
 
 # NOC modules
 from .base import DataFormatter
-from ..types import OutputType, BandFormat
+from ..types import OutputType, BandFormat, HEADER_BAND
 from ..report import Band
 from noc.services.web.base.simplereport import (
     Report,
@@ -26,28 +26,27 @@ from noc.services.web.base.simplereport import (
 
 
 class SimpleReportFormatter(DataFormatter):
+    """
+    Simple formatter. Used Band format from config for build docs with section:
+        * Text Section
+        * Table section
+        * Matrix Section
+        * Delimiter
+    Sections based on Band Config (Direction and format):
+        * header band - used for report title and common column description (for root)
+        * table section - if BandFormat has Column format
+        * matrix section - if Direction set to cross
+        * Delimiter set for bands on common level
+    """
+
     def render_document(self):
         """"""
         if self.report_template.output_type != OutputType.HTML:
             self.render_table()
             return
         report = Report()
-        header_format = None
-        if self.report_template.bands_format and "header" in self.report_template.bands_format:
-            header_format = self.report_template.bands_format["header"]
-        report.append_section(
-            TextSection(title=header_format.title_template if header_format else "")
-        )
-        # columns, fields = self.get_columns()
-        band = list(self.root_band.iter_nested_bands())
-        columns, _ = self.get_columns(band[-1] if band else None, header_format)
-        report.append_section(
-            TableSection(
-                columns=list(columns),
-                data=self.get_report_data(),
-                enumerate=False,
-            )
-        )
+        for s in self.render_sections():
+            report.append_section(s)
         if self.output_type == OutputType.CSV:
             r = report.to_csv(delimiter=self.csv_delimiter)
         elif self.output_type == OutputType.SSV:
@@ -66,6 +65,125 @@ class SimpleReportFormatter(DataFormatter):
         else:
             raise NotImplementedError(f"Output Type {self.output_type} not supported")
         self.output_stream.write(r.encode("utf8"))
+
+    def get_report_title(self) -> str:
+        """Getting report title"""
+        header = self.get_band_format(HEADER_BAND)
+        if header:
+            return header.title_template
+        return "Report 1"  # Report Title
+
+    @staticmethod
+    def get_title(band, template: Optional[str] = None) -> str:
+        """Render Band Title if setting template"""
+        if not template:
+            return band.name
+        return Jinja2Template(template).render(band.get_data())
+
+    @classmethod
+    def get_columns_format(cls, band: BandFormat) -> List[TableColumn]:
+        """Return Columns by band Format"""
+        if not band.columns:
+            return []
+        columns = []
+        for c in band.columns:
+            if c.format_type or c.total:
+                columns.append(
+                    TableColumn(
+                        c.name,
+                        c.title or "",
+                        align=c.align.name.lower(),
+                        format=c.format_type,
+                        total=c.total,
+                        total_label=c.total_label,
+                    )
+                )
+            else:
+                columns += [
+                    TableColumn(
+                        c.name,
+                        c.title or "",
+                    )
+                ]
+        return columns
+
+    def get_table_section(
+        self, band: Band, header_columns: List[TableColumn]
+    ) -> Optional[TableSection]:
+        """"""
+        bf = self.get_band_format(band.name)
+        if bf and bf.columns:
+            columns = self.get_columns_format(bf)
+        elif header_columns:
+            columns = header_columns
+        else:
+            columns = band.get_columns()
+        if not columns:
+            return
+        fields = [getattr(c, "name", c) for c in columns]
+        data = []
+        if not band.has_rows and band.get_data():
+            data.append([band.data.get(f, "") for f in fields])
+        for row in band.iter_rows():
+            data.append([row.get(f, "") for f in fields])
+        return data
+
+    def get_report_columns(self) -> List[TableColumn]:
+        """
+        Report Columns used for print report table data
+        Column may be set:
+        1. On Header Band Format
+        2. On Rows datasource
+        3. Exception
+        """
+        header_format = self.get_band_format(HEADER_BAND)
+        columns = []
+        if header_format:
+            columns = self.get_columns_format(header_format)
+        if not columns and self.root_band.has_rows:
+            columns = [TableColumn(name=c, title=c) for c in self.root_band.get_columns()]
+        if columns:
+            return columns
+        # Getting last data band
+        for rb in self.root_band.iter_nested_bands():
+            if rb.has_children:
+                continue
+            bf = self.get_band_format(rb.name)
+            if bf and bf.columns:
+                columns = self.get_columns_format(bf)
+                if columns:
+                    return columns
+            if rb.has_rows:
+                return [TableColumn(name=c, title=c) for c in rb.get_columns()]
+
+    def render_sections(self):
+        columns = self.get_report_columns()
+        if not columns:
+            raise ValueError("Not setting column for Report")
+        data = []
+        for rb in self.root_band.iter_report_bands():
+            if rb.name == HEADER_BAND:
+                # Skip Header Band
+                continue
+            bf = self.get_band_format(rb.name)
+            # Section Row
+            if not rb.is_root and bf and bf.title_template:
+                data.append(SectionRow(self.get_title(rb, bf.title_template)))
+            if rb.has_children:
+                continue
+            fields = [getattr(c, "name", c) for c in columns]
+            for row in rb.iter_rows(fields):
+                data.append(row)
+            # Table Section
+            # tb = self.get_table_section(rb, header_columns)
+            # if not tb:
+            #    continue
+            # data.append(tb)
+            # If not Header Columns, set it from last Band
+        return [
+            TextSection(title=self.get_report_title()),
+            TableSection(columns=columns, data=data, enumerate=False),
+        ]
 
     def render_table(self):
         """
@@ -119,98 +237,3 @@ class SimpleReportFormatter(DataFormatter):
             idx_max = max([len(str(s)) for s in dataframe[index_filed]] + [len(str(index_filed))])
             return [idx_max] + r
         return r
-
-    def get_report_data(self) -> List[Any]:
-        """
-        Convert Report Band to Report Data Section
-        :return:
-        """
-        r = []
-        for rb in self.root_band.iter_report_bands():
-            if rb.name == "header":
-                continue
-            # Section Row
-            if not rb.is_root:  # Section
-                bf = self.get_band_format(rb)
-                if bf and bf.title_template:
-                    r.append(SectionRow(self.get_title(rb, bf.title_template)))
-                    if not rb.has_rows:
-                        continue
-            # Out data
-            if not rb.has_children and rb.has_rows:
-                row_columns = rb.get_columns()
-                for row in rb.iter_rows():
-                    r.append([row.get(c, "") for c in row_columns])
-            elif not rb.has_children and rb.data:
-                row_columns = list(rb.data)
-                r.append([rb.data.get(c, "") for c in row_columns])
-        return r
-
-    def get_band_format(self, band: Band) -> Optional[BandFormat]:
-        """
-
-        :return:
-        """
-        if (
-            not self.report_template.bands_format
-            or band.name not in self.report_template.bands_format
-        ):
-            return
-        return self.report_template.bands_format[band.name]
-
-    def get_columns(
-        self, band: Optional[Band] = None, header: Optional[BandFormat] = None
-    ) -> Tuple[List[Any], Optional[List[str]]]:
-        """Return columns format and fields list"""
-        # Try Root config first
-        band = band or self.root_band.get_data_band()
-        if not band and not header:
-            return [], None
-        elif header and header.columns:
-            columns = []
-            for c in header.columns:
-                if c.format_type or c.total:
-                    columns.append(
-                        TableColumn(
-                            c.title or "",
-                            align=c.align.name.lower(),
-                            format=c.format_type,
-                            total=c.total,
-                            total_label=c.total_label,
-                        )
-                    )
-                else:
-                    columns += [c.title or ""]
-            return columns, None
-        band_format = self.get_band_format(band)
-        # Try DataBand
-        if not (band_format and band_format.columns) and band.get_columns():
-            return ([fn for fn in band.get_columns()],) * 2
-        elif not band_format or not band_format.columns:
-            return [], None
-        fields = [c.name for c in band_format.columns] if band_format else None
-        columns = []
-        for c in band_format.columns:
-            if c.format_type or c.total:
-                columns += [
-                    TableColumn(
-                        c.title or "",
-                        align=c.align.name.lower(),
-                        format=c.format_type,
-                        total=c.total,
-                        total_label=c.total_label,
-                    )
-                ]
-            else:
-                columns += [c.title or c.name or ""]
-        return columns, fields
-
-    @staticmethod
-    def get_title(band, template: Optional[str] = None) -> str:
-        """
-        Render Band Title if setting template
-        :return:
-        """
-        if not template:
-            return band.name
-        return Jinja2Template(template).render(band.get_data())

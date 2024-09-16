@@ -35,17 +35,17 @@ bands:
   - name: managed_object
     queries:
       - name: q1
-        query: select profile, sum(discovered_managed_object_all) as count from Root group by profile order by count desc, profile
+        query: select profile as name, sum(discovered_managed_object_all) as count from Root group by profile order by count desc, name
   - name: interfaces
     queries:
       - name: q2
         datasource: interfaceprofilestatsds
-        query: select profile, count from self order by count desc
+        query: select profile as name, count from self order by count desc
   - name: links
     queries:
       - name: q3
         datasource: linkedmethodstatds
-        query: select method, count from self order by count desc
+        query: select method as name, count from self order by count desc
   - name: jobs_summary
     queries:
       - name: q4

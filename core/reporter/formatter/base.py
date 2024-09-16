@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Optional
 from io import BytesIO
 
 # NOC modules
-from ..types import Template, OutputType
+from ..types import Template, OutputType, BandFormat
 from noc.core.reporter.report import Band
 from noc.config import config
 
@@ -32,6 +33,10 @@ class DataFormatter(object):
         self.output_type = output_type
         self.output_stream: BytesIO = output_stream or BytesIO()
         self.csv_delimiter = config.web.report_csv_delimiter
+
+    def get_band_format(self, band: str) -> Optional[BandFormat]:
+        if self.report_template.bands_format and band in self.report_template.bands_format:
+            return self.report_template.bands_format[band]
 
     def render_document(self):
         """

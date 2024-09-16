@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict
 from noc.models import get_model, is_document
 
 ROOT_BAND = "Root"
+HEADER_BAND = "header"
 
 
 class BandOrientation(enum.Enum):

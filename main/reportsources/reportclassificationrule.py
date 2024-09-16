@@ -11,7 +11,7 @@ from typing import List, Dict
 
 # NOC modules
 from noc.core.reporter.reportsource import ReportSource
-from noc.core.reporter.report import Band
+from noc.core.reporter.report import Band, DataSet
 from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 
@@ -25,8 +25,6 @@ class ReportClassificationRule(ReportSource):
             "rule": BandFormat(
                 # title_template="Classification Rules",
                 title_template="{{ name }} ({{ preference }})",
-            ),
-            "row": BandFormat(
                 columns=[
                     ColumnFormat(name="key_re", title="Key RE"),
                     ColumnFormat(name="value_re", title="Value RE"),
@@ -56,15 +54,9 @@ class ReportClassificationRule(ReportSource):
             # d1
             rb = Band(name="rule", data={"name": r.name, "preference": r.preference})
             # d2
-            rb.add_child(
-                Band(
-                    name="row",
-                    data={"key_re": "Event Class", "value_re": r.event_class.name},
-                )
-            )
-            # data += [SectionRow("%s (%s)" % (r.name, r.preference))]
-            # data += [["Event Class", r.event_class.name]]
+            rows = [{"key_re": "Event Class", "value_re": r.event_class.name}]
             for p in r.patterns:
-                rb.add_child(Band(name="row", data={"key_re": p.key_re, "value_re": p.value_re}))
+                rows.append({"key_re": p.key_re, "value_re": p.value_re})
+            rb.add_dataset(DataSet(name="rule", rows=rows, data=None))
             data.append(rb)
         return data
