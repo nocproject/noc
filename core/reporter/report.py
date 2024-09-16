@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, Iterable, List
+from typing import Optional, Dict, Any, Iterable, List, Tuple
 
 # Third-party modules
 import polars as pl
@@ -151,18 +151,16 @@ class Band(object):
                 sql.register(b.name, rows.lazy())
         return r
 
-    def iter_rows(self, fields: Optional[List[str]] = None) -> Iterable[Dict[str, Any]]:
+    def iter_rows(self) -> Iterable[Dict[str, Any]]:
         """iterate row dataset"""
-        if not fields:
-            for r in self.get_rows():
-                yield from r.to_dicts()
-            return
+        for r in self.get_rows():
+            yield from r.to_dicts()
+
+    def iter_data_rows(self, fields: List[str] = None) -> Iterable[Tuple[str, ...]]:
+        """Convert rows to columns tuple"""
         for r in self.get_rows():
             for row in r.to_dicts():
-                d = {}
-                for f in fields:
-                    d[f] = row.get(f) or ""
-                yield d
+                yield tuple(row.get(f) or "" for f in fields)
 
     def add_dataset(self, data: DataSet, name: Optional[str] = None):
         """

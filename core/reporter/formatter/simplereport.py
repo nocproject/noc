@@ -107,27 +107,6 @@ class SimpleReportFormatter(DataFormatter):
                 ]
         return columns
 
-    def get_table_section(
-        self, band: Band, header_columns: List[TableColumn]
-    ) -> Optional[TableSection]:
-        """"""
-        bf = self.get_band_format(band.name)
-        if bf and bf.columns:
-            columns = self.get_columns_format(bf)
-        elif header_columns:
-            columns = header_columns
-        else:
-            columns = band.get_columns()
-        if not columns:
-            return
-        fields = [getattr(c, "name", c) for c in columns]
-        data = []
-        if not band.has_rows and band.get_data():
-            data.append([band.data.get(f, "") for f in fields])
-        for row in band.iter_rows():
-            data.append([row.get(f, "") for f in fields])
-        return data
-
     def get_report_columns(self) -> List[TableColumn]:
         """
         Report Columns used for print report table data
@@ -161,6 +140,7 @@ class SimpleReportFormatter(DataFormatter):
         if not columns:
             raise ValueError("Not setting column for Report")
         data = []
+        fields = [c.name for c in columns]
         for rb in self.root_band.iter_report_bands():
             if rb.name == HEADER_BAND:
                 # Skip Header Band
@@ -171,8 +151,8 @@ class SimpleReportFormatter(DataFormatter):
                 data.append(SectionRow(self.get_title(rb, bf.title_template)))
             if rb.has_children:
                 continue
-            fields = [getattr(c, "name", c) for c in columns]
-            for row in rb.iter_rows(fields):
+            for row in rb.iter_data_rows(fields):
+                # data.append([row.get(f, "") for f in fields])
                 data.append(row)
             # Table Section
             # tb = self.get_table_section(rb, header_columns)

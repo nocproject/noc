@@ -6,7 +6,7 @@ templates:
     output_type: html
     bands_format:
       header:
-        title_template: Discovery Summary
+        title_template: Discovery ID cache poison
         columns:
           - name: name
             title: Managed Object
