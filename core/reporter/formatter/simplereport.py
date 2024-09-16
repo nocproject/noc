@@ -15,7 +15,6 @@ from xlsxwriter.workbook import Workbook
 # NOC modules
 from .base import DataFormatter
 from ..types import OutputType, BandFormat, HEADER_BAND
-from ..report import Band
 from noc.services.web.base.simplereport import (
     Report,
     TextSection,
