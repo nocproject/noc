@@ -330,7 +330,6 @@ class Script(BaseScript):
                             continue
                         dst[name[:-6]] = oo["val"]
 
-
                     if name.endswith("SetOutAtt"):
                         gain[name[:-9]] = oo["val"]
 
