@@ -108,6 +108,9 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       hidden: true,
       allowDeselect: true,
       split: true,
+      store: {
+        data: [],
+      },
       columns: [
         {
           text: __("Local Object"),
