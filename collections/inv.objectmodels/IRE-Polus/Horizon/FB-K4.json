@@ -47,5 +47,6 @@
             "value": 0.27
         }
     ],
-    "front_facade__name": "RBS | iData | FAN IP1592"
+    "front_facade__name": "RBS | iData | FAN IP1592",
+    "short_label": "FANB"
 }

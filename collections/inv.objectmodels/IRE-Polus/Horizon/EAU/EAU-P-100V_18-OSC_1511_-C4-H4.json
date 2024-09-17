@@ -151,5 +151,6 @@
             "interface": "optical",
             "value": 20.0
         }
-    ]
+    ],
+    "short_label": "EAU-P-100V/18"
 }

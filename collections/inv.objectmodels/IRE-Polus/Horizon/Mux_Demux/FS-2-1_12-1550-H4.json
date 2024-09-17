@@ -104,5 +104,6 @@
             "interface": "asset",
             "value": ["FS-2-1/12-1550-H4"]
         }
-    ]
+    ],
+    "short_label": "FS"
 }

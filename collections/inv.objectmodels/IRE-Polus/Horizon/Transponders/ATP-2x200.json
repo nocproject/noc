@@ -6,8 +6,8 @@
     "description": "Карта ATP-2x200 предназначена для агрегации клиентского трафика класса 100G (100GE/OTU4) в линейный кадр OTUC2 (200G). На лицевой панели карты ATP-2x200 размещаются 4 клиентских порта QSFP28 и два линейных порта  CFP2, что позволяет агрегировать до 4-x клиентов в линейный сигнал с общей полосой 400G.",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
-    "labels": ["noc::inv::lc"],
     "plugins": ["pconf"],
+    "labels": ["noc::inv::lc"],
     "connections": [
         {
             "name": "in",
@@ -197,5 +197,6 @@
             "value": 30
         }
     ],
-    "front_facade__name": "RBS | iData | ATP-2x200 CFP2 QSFP28 IP1652"
+    "front_facade__name": "RBS | iData | ATP-2x200 CFP2 QSFP28 IP1652",
+    "short_label": "ATP-2x200"
 }

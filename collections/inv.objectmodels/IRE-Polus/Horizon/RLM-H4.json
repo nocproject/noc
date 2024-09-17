@@ -70,5 +70,6 @@
             "interface": "asset",
             "value": ["RLM-H4"]
         }
-    ]
+    ],
+    "short_label": "RLM-H4"
 }
