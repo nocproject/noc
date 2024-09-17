@@ -323,16 +323,13 @@ class Script(BaseScript):
                     if name.endswith("SetIn"):
                         if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
                             continue
-#                        print(oo["val"])
                         src[name[:-5]] = oo["val"]
-#                        print(src)
 
                     if name.endswith("SetOut"):
                         if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
                             continue
-#                        print(oo["val"])
                         dst[name[:-6]] = oo["val"]
-#                        print(dst)
+
 
                     if name.endswith("SetOutAtt"):
                         gain[name[:-9]] = oo["val"]
@@ -367,7 +364,6 @@ class Script(BaseScript):
         if is_roadm:
             for cname in dst:
                 out_port = dst[cname]
-                print(f"OUT |{out_port}|")
 
                 crossings.append(
                     {
@@ -380,7 +376,6 @@ class Script(BaseScript):
             for cname in src:
                 in_port = src[cname]
                 out_gain = gain.get(cname)
-                print(f"IN |{in_port}|")
 
                 crossings.append(
                     {
