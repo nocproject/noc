@@ -267,39 +267,100 @@ class Script(BaseScript):
 
             return f"odu::{outer_odu}::{dst_discriminator}"
 
+        def get_lambda_discriminator(channel: str) -> str:
+            ch_freq = 0
+            ch_width = 0
+            ch_step = 0
+            base_freq = 0
+            # 87.5 Ghz grid
+            if channel.startswith("Ch"):
+                ch_num = int(channel.replace("Ch", ""))
+                base_freq = 191431.25
+                ch_width = 87.5
+                ch_step = 87.5
+
+            # 100 Ghz grid
+            elif channel.startswith("C"):
+                ch_num = int(channel.replace("C", ""))
+                base_freq = 190000
+                ch_width = 50
+                ch_step = 100
+
+            # 50 Ghz grid
+            elif channel.startswith("H"):
+                ch_num = int(channel.replace("H", ""))
+                base_freq = 190050
+                ch_width = 50
+                ch_step = 100
+
+            ch_freq = base_freq + ch_step * ch_num
+
+            return f"lambda::{ch_freq}-{ch_width}"
+
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
+        gain: Dict[str, str] = {}
         datatypes: Dict[str, str] = {}
         port_states: Dict[str, str] = {}
         mode: Optional[str] = None
         enable_oduflex = set()
-        is_oadm = False
+        is_atp = False
+        is_roadm = False
 
         for o in config["RK"][crate_num]["DV"]:
             if o["slt"] != slot:
                 continue
-            is_oadm = "oadm" in o["cls"]
-            for oo in o["PM"]:
-                if "nam" not in oo or "val" not in oo:
-                    continue
-                name = oo["nam"]
-                if name.endswith("_SetState"):
-                    # IS - In Service
-                    # OOS - Out Of Service
-                    # MT - Maintenance
-                    port_states[get_port(name[:-9])] = oo["val"] in ["IS", "MT"]
-                if name.endswith("_SetSrc"):
-                    if oo["val"] != "None":
-                        src[name[:-7]] = oo["val"]
-                elif name.endswith("_SetDst"):
-                    if oo["val"] != "None":
-                        dst[name[:-7]] = oo["val"]
-                elif name == "SetMode":
-                    mode = oo["val"]
-                elif name.endswith("_SetDataType"):
-                    if "GFC" in oo["val"]:
-                        enable_oduflex.add(name[:-12])
-                    datatypes[get_port(name[:-12])] = oo["val"]
+            print("###CLS###|%s|" % (o["cls"]))
+            is_atp = "atp" in o["cls"]
+            is_roadm = "roadm" in o["cls"]
+
+            print(is_atp)
+            print(is_roadm)
+
+            if is_roadm:
+                for oo in o["PM"]:
+#                    print(oo)
+                    if "nam" not in oo or "val" not in oo:
+                        continue
+                    name = oo["nam"]
+
+                    if name.endswith("SetIn"):
+                        if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
+                            continue
+                        src[name[:-5]] = oo["val"]
+                        print(src)
+
+                    if name.endswith("SetOut"):
+                        if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
+                            continue
+                        dst[name[:-6]] = oo["val"]
+                        print(dst)
+
+                    if name.endswith("SetOutAtt"):
+                        gain[name[:-9]] = oo["val"]
+
+            else:
+                for oo in o["PM"]:
+                    if "nam" not in oo or "val" not in oo:
+                        continue
+                    name = oo["nam"]
+                    if name.endswith("_SetState"):
+                        # IS - In Service
+                        # OOS - Out Of Service
+                        # MT - Maintenance
+                        port_states[get_port(name[:-9])] = oo["val"] in ["IS", "MT"]
+                    if name.endswith("_SetSrc"):
+                        if oo["val"] != "None":
+                            src[name[:-7]] = oo["val"]
+                    elif name.endswith("_SetDst"):
+                        if oo["val"] != "None":
+                            dst[name[:-7]] = oo["val"]
+                    elif name == "SetMode":
+                        mode = oo["val"]
+                    elif name.endswith("_SetDataType"):
+                        if "GFC" in oo["val"]:
+                            enable_oduflex.add(name[:-12])
+                        datatypes[get_port(name[:-12])] = oo["val"]
 
         crossings = []
         if mode:
@@ -307,6 +368,26 @@ class Script(BaseScript):
 
         for cname in src:
             if cname not in dst:
+                continue
+
+            print(src[cname])
+            print(dst[cname])
+            print(gain.get(cname))
+
+            if is_roadm:
+                in_port = src[cname]
+                out_port = dst[cname]
+                out_gain = gain.get(cname)
+
+                crossings.append(
+                    {
+                        "input": in_port,
+                        "output": out_port,
+                        "output_discriminator": get_lambda_discriminator(cname),
+                        "gain_db": out_gain,
+                    }
+                )
+
                 continue
 
             input = get_port(get_raw_port(src[cname]))
@@ -321,7 +402,7 @@ class Script(BaseScript):
             if cname not in enable_oduflex and rest_dst == "ODUFlex":
                 continue
 
-            if (not is_oadm) or (port_states[input] and port_states[output]):
+            if (not is_atp) or (port_states[input] and port_states[output]):
                 crossings.append(
                     {
                         "input": input,
