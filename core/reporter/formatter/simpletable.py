@@ -1,0 +1,82 @@
+# ----------------------------------------------------------------------
+# SimpleReport DataFormatter
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2024 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
+from typing import Optional
+
+# Third-party modules
+from xlsxwriter.workbook import Workbook
+
+# NOC modules
+from .base import DataFormatter
+from ..types import OutputType, HEADER_BAND
+
+
+class SimpleTableFormatter(DataFormatter):
+    """
+    Simple formatter. Used Band format from config for build docs with section:
+        * Text Section
+        * Table section
+        * Matrix Section
+        * Delimiter
+    Sections based on Band Config (Direction and format):
+        * header band - used for report title and common column description (for root)
+        * table section - if BandFormat has Column format
+        * matrix section - if Direction set to cross
+        * Delimiter set for bands on common level
+    """
+
+    def render_document(self):
+        """
+        Format for Root Band data as table
+        """
+        header_format = self.get_band_format(HEADER_BAND)
+        # Column title map
+        HEADER_ROW = {}
+        for col in header_format.columns:
+            *_, col_name = col.name.rsplit(".", 1)
+            HEADER_ROW[col_name] = col.title
+        if not self.root_band.has_rows:
+            return
+        data = self.root_band.get_rows()[0]
+        out_columns = [c for c in data.columns]
+        if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
+            r = self.csv_delimiter.join(HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
+            r += data.select(out_columns).write_csv(
+                # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
+                # columns=out_columns,
+                separator=self.csv_delimiter,
+                quote_char='"',
+                include_header=False,
+            )
+            self.output_stream.write(r.encode("utf8"))
+        elif self.output_type == OutputType.XLSX:
+            book = Workbook(self.output_stream)
+            cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+            worksheet = book.add_worksheet(self.report_template.output_name_pattern)
+            for cn, col in enumerate(out_columns):
+                worksheet.write(0, cn, HEADER_ROW.get(col, col), cf1)
+            for cn, col in enumerate(out_columns):
+                worksheet.write_column(1, cn, data[col], cf1)
+            (max_row, max_col) = data.shape
+            worksheet.autofilter(0, 0, max_row, len(out_columns))
+            worksheet.freeze_panes(1, 0)
+            for i, width in enumerate(self.get_col_widths(data)):
+                worksheet.set_column(i, i, width)
+            #
+            book.close()
+
+    @staticmethod
+    def get_col_widths(dataframe, index_filed: Optional[str] = None):
+        # Then, we concatenate this to the max of the lengths
+        # of column name and its values for each column, left to right
+        r = [max([len(str(s)) for s in dataframe[col]] + [len(col)]) for col in dataframe.columns]
+        # First we find the maximum length of the index column
+        if index_filed:
+            idx_max = max([len(str(s)) for s in dataframe[index_filed]] + [len(str(index_filed))])
+            return [idx_max] + r
+        return r

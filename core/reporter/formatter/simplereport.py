@@ -40,9 +40,6 @@ class SimpleReportFormatter(DataFormatter):
 
     def render_document(self):
         """"""
-        if self.report_template.output_type != OutputType.HTML:
-            self.render_table()
-            return
         report = Report()
         for s in self.render_sections():
             report.append_section(s)
@@ -90,7 +87,7 @@ class SimpleReportFormatter(DataFormatter):
                 columns.append(
                     TableColumn(
                         c.name,
-                        c.title or "",
+                        c.title if c.title is not None else "",
                         align=c.align.name.lower(),
                         format=c.format_type,
                         total=c.total,
@@ -101,7 +98,7 @@ class SimpleReportFormatter(DataFormatter):
                 columns += [
                     TableColumn(
                         c.name,
-                        c.title or "",
+                        c.title if c.title is not None else "",
                     )
                 ]
         return columns
@@ -163,56 +160,3 @@ class SimpleReportFormatter(DataFormatter):
             TextSection(title=self.get_report_title()),
             TableSection(columns=columns, data=data, enumerate=False),
         ]
-
-    def render_table(self):
-        """
-        Format for Root Band data as table
-        :return:
-        """
-        band = self.root_band.children_bands[0]
-        r_format = self.report_template.bands_format[band.name]
-        # Column title map
-        HEADER_ROW = {}
-        for col in r_format.columns:
-            *_, col_name = col.name.rsplit(".", 1)
-            HEADER_ROW[col_name] = col.title
-        if not self.root_band.has_rows:
-            return
-        data = self.root_band.get_rows()[0]
-        out_columns = [c for c in data.columns]
-        if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
-            r = self.csv_delimiter.join(HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
-            r += data.select(out_columns).write_csv(
-                # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
-                # columns=out_columns,
-                separator=self.csv_delimiter,
-                quote_char='"',
-                include_header=False,
-            )
-            self.output_stream.write(r.encode("utf8"))
-        elif self.output_type == OutputType.XLSX:
-            book = Workbook(self.output_stream)
-            cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
-            worksheet = book.add_worksheet(self.report_template.output_name_pattern)
-            for cn, col in enumerate(out_columns):
-                worksheet.write(0, cn, HEADER_ROW.get(col, col), cf1)
-            for cn, col in enumerate(out_columns):
-                worksheet.write_column(1, cn, data[col], cf1)
-            (max_row, max_col) = data.shape
-            worksheet.autofilter(0, 0, max_row, len(out_columns))
-            worksheet.freeze_panes(1, 0)
-            for i, width in enumerate(self.get_col_widths(data)):
-                worksheet.set_column(i, i, width)
-            #
-            book.close()
-
-    @staticmethod
-    def get_col_widths(dataframe, index_filed: Optional[str] = None):
-        # Then, we concatenate this to the max of the lengths
-        # of column name and its values for each column, left to right
-        r = [max([len(str(s)) for s in dataframe[col]] + [len(col)]) for col in dataframe.columns]
-        # First we find the maximum length of the index column
-        if index_filed:
-            idx_max = max([len(str(s)) for s in dataframe[index_filed]] + [len(str(index_filed))])
-            return [idx_max] + r
-        return r

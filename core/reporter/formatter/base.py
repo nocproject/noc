@@ -21,6 +21,8 @@ class DataFormatter(object):
     Create result document by setted format
     """
 
+    label: Optional[str] = None
+
     def __init__(
         self,
         root_band: Band,

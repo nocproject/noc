@@ -20,6 +20,7 @@ Ext.define('NOC.main.reportconfig.Application', {
         "NOC.main.ref.ulanguage.LookupField",
         "NOC.main.ref.datasource.LookupField",
         "NOC.main.ref.reportsource.LookupField",
+        "NOC.main.ref.reportformatter.LookupField",
         "NOC.aaa.group.LookupField",
         "NOC.aaa.user.LookupField"
     ],
@@ -282,6 +283,12 @@ Ext.define('NOC.main.reportconfig.Application', {
                                             allowBlank: false
                                         },
                                         {
+                                            name: "handler",
+                                            xtype: "main.ref.reportformatter.LookupField",
+                                            fieldLabel: __("Report Formatter"),
+                                            allowBlank: false
+                                        },
+                                        {
                                             name: "output_type",
                                             xtype: "combobox",
                                             fieldLabel: __("Output Type"),
@@ -302,11 +309,13 @@ Ext.define('NOC.main.reportconfig.Application', {
                                         {
                                             name: "is_alterable_output",
                                             xtype: "checkbox",
+                                            allowBlank: true,
                                             fieldLabel: __("Alterable output")
                                         },
                                         {
                                             name: "has_preview",
                                             xtype: "checkbox",
+                                            allowBlank: true,
                                             fieldLabel: __("Has Preview")
                                         }
                                     ]

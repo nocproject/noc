@@ -34,16 +34,11 @@
                     "json": null
                 }
             ]
-        },
-        {
-            "name": "objects",
-            "orientation": "H",
-            "parent": "Root"
         }
     ],
     "bands_format": [
         {
-            "name": "objects",
+            "name": "header",
             "column_format": [
                 {
                     "name": "id",
@@ -353,6 +348,7 @@
     "templates": [
         {
             "code": "DEFAULT",
+            "handler": "simpletable",
             "has_preview": false,
             "is_alterable_output": true,
             "output_name_pattern": "object_detail",

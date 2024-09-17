@@ -357,6 +357,7 @@
     "templates": [
         {
             "code": "DEFAULT",
+            "handler": "simpletable",
             "has_preview": false,
             "is_alterable_output": true,
             "output_type": "csv"
