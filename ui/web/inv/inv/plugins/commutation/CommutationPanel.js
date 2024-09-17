@@ -47,18 +47,18 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     },
     {
       xtype: "button",
-      text: __("Download SVG"),
-      glyph: NOC.glyph.download,
-      handler: "onDownloadSVG",
-    },
-    {
-      xtype: "button",
       itemId: "detailsButton",
       text: __("Show details"),
       glyph: NOC.glyph.eye_slash,
       enableToggle: true,
       pressed: false,
       toggleHandler: "showHideDetails",
+    },
+    {
+      xtype: "button",
+      tooltip: __("Download image as SVG"),
+      glyph: NOC.glyph.download,
+      handler: "onDownloadSVG",
     },
     {
       xtype: "combobox",

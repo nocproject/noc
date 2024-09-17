@@ -69,7 +69,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     });
 
     me.downloadButton = Ext.create("Ext.button.Button", {
-      text: __("Download SVG"),
+      tooltip: __("Download image as SVG"),
       glyph: NOC.glyph.download,
       scope: me,
       handler: me.onDownloadSVG,

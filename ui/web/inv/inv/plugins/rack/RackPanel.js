@@ -198,12 +198,6 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       },
     },
     {
-      xtype: "button",
-      text: __("Download SVG"),
-      glyph: NOC.glyph.download,
-      handler: "onDownloadSVG",
-    },
-    {
       text: __("Edit"),
       glyph: NOC.glyph.edit,
       enableToggle: true,
@@ -214,6 +208,12 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         var vm = this.up("panel").getViewModel();
         vm.set("edit", !vm.get("edit"));
       },
+    },
+    {
+      xtype: "button",
+      tooltip: __("Download image as SVG"),
+      glyph: NOC.glyph.download,
+      handler: "onDownloadSVG",
     },
   ],
   preview: function(data){
