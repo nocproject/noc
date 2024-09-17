@@ -46,6 +46,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     },
     {
       xtype: "button",
+      text: __("Download SVG"),
+      glyph: NOC.glyph.download,
+      handler: "onDownloadSVG",
+    },
+    {
+      xtype: "button",
       text: __("Magic"),
       itemId: "adhoc",
       glyph: NOC.glyph.magic,
@@ -57,6 +63,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       xtype: "grid",
       scrollable: "y",
       split: true,
+      store: {
+        data: [],
+      },
       columns: [
         {
           xtype: 'glyphactioncolumn',
@@ -391,5 +400,17 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var r = grid.getStore().getAt(rowIndex),
       id = r.get("id");
     NOC.launch("inv.channel", "history", {"args": [id]})
+  },
+  //
+  onDownloadSVG: function(){
+    var me = this,
+      imageComponent = me.down("#scheme"),
+      svg = imageComponent.getEl().dom.outerHTML,
+      svgBlob = new Blob([svg], {type: "image/svg+xml"}),
+      svgUrl = URL.createObjectURL(svgBlob),
+      a = document.createElement("a");
+    a.href = svgUrl;
+    a.download = "channel-scheme-" + me.currentId + ".svg";
+    a.click();
   },
 });

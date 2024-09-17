@@ -198,6 +198,12 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       },
     },
     {
+      xtype: "button",
+      text: __("Download SVG"),
+      glyph: NOC.glyph.download,
+      handler: "onDownloadSVG",
+    },
+    {
       text: __("Edit"),
       glyph: NOC.glyph.edit,
       enableToggle: true,

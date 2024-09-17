@@ -110,4 +110,19 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
     imgEl.style.transformOrigin = "0 0";
     imgEl.style.transform = "scale(" + combo.getValue() + ")";
   },
+  //
+  onDownloadSVG: function(){
+    var me = this,
+      vm = me.getViewModel(),
+      side = vm.get("side"),
+      currentId = vm.get("currentId"),
+      svg = vm.getView().down("#viewPanel").getEl().dom.querySelector("object").contentDocument.documentElement.outerHTML,
+      blob = new Blob([svg], {type: "image/svg+xml"}),
+      url = URL.createObjectURL(blob),
+      a = document.createElement("a");
+    a.href = url;
+    a.download = `rack-${side}-${currentId}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
 });
