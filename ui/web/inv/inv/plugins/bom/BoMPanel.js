@@ -20,6 +20,9 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
     stores: {
       gridStore: {
         model: "NOC.inv.inv.plugins.bom.BoMModel",
+        sorters: [
+          {property: "model", direction: "ASC"},
+        ],
         listeners: {
           datachanged: "onDataChanged",
           beforeload: "onBeforeStoreLoad",
@@ -86,6 +89,9 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       bind: {
         store: "{gridStore}",
       },
+      features: [{
+        ftype: "grouping",
+      }],
       scrollable: "y",
       columns: [
         {
@@ -115,9 +121,10 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
     var me = this;
     me.callParent();
 
-    var store = me.getViewModel().getStore("gridStore");
-    var filters = store.getFilters();
+    var store = me.getViewModel().getStore("gridStore"),
+      filters = store.getFilters();
 
+    store.setGroupField("vendor");
     me.getViewModel().bind({
       bindTo: {
         searchText: "{searchText}",
