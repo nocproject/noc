@@ -105,5 +105,6 @@
             "interface": "asset",
             "value": ["RA1-H4"]
         }
-    ]
+    ],
+    "short_label": "RA1-H4"
 }

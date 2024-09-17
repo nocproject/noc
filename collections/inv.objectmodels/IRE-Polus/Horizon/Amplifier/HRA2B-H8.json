@@ -112,5 +112,6 @@
             "interface": "asset",
             "value": ["HRA2B-H8"]
         }
-    ]
+    ],
+    "short_label": "HRA2B"
 }

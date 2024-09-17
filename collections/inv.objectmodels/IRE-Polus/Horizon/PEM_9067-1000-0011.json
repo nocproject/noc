@@ -53,5 +53,7 @@
             "interface": "weight",
             "value": 0.4
         }
-    ]
+    ],
+    "front_facade__name": "RBS | iData | PEM 1509-3",
+    "short_label": "PEM"
 }

@@ -106,5 +106,6 @@
             "value": ["RA2-H4"]
         }
     ],
-    "front_facade__name": "RBS | iData | RBS-RA2-H4 IP1456"
+    "front_facade__name": "RBS | iData | RBS-RA2-H4 IP1456",
+    "short_label": "RA2-H4"
 }

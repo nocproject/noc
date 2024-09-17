@@ -97,5 +97,6 @@
             "value": ["ROADM-2-C-50-H8"]
         }
     ],
-    "front_facade__name": "RBS | iData | ROADM-2-C-50-H8 IP1436"
+    "front_facade__name": "RBS | iData | ROADM-2-C-50-H8 IP1436",
+    "short_label": "ROADM-2"
 }

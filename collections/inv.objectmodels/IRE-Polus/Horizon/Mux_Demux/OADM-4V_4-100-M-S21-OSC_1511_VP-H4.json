@@ -252,23 +252,23 @@
         },
         {
             "input": "P_IN",
-            "output": "C21_OUT",
-            "input_discriminator": "lambda::192100-50"
+            "input_discriminator": "lambda::192100-50",
+            "output": "C21_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C22_OUT",
-            "input_discriminator": "lambda::192200-50"
+            "input_discriminator": "lambda::192200-50",
+            "output": "C22_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C23_OUT",
-            "input_discriminator": "lambda::192300-50"
+            "input_discriminator": "lambda::192300-50",
+            "output": "C23_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C24_OUT",
-            "input_discriminator": "lambda::192400-50"
+            "input_discriminator": "lambda::192400-50",
+            "output": "C24_OUT"
         },
         {
             "input": "EXT_IN",
@@ -276,23 +276,23 @@
         },
         {
             "input": "C21_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192100-50"
+            "input_discriminator": "lambda::192100-50",
+            "output": "B_OUT"
         },
         {
             "input": "C22_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192200-50"
+            "input_discriminator": "lambda::192200-50",
+            "output": "B_OUT"
         },
         {
             "input": "C23_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192300-50"
+            "input_discriminator": "lambda::192300-50",
+            "output": "B_OUT"
         },
         {
             "input": "C24_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192400-50"
+            "input_discriminator": "lambda::192400-50",
+            "output": "B_OUT"
         },
         {
             "input": "OSC_IN",
@@ -349,5 +349,6 @@
             "value": 192.4
         }
     ],
-    "front_facade__name": "RBS | iData | OADM-4V/4-100-M-C21-OSC(1511) IP1550"
+    "front_facade__name": "RBS | iData | OADM-4V/4-100-M-C21-OSC(1511) IP1550",
+    "short_label": "OADM-4V"
 }

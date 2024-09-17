@@ -926,5 +926,6 @@
             "value": ["ADM-200-SFP+/CFP2-H8"]
         }
     ],
-    "front_facade__name": "RBS | iData | ADM-200 1438-1"
+    "front_facade__name": "RBS | iData | ADM-200 1438-1",
+    "short_label": "ADM-200"
 }
