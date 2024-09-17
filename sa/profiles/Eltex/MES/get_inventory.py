@@ -172,6 +172,8 @@ class Script(BaseScript):
             code = match.group("code")
             if code == "1000BASE-LX":
                 part_no = "NoName | Transceiver | 1G | SFP LX"
+            elif code == "1000BASE-SX":
+                part_no = "NoName | Transceiver | 1G | SFP SX"
             elif code == "BaseBX10":
                 wavelength = match.group("wavelength")
                 if wavelength == "1310 nm":
