@@ -310,16 +310,12 @@ class Script(BaseScript):
         for o in config["RK"][crate_num]["DV"]:
             if o["slt"] != slot:
                 continue
-            print("###CLS###|%s|" % (o["cls"]))
+            # print("###CLS###|%s|" % (o["cls"]))
             is_atp = "atp" in o["cls"]
             is_roadm = "roadm" in o["cls"]
 
-            print(is_atp)
-            print(is_roadm)
-
             if is_roadm:
                 for oo in o["PM"]:
-#                    print(oo)
                     if "nam" not in oo or "val" not in oo:
                         continue
                     name = oo["nam"]
@@ -370,9 +366,9 @@ class Script(BaseScript):
             if cname not in dst:
                 continue
 
-            print(src[cname])
-            print(dst[cname])
-            print(gain.get(cname))
+            # print(src[cname])
+            # print(dst[cname])
+            # print(gain.get(cname))
 
             if is_roadm:
                 in_port = src[cname]
@@ -381,10 +377,18 @@ class Script(BaseScript):
 
                 crossings.append(
                     {
-                        "input": in_port,
+                        "input": "COM_IN",
                         "output": out_port,
-                        "output_discriminator": get_lambda_discriminator(cname),
-                        "gain_db": out_gain,
+                        "input_discriminator": get_lambda_discriminator(cname),
+                        "gain_db": out_gain if out_gain else 1,
+                    }
+                )
+                crossings.append(
+                    {
+                        "input": in_port,
+                        "output": "COM_OUT",
+                        "input_discriminator": get_lambda_discriminator(cname),
+                        "gain_db": out_gain if out_gain else 1,
                     }
                 )
 
