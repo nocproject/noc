@@ -323,14 +323,16 @@ class Script(BaseScript):
                     if name.endswith("SetIn"):
                         if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
                             continue
+#                        print(oo["val"])
                         src[name[:-5]] = oo["val"]
-                        print(src)
+#                        print(src)
 
                     if name.endswith("SetOut"):
                         if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
                             continue
+#                        print(oo["val"])
                         dst[name[:-6]] = oo["val"]
-                        print(dst)
+#                        print(dst)
 
                     if name.endswith("SetOutAtt"):
                         gain[name[:-9]] = oo["val"]
@@ -362,66 +364,67 @@ class Script(BaseScript):
         if mode:
             self.logger.debug("Mode %s:", mode)
 
-        for cname in src:
-            if cname not in dst:
-                continue
-
-            # print(src[cname])
-            # print(dst[cname])
-            # print(gain.get(cname))
-
-            if is_roadm:
-                in_port = src[cname]
+        if is_roadm:
+            for cname in dst:
                 out_port = dst[cname]
-                out_gain = gain.get(cname)
+                print(f"OUT |{out_port}|")
 
                 crossings.append(
                     {
                         "input": "COM_IN",
                         "output": out_port,
                         "input_discriminator": get_lambda_discriminator(cname),
-                        "gain_db": out_gain if out_gain else 1,
                     }
                 )
+
+            for cname in src:
+                in_port = src[cname]
+                out_gain = gain.get(cname)
+                print(f"IN |{in_port}|")
+
                 crossings.append(
                     {
                         "input": in_port,
                         "output": "COM_OUT",
-                        "input_discriminator": get_lambda_discriminator(cname),
+                        "output_discriminator": get_lambda_discriminator(cname),
                         "gain_db": out_gain if out_gain else 1,
                     }
                 )
 
-                continue
+        else:
 
-            input = get_port(get_raw_port(src[cname]))
-            output = get_port(get_raw_port(dst[cname]))
-            rest_dst = dst[cname].split("_", 2)[-1]
+            for cname in src:
+                if cname not in dst:
+                    continue
 
-            datatype = datatypes[output]
-            outer_odu = get_outer_odu(mode, output, datatype)
+                input = get_port(get_raw_port(src[cname]))
+                output = get_port(get_raw_port(dst[cname]))
+                rest_dst = dst[cname].split("_", 2)[-1]
 
-            if cname in enable_oduflex and rest_dst != "ODUFlex":
-                continue
-            if cname not in enable_oduflex and rest_dst == "ODUFlex":
-                continue
+                datatype = datatypes[output]
+                outer_odu = get_outer_odu(mode, output, datatype)
 
-            if (not is_atp) or (port_states[input] and port_states[output]):
-                crossings.append(
-                    {
-                        "input": input,
-                        "output": output,
-                        "output_discriminator": get_discriminator(outer_odu, rest_dst),
-                    }
-                )
-            else:
-                self.logger.debug(
-                    "One of the ports is offline %s:%s,%s:%s",
-                    input,
-                    port_states[input],
-                    output,
-                    port_states[output],
-                )
+                if cname in enable_oduflex and rest_dst != "ODUFlex":
+                    continue
+                if cname not in enable_oduflex and rest_dst == "ODUFlex":
+                    continue
+
+                if (not is_atp) or (port_states[input] and port_states[output]):
+                    crossings.append(
+                        {
+                            "input": input,
+                            "output": output,
+                            "output_discriminator": get_discriminator(outer_odu, rest_dst),
+                        }
+                    )
+                else:
+                    self.logger.debug(
+                        "One of the ports is offline %s:%s,%s:%s",
+                        input,
+                        port_states[input],
+                        output,
+                        port_states[output],
+                    )
 
         return crossings
 
