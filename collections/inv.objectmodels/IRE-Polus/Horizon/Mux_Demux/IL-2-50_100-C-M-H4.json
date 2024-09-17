@@ -162,5 +162,6 @@
             "interface": "asset",
             "value": ["IL-2-50/100-C-M-H4"]
         }
-    ]
+    ],
+    "short_label": "IL"
 }

@@ -560,5 +560,6 @@
             "value": ["ADM-10-SFP/SFP+-H8"]
         }
     ],
-    "front_facade__name": "RBS | iData | ADM-10 1459-1"
+    "front_facade__name": "RBS | iData | ADM-10 1459-1",
+    "short_label": "ADM-10"
 }

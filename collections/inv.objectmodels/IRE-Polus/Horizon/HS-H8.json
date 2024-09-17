@@ -61,5 +61,6 @@
             "value": ["HS-H8"]
         }
     ],
-    "front_facade__name": "RBS | iData | HS-H8"
+    "front_facade__name": "RBS | iData | HS-H8",
+    "short_label": "HS-H8"
 }

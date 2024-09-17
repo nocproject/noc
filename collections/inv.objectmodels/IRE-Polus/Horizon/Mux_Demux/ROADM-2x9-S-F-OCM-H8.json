@@ -1,9 +1,9 @@
 {
-    "name": "IRE-Polus | Horizon | Mux_Demux | ROADM-9-C-F-OCM-OSC(1511)-B(50/14)-P(175/18)-H8",
+    "name": "IRE-Polus | Horizon | Mux_Demux | ROADM-2x9-С-F-OCM-H8",
     "$collection": "inv.objectmodels",
-    "uuid": "9167ba64-16d9-4678-b4d3-a87727b22fd2",
+    "uuid": "230e3071-793d-4556-9e21-489b94812201",
     "vendor__code": "IRE-POLUS",
-    "description": "Карта ROADM-9 является реконфигурируемым оптическим мультиплексором ввода/вывода ROADM с внутренними оптическими усилителями",
+    "description": "ROADM-2x9-С-F-OCM-H8 – перестраиваемый оптический мультиплексор ввода/вывода",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
     "plugins": ["pconf"],
@@ -17,42 +17,28 @@
         },
         {
             "name": "COM_IN",
-            "description": "Общий вход",
+            "description": "Вход со стороны оптоволоконной линии",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
             "name": "COM_OUT",
-            "description": "Общий выход",
+            "description": "Выход в сторону оптоволоконной линии",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
             "name": "MON_IN",
-            "description": "Мониторинг общего входа",
+            "description": "Порт мониторинга оптического сигнала на входе COM IN",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
             "name": "MON_OUT",
-            "description": "Мониторинг общего выхода",
-            "direction": "s",
-            "gender": "f",
-            "type__name": "Optical | LC"
-        },
-        {
-            "name": "OSC_IN",
-            "description": "Ввод служебного канала",
-            "direction": "s",
-            "gender": "f",
-            "type__name": "Optical | LC"
-        },
-        {
-            "name": "OSC_OUT",
-            "description": "Вывод служебного канала",
+            "description": "Порт мониторинга оптического сигнала на выходе COM OUT",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
@@ -188,7 +174,7 @@
         {
             "attr": "power",
             "interface": "power",
-            "value": 85.0
+            "value": 8.0
         },
         {
             "attr": "width",
@@ -213,8 +199,9 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["ROADM-9-C-F-OCM-OSC(1511)-B(50/14)-P(175/18)-H8"]
+            "value": ["ROADM-2x9-C-F-OCM-H8"]
         }
     ],
-    "front_facade__name": "RBS | iData | ROADM-9-C-F-OCM-OSC(1511)-B(50/14)-P(175/18)-H8"
+    "front_facade__name": "RBS | iData | ROADM-2x9-C-F-OCM-H8 IP1537",
+    "short_label": "ROADM-2x9-С-F"
 }

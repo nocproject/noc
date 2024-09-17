@@ -63,5 +63,6 @@
             "interface": "asset",
             "value": ["OPM-2-C-H4"]
         }
-    ]
+    ],
+    "short_label": "OPM-2"
 }

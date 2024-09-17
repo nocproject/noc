@@ -102,5 +102,6 @@
             "value": ["BS-1-1-H4"]
         }
     ],
-    "front_facade__name": "RBS | iData | BS-1-1 H4 IP1540"
+    "front_facade__name": "RBS | iData | BS-1-1 H4 IP1540",
+    "short_label": "BS"
 }
