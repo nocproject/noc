@@ -184,5 +184,6 @@
             "interface": "asset",
             "value": ["IL-2-50/100-C-M-OSC(1511)-H8"]
         }
-    ]
+    ],
+    "short_label": "IL-OSC"
 }

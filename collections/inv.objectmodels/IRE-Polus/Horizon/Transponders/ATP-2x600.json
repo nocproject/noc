@@ -6,8 +6,8 @@
     "description": "Карта ATP-2x600 предназначена для агрегации клиентского трафика класса 100G (100GE/OTU4) в линейный кадр OTUC6 (600G). На лицевой панели ATP-2x600 размещаются 12 клиентских портов QSFP28 и два линейных порта 600G, что позволяет агрегировать до 12-и 100GE/OTU4 клиентов в линейный сигнал 2x600G.",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
-    "labels": ["noc::inv::lc"],
     "plugins": ["pconf"],
+    "labels": ["noc::inv::lc"],
     "configuration_rule__name": "ATP_2x600",
     "connections": [
         {
@@ -425,5 +425,6 @@
             "value": 1.0
         }
     ],
-    "front_facade__name": "RBS | iData | ATP 2x600 QSFP28"
+    "front_facade__name": "RBS | iData | ATP 2x600 QSFP28",
+    "short_label": "ATP-2x600"
 }

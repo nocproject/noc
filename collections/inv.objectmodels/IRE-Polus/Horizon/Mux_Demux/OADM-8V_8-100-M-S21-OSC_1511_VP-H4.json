@@ -364,43 +364,43 @@
         },
         {
             "input": "P_IN",
-            "output": "C21_OUT",
-            "input_discriminator": "lambda::192100-50"
+            "input_discriminator": "lambda::192100-50",
+            "output": "C21_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C22_OUT",
-            "input_discriminator": "lambda::192200-50"
+            "input_discriminator": "lambda::192200-50",
+            "output": "C22_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C23_OUT",
-            "input_discriminator": "lambda::192300-50"
+            "input_discriminator": "lambda::192300-50",
+            "output": "C23_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C24_OUT",
-            "input_discriminator": "lambda::192400-50"
+            "input_discriminator": "lambda::192400-50",
+            "output": "C24_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C25_OUT",
-            "input_discriminator": "lambda::192500-50"
+            "input_discriminator": "lambda::192500-50",
+            "output": "C25_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C26_OUT",
-            "input_discriminator": "lambda::192600-50"
+            "input_discriminator": "lambda::192600-50",
+            "output": "C26_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C27_OUT",
-            "input_discriminator": "lambda::192700-50"
+            "input_discriminator": "lambda::192700-50",
+            "output": "C27_OUT"
         },
         {
             "input": "P_IN",
-            "output": "C28_OUT",
-            "input_discriminator": "lambda::192800-50"
+            "input_discriminator": "lambda::192800-50",
+            "output": "C28_OUT"
         },
         {
             "input": "EXT_IN",
@@ -408,43 +408,43 @@
         },
         {
             "input": "C21_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192100-50"
+            "input_discriminator": "lambda::192100-50",
+            "output": "B_OUT"
         },
         {
             "input": "C22_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192200-50"
+            "input_discriminator": "lambda::192200-50",
+            "output": "B_OUT"
         },
         {
             "input": "C23_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192300-50"
+            "input_discriminator": "lambda::192300-50",
+            "output": "B_OUT"
         },
         {
             "input": "C24_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192400-50"
+            "input_discriminator": "lambda::192400-50",
+            "output": "B_OUT"
         },
         {
             "input": "C25_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192500-50"
+            "input_discriminator": "lambda::192500-50",
+            "output": "B_OUT"
         },
         {
             "input": "C26_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192600-50"
+            "input_discriminator": "lambda::192600-50",
+            "output": "B_OUT"
         },
         {
             "input": "C27_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192700-50"
+            "input_discriminator": "lambda::192700-50",
+            "output": "B_OUT"
         },
         {
             "input": "C28_IN",
-            "output": "B_OUT",
-            "input_discriminator": "lambda::192800-50"
+            "input_discriminator": "lambda::192800-50",
+            "output": "B_OUT"
         },
         {
             "input": "OSC_IN",
@@ -500,5 +500,6 @@
             "interface": "dwdm",
             "value": 192.8
         }
-    ]
+    ],
+    "short_label": "OADM-8V"
 }

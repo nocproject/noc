@@ -105,5 +105,6 @@
             "interface": "asset",
             "value": ["FRA-H4"]
         }
-    ]
+    ],
+    "short_label": "FRA"
 }

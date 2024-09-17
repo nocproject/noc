@@ -248,5 +248,6 @@
             "interface": "asset",
             "value": ["EAU-2x(40V/18+100/12)-OSC-H8"]
         }
-    ]
+    ],
+    "short_label": "EAU-2x(40V/18+100/12)"
 }
