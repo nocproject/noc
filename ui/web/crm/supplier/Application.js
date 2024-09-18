@@ -15,6 +15,7 @@ Ext.define("NOC.crm.supplier.Application", {
     "NOC.crm.supplierprofile.LookupField",
     "NOC.main.remotesystem.LookupField",
     "NOC.project.project.LookupField",
+    "NOC.core.IntegrationField",
   ],
   model: "NOC.crm.supplier.Model",
   search: true,
@@ -83,37 +84,7 @@ Ext.define("NOC.crm.supplier.Application", {
           allowBlank: true,
         },
         {
-          xtype: "fieldset",
-          layout: "hbox",
-          title: __("Integration"),
-          defaults: {
-            padding: 4,
-            labelAlign: "left",
-          },
-          items: [
-            {
-              name: "remote_system",
-              xtype: "main.remotesystem.LookupField",
-              fieldLabel: __("Remote System"),
-              labelWidth: 150,
-              allowBlank: true,
-            },
-            {
-              name: "remote_id",
-              xtype: "textfield",
-              fieldLabel: __("Remote ID"),
-              labelWidth: 150,
-              allowBlank: true,
-              uiStyle: "medium",
-            },
-            {
-              name: "bi_id",
-              xtype: "displayfield",
-              fieldLabel: __("BI ID"),
-              allowBlank: true,
-              uiStyle: "medium",
-            },
-          ],
+          xtype: "noc.integrationfield",
         },
         {
           name: "labels",
