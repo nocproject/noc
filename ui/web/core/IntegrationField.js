@@ -33,7 +33,7 @@ Ext.define("NOC.core.IntegrationField", {
     {
       name: "bi_id",
       xtype: "displayfield",
-      fieldLabel: __("BI ID."),
+      fieldLabel: __("BI ID"),
       labelWidth: 50,
       allowBlank: true,
       uiStyle: "medium",
