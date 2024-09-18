@@ -86,6 +86,9 @@ class OTNOTUController(BaseController):
             )
             # Pass to next
             ep = self.get_peer(nep)
+            if not ep:
+                self.logger.info("Other side of the channel is not connected")
+                return
         if ep.name == "rx":
             end = self.up(ep.object)
             if not end:
