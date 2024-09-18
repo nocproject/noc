@@ -9,6 +9,7 @@
 from typing import Optional, Dict, Any, List
 from enum import IntEnum, Enum
 from dataclasses import dataclass
+import uuid
 
 # Third-party modules
 # import orjson
@@ -61,6 +62,11 @@ class Item(object):
         if self.options is not None:
             r["options"] = [{"id": k, "label": v} for k, v in self.options.items()]
         return r
+
+
+H8_CT_UUID = uuid.UUID("4aa9afdc-7420-4dde-9727-2c3de1c3a8f4")
+CU_UUID = uuid.UUID("1cde0558-d43d-4485-9be2-89f08d85ed61")
+HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
 
 
 class PConfPlugin(InvPlugin):
@@ -188,7 +194,18 @@ class PConfPlugin(InvPlugin):
         Returns:
             Card number according to API.
         """
-        if obj.parent and obj.parent.model.name.endswith("HS-H8"):
+        if (
+            obj.model.uuid == CU_UUID
+            and obj.parent
+            and obj.parent_connection
+            and obj.parent_connection.startswith("cu")
+        ):
+            # CU require additional treatment
+            # Get number of slots
+            n_slots = sum(1 for cn in obj.parent.model.connections if cn.type.uuid == H8_CT_UUID)
+            cu_n = int(obj.parent_connection[2:])
+            return 2 * n_slots + cu_n
+        if obj.parent and obj.parent.model.uuid == HS_UUID:
             # Half-sized card
             return (int(obj.parent.parent_connection) - 1) * 2 + int(obj.parent_connection)
         return (int(obj.parent_connection) - 1) * 2 + 1
