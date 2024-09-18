@@ -20,12 +20,22 @@ class BoMPlugin(InvPlugin):
     def get_data(self, request, obj: Object) -> dict[str, Any]:
         r: list[dict[str, str]] = []
         for o in Object.objects.filter(id__in=obj.get_nested_ids()):
+            # Get location
+            path = []
+            current = o
+            while current.parent and current != obj:
+                if current.parent_connection:
+                    path.append(current.parent_connection)
+                else:
+                    path.append(current.name or "-")
+                current = current.parent
+            #
             r.append(
                 {
                     "id": str(o.id),
                     "vendor": str(o.model.vendor.name),
                     "model": o.model.name.split("|")[-1].strip(),
-                    "location": "???",
+                    "location": " > ".join(reversed(path)),
                     "serial": o.get_data("asset", "serial") or "",
                     "asset_no": o.get_data("asset", "asset_no") or "",
                 }

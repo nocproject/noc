@@ -97,22 +97,27 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
         {
           text: __("Vendor"),
           dataIndex: "vendor",
+          width: 150,
         },
         {
           text: __("Model"),
           dataIndex: "model",
+          width: 250,
         },
         {
           text: __("Location"),
           dataIndex: "location",
+          flex: 1,
         },
         {
           text: __("Serial"),
           dataIndex: "serial",
+          width: 150,
         },
         {
           text: __("Asset#"),
           dataIndex: "asset_no",
+          width: 150,
         },
       ],
     },
