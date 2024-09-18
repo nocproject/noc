@@ -10,6 +10,7 @@ from typing import Optional, Dict, Any, List
 from enum import IntEnum, Enum
 from dataclasses import dataclass
 import uuid
+from collections import defaultdict
 
 # Third-party modules
 # import orjson
@@ -27,6 +28,7 @@ class Table(IntEnum):
     INFO = 1
     STATUS = 2
     CONFIG = 3
+    THRESHOLD = 4
 
 
 class Type(Enum):
@@ -67,6 +69,63 @@ class Item(object):
 H8_CT_UUID = uuid.UUID("4aa9afdc-7420-4dde-9727-2c3de1c3a8f4")
 CU_UUID = uuid.UUID("1cde0558-d43d-4485-9be2-89f08d85ed61")
 HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
+
+
+class Status(Enum):
+    """
+    Threshold status.
+    """
+
+    UNKNOWN = "?"
+    OK = "o"
+    WARN = "w"
+    CRITICAL = "c"
+
+
+@dataclass
+class Threshold(object):
+    c_min: str | None = None
+    w_min: str | None = None
+    w_max: str | None = None
+    c_max: str | None = None
+
+    def to_json(self) -> list[str | None]:
+        """Serialize to JSON"""
+        return [self.c_min, self.w_min, self.w_max, self.c_max]
+
+    def get_status(self, v: str) -> Status:
+        """Calculate threshold status"""
+
+        def to_float(x: str | None) -> float | None:
+            if x is None:
+                return None
+            try:
+                return float(x)
+            except ValueError:
+                return None
+
+        # Convert value
+        fv = to_float(v)
+        if fv is None:
+            return Status.UNKNOWN
+        # c_min
+        c_min = to_float(self.c_min)
+        if c_min is not None and fv <= c_min:
+            return Status.CRITICAL
+        # w_min
+        w_min = to_float(self.w_min)
+        if w_min is not None and fv <= w_min:
+            return Status.WARN
+        # c_max
+        c_max = to_float(self.c_max)
+        if c_max is not None and fv >= c_max:
+            return Status.CRITICAL
+        # w_max
+        w_max = to_float(self.w_max)
+        if w_max is not None and fv >= w_max:
+            return Status.WARN
+        # ok
+        return Status.OK
 
 
 class PConfPlugin(InvPlugin):
@@ -157,6 +216,7 @@ class PConfPlugin(InvPlugin):
         pm = slot_cfg.get("PM")
         if not pm:
             return []
+        threholds: defaultdict[str, Threshold] = defaultdict(Threshold)
         for row in pm:
             name = row.get("nam")
             if not name:
@@ -170,18 +230,39 @@ class PConfPlugin(InvPlugin):
                 dt = "string"
             else:
                 dt = "string"
+            table = row.get("tbl", 1)
+            value = row.get("val") or ""
             c = {
                 "name": name,
-                "value": row.get("val") or "",
+                "value": value,
                 "description": row.get("dsc") or "",
                 "units": row.get("unt") or "",
                 "read_only": (row.get("acs") or "") != "W",
                 "type": dt,
-                "table": row.get("tbl", 1),
+                "table": table,
             }
             if options:
                 c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
             conf.append(c)
+            if table == Table.THRESHOLD:
+                match name[-4:]:
+                    case "CMin":
+                        threholds[name[:-4]].c_min = value
+                    case "WMin":
+                        threholds[name[:-4]].w_min = value
+                    case "WMax":
+                        threholds[name[:-4]].w_max = value
+                    case "CMax":
+                        threholds[name[:-4]].c_max = value
+                    case _:
+                        pass
+        # Apply thresholds
+        if threholds:
+            for c in conf:
+                if c["name"] in threholds:
+                    th = threholds[c["name"]]
+                    c["thresholds"] = th.to_json()
+                    c["status"] = th.get_status(c["value"])
         return conf
 
     @staticmethod
