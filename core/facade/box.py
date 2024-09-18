@@ -60,10 +60,15 @@ def get_svg_for_box(
                 interaction=Interaction(
                     actions=[
                         InteractionItem(
+                            event=InteractionEvent.CLICK,
+                            action=InteractionAction.INFO,
+                            resource=ro.as_resource(),
+                        ),
+                        InteractionItem(
                             event=InteractionEvent.DBLCLICK,
                             action=InteractionAction.GO,
                             resource=ro.as_resource(),
-                        )
+                        ),
                     ]
                 ).to_str(),
             )

@@ -35,6 +35,7 @@ from noc.core.inv.attach.module import (
     ModulePosition,
     get_free as get_free_for_module,
 )
+from noc.core.inv.info import info
 from noc.sa.interfaces.base import (
     StringParameter,
     ObjectIdParameter,
@@ -735,3 +736,19 @@ class InvApplication(ExtApplication):
         obj = self.get_object_or_404(Object, id=container)
         cloned = clone(obj, clone_connections=clone_connections)
         return {"status": True, "object": str(cloned.id), "message": "Object cloned successfully"}
+
+    @view(
+        "^baloon/",
+        method=["POST"],
+        access="read",
+        api=True,
+        validate=DictParameter(attrs={"resource": StringParameter(required=True)}),
+    )
+    def api_baloon(self, request, resource: str):
+        try:
+            i = info(resource)
+        except ValueError:
+            return self.response_not_found()
+        if not i:
+            return self.response_not_found()
+        return i.to_json()
