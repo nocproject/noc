@@ -209,6 +209,12 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         vm.set("edit", !vm.get("edit"));
       },
     },
+    {
+      xtype: "button",
+      tooltip: __("Download image as SVG"),
+      glyph: NOC.glyph.download,
+      handler: "onDownloadSVG",
+    },
   ],
   preview: function(data){
     var me = this,

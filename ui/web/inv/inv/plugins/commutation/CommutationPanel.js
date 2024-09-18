@@ -19,6 +19,11 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   itemId: "commutationPanel",
   tbar: [
     {
+      glyph: NOC.glyph.refresh,
+      tooltip: __("Reload"),
+      handler: "onReload",
+    },
+    {
       xtype: "combobox",
       store: [
         [0.25, "25%"],
@@ -48,6 +53,12 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       enableToggle: true,
       pressed: false,
       toggleHandler: "showHideDetails",
+    },
+    {
+      xtype: "button",
+      tooltip: __("Download image as SVG"),
+      glyph: NOC.glyph.download,
+      handler: "onDownloadSVG",
     },
     {
       xtype: "combobox",
@@ -108,6 +119,9 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       hidden: true,
       allowDeselect: true,
       split: true,
+      store: {
+        data: [],
+      },
       columns: [
         {
           text: __("Local Object"),
@@ -163,7 +177,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     },
   ],
   //
-  preview: function(response){
+  preview: function(response, objectId){
     var me = this,
       grid = me.down("grid"),
       filterCombo = me.down("#filterCombo"),
@@ -175,6 +189,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       fields: ["id", "text"],
       data: comboData,
     }));
+    me.currentId = objectId;
     filterCombo.setValue("");
     filterCombo.getTrigger("clear").hide();
     me.renderScheme(response.viz);
@@ -311,5 +326,18 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     });
 
     return Array.from(result).map(item => JSON.parse(item));
+  },
+  onDownloadSVG: function(){
+    var me = this,
+      imageContainer = me.down("#commutationScheme container"),
+      image = imageContainer.getEl().dom.querySelector("svg"),
+      svgData = new XMLSerializer().serializeToString(image),
+      blob = new Blob([svgData], {type: "image/svg+xml"}),
+      url = URL.createObjectURL(blob),
+      a = document.createElement("a");
+
+    a.href = url;
+    a.download = `commutation-${me.currentId}.svg`;
+    a.click();
   },
 });
