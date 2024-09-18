@@ -28,6 +28,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       scope: me,
       toggleGroup: "side",
       pressed: true,
+      value: "front",
       handler: function(){
         me.viewCard.setActiveItem(0);
       },
@@ -38,6 +39,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       text: __("Rear"),
       scope: me,
       toggleGroup: "side",
+      value: "rear",
       handler: function(){
         me.viewCard.setActiveItem(1);
       },
@@ -66,6 +68,13 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       },
     });
 
+    me.downloadButton = Ext.create("Ext.button.Button", {
+      tooltip: __("Download image as SVG"),
+      glyph: NOC.glyph.download,
+      scope: me,
+      handler: me.onDownloadSVG,
+    });
+
     me.segmentedButton = Ext.create("Ext.button.Segmented", {
       items: [me.sideFrontButton, me.sideRearButton],
     });
@@ -87,7 +96,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         {
           xtype: "toolbar",
           dock: "top",
-          items: [me.reloadButton, "-", me.segmentedButton, me.zoomButton],
+          items: [me.reloadButton, "-", me.segmentedButton, me.zoomButton, me.downloadButton],
         },
       ],
     });
@@ -100,21 +109,14 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     // Add views
     me.viewCard.removeAll();
     me.viewCard.add(
-      Ext.Array.map(data.views, function(view){
+      Ext.Array.map(data.views, function(view, index){
         return {
           xtype: "container",
           layout: "fit",
           items: [
-            // {
-            // xtype: "image",
-            // itemId: "image",
-            // src: view.src,
-            // title: view.name,
-            // padding: 5,
-            // },
             {
               xtype: "container",
-              itemId: "image",
+              itemId: "image-" + (index === 0 ? "front" : "rear"),
               html: "<object id='svg-object' data='" + view.src + "' type='image/svg+xml'></object>",
               padding: 5,
               listeners: {
@@ -186,5 +188,18 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       height = Math.max(height, imgEl.height);
       me.facadeViewPanel.setWidth(width);
     });
+  },
+  //
+  onDownloadSVG: function(){
+    var me = this,
+      side = me.segmentedButton.getValue(),
+      svg = me.viewCard.down(`#image-${side}`).getEl().dom.querySelector("object").contentDocument.documentElement.outerHTML,
+      blob = new Blob([svg], {type: "image/svg+xml"}),
+      url = URL.createObjectURL(blob),
+      a = document.createElement("a");
+    a.href = url;
+    a.download = `facade-${side}-${me.currentId}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
   },
 });

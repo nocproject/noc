@@ -51,12 +51,23 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       glyph: NOC.glyph.magic,
       handler: "onAddHoc",
     },
+    {
+      xtype: "button",
+      itemId: "downloadSVGBtn",
+      tooltip: __("Download image as SVG"),
+      glyph: NOC.glyph.download,
+      disabled: true,
+      handler: "onDownloadSVG",
+    },
   ],
   items: [
     {
       xtype: "grid",
       scrollable: "y",
       split: true,
+      store: {
+        data: [],
+      },
       columns: [
         {
           xtype: 'glyphactioncolumn',
@@ -148,7 +159,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
-      var imageComponent = me.down("[itemId=scheme]"),
+      var imageComponent = me.down("#scheme"),
         svg = viz.renderSVGElement(data);
       imageComponent.setHidden(false);
       imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
@@ -312,10 +323,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   onChangeSelection: function(grid, selected){
+    var me = this,
+      downloadBtn = me.down("#downloadSVGBtn");
     if(selected.length > 0){
-      var me = this,
-        recordData = selected[0].getData(),
+      var recordData = selected[0].getData(),
         url = "/inv/channel/" + recordData.id + "/viz/";
+      downloadBtn.setDisabled(false);
       Ext.Ajax.request({
         url: url,
         method: "GET",
@@ -328,6 +341,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           NOC.error(__("Failed to get data") + ": " + response.status);
         },
       });
+    } else{
+      downloadBtn.setDisabled(true);
     }
   },
   //
@@ -391,5 +406,18 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var r = grid.getStore().getAt(rowIndex),
       id = r.get("id");
     NOC.launch("inv.channel", "history", {"args": [id]})
+  },
+  //
+  onDownloadSVG: function(){
+    var me = this,
+      imageComponent = me.down("#scheme"),
+      svgBase64 = imageComponent.getEl().dom.src.replace("data:image/svg+xml;base64,", ""),
+      svg = atob(svgBase64),
+      svgBlob = new Blob([svg], {type: "image/svg+xml"}),
+      svgUrl = URL.createObjectURL(svgBlob),
+      a = document.createElement("a");
+    a.href = svgUrl;
+    a.download = "channel-scheme-" + me.currentId + ".svg";
+    a.click();
   },
 });
