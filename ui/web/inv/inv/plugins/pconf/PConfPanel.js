@@ -55,6 +55,16 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       bind: {
         value: "{searchText}",
       },
+      listeners: {
+        change: function(field, newValue){
+          var trigger = field.getTrigger("clear");
+          if(newValue){
+            trigger.show();
+          } else{
+            trigger.hide();
+          }
+        },
+      },
       triggers: {
         clear: {
           cls: "x-form-clear-trigger",

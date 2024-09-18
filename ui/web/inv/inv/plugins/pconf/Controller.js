@@ -56,7 +56,4 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
       },
     });
   },
-  onTabSelect: function(){
-    console.log("onTabSelect");
-  },
 });
