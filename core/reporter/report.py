@@ -160,7 +160,7 @@ class Band(object):
         """Convert rows to columns tuple"""
         for r in self.get_rows():
             for row in r.to_dicts():
-                yield tuple(row.get(f) or "" for f in fields)
+                yield tuple(row.get(f, "") for f in fields)
 
     def add_dataset(self, data: DataSet, name: Optional[str] = None):
         """

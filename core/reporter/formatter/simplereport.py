@@ -77,17 +77,17 @@ class SimpleReportFormatter(DataFormatter):
         return Jinja2Template(template).render(band.get_data())
 
     @classmethod
-    def get_columns_format(cls, band: BandFormat) -> List[TableColumn]:
+    def get_columns_format(cls, bf: BandFormat) -> List[TableColumn]:
         """Return Columns by band Format"""
-        if not band.columns:
+        if not bf.columns:
             return []
         columns = []
-        for c in band.columns:
+        for c in bf.columns:
             if c.format_type or c.total:
                 columns.append(
                     TableColumn(
                         c.name,
-                        c.title if c.title is not None else "",
+                        c.title,
                         align=c.align.name.lower(),
                         format=c.format_type,
                         total=c.total,
@@ -98,7 +98,7 @@ class SimpleReportFormatter(DataFormatter):
                 columns += [
                     TableColumn(
                         c.name,
-                        c.title if c.title is not None else "",
+                        c.title,
                     )
                 ]
         return columns
