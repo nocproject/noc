@@ -92,7 +92,7 @@ def _get_path(obj: Object) -> list[PathItem] | None:
         )
         if current.is_container:
             break
-        current = obj.parent
+        current = current.parent
     return list(reversed(r)) if r else None
 
 
