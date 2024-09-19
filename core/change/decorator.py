@@ -8,6 +8,7 @@
 # Python modules
 from logging import getLogger
 from typing import Optional, List, Tuple
+from functools import partial
 
 # NOC modules
 from noc.models import is_document, get_model_id
@@ -23,16 +24,20 @@ def get_datastreams(instance, changed_fields=None) -> Optional[List[Tuple[str, s
     return [item for item in instance.iter_changed_datastream(changed_fields=changed_fields or {})]
 
 
-def change(model):
+def change(model=None, *, audit=False):
     """
     @change decorator to enable generalized change tracking on the model.
     :param model:
+    :param audit:
     :return:
     """
+    if model is None:
+        return partial(change, audit=audit)
+
     if not hasattr(model, "get_by_id"):
-        raise ValueError("[%s] Missed .get_by_id", get_model_id(model))
-    if not hasattr(model, "flag_audit"):
-        model.flag_audit = True
+        raise ValueError("[%s] Missed .get_by_id" % get_model_id(model))
+    if audit and not hasattr(model, "_flag_audit"):
+        model._flag_audit = audit
     if is_document(model):
         _track_document(model)
     else:

@@ -18,7 +18,7 @@ from abc import ABCMeta, abstractmethod
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from .model import ChangeItem
-from noc.models import get_model
+from noc.models import get_model, _MODELS
 
 CHANGE_HANDLER = "noc.core.change.change.on_change"
 DS_APPLY_HANDLER = "noc.core.change.change.apply_datastream"
@@ -53,12 +53,14 @@ class ChangeTracker(object):
             bi_dict_model = loader[dcls_name]
             if not bi_dict_model:
                 continue
-            mongo_model = get_model(bi_dict_model._meta.source_model)
-            if hasattr(mongo_model, "flag_audit"):
-                CHANGE_HANDLERS[bi_dict_model._meta.source_model].add(AUDIT_CHANGE)
             CHANGE_HANDLERS[bi_dict_model._meta.source_model].add(BI_APPLY_HANDLER)
         CHANGE_HANDLERS["inv.ObjectModel"].add(SYNC_SENSOR_HANDLER)
         CHANGE_HANDLERS["inv.Object"].add(SYNC_SENSOR_HANDLER)
+
+        for cls_name in _MODELS:
+            mongo_model = get_model(cls_name)
+            if hasattr(mongo_model, "_flag_audit"):
+                CHANGE_HANDLERS[cls_name].add(AUDIT_CHANGE)
 
     @staticmethod
     def get_policy() -> "BaseChangeTrackerPolicy":
