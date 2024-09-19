@@ -86,7 +86,12 @@ Ext.define("NOC.project.project.Application", {
               name: "shape_overlay_position",
               xtype: "main.ref.soposition.LookupField",
               fieldLabel: __("Position"),
-              labelWidth: 150,
+              labelWidth: 175,
+              width: 330,
+              listConfig: {
+                minWidth: 155,
+              },
+              uiStyle: undefined,
               allowBlank: true,
             },
             {
@@ -94,6 +99,11 @@ Ext.define("NOC.project.project.Application", {
               xtype: "main.ref.soform.LookupField",
               fieldLabel: __("Form"),
               labelWidth: 50,
+              width: 200,
+              listConfig: {
+                minWidth: 150,
+              },
+              uiStyle: undefined,
               allowBlank: true,
             },
           ],

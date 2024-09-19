@@ -26,7 +26,7 @@ Ext.define("NOC.core.IntegrationField", {
       name: "remote_id",
       xtype: "textfield",
       fieldLabel: __("Remote ID"),
-      labelWidth: 150,
+      labelWidth: 175,
       width: 330,
       allowBlank: true,
     },
