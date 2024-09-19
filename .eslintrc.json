@@ -47,6 +47,9 @@
           },
           "var": {
             "after": true
+          },
+          "case": {
+            "after": true
           }
         }
       }
