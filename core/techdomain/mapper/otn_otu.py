@@ -30,7 +30,10 @@ class DWDMOTUMapper(BaseMapper):
             self.add_subgraph(
                 {
                     "name": f"cluster_{name}",
-                    "graphAttributes": {"label": label, "bgcolor": "#bec3c6"},
+                    "graphAttributes": {
+                        "label": label,
+                        "bgcolor": "#bec3c6",
+                    },
                     "nodes": [
                         {
                             "name": name,
@@ -51,7 +54,6 @@ class DWDMOTUMapper(BaseMapper):
                     end="end" if forward else "start",
                     start_port="tx",
                     end_port="rx",
-                    dir="forward",
                 )
                 return
             # Pass trough channels
@@ -67,6 +69,8 @@ class DWDMOTUMapper(BaseMapper):
                     ch_viz["graphAttributes"]["label"] = pi.channel.name
                     ch_viz["graphAttributes"]["style"] = "dashed"
                     self.add_subgraph(ch_viz)
+                    if not forward:
+                        self.reverse_graph(ch_viz)
                     # Connect
                     if mapper.input:
                         # input
