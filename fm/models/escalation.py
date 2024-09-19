@@ -643,8 +643,8 @@ class Escalation(Document):
             {"$set": q_set},
             projection={"end_timestamp": True, "sequence_num": True, "_id": True},
         )
-        logger.debug("[%s] Register changes on Escalation Document", r.get("_id"))
         if r and r["sequence_num"]:
+            logger.debug("[%s] Register changes on Escalation Document", r.get("_id"))
             # Update Job, TTSystem Shard (Set Shard on Profile)
             # Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
             cls.ensure_job(r["_id"])

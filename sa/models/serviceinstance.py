@@ -122,7 +122,7 @@ class ServiceInstance(Document):
         """Getting Service Instance by alarm"""
         q = Q(managed_object=alarm.managed_object.id)
         if alarm.is_link_alarm and getattr(alarm.components, "interface", None):
-            q |= Q(resources=alarm.components.inteface.as_resource())
+            q |= Q(resources=alarm.components.interface.as_resource())
         address = None
         if "address" in alarm.vars:
             address = alarm.vars.get("address")
