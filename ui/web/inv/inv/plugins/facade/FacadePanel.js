@@ -167,7 +167,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     var me = this,
       width = me.startWidth,
       height = me.startHeight;
-    Ext.each(me.query("#image"), function(img){
+    Ext.each(me.query("#image-front, #image-rear"), function(img){
       var imgEl = img.getEl().dom;
       imgEl.style.transformOrigin = "0 0";
       imgEl.style.transform = "scale(" + combo.getValue() + ")";
