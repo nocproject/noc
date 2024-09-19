@@ -174,3 +174,35 @@ class BaseMapper(object):
     def add_subgraphs(self, iter: Iterable[Dict[str, Any]]) -> None:
         """Add nodes from iterable."""
         self.g["subgraphs"].extend(iter)
+
+    def reverse_graph(self, g: dict[str, Any]):
+        """Reverse direction of the graph."""
+
+        def swap(d: dict[str, str], x: str, y: str) -> None:
+            """
+            Swap labels in dir
+            """
+            old_x = d.get(x)
+            old_y = d.get(y)
+            if old_x is None and old_y is not None:
+                del d[y]
+            if old_y is None and old_x is not None:
+                del d[x]
+            if old_x is not None:
+                d[y] = old_x
+            if old_y is not None:
+                d[x] = old_y
+
+        if "edges" not in g:
+            return
+        for edge in g["edges"]:
+            if "attributes" not in edge:
+                edge["attributes"] = {}
+            attrs = edge["attributes"]
+            direction = attrs.get("dir") or "forward"
+            # Swap direction
+            attrs["dir"] = "back" if direction == "forward" else "forward"
+            # head <-> tail
+            swap(edge, "head", "tail")
+            # headport <-> tailport
+            swap(attrs, "headport", "tailport")
