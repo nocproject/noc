@@ -11,7 +11,7 @@ from typing import Optional, Dict, Any, Iterable, Tuple, Set, List
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel, ObjectModelConnection
 from noc.inv.models.object import Object
-from noc.core.inv.path import find_path
+from noc.core.inv.path import find_path, PathItem
 
 translation_map = str.maketrans("<>", "><")
 
@@ -75,6 +75,7 @@ class CrossingProposalsBuilder(object):
             )
             result["right"]["connections"] = list(right.iter_connections())
             result["right"]["internal_connections"] = right.internal_connections
+            result["wires"].extend(right.wires)
         return result
 
 
@@ -101,6 +102,7 @@ class _SideBuilder(object):
         self.internal_connections = None
         self.internal_used = None
         self.cable = cable
+        self.loops: set[str] = set()
 
     def get_children(self, name: str) -> Optional[Object]:
         """
@@ -272,7 +274,30 @@ class _SideBuilder(object):
                     "id": str(rd.obj.id),
                     "slot": rd.connection,
                 }
-            if self.has_wires and self.o_to:
+            is_loop = False
+            if not rd:
+                loop_side = self.get_loopback_connection(self.o_from, c.name)
+                if loop_side:
+                    is_loop = True
+                    if loop_side not in self.loops:
+                        self.loops.add(c.name)
+                        self.loops.add(loop_side)
+                        side = "left" if self.has_wires else "right"
+                        self.wires.append(
+                            [
+                                {
+                                    "id": self.connection_id(self.o_from, c.name),
+                                    "name": c.name,
+                                    "side": side,
+                                },
+                                {
+                                    "id": self.connection_id(self.o_from, loop_side),
+                                    "name": loop_side,
+                                    "side": side,
+                                },
+                            ]
+                        )
+            if self.has_wires and self.o_to and not is_loop:
                 _, remote = self.get_remote_slot(c, self.o_from, self.o_to)
                 if remote:
                     self.wires.append(
@@ -292,7 +317,7 @@ class _SideBuilder(object):
         return r
 
     @staticmethod
-    def get_remote_device(slot, protocols, o) -> Optional[Object]:
+    def get_remote_device(slot, protocols, o) -> PathItem | None:
         """
         Determing remote device with find_path method
         :return:
@@ -364,6 +389,20 @@ class _SideBuilder(object):
         if prefix == "lambda":
             return f"{chr(955)}{d}"
         return d
+
+    def get_loopback_connection(self, obj: Object, name: str) -> str | None:
+        """
+        Find other side of loopback connection
+        """
+        _, ro, rn = obj.get_p2p_connection(name)
+        if not ro or not ro.is_wire:
+            return None
+        # Find other part
+        for oc in ro.iter_cross(rn):
+            _, rro, rrn = ro.get_p2p_connection(oc.output)
+            if rro and rro == obj:
+                return rrn
+        return None
 
 
 class _LeftBuilder(_SideBuilder):
