@@ -941,10 +941,12 @@ class Object(Document):
             if not c:
                 return
             self.log(f"'{name}' disconnected", system="CORE", op="DISCONNECT")
-            c.delete()
-            if o.is_wire and not ObjectConnection.objects.filter(connection__object=o.id).first():
-                # Check wire connection and remove
+            if o.is_wire:
+                # Cleanup wire
+                ObjectConnection.objects.filter(connection__object=o.id).delete()
                 o.delete()
+            else:
+                c.delete()
 
     def connect_p2p(
         self,
