@@ -24,6 +24,7 @@ class DataSet:
     rows: Optional[List[Dict[str, Any]]] = None
     query: Optional[str] = None
     transpose: bool = False
+    transpose_columns: Optional[List[str]] = None
 
 
 class Band(object):
@@ -143,8 +144,15 @@ class Band(object):
                 rows = ds.data
             else:
                 continue
-            if ds.transpose:
+            if ds.transpose and not ds.transpose_columns:
+                # rows = rows.transpose(include_header=True)
                 rows = rows.transpose(include_header=True)
+            elif ds.transpose and ds.transpose_columns:
+                rows = rows.transpose(
+                    include_header=True,
+                    header_name=ds.transpose_columns[0],
+                    column_names=ds.transpose_columns[1:],
+                )
             if b.name == self.name:
                 r.append(rows)
             else:

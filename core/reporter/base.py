@@ -290,7 +290,11 @@ class ReportEngine(object):
             else:
                 r.append(
                     DataSet(
-                        name=query.name, data=data, query=query.query, transpose=query.transpose
+                        name=query.name,
+                        data=data,
+                        query=query.query,
+                        transpose=query.transpose,
+                        transpose_columns=query.transpose_columns,
                     )
                 )
         return r

@@ -64,6 +64,7 @@ class ReportQuery(BaseModel):
     params: Dict[str, Any] = None
     json_data: Optional[str] = None
     transpose: bool = False
+    transpose_columns: Optional[List[str]] = None
 
 
 class BandCondition(BaseModel):
