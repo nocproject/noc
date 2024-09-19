@@ -20,5 +20,5 @@ share insights, and exchange knowledge about the NOC, its features, and best pra
 We value our community members and aim to let them communicate in the language they're comfortable with.
 Choose the groups you want to join:
 
-* [Official English NOC Telegram](tg-en.md)
-* [Official Russian NOC Telegram](tg-ru.md)
+* [Official English NOC Telegram](https://t.me/noc_en)
+* [Official Russian NOC Telegram](https://t.me/noc_ru)
