@@ -470,8 +470,8 @@ class InvApplication(ExtApplication):
     def api_get_crossing_proposals(
         self,
         request,
-        o1,
-        o2=None,
+        o1: str,
+        o2: str | None = None,
         left_filter: Optional[str] = None,
         right_filter: Optional[str] = None,
         cable_filter: Optional[str] = None,
@@ -654,7 +654,7 @@ class InvApplication(ExtApplication):
         else:
             ro: Object = self.get_object_or_404(Object, id=remote_object)
             lo.disconnect_p2p(name)
-            ro.disconnect_p2p(remote_name)
+            ro.disconnect_p2p(remote_name)  # Unnecessary for cables
         lo.save()
         return self.render_json({"status": True, "text": ""})
 
