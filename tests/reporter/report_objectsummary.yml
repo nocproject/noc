@@ -9,7 +9,7 @@ templates:
         title_template: Discovery Summary
         columns:
           - name: name
-            title:
+            title: " "
           - name: count
             title: Count
             align: 2

@@ -25,7 +25,7 @@
             "parent": "Root",
             "queries": [
                 {
-                    "ds_query": "select name, address, 'Main' as object, all_caps, managed_object_id from Root"
+                    "ds_query": "select name, address, 'Main' as object, all_caps as caps, managed_object_id from Root"
                 }
             ]
         },
@@ -36,13 +36,43 @@
             "queries": [
                 {
                     "datasource": "interfacedetailds",
-                    "ds_query": "select interface_name, protocols from self where managed_object_id = {{ managed_object_id }}",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "ds_query": "select name, address, interface_name as object, protocols as caps from self where managed_object_id = {{ managed_object_id }}",
                     "json": null
                 }
             ]
         }
     ],
     "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object",
+                    "title": "Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "caps",
+                    "title": "Capabilities",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        },
         {
             "name": "master",
             "column_format": [
@@ -140,9 +170,10 @@
     "templates": [
         {
             "code": "DEFAULT",
+            "handler": "simpletable",
             "has_preview": false,
             "is_alterable_output": true,
-            "output_type": "csv"
+            "output_type": "html"
         }
     ]
 }
