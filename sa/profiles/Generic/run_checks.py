@@ -6,56 +6,40 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.checkers.loader import loader
 from noc.sa.interfaces.idiagnosticheck import IDiagnosticCheck
 from noc.core.validators import is_ipv4
 
 
 class Script(BaseScript):
     """
-    Execute a ping profile command
+    Execute a script with check option
     """
 
     name = "Generic.run_checks"
     interface = IDiagnosticCheck
 
-    def execute_ping(self, address):
-        # Remote Ping
-        r = self.scripts.ping(address=address)
-        return {
-            "check": "",
-            "status": bool(r["success"]),
-            "address": address,
-            "metrics": [],
-        }
-
-    def execute_other(self, script, **kwargs):
-        try:
-            return getattr(self.scripts, script)(**kwargs)
-        except AttributeError:
-            return {
-                "check": "",
-                "status": True,
-                "skipped": True,
-                "error": {
-                    "code": "0",
-                    "message": "Invalid script",
-                },
-            }
+    def get_script_by_check(self, check) -> Optional[str]:
+        iface = loader.get_interface_by_check(check)
+        return iface.check_script
 
     def execute(self, checks: List[Dict[str, Any]]):
         r = []
         for c in checks:
             if not is_ipv4(c["address"]):
                 continue
-            script = c["script"]
-            if script not in self.scripts:
+            if c.get("script"):
+                script = c["script"]
+            else:
+                script = self.get_script_by_check(c["name"])
+            if not script or script not in self.scripts:
                 r.append(
                     {
-                        "check": "",
+                        "check": c["name"],
                         "status": True,
                         "skipped": True,
                         "error": {
@@ -65,9 +49,13 @@ class Script(BaseScript):
                     }
                 )
                 continue
-            if script == "ping":
-                s = self.execute_ping(c["address"])
-            else:
-                s = self.execute_other(**c["data"])
+            script = getattr(self.scripts, script)
+            # interface: BaseInterface = script._interface
+            interface = loader.get_interface_by_check(c["name"])
+            if interface.check != c["name"]:
+                raise ValueError("Interface %s Not supported check: %s" % (str(interface), c["name"]))
+            params = interface().get_check_params(c)
+            result = script(**params)
+            s = interface().clean_check_result(c, result)
             r.append(s)
         return r

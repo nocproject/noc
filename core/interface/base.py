@@ -5,11 +5,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Dict, Any
+
 # NOC modules
 from .error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
+from noc.core.checkers.base import CheckResult
 
-RESERVED_NAMES = {"returns", "template", "form", "preview"}
+RESERVED_NAMES = {"returns", "template", "form", "preview", "check"}
 
 
 class BaseInterfaceMetaclass(type):
@@ -37,6 +41,8 @@ class BaseInterface(object, metaclass=BaseInterfaceMetaclass):
     template = None  # Relative template path in sa/templates/
     form = None
     preview = None
+    check = None
+    check_script = None
     # _INPUT_PARAMS = []  # Populated by metaclass
     # _INPUT_MAP = {}  # name -> parameter, Populated by metaclass
     # _INPUT_DEFAULTS = {}  # name -> default, populated by metaclass
@@ -114,3 +120,11 @@ class BaseInterface(object, metaclass=BaseInterfaceMetaclass):
         for n, p in self.gen_parameters():
             r += [p.get_form_field(n)]
         return r
+
+    def get_check_params(self, check) -> Dict[str, Any]:
+        """Convert check args to script param"""
+        return {}
+
+    def clean_check_result(self, check, result) -> CheckResult:
+        """"""
+        raise NotImplementedError("Check not supported with script")
