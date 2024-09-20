@@ -160,6 +160,22 @@ class SubInterface(Document):
 
     @property
     def service(self):
-        from noc.sa.models.service import Service
+        from noc.sa.models.serviceinstance import ServiceInstance
 
-        return Service.objects.filter(subinterface_id=self.id).first()
+        si = ServiceInstance.objects.filter(resources=self.as_resource()).first()
+        if si:
+            return si.service
+        return
+
+    def as_resource(self, path: Optional[str] = None) -> str:
+        """
+        Convert instance or connection to the resource reference.
+
+        Args:
+            path: Optional connection name
+
+        Returns:
+            Resource reference
+        """
+        # return f"if:{self.interface.id}:{self.id}"
+        return f"si:{self.id}"
