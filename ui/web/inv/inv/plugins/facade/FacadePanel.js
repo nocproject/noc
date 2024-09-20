@@ -59,6 +59,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         [3.0, "300%"],
         [4.0, "400%"],
       ],
+      itemId: "zoomCombo",
       width: 100,
       value: 1.0,
       valueField: "zoom",
