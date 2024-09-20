@@ -50,6 +50,11 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                     if(result.buttons){
                       tooltipHtml += `<div>${result.buttons}</div>`;
                     }
+
+                    Ext.ComponentQuery.query('tooltip').forEach(function(tooltip){
+                      tooltip.destroy();
+                    });
+
                     var tooltip = Ext.create("Ext.tip.ToolTip", {
                       html: tooltipHtml,
                       closeAction: "destroy",
