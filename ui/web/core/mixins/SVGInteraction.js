@@ -8,20 +8,65 @@
 console.debug("Defining NOC.core.mixins.SVGInteraction");
 
 Ext.define("NOC.core.mixins.SVGInteraction", {
-  addInteractionEvents: function(svgObject, showObject){
-    svgObject.addEventListener('load', function(){
+  addInteractionEvents: function(container, svgObject, showObject){
+    svgObject.addEventListener("load", function(){
       var svgDocument = svgObject.contentDocument;
+      
       if(svgDocument){
-        var svgElements = svgDocument.querySelectorAll("[data-interaction]");
-        svgElements.forEach(function(element){
+        var elements = svgDocument.querySelectorAll("[data-interaction]");
+        elements.forEach(function(element){
           var events = element.dataset.interaction.split(",");
           events.forEach(function(e){
-            var [event, action, resource] = e.split(":");
+            var [event, action, resource] = e.split(":"),
+              resourceData = decodeURIComponent(resource);
             if(action === "go"){
               element.addEventListener(event, function(){
-                var value = decodeURIComponent(resource).split(":")[1];
+                var value = resourceData.split(":")[1];
                 showObject(value);
               });
+            }
+            if(action === "info"){
+              element.addEventListener(event, function(event){
+                Ext.Ajax.request({
+                  url: "/inv/inv/baloon/",
+                  method: "POST",
+                  jsonData: {
+                    resource: resourceData,
+                  },
+                  success: function(response){
+                    var result = Ext.decode(response.responseText),
+                      path = Ext.Array.map(result.path, function(item){ return item.label }).join(" > "),
+                      tooltipHtml = `
+                      <div>${path}</div>
+                      <div><strong>${result.title}</strong></div>
+                      <div><em>${result.description}</em></div>
+                    `,
+                      xOffset = svgObject.getBoundingClientRect().left + container.getEl().dom.scrollLeft,
+                      yOffset = svgObject.getBoundingClientRect().top + container.getEl().dom.scrollTop;
+                    if(result.buttons){
+                      tooltipHtml += `<div>${result.buttons}</div>`;
+                    }
+
+                    var tooltip = Ext.create("Ext.tip.ToolTip", {
+                      html: tooltipHtml,
+                      closeAction: "destroy",
+                      dismissDelay: 0,
+                      tools: [
+                        {
+                          type: "close",
+                          handler: function(){
+                            tooltip.destroy();
+                          },
+                        },
+                      ],
+                    });
+                    tooltip.showAt([event.pageX + xOffset, event.pageY + yOffset]);
+                  },
+                  failure: function(){
+                    NOC.error(__("Failed to get data"));
+                  },
+                });
+              })
             }
           });
         });
