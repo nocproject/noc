@@ -118,7 +118,7 @@ class ServiceInstance(Document):
         return False
 
     @classmethod
-    def get_services_by_alarm(cls, alarm: ActiveAlarm) -> List["Service"]:
+    def get_services_by_alarm(cls, alarm: ActiveAlarm):
         """Getting Service Instance by alarm"""
         q = Q(managed_object=alarm.managed_object.id)
         if alarm.is_link_alarm and getattr(alarm.components, "interface", None):
