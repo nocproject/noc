@@ -27,6 +27,7 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
             }
             if(action === "info"){
               element.addEventListener(event, function(event){
+                var scale = container.down("#zoomCombo").getValue();
                 Ext.Ajax.request({
                   url: "/inv/inv/baloon/",
                   method: "POST",
@@ -35,18 +36,20 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                   },
                   success: function(response){
                     var result = Ext.decode(response.responseText),
-                      path = Ext.Array.map(result.path, function(item){ return item.label }).join(" > "),
+                      path = Ext.Array.map(result.path, function(item){return item.label}).join(" > "),
                       tooltipHtml = `
                       <div>${path}</div>
                       <div><strong>${result.title}</strong></div>
                       <div><em>${result.description}</em></div>
                     `,
-                      xOffset = svgObject.getBoundingClientRect().left + container.getEl().dom.scrollLeft,
-                      yOffset = svgObject.getBoundingClientRect().top + container.getEl().dom.scrollTop;
+                      svgRect = svgObject.getBoundingClientRect(),
+                      containerEl = container.getEl().dom,
+                      xOffset = svgRect.left + containerEl.scrollLeft,
+                      yOffset = svgRect.top + containerEl.scrollTop;
+
                     if(result.buttons){
                       tooltipHtml += `<div>${result.buttons}</div>`;
                     }
-
                     var tooltip = Ext.create("Ext.tip.ToolTip", {
                       html: tooltipHtml,
                       closeAction: "destroy",
@@ -60,7 +63,7 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                         },
                       ],
                     });
-                    tooltip.showAt([event.pageX + xOffset, event.pageY + yOffset]);
+                    tooltip.showAt([event.pageX * scale + xOffset, event.pageY * scale + yOffset]);
                   },
                   failure: function(){
                     NOC.error(__("Failed to get data"));
