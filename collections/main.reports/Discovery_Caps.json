@@ -1,0 +1,179 @@
+{
+    "name": "Discovery Caps",
+    "$collection": "main.reports",
+    "uuid": "cd503926-86c7-40cf-8069-61eeec179619",
+    "title": "Discovery Object Caps (New)",
+    "description": "Опрошенные свойства оборудования",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectcapsds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select name, address, 'Main' as object, all_caps as caps, managed_object_id from Root"
+                }
+            ]
+        },
+        {
+            "name": "interface",
+            "orientation": "H",
+            "parent": "master",
+            "queries": [
+                {
+                    "datasource": "interfacedetailds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "ds_query": "select name, address, interface_name as object, protocols as caps from self where managed_object_id = {{ managed_object_id }}",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object",
+                    "title": "Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "caps",
+                    "title": "Capabilities",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "master",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object",
+                    "title": "Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectcapsds.all_caps",
+                    "title": "Capabilities",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "interface",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object"
+                },
+                {
+                    "name": "address",
+                    "title": "Address"
+                },
+                {
+                    "name": "interfacedetailds.interface_name",
+                    "title": "Object"
+                },
+                {
+                    "name": "interfacedetailds.protocols",
+                    "title": "Capabilities"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Опрошенные свойства оборудования (Новый)"
+        },
+        "columns.address": {
+            "ru": "Адрес"
+        },
+        "columns.capabilities": {
+            "ru": "Свойства"
+        },
+        "columns.managed_object": {
+            "ru": "Объект управления"
+        },
+        "columns.object": {
+            "ru": "Объект"
+        },
+        "parameters.mo_profile": {
+            "ru": "Профиль объекта"
+        },
+        "parameters.pool": {
+            "ru": "Пул объекта"
+        }
+    },
+    "parameters": [
+        {
+            "name": "pool",
+            "description": null,
+            "hide": false,
+            "label": "Pool",
+            "model_id": "main.Pool",
+            "required": true,
+            "type": "model"
+        },
+        {
+            "name": "mo_profile",
+            "description": null,
+            "hide": false,
+            "label": "MO Profile",
+            "model_id": "sa.ManagedObjectProfile",
+            "type": "model"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simpletable",
+            "has_preview": false,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}

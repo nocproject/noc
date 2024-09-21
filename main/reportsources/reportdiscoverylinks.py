@@ -15,7 +15,7 @@ import polars as pl
 from noc.main.models.pool import Pool
 from noc.main.models.report import Report
 from noc.core.reporter.reportsource import ReportSource
-from noc.core.reporter.report import Band
+from noc.core.reporter.report import Band, DataSet
 from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.core.datasources.loader import loader
 from noc.core.translation import ugettext as _
@@ -35,8 +35,8 @@ class ReportDiscoveryLinks(ReportSource):
     def get_formats(self) -> Dict[str, BandFormat]:
         return {
             "header": BandFormat(title_template="Discovery Links Summary"),
-            "pool": BandFormat(title_template="{{ name }}"),
-            "row": BandFormat(
+            "pool": BandFormat(
+                title_template="{{ name }}",
                 columns=[
                     ColumnFormat(name="links_count", title=_("Links count")),
                     ColumnFormat(name="mo_count", title=_("MO Count")),
@@ -79,7 +79,7 @@ class ReportDiscoveryLinks(ReportSource):
             if not row["all"]:
                 continue
             pool = Pool.get_by_name(row["pool"])
-            b = Band(name="pool", data={"name": pool.name})
+            rows = []
             for x, condition in [
                 ("all", ""),
                 ("0", "and link_count = 0"),
@@ -87,22 +87,21 @@ class ReportDiscoveryLinks(ReportSource):
                 ("2", "and link_count = 2"),
                 ("More 3", "and link_count > 2"),
             ]:
-                b.add_child(
-                    Band(
-                        name="row",
-                        data={
-                            "links_count": x,
-                            "mo_count": row[x],
-                            "percent_at_all": (
-                                f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
-                            ),
-                            "detail": url
-                            % (
-                                f"select * from mo where status = True and enable_ping = True and enable_box = True {condition}",
-                                str(pool.id),
-                            ),
-                        },
-                    )
+                rows.append(
+                    {
+                        "links_count": x,
+                        "mo_count": row[x],
+                        "percent_at_all": (
+                            f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
+                        ),
+                        "detail": url
+                        % (
+                            f"select * from mo where status = True and enable_ping = True and enable_box = True {condition}",
+                            str(pool.id),
+                        ),
+                    },
                 )
+            b = Band(name="pool", data={"name": pool.name})
+            b.add_dataset(DataSet(name="row", rows=rows, data=None))
             data.append(b)
         return data

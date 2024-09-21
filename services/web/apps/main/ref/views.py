@@ -28,6 +28,7 @@ from noc.core.topology.loader import loader as topo_loader
 from noc.core.mx import MessageType, MESSAGE_HEADERS
 from noc.core.datasources.loader import loader as ds_loader
 from noc.core.protodcsources.loader import loader as pds_loader
+from noc.core.reporter.formatter.loader import loader as r_formatter_loader
 from noc.main.reportsources.loader import loader as rds_loader
 from noc.models import iter_model_id
 from noc import settings
@@ -244,6 +245,19 @@ class RefAppplication(ExtApplication):
             if not repo_source:
                 continue
             r += [{"id": name, "label": repo_source.name}]
+        return r  # list(sorted(r))
+
+    def build_reportformatter(self):
+        """
+        ReportSource name
+        :return:
+        """
+        r = []
+        for name in r_formatter_loader:
+            repo_fmt = r_formatter_loader[name]
+            if not repo_fmt:
+                continue
+            r += [{"id": name, "label": repo_fmt.label or name}]
         return r  # list(sorted(r))
 
     def build_protocoldiscriminatorsource(self):
