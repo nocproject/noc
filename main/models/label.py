@@ -1309,14 +1309,15 @@ class Label(Document):
         lock=lambda _: re_lock,
     )
     def _get_re(cls, rxi: "RegexItem") -> Optional[re.Pattern]:
+        flags = 0
+        if rxi.flag_multiline:
+            flags ^= re.MULTILINE
+        if rxi.flag_dotall:
+            flags ^= re.DOTALL
         try:
-            rx = re.compile(rxi.regexp)
+            rx = re.compile(rxi.regexp, flags=flags)
         except re.error:
             return None
-        if rxi.flag_multiline:
-            rx.flags ^= re.MULTILINE
-        if rxi.flag_dotall:
-            rx.flags ^= re.DOTALL
         return rx
 
     @classmethod
