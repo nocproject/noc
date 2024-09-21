@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict
 from noc.models import get_model, is_document
 
 ROOT_BAND = "Root"
+HEADER_BAND = "header"
 
 
 class BandOrientation(enum.Enum):
@@ -63,6 +64,7 @@ class ReportQuery(BaseModel):
     params: Dict[str, Any] = None
     json_data: Optional[str] = None
     transpose: bool = False
+    transpose_columns: Optional[List[str]] = None
 
 
 class BandCondition(BaseModel):

@@ -5,6 +5,19 @@ templates:
     formatter: simplereport
     output_type: html
     bands_format:
+      header:
+        title_template: Discovery ID cache poison
+        columns:
+          - name: name
+            title: Managed Object
+          - name: address
+            title: Address
+          - name: profile
+            title: Profile
+          - name: pool
+            title: Pool
+          - name: is_managed
+            title: is managed
       master_data:
         title_template: '{{ mac }} {{ reason }}'
 bands:

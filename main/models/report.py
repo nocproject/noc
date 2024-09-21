@@ -107,7 +107,7 @@ class Template(EmbeddedDocument):
     output_name_pattern = StringField()
     is_alterable_output = BooleanField(default=True)
     has_preview = BooleanField(default=False)
-    handler = StringField()
+    handler = StringField(default="simplereport", required=True)
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -116,6 +116,7 @@ class Template(EmbeddedDocument):
             "output_type": self.output_type,
             "is_alterable_output": self.is_alterable_output,
             "has_preview": self.has_preview,
+            "handler": self.handler,
         }
         if self.output_name_pattern:
             r["output_name_pattern"] = self.output_name_pattern
@@ -341,7 +342,7 @@ class Report(Document):
             templates[t.code] = TemplateCfg(
                 code=t.code,
                 output_type=t.output_type,
-                formatter="simplereport",
+                formatter=t.handler,
                 output_name_pattern=t.output_name_pattern,
                 bands_format=b_format_cfg,
             )

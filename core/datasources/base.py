@@ -110,6 +110,8 @@ class BaseDataSource(object):
         if not fields:
             # Not filtered field
             return True
+        elif cls.row_index and f.name == cls.row_index:
+            return True
         elif f.name not in fields:
             # Not filtered field
             return False
@@ -146,6 +148,8 @@ class BaseDataSource(object):
                     series.append(pl.Series(c.name, r[c.name], dtype=c.type.value))
                 except TypeError:
                     print(f"Type Error on column: {c.name}. Will be skipping")
+                except OverflowError:
+                    print(f"OverflowError on column: {c.name}. Will be skipping")
         return pl.DataFrame(series)
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 

@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, Iterable, List
+from typing import Optional, Dict, Any, Iterable, List, Tuple
 
 # Third-party modules
 import polars as pl
@@ -24,6 +24,7 @@ class DataSet:
     rows: Optional[List[Dict[str, Any]]] = None
     query: Optional[str] = None
     transpose: bool = False
+    transpose_columns: Optional[List[str]] = None
 
 
 class Band(object):
@@ -129,16 +130,29 @@ class Band(object):
             if b.name not in b.datasets:
                 continue
             ds = b.datasets[b.name]
+            if ds.rows:
+                r.append(pl.DataFrame(ds.rows))
+                continue
             if ds.query and ds.data is None:
                 rows = sql.execute(Jinja2Template(ds.query).render(ctx), eager=True)
             elif ds.query and ds.data is not None:
-                rows = ds.data.sql(Jinja2Template(ds.query).render(ctx))
+                try:
+                    rows = ds.data.sql(Jinja2Template(ds.query).render(ctx))
+                except pl.exceptions.ColumnNotFoundError:
+                    continue
             elif not ds.query and ds.data is not None:
                 rows = ds.data
             else:
                 continue
-            if ds.transpose:
+            if ds.transpose and not ds.transpose_columns:
+                # rows = rows.transpose(include_header=True)
                 rows = rows.transpose(include_header=True)
+            elif ds.transpose and ds.transpose_columns:
+                rows = rows.transpose(
+                    include_header=True,
+                    header_name=ds.transpose_columns[0],
+                    column_names=ds.transpose_columns[1:],
+                )
             if b.name == self.name:
                 r.append(rows)
             else:
@@ -149,6 +163,12 @@ class Band(object):
         """iterate row dataset"""
         for r in self.get_rows():
             yield from r.to_dicts()
+
+    def iter_data_rows(self, fields: List[str] = None) -> Iterable[Tuple[str, ...]]:
+        """Convert rows to columns tuple"""
+        for r in self.get_rows():
+            for row in r.to_dicts():
+                yield tuple(row.get(f, "") for f in fields)
 
     def add_dataset(self, data: DataSet, name: Optional[str] = None):
         """

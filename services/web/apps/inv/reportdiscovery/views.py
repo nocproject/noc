@@ -67,7 +67,7 @@ class ReportDiscoveryApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                "",
+                " ",
                 TableColumn(
                     "Count", align="right", format="integer", total="sum", total_label="Total"
                 ),

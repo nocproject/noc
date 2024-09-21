@@ -15,7 +15,6 @@ from django.contrib.postgres.aggregates.general import ArrayAgg
 
 # NOC modules
 from .base import FieldInfo, FieldType, BaseDataSource
-from noc.core.wf.diagnostic import DiagnosticState
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
@@ -86,16 +85,16 @@ class DiscoverySummaryDS(BaseDataSource):
         for row in icoll.aggregate(MOS_IFACE_PIPELINE, allowDiskUse=True):
             mo_id, i_profile = row["_id"]["mo"], row["_id"]["p"]
             metrics[mo_id] += row["metrics"] * p_metrics[i_profile]
+        processed = set()
         # Main loop
         for row_num, row in enumerate(
-            ManagedObject.objects.filter(
-                diagnostics__SA__state=DiagnosticState.enabled.value,
-            )
+            ManagedObject.objects.filter(is_managed=True)
             .values("pool", "object_profile")
             .annotate(dcount=Count("*"), mos=ArrayAgg("id")),
             start=1,
         ):
             mop = ManagedObjectProfile.get_by_id(row["object_profile"])
+            processed.add(mop.id)
             mos_count = row["dcount"]
             mos = set(row["mos"])
             r = {
@@ -145,3 +144,9 @@ class DiscoverySummaryDS(BaseDataSource):
                 if mop.enable_periodic_discovery
                 else 0
             )
+        # OP without objects
+        for op in ManagedObjectProfile.objects.filter().exclude(id__in=processed):
+            yield row_num, "pool", "default"
+            yield row_num, "profile", op.name
+            for f in cls.fields[2:]:
+                yield row_num, f.name, 0
