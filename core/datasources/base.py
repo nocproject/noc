@@ -150,6 +150,8 @@ class BaseDataSource(object):
                     print(f"Type Error on column: {c.name}. Will be skipping")
                 except OverflowError:
                     print(f"OverflowError on column: {c.name}. Will be skipping")
+                except pl.exceptions.InvalidOperationError:
+                    print(f"Invalid Operation Cast on column: {c.name}. Will be skipping")
         return pl.DataFrame(series)
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 

@@ -176,6 +176,8 @@ class ReportEngine(object):
             value = params.get(name)
             if not value and p.required:
                 raise ValueError(f"Required parameter {name} not found")
+            elif not value and p.default_value:
+                value = p.default_value
             elif not value:
                 continue
             clean_params[name] = p.clean_value(value)

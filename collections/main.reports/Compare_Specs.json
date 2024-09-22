@@ -9,7 +9,7 @@
             "name": "Root",
             "orientation": "H",
             "queries": [{
-                "datasource": "comparespecsds",
+                "datasource": "objectmodeldatads",
                 "json": null
             }]
         },
@@ -29,25 +29,17 @@
             "parent": "master_data",
             "queries": [
                 {
-                    "ds_query": "select model, width, height, depth, ru, weight from Root where vendor = '{{ vendor }}' order by model"
+                    "ds_query": "select name, dimensions_width as width, dimensions_height as height, dimensions_depth as depth, ru, weight_weight as weight from Root where vendor = '{{ vendor }}' order by name"
                 }
             ]
         }
     ],
     "bands_format": [
         {
-            "name": "Root",
-            "title_template": "Compare Specs"
-        },
-        {
-            "name": "master_data",
-            "title_template": "{{ vendor }}"
-        },
-        {
-            "name": "detail_data",
+            "name": "header",
             "column_format": [
                 {
-                    "name": "model",
+                    "name": "name",
                     "title": "Model"
                 },
                 {
@@ -71,7 +63,11 @@
                     "title": "Weight (kg)"
                 }
             ],
-            "title_template": ""
+            "title_template": "Compare Specs"
+        },
+        {
+            "name": "master_data",
+            "title_template": "{{ vendor }}"
         }
     ],
     "category": "inv",
@@ -81,25 +77,36 @@
         "title": {
             "ru": "Сравнить спецификации (Новый)"
         },
-        "columns.model": {
-            "ru": "Модель"
-        },
-        "columns.width": {
-            "ru": "Ширина"
+        "columns.depth": {
+            "ru": "Глубина"
         },
         "columns.height": {
             "ru": "Высота"
         },
-        "columns.depth": {
-            "ru": "Глубина"
+        "columns.model": {
+            "ru": "Модель"
         },
         "columns.weight": {
             "ru": "Вес (кг)"
+        },
+        "columns.width": {
+            "ru": "Ширина"
         }
     },
+    "parameters": [
+        {
+            "name": "managed_only",
+            "description": null,
+            "default": "true",
+            "hide": true,
+            "label": "MO",
+            "type": "bool"
+        }
+    ],
     "templates": [
         {
             "code": "DEFAULT",
+            "handler": "simplereport",
             "has_preview": true,
             "is_alterable_output": true,
             "output_type": "html"
