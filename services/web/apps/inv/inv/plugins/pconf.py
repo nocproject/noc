@@ -11,9 +11,10 @@ from enum import IntEnum, Enum
 from dataclasses import dataclass
 import uuid
 from collections import defaultdict
+from pathlib import Path
 
 # Third-party modules
-# import orjson
+import orjson
 from pymongo.collection import Collection
 
 # NOC modules
@@ -132,6 +133,9 @@ class PConfPlugin(InvPlugin):
     name = "pconf"
     js = "NOC.inv.inv.plugins.pconf.PConfPanel"
 
+    # Set to config path for debugging
+    JSON_PATH: Path | None = None
+
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
@@ -143,9 +147,14 @@ class PConfPlugin(InvPlugin):
         )
 
     def get_data(self, request, o):
+        # Debugging
+        if self.JSON_PATH:
+            return self.get_beef(o, self.JSON_PATH)
+        # Headless
         mo = self.get_managed_object(o)
         if mo is None:
             return self.get_headless(o)
+        # Managed
         return self.get_managed(o, mo)
 
     @staticmethod
@@ -301,16 +310,26 @@ class PConfPlugin(InvPlugin):
         Returns:
             Response data.
         """
+        data = mo.scripts.get_params()
+        conf = self._parse_for_slot(data, self._get_card(obj))
+        return {"id": str(obj.id), "conf": conf}
 
-        def get_data() -> dict[str, Any]:
-            # Debugging:
-            # Get from JSON
-            # with open(self.SAMPLE_PATH) as fp:
-            #    return orjson.loads(fp.read())
-            # Get from MO
-            return mo.scripts.get_params()
+    def get_beef(self, obj: Object, path: Path) -> dict[str, Any]:
+        """
+        Get data from JSON.
 
-        conf = self._parse_for_slot(get_data(), self._get_card(obj))
+        For debugging.
+
+        Args:
+            obj: Object reference.
+            path: JSON file path.
+
+        Returns:
+            Response data.
+        """
+        with open(path, "rb") as fp:
+            data = orjson.loads(fp.read())
+        conf = self._parse_for_slot(data, self._get_card(obj))
         return {"id": str(obj.id), "conf": conf}
 
     def get_headless(self, obj: Object) -> Dict[str, Any]:
