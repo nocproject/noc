@@ -1,12 +1,11 @@
 # ----------------------------------------------------------------------
 # Change handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import json
 import datetime
 import time
 import uuid

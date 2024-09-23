@@ -134,7 +134,7 @@ id_lock = Lock()
 @on_init
 @on_save
 @bi_sync
-@change
+@change(audit=True)
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "object_profile"),

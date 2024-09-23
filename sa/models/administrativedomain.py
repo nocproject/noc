@@ -37,7 +37,7 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 @Label.model
 @on_init
 @bi_sync
-@change
+@change(audit=True)
 @on_delete_check(
     check=[
         ("cm.ObjectNotify", "administrative_domain"),

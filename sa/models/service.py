@@ -36,7 +36,7 @@ import cachetools
 from .serviceprofile import ServiceProfile, Status, CalculatedStatusRule
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_save, on_delete_check
+from noc.core.model.decorator import on_save, on_delete_check, on_init
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
@@ -136,7 +136,8 @@ class ServiceStatusDependency(EmbeddedDocument):
 @bi_sync
 @on_save
 @resourcegroup
-@change
+@on_init
+@change(audit=True)
 @workflow
 @on_delete_check(
     clean=[
