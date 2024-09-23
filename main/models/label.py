@@ -1311,9 +1311,9 @@ class Label(Document):
     def _get_re(cls, rxi: "RegexItem") -> Optional[re.Pattern]:
         flags = 0
         if rxi.flag_multiline:
-            flags ^= re.MULTILINE
+            flags |= re.MULTILINE
         if rxi.flag_dotall:
-            flags ^= re.DOTALL
+            flags |= re.DOTALL
         try:
             rx = re.compile(rxi.regexp, flags=flags)
         except re.error:
