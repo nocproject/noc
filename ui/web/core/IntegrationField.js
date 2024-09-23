@@ -38,6 +38,9 @@ Ext.define("NOC.core.IntegrationField", {
       allowBlank: true,
       uiStyle: "medium",
       renderer: function(value){
+        if(!value){
+          return "";
+        }
         return value + NOC.clipboardIcon(value);
       },
     },
