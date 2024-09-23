@@ -79,6 +79,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   onTabTypeChange: function(){
     this.removeFilter();
   },
+  onButtonRender: function(button){
+    var color = this.getView().getColor()[button.value];
+    button.getEl().down(".x-btn-glyph").setStyle("color", color);
+  },
   valueRenderer: function(value, metaData, record){
     var displayValue = value;
     if(record.get("type") === "enum"){
