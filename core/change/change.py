@@ -53,7 +53,7 @@ def audit_change(changes: List[ChangeItem]) -> None:
     if data:
         svc.publish(
             value=b"\n".join(data),
-            stream=f"ch.changes",
+            stream="ch.changes",
             partition=0,
             headers={},
         )

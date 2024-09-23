@@ -37,7 +37,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_init
 from noc.wf.models.workflow import Workflow
 from noc.config import config
 from .ifdescpatterns import IfDescPatterns
@@ -83,6 +83,7 @@ class InterfaceProfileMetrics(EmbeddedDocument):
 
 @Label.match_labels("interface_profile", allowed_op={"="})
 @bi_sync
+@on_init
 @change(audit=True)
 @on_delete_check(
     check=[

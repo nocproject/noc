@@ -79,6 +79,8 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         :return:
         """
         ov, key = None, None
+        if hasattr(document, "initial_data"):
+            ov = document.initial_data[field_name]
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
         elif hasattr(ov, "_instance"):

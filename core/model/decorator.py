@@ -30,10 +30,19 @@ def _get_field_snapshot(sender, instance):
         n = getattr(field, "raw_name", field.attname)
         nv = instance.__dict__.get(n)
         if nv:
-            # Resolve references when neccessary
+            # Resolve references when necessary
             return getattr(instance, n)
         return nv
 
+    def dg(field):
+        nv = instance._data.get(field)
+        if nv:
+            # Resolve references when necessary
+            return getattr(instance, field)
+        return nv
+
+    if is_document(sender):
+        return {name: dg(name) for name in sender._fields}
     return {f.name: g(f) for f in sender._meta.local_fields}
 
 
@@ -111,7 +120,10 @@ def on_delete(cls):
     return cls
 
 
-def _on_init_handler(sender, instance, *args, **kwargs):
+def _on_init_handler(sender, instance=None, *args, **kwargs):
+    if not instance:
+        # If mongo document instance
+        instance = kwargs.get("document")
     instance.initial_data = _get_field_snapshot(sender, instance)
 
 
@@ -128,9 +140,14 @@ def on_init(cls):
            print self.initial_data
            ...
     """
-    from django.db.models import signals as django_signals
+    if is_document(cls):
+        from mongoengine import signals as mongo_signals
 
-    django_signals.post_init.connect(_on_init_handler, sender=cls)
+        mongo_signals.post_init.connect(_on_init_handler, sender=cls)
+    else:
+        from django.db.models import signals as django_signals
+
+        django_signals.post_init.connect(_on_init_handler, sender=cls)
     return cls
 
 
