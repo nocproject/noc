@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Service card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import operator
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.service import Service
-from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.maintenance.models.maintenance import Maintenance
 
@@ -116,7 +115,7 @@ class ServiceCard(BaseCard):
     def get_interface(self):
         svc = self.object
         while svc:
-            iface = Interface.objects.filter(service=svc).first()
+            iface = svc.interface
             if iface:
                 return iface
             svc = svc.parent

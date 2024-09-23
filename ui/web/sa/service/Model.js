@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.service Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.service.Model");
@@ -17,6 +17,10 @@ Ext.define("NOC.sa.service.Model", {
         },
         {
             name: "cpe_serial",
+            type: "string"
+        },
+        {
+            name: "name_template",
             type: "string"
         },
         {
@@ -51,15 +55,6 @@ Ext.define("NOC.sa.service.Model", {
         {
             name: "remote_id",
             type: "string"
-        },
-        {
-            name: "managed_object",
-            type: "int"
-        },
-        {
-            name: "managerd_object__label",
-            type: "string",
-            persist: false
         },
         {
             name: "subscriber",
@@ -166,8 +161,34 @@ Ext.define("NOC.sa.service.Model", {
         },
         {
             name: "oper_status",
-            type: "bool",
+            type: "string",
             persist: false
+        },
+        {
+            name: "static_instances",
+            type: "auto"
+        },
+        {
+            name: "status_transfer_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "status_dependencies",
+            type: "auto"
+        },
+        {
+            name: "calculate_status_function",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "calculate_status_rules",
+            type: "auto"
+        },
+        {
+            name: "instances",
+            type: "auto"
         },
         {
             name: "labels",

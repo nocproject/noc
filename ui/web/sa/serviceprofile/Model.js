@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.serviceprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.serviceprofile.Model");
@@ -58,21 +58,6 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "int"
         },
         {
-            name: "status_transfer_policy",
-            type: "string",
-            defaultValue: "T"
-        },
-        {
-            name: "status_transfer_function",
-            type: "string",
-            defaultValue: "MIN"
-        },
-        {
-            name: "alarm_affected_policy",
-            type: "string",
-            defaultValue: "D"
-        },
-        {
             name: "show_in_summary",
             type: "boolean"
         },
@@ -108,19 +93,26 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "auto"
         },
         {
-            name: "status_transfer_rule",
+            name: "status_transfer_policy",
+            type: "string",
+            defaultValue: "S"
+        },
+        {
+            name: "calculate_status_function",
+            type: "string",
+            defaultValue: "MN"
+        },
+        {
+            name: "calculate_status_rule",
             type: "auto"
         },
         {
-            name: "status_transfer_map",
-            type: "auto"
+            name: "alarm_affected_policy",
+            type: "string",
+            defaultValue: "A"
         },
         {
-            name: "alarm_filter",
-            type: "auto"
-        },
-        {
-            name: "alarm_status_map",
+            name: "alarm_status_rules",
             type: "auto"
         }
     ]

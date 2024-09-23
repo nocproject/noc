@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.service application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.service.Application");
@@ -21,6 +21,7 @@ Ext.define("NOC.sa.service.Application", {
     "NOC.inv.capability.LookupField",
     "NOC.inv.resourcegroup.LookupField",
     "NOC.core.label.LabelField",
+    'NOC.core.combotree.ComboTree',
     "Ext.ux.form.GridField",
   ],
   model: "NOC.sa.service.Model",
@@ -133,6 +134,19 @@ Ext.define("NOC.sa.service.Application", {
           allowBlank: true,
         },
         {
+            name: "name_template",
+            xtype: "textfield",
+            fieldLabel: __("Name Template"),
+            allowBlank: true,
+            uiStyle: "large"
+        },
+        {
+          name: "description",
+          xtype: "textarea",
+          fieldLabel: __("Description"),
+          allowBlank: true,
+        },
+        {
           name: "labels",
           xtype: "labelfield",
           fieldLabel: __("Labels"),
@@ -141,28 +155,33 @@ Ext.define("NOC.sa.service.Application", {
           },
         },
         {
-          name: "parent",
-          xtype: "sa.service.LookupField",
-          fieldLabel: __("Parent"),
-          allowBlank: true,
-        },
-        {
-          name: "subscriber",
-          xtype: "crm.subscriber.LookupField",
-          fieldLabel: __("Subscriber"),
-          allowBlank: true,
-        },
-        {
-          name: "supplier",
-          xtype: "crm.supplier.LookupField",
-          fieldLabel: __("Supplier"),
-          allowBlank: true,
-        },
-        {
-          name: "description",
-          xtype: "textarea",
-          fieldLabel: __("Description"),
-          allowBlank: true,
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("Refenced"),
+          defaults: {
+            padding: 4,
+            labelAlign: "top"
+          },
+          items: [
+            {
+              name: "parent",
+              xtype: "sa.service.LookupField",
+              fieldLabel: __("Parent"),
+              allowBlank: true,
+            },
+            {
+              name: "subscriber",
+              xtype: "crm.subscriber.LookupField",
+              fieldLabel: __("Subscriber"),
+              allowBlank: true,
+            },
+            {
+              name: "supplier",
+              xtype: "crm.supplier.LookupField",
+              fieldLabel: __("Supplier"),
+              allowBlank: true,
+            }
+          ]
         },
         {
           xtype: "fieldset",
@@ -195,30 +214,6 @@ Ext.define("NOC.sa.service.Application", {
                 uiStyle: "large"
             }
           ]
-        },
-        {
-          xtype: "fieldset",
-          layout: "hbox",
-          title: __("Network Resources"),
-          defaults: {
-            padding: 4,
-            labelAlign: "top",
-          },
-          items: [
-            {
-              name: "managed_object",
-              xtype: "sa.managedobject.LookupField",
-              fieldLabel: __("Managed Object"),
-              allowBlank: true,
-            },
-            {
-              name: "nri_port",
-              xtype: "textfield",
-              fieldLabel: __("NRI Port"),
-              allowBlank: true,
-              uiStyle: "medium",
-            },
-          ],
         },
         {
           xtype: "fieldset",
@@ -322,6 +317,305 @@ Ext.define("NOC.sa.service.Application", {
         },
         {
           xtype: "fieldset",
+          title: __("Oper Status Transfer"),
+          defaults: {
+            padding: 4,
+            labelAlign: "top"
+          },
+          items: [
+            {
+              name: "status_transfer_policy",
+              xtype: "combobox",
+              fieldLabel: __("Status Transfer Policy"),
+              tooltip: __("Transfer Oper Statuses to Adjacent Servies <br/>" +
+                  'D - Disable Status Transfer<br/>' +
+                  'T - Transfer to All Adjacent<br/>' +
+                  'R - Transfer By Rule<br/>' +
+                  'P - From Profile'),
+              store: [
+                  ["D", __("Disable")],
+                  ["P", __("By Profile")],
+                  ["T", __("Transparent")],
+                  ["R", __("By Rule")]
+              ],
+              allowBlank: true,
+              value: "P",
+              uiStyle: "medium",
+              listeners: {
+                  render: me.addTooltip
+              }
+            },
+            {
+              name: "status_dependencies",
+              fieldLabel: __("Service Status Dependencies"),
+              xtype: "gridfield",
+              allowBlank: true,
+              columns: [
+                {
+                    text: __("Service"),
+                    dataIndex: "service",
+                    width: 200,
+                    editor: "sa.service.LookupField",
+                    allowBlank: true,
+                    renderer: NOC.render.Lookup("service")
+                },
+                {
+                    text: __("Type"),
+                    dataIndex: "type",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            ["S", "Service (Using)"],
+                            ["G", "Group"],
+                            ["P", "Parent"],
+                            ["C", "Children"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        "S": "Service (Using)",
+                        "G": "Group",
+                        "P": "Parent",
+                        "C": "Children"
+                    })
+                },
+                {
+                    text: __("Min. Status"),
+                    dataIndex: "min_status",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            [0, "UNKNOWN"],
+                            [1, "UP"],
+                            [2, "SLIGHTLY_DEGRADED"],
+                            [3, "DEGRADED"],
+                            [4, "DOWN"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        0: "UNKNOWN",
+                        1: "UP",
+                        2: "SLIGHTLY_DEGRADED",
+                        3: "DEGRADED",
+                        4: "DOWN"
+                    })
+                },
+                {
+                    text: __("Max. Status"),
+                    dataIndex: "max_status",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            [0, "UNKNOWN"],
+                            [1, "UP"],
+                            [2, "SLIGHTLY_DEGRADED"],
+                            [3, "DEGRADED"],
+                            [4, "DOWN"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        0: "UNKNOWN",
+                        1: "UP",
+                        2: "SLIGHTLY_DEGRADED",
+                        3: "DEGRADED",
+                        4: "DOWN"
+                    })
+                },
+                {
+                    text: __("Set Status"),
+                    dataIndex: "set_status",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            [0, "UNKNOWN"],
+                            [1, "UP"],
+                            [2, "SLIGHTLY_DEGRADED"],
+                            [3, "DEGRADED"],
+                            [4, "DOWN"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        0: "UNKNOWN",
+                        1: "UP",
+                        2: "SLIGHTLY_DEGRADED",
+                        3: "DEGRADED",
+                        4: "DOWN"
+                    })
+                },
+                {
+                    text: __("Ignored"),
+                    dataIndex: "ignored",
+                    width: 50,
+                    renderer: NOC.render.Bool,
+                    editor: "checkbox"
+                },
+                {
+                    text: __("Weight"),
+                    dataIndex: "weight",
+                    editor: {
+                        xtype: "numberfield"
+                    }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          xtype: "fieldset",
+          title: __("Calculate Oper Status"),
+          defaults: {
+            padding: 4,
+            labelAlign: "top"
+          },
+          items: [
+            {
+              name: "calculate_status_function",
+              xtype: "combobox",
+              fieldLabel: __("Calculate Oper Status Policy"),
+              tooltip: __("Calculate Oper Status <br/>" +
+                  'D - Disable Status Transfer<br/>' +
+                  'R - Transfer By Rule<br/>' +
+                  'P - From Profile'),
+              store: [
+                  ["D", __("Disable")],
+                  ["P", __("By Profile")],
+                  ["MX", __("By Max Status")],
+                  ["MN", __("By Min Status")],
+                  ["R", __("By Rule")]
+              ],
+              allowBlank: true,
+              value: "P",
+              uiStyle: "medium",
+              listeners: {
+                  render: me.addTooltip
+              }
+            },
+            {
+              name: "calculate_status_rules",
+              fieldLabel: __("Calculate Status Rules"),
+              xtype: "gridfield",
+              allowBlank: true,
+              columns: [
+                {
+                    text: __("Function"),
+                    dataIndex: "weight_function",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            ["C", "Count"],
+                            ["CP", "By Percent"],
+                            ["MIN", "Minimal"],
+                            ["MAX", "Maximum"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        "C": "C",
+                        "CP": "CP",
+                        "MIN": "MIN",
+                        "MAX": "MAX"
+                    })
+                },
+                {
+                    text: __("Op"),
+                    dataIndex: "op",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            ["<=", "<="],
+                            ["=", "="],
+                            [">=", ">="]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        "<=": "<=",
+                        "=": "=",
+                        ">=": ">="
+                    })
+                },
+                {
+                    text: __("Weight"),
+                    dataIndex: "weight",
+                    editor: {
+                        xtype: "numberfield"
+                    }
+                },
+                {
+                    text: __("Min. Status"),
+                    dataIndex: "min_status",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            [0, "UNKNOWN"],
+                            [1, "UP"],
+                            [2, "SLIGHTLY_DEGRADED"],
+                            [3, "DEGRADED"],
+                            [4, "DOWN"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        0: "UNKNOWN",
+                        1: "UP",
+                        2: "SLIGHTLY_DEGRADED",
+                        3: "DEGRADED",
+                        4: "DOWN"
+                    })
+                },
+                {
+                    text: __("Max. Status"),
+                    dataIndex: "max_status",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            [0, "UNKNOWN"],
+                            [1, "UP"],
+                            [2, "SLIGHTLY_DEGRADED"],
+                            [3, "DEGRADED"],
+                            [4, "DOWN"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        0: "UNKNOWN",
+                        1: "UP",
+                        2: "SLIGHTLY_DEGRADED",
+                        3: "DEGRADED",
+                        4: "DOWN"
+                    })
+                },
+                {
+                    text: __("To Status"),
+                    dataIndex: "set_status",
+                    width: 100,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            [0, "UNKNOWN"],
+                            [1, "UP"],
+                            [2, "SLIGHTLY_DEGRADED"],
+                            [3, "DEGRADED"],
+                            [4, "DOWN"]
+                        ]
+                    },
+                    renderer: NOC.render.Choices({
+                        0: "UNKNOWN",
+                        1: "UP",
+                        2: "SLIGHTLY_DEGRADED",
+                        3: "DEGRADED",
+                        4: "DOWN"
+                    })
+                }
+              ]
+            }
+          ]
+        },
+        {
+          xtype: "fieldset",
           layout: "hbox",
           title: __("Integration"),
           defaults: {
@@ -350,6 +644,64 @@ Ext.define("NOC.sa.service.Application", {
               uiStyle: "medium",
             },
           ],
+        },
+        {
+          name: "static_instances",
+          xtype: "gridfield",
+          fieldLabel: __("Static Instances"),
+          allowBlank: true,
+          columns: [
+            {
+              text: __("Name"),
+              dataIndex: "textfield",
+              width: 250,
+              editor: "textfield"
+            },
+            {
+              text: __("Port"),
+              dataIndex: "port_range",
+              width: 50,
+              editor: "textfield"
+            },
+          ]
+        },
+        {
+          name: "instances",
+          xtype: "gridfield",
+          fieldLabel: __("Instances"),
+          allowBlank: true,
+          columns: [
+            {
+              text: __("Name"),
+              dataIndex: "textfield",
+              width: 250,
+              editor: "textfield"
+            },
+            {
+              text: __("Address"),
+              dataIndex: "address",
+              width: 100,
+              editor: "textfield"
+            },
+            {
+              text: __("FQDN"),
+              dataIndex: "fqdn",
+              width: 100,
+              editor: "textfield"
+            },
+            {
+              text: __("Port"),
+              dataIndex: "port",
+              width: 50,
+              editor: "numberfield"
+            },
+            {
+              text: __("NRI Port"),
+              dataIndex: "nri_port",
+              width: 100,
+              editor: "textfield"
+            }
+          ]
         },
         {
           name: "caps",
@@ -383,7 +735,7 @@ Ext.define("NOC.sa.service.Application", {
               editor: "textfield",
             },
           ],
-        },
+        }
       ],
     });
     me.callParent();
@@ -401,6 +753,12 @@ Ext.define("NOC.sa.service.Application", {
       name: "profile",
       ftype: "lookup",
       lookup: "sa.serviceprofile",
+    },
+    {
+        title: __("By Service Group"),
+        name: 'effective_service_groups',
+        ftype: "tree",
+        lookup: "inv.resourcegroup",
     },
     {
       title: __("By Subscriber"),

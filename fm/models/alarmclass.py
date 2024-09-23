@@ -7,6 +7,7 @@
 
 # Python modules
 import os
+import re
 from threading import Lock
 import operator
 from typing import Any, Dict, Optional, List, Callable, Union
@@ -196,6 +197,7 @@ class AlarmClass(Document):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _name_rx_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     _handlers_cache = {}
     _clear_handlers_cache = {}
@@ -217,6 +219,12 @@ class AlarmClass(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["AlarmClass"]:
         return AlarmClass.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_rx_cache"), lock=lambda _: id_lock)
+    def get_by_rx_name(cls, name_rx: str) -> Optional["AlarmClass"]:
+        name_rx = re.compile(name_rx)
+        return AlarmClass.objects.filter(name=name_rx).first()
 
     @property
     def severity(self) -> Optional[AlarmSeverity]:

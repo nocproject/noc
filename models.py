@@ -221,6 +221,7 @@ _MODELS = {
     "sa.Profile": "noc.sa.models.profile.Profile",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
     "sa.Service": "noc.sa.models.service.Service",
+    "sa.ServiceInstance": "noc.sa.models.serviceinstance.ServiceInstance",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.ServiceSummary": "noc.sa.models.servicesummary.ServiceSummary",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
@@ -470,4 +471,4 @@ LABEL_MODELS = {
     "wf.State": "enable_workflowstate",
 }
 
-RESOURCE_MODELS = {"o": "inv.Object"}
+RESOURCE_MODELS = {"o": "inv.Object", "if": "inv.Interface", "si": "inv.SubInterface"}
