@@ -24,7 +24,7 @@ def get_datastreams(instance, changed_fields=None) -> Optional[List[Tuple[str, s
     return [item for item in instance.iter_changed_datastream(changed_fields=changed_fields or {})]
 
 
-def change(model=None, *, audit=False):
+def change(model=None, *, audit=True):
     """
     @change decorator to enable generalized change tracking on the model.
     :param model:

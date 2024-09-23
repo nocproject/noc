@@ -137,7 +137,7 @@ class ServiceStatusDependency(EmbeddedDocument):
 @on_save
 @resourcegroup
 @on_init
-@change(audit=True)
+@change
 @workflow
 @on_delete_check(
     clean=[

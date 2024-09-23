@@ -26,7 +26,7 @@ from noc.main.models.label import Label
 
 @on_delete
 @on_save
-@change
+@change(audit=False)
 class Link(Document):
     """
     Network links.

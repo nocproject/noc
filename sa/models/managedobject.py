@@ -310,7 +310,7 @@ class ManagedObjectManager(Manager):
 @on_delete
 @workflow
 @diagnostic
-@change(audit=True)
+@change
 @resourcegroup
 @Label.model
 @on_delete_check(

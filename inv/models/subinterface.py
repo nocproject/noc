@@ -53,7 +53,7 @@ TUNNEL_TYPES = (
 
 @on_delete
 @Label.model
-@change
+@change(audit=False)
 class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",

@@ -58,7 +58,7 @@ for dt in ["i32", "u32", "f32"]:
 
 @Label.dynamic_classification(profile_model_id="inv.SensorProfile")
 @Label.model
-@change
+@change(audit=False)
 @bi_sync
 @workflow
 class Sensor(Document):

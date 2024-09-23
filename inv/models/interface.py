@@ -59,7 +59,7 @@ logger = logging.getLogger(__name__)
 
 # @Label.dynamic_classification(profile_model_id="inv.InterfaceProfile")
 @on_delete
-@change
+@change(audit=False)
 @resourcegroup
 @Label.model
 @workflow
