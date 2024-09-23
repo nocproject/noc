@@ -587,7 +587,7 @@ class Service(Document):
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
         #
-        services = ServiceInstance.get_services_by_alarm(alarm)
+        services = list(ServiceInstance.get_services_by_alarm(alarm))
         if q:
             services += list(Service.objects.filter(q))
         return list(set(s.id for s in services))
