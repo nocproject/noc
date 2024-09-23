@@ -18,7 +18,6 @@ from abc import ABCMeta, abstractmethod
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from .model import ChangeItem
-from noc.models import get_model, _MODELS
 
 CHANGE_HANDLER = "noc.core.change.change.on_change"
 DS_APPLY_HANDLER = "noc.core.change.change.apply_datastream"
@@ -56,11 +55,6 @@ class ChangeTracker(object):
             CHANGE_HANDLERS[bi_dict_model._meta.source_model].add(BI_APPLY_HANDLER)
         CHANGE_HANDLERS["inv.ObjectModel"].add(SYNC_SENSOR_HANDLER)
         CHANGE_HANDLERS["inv.Object"].add(SYNC_SENSOR_HANDLER)
-
-        for cls_name in _MODELS:
-            mongo_model = get_model(cls_name)
-            if hasattr(mongo_model, "_flag_audit"):
-                CHANGE_HANDLERS[cls_name].add(AUDIT_CHANGE)
 
     @staticmethod
     def get_policy() -> "BaseChangeTrackerPolicy":
@@ -165,16 +159,13 @@ class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
     Base class for change tracker policies
     """
 
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
     @abstractmethod
-    def register(self, item: ChangeItem) -> None:
-        ...
+    def register(self, item: ChangeItem, audit: bool = False) -> None: ...
 
     @abstractmethod
-    def register_ds(self, items: List[Tuple[str, str]]) -> None:
-        ...
+    def register_ds(self, items: List[Tuple[str, str]]) -> None: ...
 
 
 class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
@@ -182,7 +173,7 @@ class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
     Drop all changes
     """
 
-    def register(self, item: ChangeItem) -> None:
+    def register(self, item: ChangeItem, audit: bool = False) -> None:
         pass
 
     def register_ds(self, items: List[Tuple[str, str]]) -> None:
@@ -194,9 +185,11 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
     Simple policy, applies every registered change
     """
 
-    def register(self, item: ChangeItem) -> None:
+    def register(self, item: ChangeItem, audit: bool = False) -> None:
         for handler in CHANGE_HANDLERS.get(item.model_id, []):
             defer(handler, key=hash(item), changes=[item])
+        if audit:
+            defer(AUDIT_CHANGE, key=hash(item), changes=[item])
 
     def register_ds(self, items: Optional[List[Tuple[str, str]]]):
         defers: Dict[int, Dict[str, Set[str]]] = {}
@@ -219,7 +212,7 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         self.changes: Dict[str, Dict[int, ChangeItem]] = defaultdict(dict)
         self.ds_changes: Dict[str, Set[str]] = defaultdict(set)
 
-    def register(self, item: ChangeItem) -> None:
+    def register(self, item: ChangeItem, audit: bool = False) -> None:
         key = hash(item)
         for handler in CHANGE_HANDLERS.get(item.model_id, []):
             changes = self.changes[handler]

@@ -118,6 +118,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         id=str(document.id),
         fields=changed_fields,
         datastreams=get_datastreams(document, {cf.field: cf.old for cf in changed_fields or []}),
+        audit=getattr(document, "_flag_audit", False),
     )
 
 
@@ -131,6 +132,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         id=str(document.id),
         fields=None,
         datastreams=get_datastreams(document),
+        audit=getattr(document, "_flag_audit", False),
     )
     if not hasattr(document, "get_changed_instance"):
         return
@@ -141,6 +143,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         id=str(document.id),
         fields=None,
         datastreams=get_datastreams(document),
+        audit=getattr(document, "_flag_audit", False),
     )
 
 
@@ -180,6 +183,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         id=str(instance.id),
         fields=changed_fields,
         datastreams=get_datastreams(instance, {cf.field: cf.old for cf in changed_fields or []}),
+        audit=getattr(instance, "_flag_audit", False),
     )
 
 
@@ -193,6 +197,7 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         id=str(instance.id),
         fields=None,
         datastreams=get_datastreams(instance),
+        audit=getattr(instance, "_flag_audit", False),
     )
     if not hasattr(instance, "get_changed_instance"):
         return
@@ -203,4 +208,5 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         id=str(instance.id),
         fields=None,
         datastreams=get_datastreams(instance),
+        audit=getattr(instance, "_flag_audit", False),
     )
