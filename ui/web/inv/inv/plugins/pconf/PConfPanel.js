@@ -9,11 +9,23 @@ console.debug("Defining NOC.inv.inv.plugins.pconf.PConfPanel");
 Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   extend: "Ext.panel.Panel",
   config: {
-    color: {
-      "?": "#7f8c8d",
-      c: "#c0392b",
-      w: "#e67e22",
-      o: "#16a085",
+    status: {
+      "?": {
+        color: "#7f8c8d",
+        glyph: "question",
+      },
+      c: {
+        color: "#c0392b",
+        glyph: "check-circle",
+      },
+      w: {
+        color: "#e67e22",
+        glyph: "exclamation-circle",
+      },
+      o: {
+        color: "#16a085",
+        glyph: "exclamation-triangle",
+      },
     },
   },
   requires: [
@@ -127,7 +139,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       },
       items: [
         {
-          glyph: NOC.glyph.question,
           tooltip: __("Unknown"),
           toggleGroup: "status",
           value: "?",
@@ -136,7 +147,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           },
         },
         {
-          glyph: NOC.glyph.check_circle,
           tooltip: __("Ok"),
           toggleGroup: "status",
           value: "o",
@@ -145,7 +155,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           },
         },
         {
-          glyph: NOC.glyph.exclamation_circle,
           tooltip: __("Warning"),
           toggleGroup: "status",
           value: "w",
@@ -154,7 +163,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           },
         },
         {
-          glyph: NOC.glyph.exclamation_triangle,
           tooltip: __("Critical"),
           toggleGroup: "status",
           value: "c",

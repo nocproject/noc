@@ -80,38 +80,47 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     this.removeFilter();
   },
   onButtonRender: function(button){
-    var color = this.getView().getColor()[button.value];
-    button.getEl().down(".x-btn-glyph").setStyle("color", color);
+    var config = this.getView().getStatus()[button.value];
+    button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
+    button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
   },
   valueRenderer: function(value, metaData, record){
-    var displayValue = value;
+    var displayValue = value,
+      status = record.get("status");
     if(record.get("type") === "enum"){
       var options = record.get("options") || [],
         option = options.find(opt => opt.id === value);
       displayValue = option ? option.label : value;
     }
-    if(Ext.isEmpty(record.get("status"))){
+    if(Ext.isEmpty(status)){
       if(record.get("read_only")){
         return "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
       }
       return "<i class='fas fa fa-pencil' style='padding-right: 4px;'></i>" + displayValue; 
     }
 
-    var val = this.whichRange(value, record.get("thresholds")),
-      result = `<div data-value='${value}' class='noc-metric-value' style='left: ${val}%'></div>`
-    + "<div class='noc-metric-container'>"
-      + "<div class='noc-metric-range noc-metric-green-range'></div>";
     
-    if(!Ext.isEmpty(record.get("status"))){
-      var ticks = this.zip(record.get("thresholds"), [20, 40, 60, 80]),
-        ranges = this.zip([[0,20], [20,40], [40,60], [60,80], [80,100]], ["red", "yellow", "green", "yellow", "red"]);
+    var statusConf = this.getView().getStatus()[status],
+      tickPosition = this.whichRange(value, record.get("thresholds")),
+      result = `<div class='noc-pconf-value fa fa-${statusConf.glyph}'`
+        + ` style='color:${statusConf.color}'>&nbsp;${value || __("unknown")}</div>`;
+
+    result += "<div class='noc-metric-container'>";
+    if(value){
+      result += `<div class='noc-pconf-value-tick' style='left: calc(${tickPosition}% - 4px);'></div>`;
+      result += "<div class='noc-metric-range noc-metric-green-range'></div>";
+    }
+    if(!Ext.isEmpty(status) && status !== "?"){
+      // var ticks = this.zip(record.get("thresholds"), [20, 40, 60, 80]),
+      var ranges = this.zip([0, 20, 40, 60, 80], ["red", "yellow", "green", "yellow", "red"]);
       
       Ext.each(ranges, function(range){
-        result += `<div class='noc-metric-range' style='left:  ${range[0][0]}%; width: ${range[0][1]}%; background: ${range[1]};'></div>`;
+        result += `<div class='noc-metric-range' `
+          + `style='left:${range[0]}%;width:20%;background: ${range[1]};'></div>`;
       });
-      Ext.each(ticks, function(tick){
-        result += `<div class='noc-metric-tick' data-qtip='${tick[0]}' style='left: ${tick[1]}%'></div>`;
-      });
+      // Ext.each(ticks, function(tick){
+      //   result += `<div class='noc-metric-tick' data-qtip='${tick[0]}' style='left: ${tick[1]}%'></div>`;
+      // });
     }
     result += "</div>";
     if(record.get("read_only")){
@@ -131,9 +140,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     } else if(val < parseFloat(ranges[2])){
       return 50;
     } else if(val < parseFloat(ranges[3])){
-      return 60;
+      return 70;
     } else{
-      return 80;
+      return 90;
     }
   },
   zip: function(){
