@@ -45,6 +45,17 @@ class Input(object):
     value: str
     job: Optional[str] = None
 
+    @property
+    def canonical_name(self) -> str:
+        """
+        Return canonical name for input.
+
+        Remove leading `*` if necessary.
+        """
+        if self.name.startswith("*"):
+            return self.name[1:]
+        return self.name
+
 
 class Job(object):
     """
@@ -301,13 +312,14 @@ class Job(object):
             action: Type[BaseAction] = loader[req.action]
             seen_inputs: Set[str] = set()
             for i in req.inputs:
-                if i.name not in action.inputs:
-                    msg = f"Invalid input `{i.name}`"
-                    raise ValueError(msg)
-                if i.name in seen_inputs:
-                    msg = f"Input `{i.name}` is defined twice"
-                    raise ValueError(msg)
-                seen_inputs.add(i.name)
+                if not i.is_kv:
+                    if i.name not in action.inputs:
+                        msg = f"Invalid input `{i.name}`"
+                        raise ValueError(msg)
+                    if i.name in seen_inputs:
+                        msg = f"Input `{i.name}` is defined twice"
+                        raise ValueError(msg)
+                    seen_inputs.add(i.name)
                 # @todo: Test name
                 try:
                     Template(i.value)
@@ -483,11 +495,12 @@ class Job(object):
         if self.inputs:
             for i in self.inputs:
                 if self.parent and i.job:
-                    kwargs[i.name] = Template(i.value).render(
+                    value = Template(i.value).render(
                         result=self.parent.results[i.job], **self.environment
                     )
                 else:
-                    kwargs[i.name] = Template(i.value).render(**self.environment)
+                    value = Template(i.value).render(**self.environment)
+                kwargs[i.canonical_name] = value
         action = self.action(env=self.environment, logger=logger)
         r = await action.execute(**kwargs)
         if self.parent and r is not None:

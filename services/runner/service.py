@@ -60,7 +60,8 @@ class RunnerService(FastAPIService):
             metrics["malformed_messages"] += 1
             return
         # Call handler, may not be invalid
-        msg_handler = getattr(self, f"on_msg_{req.op}")
+        op = req.op or "submit"
+        msg_handler = getattr(self, f"on_msg_{op}")
         if not msg_handler:
             self.logger.error("Internal error. No handler for '%s'", req.op)
             return

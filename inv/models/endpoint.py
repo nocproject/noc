@@ -15,8 +15,10 @@ from mongoengine.fields import (
     BooleanField,
     IntField,
     EmbeddedDocumentListField,
+    ObjectIdField,
 )
 from mongoengine import signals
+from bson import ObjectId
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -77,6 +79,7 @@ class Endpoint(Document):
     is_root = BooleanField()
     pair = IntField(required=False)
     used_by = EmbeddedDocumentListField(UsageItem)
+    last_job = ObjectIdField(required=False)
 
     def __str__(self) -> str:
         return f"{self.channel.name}:{self.resource}"
@@ -91,6 +94,11 @@ class Endpoint(Document):
         else:
             parts = document.resource.split(":", 2)
             document.root_resource = f"{parts[0]}:{parts[1]}"
+
+    def set_last_job(self, job_id: ObjectId) -> None:
+        """Update last provisioning job id."""
+        self.last_job = job_id
+        self._get_collection().update_one({"_id": self.id}, {"$set": {"last_job": job_id}})
 
 
 signals.pre_save.connect(Endpoint._update_root_resource, sender=Endpoint)

@@ -161,14 +161,19 @@ class OTNODUController(BaseController):
         start = Endpoint(object=path[0].object, name=path[0].input)
         end = Endpoint(object=path[1].object, name=path[1].output)
         discriminator = path[0].input_discriminator
-        dbe = list(DBEndpoint.objects.filter(resource__in=[start.as_resource(), end.as_resource()]))
+        dbe: list[DBEndpoint] = list(
+            DBEndpoint.objects.filter(resource__in=[start.as_resource(), end.as_resource()])
+        )
         if not dbe:
             # New channel
             ch = self.create_ad_hoc_channel(discriminator=get_channel_odu(discriminator))
             is_new = True
             # Create endpoints
-            DBEndpoint(channel=ch, resource=start.as_resource()).save()
-            DBEndpoint(channel=ch, resource=end.as_resource()).save()
+            dbe = []
+            for x in (start, end):
+                ep = DBEndpoint(channel=ch, resource=x.as_resource())
+                ep.save()
+                dbe.append(ep)
         elif len(dbe) == 1:
             # Hanging endpoint
             return None, "Hanging endpoint"
@@ -187,6 +192,18 @@ class OTNODUController(BaseController):
         otu_end = Endpoint(object=path[1].object, name=path[1].input)
         ensure_usage(ch, otu_start)
         ensure_usage(ch, otu_end)
+        # Run provisioning
+        for pi, ep in zip(path, dbe):
+            self.logger.info("Getting profile controller for %s", pi.object)
+            ctl = self.get_profile_controller(pi.object)
+            if ctl:
+                self.logger.info("Preparing setup")
+                job = ctl.setup(ch, ep)
+                if job:
+                    ep.set_last_job(job.id)
+                    self.submit_job(job)
+            else:
+                self.logger.info("Controller is not supported, skipping")
         # Return
         if is_new:
             return ch, "Channel created"

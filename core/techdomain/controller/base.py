@@ -20,6 +20,9 @@ from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.resource import from_resource
+from noc.core.service.pub import publish
+from noc.core.runner.models.jobreq import JobRequest
+from ..profile.channel import ProfileChannelController
 
 
 @dataclass
@@ -308,3 +311,33 @@ class BaseController(object):
             return Endpoint(object=o, name=n, channel=ch)
         msg = f"Topology {ch.topology} is not supported"
         raise NotImplementedError(msg)
+
+    def get_profile_controller(self, obj: Object) -> ProfileChannelController | None:
+        """
+        Get profile controller for object.
+
+        Args:
+            obj: Object instance.
+
+        Returns:
+            ProfileChannelController: if supported.
+            None: if not supported.
+        """
+        mo = ProfileChannelController.get_managed_object(f"o:{obj.id}")
+        # @todo: Move hardcode to model data
+        profile = mo.profile.name if mo else "IRE-Polus.Horizon"
+        # @todo: Consider custom
+        mn = f"noc.sa.profiles.{profile}.controller.{self.name}"
+        try:
+            m = __import__(mn, {}, {}, "Controller")
+            return m.Controller()
+        except ImportError as e:
+            print(e)
+            return None
+
+    def submit_job(self, job: JobRequest) -> None:
+        """Submit job to runner."""
+        self.logger.info("Submitting job %s", job.id)
+        if not job.op:
+            job.op = "submit"
+        publish(job.model_dump_json().encode(), "submit", partition=0)

@@ -31,6 +31,18 @@ class InputMapping(BaseModel):
     value: str
     job: Optional[str] = None
 
+    @property
+    def is_kv(self) -> bool:
+        """Check if input is key-value mappig."""
+        return self.name.startswith("*")
+
+
+def KVInputMapping(name: str, value: str) -> InputMapping:
+    """
+    Key-value input mapping.
+    """
+    return InputMapping(name=f"*{name}", value=value)
+
 
 class JobRequest(BaseModel):
     """
