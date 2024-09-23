@@ -18,7 +18,7 @@ from noc.core.translation import ugettext as _
 class Changes(Model):
     class Meta(object):
         db_table = "changes"
-        engine = MergeTree("timestamp", ("change_id", "user", "model_name"))
+        engine = MergeTree("timestamp", ("user", "model_name"))
 
     change_id = StringField(description=_("Id"))
     timestamp = DateTimeField(description="Timestamp")

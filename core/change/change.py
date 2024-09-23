@@ -27,29 +27,36 @@ logger = getLogger(__name__)
 
 
 def audit_change(changes: List[ChangeItem]) -> None:
-    """
+    """Processed Audit changes"""
 
-    :param changes:
-    :return:
-    """
-    from noc.core.service.pub import publish
-
+    svc = get_service()
+    data = []
     for item in changes:
         item = ChangeItem(**item)
         o = get_object(item.model_id, item.item_id)
         dt_object = datetime.datetime.fromtimestamp(item.ts)
         user = item.user if hasattr(item, "user") else None
-        dc_new = {
-            "change_id": str(uuid.uuid4()),
-            "timestamp": dt_object.strftime("%Y-%m-%d %H:%M:%S"),
-            "user": user,
-            "model_name": item.model_id,
-            "object_name": o.name,
-            "object_id": item.item_id,
-            "op": item.op[0].upper(),
-            "changes": json.dumps(item.changed_fields),
-        }
-        publish(orjson.dumps(dc_new), stream="ch.changes", partition=0)
+        data.append(
+            orjson.dumps(
+                {
+                    "change_id": str(uuid.uuid4()),
+                    "timestamp": dt_object.strftime("%Y-%m-%d %H:%M:%S"),
+                    "user": user,
+                    "model_name": item.model_id,
+                    "object_name": o.name,
+                    "object_id": item.item_id,
+                    "op": item.op[0].upper(),
+                    "changes": orjson.dumps(item.changed_fields).decode(),
+                }
+            )
+        )
+    if data:
+        svc.publish(
+            value=b"\n".join(data),
+            stream=f"ch.changes",
+            partition=0,
+            headers={},
+        )
 
 
 def on_change(
@@ -57,13 +64,7 @@ def on_change(
     *args,
     **kwargs,
 ) -> None:
-    """
-    Change worker
-    :param changes: List of (op, model id, item id, changed fields list, timestamp)
-    :param args:
-    :param kwargs:
-    :return:
-    """
+    """Common changes worker"""
     # BI Dictionary changes
     bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]] = defaultdict(set)
     # Sensors object
@@ -120,11 +121,7 @@ def apply_datastream(ds_changes: Optional[Dict[str, Set[str]]] = None) -> None:
 
 
 def apply_ch_dictionary(changes: List[ChangeItem]) -> None:
-    """
-    Apply Clickhouse BI Dictionary
-    :param changes:
-    :return:
-    """
+    """Apply Clickhouse BI Dictionary"""
     from noc.core.bi.dictionaries.loader import loader
     from noc.core.clickhouse.model import DictionaryModel
 
@@ -162,11 +159,7 @@ def apply_ch_dictionary(changes: List[ChangeItem]) -> None:
 
 
 def apply_sync_sensors(changes: List[ChangeItem]) -> None:
-    """
-
-    :param changes:
-    :return:
-    """
+    """Apply sync sensor if ObjectModel changed"""
     from noc.inv.models.object import Object
     from noc.inv.models.sensor import sync_object
 

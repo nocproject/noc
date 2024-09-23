@@ -13,7 +13,6 @@ from collections import defaultdict
 from typing import Optional, Tuple, List, Dict, Literal, Set
 from abc import ABCMeta, abstractmethod
 
-
 # NOC modules
 from noc.core.defer import defer
 from noc.core.hash import hash_int
@@ -87,15 +86,17 @@ class ChangeTracker(object):
 
         if not CHANGE_HANDLERS:
             self.load_receivers()
+        user = get_user() or ""
         self.get_policy().register(
             item=ChangeItem(
                 op=op,
                 model_id=model,
                 item_id=id,
                 ts=time.time(),
-                user=str(get_user()),
+                user=str(user),
                 changed_fields=fields,
-            )
+            ),
+            audit=audit and user,
         )
         if datastreams:
             self.get_policy().register_ds(items=datastreams)  # Handler -> Change
