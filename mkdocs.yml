@@ -953,6 +953,7 @@ nav:
       - Performance Management: performance-management/index.md
       - Working with Report: reference-report-configuration/index.md
       - Peering Management: peering-management/index.md
+      - Monitoring by Service Operation Status: docs/service-status-monitoring/index.md
       - Custom: custom/index.md
       - Cards: card/index.md
       - ETL: etl/index.md
