@@ -103,6 +103,11 @@ class ModelInterfaceAttr(EmbeddedDocument):
             return value
         raise ValueError(f"Value {value} is not ObjectID")
 
+    def clean_strlist(self, value):
+        if isinstance(value, str):
+            return value.split(",")
+        return value
+
 
 class ModelInterface(Document):
     """
@@ -119,7 +124,7 @@ class ModelInterface(Document):
 
     name = StringField(unique=True)
     description = StringField()
-    attrs = ListField(EmbeddedDocumentField(ModelInterfaceAttr))
+    attrs: List[ModelInterfaceAttr] = ListField(EmbeddedDocumentField(ModelInterfaceAttr))
     uuid = UUIDField(binary=True)
 
     _id_cache = cachetools.TTLCache(100, 10)

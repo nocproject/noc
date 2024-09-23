@@ -1,0 +1,115 @@
+{
+    "name": "Compare Specs",
+    "$collection": "main.reports",
+    "uuid": "93afc46c-2819-4b2f-870f-750851d5adfc",
+    "title": "Compare Specs (New)",
+    "description": "Сравнить спецификации",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "objectmodeldatads",
+                "json": null
+            }]
+        },
+        {
+            "name": "master_data",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select vendor from Root group by vendor order by vendor"
+                }
+            ]
+        },
+        {
+            "name": "detail_data",
+            "orientation": "H",
+            "parent": "master_data",
+            "queries": [
+                {
+                    "ds_query": "select name, dimensions_width as width, dimensions_height as height, dimensions_depth as depth, ru, weight_weight as weight from Root where vendor = '{{ vendor }}' order by name"
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Model"
+                },
+                {
+                    "name": "width",
+                    "title": "Width"
+                },
+                {
+                    "name": "height",
+                    "title": "Height"
+                },
+                {
+                    "name": "depth",
+                    "title": "Depth"
+                },
+                {
+                    "name": "ru",
+                    "title": "RU"
+                },
+                {
+                    "name": "weight",
+                    "title": "Weight (kg)"
+                }
+            ],
+            "title_template": "Compare Specs"
+        },
+        {
+            "name": "master_data",
+            "title_template": "{{ vendor }}"
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сравнить спецификации (Новый)"
+        },
+        "columns.depth": {
+            "ru": "Глубина"
+        },
+        "columns.height": {
+            "ru": "Высота"
+        },
+        "columns.model": {
+            "ru": "Модель"
+        },
+        "columns.weight": {
+            "ru": "Вес (кг)"
+        },
+        "columns.width": {
+            "ru": "Ширина"
+        }
+    },
+    "parameters": [
+        {
+            "name": "managed_only",
+            "description": null,
+            "default": "true",
+            "hide": true,
+            "label": "MO",
+            "type": "bool"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
