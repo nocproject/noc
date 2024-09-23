@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ServiceModel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,6 @@ from pydantic import ConfigDict
 from .base import BaseModel, _BaseModel
 from .typing import Reference
 from .serviceprofile import ServiceProfile
-from .managedobject import ManagedObject
 from .subscriber import Subscriber
 
 
@@ -25,9 +24,19 @@ class CapsItem(_BaseModel):
     value: Union[str, bool, int]
 
 
+class Instance(_BaseModel):
+    name: Optional[str] = None
+    addresses: Optional[List[str]] = None
+    fqdn: Optional[str] = None
+    port: Optional[int] = None
+    remote_id: Optional[str] = None
+    nri_port: Optional[str] = None
+
+
 class Service(BaseModel):
     id: str
     profile: Reference["ServiceProfile"]
+    name_template: Optional[str] = None
     parent: Optional[Reference["Service"]] = None
     subscriber: Optional[Reference["Subscriber"]] = None
     ts: Optional[datetime] = None
@@ -44,8 +53,6 @@ class Service(BaseModel):
     stage_start: Optional[datetime] = None
     account_id: Optional[str] = None
     address: Optional[str] = None
-    managed_object: Optional[Reference["ManagedObject"]] = None
-    nri_port: Optional[str] = None
     cpe_serial: Optional[str] = None
     cpe_mac: Optional[str] = None
     cpe_model: Optional[str] = None
@@ -53,6 +60,7 @@ class Service(BaseModel):
     labels: Optional[List[str]] = None
     description: Optional[str] = None
     capabilities: Optional[List[CapsItem]] = None
+    instances: Optional[List[Instance]] = None
     checkpoint: Optional[str] = None
 
     model_config = ConfigDict(populate_by_name=True)
