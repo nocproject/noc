@@ -717,3 +717,20 @@ table {
 .selectable:hover path{
     stroke: #f1c40f;
 }
+
+.noc-remove-menu-item .x-menu-item-text {
+    color: #c0392b;
+}
+
+.noc-remove-menu-item .x-menu-item-icon {
+    color: #c0392b;
+}
+
+.x-menu-item.noc-remove-menu-item.x-menu-item-active {
+    background-color: #c0392b !important;
+}
+
+.x-menu-item.noc-remove-menu-item.x-menu-item-active .x-menu-item-text,
+.x-menu-item.noc-remove-menu-item.x-menu-item-active .x-menu-item-icon {
+    color: #FFFFFF !important;
+}

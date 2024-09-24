@@ -94,6 +94,7 @@ Ext.define("NOC.inv.inv.Application", {
           itemId: "invNavContextMenuRemoveItem",
           text: __("Delete"),
           scope: me,
+          cls: "noc-remove-menu-item",
           handler: me.onRemoveGroup,
         },
       ],
