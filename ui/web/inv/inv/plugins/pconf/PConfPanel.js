@@ -223,11 +223,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           width: 200,
           renderer: "valueRenderer",
         },
-        {
-          text: __("Units"),
-          dataIndex: "units",
-          width: 50,
-        },
+        // {
+        // text: __("Units"),
+        // dataIndex: "units",
+        // width: 50,
+        // },
         {
           text: __("Description"),
           dataIndex: "description",

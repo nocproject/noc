@@ -93,13 +93,20 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
   },
   valueRenderer: function(value, metaData, record){
-    var displayValue = value,
+    var displayValue,
+      units = record.get("units"),
       allStatusConf = this.getView().getStatus(),
       status = record.get("status");
     if(record.get("type") === "enum"){
       var options = record.get("options") || [],
         option = options.find(opt => opt.id === value);
       displayValue = option ? option.label : value;
+    }
+
+    if(Ext.isEmpty(value)){
+      displayValue = "";
+    } else{
+      displayValue = value + "&nbsp;" + units || "";
     }
     if(Ext.isEmpty(status)){
       if(record.get("read_only")){
@@ -114,7 +121,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     
     if(value){
       result = `<div class='noc-pconf-value fa fa-${statConf.glyph}'`
-        + ` style='color:${statConf.color}'>&nbsp;${value}</div>`;
+        + ` style='color:${statConf.color}'>&nbsp;${displayValue}</div>`;
     } else{
       result = `<div class='noc-pconf-value'</div>`;
     }
@@ -147,10 +154,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     if(value){
       result += `<div class='noc-pconf-value-tick' style='left: calc(${tickPosition}% - 4px);background: ${statConf.color}'></div>`;
     }
-    if(record.get("read_only")){
-      return "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + result; 
-    }
-    return "<i class='fas fa fa-pencil' style='padding-right: 4px;'></i>" + result;
+    return result;
   },
   whichRange: function(value, ranges){
     var val = parseFloat(value),
