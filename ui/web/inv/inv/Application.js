@@ -70,7 +70,7 @@ Ext.define("NOC.inv.inv.Application", {
         },
         {
           glyph: NOC.glyph.plug,
-          text: __("Create connection"),
+          text: __("Connect"),
           scope: me,
           disabled: false,
           handler: me.onCreateConnection,
@@ -92,7 +92,7 @@ Ext.define("NOC.inv.inv.Application", {
         {
           glyph: NOC.glyph.trash_o,
           itemId: "invNavContextMenuRemoveItem",
-          text: __("Remove group"),
+          text: __("Delete"),
           scope: me,
           handler: me.onRemoveGroup,
         },
