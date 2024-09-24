@@ -57,37 +57,45 @@ Ext.define("NOC.inv.inv.Application", {
       items: [
         {
           glyph: NOC.glyph.plus,
-          itemId: "invNavContextMenuAdd",
+          itemId: "invNavContextMenuAddItem",
           text: __("Add objects"),
           scope: me,
           handler: me.onAddObject,
-        },
-        {
-          glyph: NOC.glyph.minus,
-          itemId: "invNavContextMenuRemove",
-          text: __("Remove group"),
-          scope: me,
-          handler: me.onRemoveGroup,
-        },
-        {
-          glyph: NOC.glyph.plug,
-          text: __("Create connection"),
-          scope: me,
-          disabled: false,
-          handler: me.onCreateConnection,
-        },
-        {
-          glyph: NOC.glyph.line_chart,
-          text: __("Open Dashboard"),
-          scope: me,
-          disabled: false,
-          handler: me.onOpenDashboard,
         },
         {
           glyph: NOC.glyph.copy,
           text: __("Clone"),
           scope: me,
           handler: me.onClone,
+        },
+        {
+          glyph: NOC.glyph.plug,
+          text: __("Connect"),
+          scope: me,
+          disabled: false,
+          handler: me.onCreateConnection,
+        },
+        {
+          xtype: "menuseparator",
+        },
+        {
+          glyph: NOC.glyph.line_chart,
+          itemId: "invNavContextMenuShowDashboardItem",
+          text: __("Show Dashboard"),
+          scope: me,
+          disabled: false,
+          handler: me.onOpenDashboard,
+        },
+        {
+          xtype: "menuseparator",
+        },
+        {
+          glyph: NOC.glyph.trash_o,
+          itemId: "invNavContextMenuRemoveItem",
+          text: __("Delete"),
+          scope: me,
+          cls: "noc-remove-menu-item",
+          handler: me.onRemoveGroup,
         },
       ],
       listeners: {
@@ -182,10 +190,11 @@ Ext.define("NOC.inv.inv.Application", {
                   method: "GET",
                   success: function(response){
                     var defaultHandler, menuItems,
+                      mapItemPosition = 5,
                       data = Ext.decode(response.responseText),
-                      mapMenuItem = me.menu.down("#invNavContextMenuMap"),
-                      addMenuItem = me.menu.down("#invNavContextMenuAdd"),
-                      removeMenuItem = me.menu.down("#invNavContextMenuRemove");
+                      mapMenuItem = me.menu.down("#invNavContextMenuMapItem"),
+                      addMenuItem = me.menu.down("#invNavContextMenuAddItem"),
+                      removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem");
                     
                     addMenuItem.setDisabled(!record.get("can_add"));
                     removeMenuItem.setDisabled(!record.get("can_delete"));
@@ -194,8 +203,8 @@ Ext.define("NOC.inv.inv.Application", {
                     }
 
                     if(Ext.isEmpty(data)){
-                      me.menu.add({
-                        itemId: "invNavContextMenuMap",
+                      me.menu.insert(mapItemPosition, {
+                        itemId: "invNavContextMenuMapItem",
                         text: __("Show Map"),
                         glyph: NOC.glyph.globe,
                         disabled: true,
@@ -219,15 +228,15 @@ Ext.define("NOC.inv.inv.Application", {
                     });
                     // mapMenuItem
                     if(menuItems.length){
-                      me.menu.add({
-                        itemId: "invNavContextMenuMap",
+                      me.menu.insert(mapItemPosition, {
+                        itemId: "invNavContextMenuMapItem",
                         text: __("Show Map"),
                         glyph: NOC.glyph.globe,
                         menu: menuItems,
                       });
                     } else{
-                      me.menu.add({
-                        itemId: "invNavContextMenuMap",
+                      me.menu.insert(mapItemPosition, {
+                        itemId: "invNavContextMenuMapItem",
                         text: __("Show Map"),
                         glyph: NOC.glyph.globe,
                         handler: function(){
@@ -324,7 +333,7 @@ Ext.define("NOC.inv.inv.Application", {
     me.callParent();
     // Process commands
     switch(me.getCmd()){
-      case"history":
+      case "history":
         me.restoreHistory(me.noc.cmd.args);
         return;
     }
