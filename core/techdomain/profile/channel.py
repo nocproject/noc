@@ -15,12 +15,11 @@ from .base import BaseProfileController
 
 
 class ProfileChannelController(BaseProfileController):
-    def setup(self, channel: Channel, ep: Endpoint) -> JobRequest | None:
+    def setup(self, ep: Endpoint) -> JobRequest | None:
         """
         Gennerate Job request to setup endpoint.
 
         Args:
-            channel: Channel instance.
             ep: Endpoint to setup.
 
         Returns:
@@ -29,12 +28,11 @@ class ProfileChannelController(BaseProfileController):
         """
         return None
 
-    def cleanup(self, channel: Channel, ep: Endpoint) -> JobRequest | None:
+    def cleanup(self, ep: Endpoint) -> JobRequest | None:
         """
         Generate Job request to cleanup endpoint.
 
         Args:
-            channel: Channel instance.
             ep: Endpoint to setup.
 
         Returns:
@@ -92,3 +90,28 @@ class ProfileChannelController(BaseProfileController):
             case _:
                 msg = f"unknown schema: {parts[0]}"
                 raise ValueError(msg)
+
+    @classmethod
+    def get_controller_for_object(cls, obj: Object, name: str) -> "ProfileChannelController | None":
+        """
+        Get profile controller for object.
+
+        Args:
+            obj: Object instance.
+            name: Controller's name.
+
+        Returns:
+            ProfileChannelController: if supported.
+            None: if not supported.
+        """
+        mo = ProfileChannelController.get_managed_object(f"o:{obj.id}")
+        # @todo: Move hardcode to model data
+        profile = mo.profile.name if mo else "IRE-Polus.Horizon"
+        # @todo: Consider custom
+        mn = f"noc.sa.profiles.{profile}.controller.{name}"
+        try:
+            m = __import__(mn, {}, {}, "Controller")
+            return m.Controller()
+        except ImportError as e:
+            self.logger.error("Cannot load profile controller: %s", e)
+            return None

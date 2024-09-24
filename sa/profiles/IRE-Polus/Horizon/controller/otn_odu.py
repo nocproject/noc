@@ -46,7 +46,7 @@ class Controller(BaseODUProfileController, HorizonMixin):
             environment={"managed_object": f"{mo.id}" if mo else "0", "card": str(card)},
         )
 
-    def setup(self, channel: Channel, ep: Endpoint) -> JobRequest | None:
+    def setup(self, ep: Endpoint) -> JobRequest | None:
         self.logger.info("Endpoint setup: %s", ep)
         # Get object
         obj = self.get_object(ep.resource)
@@ -78,7 +78,7 @@ class Controller(BaseODUProfileController, HorizonMixin):
         # Get port
         _, _, port = ep.resource.split(":", 2)
         # Get jobs
-        jobs = list(self.iter_set_requests(self.iter_cleanup(port)))
+        jobs = list(self.iter_set_requests(self.iter_cleanup(obj, port)))
         if not jobs:
             self.logger.info("Nothing to setup, skipping")
             return None

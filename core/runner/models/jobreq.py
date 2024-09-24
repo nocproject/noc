@@ -13,6 +13,9 @@ import datetime
 from pydantic import BaseModel, Field
 from bson import ObjectId
 
+# NOC modules
+from noc.core.service.pub import publish
+
 
 class InputMapping(BaseModel):
     """
@@ -85,3 +88,9 @@ class JobRequest(BaseModel):
     after: Optional[datetime.datetime] = None
     deadline: Optional[datetime.datetime] = None
     jobs: Optional[List["JobRequest"]] = None
+
+    def submit(self) -> None:
+        """Submit job request."""
+        if not self.op:
+            self.op = "submit"
+        publish(self.model_dump_json().encode(), "submit", partition=0)

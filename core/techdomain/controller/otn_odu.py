@@ -15,6 +15,7 @@ from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from .base import BaseController, Endpoint, PathItem
 from .otn_otu import OTNOTUController
+from ..profile.channel import ProfileChannelController
 
 
 class OTNODUController(BaseController):
@@ -195,15 +196,14 @@ class OTNODUController(BaseController):
         # Run provisioning
         for pi, ep in zip(path, dbe):
             self.logger.info("Getting profile controller for %s", pi.object)
-            ctl = self.get_profile_controller(pi.object)
-            if ctl:
-                self.logger.info("Preparing setup")
-                job = ctl.setup(ch, ep)
-                if job:
-                    ep.set_last_job(job.id)
-                    self.submit_job(job)
-            else:
+            ctl = ProfileChannelController.get_controller_for_object(pi.object, self.name)
+            if not ctl:
                 self.logger.info("Controller is not supported, skipping")
+            self.logger.info("Preparing setup")
+            job = ctl.setup(ep)
+            if job:
+                ep.set_last_job(job.id)
+                job.submit()
         # Return
         if is_new:
             return ch, "Channel created"
