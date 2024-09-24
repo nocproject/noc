@@ -10,7 +10,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   extend: "Ext.panel.Panel",
   config: {
     status: {
-      "?": {
+      u: {
         color: "#7f8c8d",
         glyph: "question",
       },
@@ -60,7 +60,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     data: {
       searchText: "",
       status: null,
-      statusDisabled: true,
+      statusDisabled: {
+        u: false,
+        c: false,
+        w: false,
+        o: false,
+      },
       tabType: 1,
       totalCount: 0,
     },
@@ -134,14 +139,16 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       itemId: "statusFilter",
       allowDepress: true,
       bind: {
-        disabled: "{statusDisabled}",
         value: "{status}",
       },
       items: [
         {
           tooltip: __("Unknown"),
           toggleGroup: "status",
-          value: "?",
+          value: "u",
+          bind: {
+            disabled: "{statusDisabled.u}",
+          },
           listeners: {
             afterrender: "onButtonRender",
           },
@@ -150,6 +157,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           tooltip: __("Ok"),
           toggleGroup: "status",
           value: "o",
+          bind: {
+            disabled: "{statusDisabled.o}",
+          },
           listeners: {
             afterrender: "onButtonRender",
           },
@@ -158,6 +168,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           tooltip: __("Warning"),
           toggleGroup: "status",
           value: "w",
+          bind: {
+            disabled: "{statusDisabled.w}",
+          },
           listeners: {
             afterrender: "onButtonRender",
           },
@@ -166,6 +179,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           tooltip: __("Critical"),
           toggleGroup: "status",
           value: "c",
+          bind: {
+            disabled: "{statusDisabled.c}",
+          },
           listeners: {
             afterrender: "onButtonRender",
           },

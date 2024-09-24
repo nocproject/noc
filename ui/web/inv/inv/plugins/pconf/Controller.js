@@ -12,14 +12,22 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
 
   onDataChanged: function(store){
     var vm = this.getViewModel(),
-      hasStatus = store.findBy(function(record){
-        return !Ext.isEmpty(record.get("status"));
-      }) === -1;
+      hasStatus = function(value){
+        return store.findBy(function(record){
+          return !Ext.isEmpty(record.get("status")) && record.get("status") === value;
+        }) === -1;
+      },
+      hasStatuses = {
+        u: hasStatus("u"),
+        c: hasStatus("c"),
+        w: hasStatus("w"),
+        o: hasStatus("o"),
+      };
     
     if(vm){
       vm.set("totalCount", store.getCount());
     }
-    vm.set("statusDisabled", hasStatus);
+    vm.set("statusDisabled", hasStatuses);
   },
   onReload: function(){
     var me = this;
@@ -110,7 +118,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     if(value){
       result += "<div class='noc-metric-range noc-metric-green-range'></div>";
     }
-    if(!Ext.isEmpty(status) && status !== "?"){
+    if(!Ext.isEmpty(status) && status !== "u"){
       var rangeColors = [
           allStatusConf["c"].color,
           allStatusConf["w"].color,
