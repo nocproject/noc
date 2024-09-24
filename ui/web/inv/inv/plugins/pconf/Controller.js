@@ -109,11 +109,15 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     }
 
     
-    var statConf = allStatusConf[status],
-      tickPosition = this.whichRange(value, record.get("thresholds")),
+    var result, statConf = allStatusConf[status],
+      tickPosition = this.whichRange(value, record.get("thresholds"));
+    
+    if(value){
       result = `<div class='noc-pconf-value fa fa-${statConf.glyph}'`
-        + ` style='color:${statConf.color}'>&nbsp;${value || __("unknown")}</div>`;
-
+        + ` style='color:${statConf.color}'>&nbsp;${value}</div>`;
+    } else{
+      result = `<div class='noc-pconf-value'</div>`;
+    }
     result += "<div class='noc-metric-container' style='padding-top:2px;'>";
     if(value){
       result += "<div class='noc-metric-range noc-metric-green-range'></div>";
@@ -135,7 +139,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
                 `${thresholds[3]} >`];
       
       Ext.each(ranges, function(range, index){
-        console.log(record.get("thresholds")[index]);
         result += `<div class='noc-metric-range' data-qtip='${tips[index]}'`
           + `style='left:${range[0]}%;width:20%;background: ${range[1]};'></div>`;
       });
