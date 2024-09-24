@@ -733,7 +733,6 @@ table {
 .noc-pconf-value-tick {
     width: 8px;
     height: 8px;
-    background: black;
     clip-path: polygon(4px 0px, 0px 8px, 8px 8px);
     position: relative;
     z-index: 5;

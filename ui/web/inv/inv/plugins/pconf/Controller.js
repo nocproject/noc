@@ -86,6 +86,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   },
   valueRenderer: function(value, metaData, record){
     var displayValue = value,
+      allStatusConf = this.getView().getStatus(),
       status = record.get("status");
     if(record.get("type") === "enum"){
       var options = record.get("options") || [],
@@ -100,29 +101,41 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     }
 
     
-    var statusConf = this.getView().getStatus()[status],
+    var statConf = allStatusConf[status],
       tickPosition = this.whichRange(value, record.get("thresholds")),
-      result = `<div class='noc-pconf-value fa fa-${statusConf.glyph}'`
-        + ` style='color:${statusConf.color}'>&nbsp;${value || __("unknown")}</div>`;
+      result = `<div class='noc-pconf-value fa fa-${statConf.glyph}'`
+        + ` style='color:${statConf.color}'>&nbsp;${value || __("unknown")}</div>`;
 
-    result += "<div class='noc-metric-container'>";
+    result += "<div class='noc-metric-container' style='padding-top:2px;'>";
     if(value){
-      result += `<div class='noc-pconf-value-tick' style='left: calc(${tickPosition}% - 4px);'></div>`;
       result += "<div class='noc-metric-range noc-metric-green-range'></div>";
     }
     if(!Ext.isEmpty(status) && status !== "?"){
-      // var ticks = this.zip(record.get("thresholds"), [20, 40, 60, 80]),
-      var ranges = this.zip([0, 20, 40, 60, 80], ["red", "yellow", "green", "yellow", "red"]);
+      var rangeColors = [
+          allStatusConf["c"].color,
+          allStatusConf["w"].color,
+          allStatusConf["o"].color,
+          allStatusConf["w"].color,
+          allStatusConf["c"].color,
+        ],
+        ranges = this.zip([0, 20, 40, 60, 80], rangeColors),
+        thresholds = record.get("thresholds"),
+        tips = [` < ${thresholds[0]}`,
+                `${thresholds[0]} - ${thresholds[1]}`,
+                `${thresholds[1]} - ${thresholds[2]}`,
+                `${thresholds[2]} - ${thresholds[3]}`,
+                `${thresholds[3]} >`];
       
-      Ext.each(ranges, function(range){
-        result += `<div class='noc-metric-range' `
+      Ext.each(ranges, function(range, index){
+        console.log(record.get("thresholds")[index]);
+        result += `<div class='noc-metric-range' data-qtip='${tips[index]}'`
           + `style='left:${range[0]}%;width:20%;background: ${range[1]};'></div>`;
       });
-      // Ext.each(ticks, function(tick){
-      //   result += `<div class='noc-metric-tick' data-qtip='${tick[0]}' style='left: ${tick[1]}%'></div>`;
-      // });
     }
     result += "</div>";
+    if(value){
+      result += `<div class='noc-pconf-value-tick' style='left: calc(${tickPosition}% - 4px);background: ${statConf.color}'></div>`;
+    }
     if(record.get("read_only")){
       return "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + result; 
     }

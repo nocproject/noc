@@ -16,15 +16,15 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       },
       c: {
         color: "#c0392b",
-        glyph: "check-circle",
+        glyph: "exclamation-triangle",
       },
       w: {
-        color: "#e67e22",
+        color: "#f1c40f",
         glyph: "exclamation-circle",
       },
       o: {
         color: "#16a085",
-        glyph: "exclamation-triangle",
+        glyph: "check-circle",
       },
     },
   },
