@@ -77,7 +77,7 @@ class Status(Enum):
     Threshold status.
     """
 
-    UNKNOWN = "?"
+    UNKNOWN = "u"
     OK = "o"
     WARN = "w"
     CRITICAL = "c"
