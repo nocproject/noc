@@ -153,18 +153,21 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     return "<i class='fas fa fa-pencil' style='padding-right: 4px;'></i>" + result;
   },
   whichRange: function(value, ranges){
-    var val = parseFloat(value);
+    var val = parseFloat(value),
+      position = function(val, range, index){
+        return (val - parseFloat(range)) * 20 / (parseFloat(ranges[index + 1]) - parseFloat(range)) + index * 20;
+      };
     if(Ext.isEmpty(ranges) || ranges.filter(range => Ext.isEmpty(range)).length > 0){
       return 50;
     }
     if(val < parseFloat(ranges[0])){
       return 10;
     } else if(val < parseFloat(ranges[1])){
-      return 30;
+      return position(val, ranges[0], 1);
     } else if(val < parseFloat(ranges[2])){
-      return 50;
+      return position(val, ranges[0], 2);
     } else if(val < parseFloat(ranges[3])){
-      return 70;
+      return position(val, ranges[0], 3);
     } else{
       return 90;
     }
