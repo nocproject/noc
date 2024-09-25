@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# ManagedObject Outage Datasource
+# ManagedObject Availability Datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -130,13 +130,17 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
 
     @classmethod
     async def iter_query(
-        cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
+        cls,
+        fields: Optional[Iterable[str]] = None,
+        start: Optional[datetime.datetime] = None,
+        end: Optional[datetime.datetime] = None,
+        skip_full_avail=False,
+        skip_zero_avail=False,
+        skip_zero_access=False,
+        *args,
+        **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
-        start: datetime.datetime = kwargs.get("start")
-        end: datetime.datetime = kwargs.get("end")
-        skip_full_avail = kwargs.get("skip_full_avail")
-        skip_zero_avail = kwargs.get("skip_zero_avail")
-        skip_zero_access = kwargs.get("skip_zero_access")
+        end = end or datetime.datetime.now().date()
         td = int((end - start).total_seconds())
         rb = cls.get_reboots_by_object(start_date=start, stop_date=end)
         outages = cls.get_outages_ch(start_date=start, stop_date=end)

@@ -18,34 +18,42 @@
                     "json": null
                 }
             ]
+        },
+        {
+            "name": "data",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select * from Root"
+            }]
         }
     ],
     "bands_format": [
         {
-            "name": "Root",
+            "name": "header",
             "column_format": [
                 {
-                    "name": "managedobjectds.administrativedomain",
+                    "name": "administrativedomain",
                     "title": "ADM. DOMAIN",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.name",
+                    "name": "name",
                     "title": "MANAGED OBJECT",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.hostname",
+                    "name": "hostname",
                     "title": "HOSTNAME",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.address",
+                    "name": "address",
                     "title": "ADDRESS",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.profile",
+                    "name": "profile",
                     "title": "PROFILE",
                     "format_type": "string"
                 },
@@ -80,56 +88,57 @@
         "title": {
             "ru": "Доступность (Новый)"
         },
-        "columns.administrativedomain": {
-            "ru": "З.О."
-        },
-        "columns.name": {
-            "ru": "Объект управления"
-        },
-        "columns.hostname": {
-            "ru": "Имя хоста"
-        },
         "columns.address": {
             "ru": "Адрес"
         },
-        "columns.profile": {
-            "ru": "Профиль"
+        "columns.administrativedomain": {
+            "ru": "З.О."
         },
         "columns.avail_percent": {
             "ru": "Доступность"
         },
+        "columns.down_count": {
+            "ru": "Число периодов"
+        },
         "columns.downtime": {
             "ru": "Общее время недос.(сек)"
         },
-        "columns.down_count": {
-            "ru": "Число периодов"
+        "columns.hostname": {
+            "ru": "Имя хоста"
+        },
+        "columns.name": {
+            "ru": "Объект управления"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
         },
         "columns.reboots": {
             "ru": "Перезагрузки"
         },
-        "parameters.start": {
-            "ru": "С"
+        "parameters.administrative_domain": {
+            "ru": "З.О."
         },
         "parameters.end": {
             "ru": "По"
         },
-        "parameters.administrative_domain": {
-            "ru": "З.О."
-        },
         "parameters.skip_full_avail": {
             "ru": "Пропустить доступные за интервал"
+        },
+        "parameters.skip_zero_access": {
+            "ru": "Пропустить с неактивными портами доступа"
         },
         "parameters.skip_zero_avail": {
             "ru": "Пропустить недоступные за интервал"
         },
-        "parameters.skip_zero_access": {
-            "ru": "Пропустить с неактивными портами доступа"
+        "parameters.start": {
+            "ru": "С"
         }
     },
     "parameters": [
         {
             "name": "start",
             "description": null,
+            "hide": false,
             "label": "From",
             "required": true,
             "type": "date"
@@ -137,6 +146,7 @@
         {
             "name": "end",
             "description": null,
+            "hide": false,
             "label": "To",
             "required": true,
             "type": "date"
@@ -144,6 +154,7 @@
         {
             "name": "administrative_domain",
             "description": null,
+            "hide": false,
             "label": "Adm. domain",
             "model_id": "sa.AdministrativeDomain",
             "type": "model"
@@ -151,18 +162,21 @@
         {
             "name": "skip_full_avail",
             "description": null,
+            "hide": false,
             "label": "Skip full available",
             "type": "bool"
         },
         {
             "name": "skip_zero_avail",
             "description": null,
+            "hide": false,
             "label": "Skip zero available",
             "type": "bool"
         },
         {
             "name": "skip_zero_access",
             "description": null,
+            "hide": false,
             "label": "Skip zero access port",
             "type": "bool"
         },
@@ -170,7 +184,7 @@
             "name": "fields",
             "description": null,
             "default": "managedobjectds.administrativedomain,managedobjectds.name,managedobjectds.hostname,managedobjectds.address,managedobjectds.profile,avail_percent,downtime,down_count,reboots",
-            "hide": false,
+            "hide": true,
             "label": "Fields",
             "type": "fields_selector"
         }
@@ -178,9 +192,10 @@
     "templates": [
         {
             "code": "DEFAULT",
-            "has_preview": false,
+            "handler": "simplereport",
+            "has_preview": true,
             "is_alterable_output": true,
-            "output_type": "csv"
+            "output_type": "html"
         }
     ]
 }
