@@ -18,34 +18,42 @@
                     "json": null
                 }
             ]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select * from Root"
+            }]
         }
     ],
     "bands_format": [
         {
-            "name": "Root",
+            "name": "header",
             "column_format": [
                 {
-                    "name": "managedobjectds.name",
+                    "name": "name",
                     "title": "Managed Object",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.address",
+                    "name": "address",
                     "title": "Address",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.profile",
+                    "name": "profile",
                     "title": "Profile",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.administrativedomain",
+                    "name": "administrativedomain",
                     "title": "Administrative Domain",
                     "format_type": "string"
                 },
                 {
-                    "name": "managedobjectds.avail_status",
+                    "name": "avail_status",
                     "title": "Avail",
                     "format_type": "string"
                 },
@@ -75,14 +83,8 @@
         "title": {
             "ru": "Отчет по проблемам дискавери (Новый)"
         },
-        "columns.name": {
-            "ru": "Объект управления"
-        },
         "columns.address": {
             "ru": "Адрес"
-        },
-        "columns.profile": {
-            "ru": "Профиль"
         },
         "columns.administrativedomain": {
             "ru": "Зона ответственности"
@@ -90,47 +92,54 @@
         "columns.avail_status": {
             "ru": "Доступность"
         },
-        "columns.last_success_discovery": {
-            "ru": "Время последнего запуска"
-        },
         "columns.discovery": {
             "ru": "Опрос"
         },
         "columns.error": {
             "ru": "Ошибка"
         },
-        "parameters.pool": {
-            "ru": "Пул объекта"
+        "columns.last_success_discovery": {
+            "ru": "Время последнего запуска"
         },
-        "parameters.mo_profile": {
-            "ru": "Профиль объекта"
+        "columns.name": {
+            "ru": "Объект управления"
         },
-        "parameters.resource_group": {
-            "ru": "Группа устройств (Селектор)"
-        },
-        "parameters.filter_no_ping": {
-            "ru": "Отфильтрвовать недоступные (не пингуются)"
-        },
-        "parameters.profile_check_only": {
-            "ru": "Вывести только проблемы доступа"
+        "columns.profile": {
+            "ru": "Профиль"
         },
         "parameters.failed_discovery_only": {
             "ru": "Исключить из вывода проблемы доступа"
         },
-        "parameters.filter_pending_links": {
-            "ru": "Отфильтровать неподтверждённые линки"
+        "parameters.filter_no_ping": {
+            "ru": "Отфильтрвовать недоступные (не пингуются)"
         },
         "parameters.filter_none_problems": {
             "ru": "Отфильтровать незаполненные проблемы"
         },
+        "parameters.filter_pending_links": {
+            "ru": "Отфильтровать неподтверждённые линки"
+        },
         "parameters.filter_view_other": {
             "ru": "Отобразить неклассифицированные проблемы"
+        },
+        "parameters.mo_profile": {
+            "ru": "Профиль объекта"
+        },
+        "parameters.pool": {
+            "ru": "Пул объекта"
+        },
+        "parameters.profile_check_only": {
+            "ru": "Вывести только проблемы доступа"
+        },
+        "parameters.resource_group": {
+            "ru": "Группа устройств (Селектор)"
         }
     },
     "parameters": [
         {
             "name": "pool",
             "description": null,
+            "hide": false,
             "label": "Pool",
             "model_id": "main.Pool",
             "required": true,
@@ -139,6 +148,7 @@
         {
             "name": "mo_profile",
             "description": null,
+            "hide": false,
             "label": "MO Profile",
             "model_id": "sa.ManagedObjectProfile",
             "type": "model"
@@ -146,6 +156,7 @@
         {
             "name": "resource_group",
             "description": null,
+            "hide": false,
             "label": "Resource Group (Selector)",
             "model_id": "inv.ResourceGroup",
             "type": "model"
@@ -153,36 +164,42 @@
         {
             "name": "filter_no_ping",
             "description": null,
+            "hide": false,
             "label": "Filter by Ping status",
             "type": "bool"
         },
         {
             "name": "profile_check_only",
             "description": null,
+            "hide": false,
             "label": "Profile check only",
             "type": "bool"
         },
         {
             "name": "failed_discovery_only",
             "description": null,
+            "hide": false,
             "label": "Failed discovery only",
             "type": "bool"
         },
         {
             "name": "filter_pending_links",
             "description": null,
+            "hide": false,
             "label": "Filter Pending links",
             "type": "bool"
         },
         {
             "name": "filter_none_problems",
             "description": null,
+            "hide": false,
             "label": "Filter None problems",
             "type": "bool"
         },
         {
             "name": "filter_view_other",
             "description": null,
+            "hide": false,
             "label": "Show other problems",
             "type": "bool"
         },
@@ -190,7 +207,7 @@
             "name": "fields",
             "description": null,
             "default": "managedobjectds.name,managedobjectds.address,managedobjectds.profile,managedobjectds.administrativedomain,managedobjectds.avail_status,last_success_discovery,discovery,error",
-            "hide": false,
+            "hide": true,
             "label": "Fields",
             "type": "fields_selector"
         }
@@ -198,9 +215,10 @@
     "templates": [
         {
             "code": "DEFAULT",
-            "has_preview": false,
+            "handler": "simplereport",
+            "has_preview": true,
             "is_alterable_output": true,
-            "output_type": "csv"
+            "output_type": "html"
         }
     ]
 }

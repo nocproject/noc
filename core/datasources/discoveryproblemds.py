@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Tuple, AsyncIterable
+from typing import Optional, Iterable, Tuple, List, Union, AsyncIterable
 
 # Third-party modules
 from pymongo import ReadPreference
@@ -14,13 +14,13 @@ from pymongo import ReadPreference
 # NOC modules
 from .base import FieldInfo, FieldType, BaseDataSource
 from noc.aaa.models.user import User
-from noc.core.mongo.connection import get_db
+from noc.core.scheduler.scheduler import Scheduler
 from noc.main.models.pool import Pool
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.useraccess import UserAccess
 
 CODE_MAP = {
@@ -34,34 +34,22 @@ CODE_MAP = {
 }
 
 
-class ReportDiscoveryProblem(object):
-    """Class for get list of discovery problems"""
+class DiscoveryProblemDS(BaseDataSource):
+    name = "discoveryproblemds"
+    row_index = "managed_object_id"
 
-    def __init__(self, mos, avail_only=False, match=None):
-        """
+    fields = [
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+        FieldInfo(name="last_success_discovery"),
+        FieldInfo(name="discovery"),
+        FieldInfo(name="error"),
+    ]
 
-        :param mos:
-        :type mos: ManagedObject.objects.filter()
-        """
-        self.mo_ids = list(mos.values_list("id", flat=True))
-        if avail_only:
-            status = ManagedObject.get_statuses(self.mo_ids)
-            self.mo_ids = [s for s in status if status[s]]
-        self.mos_pools = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
-        self.coll_name = "noc.schedules.discovery.%s"
-        # @todo Good way for pipelines fill
-        self.pipelines = {}
-        self.match = match
-
-    def pipeline(self):
-        """
-        Generate pipeline for request
-        :return:
-        :rtype: list
-        """
+    @classmethod
+    def get_pipeline(cls, ids: List[int], match=None):
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         pipeline = [
-            {"$match": {"key": {"$in": self.mo_ids}, "jcls": discovery}},
+            {"$match": {"key": {"$in": ids}, "jcls": discovery}},
             {
                 "$project": {
                     "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
@@ -79,35 +67,22 @@ class ReportDiscoveryProblem(object):
             },
             {"$project": {"job.problems": True, "st": True, "key": True}},
         ]
-        if self.match:
-            # @todo check match
-            pipeline += [{"$match": self.match}]
+        if match:
+            pipeline += [{"$match": match}]
         else:
             pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {}}}}]
         return pipeline
 
-    def __iter__(self):
-        for p in self.mos_pools:
-            r = (
-                get_db()[self.coll_name % p.name]
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .aggregate(self.pipelines.get(p.name, self.pipeline()))
-            )
-            for x in r:
-                # @todo Append info for MO
-                yield x
-
-
-class DiscoveryProblemDS(BaseDataSource):
-    name = "discoveryproblemds"
-    row_index = "managed_object_id"
-
-    fields = [
-        FieldInfo(name="managed_object_id", type=FieldType.UINT),
-        FieldInfo(name="last_success_discovery"),
-        FieldInfo(name="discovery"),
-        FieldInfo(name="error"),
-    ]
+    @staticmethod
+    def clean_problem(problems) -> str:
+        """Cleanup method problem"""
+        if isinstance(problems, dict) and "" in problems:
+            problem = problems.get("", "")
+        if "Remote error code" in problems:
+            problem = CODE_MAP.get(problems.split(" ")[-1], problems)
+        if isinstance(problems, str):
+            problem = problems.replace("\n", " ").replace("\r", " ")
+        return problem
 
     @classmethod
     async def iter_query(
@@ -125,10 +100,23 @@ class DiscoveryProblemDS(BaseDataSource):
         user: Optional[User] = None,
         *args,
         **kwargs,
-    ) -> AsyncIterable[Tuple[str, str]]:
+    ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
+        """
+        Attrs:
+            fields:
+            pool: Requested Pool
+            mo_profile: Requested Object Profile
+            resource_group: Requested Device Resource Group
+            filter_no_ping: Exclude unavailable devices
+            profile_check_only: Request only SA Profile Check Rules
+            failed_discovery_only: Exclude Diagnostic problem
+            filter_pending_links: Exclude problem with topology methods
+            filter_none_problems:
+            filter_view_other:
+            user: Requested user
+        """
         if not pool:
             raise ValueError("'pool' parameter is required")
-        match = None
         if resource_group:
             mos = ManagedObject.objects.filter(
                 effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
@@ -139,6 +127,8 @@ class DiscoveryProblemDS(BaseDataSource):
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(user))
         if mo_profile:
             mos = mos.filter(object_profile=mo_profile)
+        if filter_no_ping:
+            mos = mos.filter(avail_status=True)
         if filter_view_other:
             mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
             mos = mos.filter(profile=Profile.objects.get(name=GENERIC_PROFILE)).exclude(
@@ -153,36 +143,31 @@ class DiscoveryProblemDS(BaseDataSource):
                     {"job.problems.version.": {"$regex": "Remote error code 1000[1234]"}},
                 ]
             }
-        elif failed_discovery_only:
-            match = {
-                "$and": [
-                    {"job.problems": {"$exists": "true", "$ne": {}}},
-                    {"job.problems.suggest_snmp": {"$exists": False}},
-                    {"job.problems.suggest_cli": {"$exists": False}},
-                ]
-            }
-        elif filter_view_other:
-            match = {"job.problems.suggest_snmp": {"$exists": False}}
-        rdp = ReportDiscoveryProblem(mos, avail_only=filter_no_ping, match=match)
+        else:
+            match = None
         exclude_method = []
         if filter_pending_links:
             exclude_method += ["lldp", "lacp", "cdp", "huawei_ndp"]
+        mo_ids = list(mos.values_list("id", flat=True))
         row_num = 0
-        for discovery in rdp:
-            for method in [x for x in discovery["job"][0]["problems"] if x not in exclude_method]:
-                problem = discovery["job"][0]["problems"][method]
-                if filter_none_problems and not problem:
-                    continue
-                if isinstance(problem, dict) and "" in problem:
-                    problem = problem.get("", "")
-                if "Remote error code" in problem:
-                    problem = CODE_MAP.get(problem.split(" ")[-1], problem)
-                if isinstance(problem, str):
-                    problem = problem.replace("\n", " ").replace("\r", " ")
-                row_num += 1
-                yield row_num, "managed_object_id", discovery["key"]
-                yield row_num, "last_success_discovery", (
-                    discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else ""
-                )
-                yield row_num, "discovery", method
-                yield row_num, "error", problem
+        pools = [Pool.get_by_id(p) for p in mos.values_list("pool", flat=True).distinct()]
+        for p in pools:
+            s = Scheduler("discovery", pool=p.name)
+            coll = s.get_collection()
+            for discovery in coll.with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+            ).aggregate(cls.get_pipeline(mo_ids, match)):
+
+                for method in [
+                    x for x in discovery["job"][0]["problems"] if x not in exclude_method
+                ]:
+                    p = discovery["job"][0]["problems"][method]
+                    if filter_none_problems and not p:
+                        continue
+                    row_num += 1
+                    yield row_num, "managed_object_id", discovery["key"]
+                    yield row_num, "last_success_discovery", (
+                        discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else ""
+                    )
+                    yield row_num, "discovery", method
+                    yield row_num, "error", cls.clean_problem(p)
