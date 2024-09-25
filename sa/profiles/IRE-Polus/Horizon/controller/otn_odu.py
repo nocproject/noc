@@ -11,7 +11,6 @@ from uuid import UUID
 
 # NOC modules
 from noc.core.runner.job import JobRequest
-from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint
 from noc.inv.models.object import Object
 from noc.core.techdomain.profile.otn_odu import BaseODUProfileController

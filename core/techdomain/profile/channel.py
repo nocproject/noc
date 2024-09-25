@@ -8,7 +8,6 @@
 # NOC modules
 from noc.core.runner.models.jobreq import JobRequest
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint
 from noc.inv.models.object import Object
 from .base import BaseProfileController
@@ -112,6 +111,5 @@ class ProfileChannelController(BaseProfileController):
         try:
             m = __import__(mn, {}, {}, "Controller")
             return m.Controller()
-        except ImportError as e:
-            self.logger.error("Cannot load profile controller: %s", e)
+        except ImportError:
             return None

@@ -20,7 +20,6 @@ from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.resource import from_resource
-from noc.core.service.pub import publish
 
 
 @dataclass

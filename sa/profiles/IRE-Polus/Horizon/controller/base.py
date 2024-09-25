@@ -11,7 +11,6 @@ from typing import Iterable
 
 # NOC modules
 from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.object import Object
 
 
