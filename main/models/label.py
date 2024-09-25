@@ -788,6 +788,47 @@ class Label(Document):
                     cursor.execute(sql, params)
 
     @classmethod
+    def build_effective_labels(cls, instance, sender=None) -> Set[str]:
+        """Build Effective labels for Instance"""
+
+        def default_iter_effective_labels(instance) -> Iterable[List[str]]:
+            yield instance.labels or []
+
+        if not instance._has_effective_labels:
+            return set(instance.labels)
+        model_id = get_model_id(instance)
+        sender = sender or get_model(model_id)
+        # Check Match labels
+        match_labels = set()
+        for ml in getattr(instance, "match_rules", []):
+            if is_document(instance):
+                match_labels |= set(ml.labels or [])
+            else:
+                match_labels |= set(ml.get("labels", []))
+        # Validate instance labels
+        can_set_label = getattr(
+            sender,
+            "can_set_label",
+            partial(cls.has_model, model_id=model_id),
+        )
+        for label in set(instance.labels):
+            if not can_set_label(label):
+                # Check can_set_label method
+                raise ValueError(f"Invalid label: {label}")
+            if label in match_labels:
+                raise ValueError(
+                    f"Label on MatchRules and Label at the same time is not allowed: {label}"
+                )
+        # Build and clean up effective labels. Filter can_set_labels
+        labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
+        el = {
+            ll
+            for ll in Label.merge_labels(labels_iter(instance), add_wildcard=True)
+            if ll[-1] in MATCH_OPS or can_set_label(ll) or ll[-1] == "*"
+        }
+        return el
+
+    @classmethod
     def model(cls, m_cls):
         """
         Decorator to denote models with labels.
@@ -813,47 +854,15 @@ class Label(Document):
         :return:
         """
 
-        def default_iter_effective_labels(instance) -> Iterable[List[str]]:
-            yield instance.labels or []
-
         def on_pre_save(sender, instance=None, document=None, *args, **kwargs):
             instance = instance or document
             # Clean up labels
-            labels = Label.merge_labels(default_iter_effective_labels(instance))
+            labels = Label.merge_labels([instance.labels or []])
             instance.labels = labels
-            model_id = get_model_id(instance)
-            # Check Match labels
-            match_labels = set()
-            for ml in getattr(instance, "match_rules", []):
-                if is_document(instance):
-                    match_labels |= set(ml.labels or [])
-                else:
-                    match_labels |= set(ml.get("labels", []))
-            # Validate instance labels
-            can_set_label = getattr(
-                sender,
-                "can_set_label",
-                partial(cls.has_model, model_id=model_id),
-            )
-            for label in set(instance.labels):
-                if not can_set_label(label):
-                    # Check can_set_label method
-                    raise ValueError(f"Invalid label: {label}")
-                if label in match_labels:
-                    raise ValueError(
-                        f"Label on MatchRules and Label at the same time is not allowed: {label}"
-                    )
             # Block effective labels
             if instance._has_effective_labels:
+                el = Label.build_effective_labels(instance, sender)
                 # Build and clean up effective labels. Filter can_set_labels
-                labels_iter = getattr(
-                    sender, "iter_effective_labels", default_iter_effective_labels
-                )
-                el = {
-                    ll
-                    for ll in Label.merge_labels(labels_iter(instance), add_wildcard=True)
-                    if ll[-1] in MATCH_OPS or can_set_label(ll) or ll[-1] == "*"
-                }
                 if not instance.effective_labels or el != set(instance.effective_labels):
                     instance.effective_labels = list(sorted(el))
             if instance._has_lazy_labels and instance.name != instance._last_name:
