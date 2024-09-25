@@ -7,7 +7,6 @@
 
 # Python modules
 import argparse
-from functools import partial
 from typing import List
 
 # NOC modules
@@ -123,8 +122,8 @@ class Command(BaseCommand):
             oel = set(o.effective_labels or [])
             for i in ifaces:
                 if not i.profile or not i.profile_locked:
-                    el = Label.merge_labels(Interface.iter_effective_labels(i))
-                    ctx = i.get_profile()
+                    el = Label.build_effective_labels(i)
+                    ctx = i.get_matcher_ctx()
                     for pn, match in get_profile:
                         if match(ctx):
                             break
@@ -146,7 +145,7 @@ class Command(BaseCommand):
                             i.profile = default_profile
                             i.save()
                             v = "Not matched. Reset to default"
-                    self.show_interface(tps, i, v, set(el) - oel)
+                    self.show_interface(tps, i, v, el - oel)
 
 
 if __name__ == "__main__":
