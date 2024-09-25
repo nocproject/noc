@@ -50,6 +50,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
       text: __("Clipboard"),
       glyph: NOC.glyph.copy,
       scope: me,
+      disabled: true,
       handler: function(){
         NOC.toClipboard(me.logText);
       },
@@ -156,8 +157,6 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             "-",
             me.runSelectedButton,
             me.stopSelectedButton,
-            "-",
-            me.clipboardButton,
           ],
         },
       ],
@@ -183,6 +182,9 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         autoScroll: true,
         padding: 4,
       }],
+      tbar: [
+        me.clipboardButton,
+      ],
     });
 
     Ext.apply(me, {
@@ -323,11 +325,13 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
       success: function(response){
         me.setLog(response.responseText);
         me.logText = response.responseText;
+        me.clipboardButton.setDisabled(false);
       },
       failure: function(){
         var text = "Failed to get job log";
         me.setLog(text);
         me.logText = text;
+        me.clipboardButton.setDisabled(true);
       },
     });
   },
