@@ -40,6 +40,13 @@
             "is_const": false
         },
         {
+            "name": "fw_version",
+            "type": "str",
+            "description": "Item's firmware version",
+            "required": false,
+            "is_const": false
+        },
+        {
             "name": "mfg_date",
             "type": "str",
             "description": "Manufacturing date in YYYY-MM-DD format",
