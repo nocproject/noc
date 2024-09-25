@@ -17,21 +17,21 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     var me = this;
 
     me.closeButton = Ext.create("Ext.button.Button", {
-      text: __("Close"),
+      tooltip: __("Close"),
       glyph: NOC.glyph.arrow_left,
       scope: me,
       handler: me.onClose,
     });
 
     me.refreshButton = Ext.create("Ext.button.Button", {
-      text: __("Refresh"),
+      tooltip: __("Refresh"),
       glyph: NOC.glyph.refresh,
       scope: me,
       handler: me.onRefresh,
     });
 
     me.runSelectedButton = Ext.create("Ext.button.Button", {
-      text: __("Run"),
+      tooltip: __("Run"),
       glyph: NOC.glyph.play,
       scope: me,
       disabled: true,
@@ -39,7 +39,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     });
 
     me.stopSelectedButton = Ext.create("Ext.button.Button", {
-      text: __("Disable"),
+      tooltip: __("Disable"),
       glyph: NOC.glyph.minus_circle,
       scope: me,
       disabled: true,
@@ -47,7 +47,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     });
 
     me.clipboardButton = Ext.create("Ext.button.Button", {
-      text: __("Clipboard"),
+      tooltip: __("Clipboard"),
       glyph: NOC.glyph.copy,
       scope: me,
       disabled: true,
