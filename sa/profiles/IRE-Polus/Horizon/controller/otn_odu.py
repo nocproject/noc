@@ -132,7 +132,7 @@ class Controller(BaseODUProfileController, HorizonMixin):
         prefix = self.get_port_prefix(name)
         # Bring port up
         yield SetValue(
-            name=f"{prefix}_SetState", value="0", description="Bring port down. Set state to OOS."
+            name=f"{prefix}_SetState", value="1", description="Bring port down. Set state to MT."
         )
 
     HANDLERS = {ADM200: (iter_adm200_setup, iter_adm200_cleanup)}
