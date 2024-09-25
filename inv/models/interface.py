@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, Iterable, List, Union
+from typing import Optional, Iterable, List, Union, Dict, Any
 
 # Third-party modules
 from bson import ObjectId
@@ -672,6 +672,14 @@ class Interface(Document):
         )
         r = next(r, {})
         return r.get("interval", 0)
+
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "resource_group": list(self.effective_service_groups),
+        }
 
 
 # Avoid circular references

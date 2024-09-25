@@ -70,8 +70,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.get_interface_profile = partial(Label.get_instance_profile, InterfaceProfile)
-        # @todo bulk
+        # self.get_interface_profile = partial(Label.get_instance_profile, InterfaceProfile)
+        self.get_interface_profile = InterfaceProfile.get_profiles_matcher()
         self.confd_interface_profile_map = List[Tuple[str, InterfaceProfile]]
         self.interface_macs: Set[str] = set()
         self.seen_interfaces = []
@@ -188,14 +188,21 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                         list(sorted(el)),
                     )
                     iface.save()
+                changed = False
+                el = Label.build_effective_labels(iface)
+                if not iface.effective_labels or el != frozenset(iface.effective_labels):
+                    iface.effective_labels = list(sorted(el))
+                    changed = True
                 # Perform interface classification
-                # self.interface_classification(iface)
+                self.interface_classification(iface)
+                if changed:
+                    iface.save()
                 # Store for future collation
                 if_map[iface.name] = iface
             # Delete hanging interfaces
             self.seen_interfaces += [i["name"] for i in fi["interfaces"]]
         # Interface Classification
-        self.interface_classification_bulk(if_map)
+        # self.interface_classification_bulk(if_map)
         # Delete hanging interfaces
         self.cleanup_interfaces(self.seen_interfaces)
         # Delete hanging forwarding instances
@@ -464,6 +471,49 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             if dsi:
                 dsi.delete()
 
+    def interface_classification(self, iface: Interface):
+        """
+        Perform interface classification
+        For Aggregate members profile inheritance from aggregate interface, if not has profile Member label
+        Attrs:
+            iface: Interface instance
+        """
+        if iface.profile_locked:
+            return
+        elif iface.aggregated_interface and iface.aggregated_interface.profile != iface.profile:
+            iface.profile = iface.aggregated_interface.profile
+            self.logger.info(
+                "[%s] Interface has been classified from members '%s'",
+                iface.name,
+                iface.aggregated_interface.name,
+            )
+            return
+        elif iface.aggregated_interface:
+            return
+        ctx = iface.get_matcher_ctx()
+        for p_id, match in self.get_interface_profile:
+            if match(ctx):
+                break
+        else:
+            self.logger.debug("[%s] Not matched profile", iface.name)
+            return
+        if p_id and p_id != iface.profile.id:
+            # Change profile
+            profile = InterfaceProfile.get_by_id(p_id)
+            if not profile:
+                self.logger.error(
+                    "Invalid interface profile '%s' for interface '%s'. " "Skipping",
+                    p_id,
+                    iface.name,
+                )
+                return
+            elif profile != iface.profile:
+                self.logger.info(
+                    "Interface %s has been classified as '%s'", iface.name, profile.name
+                )
+                iface.profile = profile
+                iface.save()
+
     def interface_classification_bulk(self, ifaces: Dict[str, Interface]):
         """
         Assign Interface Profile by Effective Label
@@ -529,39 +579,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 if iface.profile.id != p_id:
                     iface.profile = InterfaceProfile.get_by_id(p_id)
                     iface.save()
-
-    def interface_classification(self, iface: "Interface"):
-        """
-        Perform interface classification
-        :param iface: Interface instance
-        :return:
-        """
-        try:
-            p_id = self.get_interface_profile(iface.effective_labels)
-        except NotImplementedError:
-            self.logger.error("Uses not implemented rule")
-            return
-        if p_id and p_id != iface.profile.id:
-            if iface.profile_locked:
-                self.logger.info(
-                    "Interface %s profile set by User. That block for classification", iface.name
-                )
-                return
-            # Change profile
-            profile = InterfaceProfile.get_by_id(p_id)
-            if not profile:
-                self.logger.error(
-                    "Invalid interface profile '%s' for interface '%s'. " "Skipping",
-                    p_id,
-                    iface.name,
-                )
-                return
-            elif profile != iface.profile:
-                self.logger.info(
-                    "Interface %s has been classified as '%s'", iface.name, profile.name
-                )
-                iface.profile = profile
-                iface.save()
 
     def resolve_properties(self):
         """
