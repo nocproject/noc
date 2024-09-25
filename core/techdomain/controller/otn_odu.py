@@ -199,6 +199,7 @@ class OTNODUController(BaseController):
             ctl = ProfileChannelController.get_controller_for_object(pi.object, self.name)
             if not ctl:
                 self.logger.info("Controller is not supported, skipping")
+                continue
             self.logger.info("Preparing setup")
             job = ctl.setup(ep)
             if job:
