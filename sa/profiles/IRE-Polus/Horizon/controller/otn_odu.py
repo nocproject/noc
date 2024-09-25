@@ -35,7 +35,7 @@ class Controller(BaseODUProfileController, HorizonMixin):
             card = 0
             dry_run = True
         # Get locks
-        locks = None if dry_run else f"mo:{mo.id}"
+        locks = None if dry_run else [f"mo:{mo.id}"]
         self.logger.info("Creating %s job for: %s (dry_run=%s)", job_type, ep.resource, dry_run)
         return JobRequest(
             name=name,
