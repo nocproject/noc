@@ -177,7 +177,16 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     forwarding_instance, iface, [si["name"] for si in i["subinterfaces"]]
                 )
                 # Update effective_labels
-                if hasattr(iface, "_refresh_labels"):
+                el = Label.build_effective_labels(iface)
+                self.logger.info(
+                    "[%s] Interface Calculated Effective labels: %s", iface.name, sorted(el)
+                )
+                if not iface.effective_labels or el != frozenset(iface.effective_labels):
+                    self.logger.info(
+                        "Interface '%s' has been changed: effective_labels = %s",
+                        iface.name,
+                        list(sorted(el)),
+                    )
                     iface.save()
                 # Perform interface classification
                 # self.interface_classification(iface)
@@ -288,7 +297,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "extra_labels": extra_labels,
                 },
                 ignore_empty=ignore_empty,
-                update_effective_labels=True,
+                update_effective_labels=False,
             )
             self.log_changes(f"Interface '{name}' has been changed", changes)
         else:
@@ -368,8 +377,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 ignore_empty=ignore_empty,
                 update_effective_labels=True,
             )
-            if any(True for cc in changes if cc[0] == "effective_labels"):
-                interface._refresh_labels = True
             self.log_changes(f"Subinterface '{name}' has been changed", changes)
         else:
             self.logger.info("Creating subinterface '%s'", name)
@@ -393,7 +400,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 ifindex=ifindex,
             )
             si.save()
-            interface._refresh_labels = True
         if mac:
             self.interface_macs.add(mac)
         if untagged_vlan:
