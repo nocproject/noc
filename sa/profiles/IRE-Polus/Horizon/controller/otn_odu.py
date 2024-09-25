@@ -119,7 +119,7 @@ class Controller(BaseODUProfileController, HorizonMixin):
         prefix = self.get_port_prefix(name)
         # Bring port up
         yield SetValue(
-            name=f"{prefix}_Set_State", value="2", description="Bring port up. Set state to IS."
+            name=f"{prefix}_SetState", value="2", description="Bring port up. Set state to IS."
         )
 
     def iter_adm200_cleanup(self, name: str) -> Iterable[SetValue]:
@@ -132,7 +132,7 @@ class Controller(BaseODUProfileController, HorizonMixin):
         prefix = self.get_port_prefix(name)
         # Bring port up
         yield SetValue(
-            name=f"{prefix}_Set_State", value="0", description="Bring port down. Set state to OOS."
+            name=f"{prefix}_SetState", value="0", description="Bring port down. Set state to OOS."
         )
 
     HANDLERS = {ADM200: (iter_adm200_setup, iter_adm200_cleanup)}

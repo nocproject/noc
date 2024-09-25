@@ -40,6 +40,6 @@ class ScriptAction(BaseAction):
         # Run script
         self.logger.info("Run managed_object=%s script=%s args=%s")
         # @todo: Wrap and catch errors
-        scr = getattr(mo.scripts, script)
-        await asyncio.to_thread(scr(**kwargs))
+        scr = mo.scripts[script]
+        await asyncio.to_thread(scr, **kwargs)
         return None
