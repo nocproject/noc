@@ -158,8 +158,8 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   },
   whichRange: function(value, ranges){
     var val = parseFloat(value),
-      position = function(val, range, index){
-        return (val - parseFloat(range)) * 20 / (parseFloat(ranges[index + 1]) - parseFloat(range)) + index * 20;
+      position = function(val, index){
+        return (val - parseFloat(ranges[index - 1])) * 20 / (parseFloat(ranges[index]) - parseFloat(ranges[index - 1])) + index * 20;
       };
     if(Ext.isEmpty(ranges) || ranges.filter(range => Ext.isEmpty(range)).length > 0){
       return 50;
@@ -167,11 +167,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     if(val < parseFloat(ranges[0])){
       return 10;
     } else if(val < parseFloat(ranges[1])){
-      return position(val, ranges[0], 1);
+      return position(val, 1);
     } else if(val < parseFloat(ranges[2])){
-      return position(val, ranges[0], 2);
+      return position(val, 2);
     } else if(val < parseFloat(ranges[3])){
-      return position(val, ranges[0], 3);
+      return position(val, 3);
     } else{
       return 90;
     }
