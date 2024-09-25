@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Test matcher
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -127,6 +127,17 @@ def test_lte(raw, config, expected):
 @pytest.mark.parametrize(
     "raw,config,expected",
     [
+        ({"labels": ["tag1", "tag2", "tag4"]}, {"labels": {"$all": ["tag1", "tag5"]}}, False),
+        ({"labels": ["tag2", "tag4"]}, {"labels": {"$all": ["tag4", "tag2"]}}, True),
+    ],
+)
+def test_all(raw, config, expected):
+    assert match(raw, config) is expected
+
+
+@pytest.mark.parametrize(
+    "raw,config,expected",
+    [
         (
             {"version": "12.2(33)SE"},
             {"version": {"$gte": "12.2(48)SE", "$lte": "12.2(52)SE"}},
@@ -155,4 +166,33 @@ def test_lte(raw, config, expected):
     ],
 )
 def test_between(raw, config, expected):
+    assert match(raw, config) is expected
+
+
+@pytest.mark.parametrize(
+    "raw,config,expected",
+    [
+        (
+            {"version": "12.2(60)SE"},
+            {
+                "$or": [
+                    {"version": {"$gte": "12.3(60)SE"}},
+                    {"version": {"$lte": "11.3(60)SE"}},
+                ],
+            },
+            False,
+        ),
+        (
+            {"version": "10.2(60)SE"},
+            {
+                "$or": [
+                    {"version": {"$gte": "12.3(60)SE"}},
+                    {"version": {"$lte": "11.3(60)SE"}},
+                ],
+            },
+            True,
+        ),
+    ],
+)
+def test_or(raw, config, expected):
     assert match(raw, config) is expected
