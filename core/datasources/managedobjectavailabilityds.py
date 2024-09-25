@@ -1,13 +1,12 @@
 # ----------------------------------------------------------------------
-# ManagedObject Outage Datasource
+# ManagedObject Availability Datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python Modules
 import datetime
-import math
 from typing import Optional, Iterable, Tuple, AsyncIterable, Union
 
 # Third-party modules
@@ -16,10 +15,10 @@ from pymongo.read_preferences import ReadPreference
 
 # NOC modules
 from .base import FieldInfo, FieldType, BaseDataSource
-from noc.fm.models.outage import Outage
+from noc.core.mongo.connection import get_db
 from noc.fm.models.reboot import Reboot
-from noc.sa.models.objectstatus import ObjectStatus
-from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectStatus
 
 OUTAGES_SQL = """
     SELECT managed_object, min(start) as min_start, max(stop) as max_stop,
@@ -31,11 +30,15 @@ OUTAGES_SQL = """
 
 class ManagedObjectAvailabilityDS(BaseDataSource):
     name = "managedobjectavailabilityds"
+    row_index = "managed_object_id"
 
     fields = [
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
         FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
         FieldInfo(name="current_avail_status", description="Avail Status", type=FieldType.BOOL),
-        FieldInfo(name="avail_percent", description="Availability by Percent", type=FieldType.UINT),
+        FieldInfo(
+            name="avail_percent", description="Availability by Percent", type=FieldType.FLOAT
+        ),
         FieldInfo(name="downtime", description="Downtime (sec)", type=FieldType.UINT),
         FieldInfo(name="down_count", description="Count outages", type=FieldType.UINT),
         FieldInfo(name="reboots", description="Reboots", type=FieldType.UINT),
@@ -71,7 +74,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         last: Optional[datetime.datetime] = None,
     ) -> int:
         """
-        Convert ObjectStatus cache to outage interval
+        Convert ManagedObjectStatus to outage interval
         :param start_date: Start interval time
         :param stop_date: End interval time
         :param status: Object Status
@@ -91,7 +94,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         return 0
 
     @staticmethod
-    def get_outages_ch(start_date, stop_date, skip_zero_avail=False):
+    def get_outages_ch(start_date, stop_date):
         from noc.core.clickhouse.connect import connection
 
         ch = connection()
@@ -111,7 +114,9 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
                 print(row)
                 continue
             row = orjson.loads(row)
-            oid = m_biid_map[int(row["managed_object"])]
+            oid = m_biid_map.get(int(row["managed_object"]), None)
+            if not oid:
+                continue
             min_start, max_stop = datetime.datetime.fromisoformat(
                 row["min_start"]
             ), datetime.datetime.fromisoformat(row["max_stop"])
@@ -123,73 +128,62 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
             outages[oid] = (duration, int(row["unavail_count"]))
         return outages
 
-    @staticmethod
-    def get_outages(start_date, stop_date, skip_zero_avail=False):
-        coll = Outage._get_collection()
-        pipeline = [
-            {
-                "$match": {
-                    "$or": [{"start": {"$gte": start_date}}, {"stop": {"$gte": start_date}}],
-                    "start": {"$lt": stop_date},
-                    "stop": {"$ne": None},
-                }
-            },
-            {
-                "$project": {
-                    "duration": {"$subtract": ["$stop", "$start"]},
-                    "start": 1,
-                    "stop": 1,
-                    "object": 1,
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$object",
-                    "duration_u": {"$sum": "$duration"},
-                    "unavail_count": {"$sum": 1},
-                    "min_start": {"$min": "$start"},
-                    "max_stop": {"$max": "$stop"},
-                }
-            },
-        ]
-        outages = {}
-        for num, row in enumerate(coll.aggregate(pipeline)):
-            oid = row["_id"]
-            min_start, max_stop = row["min_start"], row["max_stop"]
-            duration = math.ceil(row["duration_u"] / 1_000)
-            if min_start < start_date:
-                duration -= (start_date - min_start).total_seconds()
-            if max_stop > stop_date:
-                duration -= (max_stop - stop_date).total_seconds()
-            outages[oid] = (duration, row["unavail_count"])
-        return outages
-
     @classmethod
     async def iter_query(
-        cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
+        cls,
+        fields: Optional[Iterable[str]] = None,
+        start: Optional[datetime.datetime] = None,
+        end: Optional[datetime.datetime] = None,
+        skip_full_avail=False,
+        skip_zero_avail=False,
+        skip_zero_access=False,
+        *args,
+        **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
-        # now = datetime.datetime.now()
-        from_date = datetime.datetime(2022, 10, 1)
-        to_date = datetime.datetime(2022, 10, 31)
-        td = int((to_date - from_date).total_seconds())
-        rb = cls.get_reboots_by_object(start_date=from_date, stop_date=to_date)
-        outages = cls.get_outages_ch(start_date=from_date, stop_date=to_date)
-        # Getting unavailable
-        for num, row in enumerate(
-            ObjectStatus._get_collection().find({"object": {"$exists": True}})
-        ):
-            oid, status = row["object"], row["status"]
-            outage_duration, outage_count = outages.get(oid, (0, 0))
+        end = end or datetime.datetime.now().date()
+        td = int((end - start).total_seconds())
+        rb = cls.get_reboots_by_object(start_date=start, stop_date=end)
+        outages = cls.get_outages_ch(start_date=start, stop_date=end)
+        # Getting managed object statuses
+        moss = ManagedObjectStatus.objects.all()
+        if skip_zero_access:
+            ips = list(InterfaceProfile.objects.filter(is_uni=True).scalar("id"))
+            pipeline = [
+                {"$match": {"profile": {"$in": ips}}},
+                {
+                    "$group": {
+                        "_id": "$managed_object",
+                        "m": {"$max": "$oper_status"},
+                    }
+                },
+                {"$match": {"m": False}},
+                {"$project": {"_id": True}},
+            ]
+            data = (
+                get_db()["noc.interfaces"]
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(pipeline)
+            )
+            data = [d["_id"] for d in data]
+            moss = moss.exclude(managed_object__in=data)
+        for num, row in enumerate(moss.values("managed_object", "last", "status")):
+            mo_id, status = row["managed_object"], row["status"]
+            outage_duration, outage_count = outages.get(mo_id, (0, 0))
             s_outage = cls.get_status_outage(
-                start_date=from_date, stop_date=to_date, status=status, last=row.get("last")
+                start_date=start, stop_date=end, status=status, last=row.get("last")
             )
             if s_outage:
                 outage_duration += s_outage
                 outage_count += 1
             outage_duration = min(outage_duration, td)
-            yield num, "id", oid
+            if skip_full_avail and outage_duration == 0:
+                continue
+            if skip_zero_avail and outage_duration == td:
+                continue
+            yield num, "managed_object_id", mo_id
+            yield num, "id", mo_id
             yield num, "current_avail_status", row["status"]
             yield num, "avail_percent", (td - outage_duration) * 100.0 / td
             yield num, "downtime", outage_duration
             yield num, "down_count", outage_count
-            yield num, "reboots", rb.get(oid, 0)
+            yield num, "reboots", rb.get(mo_id, 0)
