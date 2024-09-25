@@ -89,8 +89,7 @@ table {
     border-bottom: 1px dotted white;
 }
 
-.noc-console .result {
-}
+.noc-console .result {}
 
 .noc-inactive {
     background-color: #808080;
@@ -109,8 +108,7 @@ table {
     padding-right: 2pt;
 }
 
-.noc-int-command {
-}
+.noc-int-command {}
 
 .noc-int-login {
     color: #4471ed;
@@ -145,20 +143,18 @@ table {
     margin: 4px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
     -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 1px 2px rgba(0, 0, 0, 0.05);
+        0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .noc-alert-success {
     background-image: -webkit-linear-gradient(top, #dff0d8 0%, #c8e5bc 100%);
     background-image: -o-linear-gradient(top, #dff0d8 0%, #c8e5bc 100%);
-    background-image: -webkit-gradient(
-            linear,
+    background-image: -webkit-gradient(linear,
             left top,
             left bottom,
             from(#dff0d8),
-            to(#c8e5bc)
-    );
+            to(#c8e5bc));
     background-image: linear-gradient(to bottom, #dff0d8 0%, #c8e5bc 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdff0d8', endColorstr='#ffc8e5bc', GradientType=0);
     background-repeat: repeat-x;
@@ -168,13 +164,11 @@ table {
 .noc-alert-info {
     background-image: -webkit-linear-gradient(top, #d9edf7 0%, #b9def0 100%);
     background-image: -o-linear-gradient(top, #d9edf7 0%, #b9def0 100%);
-    background-image: -webkit-gradient(
-            linear,
+    background-image: -webkit-gradient(linear,
             left top,
             left bottom,
             from(#d9edf7),
-            to(#b9def0)
-    );
+            to(#b9def0));
     background-image: linear-gradient(to bottom, #d9edf7 0%, #b9def0 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9edf7', endColorstr='#ffb9def0', GradientType=0);
     background-repeat: repeat-x;
@@ -184,13 +178,11 @@ table {
 .noc-alert-warning {
     background-image: -webkit-linear-gradient(top, #fcf8e3 0%, #f8efc0 100%);
     background-image: -o-linear-gradient(top, #fcf8e3 0%, #f8efc0 100%);
-    background-image: -webkit-gradient(
-            linear,
+    background-image: -webkit-gradient(linear,
             left top,
             left bottom,
             from(#fcf8e3),
-            to(#f8efc0)
-    );
+            to(#f8efc0));
     background-image: linear-gradient(to bottom, #fcf8e3 0%, #f8efc0 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffcf8e3', endColorstr='#fff8efc0', GradientType=0);
     background-repeat: repeat-x;
@@ -200,13 +192,11 @@ table {
 .noc-alert-danger {
     background-image: -webkit-linear-gradient(top, #f2dede 0%, #e7c3c3 100%);
     background-image: -o-linear-gradient(top, #f2dede 0%, #e7c3c3 100%);
-    background-image: -webkit-gradient(
-            linear,
+    background-image: -webkit-gradient(linear,
             left top,
             left bottom,
             from(#f2dede),
-            to(#e7c3c3)
-    );
+            to(#e7c3c3));
     background-image: linear-gradient(to bottom, #f2dede 0%, #e7c3c3 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff2dede', endColorstr='#ffe7c3c3', GradientType=0);
     background-repeat: repeat-x;
@@ -218,8 +208,7 @@ table {
     -webkit-filter: brightness(0.95);
 }
 
-.noc-offset-0 {
-}
+.noc-offset-0 {}
 
 .noc-offset-1 {
     padding-left: 4px;
@@ -299,19 +288,19 @@ table {
 /*
  * Statuses
  */
-.noc-status-waiting > td {
+.noc-status-waiting>td {
     background-color: #7f8c8d !important;
 }
 
-.noc-status-running > td {
+.noc-status-running>td {
     background-color: #f0c330 !important;
 }
 
-.noc-status-success > td {
+.noc-status-success>td {
     background-color: #39ca74 !important;
 }
 
-.noc-status-failed > td {
+.noc-status-failed>td {
     background-color: #be3a31 !important;
 }
 
@@ -417,7 +406,7 @@ table {
     width: 401px;
 }
 
-.noc-wc-state + .noc-wc-cloud {
+.noc-wc-state+.noc-wc-cloud {
     background: #ecf0f1;
     border: 1px solid #b5b8c8;
     border-radius: 5px;
@@ -428,8 +417,8 @@ table {
     z-index: 5;
 }
 
-.noc-wc-state + .noc-wc-cloud:before,
-.noc-wc-state + .noc-wc-cloud:after {
+.noc-wc-state+.noc-wc-cloud:before,
+.noc-wc-state+.noc-wc-cloud:after {
     content: "";
     position: absolute;
     border-left: 10px solid transparent;
@@ -439,11 +428,11 @@ table {
     margin-left: -200px;
 }
 
-.noc-wc-state + .noc-wc-cloud:before {
+.noc-wc-state+.noc-wc-cloud:before {
     border-bottom: 10px solid #b5b8c8;
 }
 
-.noc-wc-state + .noc-wc-cloud:after {
+.noc-wc-state+.noc-wc-cloud:after {
     border-bottom: 10px solid #ecf0f1;
     margin-bottom: -2px;
     z-index: 1;
@@ -461,7 +450,7 @@ table {
 /*
  * Safari 11 fieldset title issue
  */
-.x-fieldset-header-default > .x-fieldset-header-text {
+.x-fieldset-header-default>.x-fieldset-header-text {
     position: static;
 }
 
@@ -561,7 +550,8 @@ table {
     opacity: 0.6 !important;
 }
 
-.x-item-disabled, .x-item-disabled * {
+.x-item-disabled,
+.x-item-disabled * {
     pointer-events: unset !important;
 }
 
@@ -677,7 +667,7 @@ table {
 .noc-metric-value {
     position: relative;
     width: 1px;
-    height: 7px; 
+    height: 7px;
     margin-top: 6px;
     background: black;
 }
@@ -694,7 +684,7 @@ table {
 }
 
 .noc-metric-green-range {
-    width: 100%; 
+    width: 100%;
     background: green;
 }
 
@@ -710,11 +700,11 @@ table {
     background-color: #f1c40f;
 }
 
-.noc-inv-nav-cell-inner::before { 
+.noc-inv-nav-cell-inner::before {
     border: none !important;
 }
 
-.selectable:hover path{
+.selectable:hover path {
     stroke: #f1c40f;
 }
 
@@ -733,4 +723,17 @@ table {
 .x-menu-item.noc-remove-menu-item.x-menu-item-active .x-menu-item-text,
 .x-menu-item.noc-remove-menu-item.x-menu-item-active .x-menu-item-icon {
     color: #FFFFFF !important;
+}
+
+.noc-pconf-value {
+    position: relative;
+    left: calc(50% - 22px);
+}
+
+.noc-pconf-value-tick {
+    width: 8px;
+    height: 8px;
+    clip-path: polygon(4px 0px, 0px 8px, 8px 8px);
+    position: relative;
+    z-index: 5;
 }

@@ -8,6 +8,26 @@ console.debug("Defining NOC.inv.inv.plugins.pconf.PConfPanel");
 
 Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   extend: "Ext.panel.Panel",
+  config: {
+    status: {
+      u: {
+        color: "#7f8c8d",
+        glyph: "question",
+      },
+      c: {
+        color: "#c0392b",
+        glyph: "exclamation-triangle",
+      },
+      w: {
+        color: "#f1c40f",
+        glyph: "exclamation-circle",
+      },
+      o: {
+        color: "#16a085",
+        glyph: "check-circle",
+      },
+    },
+  },
   requires: [
     "NOC.inv.inv.plugins.pconf.PConfModel",
     "NOC.inv.inv.plugins.pconf.Controller",
@@ -23,19 +43,29 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         listeners: {
           datachanged: "onDataChanged",
         },
-        filters: [{
-          property: "name",
-          value: "{searchText}",
-          anyMatch: true,
-          caseSensitive: false,
-        }, {
-          property: "table",
-          value: "{tabType}",
-        }],
+        filters: [
+          {
+            property: "name",
+            value: "{searchText}",
+            anyMatch: true,
+            caseSensitive: false,
+          },
+          {
+            property: "table",
+            value: "{tabType}",
+          },
+        ],
       },
     },
     data: {
       searchText: "",
+      status: null,
+      statusDisabled: {
+        u: false,
+        c: false,
+        w: false,
+        o: false,
+      },
       tabType: 1,
       totalCount: 0,
     },
@@ -51,7 +81,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       xtype: "textfield",
       itemId: "searchText",
       emptyText: __("Search..."),
-      width: 400,
+      width: 300,
       bind: {
         value: "{searchText}",
       },
@@ -100,6 +130,66 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       },
       value: 1,
       editable: false,
+      listeners: {
+        select: "onTabTypeChange",
+      },
+    },
+    {
+      xtype: "segmentedbutton",
+      itemId: "statusFilter",
+      allowDepress: true,
+      bind: {
+        value: "{status}",
+      },
+      items: [
+        {
+          tooltip: __("Unknown"),
+          toggleGroup: "status",
+          value: "u",
+          bind: {
+            disabled: "{statusDisabled.u}",
+          },
+          listeners: {
+            afterrender: "onButtonRender",
+          },
+        },
+        {
+          tooltip: __("Ok"),
+          toggleGroup: "status",
+          value: "o",
+          bind: {
+            disabled: "{statusDisabled.o}",
+          },
+          listeners: {
+            afterrender: "onButtonRender",
+          },
+        },
+        {
+          tooltip: __("Warning"),
+          toggleGroup: "status",
+          value: "w",
+          bind: {
+            disabled: "{statusDisabled.w}",
+          },
+          listeners: {
+            afterrender: "onButtonRender",
+          },
+        },
+        {
+          tooltip: __("Critical"),
+          toggleGroup: "status",
+          value: "c",
+          bind: {
+            disabled: "{statusDisabled.c}",
+          },
+          listeners: {
+            afterrender: "onButtonRender",
+          },
+        },
+      ],
+      listeners: {
+        toggle: "onStatusChange",
+      },
     },
     "->",
     {
@@ -131,24 +221,13 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
             xtype: "textfield",
           },
           width: 200,
-          renderer: function(value, metaData, record){
-            var displayValue = value;
-            if(record.get("type") === "enum"){
-              var options = record.get("options") || [],
-                option = options.find(opt => opt.id === value);
-              displayValue = option ? option.label : value;
-            }
-            if(record.get("read_only")){
-              return "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
-            }
-            return "<i class='fas fa fa-pencil' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
-          },
+          renderer: "valueRenderer",
         },
-        {
-          text: __("Units"),
-          dataIndex: "units",
-          width: 50,
-        },
+        // {
+        // text: __("Units"),
+        // dataIndex: "units",
+        // width: 50,
+        // },
         {
           text: __("Description"),
           dataIndex: "description",

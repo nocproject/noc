@@ -136,7 +136,10 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       },
       single: false,
     }, function(data){
-      filters.remove("invBoMFilter");
+      var bomFilter = filters.find("_id", "invBoMFilter");
+      if(bomFilter){
+        filters.remove(bomFilter);
+      }
       filters.add({
         id: "invBoMFilter",
         filterFn: function(record){

@@ -11,10 +11,23 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   alias: "controller.pconf",
 
   onDataChanged: function(store){
-    var viewModel = this.getViewModel();
-    if(viewModel){
-      viewModel.set("totalCount", store.getCount());
+    var vm = this.getViewModel(),
+      hasStatus = function(value){
+        return store.findBy(function(record){
+          return !Ext.isEmpty(record.get("status")) && record.get("status") === value;
+        }) === -1;
+      },
+      hasStatuses = {
+        u: hasStatus("u"),
+        c: hasStatus("c"),
+        w: hasStatus("w"),
+        o: hasStatus("o"),
+      };
+    
+    if(vm){
+      vm.set("totalCount", store.getCount());
     }
+    vm.set("statusDisabled", hasStatuses);
   },
   onReload: function(){
     var me = this;
@@ -55,5 +68,134 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
         NOC.error(__("Failed to set parameter"));
       },
     });
+  },
+  onStatusChange: function(group, button){
+    var store = this.getViewModel().getStore("gridStore"),
+      filters = store.getFilters();
+    
+    this.removeFilter();
+    if(button.pressed){
+      filters.add({
+        id: "invConfigStatusFilter",
+        filterFn: function(record){
+          var status = record.get("status");
+          return button.value === status
+        },
+      });
+    }
+  },
+  onTabTypeChange: function(){
+    this.removeFilter();
+  },
+  onButtonRender: function(button){
+    var config = this.getView().getStatus()[button.value];
+    button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
+    button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
+  },
+  valueRenderer: function(value, metaData, record){
+    var displayValue,
+      units = record.get("units"),
+      allStatusConf = this.getView().getStatus(),
+      status = record.get("status");
+    if(record.get("type") === "enum"){
+      var options = record.get("options") || [],
+        option = options.find(opt => opt.id === value);
+      displayValue = option ? option.label : value;
+    }
+
+    if(Ext.isEmpty(value)){
+      displayValue = "";
+    } else{
+      displayValue = value + "&nbsp;" + units || "";
+    }
+    if(Ext.isEmpty(status)){
+      if(record.get("read_only")){
+        return "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;
+      }
+      return "<i class='fas fa fa-pencil' style='padding-right: 4px;'></i>" + displayValue; 
+    }
+
+    
+    var result, statConf = allStatusConf[status],
+      tickPosition = this.whichRange(value, record.get("thresholds"));
+    
+    if(value){
+      result = `<div class='noc-pconf-value fa fa-${statConf.glyph}'`
+        + ` style='color:${statConf.color}'>&nbsp;${displayValue}</div>`;
+    } else{
+      result = `<div class='noc-pconf-value'</div>`;
+    }
+    result += "<div class='noc-metric-container' style='padding-top:2px;'>";
+    if(value){
+      result += "<div class='noc-metric-range noc-metric-green-range'></div>";
+    }
+    if(!Ext.isEmpty(status) && status !== "u"){
+      var rangeColors = [
+          allStatusConf["c"].color,
+          allStatusConf["w"].color,
+          allStatusConf["o"].color,
+          allStatusConf["w"].color,
+          allStatusConf["c"].color,
+        ],
+        ranges = this.zip([0, 20, 40, 60, 80], rangeColors),
+        thresholds = record.get("thresholds"),
+        tips = [` < ${thresholds[0]}`,
+                `${thresholds[0]} - ${thresholds[1]}`,
+                `${thresholds[1]} - ${thresholds[2]}`,
+                `${thresholds[2]} - ${thresholds[3]}`,
+                `${thresholds[3]} >`];
+      
+      Ext.each(ranges, function(range, index){
+        result += `<div class='noc-metric-range' data-qtip='${tips[index]}'`
+          + `style='left:${range[0]}%;width:20%;background: ${range[1]};'></div>`;
+      });
+    }
+    result += "</div>";
+    if(value){
+      result += `<div class='noc-pconf-value-tick' style='left: calc(${tickPosition}% - 4px);background: ${statConf.color}'></div>`;
+    }
+    return result;
+  },
+  whichRange: function(value, ranges){
+    var val = parseFloat(value),
+      position = function(val, range, index){
+        return (val - parseFloat(range)) * 20 / (parseFloat(ranges[index + 1]) - parseFloat(range)) + index * 20;
+      };
+    if(Ext.isEmpty(ranges) || ranges.filter(range => Ext.isEmpty(range)).length > 0){
+      return 50;
+    }
+    if(val < parseFloat(ranges[0])){
+      return 10;
+    } else if(val < parseFloat(ranges[1])){
+      return position(val, ranges[0], 1);
+    } else if(val < parseFloat(ranges[2])){
+      return position(val, ranges[0], 2);
+    } else if(val < parseFloat(ranges[3])){
+      return position(val, ranges[0], 3);
+    } else{
+      return 90;
+    }
+  },
+  zip: function(){
+    var args = Array.prototype.slice.call(arguments),
+      length = Math.max.apply(null, args.map(function(arr){ return arr.length; })),
+      result = [];
+
+    for(var i = 0; i < length; i++){
+      var row = args.map(function(arr){ return arr[i]; });
+      result.push(row);
+    }
+
+    return result;
+  },
+  removeFilter: function(){
+    var store = this.getViewModel().getStore("gridStore"),
+      filters = store.getFilters(),
+      statusFilter = filters.find("_id", "invConfigStatusFilter");
+
+    this.getViewModel().set("status", null);
+    if(statusFilter){
+      filters.remove(statusFilter);
+    }
   },
 });
