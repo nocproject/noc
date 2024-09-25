@@ -1,107 +1,121 @@
 # ----------------------------------------------------------------------
-# Expression matcher
+# Function matcher
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
-from typing import Iterable
+from functools import partial
+from typing import List, Tuple, FrozenSet, Callable, Dict, Any, Union, Iterable
 
-# NOC modules
+# NOC Modules
 from noc.core.text import alnum_key
 
 
-__all__ = ["match"]
+def match(ctx: Dict[str, Union[List, str, int]], expr: Dict[str, Any]) -> bool:
+    return build_matcher(expr)(ctx)
 
 
-def match(ctx, expr):
-    """
-    Returns True if context *ctx* matches against expression *expr*
-    :param ctx: dict of context variables
-    :param expr: dict of expression
-    :return:
-    """
-    if "$or" in expr:
-        for x in expr["$or"]:
-            if match(ctx, x):
+def get_matcher(op: str, field: str, value: Any) -> Callable:
+    """getting matcher function by operation"""
+    if op not in matchers:
+        raise ValueError("Unknown matcher: %s", op)
+    # Clean Argument
+    match op:
+        case "$regex":
+            value = re.compile(value)
+        case "$in" | "$all" | "$any":
+            value = frozenset(str(v) for v in value)
+        case "$eq":
+            value = value
+        case _:
+            value = alnum_key(value)
+    return partial(matchers[op], value, field)
+
+
+def iter_matchers(expr: Dict[str, Any]) -> Iterable[Callable]:
+    for field, matcher in expr.items():
+        if field == "$or":
+            yield partial(match_or, (build_matcher(m) for m in matcher))
+        elif not isinstance(matcher, dict):
+            yield partial(match_eq, matcher, field)
+        else:
+            for op, value in matcher.items():
+                yield get_matcher(op, field, value)
+
+
+def build_matcher(expr: Dict[str, Any]) -> Callable:
+    """Build matcher function by expression"""
+    # If not tuple, matcher works one time
+    return partial(match_and, tuple(iter_matchers(expr)))
+
+
+def match_or(c_iter: Tuple[Callable, ...], ctx: Dict[str, Any]) -> bool:
+    for c in c_iter:
+        try:
+            if c(ctx):
                 return True
-        return False
-    else:
-        for x in expr:
-            # iter matchers expression - caps, version, platform, vendor
-            if x not in ctx:
-                return False
-            if isinstance(expr[x], dict):
-                for m in expr[x]:
-                    if ctx[x] is None:
-                        continue
-                    mf = matchers.get(m)
-                    if mf and not isinstance(expr[x][m], tuple):
-                        if not mf(ctx[x], expr[x][m]):
-                            return False
-                    elif mf and isinstance(expr[x][m], tuple) and expr[x][m][0] in ctx[x]:
-                        # if caps matchers: "caps": {"$gte": ("DB | Interfaces", 40)}
-                        if not mf(str(ctx[x][expr[x][m][0]]), str(expr[x][m][1])):
-                            return False
-                    else:
-                        return False
-            elif ctx.get(x) != expr[x]:
-                return False
-        return True
-
-
-def match_regex(v, rx):
-    return bool(re.search(rx, v))
-
-
-def match_all(v, iter):
-    """
-    All logic
-    :param v: Caps
-    :param iter: Matcher value
-    :return:
-    """
-    if isinstance(v, str):
-        return str(v) in iter
-    if isinstance(v, Iterable):
-        # if v list - check all
-        return not bool(set(iter) - set(v))
+        except KeyError:
+            return False
     return False
 
 
-def match_in(v, iter):
-    if isinstance(v, str):
-        return str(v) in iter
-    if isinstance(v, Iterable):
-        # if v list - check intersection
-        return bool(set(v).intersection(set(iter)))
-    return False
+def match_and(c_iter: Tuple[Callable, ...], ctx: Dict[str, Any]) -> bool:
+    for c in c_iter:
+        try:
+            if not c(ctx):
+                return False
+        except KeyError:
+            return False
+    return True
 
 
-def match_gt(v, cv):
-    return alnum_key(v) > alnum_key(cv)
+def match_regex(rx: re.Pattern, field: str, ctx: Dict[str, Any]) -> bool:
+    return bool(rx.search(ctx[field]))
 
 
-def match_gte(v, cv):
-    return alnum_key(v) >= alnum_key(cv)
+def match_in(c_iter: FrozenSet, field: str, ctx: Dict[str, Any]) -> bool:
+    return str(ctx[field]) in c_iter
 
 
-def match_lt(v, cv):
-    return alnum_key(v) < alnum_key(cv)
+def match_all(c_iter: FrozenSet, field: str, ctx: Dict[str, Any]) -> bool:
+    return not bool(c_iter - set(ctx[field]))
 
 
-def match_lte(v, cv):
-    return alnum_key(v) <= alnum_key(cv)
+def match_any(c_iter: FrozenSet, field: str, ctx: Dict[str, Any]) -> bool:
+    return bool(set(ctx[field]).intersection(c_iter))
+
+
+def match_gt(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
+    return alnum_key(ctx[field]) > cv
+
+
+def match_gte(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
+    return alnum_key(ctx[field]) >= cv
+
+
+def match_lt(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
+    return alnum_key(ctx[field]) < cv
+
+
+def match_lte(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
+    return alnum_key(ctx[field]) <= cv
+
+
+def match_eq(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
+    return ctx[field] == cv
 
 
 matchers = {
     "$regex": match_regex,
     "$in": match_in,
-    "$all": match_in,
+    "$any": match_any,
+    "$all": match_all,
     "$gt": match_gt,
     "$gte": match_gte,
     "$lt": match_lt,
     "$lte": match_lte,
+    "$eq": match_eq,
 }
