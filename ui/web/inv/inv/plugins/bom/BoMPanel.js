@@ -108,6 +108,9 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
           text: __("Location"),
           dataIndex: "location",
           flex: 1,
+          renderer: function(v){
+            return v.join(" > ")
+          },
         },
         {
           text: __("Serial"),
@@ -118,6 +121,16 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
           text: __("Asset#"),
           dataIndex: "asset_no",
           width: 150,
+        },
+        {
+          text: __("Revision"),
+          dataIndex: "revision",
+          width: 100,
+        },
+        {
+          text: __("Version"),
+          dataIndex: "fw_version",
+          width: 100,
         },
       ],
     },
