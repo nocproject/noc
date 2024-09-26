@@ -210,10 +210,29 @@ class OduDiscriminator(object):
         return r
 
 
-scopes = {x.scope: x for x in (LambdaDiscriminator, VlanDiscriminator, OduDiscriminator)}
+class OscDiscriminator(object):
+    scope = "osc"
+    OUTBAND = "outband"
+
+    def __init__(self, value: str) -> None:
+        if value != self.OUTBAND:
+            raise ValueError(f"Must be {self.OUTBAND}")
+
+    def __str__(self) -> str:
+        return f"{self.scope}::{self.OUTBAND}"
+
+    def __contains__(self, other: Any) -> bool:
+        return isinstance(other, OscDiscriminator)
 
 
-def discriminator(v: str) -> Union[LambdaDiscriminator, VlanDiscriminator, OduDiscriminator]:
+scopes = {
+    x.scope: x for x in (LambdaDiscriminator, VlanDiscriminator, OduDiscriminator, OscDiscriminator)
+}
+
+
+def discriminator(
+    v: str,
+) -> LambdaDiscriminator | VlanDiscriminator | OduDiscriminator | OscDiscriminator:
     if SCOPE_SEPARATOR not in v:
         msg = "Invalid Format"
         raise ValueError(msg)
