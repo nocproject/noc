@@ -24,7 +24,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMModel", {
     },
     {
       name: "location",
-      type: "string",
+      type: "auto",
     },
     {
       name: "serial",
@@ -32,6 +32,14 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMModel", {
     },
     {
       name: "asset_no",
+      type: "string",
+    },
+    {
+      name: "revision",
+      type: "string",
+    },
+    {
+      name: "fw_version",
       type: "string",
     },
   ],

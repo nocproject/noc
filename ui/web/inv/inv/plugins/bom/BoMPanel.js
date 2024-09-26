@@ -108,6 +108,9 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
           text: __("Location"),
           dataIndex: "location",
           flex: 1,
+          renderer: function(v){
+            return v.join(" > ")
+          },
         },
         {
           text: __("Serial"),
@@ -118,6 +121,16 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
           text: __("Asset#"),
           dataIndex: "asset_no",
           width: 150,
+        },
+        {
+          text: __("Revision"),
+          dataIndex: "revision",
+          width: 100,
+        },
+        {
+          text: __("Version"),
+          dataIndex: "fw_version",
+          width: 100,
         },
       ],
     },
@@ -147,11 +160,15 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
             vendor = record.get("vendor").toLowerCase(),
             model = record.get("model").toLowerCase(),
             serial = record.get("serial").toLowerCase(),
-            asset_no = record.get("asset_no").toLowerCase();
+            asset_no = record.get("asset_no").toLowerCase(),
+            revision = record.get("revision").toLowerCase(),
+            fw_version = record.get("fw_version").toLowerCase();
           return vendor.includes(text) ||
               model.includes(text) ||
               serial.includes(text) ||
-              asset_no.includes(text);
+              asset_no.includes(text) ||
+              revision.includes(text) ||
+              fw_version.includes(text)
         },
       });
     });
