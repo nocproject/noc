@@ -619,6 +619,11 @@
             "output": "P1"
         },
         {
+            "input": "LINE_IN",
+            "input_discriminator": "osc::outband",
+            "output": "OSC_OUT"
+        },
+        {
             "input": "P2",
             "input_discriminator": "lambda::192100-50",
             "output": "C21"
@@ -817,10 +822,6 @@
             "input": "P2",
             "input_discriminator": "lambda::196000-50",
             "output": "C60"
-        },
-        {
-            "input": "P2",
-            "output": "OSC_OUT"
         }
     ],
     "data": [
