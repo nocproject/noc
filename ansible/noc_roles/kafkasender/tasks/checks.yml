@@ -9,12 +9,12 @@
     - checks
 
 
-- name: fail if liftbridge is not selected
+- name: fail if Kafka or Liftbridge is not selected
   fail:
-    msg: "Kafkasender works only with liftbridge service. Please install at least one"
+    msg: "Kafkasender works only with Liftbridge or Kafka services. Please install at least one"
   when:
     - has_svc_kafkasender is defined
-    - "'svc-liftbridge' not in groups"
+    - "'svc-liftbridge' not in groups and 'svc-kafka' not in groups"
   tags:
     - checks
 
