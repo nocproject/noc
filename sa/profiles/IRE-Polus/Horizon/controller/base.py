@@ -87,3 +87,24 @@ class HorizonMixin(object):
             return f"Cl_{name[6:]}"
         msg = f"Invalid port name: {name}"
         raise ValueError(msg)
+
+    @classmethod
+    def get_adm200_xcvr_suffix(cls, name: str) -> str:
+        """
+        Get tranceiver suffix for ADM-200.
+
+        Args:
+            name: Port name.
+
+        Raises:
+            ValueError: On invalid name.
+
+        Returns:
+            Transceiver suffix.
+        """
+        if name.startswith("LINE"):
+            return "CFP2"
+        if name.startswith("CLIENT"):
+            return "SFP"
+        msg = f"Invalid port name: {name}"
+        raise ValueError(msg)
