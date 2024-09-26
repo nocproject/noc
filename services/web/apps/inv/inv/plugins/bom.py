@@ -35,9 +35,11 @@ class BoMPlugin(InvPlugin):
                     "id": str(o.id),
                     "vendor": str(o.model.vendor.name),
                     "model": o.model.name.split("|")[-1].strip(),
-                    "location": " > ".join(reversed(path)),
+                    "location": list(reversed(path)),
                     "serial": o.get_data("asset", "serial") or "",
                     "asset_no": o.get_data("asset", "asset_no") or "",
+                    "revision": o.get_data("asset", "revision") or "",
+                    "fw_version": o.get_data("asset", "fw_version") or "",
                 }
             )
         return {"data": r}
