@@ -10,9 +10,10 @@ import orjson
 
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.script.error import ScriptError
 from noc.core.script.http.base import HTTPError
 from noc.core.interface.base import BaseInterface
-from noc.sa.interfaces.base import BooleanParameter, StringParameter, IntParameter
+from noc.sa.interfaces.base import StringParameter, IntParameter
 
 
 class ISetParam(BaseInterface):
@@ -24,7 +25,6 @@ class ISetParam(BaseInterface):
     name = StringParameter(required=True)
     # Param value
     value = StringParameter()
-    returns = BooleanParameter()
 
 
 class Script(BaseScript):
@@ -50,6 +50,4 @@ class Script(BaseScript):
             self.logger.warning(
                 "Error core %s received while set_param. Message is |%s|", e.code, e
             )
-            return False
-
-        return True
+            raise ScriptError(f"Error code {e.code} received while set_param. Message is |{e}|")
