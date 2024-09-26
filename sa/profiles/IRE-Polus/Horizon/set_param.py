@@ -13,7 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.core.script.error import ScriptError
 from noc.core.script.http.base import HTTPError
 from noc.core.interface.base import BaseInterface
-from noc.sa.interfaces.base import BooleanParameter, StringParameter, IntParameter
+from noc.sa.interfaces.base import StringParameter, IntParameter
 
 
 class ISetParam(BaseInterface):
