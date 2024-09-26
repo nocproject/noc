@@ -1,0 +1,16 @@
+{
+    "name": "OTN OSC",
+    "$collection": "inv.techdomains",
+    "uuid": "100bbccd-02e2-44d1-b069-1e94af059ad6",
+    "description": "Optical Supervisory Channel",
+    "allow_bunch": false,
+    "allow_children": false,
+    "allow_p2mp": false,
+    "allow_p2p": false,
+    "allow_parent": false,
+    "allow_star": false,
+    "allow_up2mp": false,
+    "allow_up2p": true,
+    "code": "otn_osc",
+    "max_endpoints": 2
+}

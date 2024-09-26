@@ -30,6 +30,8 @@ from noc.core.discriminator import discriminator
         "odu::ODU1-2",
         "odu::ODU1::ODU0-3",
         "odu::ODU0::ODU1",
+        # osc
+        "osc::inband",
     ],
 )
 def test_invalid_value(v: str) -> None:
@@ -58,6 +60,9 @@ def test_invalid_value(v: str) -> None:
         ("odu::ODU2", "odu::ODU1", False),
         ("odu::ODU2", "odu::ODU2", True),
         ("odu::ODU2", "odu::ODU2::ODU0-1", True),
+        # OSC
+        ("osc::outband", "osc::outband", True),
+        ("osc::outband", "odu::ODU2", False),
     ],
 )
 def test_contains(x: str, y: str, expected: str) -> None:
