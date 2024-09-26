@@ -414,7 +414,7 @@ class Object(Document):
         return bool(self.get_data("rackmount", "units"))
 
     @property
-    def is_xcvr(self)->bool:
+    def is_xcvr(self) -> bool:
         """Check if object is transceiver."""
         return self.model.cr_context and self.model.cr_context == "XCVR"
 
