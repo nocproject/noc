@@ -81,8 +81,16 @@ class ChannelPlugin(InvPlugin):
                 "discriminator": ch.discriminator or "",
             }
 
-        nested = [f"o:{o_id}" for o_id in object.get_nested_ids()]
-        pipeline = [{"$match": {"root_resource": {"$in": nested}}}, {"$group": {"_id": "$channel"}}]
+        if object.is_xcvr and object.parent and object.parent_connection:
+            # Transceiver
+            ep = f"o:{object.parent.id}:{object.parent_connection}"
+            pipeline = [{"$match": {"resource": ep}}, {"$group": {"_id": "$channel"}}]
+        else:
+            nested = [f"o:{o_id}" for o_id in object.get_nested_ids()]
+            pipeline = [
+                {"$match": {"root_resource": {"$in": nested}}},
+                {"$group": {"_id": "$channel"}},
+            ]
         r = DBEndpoint._get_collection().aggregate(pipeline)
         items = [i["_id"] for i in r]
         if not items:
@@ -134,7 +142,12 @@ class ChannelPlugin(InvPlugin):
             return controller, r2, r1
 
         o = self.app.get_object_or_404(Object, id=id)
-        nested_objects = list(Object.objects.filter(id__in=o.get_nested_ids()))
+        is_xcvr = o.is_xcvr and o.parent and o.parent_connection
+        if is_xcvr:
+            nested_objects = [o.parent]
+            xep = Endpoint(object=o.parent, name=o.parent_connection)
+        else:
+            nested_objects = list(Object.objects.filter(id__in=o.get_nested_ids()))
         r: List[Dict[str, str]] = []
         # Check all cotrollers
         seen = set()
@@ -142,6 +155,8 @@ class ChannelPlugin(InvPlugin):
             controller = controller_loader[controller_name]()
             for no in nested_objects:
                 for sep, eep in controller.iter_adhoc_endpoints(no):
+                    if is_xcvr and not (sep == xep or eep == xep):
+                        continue
                     if controller.topology.is_bidirectional:
                         # Supress duplicates in other direction
                         h = ep_hash(controller.name, sep, eep)

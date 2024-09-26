@@ -413,6 +413,11 @@ class Object(Document):
         """Check if object is rack-mountable"""
         return bool(self.get_data("rackmount", "units"))
 
+    @property
+    def is_xcvr(self)->bool:
+        """Check if object is transceiver."""
+        return self.model.cr_context and self.model.cr_context == "XCVR"
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object
