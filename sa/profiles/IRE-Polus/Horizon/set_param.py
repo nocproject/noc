@@ -50,4 +50,4 @@ class Script(BaseScript):
             self.logger.warning(
                 "Error core %s received while set_param. Message is |%s|", e.code, e
             )
-            raise ScriptError("Error core %s received" % e.code)
+            raise ScriptError(f"Error code {e.code} received while set_param. Message is |{e}|)
