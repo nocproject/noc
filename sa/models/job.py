@@ -25,6 +25,31 @@ from mongoengine.fields import (
 from noc.core.model.decorator import on_delete_check
 
 
+class JobStatus(Enum):
+    """
+    Job status.
+
+    Attributes:
+        * `p` - Pending, waiting for manual approve.
+        * `w` - Waiting, ready to run.
+        * `r` - Running
+        * `S` - Suspended
+        * `s` - Success
+        * `f` - Failed with error
+        * `w` - Warning. Failed, but allowed to fail.
+        * `c` - Cancelled
+    """
+
+    PENDING = "p"
+    WAITING = "w"
+    RUNNING = "r"
+    SUSPENDED = "S"
+    SUCCESS = "s"
+    FAILED = "f"
+    WARNING = "W"
+    CANCELLED = "c"
+
+
 class InputMapping(EmbeddedDocument):
     """
     Input parameter mapping.
@@ -86,7 +111,7 @@ class Job(Document):
     # labels = ListField(StringField())
     # effective_labels = ListField(StringField())
     status = StringField(
-        choices=["p", "w", "r", "S", "s", "f", "W", "c"], default="w", required=True
+        choices=[s.value for s in JobStatus], default=JobStatus.WAITING.value, required=True
     )
     allow_fail = BooleanField(default=False)
     depends_on = ListField(ObjectIdField(), required=False)
@@ -103,28 +128,3 @@ class Job(Document):
 
     def __str__(self) -> str:
         return f"{self.name}::{self.action}"
-
-
-class JobStatus(Enum):
-    """
-    Job status.
-
-    Attributes:
-        * `p` - Pending, waiting for manual approve.
-        * `w` - Waiting, ready to run.
-        * `r` - Running
-        * `S` - Suspended
-        * `s` - Success
-        * `f` - Failed with error
-        * `w` - Warning. Failed, but allowed to fail.
-        * `c` - Cancelled
-    """
-
-    PENDING = "p"
-    WAITING = "w"
-    RUNNING = "r"
-    SUSPENDED = "S"
-    SUCCESS = "s"
-    FAILED = "f"
-    WARNING = "W"
-    CANCELLED = "c"

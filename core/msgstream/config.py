@@ -94,6 +94,7 @@ STREAMS: List[StreamConfig] = [
     ),
     StreamConfig(
         name="submit",
+        partitions=1,
         retention_bytes=config.msgstream.submit.retention_max_bytes,
         retention_ages=config.msgstream.submit.retention_max_age,
         segment_bytes=config.msgstream.submit.segment_max_bytes,
