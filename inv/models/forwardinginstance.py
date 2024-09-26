@@ -21,7 +21,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.config import config
 
 
-@change
+@change(audit=False)
 @on_delete_check(ignore=[("inv.SubInterface", "forwarding_instance")])
 class ForwardingInstance(Document):
     """

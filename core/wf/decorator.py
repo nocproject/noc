@@ -118,6 +118,7 @@ def document_set_state(
             str(self.id),
             fields=[cf],
             datastreams=get_datastreams(self, {cf.field: cf.old}),
+            audit=True,
         )
 
 
@@ -235,6 +236,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             str(self.id),
             fields=[cf],
             datastreams=get_datastreams(self, {cf.field: cf.old}),
+            audit=True,
         )
 
 

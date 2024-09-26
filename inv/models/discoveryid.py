@@ -44,7 +44,7 @@ class MACRange(EmbeddedDocument):
         return "%s - %s" % (self.first_mac, self.last_mac)
 
 
-@change
+@change(audit=False)
 @on_delete
 class DiscoveryID(Document):
     """
