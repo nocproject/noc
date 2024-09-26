@@ -13,8 +13,10 @@ from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
+from noc.core.runner.models.jobreq import JobRequest
 from .base import BaseController, Endpoint, PathItem
 from .otn_otu import OTNOTUController
+from ..profile.channel import ProfileChannelController
 
 
 class OTNODUController(BaseController):
@@ -161,14 +163,19 @@ class OTNODUController(BaseController):
         start = Endpoint(object=path[0].object, name=path[0].input)
         end = Endpoint(object=path[1].object, name=path[1].output)
         discriminator = path[0].input_discriminator
-        dbe = list(DBEndpoint.objects.filter(resource__in=[start.as_resource(), end.as_resource()]))
+        dbe: list[DBEndpoint] = list(
+            DBEndpoint.objects.filter(resource__in=[start.as_resource(), end.as_resource()])
+        )
         if not dbe:
             # New channel
             ch = self.create_ad_hoc_channel(discriminator=get_channel_odu(discriminator))
             is_new = True
             # Create endpoints
-            DBEndpoint(channel=ch, resource=start.as_resource()).save()
-            DBEndpoint(channel=ch, resource=end.as_resource()).save()
+            dbe = []
+            for x in (start, end):
+                ep = DBEndpoint(channel=ch, resource=x.as_resource())
+                ep.save()
+                dbe.append(ep)
         elif len(dbe) == 1:
             # Hanging endpoint
             return None, "Hanging endpoint"
@@ -187,6 +194,22 @@ class OTNODUController(BaseController):
         otu_end = Endpoint(object=path[1].object, name=path[1].input)
         ensure_usage(ch, otu_start)
         ensure_usage(ch, otu_end)
+        # Run provisioning
+        jobs = []
+        for pi, ep in zip(path, dbe):
+            self.logger.info("Getting profile controller for %s", pi.object)
+            ctl = ProfileChannelController.get_controller_for_object(pi.object, self.name)
+            if not ctl:
+                self.logger.info("Controller is not supported, skipping")
+                continue
+            self.logger.info("Preparing setup")
+            job = ctl.setup(ep)
+            if job:
+                ep.set_last_job(job.id)
+                jobs.append(job)
+        if jobs:
+            job = JobRequest(name="Setup ODU channel", jobs=jobs)
+            job.submit()
         # Return
         if is_new:
             return ch, "Channel created"

@@ -13,6 +13,9 @@ import datetime
 from pydantic import BaseModel, Field
 from bson import ObjectId
 
+# NOC modules
+from noc.core.service.pub import publish
+
 
 class InputMapping(BaseModel):
     """
@@ -30,6 +33,18 @@ class InputMapping(BaseModel):
     name: str
     value: str
     job: Optional[str] = None
+
+    @property
+    def is_kv(self) -> bool:
+        """Check if input is key-value mappig."""
+        return self.name.startswith("*")
+
+
+def KVInputMapping(name: str, value: str) -> InputMapping:
+    """
+    Key-value input mapping.
+    """
+    return InputMapping(name=f"*{name}", value=value)
 
 
 class JobRequest(BaseModel):
@@ -73,3 +88,9 @@ class JobRequest(BaseModel):
     after: Optional[datetime.datetime] = None
     deadline: Optional[datetime.datetime] = None
     jobs: Optional[List["JobRequest"]] = None
+
+    def submit(self) -> None:
+        """Submit job request."""
+        if not self.op:
+            self.op = "submit"
+        publish(self.model_dump_json().encode(), "submit", partition=0)

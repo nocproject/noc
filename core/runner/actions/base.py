@@ -31,7 +31,9 @@ class ActionMetaclass(type):
         for param in sig.parameters.values():
             if param.kind != param.KEYWORD_ONLY:
                 continue
-            m.inputs[param.name] = param.annotation == Optional[str]
+            m.inputs[param.name] = (
+                not (param.default is param.empty) or param.annotation == Optional[str]
+            )
         return m
 
 

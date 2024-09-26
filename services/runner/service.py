@@ -47,6 +47,7 @@ class RunnerService(FastAPIService):
     async def on_activate(self):
         connect_async()
         self.runner = Runner(concurrency=config.runner.max_running, queue=self.queue)
+        asyncio.create_task(self.sync_task())
         await self.subscribe_stream(STREAM, self.slot_number, self.on_msg)
 
     async def on_msg(self, msg: Message):
@@ -60,7 +61,8 @@ class RunnerService(FastAPIService):
             metrics["malformed_messages"] += 1
             return
         # Call handler, may not be invalid
-        msg_handler = getattr(self, f"on_msg_{req.op}")
+        op = req.op or "submit"
+        msg_handler = getattr(self, f"on_msg_{op}")
         if not msg_handler:
             self.logger.error("Internal error. No handler for '%s'", req.op)
             return
@@ -84,7 +86,7 @@ class RunnerService(FastAPIService):
                 job_id, data = self.queue.get_nowait()
                 if job_id:
                     # Update
-                    bulk.append(UpdateOne({"_id": job_id}, data))
+                    bulk.append(UpdateOne({"_id": job_id}, {"$set": data}))
                 else:
                     # Insert
                     bulk.append(InsertOne(data))
@@ -97,7 +99,7 @@ class RunnerService(FastAPIService):
                     "%d changes written in %.2fms", len(bulk), float(dt) / 1_000_000.0
                 )
                 metrics["sync_changes"] += len(bulk)
-            asyncio.sleep(1.0)
+            await asyncio.sleep(1.0)
 
     async def restore_state(self):
         def create_job(doc: Dict[str, Any]) -> Job:
