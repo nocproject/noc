@@ -65,7 +65,7 @@ from .alarmlog import AlarmLog
 from .escalationprofile import EscalationProfile
 
 
-@change
+@change(audit=False)
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",

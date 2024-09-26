@@ -40,7 +40,7 @@ from .alarmlog import AlarmLog
 from .alarmseverity import AlarmSeverity
 
 
-@change
+@change(audit=False)
 class ArchivedAlarm(Document):
     meta = {
         "collection": "noc.alarms.archived",
