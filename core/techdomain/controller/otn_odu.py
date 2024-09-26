@@ -13,6 +13,7 @@ from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
+from noc.core.runner.models.jobreq import JobRequest
 from .base import BaseController, Endpoint, PathItem
 from .otn_otu import OTNOTUController
 from ..profile.channel import ProfileChannelController
@@ -194,6 +195,7 @@ class OTNODUController(BaseController):
         ensure_usage(ch, otu_start)
         ensure_usage(ch, otu_end)
         # Run provisioning
+        jobs = []
         for pi, ep in zip(path, dbe):
             self.logger.info("Getting profile controller for %s", pi.object)
             ctl = ProfileChannelController.get_controller_for_object(pi.object, self.name)
@@ -204,7 +206,10 @@ class OTNODUController(BaseController):
             job = ctl.setup(ep)
             if job:
                 ep.set_last_job(job.id)
-                job.submit()
+                jobs.append(job)
+        if jobs:
+            job = JobRequest(name="Setup ODU channel", jobs=jobs)
+            job.submit()
         # Return
         if is_new:
             return ch, "Channel created"
