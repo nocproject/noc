@@ -13,7 +13,7 @@
       changed_when: false
       when: molecule_yml.platforms[0].distr is match("ubuntu.*")
 
-    - name: Wait 10sec for upgrade
+    - name: Wait 30sec for upgrade
       raw: "sleep 10"
       changed_when: false
       when: molecule_yml.platforms[0].distr is match("ubuntu.*")
