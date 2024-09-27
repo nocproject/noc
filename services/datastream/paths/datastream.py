@@ -193,6 +193,7 @@ class DatastreamAPI(object):
         ):
             # Increase limit by 1 to detect datastream has more data
             limit = min(limit, datastream.DEFAULT_LIMIT) + 1
+            # Request size left
             left = config.datastream.max_reply_size
             # Collect filters
             filters = ds_filter or []
@@ -228,16 +229,17 @@ class DatastreamAPI(object):
                     ):
                         if not first_change:
                             first_change = change_id
-                        left -= len(data)
-                        if left < 0:
+                        data_size = len(data_size)
+                        if left < data_size:
                             logger.info(
                                 "Response getting too large. Sending. [collected=%d, data=%d, limit=%d]",
-                                config.datastream.max_reply_size - left + len(data),
-                                len(data),
+                                config.datastream.max_reply_size - left,
+                                data_size,
                                 config.datastream.max_reply_size,
                             )
                             has_more = True
                             break  # Split large reply
+                        left -= data_size
                         last_change = change_id
                         r.append(data)
                         nr += 1
