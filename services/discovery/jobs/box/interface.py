@@ -178,7 +178,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 )
                 # Update effective_labels
                 el = Label.build_effective_labels(iface)
-                self.logger.info(
+                self.logger.debug(
                     "[%s] Interface Calculated Effective labels: %s", iface.name, sorted(el)
                 )
                 if not iface.effective_labels or el != frozenset(iface.effective_labels):
@@ -418,10 +418,10 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     def subinterface_classification(self, si: SubInterface):
         """Classification SubInterface"""
-        ctx = si.get_matcher_ctx()
         if si.profile.subinterface_apply_policy == "I":
             return
-        for p_id, match in self.get_interface_profile:
+        ctx = si.get_matcher_ctx()
+        for p_id, match in self.get_subinterface_profile:
             if match(ctx):
                 p = InterfaceProfile.get_by_id(p_id)
                 break

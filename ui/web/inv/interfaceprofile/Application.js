@@ -12,6 +12,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
         "NOC.core.combotree.ComboTree",
+        "NOC.core.tagfield.Tagfield",
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.notificationgroup.LookupField",
@@ -555,10 +556,10 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 }
                             },
                             {
+                                xtype: "core.tagfield",
+                                url: "/inv/resourcegroup/lookup/",
+                                fieldLabel: __("Object Groups"),
                                 name: "resource_groups",
-                                xtype: "noc.core.combotree",
-                                fieldLabel: __("Groups"),
-                                restUrl: "/inv/resourcegroup/",
                                 allowBlank: true,
                                 uiStyle: "extra"
                             }
