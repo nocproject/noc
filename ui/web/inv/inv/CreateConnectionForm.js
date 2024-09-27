@@ -716,6 +716,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
             me.drawPanel.getEl().dom.style.width = `${me.drawPanelSize.w}px`;
             me.drawPanel.getSurface().setRect([0, 0, me.drawPanelSize.w, me.drawPanelSize.h]);
+            me.drawPanel.getSurface("left_internal_conn").setRect([0, 0, me.drawPanelSize.w, me.drawPanelSize.h]);
+            me.drawPanel.getSurface("right_internal_conn").setRect([0, 0, me.drawPanelSize.w, me.drawPanelSize.h]);
             mainSurface.renderFrame();
           },
           failure: function(){
