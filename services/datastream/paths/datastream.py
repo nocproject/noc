@@ -215,6 +215,7 @@ class DatastreamAPI(object):
             first_change = None
             last_change = None
             nr = 1
+            has_more = False
             while True:
                 r = []
                 try:
@@ -229,11 +230,13 @@ class DatastreamAPI(object):
                             first_change = change_id
                         left -= len(data)
                         if left < 0:
+                            has_more = True
                             break  # Split large reply
                         last_change = change_id
                         r.append(data)
                         nr += 1
                         if nr == limit:
+                            has_more = True
                             break  # Skip last additional item
                 except ValueError:
                     raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
@@ -251,7 +254,7 @@ class DatastreamAPI(object):
                 headers["X-NOC-DataStream-First-Change"] = str(first_change)
             if last_change:
                 headers["X-NOC-DataStream-Last-Change"] = str(last_change)
-            if nr == limit:
+            if has_more:
                 headers["X-NOC-DataStream-More"] = "1"
             resp = ",".join(r)
             return Response(content=f"[{resp}]", headers=headers)
