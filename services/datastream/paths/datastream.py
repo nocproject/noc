@@ -193,6 +193,7 @@ class DatastreamAPI(object):
         ):
             # Increase limit by 1 to detect datastream has more data
             limit = min(limit, datastream.DEFAULT_LIMIT) + 1
+            left = config.datastream.max_reply_size
             # Collect filters
             filters = ds_filter or []
             ids = ds_id or None
@@ -226,8 +227,11 @@ class DatastreamAPI(object):
                     ):
                         if not first_change:
                             first_change = change_id
+                        left -= len(data)
+                        if left < 0:
+                            break  # Split large reply
                         last_change = change_id
-                        r += [data]
+                        r.append(data)
                         nr += 1
                         if nr == limit:
                             break  # Skip last additional item

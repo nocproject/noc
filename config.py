@@ -798,6 +798,7 @@ class Config(BaseConfig):
             default=30,
             help="The maximum time in seconds for the server to wait for changes before responding to a getMore operation",
         )
+        max_reply_size = BytesParameter(default=50_000_000, help="Maximum reply size in bytes")
         enable_administrativedomain = BooleanParameter(default=False)
         enable_administrativedomain_wait = BooleanParameter(
             default=True,
