@@ -256,8 +256,7 @@ class DatastreamAPI(object):
                 headers["X-NOC-DataStream-Last-Change"] = str(last_change)
             if has_more:
                 headers["X-NOC-DataStream-More"] = "1"
-            resp = ",".join(r)
-            return Response(content=f"[{resp}]", headers=headers)
+            return Response(content=f"[{','.join(r)}]", headers=headers)
 
         return inner_datastream
 

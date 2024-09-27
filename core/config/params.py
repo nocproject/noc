@@ -229,7 +229,7 @@ class BytesParameter(BaseParameter):
             n, r = divmod(self.value, d)
             if not r:
                 return "%d%s" % (n, s)
-        return "%ss" % self.value
+        return str(self.value)
 
 
 class ListParameter(BaseParameter):
