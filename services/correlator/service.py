@@ -420,19 +420,20 @@ class CorrelatorService(FastAPIService):
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
-        :param managed_object: Managed Object instance
-        :param timestamp: Alarm Timestamp
-        :param alarm_class: Alarm Class reference
-        :param vars: Alarm variables
-        :param event:
-        :param reference:
-        :param remote_system:
-        :param remote_id:
-        :param groups:
-        :param labels:
-        :param min_group_size: For Group alarm, minimal count alarm on it
-        :param severity: Alarm Severity source
-        :returns: Alarm, if created, None otherwise
+        Attrs:
+            managed_object: Managed Object instance
+            timestamp: Alarm Timestamp
+            alarm_class: Alarm Class reference
+            vars: Alarm variables
+            event: Event Instance
+            reference: Reference String
+            remote_system: Remote System on received dispose
+            remote_id: Alarm Id on Remote System
+            groups:
+            labels: Alarm Labels
+            min_group_size: For Group alarm, minimal count alarm on it
+            severity: Alarm Severity source
+        Return: Alarm, if created, None otherwise
         """
 
         scope_label = str(event.id) if event else "DIRECT"
@@ -534,7 +535,7 @@ class CorrelatorService(FastAPIService):
                     alarm_groups[gi.reference] = gi
         # Apply rules
         escalation_profile = None
-        a_severity: Optional[int] = None
+        a_severity: Optional[AlarmSeverity] = None
         for rule in self.alarm_rule_set.iter_rules(a):
             for gi in rule.iter_groups(a):
                 if gi.reference and gi.reference not in alarm_groups:
@@ -551,7 +552,7 @@ class CorrelatorService(FastAPIService):
         a.deferred_groups = deferred_groups
         # Calculate Alarm Severities
         if a_severity:
-            a.severity = a_severity
+            a.severity = a_severity.severity
         else:
             # If changed policy
             a.severity = a.get_effective_severity(summary)

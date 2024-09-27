@@ -50,7 +50,7 @@ class Action(object):
     policy: str
     notification_group: Optional[NotificationGroup] = None
     severity_action: str = "set"
-    severity: int = 0
+    severity: Optional[AlarmSeverity] = None
     # Sync collection Default ?
     alarm_class: Optional[AlarmClass] = None
 
@@ -126,7 +126,7 @@ class AlarmRule(object):
                     policy=action.policy,
                     notification_group=action.notification_group,
                     severity_action=action.severity_action,
-                    severity=action.severity.severity if action.severity else None,
+                    severity=action.severity,
                 )
             )
         return rule
