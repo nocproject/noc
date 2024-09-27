@@ -365,6 +365,7 @@ class CommutationPlugin(InvPlugin):
         top = get_graph_template()
         top["directed"] = False
         top["graphAttributes"]["rankdir"] = "LR"
+        top["graphAttributes"]["ranksep"] = "2.0"  # Larger horizontal step
         top["graphAttributes"]["bgcolor"] = ""  # Prevent attribute propagation
         top["graphAttributes"]["label"] = ""  # And here too
         top["edgeAttributes"] = {"penwidth": 2}
