@@ -71,6 +71,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         super().__init__(*args, **kwargs)
         # self.get_interface_profile = partial(Label.get_instance_profile, InterfaceProfile)
         self.get_interface_profile = InterfaceProfile.get_profiles_matcher()
+        self.get_subinterface_profile = InterfaceProfile.get_profiles_matcher(subinterface=True)
         self.confd_interface_profile_map = List[Tuple[str, InterfaceProfile]]
         self.interface_macs: Set[str] = set()
         self.seen_interfaces = []
@@ -412,7 +413,24 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             self.interface_assigned_vlans.add(untagged_vlan)
         if vlan_ids:
             self.interface_assigned_vlans.update(set(vlan_ids))
+        self.subinterface_classification(si)
         return si
+
+    def subinterface_classification(self, si: SubInterface):
+        """Classification SubInterface"""
+        ctx = si.get_matcher_ctx()
+        if si.profile.subinterface_apply_policy == "I":
+            return
+        for p_id, match in self.get_interface_profile:
+            if match(ctx):
+                p = InterfaceProfile.get_by_id(p_id)
+                break
+        else:
+            self.logger.debug("[%s] Nothing profile for match", si.name)
+            p = InterfaceProfile.get_default_profile()
+        if p and p.id != si.profile.id:
+            si.profile = p
+            si.save()
 
     def cleanup_forwarding_instances(self, fi: List[str]):
         """
@@ -432,8 +450,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     def cleanup_interfaces(self, interfaces: List[str]):
         """
         Delete hanging interfaces
-        :param interfaces: generator yielding interfaces names
-        :return:
+        Attrs:
+            interfaces: generator yielding interfaces names
         """
         db_iface: Set[str] = set(
             i["name"] for i in Interface.objects.filter(managed_object=self.object.id).only("name")
@@ -452,7 +470,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     ):
         """
         Delete hanging subinterfaces
-        :return:
         """
         if forwarding_instance:
             fi = forwarding_instance.id
@@ -478,6 +495,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             iface: Interface instance
         """
         if iface.profile_locked:
+            self.logger.info(
+                "[%s] Interface %s profile set by User. That block for classification",
+                iface.name,
+                iface.profile.name,
+            )
             return
         elif iface.aggregated_interface and iface.aggregated_interface.profile != iface.profile:
             iface.profile = iface.aggregated_interface.profile
@@ -494,56 +516,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             if match(ctx):
                 break
         else:
-            self.logger.debug("[%s] Not matched profile", iface.name)
+            self.logger.debug("[%s] Nothing profile for match", iface.name)
             return
         if p_id and p_id != iface.profile.id:
-            # Change profile
-            profile = InterfaceProfile.get_by_id(p_id)
-            if not profile:
-                self.logger.error(
-                    "Invalid interface profile '%s' for interface '%s'. " "Skipping",
-                    p_id,
-                    iface.name,
-                )
-                return
-            elif profile != iface.profile:
-                self.logger.info(
-                    "Interface %s has been classified as '%s'", iface.name, profile.name
-                )
-                iface.profile = profile
-                iface.save()
-
-    def interface_classification_bulk(self, ifaces: Dict[str, Interface]):
-        """
-        Assign Interface Profile by Effective Label
-        For Aggregate members profile inheritance from aggregate interface, if not has profile Member label
-        """
-
-        members: Dict[Interface, str] = {}
-        aggregated: Dict[Interface, InterfaceProfile] = {}
-        for i_id, i_name, p_id in Label.iter_document_profile(
-            "inv.Interface",
-            "inv.InterfaceProfile",
-            query_filter=[("managed_object", self.object.id), ("type", ["physical", "aggregated"])],
-        ):
-            iface = ifaces.get(i_name)
-            if not iface:
-                self.logger.warning("[%s] Unknown interface", i_name)
-                continue
-            elif iface.profile_locked:
-                self.logger.info(
-                    "[%s] Interface %s profile set by User. That block for classification",
-                    iface.name,
-                    iface.profile.name,
-                )
-                continue
-            elif iface.aggregated_interface:
-                # Classification later
-                members[iface] = p_id
-                continue
-            if not p_id:
-                self.logger.debug("[%s] Nothing profile for match", iface.name)
-                continue
             # Change profile
             profile = InterfaceProfile.get_by_id(p_id)
             if not profile:
@@ -552,37 +527,16 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     iface.name,
                     p_id,
                 )
-                continue
+                return
             elif profile != iface.profile:
                 self.logger.info(
                     "[%s] Interface has been classified as '%s'", iface.name, profile.name
                 )
                 iface.profile = profile
                 iface.save()
-            if iface.type == "aggregated":
-                aggregated[iface] = iface.profile
-        self.logger.debug("Classified members interfaces: %s", members)
-        # Processed members
-        for iface, p_id in members.items():
-            if (
-                iface.aggregated_interface in aggregated
-                and iface.profile != aggregated[iface.aggregated_interface]
-            ):
-                self.logger.info(
-                    "[%s] Interface has been classified from members '%s'",
-                    iface.name,
-                    aggregated[iface.aggregated_interface].name,
-                )
-                iface.profile = aggregated[iface.aggregated_interface]
-            elif iface.aggregated_interface not in aggregated and p_id:
-                if iface.profile.id != p_id:
-                    iface.profile = InterfaceProfile.get_by_id(p_id)
-                    iface.save()
 
     def resolve_properties(self):
-        """
-        Try to resolve missed ifindexes and mac
-        """
+        """Try to resolve missed ifindexes and mac"""
         resolve_ifindex, resolve_mac = True, False
         iface_discovery_policy = self.object.get_interface_discovery_policy()
         if iface_discovery_policy == "c":
@@ -608,6 +562,12 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         if not missed_properties:
             return
         self.logger.info("Missed properties for: %s", ", ".join(missed_properties))
+        if "get_interface_properties" not in self.object.scripts:
+            self.logger.info(
+                "Profile %s not supported 'get_interface_properties' script",
+                self.object.profile.name,
+            )
+            return
         try:
             r = self.object.scripts.get_interface_properties(
                 enable_ifindex=resolve_ifindex, enable_interface_mac=resolve_mac

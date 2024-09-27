@@ -619,7 +619,7 @@ class Interface(Document):
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
                 service=service,
             )
-            if not i_profile.allow_subinterface_metrics:
+            if not i_profile.subinterface_apply_policy != "I":
                 continue
             for si in (
                 SubInterface._get_collection()
@@ -678,7 +678,7 @@ class Interface(Document):
             "name": self.name,
             "description": self.description,
             "labels": list(self.effective_labels),
-            "resource_group": list(self.effective_service_groups),
+            "service_groups": list(self.managed_object.effective_service_groups),
         }
 
 

@@ -34,8 +34,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.prefixtable import PrefixTable
-from noc.vc.models.vlanfilter import VLANFilter
 from noc.pm.models.metrictype import MetricType
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
@@ -64,11 +62,11 @@ class MatchRule(EmbeddedDocument):
     dynamic_order = IntField(default=0)
     labels = ListField(StringField())
     resource_groups = ListField(ObjectIdField())
-    untagged_vlan_filter: VLANFilter = PlainReferenceField(VLANFilter, required=False)
-    tagged_vlan_filter: VLANFilter = PlainReferenceField(VLANFilter, required=False)
-    prefix_filter = ForeignKeyField(PrefixTable, required=False)
-    name_patter = StringField()
-    description_patter = StringField()
+    # untagged_vlan_filter: VLANFilter = PlainReferenceField(VLANFilter, required=False)
+    # tagged_vlan_filter: VLANFilter = PlainReferenceField(VLANFilter, required=False)
+    # prefix_filter = ForeignKeyField(PrefixTable, required=False)
+    # name_patter = StringField()
+    # description_patter = StringField()
 
     def get_match_expr(self) -> Dict[str, Any]:
         r = {}
@@ -76,18 +74,21 @@ class MatchRule(EmbeddedDocument):
             r["labels"] = {"$all": list(self.labels)}
         if self.resource_groups:
             r["service_groups"] = {"$all": [str(x) for x in self.resource_groups]}
-        if self.untagged_vlan_filter:
-            r["untagged_vlan"] = {"$in": self.untagged_vlan_filter.include_vlans}
-        if self.tagged_vlan_filter:
-            r["tagged_vlans"] = {"$any": self.tagged_vlan_filter.include_vlans}
-        if self.name_patter:
-            r["name"] = {"$regex": self.name_patter}
-        if self.description_patter:
-            r["description"] = {"$regex": self.description_patter}
+        # if self.untagged_vlan_filter:
+        #     r["untagged_vlan"] = {"$in": self.untagged_vlan_filter.include_vlans}
+        # if self.tagged_vlan_filter:
+        #     r["tagged_vlans"] = {"$any": self.tagged_vlan_filter.include_vlans}
+        # if self.name_patter:
+        #     r["name"] = {"$regex": self.name_patter}
+        # if self.description_patter:
+        #     r["description"] = {"$regex": self.description_patter}
         return r
 
     def __str__(self):
         return f'{self.dynamic_order}: {", ".join(self.labels)}'
+
+    def get_labels(self):
+        return list(Label.objects.filter(name__in=self.labels))
 
 
 class InterfaceProfileMetrics(EmbeddedDocument):
@@ -213,13 +214,13 @@ class InterfaceProfile(Document):
     # Enable abduct detection on interface
     enable_abduct_detection = BooleanField(default=False)
     #
-    apply_scope = StringField(
+    subinterface_apply_policy = StringField(
         choices=[
-            ("I", "Only Interface"),
-            ("S", "Only SubInterface"),
-            ("Any", "Any"),
+            ("I", "Inherit from Interface"),
+            ("R", "By Rule"),
+            ("D", "Disable (Interface Only)"),
         ],
-        default="P",
+        default="D",
     )
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
@@ -383,10 +384,14 @@ class InterfaceProfile(Document):
         return matcher(ctx)
 
     @classmethod
-    def get_profiles_matcher(cls) -> Tuple[Tuple[str, Callable], ...]:
+    def get_profiles_matcher(cls, subinterface: bool = False) -> Tuple[Tuple[str, Callable], ...]:
         """Build matcher based on Profile Match Rules"""
         r = {}
-        for ip in InterfaceProfile.objects.filter(dynamic_classification_policy__ne="D"):
+        if subinterface:
+            profiles = InterfaceProfile.objects.filter(subinterface_apply_policy="R")
+        else:
+            profiles = InterfaceProfile.objects.filter(dynamic_classification_policy__ne="D")
+        for ip in profiles:
             for mr in ip.match_rules:
                 r[(str(ip.id), mr.dynamic_order)] = build_matcher(mr.get_match_expr())
         return tuple((x[0], r[x]) for x in sorted(r, key=lambda i: i[1]))
