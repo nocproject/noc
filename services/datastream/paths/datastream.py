@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Datastream endpoint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -219,7 +219,7 @@ class DatastreamAPI(object):
             while True:
                 r = []
                 try:
-                    async for item_id, change_id, data in datastream.iter_data_async(
+                    async for _item_id, change_id, data in datastream.iter_data_async(
                         limit=limit,
                         filters=filters,
                         change_id=change_id,
@@ -230,6 +230,12 @@ class DatastreamAPI(object):
                             first_change = change_id
                         left -= len(data)
                         if left < 0:
+                            logger.info(
+                                "Response getting too large. Sending. [collected=%d, data=%d, limit=%d]",
+                                config.datastream.max_reply_size - left + len(data),
+                                len(data),
+                                config.datastream.max_reply_size,
+                            )
                             has_more = True
                             break  # Split large reply
                         last_change = change_id
