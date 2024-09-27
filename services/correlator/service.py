@@ -542,7 +542,7 @@ class CorrelatorService(FastAPIService):
                     alarm_groups[gi.reference] = gi
             for ai in rule.iter_actions(a):
                 if ai.severity:
-                    a_severity = a.severity
+                    a_severity = ai.severity
             if rule.escalation_profile:
                 escalation_profile = rule.escalation_profile
             if a.severity_policy != rule.severity_policy:
