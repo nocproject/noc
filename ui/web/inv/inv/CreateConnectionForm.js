@@ -29,6 +29,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     "NOC.inv.inv.sprites.External",
     "NOC.inv.inv.sprites.Pin",
     "NOC.inv.inv.sprites.Pointer",
+    "NOC.core.ConnectionGraph",
   ],
   viewModel: {
     data: {
@@ -824,18 +825,32 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     });
   },
   makeInternalConnections: function(connections, side){
-    var me = this,
+    var ports, me = this,
       surface = me.drawPanel.getSurface(),
       sprites = [];
-
+      
+    NOC.core.ConnectionGraph.buildGraphFromConnections(connections);
+    ports = NOC.core.ConnectionGraph.getPortsWithManyLabel();
+    Ext.each(ports, function(port){
+      Ext.each(connections, function(connection){
+        if(connection.from.id === port.id){
+          connection.to.discriminator = connection.from.discriminator;
+          connection.from.discriminator = "";
+        }
+        if(connection.to.id === port.id){
+          connection.from.discriminator = connection.to.discriminator;
+          connection.to.discriminator = "";
+        }
+      });
+    });
     Ext.each(connections, function(connection){
       var conn,
-        from = surface.get(connection.from.id),
-        to = surface.get(connection.to.id);
+        fromPin = surface.get(connection.from.id),
+        toPin = surface.get(connection.to.id);
 
-      from.has_arrow = connection.from.has_arrow;
-      to.has_arrow = connection.to.has_arrow;
-      if((conn = me.makeConnection(from, to, side, "internal", connection)) != undefined) sprites.push(conn);
+      fromPin.has_arrow = connection.from.has_arrow;
+      toPin.has_arrow = connection.to.has_arrow;
+      if((conn = me.makeConnection(fromPin, toPin, side, "internal", connection)) != undefined) sprites.push(conn);
     });
     return Ext.Array.map(
       Ext.Array.sort(sprites, function(a, b){
