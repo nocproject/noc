@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Iterable, List, Union
+from typing import Optional, Iterable, List, Union, Dict, Any
 
 # Third-party modules
 from bson import ObjectId
@@ -179,3 +179,10 @@ class SubInterface(Document):
         """
         # return f"if:{self.interface.id}:{self.id}"
         return f"si:{self.id}"
+
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+        }

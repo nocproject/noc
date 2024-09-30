@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interfaceprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interfaceprofile.Application");
@@ -11,6 +11,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
+        "NOC.core.combotree.ComboTree",
+        "NOC.core.tagfield.Tagfield",
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.notificationgroup.LookupField",
@@ -194,6 +196,26 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                     ]
                                 },
                                 defaultValue: "R",
+                                uiStyle: "medium"
+                            },
+                                                        {
+                                name: "subinterface_apply_policy",
+                                xtype: "combobox",
+                                fieldLabel: __("SubInterface Apply Policy"),
+                                labelWidth: 200,
+                                allowBlank: false,
+                                queryMode: "local",
+                                displayField: "label",
+                                valueField: "id",
+                                store: {
+                                    fields: ["id", "label"],
+                                    data: [
+                                        {id: "D", label: "Disable (Interface Only)"},
+                                        {id: "R", label: "By Rule"},
+                                        {id: "I", label: "Inherit From Interface"},
+                                    ]
+                                },
+                                defaultValue: "D",
                                 uiStyle: "medium"
                             },
                         ]
@@ -532,6 +554,14 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 query: {
                                     "allow_matched": true
                                 }
+                            },
+                            {
+                                xtype: "core.tagfield",
+                                url: "/inv/resourcegroup/lookup/",
+                                fieldLabel: __("Object Groups"),
+                                name: "resource_groups",
+                                allowBlank: true,
+                                uiStyle: "extra"
                             }
                         ]
                     }
