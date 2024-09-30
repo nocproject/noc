@@ -110,7 +110,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     var me = this;
     me.currentId = data.id;
     // Remove all views
-    me.viewCard.removeAll();
+    if(me.viewCard.items.length > 0) me.viewCard.removeAll();
     // Add views
     me.viewCard.add(
       Ext.Array.map(data.views, function(view, index){

@@ -20,14 +20,16 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
             var [event, action, resource] = e.split(":"),
               resourceData = decodeURIComponent(resource);
             if(action === "go"){
-              element.addEventListener(event, function(){
+              element.addEventListener(event, function(evt){
                 var value = resourceData.split(":")[1];
+                evt.stopPropagation();
                 showObject(value);
               });
             }
             if(action === "info"){
-              element.addEventListener(event, function(event){
+              element.addEventListener(event, function(evt){
                 var scale = container.down("#zoomCombo").getValue();
+                evt.stopPropagation();
                 Ext.Ajax.request({
                   url: "/inv/inv/baloon/",
                   method: "POST",
@@ -36,6 +38,7 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                   },
                   success: function(response){
                     var result = Ext.decode(response.responseText),
+                      tooltipConfig = {},
                       path = Ext.Array.map(result.path, function(item){return item.label}).join(" > "),
                       tooltipHtml = `
                       <div>${path}</div>
@@ -47,15 +50,12 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                       xOffset = svgRect.left + containerEl.scrollLeft,
                       yOffset = svgRect.top + containerEl.scrollTop;
 
-                    if(result.buttons){
-                      tooltipHtml += `<div>${result.buttons}</div>`;
-                    }
-
-                    Ext.ComponentQuery.query('tooltip').forEach(function(tooltip){
+                    Ext.ComponentQuery.query("tooltip#SVGbaloon").forEach(function(tooltip){
                       tooltip.destroy();
                     });
-
-                    var tooltip = Ext.create("Ext.tip.ToolTip", {
+                      
+                    tooltipConfig = {
+                      itemId: "SVGbaloon",
                       html: tooltipHtml,
                       closeAction: "destroy",
                       dismissDelay: 0,
@@ -67,8 +67,21 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                           },
                         },
                       ],
-                    });
-                    tooltip.showAt([event.pageX * scale + xOffset, event.pageY * scale + yOffset]);
+                    }
+                    if(result.buttons && result.buttons.length){
+                      Ext.apply(tooltipConfig, {
+                        buttons: Ext.Array.map(result.buttons, function(button){ 
+                          return {
+                            xtype: "button",
+                            glyph: button.glyph,
+                            tooltip: button.hint,
+                          }
+                        }),
+                      });
+                    }
+
+                    var tooltip = Ext.create("Ext.tip.ToolTip", tooltipConfig);
+                    tooltip.showAt([evt.pageX * scale + xOffset, evt.pageY * scale + yOffset]);
                   },
                   failure: function(){
                     NOC.error(__("Failed to get data"));
