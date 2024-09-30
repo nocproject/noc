@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # IRE-Polus.Horizon.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+import pprint
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -16,5 +19,9 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self, **kwargs):
-        v = self.cli("show config")
-        return v
+        config = self.http.get(
+            "/snapshots/full/config.json",
+            json=True,
+        )
+
+        return pprint.pformat(config)
