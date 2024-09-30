@@ -338,7 +338,7 @@ class Script(BaseScript):
         enable_oduflex = set()
         crossings = []
 
-        for oo in config["PM"]:
+        for oo in config:
             if "nam" not in oo or "val" not in oo:
                 continue
             name = oo["nam"]
@@ -405,7 +405,7 @@ class Script(BaseScript):
         enable_oduflex = set()
         crossings = []
 
-        for oo in config["PM"]:
+        for oo in config:
             if "nam" not in oo or "val" not in oo:
                 continue
             name = oo["nam"]
@@ -464,7 +464,7 @@ class Script(BaseScript):
             # print("###CLS###|%s|" % (o["cls"]))
             if "atp" in o["cls"]:
                 return self.parse_cross_atp(o["PM"])
-            elif "roadm2x9" in o["cls"]:
+            elif "sroadm7" in o["cls"]:
                 return self.parse_cross_roadm2x9(o["PM"])
             else:
                 return self.parse_cross_default(o["PM"])
