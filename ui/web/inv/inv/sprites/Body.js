@@ -48,8 +48,8 @@ Ext.define("NOC.inv.inv.sprites.Body", {
           });
           me.label.setAttributes({
             text: attr.label,
-            textAlign: "end",
-            x: pointX + attr.width,
+            textAlign: attr.side === "left" ? "start" : "end",
+            x: pointX + (attr.side === "left" ? 0 : attr.width),
             y: attr.y - attr.gap,
           });
         },
