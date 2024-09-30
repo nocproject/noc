@@ -28,6 +28,7 @@ class SVG(object):
         "xlink": "http://www.w3.org/1999/xlink",
     }
     HIGHLIGHT_STYLE = {"opacity": "0.5"}
+    SELECTABLE_CLS = "selectable"
 
     def __init__(self: "SVG") -> None:
         self._tree: ET.ElementTree
@@ -268,7 +269,7 @@ class SVG(object):
         # Apply data-* attributes
         if kwargs:
             attrs.update({f"data-{k.replace('_', '-')}": v for k, v in kwargs.items()})
-            attrs["class"] = "selectable"
+            attrs["class"] = self.SELECTABLE_CLS
         # Remove all children from elements
         el.clear()
         # Replace with `g`
@@ -512,6 +513,42 @@ class SVG(object):
         style = ET.Element(self.STYLE)
         self._tree.getroot().insert(0, style)
         style.text = "\n".join(s)
+
+    def _get_element_by_id(self, element_id: str) -> ET.Element | None:
+        """
+        Find element by id.
+        """
+        return self._tree.find(f".//*[@id='{element_id}']")
+
+    def set(self, element_id: str, name: str, value: str) -> None:
+        """
+        Set attribute of element.
+
+        Args:
+            element_id: Element id.
+            name: Attribute name
+            value: Attribute value.
+        """
+        el = self._get_element_by_id(element_id)
+        if el is not None:
+            el.set(name, value)
+
+    def add_class(self, element_id: str, name: str) -> None:
+        """
+        Add class to element.
+
+        Args:
+            element_id: Element id.
+            name: Class name
+        """
+        el = self._get_element_by_id(element_id)
+        if el is None:
+            return
+        current_cls = el.get("class")
+        if current_cls:
+            el.set("class", f"{current_cls} {name}")
+        else:
+            el.set("class", name)
 
 
 # WARNING: Modifying global state

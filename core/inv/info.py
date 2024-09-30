@@ -11,6 +11,7 @@ from typing import Any
 
 # Python modules
 from noc.inv.models.object import Object
+from noc.core.translation import ugettext as _
 
 
 @dataclass
@@ -24,8 +25,9 @@ class PathItem(object):
 
 @dataclass
 class Button(object):
-    label: str | None
-    glyph: str | None
+    label: str | None = None
+    glyph: str | None = None
+    hint: str | None = None
 
     def to_json(self) -> dict[str, Any]:
         """Convert Button to JSON-serializable dict."""
@@ -34,6 +36,8 @@ class Button(object):
             r["label"] = self.label
         if self.glyph:
             r["glyph"] = self.glyph
+        if self.hint:
+            r["hint"] = self.hint
         return r
 
 
@@ -69,6 +73,7 @@ def info(resource: str) -> Info | None:
         Info: with info structure.
         None: when resource cannot be dereferenced.
     """
+    print("INFO>", resource)
     try:
         obj, name = Object.from_resource(resource)
         if obj is None:
@@ -104,6 +109,7 @@ def _info_for_object(obj: Object) -> Info:
         title=obj.parent_connection if obj.parent_connection else obj.name,
         path=_get_path(obj),
         description=f"{obj.model.get_short_label()}",
+        buttons=[Button(glyph="arrow-right", hint=_("Go to object"))],
     )
 
 
@@ -111,4 +117,10 @@ def _info_for_connection(obj: Object, name: str) -> Info:
     """
     Build info for connection.
     """
-    return Info(title=name, path=_get_path(obj))
+    cn = obj.model.get_model_connection(name)
+    if cn and cn.type is not None:
+        ct = cn.type.name.split("|")[-1].strip()
+        description = ct
+    else:
+        description = "Unknown connection"
+    return Info(title=name, path=_get_path(obj), description=description)

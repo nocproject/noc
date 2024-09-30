@@ -41,20 +41,45 @@ def get_svg_for_box(
         return None
     # Get module facade
     svg = get_svg_for_facade(facade, cache=cache)
-    # Insert nested modules
-    for ro in obj.iter_children():
+    if obj.is_xcvr:
+        return svg  # Do not mark transceiver pins
+    # Get nested modules
+    children = {
+        child.parent_connection: child for child in obj.iter_children() if child.parent_connection
+    }
+    # Iterate through connections
+    for c in obj.model.connections:
+        if c.is_outer:
+            continue
+        slot_id = slot_to_id(c.name)
+        child = children.get(c.name)
+        if not child:
+            # Mark connection
+            interaction = Interaction(
+                actions=[
+                    InteractionItem(
+                        event=InteractionEvent.CLICK,
+                        action=InteractionAction.INFO,
+                        resource=f"o:{obj.id}:{c.name}",
+                    )
+                ]
+            )
+            svg.set(slot_id, "data-interaction", interaction.to_str())
+            svg.add_class(slot_id, svg.SELECTABLE_CLS)
+            continue
+        # Nested module
         # Always use front facades for nested modules
-        mod_svg = get_svg_for_box(ro, name="front", cache=cache)
+        mod_svg = get_svg_for_box(child, name="front", cache=cache)
         if not mod_svg:
-            continue  # Skip
+            continue  # @todo: Generate placeholder
         # Embed module
         try:
             svg.embed(
-                slot_to_id(ro.parent_connection),
+                slot_id,
                 mod_svg,
                 additional=(
-                    [slot_to_id(a) for a in ro.additional_connections if a]
-                    if ro.additional_connections
+                    [slot_to_id(a) for a in child.additional_connections if a]
+                    if child.additional_connections
                     else None
                 ),
                 interaction=Interaction(
@@ -62,12 +87,7 @@ def get_svg_for_box(
                         InteractionItem(
                             event=InteractionEvent.CLICK,
                             action=InteractionAction.INFO,
-                            resource=ro.as_resource(),
-                        ),
-                        InteractionItem(
-                            event=InteractionEvent.DBLCLICK,
-                            action=InteractionAction.GO,
-                            resource=ro.as_resource(),
+                            resource=child.as_resource(),
                         ),
                     ]
                 ).to_str(),
