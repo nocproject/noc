@@ -49,6 +49,11 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
       pressed: true,
       toggleHandler: "showHideDetails",
     },
+    {
+      tooltip: __("Download image as SVG"),
+      glyph: NOC.glyph.download,
+      handler: "onDownloadSVG",
+    },
   ],
   items: [
     {
@@ -219,4 +224,19 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
     imageStyle.transformOrigin = "0 0";
     imageStyle.transform = "scale(" + combo.getValue() + ")";
   },
+  //
+  onDownloadSVG: function(){
+    var me = this,
+      imageContainer = me.down("#crossingScheme container"), 
+      image = imageContainer.getEl().dom.querySelector("svg"),
+      svgData = new XMLSerializer().serializeToString(image),
+      blob = new Blob([svgData], {type: "image/svg+xml"}),
+      url = URL.createObjectURL(blob),
+      a = document.createElement("a");
+
+    a.href = url;
+    a.download = `crossing-${me.currentId}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);},
+
 });
