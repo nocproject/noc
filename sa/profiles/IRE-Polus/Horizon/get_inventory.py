@@ -17,6 +17,7 @@ import orjson
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from .profile import PolusParam, Component
+from noc.core.discriminator import LambdaDiscriminator
 
 
 @dataclass
@@ -87,6 +88,112 @@ class Script(BaseScript):
 
     rx_devices = re.compile(r"(?P<slot>\d+)\s*\|(?P<name>\S+)\s*")
     rx_table = re.compile(r"(?P<pname>\S+)\s*\|(?P<punits>\S*)\s*\|(?P<pvalue>.+)\s*")
+
+    @staticmethod
+    def get_port(n: str) -> str:
+        """
+        Convert port name:
+            Cl_1 -> CLIENT1
+            Ln_1 -> LINE1
+        """
+        t, n = n.split("_", 1)
+        if t == "Cl":
+            return f"CLIENT{n}"
+        elif t == "Ln":
+            return f"LINE{n}"
+        raise ValueError(f"Invalid port {n}")
+
+    @staticmethod
+    def get_raw_port(n: str) -> str:
+        """
+        Clean port name from crossing:
+            Cl_5_ODU2 -> Cl_5
+        """
+        t, n, _ = n.split("_", 2)
+        return "_".join([t, n])
+
+    @staticmethod
+    def convert_datatype_to_odu(datatype: str) -> str:
+        OTU_MAP = {
+            "OTUC6": "ODUC6",
+            "OTUC5": "ODUC5",
+            "OTUC4": "ODUC4",
+            "OTUC3": "ODUC3",
+            "OTUC2": "ODUC2",
+            "OTUC1": "ODUC1",
+            "OTU4": "ODU4",
+            "OTU3": "ODU3",
+            "OTU2e": "ODU2e",
+            "OTU2": "ODU2",
+            "OTU1": "ODU1",
+        }
+
+        if datatype in OTU_MAP:
+            return OTU_MAP[datatype]
+        else:
+            raise ValueError(f"datatype {datatype} is not in map")
+
+    @staticmethod
+    def get_default_datatype(mode: str, port: str) -> str:
+        """
+        Returns default datatype for card ADM-200 on port in different mode
+        """
+        DEFAULT_DATATYPE_MAP = {
+            "AGG-200": {
+                "LINE1": "OTUC2",
+                "LINE2": "OTUC2",
+            },
+            "AGG-100-BS": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+            },
+            "AGG-2x100": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+            },
+            "TP-100+TP-10x10": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+                "CLIENT11": "OTU2",
+                "CLIENT12": "OTU2",
+                "CLIENT13": "OTU2",
+                "CLIENT14": "OTU2",
+                "CLIENT15": "OTU2",
+                "CLIENT16": "OTU2",
+                "CLIENT17": "OTU2",
+                "CLIENT18": "OTU2",
+                "CLIENT19": "OTU2",
+                "CLIENT20": "OTU2",
+            },
+        }
+
+        if mode in DEFAULT_DATATYPE_MAP:
+            if port in DEFAULT_DATATYPE_MAP[mode]:
+                return DEFAULT_DATATYPE_MAP[mode][port]
+            else:
+                raise ValueError(f"Unknown port {port} in mode {mode}")
+        else:
+            raise ValueError(f"Unknown mode {mode}")
+
+    @staticmethod
+    def get_outer_odu(card_mode: str, dst_port: str, dst_datatype: str) -> str:
+        if not dst_datatype:
+            dst_datatype = Script.get_default_datatype(card_mode, dst_port)
+
+        return Script.convert_datatype_to_odu(dst_datatype)
+
+    @staticmethod
+    def get_discriminator(outer_odu: str, code_dst: str) -> str:
+        dst_odu = code_dst
+        dst_discriminator = code_dst
+        if "_" in code_dst:
+            dst_odu, dst_n = code_dst.split("_")
+            dst_discriminator = f"{dst_odu}-{dst_n}"
+
+        if outer_odu == dst_odu:
+            return f"odu::{dst_odu}"
+
+        return f"odu::{outer_odu}::{dst_discriminator}"
 
     def get_fru(self, c: Component) -> Optional[FRU]:
         """
@@ -171,132 +278,57 @@ class Script(BaseScript):
             r[match.group("pname")] = match.group("pvalue").strip()
         return r
 
-    def get_crossings(
-        self, config: Dict[str, Any], crate_num: int, slot: int
-    ) -> List[Dict[str, str]]:
-        def get_default_datatype(mode: str, port: str) -> str:
-            DEFAULT_DATATYPE_MAP = {
-                "AGG-200": {
-                    "LINE1": "OTUC2",
-                    "LINE2": "OTUC2",
-                },
-                "AGG-100-BS": {
-                    "LINE1": "OTU4",
-                    "LINE2": "OTU4",
-                },
-                "AGG-2x100": {
-                    "LINE1": "OTU4",
-                    "LINE2": "OTU4",
-                },
-                "TP-100+TP-10x10": {
-                    "LINE1": "OTU4",
-                    "LINE2": "OTU4",
-                    "CLIENT11": "OTU2",
-                    "CLIENT12": "OTU2",
-                    "CLIENT13": "OTU2",
-                    "CLIENT14": "OTU2",
-                    "CLIENT15": "OTU2",
-                    "CLIENT16": "OTU2",
-                    "CLIENT17": "OTU2",
-                    "CLIENT18": "OTU2",
-                    "CLIENT19": "OTU2",
-                    "CLIENT20": "OTU2",
-                },
-            }
-            datatype = ""
-            if mode in DEFAULT_DATATYPE_MAP:
-                if port in DEFAULT_DATATYPE_MAP[mode]:
-                    datatype = DEFAULT_DATATYPE_MAP[mode][port]
-                else:
-                    self.logger.debug("Unknown port %s in mode %s", port, mode)
-            else:
-                self.logger.debug("Unknown mode %s", mode)
+    def parse_cross_roadm2x9(self, config) -> List[Dict[str, str]]:
+        src: Dict[str, str] = {}
+        dst: Dict[str, str] = {}
+        gain: Dict[str, str] = {}
+        crossings = []
 
-            return datatype
+        for oo in config:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
 
-        def convert_datatype_to_odu(datatype: str) -> str:
-            OTU_MAP = {
-                "OTUC6": "ODUC6",
-                "OTUC5": "ODUC5",
-                "OTUC4": "ODUC4",
-                "OTUC3": "ODUC3",
-                "OTUC2": "ODUC2",
-                "OTUC1": "ODUC1",
-                "OTU4": "ODU4",
-                "OTU3": "ODU3",
-                "OTU2e": "ODU2e",
-                "OTU2": "ODU2",
-                "OTU1": "ODU1",
-            }
+            if name.endswith("SetIn"):
+                if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
+                    continue
+                src[name[:-5]] = oo["val"]
 
-            if datatype in OTU_MAP:
-                odu = OTU_MAP[datatype]
-            else:
-                odu = datatype
-                self.logger.debug("datatype %s is not in map", datatype)
+            if name.endswith("SetOut"):
+                if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
+                    continue
+                dst[name[:-6]] = oo["val"]
 
-            return odu
+            if name.endswith("SetOutAtt"):
+                gain[name[:-9]] = oo["val"]
 
-        def get_outer_odu(card_mode: str, dst_port: str, dst_datatype: str) -> str:
-            if not dst_datatype:
-                dst_datatype = get_default_datatype(card_mode, dst_port)
+        for cname in dst:
+            out_port = dst[cname]
 
-            return convert_datatype_to_odu(dst_datatype)
+            crossings.append(
+                {
+                    "input": "COM_IN",
+                    "output": out_port,
+                    "input_discriminator": str(LambdaDiscriminator.from_channel(cname)),
+                }
+            )
 
-        def get_raw_port(n: str) -> str:
-            t, n, _ = n.split("_", 2)
-            return "_".join([t, n])
+        for cname in src:
+            in_port = src[cname]
+            out_gain = gain.get(cname)
 
-        def get_port(n: str) -> str:
-            t, n = n.split("_", 1)
-            if t == "Cl":
-                return f"CLIENT{n}"
-            elif t == "Ln":
-                return f"LINE{n}"
-            raise ValueError(f"Invalid port {n}")
+            crossings.append(
+                {
+                    "input": in_port,
+                    "output": "COM_OUT",
+                    "output_discriminator": str(LambdaDiscriminator.from_channel(cname)),
+                    "gain_db": out_gain if out_gain else 1,
+                }
+            )
 
-        def get_discriminator(outer_odu: str, code_dst: str) -> str:
-            dst_odu = code_dst
-            dst_discriminator = code_dst
-            if "_" in code_dst:
-                dst_odu, dst_n = code_dst.split("_")
-                dst_discriminator = f"{dst_odu}-{dst_n}"
+        return crossings
 
-            if outer_odu == dst_odu:
-                return f"odu::{dst_odu}"
-
-            return f"odu::{outer_odu}::{dst_discriminator}"
-
-        def get_lambda_discriminator(channel: str) -> str:
-            ch_freq = 0
-            ch_width = 0
-            ch_step = 0
-            base_freq = 0
-            # 87.5 Ghz grid
-            if channel.startswith("Ch"):
-                ch_num = int(channel.replace("Ch", ""))
-                base_freq = 191431.25
-                ch_width = 87.5
-                ch_step = 87.5
-
-            # 100 Ghz grid
-            elif channel.startswith("C"):
-                ch_num = int(channel.replace("C", ""))
-                base_freq = 190000
-                ch_width = 50
-                ch_step = 100
-
-            # 50 Ghz grid
-            elif channel.startswith("H"):
-                ch_num = int(channel.replace("H", ""))
-                base_freq = 190050
-                ch_width = 50
-                ch_step = 100
-
-            ch_freq = base_freq + ch_step * ch_num
-
-            return f"lambda::{ch_freq}-{ch_width}"
-
+    def parse_cross_atp(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
         gain: Dict[str, str] = {}
@@ -304,121 +336,138 @@ class Script(BaseScript):
         port_states: Dict[str, str] = {}
         mode: Optional[str] = None
         enable_oduflex = set()
-        is_atp = False
-        is_roadm = False
+        crossings = []
+
+        for oo in config["PM"]:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
+            if name.endswith("_SetState"):
+                # IS - In Service
+                # OOS - Out Of Service
+                # MT - Maintenance
+                port_states[self.get_port(name[:-9])] = oo["val"] in ["IS", "MT"]
+            if name.endswith("_SetSrc"):
+                if oo["val"] != "None":
+                    src[name[:-7]] = oo["val"]
+            elif name.endswith("_SetDst"):
+                if oo["val"] != "None":
+                    dst[name[:-7]] = oo["val"]
+            elif name == "SetMode":
+                mode = oo["val"]
+            elif name.endswith("_SetDataType"):
+                if "GFC" in oo["val"]:
+                    enable_oduflex.add(name[:-12])
+                datatypes[self.get_port(name[:-12])] = oo["val"]
+
+        for cname in src:
+            if cname not in dst:
+                continue
+
+            input = self.get_port(self.get_raw_port(src[cname]))
+            output = self.get_port(self.get_raw_port(dst[cname]))
+            rest_dst = dst[cname].split("_", 2)[-1]
+
+            datatype = datatypes[output]
+            outer_odu = self.get_outer_odu(mode, output, datatype)
+
+            if cname in enable_oduflex and rest_dst != "ODUFlex":
+                continue
+            if cname not in enable_oduflex and rest_dst == "ODUFlex":
+                continue
+
+            if port_states[input] and port_states[output]:
+                crossings.append(
+                    {
+                        "input": input,
+                        "output": output,
+                        "output_discriminator": self.get_discriminator(outer_odu, rest_dst),
+                    }
+                )
+            else:
+                self.logger.debug(
+                    "One of the ports is offline %s:%s,%s:%s",
+                    input,
+                    port_states[input],
+                    output,
+                    port_states[output],
+                )
+
+        return crossings
+
+    def parse_cross_default(self, config) -> List[Dict[str, str]]:
+        src: Dict[str, str] = {}
+        dst: Dict[str, str] = {}
+        gain: Dict[str, str] = {}
+        datatypes: Dict[str, str] = {}
+        port_states: Dict[str, str] = {}
+        mode: Optional[str] = None
+        enable_oduflex = set()
+        crossings = []
+
+        for oo in config["PM"]:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
+            if name.endswith("_SetState"):
+                # IS - In Service
+                # OOS - Out Of Service
+                # MT - Maintenance
+                port_states[self.get_port(name[:-9])] = oo["val"] in ["IS", "MT"]
+            if name.endswith("_SetSrc"):
+                if oo["val"] != "None":
+                    src[name[:-7]] = oo["val"]
+            elif name.endswith("_SetDst"):
+                if oo["val"] != "None":
+                    dst[name[:-7]] = oo["val"]
+            elif name == "SetMode":
+                mode = oo["val"]
+            elif name.endswith("_SetDataType"):
+                if "GFC" in oo["val"]:
+                    enable_oduflex.add(name[:-12])
+                datatypes[self.get_port(name[:-12])] = oo["val"]
+
+        for cname in src:
+            if cname not in dst:
+                continue
+
+            input = self.get_port(self.get_raw_port(src[cname]))
+            output = self.get_port(self.get_raw_port(dst[cname]))
+            rest_dst = dst[cname].split("_", 2)[-1]
+
+            datatype = datatypes[output]
+            outer_odu = self.get_outer_odu(mode, output, datatype)
+
+            if cname in enable_oduflex and rest_dst != "ODUFlex":
+                continue
+            if cname not in enable_oduflex and rest_dst == "ODUFlex":
+                continue
+
+            crossings.append(
+                {
+                    "input": input,
+                    "output": output,
+                    "output_discriminator": self.get_discriminator(outer_odu, rest_dst),
+                }
+            )
+
+        return crossings
+
+    def get_crossings(
+        self, config: Dict[str, Any], crate_num: int, slot: int
+    ) -> List[Dict[str, str]]:
+        crossings = []
 
         for o in config["RK"][crate_num]["DV"]:
             if o["slt"] != slot:
                 continue
             # print("###CLS###|%s|" % (o["cls"]))
-            is_atp = "atp" in o["cls"]
-            is_roadm = "roadm7" in o["cls"]
-
-            if is_roadm:
-                for oo in o["PM"]:
-                    if "nam" not in oo or "val" not in oo:
-                        continue
-                    name = oo["nam"]
-
-                    if name.endswith("SetIn"):
-                        if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
-                            continue
-                        src[name[:-5]] = oo["val"]
-
-                    if name.endswith("SetOut"):
-                        if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
-                            continue
-                        dst[name[:-6]] = oo["val"]
-
-                    if name.endswith("SetOutAtt"):
-                        gain[name[:-9]] = oo["val"]
-
+            if "atp" in o["cls"]:
+                return self.parse_cross_atp(o["PM"])
+            elif "roadm2x9" in o["cls"]:
+                return self.parse_cross_roadm2x9(o["PM"])
             else:
-                for oo in o["PM"]:
-                    if "nam" not in oo or "val" not in oo:
-                        continue
-                    name = oo["nam"]
-                    if name.endswith("_SetState"):
-                        # IS - In Service
-                        # OOS - Out Of Service
-                        # MT - Maintenance
-                        port_states[get_port(name[:-9])] = oo["val"] in ["IS", "MT"]
-                    if name.endswith("_SetSrc"):
-                        if oo["val"] != "None":
-                            src[name[:-7]] = oo["val"]
-                    elif name.endswith("_SetDst"):
-                        if oo["val"] != "None":
-                            dst[name[:-7]] = oo["val"]
-                    elif name == "SetMode":
-                        mode = oo["val"]
-                    elif name.endswith("_SetDataType"):
-                        if "GFC" in oo["val"]:
-                            enable_oduflex.add(name[:-12])
-                        datatypes[get_port(name[:-12])] = oo["val"]
-
-        crossings = []
-        if mode:
-            self.logger.debug("Mode %s:", mode)
-
-        if is_roadm:
-            for cname in dst:
-                out_port = dst[cname]
-
-                crossings.append(
-                    {
-                        "input": "COM_IN",
-                        "output": out_port,
-                        "input_discriminator": get_lambda_discriminator(cname),
-                    }
-                )
-
-            for cname in src:
-                in_port = src[cname]
-                out_gain = gain.get(cname)
-
-                crossings.append(
-                    {
-                        "input": in_port,
-                        "output": "COM_OUT",
-                        "output_discriminator": get_lambda_discriminator(cname),
-                        "gain_db": out_gain if out_gain else 1,
-                    }
-                )
-
-        else:
-
-            for cname in src:
-                if cname not in dst:
-                    continue
-
-                input = get_port(get_raw_port(src[cname]))
-                output = get_port(get_raw_port(dst[cname]))
-                rest_dst = dst[cname].split("_", 2)[-1]
-
-                datatype = datatypes[output]
-                outer_odu = get_outer_odu(mode, output, datatype)
-
-                if cname in enable_oduflex and rest_dst != "ODUFlex":
-                    continue
-                if cname not in enable_oduflex and rest_dst == "ODUFlex":
-                    continue
-
-                if (not is_atp) or (port_states[input] and port_states[output]):
-                    crossings.append(
-                        {
-                            "input": input,
-                            "output": output,
-                            "output_discriminator": get_discriminator(outer_odu, rest_dst),
-                        }
-                    )
-                else:
-                    self.logger.debug(
-                        "One of the ports is offline %s:%s,%s:%s",
-                        input,
-                        port_states[input],
-                        output,
-                        port_states[output],
-                    )
+                return self.parse_cross_default(o["PM"])
 
         return crossings
 
