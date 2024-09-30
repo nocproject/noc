@@ -312,7 +312,7 @@ class Script(BaseScript):
                 continue
             # print("###CLS###|%s|" % (o["cls"]))
             is_atp = "atp" in o["cls"]
-            is_roadm = "roadm" in o["cls"]
+            is_roadm = "roadm7" in o["cls"]
 
             if is_roadm:
                 for oo in o["PM"]:
