@@ -59,6 +59,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       h: 0,
     };
     me.betweenSpace = 450;
+    me.toolTipOffset = 40;
   },
   initComponent: function(){
     var me = this;
@@ -1411,10 +1412,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             me.drawPanel.selectedSprite = sprite;
             sprite.setAttributes({isSelected: true});
             if(sprite.toDiscriminatorTooltip && sprite.toDiscriminatorTooltip.isHidden()){
-              sprite.toDiscriminatorTooltip.showAt([event.pageX + (sprite.side === "left" ? 20 : -20), event.pageY + 20]);
+              sprite.toDiscriminatorTooltip.showAt([event.pageX + (sprite.side === "left" ? me.toolTipOffset : -1 * me.toolTipOffset), event.pageY + me.toolTipOffset]);
             }
             if(sprite.fromDiscriminatorTooltip && sprite.fromDiscriminatorTooltip.isHidden()){
-              sprite.fromDiscriminatorTooltip.showAt([event.pageX + (sprite.side === "left" ? 20 : -20), event.pageY - 20]);
+              sprite.fromDiscriminatorTooltip.showAt([event.pageX + (sprite.side === "left" ? me.toolTipOffset : -1 * me.toolTipOffset), event.pageY - me.toolTipOffset]);
             }
           }
           if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)){
@@ -1425,7 +1426,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         case "external": {
           sprite.setAttributes({isSelected: true});
-          sprite.remoteNameTooltip.showAt([event.pageX + (sprite.side === "left" ? 20 : -20), event.pageY + 20]);
+          sprite.remoteNameTooltip.showAt([event.pageX + (sprite.side === "left" ? me.toolTipOffset : -1 * me.toolTipOffset), event.pageY + me.toolTipOffset]);
           break;
         }
       }
