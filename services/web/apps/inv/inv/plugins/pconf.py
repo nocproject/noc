@@ -633,4 +633,17 @@ ADM200_MAP = {
         {"input": "CLIENT19", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-9"},
         {"input": "CLIENT20", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-10"},
     ],
+    "TP-100+TP-10x10": [
+        {"input": "CLIENT1", "output": "CLIENT11", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT2", "output": "CLIENT12", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT3", "output": "CLIENT13", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT4", "output": "CLIENT14", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT5", "output": "CLIENT15", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT6", "output": "CLIENT16", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT7", "output": "CLIENT17", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT8", "output": "CLIENT18", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT9", "output": "CLIENT19", "output_discriminator": "odu::ODU2"},
+        {"input": "CLIENT10", "output": "CLIENT20", "output_discriminator": "odu::ODU2"},
+        {"input": "LINE2", "output": "LINE1", "output_discriminator": "odu::ODUC4"},
+    ],
 }
