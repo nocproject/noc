@@ -416,6 +416,9 @@ Ext.define("NOC.inv.inv.Application", {
     var me = this;
 
     me.down("#addObjectDock").show();
+    Ext.ComponentQuery.query('[tooltip]').forEach(function(cmp){
+      cmp.setTooltip(null);
+    });
     if(rowModel){
       var node = rowModel.view.getNode(record);
       if(node){

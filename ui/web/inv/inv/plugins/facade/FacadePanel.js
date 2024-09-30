@@ -109,11 +109,8 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   preview: function(data){
     var me = this;
     me.currentId = data.id;
-    // Remove views and tooltips
+    // Remove all views
     me.viewCard.removeAll();
-    Ext.ComponentQuery.query('[tooltip]').forEach(function(cmp){
-      cmp.setTooltip(null);
-    });
     // Add views
     me.viewCard.add(
       Ext.Array.map(data.views, function(view, index){
