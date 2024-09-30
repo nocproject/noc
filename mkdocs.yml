@@ -981,6 +981,8 @@ nav:
       - NOC 24.1 Generation:
           - NOC 24.1: releases/24_1.md
           - NOC 24.1.1: releases/24_1_1.md
+          - NOC 24.1.2: releases/24_1_2.md
+
       - NOC 23.1 Generation:
           - NOC 23.1: releases/23_1.md
           - NOC 23.1.1: releases/23_1_1.md
