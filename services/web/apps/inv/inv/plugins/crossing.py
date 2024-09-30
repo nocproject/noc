@@ -62,6 +62,7 @@ class CrossingPlugin(InvPlugin):
                 "label": "",
                 "bgcolor": "",
                 "rankdir": "LR",
+                "ranksep": "3.0",  # Larger space between sides
             },
             "directed": True,
             "nodes": [],
