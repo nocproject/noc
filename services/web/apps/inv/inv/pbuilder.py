@@ -67,14 +67,14 @@ class CrossingProposalsBuilder(object):
             self.cable,
         )
         result["left"]["connections"] = list(left.iter_connections())
-        result["left"]["internal_connections"] = left.internal_connections
+        result["left"]["internal_connections"] = left.internal_connections or []
         result["wires"] = left.wires
         if self.ro:
             right = _RightBuilder(
                 self.ro, self.right_filter, self.lo, self.left_filter, self.internal, self.cable
             )
             result["right"]["connections"] = list(right.iter_connections())
-            result["right"]["internal_connections"] = right.internal_connections
+            result["right"]["internal_connections"] = right.internal_connections or []
             result["wires"].extend(right.wires)
         return result
 
@@ -140,7 +140,7 @@ class _SideBuilder(object):
                 "gender": c.gender,
                 "direction": c.direction,
                 "protocols": [str(p) for p in c_data.protocols],
-                "internal": None,
+                "internal": {"valid": True, "free": False, "allow_discriminators": []},
                 "disable_reason": "",
             }
             if c.is_inner:
