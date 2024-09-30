@@ -1,13 +1,13 @@
 # ---------------------------------------------------------------------
 # Interface profile management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import argparse
-from functools import partial
+from typing import List
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -60,7 +60,7 @@ class Command(BaseCommand):
         return sorted(objects, key=lambda x: x.name)
 
     @staticmethod
-    def get_interfaces(mo):
+    def get_interfaces(mo) -> List[Interface]:
         return sorted(
             Interface.objects.filter(managed_object=mo.id, type__in=["physical", "aggregated"]),
             key=lambda x: alnum_key(x.name),
@@ -106,51 +106,9 @@ class Command(BaseCommand):
                     i.save()
 
     def handle_apply(self, moo, *args, **kwargs):
-        default_profile = InterfaceProfile.get_default_profile()
-        for o in self.get_objects(moo):
-            self.stdout.write(f"{o.name} ({getattr(o, 'platform', '')}), {o.effective_labels}:\n")
-            ifaces = self.get_interfaces(o)
-            if not ifaces:
-                self.stdout.write("No ifaces on object\n")
-                continue
-            i_cache = {i.id: i for i in ifaces}
-            tps = self.get_interface_template(ifaces)
-            pcache = {}
-            members = {}
-            for i_id, i_name, pn in Label.iter_document_profile(
-                "inv.Interface",
-                "inv.InterfaceProfile",
-                query_filter=[("managed_object", o.id), ("type", ["physical", "aggregated"])],
-            ):
-                i = i_cache.get(i_id)
-                # pn = InterfaceProfile.get_by_id(p_id)
-                if i.aggregated_interface:
-                    members[i] = pn
-                if pn and pn == i.profile.id:
-                    v = f"Already Set: {i.profile.name}"
-                elif pn:
-                    p = pcache.get(pn)
-                    if not p:
-                        p = InterfaceProfile.get_by_id(pn)
-                        pcache[pn] = p
-                    i.profile = p
-                    i.save()
-                    v = f"Set {p.name}"
-                else:
-                    v = "Not matched"
-                    if kwargs.get("reset_default") and i.profile != default_profile:
-                        i.profile = default_profile
-                        i.save()
-                        v = "Not matched. Reset to default"
-                self.show_interface(
-                    tps, i, v, None
-                )  # set(i.effective_labels) - set(o.effective_labels))
-
-    def handle_apply_direct(self, moo, *args, **kwargs):
         # sol = config.get("interface_discovery", "get_interface_profile")
-        # @todo Classification pyrule
         default_profile = InterfaceProfile.get_default_profile()
-        get_profile = partial(Label.get_instance_profile, InterfaceProfile)
+        get_profile = InterfaceProfile.get_profiles_matcher()
         pcache = {}
         for o in self.get_objects(moo):
             self.stdout.write(
@@ -164,8 +122,13 @@ class Command(BaseCommand):
             oel = set(o.effective_labels or [])
             for i in ifaces:
                 if not i.profile or not i.profile_locked:
-                    el = Label.merge_labels(Interface.iter_effective_labels(i))
-                    pn = get_profile(el)
+                    el = Label.build_effective_labels(i)
+                    ctx = i.get_matcher_ctx()
+                    for pn, match in get_profile:
+                        if match(ctx):
+                            break
+                    else:
+                        pn = None
                     if pn and pn == i.profile.id:
                         v = f"Already Set: {i.profile.name}"
                     elif pn:
@@ -182,7 +145,7 @@ class Command(BaseCommand):
                             i.profile = default_profile
                             i.save()
                             v = "Not matched. Reset to default"
-                    self.show_interface(tps, i, v, set(el) - oel)
+                    self.show_interface(tps, i, v, el - oel)
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, Iterable, List, Union
+from typing import Optional, Iterable, List, Union, Dict, Any
 
 # Third-party modules
 from bson import ObjectId
@@ -619,7 +619,7 @@ class Interface(Document):
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
                 service=service,
             )
-            if not i_profile.allow_subinterface_metrics:
+            if not i_profile.subinterface_apply_policy != "I":
                 continue
             for si in (
                 SubInterface._get_collection()
@@ -672,6 +672,14 @@ class Interface(Document):
         )
         r = next(r, {})
         return r.get("interval", 0)
+
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "service_groups": list(self.managed_object.effective_service_groups),
+        }
 
 
 # Avoid circular references

@@ -1,13 +1,13 @@
 # ---------------------------------------------------------------------
 # Interface Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from threading import Lock, RLock
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, Callable, Any, Tuple
 from dataclasses import dataclass
 import operator
 
@@ -20,6 +20,7 @@ from mongoengine.fields import (
     ReferenceField,
     ListField,
     EmbeddedDocumentField,
+    ObjectIdField,
     IntField,
 )
 from pymongo import ReadPreference
@@ -38,6 +39,7 @@ from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check, on_init
+from noc.core.matcher import build_matcher
 from noc.wf.models.workflow import Workflow
 from noc.config import config
 from .ifdescpatterns import IfDescPatterns
@@ -59,7 +61,28 @@ class MetricConfig(object):
 class MatchRule(EmbeddedDocument):
     dynamic_order = IntField(default=0)
     labels = ListField(StringField())
-    resource_groups: ListField(ObjectId())
+    resource_groups = ListField(ObjectIdField())
+    # untagged_vlan_filter: VLANFilter = PlainReferenceField(VLANFilter, required=False)
+    # tagged_vlan_filter: VLANFilter = PlainReferenceField(VLANFilter, required=False)
+    # prefix_filter = ForeignKeyField(PrefixTable, required=False)
+    # name_patter = StringField()
+    # description_patter = StringField()
+
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        if self.resource_groups:
+            r["service_groups"] = {"$all": [str(x) for x in self.resource_groups]}
+        # if self.untagged_vlan_filter:
+        #     r["untagged_vlan"] = {"$in": self.untagged_vlan_filter.include_vlans}
+        # if self.tagged_vlan_filter:
+        #     r["tagged_vlans"] = {"$any": self.tagged_vlan_filter.include_vlans}
+        # if self.name_patter:
+        #     r["name"] = {"$regex": self.name_patter}
+        # if self.description_patter:
+        #     r["description"] = {"$regex": self.description_patter}
+        return r
 
     def __str__(self):
         return f'{self.dynamic_order}: {", ".join(self.labels)}'
@@ -181,8 +204,6 @@ class InterfaceProfile(Document):
     is_uni = BooleanField(default=False)
     # Allow automatic segmentation
     allow_autosegmentation = BooleanField(default=False)
-    # Allow collecting metrics from subinterfaces
-    allow_subinterface_metrics = BooleanField(default=False)
     #
     allow_vacuum_bulling = BooleanField(default=False)
     # Validation policy
@@ -192,6 +213,15 @@ class InterfaceProfile(Document):
     ifdesc_handler = PlainReferenceField(Handler)
     # Enable abduct detection on interface
     enable_abduct_detection = BooleanField(default=False)
+    #
+    subinterface_apply_policy = StringField(
+        choices=[
+            ("I", "Inherit from Interface"),
+            ("R", "By Rule"),
+            ("D", "Disable (Interface Only)"),
+        ],
+        default="D",
+    )
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
         choices=[("R", "By Rule"), ("D", "Disable")],
@@ -337,3 +367,31 @@ class InterfaceProfile(Document):
         if self.metric_collected_policy == "do" and oper_status is False:
             return False
         return True
+
+    def get_matcher(self) -> Callable:
+        """"""
+        expr = []
+        for r in self.match_rules:
+            expr.append(r.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
+    def is_match(self, o) -> bool:
+        """Local Match rules"""
+        matcher = self.get_matcher()
+        ctx = o.get_matcher_ctx()
+        return matcher(ctx)
+
+    @classmethod
+    def get_profiles_matcher(cls, subinterface: bool = False) -> Tuple[Tuple[str, Callable], ...]:
+        """Build matcher based on Profile Match Rules"""
+        r = {}
+        if subinterface:
+            profiles = InterfaceProfile.objects.filter(subinterface_apply_policy="R")
+        else:
+            profiles = InterfaceProfile.objects.filter(dynamic_classification_policy__ne="D")
+        for ip in profiles:
+            for mr in ip.match_rules:
+                r[(str(ip.id), mr.dynamic_order)] = build_matcher(mr.get_match_expr())
+        return tuple((x[0], r[x]) for x in sorted(r, key=lambda i: i[1]))
