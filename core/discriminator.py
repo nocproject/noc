@@ -31,8 +31,8 @@ class LambdaDiscriminator(object):
             f, w = value.split("-")
         else:
             f, w = value, "0"
-        self.freq = float(f)
-        self.width = float(w)
+        self.freq = int(f) if f.isdigit() else float(f)
+        self.width = int(w) if w.isdigit() else float(w)
 
     def __str__(self) -> str:
         if self.width:
