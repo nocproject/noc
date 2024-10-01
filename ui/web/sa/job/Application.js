@@ -135,6 +135,12 @@ Ext.define("NOC.sa.job.Application", {
 
   onCloseDetail: function(){
     this.showGrid();
+    if(Ext.Object.isEmpty(this.currentQuery)){
+      return;
+    }
+    // case restore by id
+    this.currentQuery = undefined;
+    this.reloadStore();
   },
 
   renderScheme: function(data){
