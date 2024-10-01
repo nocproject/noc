@@ -1163,7 +1163,7 @@ class AssetCheck(DiscoveryCheck):
             return Crossing(
                 input=item["input"],
                 output=item["output"],
-                input_discriminator=item.get("input_discrimiator"),
+                input_discriminator=item.get("input_discriminator"),
                 output_discriminator=item.get("output_discriminator"),
                 gain_db=item.get("gain_db"),
             )

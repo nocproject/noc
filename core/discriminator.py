@@ -31,8 +31,8 @@ class LambdaDiscriminator(object):
             f, w = value.split("-")
         else:
             f, w = value, "0"
-        self.freq = int(f)
-        self.width = int(w)
+        self.freq = int(f) if f.isdigit() else float(f)
+        self.width = int(w) if w.isdigit() else float(w)
 
     def __str__(self) -> str:
         if self.width:
@@ -49,6 +49,37 @@ class LambdaDiscriminator(object):
         return ((self.freq - self.width) <= (other.freq - other.width)) and (
             (self.freq + self.width) >= (other.freq + other.width)
         )
+
+    @classmethod
+    def from_channel(cls, name: str) -> "LambdaDiscriminator":
+        ch_freq = 0
+        ch_width = 0
+        ch_step = 0
+        base_freq = 0
+        # 87.5 Ghz grid
+        if name.startswith("Ch"):
+            ch_num = int(name.replace("Ch", ""))
+            # Maybe Polus only grid
+            base_freq = 191431.25
+            ch_width = 87.5
+            ch_step = 87.5
+
+        # 100 Ghz grid
+        elif name.startswith("C"):
+            ch_num = int(name.replace("C", ""))
+            base_freq = 190000
+            ch_width = 50
+            ch_step = 100
+
+        # 50 Ghz grid
+        elif name.startswith("H"):
+            ch_num = int(name.replace("H", ""))
+            base_freq = 190050
+            ch_width = 50
+            ch_step = 100
+
+        ch_freq = base_freq + ch_step * ch_num
+        return LambdaDiscriminator(f"{ch_freq}-{ch_width}")
 
 
 class VlanDiscriminator(object):
