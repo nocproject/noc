@@ -46,6 +46,10 @@ Ext.define("NOC.inv.channel.Model", {
       type: "string",
     },
     {
+      name: "controller",
+      type: "string",
+    },
+    {
       name: "project",
       type: "int",
     },
