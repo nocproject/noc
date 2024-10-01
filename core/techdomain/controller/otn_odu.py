@@ -209,6 +209,7 @@ class OTNODUController(BaseController):
                 jobs.append(job)
         if jobs:
             job = JobRequest(name="Setup ODU channel", jobs=jobs)
+            self.logger.info("Submitting job %s", job.id)
             job.submit()
         # Return
         if is_new:
