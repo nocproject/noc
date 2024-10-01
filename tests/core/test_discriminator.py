@@ -9,6 +9,7 @@
 import pytest
 
 # NOC modules
+from noc.core.discriminator import LambdaDiscriminator
 from noc.core.discriminator import discriminator
 
 
@@ -37,6 +38,22 @@ from noc.core.discriminator import discriminator
 def test_invalid_value(v: str) -> None:
     with pytest.raises(ValueError):
         discriminator(v)
+
+
+@pytest.mark.parametrize(
+    ("x", "expected"),
+    [
+        ("C1", "lambda::190100-50"),
+        ("H1", "lambda::190150-50"),
+        ("C24", "lambda::192400-50"),
+        ("H24", "lambda::192450-50"),
+        ("Ch1", "lambda::191518.75-87.5"),
+        ("Ch3", "lambda::191693.75-87.5"),
+    ],
+)
+def test_from_channel(x: str, expected: str) -> None:
+    d1 = LambdaDiscriminator.from_channel(x)
+    assert str(d1) == expected
 
 
 @pytest.mark.parametrize(
