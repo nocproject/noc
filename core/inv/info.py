@@ -8,10 +8,12 @@
 # Python modules
 from dataclasses import dataclass
 from typing import Any
+from enum import Enum
 
 # Python modules
 from noc.inv.models.object import Object
 from noc.core.translation import ugettext as _
+from noc.core.glyph import Glyph
 
 
 @dataclass
@@ -23,21 +25,31 @@ class PathItem(object):
         return {"label": self.label}
 
 
+class ButtonAction(Enum):
+    GO = "go"
+
+
 @dataclass
 class Button(object):
     label: str | None = None
-    glyph: str | None = None
+    glyph: Glyph | None = None
     hint: str | None = None
+    action: ButtonAction | None = None
+    args: str | None = None
 
-    def to_json(self) -> dict[str, Any]:
+    def to_json(self) -> dict[str, str | int]:
         """Convert Button to JSON-serializable dict."""
-        r: dict[str, str] = {}
+        r: dict[str, str | int] = {}
         if self.label:
             r["label"] = self.label
         if self.glyph:
-            r["glyph"] = self.glyph
+            r["glyph"] = self.glyph.value
         if self.hint:
             r["hint"] = self.hint
+        if self.action:
+            r["action"] = self.action.value
+        if self.args:
+            r["args"] = self.args
         return r
 
 
@@ -109,7 +121,14 @@ def _info_for_object(obj: Object) -> Info:
         title=obj.parent_connection if obj.parent_connection else obj.name,
         path=_get_path(obj),
         description=f"{obj.model.get_short_label()}",
-        buttons=[Button(glyph="arrow-right", hint=_("Go to object"))],
+        buttons=[
+            Button(
+                glyph=Glyph.ARROW_RIGHT,
+                hint=_("Go to object"),
+                action=ButtonAction.GO,
+                args=str(obj.id),
+            )
+        ],
     )
 
 
