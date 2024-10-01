@@ -94,10 +94,12 @@ Ext.define("NOC.sa.job.Application", {
       {
         itemId: "jobScheme",
         region: "center",
+        scrollable: true,
       },
       {
         region: "east",
         width: 250,
+        scrollable: "y",
       },
     ],
   },
