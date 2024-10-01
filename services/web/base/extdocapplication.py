@@ -23,6 +23,7 @@ from mongoengine.fields import (
     GeoPointField,
     EnumField,
     EmbeddedDocumentListField,
+    ObjectIdField,
 )
 from mongoengine.errors import ValidationError, NotUniqueError
 from mongoengine.queryset import Q
@@ -386,6 +387,8 @@ class ExtDocApplication(ExtApplication):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                     elif hasattr(f, "field") and isinstance(f.field, ReferenceField):
                         v = [{"label": str(vv), "id": str(vv.id)} for vv in v]
+                    elif hasattr(f, "field") and isinstance(f.field, ObjectIdField):
+                        v = [str(vv) for vv in v]
                 elif isinstance(f, PlainReferenceListField):
                     v = [{"label": str(vv), "id": str(vv.id)} for vv in v]
                 elif isinstance(f, EmbeddedDocumentField):
