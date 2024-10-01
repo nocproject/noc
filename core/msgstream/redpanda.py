@@ -197,9 +197,14 @@ class RedPandaClient(object):
             group_id=group_id,
             retry_backoff_ms=config.redpanda.retry_backoff_ms * 1_000,
         )
-        # @todo errors
-        await self.consumer.start()
-        return self.consumer
+        while True:
+            # @todo errors
+            try:
+                await self.consumer.start()
+                return self.consumer
+            except KafkaConnectionError as e:
+                logger.error("Cannot connect to Kafka: %s", e)
+                await asyncio.sleep(1.0)
 
     def get_kafka_client(self) -> AIOKafkaClient:
         """
