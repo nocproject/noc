@@ -144,6 +144,13 @@ Ext.define("NOC.inv.channel.Application", {
           allowBlank: false,
         },
         {
+          name: "controller",
+          xtype: "textfield",
+          fieldLabel: __("Controller"),
+          uiStyle: "medium",
+          allowBlank: true,
+        },
+        {
           name: "description",
           xtype: "textarea",
           fieldLabel: __("Description"),
