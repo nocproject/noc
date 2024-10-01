@@ -97,9 +97,67 @@ Ext.define("NOC.sa.job.Application", {
         scrollable: true,
       },
       {
+        itemId: "jobData",
         region: "east",
         width: 250,
         scrollable: "y",
+        defaults: {
+          padding: 4,
+          allowBlank: true,
+        },
+        listeners: {
+          resize: function(component){
+            component.updateLayout();
+          },
+        },
+        items: [
+          {
+            xtype: "displayfield",
+            name: "status",
+            fieldLabel: __("Status"),
+            renderer: NOC.render.JobStatus,
+          },
+          {
+            xtype: "displayfield",
+            name: "name",
+            fieldLabel: __("Name"),
+          },
+          {
+            xtype: "displayfield",
+            name: "description",
+            fieldLabel: __("Description"),
+          },
+          {
+            xtype: "grid",
+            title: __("Inputs"),
+            name: "inputs",
+            visible: false,
+            columns: [
+              {text: __("Name"), dataIndex: "name", flex: 1},
+              {text: __("Value"), dataIndex: "value", flex: 1},
+            ],
+            store: {
+              fields: ["name", "value"],
+              data: [
+              ],
+            },
+          },
+          {
+            xtype: "grid",
+            title: __("Environment"),
+            name: "environment",
+            visible: false,
+            columns: [
+              {text: __("Name"), dataIndex: "name", flex: 1},
+              {text: __("Value"), dataIndex: "value", flex: 1},
+            ],
+            store: {
+              fields: ["name", "value"],
+              data: [
+              ],
+            },
+          },
+        ],
       },
     ],
   },
@@ -115,11 +173,33 @@ Ext.define("NOC.sa.job.Application", {
 
   onEditRecord: function(record){
     var me = this,
+      dataPanel = me.down("#jobData"),
+      inputs = Ext.Array.map(record.get("inputs"), function(item){
+        return {name: item.name, value: item.value}
+      }),
+      environment = Ext.Array.map(Ext.Object.getKeys(record.get("environment")), function(key){
+        return {name: key, value: record.get("environment")[key]}
+      }),
       url = "/sa/job/" + record.id + "/viz/";
     
     me.currentRecord = record;
     me.showItem(me.ITEM_DETAIL);
     me.down("#goToParentBtn").setDisabled(Ext.isEmpty(record.get("parent")));
+    dataPanel.down("[name=status]").setValue(record.get("status"));
+    dataPanel.down("[name=name]").setValue(record.get("name"));
+    dataPanel.down("[name=description]").setValue(record.get("description"));
+    if(inputs.length){
+      dataPanel.down("[name=inputs]").show();
+      dataPanel.down("[name=inputs]").getStore().loadData(inputs);
+    } else{
+      dataPanel.down("[name=inputs]").hide();
+    }
+    if(environment.length){
+      dataPanel.down("[name=environment]").show();
+      dataPanel.down("[name=environment]").getStore().loadData(environment);
+    } else{
+      dataPanel.down("[name=environment]").hide();
+    }
     me.setHistoryHash(record.id);
     Ext.Ajax.request({
       url: url,
