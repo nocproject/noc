@@ -211,6 +211,8 @@ class OTNODUController(BaseController):
             job = JobRequest(name="Setup ODU channel", jobs=jobs)
             self.logger.info("Submitting job %s", job.id)
             job.submit()
+        else:
+            self.logger.info("Nothing to submit. skipping.")
         # Return
         if is_new:
             return ch, "Channel created"
