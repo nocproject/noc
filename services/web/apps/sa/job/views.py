@@ -104,7 +104,7 @@ class Node(object):
                     "attributes": {
                         "shape": "box",
                         "label": self.name,
-                        "id": f"n_{self.id}",
+                        "id": self.id,
                         "class": "selectable",
                     },
                 }
@@ -116,7 +116,7 @@ class Node(object):
             "graphAttributes": {
                 "label": self.name,
                 "style": "rounded,dashed",
-                "id": f"n_{self.id}",
+                "id": self.id,
                 "class": "selectable",
             },
             "nodes": [],
