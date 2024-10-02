@@ -19,10 +19,14 @@ from noc.core.glyph import Glyph
 @dataclass
 class PathItem(object):
     label: str
+    id: str | None = None
 
     def to_json(self) -> dict[str, Any]:
         """Convert PathItem to JSON-serializable dict."""
-        return {"label": self.label}
+        r = {"label": self.label}
+        if self.id:
+            r["id"] = self.id
+        return r
 
 
 class ButtonAction(Enum):
@@ -85,7 +89,6 @@ def info(resource: str) -> Info | None:
         Info: with info structure.
         None: when resource cannot be dereferenced.
     """
-    print("INFO>", resource)
     try:
         obj, name = Object.from_resource(resource)
         if obj is None:
@@ -105,7 +108,10 @@ def _get_path(obj: Object) -> list[PathItem] | None:
     current = obj.parent
     while current:
         r.append(
-            PathItem(label=current.parent_connection if current.parent_connection else current.name)
+            PathItem(
+                label=current.parent_connection if current.parent_connection else current.name,
+                id=str(current.id),
+            )
         )
         if current.is_container:
             break
