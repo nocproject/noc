@@ -7,8 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import asyncio
-import random
 from typing import Optional, Union, List
 from collections import defaultdict
 
