@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from core.runner.models.jobreq import JobRequest
-from inv.models.endpoint import Endpoint
+from noc.core.runner.models.jobreq import JobRequest
+from noc.inv.models.endpoint import Endpoint
 from .channel import ProfileChannelController
 
 

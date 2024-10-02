@@ -48,7 +48,7 @@ class Endpoint(object):
         """Human-friendly label."""
         r = self.object.get_local_name_path(True)
         r.append(self.name)
-        return ">".join(r)
+        return " > ".join(r)
 
 
 @dataclass
