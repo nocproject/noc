@@ -8,7 +8,9 @@ console.debug("Defining NOC.inv.inv.plugins.facade.FacadePanel");
 
 Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   extend: "Ext.panel.Panel",
-  requires: [],
+  mixins: [
+    "NOC.core.mixins.SVGInteraction",
+  ],
   title: __("Facade"),
   closable: false,
   scrollable: true,
@@ -57,6 +59,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         [3.0, "300%"],
         [4.0, "400%"],
       ],
+      itemId: "zoomCombo",
       width: 100,
       value: 1.0,
       valueField: "zoom",
@@ -106,8 +109,9 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   preview: function(data){
     var me = this;
     me.currentId = data.id;
+    // Remove all views
+    if(me.viewCard.items.length > 0) me.viewCard.removeAll();
     // Add views
-    me.viewCard.removeAll();
     me.viewCard.add(
       Ext.Array.map(data.views, function(view, index){
         return {
@@ -123,23 +127,8 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
                 scope: me,
                 afterrender: function(container){
                   var app = this,
-                    svgObject = container.getEl().dom.querySelector('#svg-object');
-                  svgObject.addEventListener('load', function(){
-                    var svgDocument = svgObject.contentDocument;
-                    if(svgDocument){
-                      var svgElements = svgDocument.querySelectorAll("[data-event]");
-                      svgElements.forEach(function(element){
-                        var events = element.dataset.event.split(",");
-                        events.forEach(function(event){
-                          element.addEventListener(event, function(){
-                            app.app.showObject(element.dataset.resource.split(":")[1]);
-                          });
-                        });
-                      });
-                    } else{
-                      NOC.error(__("SVG Document is not loaded"));
-                    }
-                  });
+                    svgObject = container.getEl().dom.querySelector('#svg-object');              
+                  me.addInteractionEvents(app, svgObject, app.app.showObject.bind(app.app));
                 },
               },
             },
