@@ -146,6 +146,8 @@ def _info_for_connection(obj: Object, name: str) -> Info:
     if cn and cn.type is not None:
         ct = cn.type.name.split("|")[-1].strip()
         description = ct
+        if cn.is_inner:
+            description += " - not connected"
     else:
         description = "Unknown connection"
     return Info(title=name, path=_get_path(obj), description=description)
