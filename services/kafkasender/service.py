@@ -2,13 +2,11 @@
 # ----------------------------------------------------------------------
 # kafkasender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import asyncio
-import random
 from typing import Optional, Union, List
 from collections import defaultdict
 
@@ -30,6 +28,7 @@ from noc.core.perf import metrics
 from noc.core.msgstream.message import Message
 from noc.core.mx import MX_TO, MX_SHARDING_KEY, KAFKA_PARTITION
 from noc.core.comp import smart_text
+from noc.core.timeout import retry_timeout
 
 
 KAFKASENDER_STREAM = "kafkasender"
@@ -135,19 +134,8 @@ class KafkaSenderService(FastAPIService):
                 # KafkaConnectionError: No connection to node with id 1
                 metrics["errors", ("type", "kafka_producer_start")] += 1
                 self.logger.error("Failed to connect producer: %s", e)
-            await self._sleep_on_error(10)
+            await retry_timeout(10.0, name="kafka_producer")
         return self.producer
-
-    @staticmethod
-    async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
-        """
-        Wait random time on error.
-
-        Args:
-            delay: Average delay in seecods.
-            deviation: Deviation from delay in seconds.
-        """
-        await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
 
     @classmethod
     def get_partition(cls, partitions: Union[bytes, List], topic: bytes) -> Union[bytes, None]:
