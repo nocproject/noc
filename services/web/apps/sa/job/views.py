@@ -44,7 +44,7 @@ class JobApplication(ExtDocApplication):
             return node
 
         g: dict[str, Any] = {
-            "graphAttributes": {"directed": True, "rankdir": "LR"},
+            "graphAttributes": {"directed": True, "rankdir": "LR", "label": ""},
             "nodes": [],
             "edges": [],
             "subgraphs": [],
@@ -104,6 +104,8 @@ class Node(object):
                     "attributes": {
                         "shape": "box",
                         "label": self.name,
+                        "id": f"n_{self.id}",
+                        "class": "selectable",
                     },
                 }
             )
@@ -111,7 +113,12 @@ class Node(object):
         # Subgraph
         sg: dict[str, Any] = {
             "name": self.node_id,
-            "graphAttributes": {"label": self.name, "style": "rounded,dashed"},
+            "graphAttributes": {
+                "label": self.name,
+                "style": "rounded,dashed",
+                "id": f"n_{self.id}",
+                "class": "selectable",
+            },
             "nodes": [],
             "edges": [],
             "subgraphs": [],
