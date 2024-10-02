@@ -99,7 +99,7 @@ Ext.define("NOC.sa.job.Application", {
       {
         itemId: "jobData",
         region: "east",
-        width: 250,
+        width: 350,
         scrollable: "y",
         defaults: {
           padding: 4,
