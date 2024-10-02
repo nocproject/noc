@@ -226,11 +226,11 @@ Ext.define("NOC.sa.job.Application", {
       container.removeAll();
       container.add({
         xtype: "container",
-        html: svg.outerHTML,
+        html: me.transformSvg(svg).outerHTML,
         listeners: {
           afterrender: function(){
             var svgElement = container.getEl().dom.querySelector("svg"),
-              elements = svgElement.querySelectorAll(".selectable");
+              elements = svgElement.querySelectorAll(".selectable1");
 
             elements.forEach(function(element){
               element.addEventListener("click", function(event){
@@ -244,7 +244,6 @@ Ext.define("NOC.sa.job.Application", {
                 } else{
                   me.setRightPanelValues(record);
                 }
-                console.log("Element clicked", element.id, me);
               });
             });
           },
@@ -322,5 +321,20 @@ Ext.define("NOC.sa.job.Application", {
         NOC.error(__("Failed to get data for job") + ": " + response.status);
       },
     });
+  },
+  //
+  transformSvg: function(svg){
+    var background = "white";
+    svg.querySelector(".graph").classList.remove("selectable");
+    svg.querySelectorAll(".node.selectable>polygon")
+      .forEach(el => el.setAttribute("fill", background));
+    svg.querySelectorAll(".cluster.selectable>path")
+      .forEach(el => el.setAttribute("fill", background));
+    svg.querySelectorAll(".selectable")
+      .forEach(el => {
+        el.classList.remove("selectable");
+        el.classList.add("selectable1");
+      });
+    return svg;
   },
 });

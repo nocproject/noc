@@ -737,3 +737,13 @@ table {
     position: relative;
     z-index: 5;
 }
+
+.selectable1:hover polygon,
+.selectable1:hover path {
+    stroke: #f1c40f;
+}
+
+.selectable1:hover:not(:has(.selectable1:hover)) > path,
+.selectable1:hover:not(:has(.selectable1:hover)) > polygon{
+    fill: rgb(220, 211, 211);
+}
