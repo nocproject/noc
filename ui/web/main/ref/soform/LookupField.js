@@ -7,8 +7,9 @@
 console.debug("Defining NOC.main.soform.LookupField");
 
 Ext.define("NOC.main.ref.soform.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.ref.soform.LookupField",
-    uiStyle: "medium-combo",
-    askPermission: false
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.ref.soform.LookupField",
+  uiStyle: "medium-combo",
+  pageSize: false,
+  askPermission: false,
 });

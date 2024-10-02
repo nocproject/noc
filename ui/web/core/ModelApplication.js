@@ -37,8 +37,8 @@ Ext.define("NOC.core.ModelApplication", {
   searchTooltip: undefined,
   recordReload: false,
   filters: null,
-  gridToolbar: [],  // Additional grid toolbar buttons
-  formToolbar: [],  // Additional form toolbar buttons
+  gridToolbar: [], // Additional grid toolbar buttons
+  formToolbar: [], // Additional form toolbar buttons
   currentRecord: null,
   appTitle: null,
   createTitle: __("Create") + " {0}",
@@ -56,6 +56,7 @@ Ext.define("NOC.core.ModelApplication", {
   helpId: undefined,
   listHelpId: undefined,
   formHelpId: undefined,
+  canAdd: true,
   //
   navTooltipTemplate: new Ext.XTemplate(
     '<tpl if="data.name">',
@@ -209,7 +210,9 @@ Ext.define("NOC.core.ModelApplication", {
       },
     });
 
-    gridToolbar.push(me.searchField, me.refreshButton, me.createButton, me.exportButton);
+    gridToolbar.push(me.searchField, me.refreshButton);
+    if(me.canAdd) gridToolbar.push(me.createButton);
+    gridToolbar.push(me.exportButton);
     // admin actions
     if(me.actions || me.hasGroupEdit){
       gridToolbar.push(me.createActionMenu());
@@ -318,7 +321,7 @@ Ext.define("NOC.core.ModelApplication", {
         scope: me,
         isDisabled: function(){
           var me = this;
-          return!me.hasPermission("read") && !me.hasPermission("update");
+          return !me.hasPermission("read") && !me.hasPermission("update");
         },
         handler: function(grid, rowIndex){
           var me = this,
@@ -792,7 +795,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.saveInlines(
           data[me.idField],
           me.inlineStores.filter(function(store){
-            return!(Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal);
+            return !(Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal);
           }));
         me.unmask();
         NOC.msg.complete(__("Saved"));
@@ -1038,7 +1041,7 @@ Ext.define("NOC.core.ModelApplication", {
   getFormData: function(){
     var me = this,
       fields = me.form.getFields().items.filter(function(item){
-        return!(Object.prototype.hasOwnProperty.call(item, "isListForm") && item.isListForm)
+        return !(Object.prototype.hasOwnProperty.call(item, "isListForm") && item.isListForm)
       }),
       f, field, data, name,
       fLen = fields.length,
@@ -1227,7 +1230,7 @@ Ext.define("NOC.core.ModelApplication", {
     Ext.each(me.inlineStores, function(s){
       s.cloneData();
     });
-    me.currentRecord = null;  // Mark record as new
+    me.currentRecord = null; // Mark record as new
     me.setFormTitle(me.cloneTitle, "CLONE");
     me.cloneButton.setDisabled(true);
   },
@@ -1239,10 +1242,10 @@ Ext.define("NOC.core.ModelApplication", {
       if(c){
         return c;
       } else{
-        return"";
+        return "";
       }
     } else{
-      return"";
+      return "";
     }
   },
   //
@@ -1316,7 +1319,7 @@ Ext.define("NOC.core.ModelApplication", {
       item.run(
         me.grid.getSelectionModel().getSelection()
                     .map(function(o){
-                      return{object: o.get(me.idField), object__label: o.get('name')}
+                      return {object: o.get(me.idField), object__label: o.get('name')}
                     }));
       return;
     }
@@ -1727,7 +1730,7 @@ Ext.define("NOC.core.ModelApplication", {
     // Other items
     if(me.actions){
       items = items.concat(me.actions.map(function(o){
-        return{
+        return {
           text: o.title,
           itemId: o.action,
           form: o.form,
