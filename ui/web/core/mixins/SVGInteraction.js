@@ -39,11 +39,14 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                   success: function(response){
                     var result = Ext.decode(response.responseText),
                       tooltipConfig = {},
-                      path = Ext.Array.map(result.path, function(item){return item.label}).join(" > "),
+                      path = Ext.Array.map(result.path, function(item){
+                        return `<span style='cursor: pointer;text-decoration: underline;'`
+                        + `data-item-id="${item.id}"`
+                          + `>${item.label}</span>`
+                      }).join(" > "),
                       tooltipHtml = `
-                      <div>${path}</div>
-                      <div><strong>${result.title}</strong></div>
-                      <div><em>${result.description}</em></div>
+                      ${path}
+                      <div style='padding: 4px 0;'><em>${result.description}</em></div>
                     `,
                       svgRect = svgObject.getBoundingClientRect(),
                       containerEl = container.getEl().dom,
@@ -56,6 +59,8 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                       
                     tooltipConfig = {
                       itemId: "SVGbaloon",
+                      title: result.title,
+                      padding: "4 0",
                       html: tooltipHtml,
                       closeAction: "destroy",
                       dismissDelay: 0,
@@ -67,6 +72,18 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                           },
                         },
                       ],
+                      listeners: {
+                        afterrender: function(tooltip){
+                          var items = tooltip.el.query("[data-item-id]");
+                          items.forEach(function(element){
+                            element.addEventListener("click", function(evt){
+                              var value = element.dataset.itemId;
+                              evt.stopPropagation(); 
+                              showObject(value);
+                            }); 
+                          });
+                        },
+                      },
                     }
                     if(result.buttons && result.buttons.length){
                       Ext.apply(tooltipConfig, {
