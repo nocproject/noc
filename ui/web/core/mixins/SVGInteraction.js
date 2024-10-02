@@ -40,6 +40,9 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                     var result = Ext.decode(response.responseText),
                       tooltipConfig = {},
                       path = Ext.Array.map(result.path, function(item){
+                        if(!item.id){
+                          return `<span>${item.label}</span>`
+                        }
                         return `<span style='cursor: pointer;text-decoration: underline;'`
                         + `data-item-id="${item.id}"`
                           + `>${item.label}</span>`
