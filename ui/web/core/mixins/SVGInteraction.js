@@ -75,6 +75,11 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                             xtype: "button",
                             glyph: button.glyph,
                             tooltip: button.hint,
+                            handler: function(){
+                              if(button.action === "go"){
+                                showObject(button.args);
+                              }
+                            },
                           }
                         }),
                       });
