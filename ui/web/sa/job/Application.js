@@ -248,6 +248,19 @@ Ext.define("NOC.sa.job.Application", {
       container.add({
         xtype: "container",
         html: svg.outerHTML,
+        listeners: {
+          afterrender: function(){
+            var svgElement = container.getEl().dom.querySelector("svg"),
+              elements = svgElement.querySelectorAll(".selectable");
+
+            elements.forEach(function(element){
+              element.addEventListener("click", function(event){
+                event.stopPropagation();
+                console.log("Element clicked", element.dataset);
+              });
+            });
+          },
+        },
       });
     });
   },
