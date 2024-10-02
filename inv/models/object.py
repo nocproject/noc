@@ -1683,6 +1683,30 @@ class Object(Document):
         # Standard size
         return 1
 
+    @classmethod
+    def from_resource(cls, resource: str) -> "tuple[Object | None, str | None]":
+        """
+        Dereference from resource.
+
+        Args:
+            resource: Resource reference, only `o` scheme is supported.
+
+        Returns:
+            Tuple of Object, connection name.
+
+        Raises:
+            ValueError: on invalid scheme.
+        """
+        if not resource.startswith("o:"):
+            raise ValueError("Invalid scheme")
+        parts = resource[2:].split(":", 2)
+        obj = Object.get_by_id(parts[0])
+        if not obj:
+            return None, None
+        if len(parts) == 2:
+            return obj, parts[1]
+        return obj, None
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
