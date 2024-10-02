@@ -31,6 +31,7 @@ from kafka.errors import (
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.ioloop.util import run_sync
+from noc.core.timeout import retry_timeout
 from .config import get_stream
 from .metadata import Metadata, PartitionMetadata, Broker
 from .message import Message
@@ -94,17 +95,6 @@ class RedPandaClient(object):
         Only Odd number, Max 3. Maybe config ?
         """
         return min(len(meta.brokers), 3) or 1
-
-    @staticmethod
-    async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
-        """
-        Wait random time on error.
-
-        Args:
-            delay: Average delay in seecods.
-            deviation: Deviation from delay in seconds.
-        """
-        await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
 
     async def fetch_metadata(
         self, stream: Optional[str] = None, wait_for_stream: bool = False
@@ -183,7 +173,7 @@ class RedPandaClient(object):
                 # KafkaConnectionError: No connection to node with id 1
                 metrics["errors", ("type", "kafka_producer_start")] += 1
                 logger.error("Failed to connect producer: %s", e)
-            await self._sleep_on_error(delay=10)
+            await retry_timeout(10.0, name="kafka_producer")
         return self.producer
 
     async def get_consumer(self, group_id=None) -> AIOKafkaConsumer:
@@ -204,7 +194,7 @@ class RedPandaClient(object):
                 return self.consumer
             except KafkaConnectionError as e:
                 logger.error("Cannot connect to Kafka: %s", e)
-                await asyncio.sleep(1.0)
+                await retry_timeout(1.0, name="kafka_consumer")
 
     def get_kafka_client(self) -> AIOKafkaClient:
         """
