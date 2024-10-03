@@ -35,6 +35,7 @@ class FRU:
     part_no: str
     serial: str
     revision: Optional[str] = None
+    fw_version: Optional[str] = None
     type: str = "LINECARD"
     vendor: str = "IRE-Polus"
     is_rbs: bool = False
@@ -222,6 +223,8 @@ class Script(BaseScript):
                 r.serial = p.value
             elif p.code == "HwNumber":
                 r.revision = p.value
+            elif p.code == "SwNumber":
+                r.fw_version = p.value
             elif p.code == "Vendor":
                 r.vendor = p.value
             # elif p.name == "State":
@@ -331,6 +334,7 @@ class Script(BaseScript):
     def parse_cross_atp(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
+        gain: Dict[str, str] = {}
         datatypes: Dict[str, str] = {}
         port_states: Dict[str, str] = {}
         mode: Optional[str] = None
@@ -397,6 +401,7 @@ class Script(BaseScript):
     def parse_cross_default(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
+        gain: Dict[str, str] = {}
         datatypes: Dict[str, str] = {}
         port_states: Dict[str, str] = {}
         mode: Optional[str] = None
@@ -570,7 +575,10 @@ class Script(BaseScript):
                 "revision": c_fru.revision,
                 "sensors": sensors,
                 "param_data": cfgs,
-                "data": [{"interface": "hw_path", "attr": "slot", "value": str(slot)}],
+                "data": [
+                    {"interface": "hw_path", "attr": "slot", "value": str(slot)},
+                    {"interface": "asset", "attr": "fw_version", "value": c_fru.fw_version},
+                ],
                 "crossing": crossings,
                 # "param_data": self.get_cfg_param_data(common),
             }
