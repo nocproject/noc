@@ -106,6 +106,7 @@ class Node(object):
                     "name": self.node_id,
                     "attributes": {
                         "shape": "box",
+                        "style": "rounded",
                         "label": self.name,
                         "id": self.id,
                         "class": SELECTABLE_CLASS,
