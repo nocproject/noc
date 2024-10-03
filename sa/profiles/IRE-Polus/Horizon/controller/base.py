@@ -170,7 +170,7 @@ class ChannelMixin(HorizonMixin):
         return self.submit(
             ep=ep,
             job_type="submit",
-            name=f"{self.label} Setup: {ep.resource}",
+            name=f"{self.label} Setup: {ep.resource_label}",
             description=f"Setup {self.label} for endpoint",
             jobs=jobs,
         )
@@ -192,7 +192,7 @@ class ChannelMixin(HorizonMixin):
         return self.submit(
             ep=ep,
             job_type="submit",
-            name=f"{self.label} Cleanup: {ep.resource}",
+            name=f"{self.label} Cleanup: {ep.resource_label}",
             description="Cleanup {self.label} for endpoint",
             jobs=jobs,
         )
