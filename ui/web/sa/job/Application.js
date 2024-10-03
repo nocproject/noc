@@ -26,6 +26,11 @@ Ext.define("NOC.sa.job.Application", {
       flex: 1,
     },
     {
+      text: __("Created"),
+      dataIndex: "created_at",
+      width: 250,
+    },
+    {
       text: __("Action"),
       dataIndex: "action",
       width: 100,

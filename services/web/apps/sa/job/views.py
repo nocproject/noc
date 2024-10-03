@@ -25,6 +25,7 @@ class JobApplication(ExtDocApplication):
     menu = [_("Jobs")]
     model = Job
     glyph = "truck"
+    default_ordering = ["-id"]
 
     @view("^(?P<id>[0-9a-f]{24})/viz/$", access="read")
     def view_viz(self, request, id: str):
