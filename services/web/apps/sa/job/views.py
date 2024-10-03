@@ -66,6 +66,13 @@ class Node(object):
     children: "list[Node] | None" = None
     depends_on: list[str] | None = None
 
+    @property
+    def status_cls(self) -> str | None:
+        """
+        Return class for job status.
+        """
+        return f"job-status-{self.status.value}"
+
     @classmethod
     def from_job(cls, job: Job) -> "Node":
         """Create node from Job record."""
@@ -109,7 +116,7 @@ class Node(object):
                         "style": "rounded",
                         "label": self.name,
                         "id": self.id,
-                        "class": SELECTABLE_CLASS,
+                        "class": f"{SELECTABLE_CLASS} {self.status_cls}",
                     },
                 }
             )
@@ -121,7 +128,7 @@ class Node(object):
                 "label": self.name,
                 "style": "rounded,dashed",
                 "id": self.id,
-                "class": SELECTABLE_CLASS,
+                "class": f"{SELECTABLE_CLASS} {self.status_cls}",
             },
             "nodes": [],
             "edges": [],
