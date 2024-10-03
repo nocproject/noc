@@ -235,7 +235,7 @@ Ext.define("NOC.sa.job.Application", {
         listeners: {
           afterrender: function(){
             var svgElement = container.getEl().dom.querySelector("svg"),
-              elements = svgElement.querySelectorAll(".selectable1");
+              elements = svgElement.querySelectorAll(".job-selectable");
 
             elements.forEach(function(element){
               element.addEventListener("click", function(event){
@@ -343,7 +343,7 @@ Ext.define("NOC.sa.job.Application", {
     svg.querySelectorAll(".selectable")
       .forEach(el => {
         el.classList.remove("selectable");
-        el.classList.add("selectable1");
+        el.classList.add("job-selectable");
       });
     return svg;
   },
