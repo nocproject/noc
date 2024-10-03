@@ -750,6 +750,7 @@ table {
 .job-selectable:hover polygon,
 .job-selectable:hover path {
     animation: strokeWidthAnimation 0.3s forwards;
+    stroke: #f1c40f;
 }
 
 .job-selectable:hover:not(:has(.job-selectable:hover)) > path,
@@ -761,4 +762,5 @@ table {
 .active-job path {
     fill: rgb(220, 211, 211);
     scrollbar-width: 3px;
+    stroke: #f1c40f;
 }

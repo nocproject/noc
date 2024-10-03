@@ -340,6 +340,7 @@ Ext.define("NOC.sa.job.Application", {
       .forEach(el => el.setAttribute("fill", background));
     svg.querySelectorAll(".cluster.job-selectable>path")
       .forEach(el => el.setAttribute("fill", background));
+    svg.querySelectorAll("title").forEach(el => el.remove());
     return svg;
   },
 });
