@@ -23,7 +23,7 @@ from bson import ObjectId
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete
-from noc.core.resource import from_resource
+from noc.core.resource import from_resource, resource_label
 from .channel import Channel
 
 
@@ -121,6 +121,11 @@ class Endpoint(Document):
         job = ctl.cleanup(self)
         if job:
             job.submit()
+
+    @property
+    def resource_label(self) -> str:
+        """Human-readable label for resource."""
+        return resource_label(self.resource)
 
 
 signals.pre_save.connect(Endpoint._update_root_resource, sender=Endpoint)

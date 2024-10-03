@@ -142,7 +142,9 @@ class ChannelMixin(HorizonMixin):
             dry_run = True
         # Get locks
         locks = None if dry_run else [f"mo:{mo.id}"]
-        self.logger.info("Creating %s job for: %s (dry_run=%s)", job_type, ep.resource, dry_run)
+        self.logger.info(
+            "Creating %s job for: %s (dry_run=%s)", job_type, ep.resource_label, dry_run
+        )
         return JobRequest(
             name=name,
             description=description,

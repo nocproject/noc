@@ -140,6 +140,10 @@ class OpticalDWDMController(BaseController):
             self.logger.info("[%s] Preparing setup", label)
             job = ctl.setup(db_ep, destination=destination)
             if job:
+                if db_ep.is_root:
+                    job.name = f"Set up entry of pair {db_ep.pair}"
+                else:
+                    job.name = f"Set up exit of pair {db_ep.pair}"
                 db_ep.set_last_job(job.id)
             else:
                 self.logger.info("[%s] Nothing to setup", label)
