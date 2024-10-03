@@ -15,6 +15,8 @@ from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.sa.models.job import Job, JobStatus
 from noc.core.translation import ugettext as _
 
+SELECTABLE_CLASS = "job-selectable"
+
 
 class JobApplication(ExtDocApplication):
     """
@@ -106,7 +108,7 @@ class Node(object):
                         "shape": "box",
                         "label": self.name,
                         "id": self.id,
-                        "class": "selectable",
+                        "class": SELECTABLE_CLASS,
                     },
                 }
             )
@@ -118,7 +120,7 @@ class Node(object):
                 "label": self.name,
                 "style": "rounded,dashed",
                 "id": self.id,
-                "class": "selectable",
+                "class": SELECTABLE_CLASS,
             },
             "nodes": [],
             "edges": [],
