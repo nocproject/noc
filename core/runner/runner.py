@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Runner implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ class Runner(object):
 
         j_map = {r.id: r for r in iter_req(req)}
         for job in Job.from_req(req):
-            logger.info("[%s] Submitted job", job)
+            logger.info("[%s|%s] Submitted job", job.id, job.name)
             self.add_job(job)
             if self._queue is not None:
                 self._save_new_job(job, j_map[str(job.id)])
@@ -94,7 +94,7 @@ class Runner(object):
         """
         Submit job to run.
         """
-        logger.info("[%s] Sheduling to execution", job)
+        logger.info("[%s|%s] Sheduling to execution", job.id, job.name)
         task = asyncio.create_task(self.run_job(job.id))
         self._tasks.add(task)
         task.add_done_callback(self._tasks.discard)
@@ -144,11 +144,11 @@ class Runner(object):
             return
         # Jobs can be started only from WAITING
         if not job.is_waiting:
-            logger.info("[%s] Job status is %s, skipping", job, job.status)
+            logger.info("[%s|%s] Job status is %s, skipping", job.id, job.name, job.status)
             return
         # Check if job is not blocked by parents.
         if job.is_blocked_by_parents():
-            logger.info("[%s] is blocked by parents, skipping", job)
+            logger.info("[%s|%s] is blocked by parents, skipping", job.id, job.name)
         # Set job status
         self.set_status(job, JobStatus.RUNNING)
         # Run parents if necessary
@@ -161,27 +161,27 @@ class Runner(object):
         locks = list(job.iter_lock_names())
         try:
             if locks:
-                logger.info("[%s] Acquiring locks: %s", job, ", ".join(locks))
+                logger.info("[%s|%s] Acquiring locks: %s", job.id, job.name, ", ".join(locks))
             async with self._locks.acquire(locks):
                 if locks:
-                    logger.info("[%s] All locks are aquired", job)
+                    logger.info("[%s|%s] All locks are aquired", job.id, job.name)
                 await job.run()
             status = JobStatus.SUCCESS
         except asyncio.TimeoutError:
-            logger.error("[%s] Timed out", job)
+            logger.error("[%s|%s] Timed out", job.id, job.name)
             status = JobStatus.WARNING if job.allow_fail else JobStatus.CANCELLED
         except asyncio.CancelledError:
-            logger.error("[%s] Cancelled", job)
+            logger.error("[%s] Cancelled", job.id, job.name)
             status = JobStatus.CANCELLED
         except ActionError as e:
-            logger.error("[%s] Error: %s", job, e)
+            logger.error("[%s|%s] Error: %s", job.id, job.name, e)
             status = JobStatus.WARNING if job.allow_fail else JobStatus.FAILED
         except Exception:
             error_report()
             status = JobStatus.WARNING if job.allow_fail else JobStatus.FAILED
         finally:
             dt = perf_counter_ns() - t0
-            logger.info("[%s] executed in %d ms", job, dt / 1_000_000)
+            logger.info("[%s|%s] executed in %d ms", job.id, job.name, dt / 1_000_000)
         self.set_status(job, status)
         job.set_task(None)
         await self.apply_group(job)
@@ -196,7 +196,7 @@ class Runner(object):
             return
         for j in leader.iter_group():
             if j.id in self._jobs:
-                logger.info("[%s] Pruning job", j)
+                logger.info("[%s|%s] Pruning job", j.id, j.name)
                 del self._jobs[j.id]
 
     async def apply_group(self, job: Job) -> None:
@@ -271,7 +271,9 @@ class Runner(object):
         """
         if job.status == status:
             return
-        logger.info("[%s] Status change %s -> %s", job, job.status.name, status.name)
+        logger.info(
+            "[%s|%s] Status change %s -> %s", job.id, job.name, job.status.name, status.name
+        )
         job.status = status
         if self._queue:
             # Store
