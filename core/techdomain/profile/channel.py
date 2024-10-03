@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from importlib import import_module
+
 # NOC modules
 from noc.core.runner.models.jobreq import JobRequest
 from noc.sa.models.managedobject import ManagedObject
@@ -14,7 +17,7 @@ from .base import BaseProfileController
 
 
 class ProfileChannelController(BaseProfileController):
-    def setup(self, ep: Endpoint) -> JobRequest | None:
+    def setup(self, ep: Endpoint, **kwargs) -> JobRequest | None:
         """
         Gennerate Job request to setup endpoint.
 
@@ -109,7 +112,9 @@ class ProfileChannelController(BaseProfileController):
         # @todo: Consider custom
         mn = f"noc.sa.profiles.{profile}.controller.{name}"
         try:
-            m = __import__(mn, {}, {}, "Controller")
-            return m.Controller()
-        except ImportError:
+            m = import_module(mn)
+            # m = __import__(mn, {}, {}, "Controller")
+        except ImportError as e:
+            print(f"Failed to import from {mn}: {e}")
             return None
+        return m.Controller()

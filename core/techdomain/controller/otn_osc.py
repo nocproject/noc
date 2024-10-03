@@ -113,6 +113,7 @@ class OTNOSCController(BaseController):
             self.logger.info("Preparing setup")
             job = ctl.setup(ep)
             if job:
+                job.name = f"Set up {ep.resource_label}"
                 ep.set_last_job(job.id)
                 jobs.append(job)
         if jobs:
