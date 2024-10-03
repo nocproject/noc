@@ -60,6 +60,11 @@ Ext.define("NOC.sa.job.Application", {
         handler: "onGoToParent",
       },
       {
+        glyph: NOC.glyph.refresh,
+        tooltip: __("Refresh"),
+        handler: "onRefresh",
+      },
+      {
         xtype: "combobox",
         store: [
           [0.25, "25%"],
@@ -342,5 +347,9 @@ Ext.define("NOC.sa.job.Application", {
       .forEach(el => el.setAttribute("fill", background));
     svg.querySelectorAll("title").forEach(el => el.remove());
     return svg;
+  },
+  //
+  onRefresh: function(){
+    this.onEditRecord(this.currentRecord);
   },
 });
