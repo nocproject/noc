@@ -1,0 +1,6 @@
+{
+    "name": "RBS | iData | Chassis K4-H8 back view",
+    "$collection": "inv.facades",
+    "uuid": "b79f4b59-c683-4a3c-97d7-e98e4195cf7a",
+    "data": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<svg viewBox=\"0 0 482 178\" xmlns=\"http://www.w3.org/2000/svg\">\n  <title>RBS | iData | Chassis K4-H8 back view</title>\n  <defs/>\n  <rect width=\"482\" height=\"178\" style=\"stroke: rgb(0, 0, 0); vector-effect: non-scaling-stroke; fill: rgb(30, 112, 186);\">\n    <title>Chassis K4-H8 back view</title>\n  </rect>\n</svg>"
+}
