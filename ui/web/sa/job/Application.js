@@ -242,10 +242,10 @@ Ext.define("NOC.sa.job.Application", {
                 var record = me.grid.getStore().getById(element.id);
 
                 event.stopPropagation();
-                svgElement.querySelectorAll(".jоb-selected").forEach(function(el){
-                  el.classList.remove("jоb-selected");
+                svgElement.querySelectorAll(".active-job").forEach(function(el){
+                  el.classList.remove("active-job");
                 });
-                element.classList.add("jоb-selected");
+                element.classList.add("active-job");
                 if(Ext.isEmpty(record)){
                   me.sendRequest(element.id, function(response){
                     var data = Ext.decode(response.responseText);
@@ -335,16 +335,11 @@ Ext.define("NOC.sa.job.Application", {
   //
   transformSvg: function(svg){
     var background = "white";
-    svg.querySelector(".graph").classList.remove("selectable");
-    svg.querySelectorAll(".node.selectable>polygon")
+    svg.querySelector(".graph").classList.remove("job-selectable");
+    svg.querySelectorAll(".node.job-selectable>polygon")
       .forEach(el => el.setAttribute("fill", background));
-    svg.querySelectorAll(".cluster.selectable>path")
+    svg.querySelectorAll(".cluster.job-selectable>path")
       .forEach(el => el.setAttribute("fill", background));
-    svg.querySelectorAll(".selectable")
-      .forEach(el => {
-        el.classList.remove("selectable");
-        el.classList.add("job-selectable");
-      });
     return svg;
   },
 });
