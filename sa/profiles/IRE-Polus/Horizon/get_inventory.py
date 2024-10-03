@@ -334,7 +334,6 @@ class Script(BaseScript):
     def parse_cross_atp(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
-        gain: Dict[str, str] = {}
         datatypes: Dict[str, str] = {}
         port_states: Dict[str, str] = {}
         mode: Optional[str] = None
@@ -401,7 +400,6 @@ class Script(BaseScript):
     def parse_cross_default(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
-        gain: Dict[str, str] = {}
         datatypes: Dict[str, str] = {}
         port_states: Dict[str, str] = {}
         mode: Optional[str] = None
