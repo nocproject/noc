@@ -171,7 +171,7 @@ class Runner(object):
             logger.error("[%s|%s] Timed out", job.id, job.name)
             status = JobStatus.WARNING if job.allow_fail else JobStatus.CANCELLED
         except asyncio.CancelledError:
-            logger.error("[%s] Cancelled", job.id, job.name)
+            logger.error("[%s|%s] Cancelled", job.id, job.name)
             status = JobStatus.CANCELLED
         except ActionError as e:
             logger.error("[%s|%s] Error: %s", job.id, job.name, e)
