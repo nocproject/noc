@@ -761,6 +761,6 @@ table {
 .active-job polygon,
 .active-job path {
     fill: rgb(220, 211, 211);
-    scrollbar-width: 3px;
-    stroke: #f1c40f;
+    stroke: black !important;
+    stroke-width: 1px !important;
 }
