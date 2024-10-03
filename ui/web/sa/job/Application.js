@@ -240,7 +240,12 @@ Ext.define("NOC.sa.job.Application", {
             elements.forEach(function(element){
               element.addEventListener("click", function(event){
                 var record = me.grid.getStore().getById(element.id);
+
                 event.stopPropagation();
+                svgElement.querySelectorAll(".jоb-selected").forEach(function(el){
+                  el.classList.remove("jоb-selected");
+                });
+                element.classList.add("jоb-selected");
                 if(Ext.isEmpty(record)){
                   me.sendRequest(element.id, function(response){
                     var data = Ext.decode(response.responseText);

@@ -738,12 +738,27 @@ table {
     z-index: 5;
 }
 
+@keyframes strokeWidthAnimation {
+    from {
+        stroke-width: 1px;
+    }
+    to {
+        stroke-width: 3px;
+    }
+}
+
 .selectable1:hover polygon,
 .selectable1:hover path {
-    stroke: #f1c40f;
+    animation: strokeWidthAnimation 0.3s forwards;
 }
 
 .selectable1:hover:not(:has(.selectable1:hover)) > path,
 .selectable1:hover:not(:has(.selectable1:hover)) > polygon{
     fill: rgb(220, 211, 211);
+}
+
+.jоb-selected polygon,
+.jоb-selected path {
+    fill: rgb(220, 211, 211);
+    scrollbar-width: 3px;
 }
