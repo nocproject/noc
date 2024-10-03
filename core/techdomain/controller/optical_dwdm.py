@@ -14,6 +14,8 @@ from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
+from noc.core.runner.models.jobreq import JobRequest
+from ..profile.channel import ProfileChannelController
 from .base import BaseController, Endpoint, PathItem
 
 
@@ -120,6 +122,34 @@ class OpticalDWDMController(BaseController):
                 if pn not in used_pairs:
                     return pn
 
+        def get_job(
+            ep: Endpoint, db_ep: DBEndpoint, destination: str | None = None
+        ) -> JobRequest | None:
+            label = ep.as_resource()
+            self.logger.info("[%s] Getting profile controller for %s", label, ep.object)
+            # Get cached
+            if ep.object in pc_cache:
+                ctl = pc_cache[ep.object]
+            else:
+                # Create controller
+                ctl = ProfileChannelController.get_controller_for_object(ep.object, self.name)
+                pc_cache[ep.object] = ctl
+            if not ctl:
+                self.logger.info("[%s] Controller is not supported, skipping", label)
+                return None
+            self.logger.info("[%s] Preparing setup", label)
+            job = ctl.setup(db_ep, destination=destination)
+            if job:
+                if db_ep.is_root:
+                    job.name = f"Set up entry of pair {db_ep.pair}"
+                else:
+                    job.name = f"Set up exit of pair {db_ep.pair}"
+                db_ep.set_last_job(job.id)
+            else:
+                self.logger.info("[%s] Nothing to setup", label)
+            return job
+
+        pc_cache = {}
         obj = ep.object
         # Trace paths
         pairs = []
@@ -153,6 +183,7 @@ class OpticalDWDMController(BaseController):
             used_pairs = set()
         # Process endpoints
         pair_count = count(1)
+        jobs = []
         for sep, eep in pairs:
             start = current_endpoints.get(sep.as_resource())
             if not start:
@@ -164,6 +195,7 @@ class OpticalDWDMController(BaseController):
                     pair=next_free_pair() if self.use_pairs else None,
                 )
                 start.save()
+            jobs.append(get_job(sep, start, destination=f"To {eep.label}"))
             end = current_endpoints.get(eep.as_resource())
             if not end:
                 end = DBEndpoint(
@@ -173,6 +205,12 @@ class OpticalDWDMController(BaseController):
                     pair=start.pair if self.use_pairs else None,
                 )
                 end.save()
+            jobs.append(get_job(eep, end, destination=f"From {sep.label}"))
+        # Submit jobs
+        jobs = [job for job in jobs if job]
+        if jobs:
+            job = JobRequest(name="Setup optical channel", jobs=jobs)
+            job.submit()
         # @todo: Remove hanging endpoints
         if current_endpoints:
             return channel, "Channel updated"

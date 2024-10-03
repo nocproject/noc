@@ -43,6 +43,13 @@ class Endpoint(object):
         o, n = from_resource(res)
         return Endpoint(object=o, name=n)
 
+    @property
+    def label(self) -> str:
+        """Human-friendly label."""
+        r = self.object.get_local_name_path(True)
+        r.append(self.name)
+        return " > ".join(r)
+
 
 @dataclass
 class PathItem(object):
