@@ -2773,7 +2773,10 @@ class ManagedObject(NOCModel):
         return self._interactions
 
     def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
-        return {key.config.header: key.clean_header_value(value) for key, value in self.message_meta.items()}
+        return {
+            key.config.header: key.clean_header_value(value)
+            for key, value in self.message_meta.items()
+        }
 
     @property
     def message_meta(self) -> Dict[MessageMeta, Any]:

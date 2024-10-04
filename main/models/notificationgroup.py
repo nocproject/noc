@@ -206,7 +206,9 @@ class NotificationGroup(NOCModel):
 
     @classmethod
     def get_group_by_type(cls, message_type: MessageType) -> List["NotificationGroup"]:
-        return list(NotificationGroup.objects.filter(message_types__message_type=message_type.value))
+        return list(
+            NotificationGroup.objects.filter(message_types__message_type=message_type.value)
+        )
 
     def get_subscription_by_user(
         self, user: User, watch: Optional[Any] = None
