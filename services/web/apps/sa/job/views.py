@@ -69,9 +69,9 @@ class Node(object):
     @property
     def status_cls(self) -> str | None:
         """
-        Return class for job status.
+        Return color for job status.
         """
-        return f"job-status-{self.status.value}"
+        return self.status.get_color(self.status.value)
 
     @classmethod
     def from_job(cls, job: Job) -> "Node":
@@ -116,7 +116,8 @@ class Node(object):
                         "style": "rounded",
                         "label": self.name,
                         "id": self.id,
-                        "class": f"{SELECTABLE_CLASS} {self.status_cls}",
+                        "class": SELECTABLE_CLASS,
+                        "color": self.status_cls,
                     },
                 }
             )
@@ -128,7 +129,8 @@ class Node(object):
                 "label": self.name,
                 "style": "rounded,dashed",
                 "id": self.id,
-                "class": f"{SELECTABLE_CLASS} {self.status_cls}",
+                "class": SELECTABLE_CLASS,
+                "color": self.status_cls,
             },
             "nodes": [],
             "edges": [],

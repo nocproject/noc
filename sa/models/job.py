@@ -49,6 +49,20 @@ class JobStatus(Enum):
     WARNING = "W"
     CANCELLED = "c"
 
+    @classmethod
+    def get_color(cls, status):
+        status_to_color = {
+            "p": "red",
+            "w": "yellowgreen",
+            "r": "blue",
+            "S": "brown",
+            "s": "#2ecc71",
+            "f": "red",
+            "W": "yellow",
+            "c": "coral",
+        }
+        return status_to_color.get(status, "unknown")
+
 
 class InputMapping(EmbeddedDocument):
     """
