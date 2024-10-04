@@ -112,7 +112,8 @@ Ext.define("NOC.sa.job.Application", {
         width: 350,
         scrollable: "y",
         defaults: {
-          padding: 4,
+          padding: "0 4",
+          margin: 0,
           allowBlank: true,
         },
         listeners: {
@@ -306,14 +307,19 @@ Ext.define("NOC.sa.job.Application", {
       inputs = Ext.Array.map(record.get("inputs"), function(item){
         return {name: item.name, value: item.value}
       }),
-      environment = Ext.Array.map(Ext.Object.getKeys(record.get("environment")), function(key){
-        return {name: key, value: record.get("environment")[key]}
+      environment = Ext.Array.map(Ext.Object.getKeys(record.get("effective_environment")), function(key){
+        return {name: key, value: record.get("effective_environment")[key]}
       });
     
     dataPanel.down("[name=status]").setValue(record.get("status"));
     dataPanel.down("[name=name]").setValue(record.get("name"));
     dataPanel.down("[name=action]").setValue(record.get("action"));
     dataPanel.down("[name=description]").setValue(record.get("description"));
+    if(Ext.isEmpty(record.get("action"))){
+      dataPanel.down("[name=action]").hide();
+    } else{
+      dataPanel.down("[name=action]").show();
+    }
     if(inputs.length){
       dataPanel.down("[name=inputs]").show();
       dataPanel.down("[name=inputs]").getStore().loadData(inputs);
