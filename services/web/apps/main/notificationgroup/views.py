@@ -9,8 +9,7 @@
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.main.models.notificationgroup import (
     NotificationGroup,
-    NotificationGroupUser,
-    NotificationGroupOther,
+    NotificationGroupUserSubscription,
 )
 from noc.services.web.base.modelinline import ModelInline
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter, UnicodeParameter
@@ -27,8 +26,7 @@ class NotificationGroupApplication(ExtModelApplication):
     model = NotificationGroup
     glyph = "envelope-o"
 
-    users = ModelInline(NotificationGroupUser)
-    other = ModelInline(NotificationGroupOther)
+    users = ModelInline(NotificationGroupUserSubscription)
 
     @view(
         url="^actions/test/$",

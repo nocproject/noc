@@ -411,9 +411,9 @@ class ModelInline(object):
             o = self.model(**attrs)
             try:
                 o.save()
-            except IntegrityError:
+            except IntegrityError as e:
                 return self.app.render_json(
-                    {"status": False, "message": "Integrity error"}, status=self.CONFLICT
+                    {"status": False, "message": f"Integrity error: {e}"}, status=self.CONFLICT
                 )
             format = request.GET.get(self.format_param)
             if format == "ext":
@@ -453,9 +453,9 @@ class ModelInline(object):
             setattr(o, k, v)
         try:
             o.save()
-        except IntegrityError:
+        except IntegrityError as e:
             return self.app.render_json(
-                {"status": False, "message": "Integrity error"}, status=self.CONFLICT
+                {"status": False, "message": f"Integrity error: {e}"}, status=self.CONFLICT
             )
         return self.app.response(status=self.OK)
 
