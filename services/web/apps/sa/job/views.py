@@ -117,7 +117,6 @@ class Node(object):
                         "label": self.name,
                         "id": self.id,
                         "class": f"{SELECTABLE_CLASS} {self.status_cls}",
-                        "fillcolor": "white",
                     },
                 }
             )
@@ -130,8 +129,6 @@ class Node(object):
                 "style": "rounded,dashed",
                 "id": self.id,
                 "class": f"{SELECTABLE_CLASS} {self.status_cls}",
-                "color": "none",
-                "fillcolor": "white",
             },
             "nodes": [],
             "edges": [],
