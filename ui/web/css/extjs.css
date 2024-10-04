@@ -737,3 +737,34 @@ table {
     position: relative;
     z-index: 5;
 }
+
+@keyframes strokeWidthAnimation {
+    from {
+        stroke-width: 1px;
+    }
+    to {
+        stroke-width: 3px;
+    }
+}
+
+.job-selectable:hover polygon,
+.job-selectable:hover path {
+    animation: strokeWidthAnimation 0.3s forwards;
+    stroke: #f1c40f;
+}
+
+.job-selectable:hover:not(:has(.job-selectable:hover)) > path,
+.job-selectable:hover:not(:has(.job-selectable:hover)) > polygon{
+    fill: rgb(220, 211, 211);
+}
+
+.active-job polygon,
+.active-job path {
+    fill: rgb(220, 211, 211);
+    stroke-width: 2px !important;
+}
+
+.job-selectable.no-hover:hover polygon,
+.job-selectable.no-hover:hover path {
+    stroke: black !important;
+}

@@ -336,6 +336,20 @@ Ext.apply(NOC.render, {
       return "";
     }
   },
+
+  JobStatus: function(v){
+    var map= {
+      p: "<i class='fa fa-clock-o'></i> PENDING",
+      w: "<i class='fa fa-pause'></i> WAITING",
+      r: "<i class='fa fa-play'></i> RUNNING",
+      S: "<i class='fa fa-stop'></i> SUSPENDED",
+      s: "<i class='fa fa-check'></i> SUCCESS",
+      f: "<i class='fa fa-exclamation-triangle'></i> FAILED",
+      W: "<i class='fa fa-exclamation-circle'></i> WARNING",
+      c: "<i class='fa fa-ban'></i> CANCELLED",
+    };
+    return map[v];
+  },
 });
 
 //
@@ -728,34 +742,34 @@ Ext.define("NOC.form.field.VTypes", {
 //
 NOC.uiStyles = function(style){
   switch(style){
-    case"small": {
+    case "small": {
       // 3 letters
       return {
         width: 50,
         anchor: null,
       }
     }
-    case"medium": {
+    case "medium": {
       // 20 letters
       return {
         width: Ext.create("NOC.core.modelfilter.Base").width - 25,
         anchor: null,
       };
     }
-    case"medium-combo": {
+    case "medium-combo": {
       return {
         width: Ext.create("NOC.core.modelfilter.Base").width - 100,
         anchor: null,
       };
     }
-    case"large": {
+    case "large": {
       // 40 letters
       return {
         width: Ext.create("NOC.core.modelfilter.Base").width * 2,
         anchor: null,
       }
     }
-    case"extra": {
+    case "extra": {
       // Full width
       return {
         anchor: "100%",

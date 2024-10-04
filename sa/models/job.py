@@ -82,7 +82,6 @@ class Job(Document):
         name: Name, when parent is not empty, must be unique
             within parent.
         description: Optional description.
-        effective_labels: Effective set of labels.
         labels: Job labels.
         effective_labels: Full set of labels.
         status: See JobStatus for values.
