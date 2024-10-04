@@ -74,7 +74,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       },
     },
     {
-      glyph: NOC.glyph.arrow_down,
+      glyph: NOC.glyph.download,
       tooltip: __("Export to CSV"),
       handler: "onExport",
     },
