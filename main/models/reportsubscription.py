@@ -42,7 +42,7 @@ class ReportSubscription(Document):
     run_as = ForeignKeyField(User)
     # Send result to notification group
     # If empty, only file will be written
-    notification_group = ForeignKeyField(NotificationGroup)
+    notification_group: "NotificationGroup" = ForeignKeyField(NotificationGroup)
     # Predefined report id
     # <app id>:<variant>
     report = StringField()
@@ -124,7 +124,7 @@ class ReportSubscription(Document):
         return path
 
     def send_report(self, path):
-        addresses = [r[2] for r in self.notification_group.members if r[1] == "mail"]
+        addresses = [r.contact for r in self.notification_group.members if r.method == "mail"]
         with open(path) as f:
             data = f.read()
         for a in addresses:

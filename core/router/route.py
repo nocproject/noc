@@ -19,10 +19,8 @@ from typing import (
     Optional,
     Literal,
     FrozenSet,
-    DefaultDict,
 )
 from dataclasses import dataclass
-from collections import defaultdict
 
 # Third-party modules
 from jinja2 import Template as JTemplate
