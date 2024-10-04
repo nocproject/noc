@@ -134,6 +134,11 @@ Ext.define("NOC.sa.job.Application", {
           },
           {
             xtype: "displayfield",
+            name: "action",
+            fieldLabel: __("Action"),
+          },
+          {
+            xtype: "displayfield",
             name: "description",
             fieldLabel: __("Description"),
           },
@@ -182,25 +187,16 @@ Ext.define("NOC.sa.job.Application", {
   },
 
   onEditRecord: function(record){
-    var me = this,
-      url = "/sa/job/" + record.id + "/viz/";
+    var me = this;
     
     me.currentRecord = record;
     me.showItem(me.ITEM_DETAIL);
     me.down("#goToParentBtn").setDisabled(Ext.isEmpty(record.get("parent")));
     me.setHistoryHash(record.id);
     me.setRightPanelValues(record);
-    Ext.Ajax.request({
-      url: url,
-      method: "GET",
-      scope: me,
-      success: function(response){
-        var data = Ext.decode(response.responseText);
-        this.renderScheme(data);
-      },
-      failure: function(response){
-        NOC.error(__("Failed to get data") + ": " + response.status);
-      },
+    me.sendRequest(record.id, "/viz/", function(response){
+      var data = Ext.decode(response.responseText);
+      me.renderScheme(data);
     });
   },
 
@@ -253,7 +249,7 @@ Ext.define("NOC.sa.job.Application", {
                 element.classList.remove("job-selectable");
                 element.classList.add("active-job");
                 if(Ext.isEmpty(record)){
-                  me.sendRequest(element.id, function(response){
+                  me.sendRequest(element.id, "/", function(response){
                     var data = Ext.decode(response.responseText);
                     me.setRightPanelValues(Ext.create('Ext.data.Record', data));
                   });
@@ -297,7 +293,7 @@ Ext.define("NOC.sa.job.Application", {
     var me = this,
       parentId = me.currentRecord.get("parent");
 
-    me.sendRequest(parentId, function(response){
+    me.sendRequest(parentId, "/", function(response){
       var data = Ext.decode(response.responseText);
       me.onEditRecord(Ext.create('Ext.data.Record', data));
       me.setHistoryHash(parentId);
@@ -316,6 +312,7 @@ Ext.define("NOC.sa.job.Application", {
     
     dataPanel.down("[name=status]").setValue(record.get("status"));
     dataPanel.down("[name=name]").setValue(record.get("name"));
+    dataPanel.down("[name=action]").setValue(record.get("action"));
     dataPanel.down("[name=description]").setValue(record.get("description"));
     if(inputs.length){
       dataPanel.down("[name=inputs]").show();
@@ -331,9 +328,11 @@ Ext.define("NOC.sa.job.Application", {
     }
   },
   //
-  sendRequest: function(itemId, callBack){
+  sendRequest: function(itemId, suffix, callBack){
+    var url = itemId ? "/sa/job/" + itemId + suffix : "/sa/job/";
+
     Ext.Ajax.request({
-      url: "/sa/job/" + itemId + "/",
+      url: url,
       method: "GET",
       success: callBack,
       failure: function(response){
@@ -343,6 +342,7 @@ Ext.define("NOC.sa.job.Application", {
   },
   //
   transformSvg: function(svg){
+    // ToDo remove this function, all logic should be in Viz config
     var background = "white",
       graphEl = svg.querySelector(".graph");
     graphEl.classList.remove("job-selectable");
@@ -357,9 +357,5 @@ Ext.define("NOC.sa.job.Application", {
       .forEach(el => el.setAttribute("fill", background));
     svg.querySelectorAll("title").forEach(el => el.remove());
     return svg;
-  },
-  //
-  onRefresh: function(){
-    this.onEditRecord(this.currentRecord);
   },
 });
