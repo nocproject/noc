@@ -16,6 +16,26 @@ from noc.sa.models.job import Job, JobStatus
 from noc.core.translation import ugettext as _
 
 SELECTABLE_CLASS = "job-selectable"
+STATUS_COLOR = {
+    JobStatus.PENDING.value: "#2c3e50",
+    JobStatus.WAITING.value: "#7f8c8d",
+    JobStatus.RUNNING.value: "#2980b9",
+    JobStatus.SUSPENDED.value: "#7f8c8d",
+    JobStatus.SUCCESS.value: "#16a085",
+    JobStatus.FAILED.value: "#c0392b",
+    JobStatus.WARNING.value: "#d35400",
+    JobStatus.CANCELLED.value: "#8e44ad",
+}
+STATUS_FONT_COLOR = {
+    JobStatus.PENDING.value: "#ecf0f1",
+    JobStatus.WAITING.value: "#ecf0f1",
+    JobStatus.RUNNING.value: "#ecf0f1",
+    JobStatus.SUSPENDED.value: "#ecf0f1",
+    JobStatus.SUCCESS.value: "#ecf0f1",
+    JobStatus.FAILED.value: "#ecf0f1",
+    JobStatus.WARNING.value: "#ecf0f1",
+    JobStatus.CANCELLED.value: "#ecf0f1",
+}
 
 
 class JobApplication(ExtDocApplication):
@@ -106,6 +126,8 @@ class Node(object):
 
     def render(self, g: dict[str, Any]) -> None:
         """Render node to graph."""
+        color = STATUS_COLOR.get(self.status.value, "black")
+        font_color = STATUS_FONT_COLOR.get(self.status.value, "black")
         # Single
         if self.children is None:
             g["nodes"].append(
@@ -113,11 +135,13 @@ class Node(object):
                     "name": self.node_id,
                     "attributes": {
                         "shape": "box",
-                        "style": "rounded",
+                        "style": "rounded,filled",
                         "label": self.name,
                         "id": self.id,
                         "class": SELECTABLE_CLASS,
-                        "color": self.status_cls,
+                        "color": color,
+                        "fillcolor": color,
+                        "fontcolor": font_color,
                     },
                 }
             )
@@ -130,7 +154,7 @@ class Node(object):
                 "style": "rounded,dashed",
                 "id": self.id,
                 "class": SELECTABLE_CLASS,
-                "color": self.status_cls,
+                "color": color,
             },
             "nodes": [],
             "edges": [],
