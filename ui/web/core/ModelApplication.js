@@ -115,13 +115,13 @@ Ext.define("NOC.core.ModelApplication", {
     me.currentRecord = null;
     // Process commands
     switch(me.getCmd()){
-      case"open":
+      case "open":
         me.loadById(me.noc.cmd.id);
         break;
-      case"history":
+      case "history":
         me.restoreHistory(me.noc.cmd.args);
         return;
-      case"new":
+      case "new":
         me.newRecord(me.noc.cmd.args);
         break;
     }
@@ -458,7 +458,7 @@ Ext.define("NOC.core.ModelApplication", {
       columns: [
         {
           xtype: "glyphactioncolumn",
-          width: 20 * rowItems.length,
+          width: 23 * rowItems.length,
           sortable: false,
           items: rowItems,
           stateId: "rowaction",
@@ -1491,8 +1491,8 @@ Ext.define("NOC.core.ModelApplication", {
           var x, xtype = v.xtype.indexOf("LookupField") !== -1 ? "combobox" : v.xtype;
           v.allowBlank = true;
           switch(xtype){
-            case"fieldset":
-            case"container":
+            case "fieldset":
+            case "container":
               x = {
                 xtype: v.xtype,
                 title: v.title,
@@ -1512,8 +1512,8 @@ Ext.define("NOC.core.ModelApplication", {
               }
               items.push(x);
               break;
-            case"checkbox":
-            case"checkboxfield":
+            case "checkbox":
+            case "checkboxfield":
               if(v.groupEdit === true){
                 x = {
                   xtype: "combobox",
@@ -1543,7 +1543,7 @@ Ext.define("NOC.core.ModelApplication", {
               items.push(x);
               me.groupCheckboxFields[v.name] = true;
               break;
-            case"combobox":
+            case "combobox":
               x = v.cloneConfig ? v.cloneConfig() : v;
               x.triggers = {
                 clear: {
@@ -1623,7 +1623,7 @@ Ext.define("NOC.core.ModelApplication", {
               }
               items.push(x);
               break;
-            case"textfield":
+            case "textfield":
               x = v.cloneConfig ? v.cloneConfig() : v;
               x.triggers = {
                 clear: {
