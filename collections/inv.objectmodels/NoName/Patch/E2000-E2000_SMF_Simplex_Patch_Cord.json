@@ -1,0 +1,38 @@
+{
+    "name": "NoName | Patch | E2000-E2000 SMF Simplex Patch Cord",
+    "$collection": "inv.objectmodels",
+    "uuid": "d53a6aa4-ee92-4fc7-8066-05c1cf676b93",
+    "vendor__code": "NONAME",
+    "description": "1-fiber E2000-E2000 SMF Patch",
+    "connections": [
+        {
+            "name": "1",
+            "description": "1st connector",
+            "direction": "s",
+            "gender": "m",
+            "type__name": "Optical | E2000"
+        },
+        {
+            "name": "2",
+            "description": "2nd connector",
+            "direction": "s",
+            "gender": "m",
+            "type__name": "Optical | E2000"
+        }
+    ],
+    "cross": [
+        {
+            "input": "1",
+            "output": "2"
+        },
+        {
+            "input": "2",
+            "output": "1"
+        }
+    ],
+    "data": [{
+        "attr": "length",
+        "interface": "length",
+        "value": 5.0
+    }]
+}
