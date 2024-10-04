@@ -73,6 +73,11 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
         },
       },
     },
+    {
+      glyph: NOC.glyph.arrow_down,
+      tooltip: __("Export to CSV"),
+      handler: "onExport",
+    },
     "->",
     {
       xtype: "tbtext",

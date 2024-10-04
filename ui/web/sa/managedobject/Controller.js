@@ -10,7 +10,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
     "Ext.ux.grid.column.GlyphAction",
   ],
   mixins: [
-    "NOC.core.Export",
+    "NOC.core.mixins.Export",
   ],
   alias: 'controller.managedobject',
   url: '/sa/managedobject/',
@@ -67,7 +67,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
     if(value){
       return value;
     }
-    return'';
+    return '';
   },
   //
   setStatusClass: function(grid){
@@ -90,7 +90,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         return className;
       }
     }
-    return'';
+    return '';
   },
   //
   onSelectionRefresh: function(){
@@ -113,7 +113,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
     var selectionGrid, renderPlugin;
 
     switch(record.get('cmd')){
-      case'SCREEN': {
+      case 'SCREEN': {
         selectionGrid = this.lookupReference('saManagedobjectSelectionGrid');
         renderPlugin = selectionGrid.findPlugin('bufferedrenderer');
         selectionGrid.getSelectionModel().selectRange(0, renderPlugin.getLastVisibleRowIndex());
@@ -122,7 +122,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         );
         return;
       }
-      case'N_ROWS': {
+      case 'N_ROWS': {
         Ext.Msg.prompt(__('Select rows'), __('Please enter number:'), function(btn, text){
           if(btn === 'ok'){
             this.getNRows('0', text);
@@ -130,7 +130,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         }, this);
         break;
       }
-      case'PERIOD': {
+      case 'PERIOD': {
         Ext.Msg.prompt(__('Select period'), __('Please enter period (start,qty), first pos is 0:'), function(btn, text){
           if(btn === 'ok'){
             this.getNRows(text.split(',')[0], text.split(',')[1]);
@@ -178,7 +178,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
 
     commandForm.removeAll();
     switch(mode){
-      case'action': {
+      case 'action': {
         commandForm.add({
           xclass: 'NOC.sa.action.LookupField',
           reference: 'saManagedobjectActionField',
@@ -192,7 +192,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         });
         break;
       }
-      case'snippet': {
+      case 'snippet': {
         commandForm.add({
           xclass: 'NOC.sa.commandsnippet.LookupField',
           reference: 'saManagedobjectFnippetField',
@@ -206,7 +206,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         });
         break;
       }
-      case'commands': {
+      case 'commands': {
         commandForm.add({
           xtype: 'textareafield',
           reference: 'saManagedobjectCommandField',
@@ -290,7 +290,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
     this.getViewModel().set('resultOutput', '');
 
     switch(mode){
-      case'commands': {
+      case 'commands': {
         this.sendCommands('commands', {
           'script': 'commands',
           'args': {
@@ -510,7 +510,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
 
     if(Ext.isFunction(result.map)){
       text = result.map(function(e){
-        return'<b>#</b> ' + e;
+        return '<b>#</b> ' + e;
       }).join('<br/>');
     }
     ac.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
@@ -564,7 +564,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
       selectedIds = Ext.Array.map(selectedModels, function(record){return record.id}),
       formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
       form = formPanel.getForm(),
-      disabledFields = Ext.Array.filter(form.getFields().items, function(field){return!field.groupEdit}),
+      disabledFields = Ext.Array.filter(form.getFields().items, function(field){return !field.groupEdit}),
       groupEditFields = Ext.Array.filter(form.getFields().items, function(field){return field.groupEdit}),
       parentCmp = this.lookupReference('saManagedobjectSelectedGrid1').up();
     Ext.Array.each(disabledFields, function(field){field.setDisabled(true)});
@@ -634,7 +634,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
   },
   onNewMaintaince: function(){
     var basketStore = this.lookupReference('saManagedobjectSelectedGrid1').getStore(),
-      objects = Ext.Array.map(basketStore.getData().items, function(record){return{object: record.id, object__label: record.get("name")}}),
+      objects = Ext.Array.map(basketStore.getData().items, function(record){return {object: record.id, object__label: record.get("name")}}),
       args = {
         direct_objects: objects,
         subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
@@ -668,7 +668,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
       {
         args: [
           {mode: 'Object'},
-          Ext.Array.map(basketStore.getData().items, function(record){return{object: record.id, object__label: record.get("name")}}),
+          Ext.Array.map(basketStore.getData().items, function(record){return {object: record.id, object__label: record.get("name")}}),
         ],
       },
     );
@@ -854,9 +854,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
         }, me);
         showMapBtn.getMenu().removeAll();
         menuItems = data.filter(function(el){
-          return!el.is_default
+          return !el.is_default
         }).map(function(el){
-          return{
+          return {
             text: el.label,
             handler: function(){
               NOC.launch("inv.map", "history", {
