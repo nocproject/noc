@@ -761,6 +761,50 @@ table {
 .active-job polygon,
 .active-job path {
     fill: rgb(220, 211, 211);
+    stroke-width: 2px !important;
+}
+
+.job-selectable.no-hover:hover polygon,
+.job-selectable.no-hover:hover path {
     stroke: black !important;
-    stroke-width: 1px !important;
+}
+
+.job-status-s path, /* success */
+.job-status-s polygon {
+    stroke: #2ecc71;
+}
+
+.job-status-ss path, /* suspended */
+.job-status-ss polygon {
+    stroke: brown;
+}
+
+.job-status-w path, /* waiting */
+.job-status-w polygon {
+    stroke: yellowgreen;
+}
+
+.job-status-ww path, /* warning */
+.job-status-ww polygon {
+    stroke: yellow;
+}
+
+.job-status-p path, /* pending */
+.job-status-p polygon {
+    stroke: orange;
+}
+
+.job-status-r path, /* running */
+.job-status-r polygon {
+    stroke: #2ecc71;
+}
+
+.job-status-f path, /* failed */
+.job-status-f polygon {
+    stroke: red;
+}
+
+.job-status-c path, /* canceled */
+.job-status-c polygon {
+    stroke: coral;
 }

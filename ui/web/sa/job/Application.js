@@ -250,6 +250,7 @@ Ext.define("NOC.sa.job.Application", {
                 svgElement.querySelectorAll(".active-job").forEach(function(el){
                   el.classList.remove("active-job");
                 });
+                element.classList.remove("job-selectable");
                 element.classList.add("active-job");
                 if(Ext.isEmpty(record)){
                   me.sendRequest(element.id, function(response){
@@ -259,6 +260,9 @@ Ext.define("NOC.sa.job.Application", {
                 } else{
                   me.setRightPanelValues(record);
                 }
+              });
+              element.addEventListener("mouseleave", function(){
+                element.classList.add("job-selectable");
               });
             });
           },
@@ -339,8 +343,14 @@ Ext.define("NOC.sa.job.Application", {
   },
   //
   transformSvg: function(svg){
-    var background = "white";
-    svg.querySelector(".graph").classList.remove("job-selectable");
+    var background = "white",
+      graphEl = svg.querySelector(".graph");
+    graphEl.classList.remove("job-selectable");
+    graphEl.classList.forEach(className => {
+      if(className.startsWith("job-status")){
+        graphEl.classList.remove(className);
+      }
+    });
     svg.querySelectorAll(".node.job-selectable>polygon")
       .forEach(el => el.setAttribute("fill", background));
     svg.querySelectorAll(".cluster.job-selectable>path")

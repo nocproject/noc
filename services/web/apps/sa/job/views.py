@@ -117,7 +117,6 @@ class Node(object):
                         "label": self.name,
                         "id": self.id,
                         "class": f"{SELECTABLE_CLASS} {self.status_cls}",
-                        "color": "none",
                         "fillcolor": "white",
                     },
                 }
