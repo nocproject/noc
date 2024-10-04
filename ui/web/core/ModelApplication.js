@@ -28,7 +28,7 @@ Ext.define("NOC.core.ModelApplication", {
     "Ext.ux.grid.column.GlyphAction",
   ],
   mixins: [
-    "NOC.core.Export",
+    "NOC.core.mixins.Export",
   ],
 
   layout: "card",
