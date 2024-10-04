@@ -49,7 +49,7 @@ Ext.define("NOC.core.mixins.Export", {
       if(i === 0){
         // Loop through the names
         for(name in obj){
-          if(obj.hasOwnProperty(name)){
+          if(Object.prototype.hasOwnProperty.call(obj, name)){
             names.push(name);
             row += [sDelimiter, name, sDelimiter, cDelimiter].join("");
           }
@@ -119,6 +119,10 @@ Ext.define("NOC.core.mixins.Export", {
     }
 
     var blob = new Blob([this.export(records, columns)], {type: "text/plain;charset=utf-8"});
+    this.downloadCsv(blob, filename);
+  },
+
+  downloadCsv: function(blob, filename){
     saveAs(blob, filename);
   },
 });
