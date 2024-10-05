@@ -100,6 +100,11 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "main_notificationgroup",
+            "subscription_settings",
+            models.JSONField("Notification Subscriptions", null=True, blank=True, default=lambda: "[]"),
+        )
+        self.db.add_column(
+            "main_notificationgroup",
             "subscription_to",
             ArrayField(
                 models.CharField(max_length=100), null=True, blank=True, default=lambda: "{}"

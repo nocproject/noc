@@ -24,7 +24,7 @@ from django.db.models import (
     CASCADE,
 )
 from django.contrib.postgres.fields import ArrayField
-from pydantic import BaseModel, RootModel
+from pydantic import BaseModel, RootModel, model_validator
 import cachetools
 
 # NOC modules
@@ -87,6 +87,10 @@ class NotificationContact:
 
 
 class StaticMember(BaseModel):
+    """
+    Contact Members for notification Set
+    """
+
     notification_method: str
     contact: str
     language: Optional[str] = None
@@ -97,10 +101,41 @@ StaticMembers = RootModel[List[StaticMember]]
 
 
 class SubscriptionConditionItem(BaseModel):
+    """
+    Rules for Match message
+        Attributes:
+            labels: Match All labels in list
+            resource_groups: Match Any resource group in List
+            administrative_domain: Have Administrative domain in paths
+    """
+
     labels: Optional[List[str]] = None
     resource_groups: Optional[List[str]] = None
     administrative_domain: Optional[int] = None
     # profile, group, container, administrative_domain
+
+
+class SubscriptionSettingItem(BaseModel):
+    """
+    Attributes:
+        group: User group for apply settings
+        allow_subscribe: Allow subscribe to group
+        auto_subscription: Create subscription record
+    """
+
+    user: Optional[int] = None
+    group: Optional[int] = None
+    allow_subscribe: bool = False
+    auto_subscription: bool = False
+
+    @model_validator(mode="after")
+    def check_passwords_match(self):
+        if not self.user and not self.group:
+            raise ValueError("User or Group must be set")
+        return self
+
+
+SubscriptionSettings = RootModel[List[SubscriptionSettingItem]]
 
 
 SubscriptionConditions = RootModel[List[SubscriptionConditionItem]]
@@ -178,6 +213,13 @@ class NotificationGroup(NOCModel):
         null=True,
         default=list,
     )
+    subscription_settings: Optional[List[SubscriptionSettingItem]] = PydanticField(
+        "Subscription Settings",
+        schema=SubscriptionSettings,
+        blank=True,
+        null=True,
+        default=list,
+    )
     # subscribed = ArrayField(CharField(max_length=100))
     subscription_to: List[str] = ArrayField(CharField(max_length=100), blank=True, null=True)
     conditions: Optional[List[SubscriptionConditionItem]] = PydanticField(
@@ -213,7 +255,7 @@ class NotificationGroup(NOCModel):
     def get_subscription_by_user(
         self, user: User, watch: Optional[Any] = None
     ) -> Optional["NotificationGroupUserSubscription"]:
-        """"""
+        """Getting subscription by user"""
         if watch:
             watch = get_subscription_id(watch)
             return NotificationGroupUserSubscription.objects.filter(
@@ -397,6 +439,9 @@ class NotificationGroup(NOCModel):
         s = self.get_subscription_by_user(user, watch)
         if not s.suppress:
             NotificationGroupUserSubscription.objects.filter(id=s.id).update(suppress=True)
+
+    def ensure_subscriptions(self):
+        """Ensure Subscription with settings"""
 
     def register_message(
         self,
