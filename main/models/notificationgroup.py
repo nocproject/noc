@@ -121,12 +121,14 @@ class SubscriptionSettingItem(BaseModel):
         group: User group for apply settings
         allow_subscribe: Allow subscribe to group
         auto_subscription: Create subscription record
+        notify_if_subscribed: Send notification if Subscription Changed
     """
 
     user: Optional[int] = None
     group: Optional[int] = None
     allow_subscribe: bool = False
     auto_subscription: bool = False
+    notify_if_subscribed: bool = False
 
     @model_validator(mode="after")
     def check_passwords_match(self):

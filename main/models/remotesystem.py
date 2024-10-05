@@ -73,6 +73,7 @@ class EnvItem(EmbeddedDocument):
         ("ip.PrefixProfile", "remote_system"),
         ("ip.Prefix", "remote_system"),
         ("main.Label", "remote_system"),
+        ("main.NotificationGroupUserSubscription", "remote_system"),
         ("sa.ManagedObject", "remote_system"),
         ("sa.AdministrativeDomain", "remote_system"),
         ("sa.ManagedObjectProfile", "remote_system"),
