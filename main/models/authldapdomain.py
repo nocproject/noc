@@ -6,13 +6,15 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
 import operator
+from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
+import cachetools
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
-import cachetools
 
 # NOC modules
 from noc.aaa.models.group import Group
@@ -128,17 +130,17 @@ class AuthLDAPDomain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str):
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AuthLDAPDomain"]:
         return AuthLDAPDomain.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str):
+    def get_by_name(cls, name: str) -> Optional["AuthLDAPDomain"]:
         return AuthLDAPDomain.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_domain(cls):
+    def get_default_domain(cls) -> Optional["AuthLDAPDomain"]:
         return AuthLDAPDomain.objects.filter(is_default=True).first()
 
     def on_save(self):
