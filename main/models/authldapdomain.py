@@ -43,7 +43,7 @@ class AuthLDAPGroup(EmbeddedDocument):
 
 @on_save
 class AuthLDAPDomain(Document):
-    meta = {"collection": "noc.authldapdomain"}
+    meta = {"collection": "noc.authldapdomain", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     is_active = BooleanField()
@@ -128,12 +128,12 @@ class AuthLDAPDomain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return AuthLDAPDomain.objects.filter(id=id).first()
+    def get_by_id(cls, oid: str):
+        return AuthLDAPDomain.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name: str):
         return AuthLDAPDomain.objects.filter(name=name).first()
 
     @classmethod

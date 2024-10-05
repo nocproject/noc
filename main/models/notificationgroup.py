@@ -50,7 +50,6 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
         ("cm.ObjectNotify", "notification_group"),
         ("dns.DNSZone", "notification_group"),
         ("dns.DNSZoneProfile", "notification_group"),
-        ("fm.ActiveAlarm", "clear_notification_group"),
         ("fm.AlarmTrigger", "notification_group"),
         ("fm.EventTrigger", "notification_group"),
         ("fm.AlarmRule", "actions.notification_group"),
