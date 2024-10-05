@@ -7,7 +7,6 @@
 
 # Python modules
 from collections import defaultdict
-from itertools import chain
 
 # Third-party modules
 from django.db.models import ForeignKey
@@ -17,7 +16,7 @@ import pytest
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.model.fields import DocumentReferenceField
-from noc.models import is_document, iter_model_id, get_model, get_model_id
+from noc.models import is_document, iter_model_id, get_model
 
 
 def iter_references():
