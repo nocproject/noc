@@ -138,10 +138,10 @@ class Router(object):
             if r_types and not r.m_types.intersection(r_types) and rid != self.DEFAULT_CHAIN:
                 continue
             elif r_types:
-                r_types = r.m_types.intersection(r_types)
+                updated_types = r.m_types.intersection(r_types)
             else:
-                r_types = r.m_types
-            for tt in r_types:
+                updated_types = r.m_types
+            for tt in updated_types:
                 chains[tt].append(r)
         if deleted:
             # Remove last route

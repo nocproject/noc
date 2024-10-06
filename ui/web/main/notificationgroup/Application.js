@@ -11,17 +11,16 @@ Ext.define("NOC.main.notificationgroup.Application", {
     requires: [
         "NOC.core.JSONPreview",
         "NOC.core.ListFormField",
+        "NOC.core.tagfield.Tagfield",
+        "NOC.core.label.LabelField",
         "NOC.main.notificationgroup.Model",
-        "NOC.main.notificationgroup.UsersModel",
         "NOC.main.timepattern.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.ref.messagetype.LookupField",
         "NOC.aaa.user.LookupField",
         "NOC.aaa.group.LookupField",
         "NOC.inv.resourcegroup.LookupField",
-        "NOC.sa.administrativedomain.LookupField",
-        "NOC.core.tagfield.Tagfield",
-        "NOC.core.label.LabelField"
+        "NOC.sa.administrativedomain.LookupField"
     ],
     model: "NOC.main.notificationgroup.Model",
     search: true,
@@ -216,28 +215,6 @@ Ext.define("NOC.main.notificationgroup.Application", {
                         },
                     ]
                 }
-          ],
-          inlines: [
-              {
-                  title: __("Users"),
-                  model: "NOC.main.notificationgroup.UsersModel",
-                  columns: [
-                      {
-                          text: __("Time Pattern"),
-                          dataIndex: "time_pattern",
-                          width: 150,
-                          renderer: NOC.render.Lookup("time_pattern"),
-                          editor: "main.timepattern.LookupField"
-                      },
-                      {
-                          text: __("User"),
-                          dataIndex: "user",
-                          width: 250,
-                          renderer: NOC.render.Lookup("user"),
-                          editor: "aaa.user.LookupField"
-                      }
-                  ]
-              }
           ],
           actions: [
               {

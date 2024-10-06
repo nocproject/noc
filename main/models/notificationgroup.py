@@ -11,7 +11,7 @@ import logging
 import operator
 from dataclasses import dataclass
 from threading import Lock
-from typing import Tuple, Dict, Iterator, Optional, Any, Set, List
+from typing import Tuple, Dict, Iterable, Optional, Any, Set, List
 
 # Third-party modules
 from django.db.models import (
@@ -39,7 +39,8 @@ from noc.core.mx import (
     MessageMeta,
     get_subscription_id,
 )
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.change.decorator import change
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
@@ -152,6 +153,8 @@ class MessageTypeItem(BaseModel):
 MessageTypes = RootModel[List[MessageTypeItem]]
 
 
+@on_save
+@change
 @on_delete_check(
     check=[
         ("cm.ObjectNotify", "notification_group"),
@@ -272,7 +275,7 @@ class NotificationGroup(NOCModel):
         return NotificationGroupUserSubscription.objects.filter(
             notification_group=self,
             user=user,
-            watch=None,
+            watch="",
         ).first()
 
     @property
@@ -282,7 +285,10 @@ class NotificationGroup(NOCModel):
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmxroute:
-            yield "cfgmxroute", f"rg:{self.id}"
+            yield "cfgmxroute", f"ng:{self.id}"
+
+    def on_save(self):
+        self.ensure_subscriptions()
 
     def get_route_config(self):
         """Return data for configured Router"""
@@ -328,12 +334,16 @@ class NotificationGroup(NOCModel):
             user_contacts = ngu.user.contacts
             if user_contacts:
                 for tp, method, params in user_contacts:
+                    if tp:
+                        tp = [tp]
+                    if ngu.time_pattern:
+                        tp.insert(ngu.time_pattern, 0)
                     m.append(
                         NotificationContact(
                             contact=params,
                             method=method,
                             language=lang,
-                            time_pattern=TimePatternList([ngu.time_pattern, tp]),
+                            time_pattern=TimePatternList(tp),
                             watch=ngu.watch,
                         )
                     )
@@ -419,9 +429,9 @@ class NotificationGroup(NOCModel):
         """Subscribe User to Group"""
         s = self.get_subscription_by_user(user, watch)
         if not s:
-            s = NotificationGroupUserSubscription(
-                notification_group=self, user=user, watch=get_subscription_id(watch)
-            )
+            s = NotificationGroupUserSubscription(notification_group=self, user=user)
+            if watch:
+                s.watch = get_subscription_id(watch)
         if expired_at and s.expired_at != expired_at:
             s.expired_at = expired_at
         s.save()
@@ -446,8 +456,37 @@ class NotificationGroup(NOCModel):
         if not s.suppress:
             NotificationGroupUserSubscription.objects.filter(id=s.id).update(suppress=True)
 
+    @property
+    def iter_subscription_settings(self) -> Iterable[SubscriptionSettingItem]:
+        for s in self.subscription_settings:
+            yield SubscriptionSettingItem(**s)
+
+    def is_allowed_subscription(self, user: User) -> bool:
+        groups = frozenset(user.groups.values_list("id", flat=True))
+        for s in self.iter_subscription_settings:
+            if s.user == user.id and s.allow_subscribe:
+                return True
+            if s.group in groups and s.allow_subscribe:
+                return True
+        return False
+
+    def ensure_user_subscription(self, user: User):
+        """"""
+        ng = self.get_subscription_by_user(user)
+        if not ng:
+            self.subscribe(user)
+
     def ensure_subscriptions(self):
         """Ensure Subscription with settings"""
+        print("Ensure Subscription")
+        for s in self.iter_subscription_settings:
+            if s.user:
+                u = User.get_by_id(s.user)
+                ng = self.get_subscription_by_user(u)
+                if s.auto_subscription and not ng:
+                    self.subscribe(u)
+                elif not s.auto_subscription and ng:
+                    self.unsubscribe(u)
 
     def register_message(
         self,
@@ -526,7 +565,7 @@ class NotificationGroup(NOCModel):
         message_type: str,
         meta: Dict[MessageMeta, Any],
         ts: Optional[datetime.datetime] = None,
-    ) -> Iterator[Tuple[str, Dict[str, bytes], Optional["Template"]]]:
+    ) -> Iterable[Tuple[str, Dict[str, bytes], Optional["Template"]]]:
         """
         mx-compatible actions. Yields tuples of `stream`, `headers`
         """
@@ -594,7 +633,7 @@ class NotificationGroupUserSubscription(NOCModel):
     user: User = ForeignKey(User, verbose_name="User", on_delete=CASCADE)
     expired_at = DateTimeField("Expired Subscription After", auto_now_add=False)
     suppress = BooleanField("Deactivate Subscription", default=False)
-    watch = CharField("Watch key", max_length=100)
+    watch = CharField("Watch key", max_length=100, null=True, blank=True)
     remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
 
     def __str__(self):

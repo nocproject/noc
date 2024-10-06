@@ -13,7 +13,6 @@ from noc.main.models.notificationgroup import (
     NotificationGroup,
     NotificationGroupUserSubscription,
 )
-from noc.services.web.base.modelinline import ModelInline
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter, UnicodeParameter
 from noc.core.translation import ugettext as _
 
@@ -27,8 +26,6 @@ class NotificationGroupApplication(ExtModelApplication):
     menu = [_("Notification Groups")]
     model = NotificationGroup
     glyph = "envelope-o"
-
-    users = ModelInline(NotificationGroupUserSubscription)
 
     @view(
         url="^actions/test/$",
@@ -48,12 +45,16 @@ class NotificationGroupApplication(ExtModelApplication):
 
     def instance_to_dict(self, o, fields=None):
         r = super().instance_to_dict(o, fields=fields)
-        ss = []
-        for ss in r.get("subscription_settings", []):
-            if ss["user"]:
-                u = User.get_by_id(ss["user"])
-                ss["user__label"] = u.username
-            if ss["group"]:
-                g = Group.get_by_id(ss["group"])
-                ss["group__label"] = g.name
+        r["subscription_settings"] = []
+        for ss in o.iter_subscription_settings:
+            x = ss.model_dump()
+            if ss.user:
+                u = User.get_by_id(ss.user)
+                x["user__label"] = u.username
+            if ss.group:
+                g = Group.get_by_id(ss.group)
+                x["group__label"] = g.name
+            r["subscription_settings"].append(x)
+        for ss in r.get("message_types", []):
+            ss["message_type__label"] = ss["message_type"]
         return r

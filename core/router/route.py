@@ -269,8 +269,8 @@ class Route(object):
     def from_data(cls, data) -> "Route":
         """
         Build Route from data config
-        :param data:
-        :return:
+        Attrs:
+            data: Datastream record
         """
         r = Route(data["name"], data["type"], data["order"], data.get("telemetry_sample"))
         r.update(data)
