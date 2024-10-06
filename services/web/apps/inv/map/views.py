@@ -211,8 +211,11 @@ class MapApplication(ExtApplication):
             for i in o[mo]:
                 if i.name not in metric_map[mo]:
                     continue
-                mo_in[mo] += int(metric_map[mo][i.name]["Interface | Load | In"])
-                mo_out[mo] += int(metric_map[mo][i.name]["Interface | Load | Out"])
+                load_in = metric_map[mo][i.name]["Interface | Load | In"]
+                load_out = metric_map[mo][i.name]["Interface | Load | Out"]
+
+                mo_in[mo] += int(load_in) if not load_in is None else 0
+                mo_out[mo] += int(load_out) if not load_out is None else 0
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
