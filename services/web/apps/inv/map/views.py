@@ -214,8 +214,8 @@ class MapApplication(ExtApplication):
                 load_in = metric_map[mo][i.name]["Interface | Load | In"]
                 load_out = metric_map[mo][i.name]["Interface | Load | Out"]
 
-                mo_in[mo] += int(load_in) if not load_in is None else 0
-                mo_out[mo] += int(load_out) if not load_out is None else 0
+                mo_in[mo] += int(load_in) if load_in is not None else 0
+                mo_out[mo] += int(load_out) if load_out is not None else 0
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
