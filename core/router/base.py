@@ -51,7 +51,9 @@ class Router(object):
         for num, route in enumerate(
             MessageRoute.objects.filter(is_active=True).order_by("order"), start=1
         ):
-            self.chains[route.type] += [Route.from_data(route.get_route_config())]
+            cfg = route.get_route_config()
+            cfg["type"] = cfg["type"].value
+            self.chains[route.type] += [Route.from_data(cfg)]
         logger.info("Loading %s route", num)
         self.rebuild_chains()
 
@@ -135,7 +137,11 @@ class Router(object):
         for rid, r in self.routes.items():
             if r_types and not r.m_types.intersection(r_types) and rid != self.DEFAULT_CHAIN:
                 continue
-            for tt in r.m_types.intersection(r_types):
+            elif r_types:
+                r_types = r.m_types.intersection(r_types)
+            else:
+                r_types = r.m_types
+            for tt in r_types:
                 chains[tt].append(r)
         if deleted:
             # Remove last route

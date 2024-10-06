@@ -45,10 +45,10 @@ class WatchHandlerDecorator(BaseAppDecorator):
         )
 
     def api_avail_subscription(self, request, object_id):
-        try:
-            o = self.app.queryset(request).get(**{self.app.pk: object_id})
-        except self.app.model.DoesNotExist:
-            return self.app.response_not_found()
+        # try:
+        #     o = self.app.queryset(request).get(**{self.app.pk: object_id})
+        # except self.app.model.DoesNotExist:
+        #     return self.app.response_not_found()
         r = []
         for g in NotificationGroup.get_groups_by_user(request.user):
             r += [

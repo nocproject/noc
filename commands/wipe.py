@@ -211,7 +211,7 @@ class Command(BaseCommand):
         :type o: User
         :return: None
         """
-        from noc.main.models.notificationgroup import NotificationGroupUser
+        from noc.main.models.notificationgroup import NotificationGroupUserSubscription
         from noc.main.models.audittrail import AuditTrail
         from noc.aaa.models.usercontact import UserContact
         from noc.aaa.models.permission import Permission
@@ -233,7 +233,7 @@ class Command(BaseCommand):
             AuditTrail.objects.filter(user=o.username).delete()
         # Clean NotificationGroupUser
         with self.log("Cleaning notification groups"):
-            NotificationGroupUser.objects.filter(user=o).delete()
+            NotificationGroupUserSubscription.objects.filter(user=o).delete()
         # Clean User contact
         with self.log("Cleaning user contact"):
             UserContact.objects.filter(user=o).delete()

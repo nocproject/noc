@@ -17,6 +17,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
         "NOC.main.template.LookupField",
         "NOC.main.ref.messagetype.LookupField",
         "NOC.aaa.user.LookupField",
+        "NOC.aaa.group.LookupField",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.core.tagfield.Tagfield",
@@ -100,7 +101,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
                       {
                           text: __("Template"),
                           dataIndex: "template",
-                          width: 150,
+                          width: 350,
                           renderer: NOC.render.Lookup("template"),
                           editor: "main.template.LookupField"
                       }
@@ -114,7 +115,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
                       {
                           text: __("Time Pattern"),
                           dataIndex: "time_pattern",
-                          width: 150,
+                          width: 350,
                           renderer: NOC.render.Lookup("time_pattern"),
                           editor: "main.timepattern.LookupField"
                       },
@@ -138,6 +139,48 @@ Ext.define("NOC.main.notificationgroup.Application", {
                           dataIndex: "contact",
                           width: 300,
                           editor: "textfield"
+                      }
+                  ]
+              },
+              {
+                  name: "subscription_settings",
+                  xtype: "gridfield",
+                  fieldLabel: __("Subscription Settings"),
+                  columns: [
+                      {
+                          text: __("User"),
+                          dataIndex: "user",
+                          editor: "aaa.user.LookupField",
+                          renderer: NOC.render.Lookup("user"),
+                          width: 250
+                      },
+                      {
+                          text: __("Group"),
+                          dataIndex: "group",
+                          editor: "aaa.group.LookupField",
+                          renderer: NOC.render.Lookup("group"),
+                          width: 250
+                      },
+                      {
+                          text: __("Allow Subscribe"),
+                          dataIndex: "allow_subscribe",
+                          editor: "checkboxfield",
+                          width: 100,
+                          renderer: NOC.render.Bool
+                      },
+                      {
+                          text: __("Add to Subscription"),
+                          dataIndex: "auto_subscription",
+                          editor: "checkboxfield",
+                          width: 100,
+                          renderer: NOC.render.Bool
+                      },
+                      {
+                          text: __("Notify Changed"),
+                          dataIndex: "notify_if_subscribed",
+                          editor: "checkboxfield",
+                          width: 100,
+                          renderer: NOC.render.Bool
                       }
                   ]
               },

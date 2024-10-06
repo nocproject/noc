@@ -38,6 +38,10 @@ Ext.define("NOC.main.notificationgroup.Model", {
             type: "auto"
         },
         {
+            name: "subscription_settings",
+            type: "auto"
+        },
+        {
             name: "static_members",
             type: "auto"
         },
