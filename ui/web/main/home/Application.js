@@ -8,25 +8,16 @@ console.debug("Defining NOC.main.home.Application");
 
 Ext.define("NOC.main.home.Application", {
   extend: "NOC.core.Application",
-  requires: [
-    "NOC.core.layout.Flex",
-  ],
   items: [
     {
       xtype: "container",
-      layout: {
-        type: "flex",
-        direction: "column",
-        wrap: "wrap",
-        gap: "20px",
-      },
+      baseCls: "noc-home-container",
       padding: 10,
       scrollable: true,
       smallHeight: 90,
       normalHeight: 200,
       extraHeight: 310,
       doubleHeight: 420,
-      cellWidth: 200,
       items: [],
       listeners: {
         render: function(panel){
@@ -88,6 +79,7 @@ Ext.define("NOC.main.home.Application", {
                   panel.add(
                     Ext.create("Ext.panel.Panel", {
                       title: widget.title,
+                      cls: "noc-home-widget",
                       border: true,
                       style: {
                         borderRadius: "8px 8px 0 0",

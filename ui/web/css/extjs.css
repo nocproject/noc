@@ -776,3 +776,43 @@ table {
 .job-selectable.no-hover:hover path {
     stroke: black !important;
 }
+
+.noc-home-container > div > div {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.noc-home-widget {
+    grid-column: span 2;
+}
+
+@media only screen and (max-width: 767px) {
+    .noc-home-container > div > div{
+        grid-template-columns: 1fr;
+    }
+
+    .noc-home-widget {
+        grid-column: span 1;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+    .noc-home-container > div > div{
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .noc-home-widget:nth-child(odd):is(:nth-last-child(1)) {
+        grid-column: 2 / span 2;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .noc-home-widget:nth-child(3n+1):is(:nth-last-child(2)) {
+        grid-column: 2 / span 2;
+    }
+
+    .noc-home-widget:nth-child(3n+1):is(:nth-last-child(1)) {
+        grid-column: 3 / span 2;
+    }
+}
