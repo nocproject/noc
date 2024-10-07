@@ -38,7 +38,7 @@ class Script(BaseScript):
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$"
     )
 
-    rx_stacking_disabled = re.compile(r"\s+Stacking\s+mode\s+:\s+Disabled", re.MULTILINE)
+    rx_stacking_disabled = re.compile(r"\s+[Ss]tacking\s+[Mm]ode\s+:\s+[Dd]isabled", re.MULTILINE)
 
     # output sample
     # | 1:9     SFP LC          OEM/               SFP-WDM1.25G-55/   PC99749158/
