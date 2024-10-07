@@ -225,6 +225,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var me = this,
       url = "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/";
     me.mask(__("Loading..."));
+    me.down("#createInvChannelBtn").setDisabled(true);
     Ext.Ajax.request({
       url: url,
       method: "GET",
@@ -292,7 +293,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     }
 
     if(activeItem.xtype === "invchannelmagic"){
-      // me.reloadMagicGrid(activeItem);
       me.onAddHoc();
     }
     //   grid = me.down("grid");
@@ -408,6 +408,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       selectionModel = grid.getSelectionModel(),
       selectedRecord = selectionModel.getSelection()[0];
 
+    me.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
       method: "POST",
@@ -420,8 +421,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         } else{
           NOC.error(data.msg);
         }
+        me.unmask();
       },
       failure: function(response){
+        me.unmask();
         NOC.error("Failure", response);
       },
     });
