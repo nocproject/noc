@@ -37,8 +37,6 @@ id_lock = Lock()
         ("inv.TechDomain", "controller_handler"),
         ("pm.ThresholdProfile", "umbrella_filter_handler"),
         ("pm.ThresholdProfile", "value_handler"),
-        ("pm.ThresholdConfig", "open_handler"),
-        ("pm.ThresholdConfig", "close_handler"),
         ("fm.AlarmRule", "actions.handler"),
         ("main.MessageRoute", "transmute_handler"),
     ]
