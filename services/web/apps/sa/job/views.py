@@ -49,6 +49,12 @@ class JobApplication(ExtDocApplication):
     glyph = "truck"
     default_ordering = ["-id"]
 
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields, nocustom)
+        if isinstance(o, Job):
+            r["effective_environment"] = o.effective_environment
+        return r
+
     @view("^(?P<id>[0-9a-f]{24})/viz/$", access="read")
     def view_viz(self, request, id: str):
         job = self.get_object_or_404(Job, id=id)

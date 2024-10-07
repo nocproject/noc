@@ -127,3 +127,15 @@ class Job(Document):
 
     def __str__(self) -> str:
         return f"{self.name}::{self.action}"
+
+    @property
+    def effective_environment(self) -> dict[str, str]:
+        """
+        Get full environment
+        """
+        env = self.environment.copy() if self.environment else {}
+        if self.parent:
+            for k, v in self.parent.environment.items():
+                if k not in env:
+                    env[k] = v
+        return env
