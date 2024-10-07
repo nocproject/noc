@@ -11,11 +11,18 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   title: __("Channels"),
   closable: false,
   defaultListenerScope: true,
-  layout: {
-    type: "vbox",
-    align: "stretch",
-  },
+  layout: "card",
+  requires: [
+    "NOC.inv.inv.plugins.channel.MagicPanel",
+  ],
   tbar: [
+    {
+      text: __("Close"),
+      itemId: "closeInvChannelBtn",
+      glyph: NOC.glyph.arrow_left,
+      hidden: true,
+      handler: "showChannelPanel",
+    },
     {
       xtype: "button",
       glyph: NOC.glyph.refresh,
@@ -24,6 +31,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     },
     {
       xtype: "combobox",
+      itemId: "zoomInvChannelCombo",
       store: [
         [0.25, "25%"],
         [0.5, "50%"],
@@ -42,18 +50,26 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       editable: false,
       listeners: {
         select: "onZoom",
-      },    
+      },
     },
     {
       xtype: "button",
       text: __("Magic"),
-      itemId: "adhoc",
+      itemId: "adhocInvChannelBtn",
       glyph: NOC.glyph.magic,
       handler: "onAddHoc",
     },
     {
+      text: __("Create"),
+      itemId: "createInvChannelBtn",
+      glyph: NOC.glyph.plus,
+      disabled: true,
+      hidden: true,
+      handler: "onCreateAdHoc",
+    },
+    {
       xtype: "button",
-      itemId: "downloadSVGBtn",
+      itemId: "downloadSvgChannelBtn",
       tooltip: __("Download image as SVG"),
       glyph: NOC.glyph.download,
       disabled: true,
@@ -62,90 +78,106 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   ],
   items: [
     {
-      xtype: "grid",
-      scrollable: "y",
-      split: true,
-      store: {
-        data: [],
+      xtype: "panel",
+      layout: {
+        type: "vbox",
+        align: "stretch",
       },
-      columns: [
+      items: [
         {
-          xtype: 'glyphactioncolumn',
-          width: 50,
-          items: [
+          xtype: "grid",
+          scrollable: "y",
+          split: true,
+          store: {
+            data: [],
+          },
+          columns: [
             {
-              glyph: NOC.glyph.star,
-              tooltip: __('Mark/Unmark'),
-              getColor: function(cls, meta, r){
-                return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
-              },
-              handler: "onFavItem",
+              xtype: 'glyphactioncolumn',
+              width: 50,
+              items: [
+                {
+                  glyph: NOC.glyph.star,
+                  tooltip: __('Mark/Unmark'),
+                  getColor: function(cls, meta, r){
+                    return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
+                  },
+                  handler: "onFavItem",
+                },
+                {
+                  glyph: NOC.glyph.edit,
+                  tooltip: __('Edit'),
+                  handler: "onEdit",
+                },
+              ],
             },
             {
-              glyph: NOC.glyph.edit,
-              tooltip: __('Edit'),
-              handler: "onEdit",
+              text: __("Name"),
+              dataIndex: "name",
+              width: 200,
+            },
+            {
+              text: __("Tech Domain"),
+              dataIndex: "tech_domain",
+              width: 150,
+              renderer: NOC.render.Lookup("tech_domain"),
+            },
+            {
+              text: __("Kind"),
+              dataIndex: "kind",
+              width: 50,
+            },
+            {
+              text: __("Topo"),
+              dataIndex: "topology",
+              width: 120,
+            },
+            {
+              text: __("Discriminator"),
+              dataIndex: "discriminator",
+              width: 100,
+            },
+            {
+              text: __("From"),
+              dataIndex: "from_endpoint",
+              flex: 1,
+            },
+            {
+              text: __("To"),
+              dataIndex: "to_endpoint",
+              flex: 1,
+            },
+          ],
+          listeners: {
+            afterlayout: "afterGridRender",
+            selectionchange: "onChangeSelection",
+          },
+        },
+        {
+          xtype: "splitter",
+        },
+        {
+          xtype: "container",
+          flex: 1,
+          itemId: "schemeContainer",
+          layout: "fit",
+          scrollable: true,
+          items: [
+            {
+              xtype: "image",
+              itemId: "scheme",
+              hidden: true,
+              padding: 5,
             },
           ],
         },
-        {
-          text: __("Name"),
-          dataIndex: "name",
-          width: 200,
-        },
-        {
-          text: __("Tech Domain"),
-          dataIndex: "tech_domain",
-          width: 150,
-          renderer: NOC.render.Lookup("tech_domain"),
-        },
-        {
-          text: __("Kind"),
-          dataIndex: "kind",
-          width: 50,
-        },
-        {
-          text: __("Topo"),
-          dataIndex: "topology",
-          width: 120,
-        },
-        {
-          text: __("Discriminator"),
-          dataIndex: "discriminator",
-          width: 100,
-        },
-        {
-          text: __("From"),
-          dataIndex: "from_endpoint",
-          flex: 1,
-        },
-        {
-          text: __("To"),
-          dataIndex: "to_endpoint",
-          flex: 1,
-        },
       ],
+    },
+    {
+      xtype: "invchannelmagic",
       listeners: {
-        afterlayout: "afterGridRender",
-        selectionchange: "onChangeSelection", 
+        magicselectionchange: "onMagicSelectionChange",
       },
-    },
-    {
-      xtype: "splitter",
-    },
-    {
-      xtype: "container",
-      flex: 1,
-      layout: "fit",
-      scrollable: true,
-      items: [
-        {
-          xtype: "image",
-          itemId: "scheme",
-          hidden: true,
-          padding: 5,
-        },
-      ],
     },
   ],
   preview: function(data, objectId){
@@ -191,7 +223,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   onAddHoc: function(){
     var me = this,
-      url = "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/"
+      url = "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/";
+    me.mask(__("Loading..."));
+    me.down("#createInvChannelBtn").setDisabled(true);
     Ext.Ajax.request({
       url: url,
       method: "GET",
@@ -201,134 +235,27 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         if(Ext.isEmpty(obj)){
           NOC.info(__("No ad-hoc channels available"));
         } else{
-          var adHocWindow = Ext.create("Ext.window.Window", {
-            title: __("Create Ad-Hoc channel"),
-            height: 400,
-            width: 800,
-            layout: "fit",
-            modal: true,
-            items: [
-              {
-                xtype: "form",
-                bodyPadding: 10,
-                layout: "anchor",
-                defaults: {
-                  anchor: "100%",
-                  labelWidth: 200,
-                },
-                items: [
-                  {
-                    xtype: "grid",
-                    scrollable: "y",
-                    height: 310,
-                    store: new Ext.data.Store({
-                      fields: ["controller", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
-                      data: obj,
-                    }),
-                    columns: [
-                      {
-                        text: __("Start"),
-                        dataIndex: "start_endpoint",
-                        flex: 1,
-                        renderer: NOC.render.Lookup("start_endpoint"),
-                      },
-                      {
-                        text: __("End"),
-                        dataIndex: "end_endpoint",
-                        flex: 1,
-                        renderer: NOC.render.Lookup("end_endpoint"),
-                      },
-                      {
-                        text: __("Controller"),
-                        dataIndex: "controller",
-                        width: 100,
-                      },
-                      {
-                        text: __("Status"),
-                        dataIndex: "status",
-                        width: 50,
-                        renderer: function(v){
-                          return {
-                            "new": "<i class='fa fa-plus' style='color:" + NOC.colors.emerald + "' title='New'></i>",
-                            "done": "<i class='fa fa-check' style='color:" + NOC.colors.yes + "' title='Done'></i>",
-                            "broken": "<i class='fa fa-exclamation-triangle' style='color:" + NOC.colors.no + "' title='Broken'></i>",
-                          }[v];
-                        },
-                      },
-                    ],
-                    selModel: {
-                      selType: "rowmodel",
-                      listeners: {
-                        selectionchange: function(selModel, selections){
-                          if(selections.length > 0){
-                            adHocWindow.down("#createButton").setDisabled(false);
-                          }
-                        },
-                        deselect: function(){
-                          adHocWindow.down("#createButton").setDisabled(true);
-                        },
-                      },
-                    } },
-                ],
-                buttons: [
-                  {
-                    text: __("Create"),
-                    itemId: "createButton",
-                    glyph: NOC.glyph.plus,
-                    disabled: true,
-                    handler: function(){
-                      var form = this.up("form"),
-                        grid = form.down("grid"),
-                        selectionModel = grid.getSelectionModel(),
-                        selectedRecord = selectionModel.getSelection()[0];
-                      Ext.Ajax.request({
-                        url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
-                        method: "POST",
-                        jsonData: {endpoint: selectedRecord.get("start_endpoint"), controller: selectedRecord.get("controller")},
-                        success: function(response){
-                          var data = Ext.decode(response.responseText);
-                          if(data.status){
-                            NOC.info(data.msg);
-                            adHocWindow.close();
-                            me.onReload(data.channel, true);
-                            NOC.launch("inv.channel", "history", {"args": [data.channel]})
-                          } else{
-                            NOC.error(data.msg);
-                          }
-                        },
-                        failure: function(response){
-                          NOC.error("Failure", response);
-                        },
-                      });
-                    },
-                  },
-                  {
-                    text: __("Cancel"),
-                    glyph: NOC.glyph.times,
-                    handler: function(){
-                      adHocWindow.close();
-                    },
-                  },
-                ],
-              },
-            ],
-          });
-          adHocWindow.show();
+          me.showMagicPanel();
+          me.down("[xtype=invchannelmagic] grid").getStore().loadData(obj);
+          me.unmask();
         }
       },
       failure: function(response){
         NOC.error(__("Failed to get data") + ": " + response.status);
+        me.unmask();
       },
     });
   },
   //
   onChangeSelection: function(grid, selected){
     var me = this,
-      downloadBtn = me.down("#downloadSVGBtn");
+      downloadBtn = me.down("#downloadSvgChannelBtn");
     if(selected.length > 0){
       var recordData = selected[0].getData(),
+        schemeContainer = me.down("#schemeContainer"),
         url = "/inv/channel/" + recordData.id + "/viz/";
       downloadBtn.setDisabled(false);
+      schemeContainer.mask(__("Loading..."));
       Ext.Ajax.request({
         url: url,
         method: "GET",
@@ -336,9 +263,11 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         success: function(response){
           var obj = Ext.decode(response.responseText);
           this.renderScheme(obj.data);
+          schemeContainer.unmask();
         },
         failure: function(response){
           NOC.error(__("Failed to get data") + ": " + response.status);
+          schemeContainer.unmask();
         },
       });
     } else{
@@ -355,32 +284,41 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     }
   },
   //
-  onReload: function(channelId, selectRow){
+  onReload: function(){
     var me = this,
-      grid = me.down("grid");
-    Ext.Ajax.request({
-      url: `/inv/inv/${me.currentId}/plugin/channel/`,
-      method: "GET",
-      success: function(response){
-        var obj = Ext.decode(response.responseText),
-          data = obj.records || [],
-          store = grid.getStore(),
-          recordIndex = store.findBy(function(record, id){return id === channelId;});
-        if(recordIndex !== -1){
-          grid.getSelectionModel().select(recordIndex);
-        }
-        store.loadData(data);
-        if(selectRow){
-          var selIndex = store.find("id", channelId);
-          if(selIndex !== -1){
-            grid.getSelectionModel().select(selIndex);
-          }
-        }
-      },
-      failure: function(response){
-        NOC.error("Error status: " + response.status);
-      },
-    });
+      activeItem = me.getLayout().getActiveItem();
+    
+    if(activeItem.xtype === "panel"){
+      me.reloadChannelGrid(activeItem);
+    }
+
+    if(activeItem.xtype === "invchannelmagic"){
+      me.onAddHoc();
+    }
+    //   grid = me.down("grid");
+    // Ext.Ajax.request({
+    //   url: `/inv/inv/${me.currentId}/plugin/channel/`,
+    //   method: "GET",
+    //   success: function(response){
+    //     var obj = Ext.decode(response.responseText),
+    //       data = obj.records || [],
+    //       store = grid.getStore(),
+    //       recordIndex = store.findBy(function(record, id){return id === channelId;});
+    //     if(recordIndex !== -1){
+    //       grid.getSelectionModel().select(recordIndex);
+    //     }
+    //     store.loadData(data);
+    //     if(selectRow){
+    //       var selIndex = store.find("id", channelId);
+    //       if(selIndex !== -1){
+    //         grid.getSelectionModel().select(selIndex);
+    //       }
+    //     }
+    //   },
+    //   failure: function(response){
+    //     NOC.error("Error status: " + response.status);
+    //   },
+    // });
   },
   //
   onFavItem: function(grid, rowIndex){
@@ -419,5 +357,76 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     a.href = svgUrl;
     a.download = "channel-scheme-" + me.currentId + ".svg";
     a.click();
+  },
+  //
+  showChannelPanel: function(){
+    this.down("#adhocInvChannelBtn").show();
+    this.down("#zoomInvChannelCombo").show();
+    this.down("#downloadSvgChannelBtn").show();
+    this.down("#closeInvChannelBtn").hide();
+    this.down("#createInvChannelBtn").hide(); 
+    this.getLayout().setActiveItem(0);
+  },
+  //
+  showMagicPanel: function(){
+    this.getLayout().setActiveItem(1);
+    this.down("#adhocInvChannelBtn").hide();
+    this.down("#zoomInvChannelCombo").hide();
+    this.down("#downloadSvgChannelBtn").hide();
+    this.down("#createInvChannelBtn").show();
+    this.down("#closeInvChannelBtn").show();
+  },
+  //
+  reloadChannelGrid: function(panel){
+    var me = this,
+      grid = panel.down("grid");
+    panel.mask(__("Loading..."));
+    Ext.Ajax.request({
+      url: `/inv/inv/${me.currentId}/plugin/channel/`,
+      method: "GET",
+      success: function(response){
+        var obj = Ext.decode(response.responseText),
+          data = obj.records || [],
+          store = grid.getStore();
+        store.loadData(data);
+        panel.unmask();
+      },
+      failure: function(response){
+        panel.unmask();
+        NOC.error("Error status: " + response.status);
+      },
+    });
+  },
+  //
+  onMagicSelectionChange: function(disable){
+    this.down("#createInvChannelBtn").setDisabled(disable);
+  },
+  //
+  onCreateAdHoc: function(){
+    var me = this,
+      grid = me.down("invchannelmagic").down("grid"),
+      selectionModel = grid.getSelectionModel(),
+      selectedRecord = selectionModel.getSelection()[0];
+
+    me.mask(__("Loading..."));
+    Ext.Ajax.request({
+      url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
+      method: "POST",
+      jsonData: {endpoint: selectedRecord.get("start_endpoint"), controller: selectedRecord.get("controller")},
+      success: function(response){
+        var data = Ext.decode(response.responseText);
+        if(data.status){
+          NOC.info(data.msg);
+          NOC.launch("inv.channel", "history", {"args": [data.channel]})
+        } else{
+          NOC.error(data.msg);
+        }
+        me.unmask();
+      },
+      failure: function(response){
+        me.unmask();
+        NOC.error("Failure", response);
+      },
+    });
   },
 });
