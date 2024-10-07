@@ -240,14 +240,17 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   onReload: function(){
     var me = this;
+    me.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/commutation/",
       method: "GET",
       scope: me,
       success: function(response){
-        me.preview(Ext.decode(response.responseText));
+        me.preview(Ext.decode(response.responseText), me.currentId);
+        me.unmask();
       },
       failure: function(){
+        me.unmask();
         NOC.error(__("Failed to get data"));
       },
     });
