@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.notificationgroupusersubscription.NotificationGroupUserSubscription");
+console.debug("Defining NOC.main.notificationgroupusersubscription.Model");
 
-Ext.define("NOC.main.notificationgroupusersubscription.NotificationGroupUserSubscription", {
+Ext.define("NOC.main.notificationgroupusersubscription.Model", {
     extend: "Ext.data.Model",
     rest_url: "/main/notificationgroupusersubscription/",
 

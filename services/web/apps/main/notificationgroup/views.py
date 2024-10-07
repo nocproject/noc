@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # main.notificationgroup application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,10 +9,7 @@
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
-from noc.main.models.notificationgroup import (
-    NotificationGroup,
-    NotificationGroupUserSubscription,
-)
+from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter, UnicodeParameter
 from noc.core.translation import ugettext as _
 

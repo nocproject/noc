@@ -64,8 +64,7 @@ Ext.define("NOC.main.notificationgroupusersubscription.Application", {
               width: 150
             }
           ],
-          fields: [ ],
-          actions: [ ]
+          fields: [ ]
       });
       me.callParent();
     }
