@@ -753,6 +753,10 @@ table {
     stroke: #f1c40f;
 }
 
+.job-selectable:hover text {
+    fill: black !important;
+}
+
 .job-selectable:hover:not(:has(.job-selectable:hover)) > path,
 .job-selectable:hover:not(:has(.job-selectable:hover)) > polygon{
     fill: rgb(220, 211, 211);
@@ -762,6 +766,10 @@ table {
 .active-job path {
     fill: rgb(220, 211, 211);
     stroke-width: 2px !important;
+}
+
+.active-job text {
+    fill: black !important;
 }
 
 .job-selectable.no-hover:hover polygon,
