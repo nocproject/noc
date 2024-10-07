@@ -288,6 +288,8 @@ Ext.define("NOC.inv.inv.Application", {
           var me = this,
             objectId = me.selectedObjectId,
             pluginName = newCard.pluginName;
+
+          me.currentPlugin = newCard.pluginName;
           Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
             method: "GET",
@@ -408,8 +410,12 @@ Ext.define("NOC.inv.inv.Application", {
       me.runPlugin(objectId, p);
     });
     me.isMenuShow = false;
-    me.tabPanel.setActiveTab(0);
     me.setHistoryHash(objectId);
+    if(me.currentPlugin && me.invPlugins[me.currentPlugin]){
+      me.tabPanel.setActiveTab(me.invPlugins[me.currentPlugin]);
+      return;
+    }
+    me.tabPanel.setActiveTab(0);
   },
   //
   onDeselect: function(rowModel, record){
