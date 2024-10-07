@@ -2,27 +2,31 @@
 
 ## Who Are We?
 
-We are an [international team](../noc-community/index.md) of recognized experts in the design, planning, and operation of communication networks and online services.
+We are an international team of recognized experts in the design, planning, and operation of communication networks and online services.
 
 ## Our Goal
 
-1. Become the leading OSS solution for data networks among open-source and commercial products, including but not limited to:
+## Our Goal
 
-    * Network Resource Inventory
-    * Fault Management
-    * Performance Analysis
-    * Configuration Management
-    * Network Management System (NMS) and Element Management System (EMS)
-    * Trail Management
-    * Provisioning and Service Activation
+1. Lead the market as the top OSS solution for data networks among both open-source and commercial products, covering:
 
-2. Create an integrated and comprehensive environment for target domains.
-3. Provide an extensible and flexible solution adaptable to various use scenarios.
-4. Make the product intuitive and user-friendly.
-5. Unite telecom operators, large enterprise users, and service companies to establish an industry standard and formalize best practices for network management.
-6. Support an active community of developers and users for knowledge and experience sharing.
+   * Network Resource Inventory
+   * Fault Management
+   * Performance Analysis
+   * Configuration Management
+   * Network and Element Management Systems (NMS/EMS)
+   * Trail Management
+   * Provisioning and Service Activation
+
+2. Develop an integrated, comprehensive environment for target domains.
+3. Provide an extensible, flexible solution adaptable to various use cases.
+4. Ensure the product is intuitive and user-friendly.
+5. Unite telecom operators, large enterprises, and service companies to establish industry standards and best practices for network management.
+6. Foster an active community of developers and users for knowledge sharing and collaboration.
 
 ## Our Users
+
+Our solution serves a diverse range of users, including:
 
 1. Telecom operators — from small to national.
 2. Enterprise clients.
@@ -34,12 +38,17 @@ We are an [international team](../noc-community/index.md) of recognized experts 
 
 ## Our Virtues
 
-1. **Open-source** — all project source codes are open and available under the [BSD license](../license.md). The product can be used for free.
-2. **Vendor-agnostic** — our solution works equally well with equipment from different vendors. Beyond the integration layer, the system core is vendor-independent.
-3. **Inventory First** — effective monitoring and management are impossible without proper inventory. We focus on inventory information and ways to keep it up to date.
-4. **Discovery** — the inventory database is populated and reconciled with the actual network state.
-5. **Policy-based management** — no need to configure monitoring for each element individually. Once inventory information is aligned, policies define what and how to monitor and manage.
-6. **Single point of truth** — the system is the source of true and accurate information about assets and their current state.
-7. **Scalability** — the system scales from simple labs with a few devices to networks with millions of elements.
-8. **Ease of development** — standard and widely used tools are utilized.
-9. **Collaborative solution** for common network operation issues.
+## Our Virtues
+
+Our project is built on the following core principles:
+
+1. **Open-source**: All project source codes are open and available under the [BSD license](../license.md).
+2. **Vendor-agnostic**: Our solution works seamlessly with equipment from different vendors. Beyond the integration layer, the system core is vendor-independent.
+3. **Inventory First**: Effective monitoring and management start with accurate inventory. We focus on maintaining up-to-date inventory information.
+4. **Discovery**: Our inventory database is continually populated and reconciled with the actual network state.
+5. **Policy-based Management**: Policies, rather than individual configurations, define monitoring and management once inventory information is aligned.
+6. **Single Point of Truth**: Our system provides accurate, reliable information about assets and their current state.
+7. **Scalability**: The system scales from small labs to networks with millions of elements.
+8. **Ease of Development**: We use standard, widely-adopted tools for ease of development.
+9. **Collaborative Solution**: We address common network operation issues through collaboration.
+
