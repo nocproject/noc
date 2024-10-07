@@ -86,7 +86,7 @@ class Migration(BaseMigration):
         self.db.add_column(
             "main_notificationgroup",
             "message_register_policy",
-            models.CharField("Name", max_length=1, default="a"),
+            models.CharField("Name", max_length=1, default="d"),
         )
         self.db.add_column(
             "main_notificationgroup",
