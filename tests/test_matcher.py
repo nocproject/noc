@@ -133,6 +133,19 @@ def test_lte(raw, config, expected):
             {"version": {"$in": ["12.2(48)SE", "12.5(48)SE", "12.2(50)SE"]}},
             True,
         ),
+        (
+            {
+                "version": "12.2(50)SE",
+                "caps": {
+                    "DB | Interfaces": 58,
+                    "SNMP": True,
+                    "SNMP | v1": False,
+                    "HP | ProCurve | CLI | Old": True,
+                },
+            },
+            {"caps": {"$in": ["HP | ProCurve | CLI | Old"]}},
+            True,
+        ),
     ],
 )
 def test_in(raw, config, expected):
