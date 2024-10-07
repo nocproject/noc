@@ -127,6 +127,34 @@ def test_lte(raw, config, expected):
 @pytest.mark.parametrize(
     "raw,config,expected",
     [
+        ({"version": "12.2(50)SE"}, {"version": {"$in": ["12.2(48)SE", "12.5(48)SE"]}}, False),
+        (
+            {"version": "12.2(50)SE"},
+            {"version": {"$in": ["12.2(48)SE", "12.5(48)SE", "12.2(50)SE"]}},
+            True,
+        ),
+        (
+            {
+                "version": "12.2(50)SE",
+                "caps": {
+                    "DB | Interfaces": 58,
+                    "SNMP": True,
+                    "SNMP | v1": False,
+                    "HP | ProCurve | CLI | Old": True,
+                },
+            },
+            {"caps": {"$in": ["HP | ProCurve | CLI | Old"]}},
+            True,
+        ),
+    ],
+)
+def test_in(raw, config, expected):
+    assert match(raw, config) is expected
+
+
+@pytest.mark.parametrize(
+    "raw,config,expected",
+    [
         ({"labels": ["tag1", "tag2", "tag4"]}, {"labels": {"$all": ["tag1", "tag5"]}}, False),
         ({"labels": ["tag2", "tag4"]}, {"labels": {"$all": ["tag4", "tag2"]}}, True),
     ],

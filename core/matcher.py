@@ -21,7 +21,7 @@ def match(ctx: Dict[str, Union[List, str, int]], expr: Dict[str, Any]) -> bool:
 def get_matcher(op: str, field: str, value: Any) -> Callable:
     """getting matcher function by operation"""
     if op not in matchers:
-        raise ValueError("Unknown matcher: %s", op)
+        raise ValueError("Unknown matcher: %s" % op)
     # Clean Argument
     match op:
         case "$regex":
@@ -32,6 +32,9 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
             value = value
         case _:
             value = alnum_key(value)
+    if field == "caps":
+        # For caps - context is dict. Maybe add has_key matcher
+        op = "$any"
     return partial(matchers[op], value, field)
 
 
@@ -59,6 +62,8 @@ def match_or(c_iter: Tuple[Callable, ...], ctx: Dict[str, Any]) -> bool:
                 return True
         except KeyError:
             return False
+        except TypeError:
+            raise AssertionError("Not supported operation for field: %s" % c)
     return False
 
 
@@ -69,6 +74,8 @@ def match_and(c_iter: Tuple[Callable, ...], ctx: Dict[str, Any]) -> bool:
                 return False
         except KeyError:
             return False
+        except TypeError:
+            raise AssertionError("Not supported operation for field: %s" % c)
     return True
 
 
