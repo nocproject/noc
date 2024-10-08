@@ -281,7 +281,7 @@ class SVG(object):
         for c in src._tree.getroot():
             el.append(c)
 
-    def place(self: "SVG", source: "SVG", /, x: float, y: float) -> None:
+    def place(self: "SVG", source: "SVG", /, x: float, y: float, **kwargs: str) -> None:
         """
         Place item to the end of SVG.
 
@@ -289,6 +289,7 @@ class SVG(object):
             source: Placed item.
             x: X coordinate.
             y: Y coordinate.
+            kwargs: Additional data-* attributes.
         """
         source = source.clone()
         # Merge defs
@@ -299,7 +300,11 @@ class SVG(object):
             # Remove defs from source
             source._tree.getroot().remove(src_defs)
         # Group element
-        g = ET.Element("g", {"transform": f"translate({x}, {y})"})
+        attrs = {"transform": f"translate({x}, {y})"}
+        if kwargs:
+            attrs.update({f"data-{k.replace('_', '-')}": v for k, v in kwargs.items()})
+            attrs["class"] = self.SELECTABLE_CLS
+        g = ET.Element("g", attrs)
         self.root.append(g)
         # Copy content from source
         for c in source.root:

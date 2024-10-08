@@ -9,7 +9,10 @@ console.debug("Defining NOC.inv.inv.plugins.rack.Controller");
 Ext.define("NOC.inv.inv.plugins.rack.Controller", {
   extend: "Ext.app.ViewController",
   alias: "controller.rack",
-  
+  mixins: [
+    "NOC.core.mixins.SVGInteraction",
+  ],
+  //
   onDataChanged: function(store){
     var viewModel = this.getViewModel();
     if(viewModel){
@@ -54,22 +57,7 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
   onAfterRender: function(container){
     var app = this.getView().up("[appId=inv.inv]"),
       svgObject = container.getEl().dom.querySelector("#svg-object");
-    svgObject.addEventListener("load", function(){
-      var svgDocument = svgObject.contentDocument;
-      if(svgDocument){
-        var svgElements = svgDocument.querySelectorAll("[data-event]");
-        svgElements.forEach(function(element){
-          var events = element.dataset.event.split(",");
-          events.forEach(function(event){
-            element.addEventListener(event, function(){
-              app.showObject(element.dataset.resource.split(":")[1]);
-            });
-          });
-        });
-      } else{
-        NOC.error(__("SVG Document is not loaded"));
-      }
-    });
+    this.addInteractionEvents(app, svgObject, app.showObject.bind(app));
 
   },
   //
