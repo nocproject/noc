@@ -28,6 +28,7 @@ from noc.core.mongo.connection_async import get_db, connect_async
 from noc.config import config
 from noc.sa.models.job import JobStatus
 from noc.services.runner.models.runnerreq import RunnerRequest, JobRequest
+from noc.core.debug import ErrorReport
 
 ta_RunnerRequest = TypeAdapter(RunnerRequest)
 STREAM = "submit"
@@ -66,7 +67,11 @@ class RunnerService(FastAPIService):
         if not msg_handler:
             self.logger.error("Internal error. No handler for '%s'", req.op)
             return
-        await msg_handler(req)
+        try:
+            with ErrorReport(logger=self.logger):
+                await msg_handler(req)
+        except Exception:
+            self.logger.info("Recovering from error")
 
     async def on_msg_submit(self, req: JobRequest) -> None:
         try:
@@ -77,7 +82,15 @@ class RunnerService(FastAPIService):
             metrics["failed_submits"] += 1
 
     async def sync_task(self):
-        """Save state chages to database"""
+        while True:
+            try:
+                with ErrorReport(logger=self.logger):
+                    await self._sync_task()
+            except Exception:
+                self.logger.error("Recovering from error")
+
+    async def _sync_task(self):
+        """Save state chages to database (implementaion)"""
         coll = get_db()["jobs"]
         while True:
             # Get changes

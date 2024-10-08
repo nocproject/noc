@@ -145,12 +145,16 @@ class ChannelMixin(HorizonMixin):
         self.logger.info(
             "Creating %s job for: %s (dry_run=%s)", job_type, ep.resource_label, dry_run
         )
+        resource_path = ep.resource_path
+        for job in jobs:
+            job.resource_path = resource_path
         return JobRequest(
             name=name,
             description=description,
             locks=locks,
             jobs=jobs,
             environment={"managed_object": f"{mo.id}" if mo else "0", "card": str(card)},
+            resource_path=resource_path,
         )
 
     def setup(self, ep: Endpoint, **kwargs) -> JobRequest | None:

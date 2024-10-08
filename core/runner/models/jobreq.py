@@ -70,6 +70,7 @@ class JobRequest(BaseModel):
         after: Schedule job to start after the specified time.
         deadline: Job must be completed before deadline, or it
             became cancelled.
+        resource_path: List representing path to resource.
         jobs: List of nested jobs. Mutual exclusive with actions.
     """
 
@@ -87,6 +88,7 @@ class JobRequest(BaseModel):
     environment: Optional[Dict[str, str]] = None
     after: Optional[datetime.datetime] = None
     deadline: Optional[datetime.datetime] = None
+    resource_path: Optional[List[str]] = None
     jobs: Optional[List["JobRequest"]] = None
 
     def submit(self) -> None:
