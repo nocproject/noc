@@ -202,10 +202,12 @@ Ext.define("NOC.inv.inv.Application", {
                       data = Ext.decode(response.responseText),
                       mapMenuItem = me.menu.down("#invNavContextMenuMapItem"),
                       addMenuItem = me.menu.down("#invNavContextMenuAddItem"),
-                      removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem");
+                      removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem"),
+                      removeAllConnectionMenuItem = me.menu.down("#invNavContextMenuRemoveAllConnectionItem");
                     
                     addMenuItem.setDisabled(!record.get("can_add"));
                     removeMenuItem.setDisabled(!record.get("can_delete"));
+                    removeAllConnectionMenuItem.setDisabled(!record.get("can_delete"));
                     if(mapMenuItem){
                       me.menu.remove(mapMenuItem);
                     }
