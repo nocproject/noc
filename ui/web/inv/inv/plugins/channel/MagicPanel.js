@@ -37,7 +37,7 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
         {
           text: __("Controller"),
           dataIndex: "controller",
-          width: 100,
+          width: 150,
         },
         {
           text: __("Status"),
