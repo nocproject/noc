@@ -102,6 +102,7 @@
         },
         {
             "input": "IN1",
+            "input_discriminator": "osc::outband",
             "output": "OSC_OUT"
         },
         {
@@ -110,6 +111,11 @@
         },
         {
             "input": "IN2",
+            "output": "OUT2"
+        },
+        {
+            "input": "OSC_IN",
+            "input_discriminator": "osc::outband",
             "output": "OUT2"
         },
         {

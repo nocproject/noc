@@ -572,6 +572,7 @@
         },
         {
             "input": "LINE_IN",
+            "input_discriminator": "osc::outband",
             "output": "OSC_OUT"
         },
         {
@@ -752,6 +753,7 @@
         },
         {
             "input": "OSC_IN",
+            "input_discriminator": "osc::outband",
             "output": "LINE_OUT"
         },
         {
