@@ -15,6 +15,7 @@ from bson import ObjectId
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.svg import SVG
+from .interaction import Interaction, InteractionAction, InteractionEvent, InteractionItem
 from .box import get_svg_for_box
 
 GOLDEN_RATIO = 1.6
@@ -286,9 +287,35 @@ def get_svg_for_rack(obj: Object, name: str = "front") -> SVG:
     cache: dict[ObjectId, SVG] = {}
     for box in iter_side(far_side):
         box_svg = get_svg_for_box(box, name="rear", cache=cache) or get_placeholder_svg(box)
-        svg.place(box_svg, x=LEFT_SIZE, y=get_y(box))
+        svg.place(
+            box_svg,
+            x=LEFT_SIZE,
+            y=get_y(box),
+            interaction=Interaction(
+                actions=[
+                    InteractionItem(
+                        event=InteractionEvent.CLICK,
+                        action=InteractionAction.INFO,
+                        resource=box.as_resource(),
+                    ),
+                ]
+            ).to_str(),
+        )
     # Draw near side
     for box in iter_side(near_side):
         box_svg = get_svg_for_box(box, name="front", cache=cache) or get_placeholder_svg(box)
-        svg.place(box_svg, x=LEFT_SIZE, y=get_y(box))
+        svg.place(
+            box_svg,
+            x=LEFT_SIZE,
+            y=get_y(box),
+            interaction=Interaction(
+                actions=[
+                    InteractionItem(
+                        event=InteractionEvent.CLICK,
+                        action=InteractionAction.INFO,
+                        resource=box.as_resource(),
+                    ),
+                ]
+            ).to_str(),
+        )
     return svg
