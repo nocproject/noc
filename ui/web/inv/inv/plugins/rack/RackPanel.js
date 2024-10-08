@@ -176,7 +176,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     "-",
     {
       xtype: "combo",
-      itemId: "zoomButton",
+      itemId: "zoomCombo",
       store: [
         [0.25, "25%"],
         [0.5, "50%"],
@@ -235,6 +235,6 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       },
     });
     viewPanel.down("#image").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
-    me.getController().onZoom(me.down("#zoomButton"));
+    me.getController().onZoom(me.down("#zoomCombo"));
   },
 });
