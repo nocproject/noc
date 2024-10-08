@@ -91,6 +91,14 @@ Ext.define("NOC.inv.inv.Application", {
         },
         {
           glyph: NOC.glyph.trash_o,
+          itemId: "invNavContextMenuRemoveAllConnectionItem",
+          text: __("Remove all connections"),
+          scope: me,
+          cls: "noc-remove-menu-item",
+          handler: me.onRemoveAllConnections,
+        },
+        {
+          glyph: NOC.glyph.trash_o,
           itemId: "invNavContextMenuRemoveItem",
           text: __("Delete"),
           scope: me,
@@ -707,6 +715,9 @@ Ext.define("NOC.inv.inv.Application", {
         }); 
       }
     }
+  },
+  onRemoveAllConnections: function(){
+    console.log("onRemoveAllConnections");
   },
   //
   restoreHistory: function(args){
