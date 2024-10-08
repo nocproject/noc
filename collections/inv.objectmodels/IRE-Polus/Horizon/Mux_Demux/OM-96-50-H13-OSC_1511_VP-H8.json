@@ -1400,7 +1400,8 @@
     "cross": [
         {
             "input": "OSC_IN",
-            "output": "LINE_OUT"
+            "output": "LINE_OUT",
+            "input_discriminator": "osc::outband"
         },
         {
             "input": "B2",

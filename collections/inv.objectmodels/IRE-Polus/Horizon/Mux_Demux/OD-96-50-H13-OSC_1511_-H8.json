@@ -1403,8 +1403,9 @@
             "output": "P1"
         },
         {
-            "input": "P2",
-            "output": "OSC_OUT"
+            "input": "LINE_IN",
+            "output": "OSC_OUT",
+            "input_discriminator": "osc::outband"
         },
         {
             "input": "P2",
