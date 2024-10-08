@@ -85,8 +85,8 @@
         },
         {
             "input": "LINE_RX",
-            "output": "OSC_TX",
-            "input_discriminator": "osc::outband"
+            "input_discriminator": "osc::outband",
+            "output": "OSC_TX"
         },
         {
             "input": "CLIENT_RX",
@@ -98,8 +98,8 @@
         },
         {
             "input": "OSC_RX",
-            "output": "LINE_TX",
-            "input_discriminator": "osc::outband"
+            "input_discriminator": "osc::outband",
+            "output": "LINE_TX"
         }
     ],
     "data": [

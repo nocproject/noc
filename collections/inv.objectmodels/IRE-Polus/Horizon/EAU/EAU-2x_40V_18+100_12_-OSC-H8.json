@@ -182,8 +182,8 @@
         },
         {
             "input": "IN1",
-            "output": "OSC1_OUT",
-            "input_discriminator": "osc::outband"
+            "input_discriminator": "osc::outband",
+            "output": "OSC1_OUT"
         },
         {
             "input": "IN1",
@@ -195,8 +195,8 @@
         },
         {
             "input": "OSC1_IN",
-            "output": "OUT2",
-            "input_discriminator": "osc::outband"
+            "input_discriminator": "osc::outband",
+            "output": "OUT2"
         },
         {
             "input": "IN2",
@@ -208,8 +208,8 @@
         },
         {
             "input": "IN3",
-            "output": "OSC2_OUT",
-            "input_discriminator": "osc::outband"
+            "input_discriminator": "osc::outband",
+            "output": "OSC2_OUT"
         },
         {
             "input": "IN3",
@@ -221,8 +221,8 @@
         },
         {
             "input": "OSC2_IN",
-            "output": "OUT4",
-            "input_discriminator": "osc::outband"
+            "input_discriminator": "osc::outband",
+            "output": "OUT4"
         },
         {
             "input": "IN4",
