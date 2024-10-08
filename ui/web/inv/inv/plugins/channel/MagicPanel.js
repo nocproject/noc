@@ -16,6 +16,7 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
       xtype: "grid",
       scrollable: "y",
       height: 310,
+      title: __("Create channel"),
       allowDeselect: true,
       store: new Ext.data.Store({
         fields: ["controller", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],

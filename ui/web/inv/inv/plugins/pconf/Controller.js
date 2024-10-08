@@ -30,21 +30,21 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     vm.set("statusDisabled", hasStatuses);
   },
   onReload: function(){
-    var me = this;
-    me.getView().mask(__("Loading..."));
+    var me = this,
+      panel = me.getView();
+    panel.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + me.getView().currentId + "/plugin/pconf/",
       method: "GET",
       scope: me,
       success: function(response){
-        var data = Ext.decode(response.responseText),
-          view = me.getView();
-        view.preview(data);
-        view.unmask();
+        var data = Ext.decode(response.responseText);
+        panel.preview(data);
+        panel.unmask();
       },
       failure: function(){
         NOC.error(__("Failed to load data"));
-        me.getView().unmask();
+        panel.unmask();
       },
     });
   },

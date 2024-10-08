@@ -123,6 +123,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       displayField: "text",
       valueField: "value",
       fieldLabel: __("Mode"),
+      labelWidth: 130,
       allowBlank: false,
       labelAlign: "right",
       bind: {
@@ -205,6 +206,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       border: false,
       autoScroll: true,
       stateful: true,
+      emptyText: __("No data"),
       bind: {
         store: "{gridStore}",
       },

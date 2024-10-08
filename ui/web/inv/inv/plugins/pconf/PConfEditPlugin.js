@@ -65,6 +65,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfEditPlugin", {
           field: {
             xtype: "combobox",
             triggers: editorTriggers,
+            editable: false,
             store: {
               fields: ["id", "label"],
               data: record.get("options") || [],
