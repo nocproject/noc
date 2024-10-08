@@ -81,6 +81,34 @@
             "type__name": "Optical | LC"
         }
     ],
+    "cross": [
+        {
+            "input": "LINE_IN",
+            "output": "CLIENT_OUT"
+        },
+        {
+            "input": "LINE_IN",
+            "output": "MON_LINE_IN"
+        },
+        {
+            "input": "LINE_IN",
+            "input_discriminator": "osc::outband",
+            "output": "OSC_OUT"
+        },
+        {
+            "input": "CLIENT_IN",
+            "output": "LINE_OUT"
+        },
+        {
+            "input": "CLIENT_IN",
+            "output": "MON_LINE_OUT"
+        },
+        {
+            "input": "OSC_IN",
+            "input_discriminator": "osc::outband",
+            "output": "LINE_OUT"
+        }
+    ],
     "data": [
         {
             "attr": "power",

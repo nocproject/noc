@@ -178,6 +178,11 @@
     "cross": [
         {
             "input": "IN1",
+            "output": "OUT1"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "osc::outband",
             "output": "OSC1_OUT"
         },
         {
@@ -185,11 +190,12 @@
             "output": "MON1"
         },
         {
-            "input": "IN1",
-            "output": "OUT1"
+            "input": "IN2",
+            "output": "OUT2"
         },
         {
-            "input": "IN2",
+            "input": "OSC1_IN",
+            "input_discriminator": "osc::outband",
             "output": "OUT2"
         },
         {
@@ -198,6 +204,11 @@
         },
         {
             "input": "IN3",
+            "output": "OUT3"
+        },
+        {
+            "input": "IN3",
+            "input_discriminator": "osc::outband",
             "output": "OSC2_OUT"
         },
         {
@@ -205,11 +216,12 @@
             "output": "MON3"
         },
         {
-            "input": "IN3",
-            "output": "OUT3"
+            "input": "IN4",
+            "output": "OUT4"
         },
         {
-            "input": "IN4",
+            "input": "OSC2_IN",
+            "input_discriminator": "osc::outband",
             "output": "OUT4"
         },
         {
