@@ -324,10 +324,88 @@ class Script(BaseScript):
                 {
                     "input": in_port,
                     "output": "COM_OUT",
-                    "output_discriminator": str(LambdaDiscriminator.from_channel(cname)),
+                    "input_discriminator": str(LambdaDiscriminator.from_channel(cname)),
                     "gain_db": out_gain if out_gain else 1,
                 }
             )
+
+        return crossings
+
+    def parse_cross_roadm2(self, config) -> List[Dict[str, str]]:
+        client_src: List[str] = []
+        dir_src: List[str] = []
+
+        gain: Dict[str, str] = {}
+        out_gain = 0
+        crossings = []
+
+        for oo in config:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
+
+            if name.endswith("SetIn"):
+                if not oo["val"] or oo["val"] == "Blocked" or oo["val"] == "Заблокирован":
+                    continue
+                if oo["val"] == "Клиент" or oo["val"] == "Client":
+                    client_src.append(name[:-5])
+                if oo["val"] == "Транзит" or oo["val"] == "Tranzit":
+                    dir_src.append(name[:-5])
+
+            if name.endswith("SetAtt"):
+                gain[name[:-6]] = oo["val"]
+
+            if name == "ClOutSetAtt":
+                out_gain = oo["val"]
+
+        # Cl In, Dir In --> Line Out
+        for cname in client_src:
+            crossings.append(
+                {
+                    "input": "CL IN",
+                    "output": "LINE_OUT",
+                    "input_discriminator": str(LambdaDiscriminator.from_channel(cname)),
+                    "gain_db": gain.get(cname, 0),
+                }
+            )
+            crossings.append(
+                {
+                    "input": "CL IN",
+                    "output": "MON",
+                    "input_discriminator": str(LambdaDiscriminator.from_channel(cname)),
+                    "gain_db": gain.get(cname, 0),
+                }
+            )
+        for cname in dir_src:
+            crossings.append(
+                {
+                    "input": "DIR IN",
+                    "output": "LINE_OUT",
+                    "input_discriminator": str(LambdaDiscriminator.from_channel(cname)),
+                }
+            )
+            crossings.append(
+                {
+                    "input": "DIR IN",
+                    "output": "MON",
+                    "input_discriminator": str(LambdaDiscriminator.from_channel(cname)),
+                }
+            )
+
+        # Line In --> Cl Out / Dir Out
+        crossings.append(
+            {
+                "input": "LINE_IN",
+                "output": "CL OUT",
+                "gain_db": out_gain,
+            }
+        )
+        crossings.append(
+            {
+                "input": "LINE_IN",
+                "output": "DIR OUT",
+            }
+        )
 
         return crossings
 
@@ -467,6 +545,8 @@ class Script(BaseScript):
                 return self.parse_cross_atp(o["PM"])
             elif "sroadm7" in o["cls"]:
                 return self.parse_cross_roadm2x9(o["PM"])
+            elif "sroadm5" in o["cls"]:
+                return self.parse_cross_roadm2(o["PM"])
             else:
                 return self.parse_cross_default(o["PM"])
 
