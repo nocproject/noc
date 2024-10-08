@@ -245,7 +245,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       method: "GET",
       scope: me,
       success: function(response){
-        me.preview(Ext.decode(response.responseText));
+        me.preview(Ext.decode(response.responseText), me.currentId);
       },
       failure: function(){
         NOC.error(__("Failed to get data"));
