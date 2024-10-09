@@ -30,13 +30,6 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       xtype: "invPluginsZoom",
       itemId: "zoomControl",
       appPanel: "commutationPanel",
-      setZoom: function(combo){
-        var me = this.up("#commutationPanel"),
-          imageContainer = me.down("#scheme"),
-          image = imageContainer.getEl().dom.querySelector("svg");
-        image.style.transformOrigin = "0 0";
-        image.style.transform = "scale(" + combo.getValue() + ")";
-      },
     },
     {
       xtype: "button",
