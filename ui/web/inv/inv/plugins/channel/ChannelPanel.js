@@ -9,10 +9,12 @@ console.debug("Defining NOC.inv.inv.plugins.channel.ChannelPanel");
 Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   extend: "Ext.panel.Panel",
   title: __("Channels"),
+  itemId: "channelPanel",
   closable: false,
   defaultListenerScope: true,
   layout: "card",
   requires: [
+    "NOC.inv.inv.plugins.Zoom",
     "NOC.inv.inv.plugins.channel.MagicPanel",
   ],
   tbar: [
@@ -30,27 +32,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       handler: "onReload",
     },
     {
-      xtype: "combobox",
-      itemId: "zoomInvChannelCombo",
-      store: [
-        [0.25, "25%"],
-        [0.5, "50%"],
-        [0.75, "75%"],
-        [1.0, "100%"],
-        [1.25, "125%"],
-        [1.5, "150%"],
-        [2.0, "200%"],
-        [3.0, "300%"],
-        [4.0, "400%"],
-      ],
-      width: 100,
-      value: 1.0,
-      valueField: "zoom",
-      displayField: "label",
-      editable: false,
-      listeners: {
-        select: "onZoom",
-      },
+      xtype: "invPluginsZoom",
+      itemId: "zoomControl",
+      appPanel: "channelPanel",
     },
     {
       xtype: "button",
@@ -209,13 +193,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     }
   },
   //
-  onZoom: function(combo){
-    var me = this,
-      imageComponent = me.down("#scheme");
-    imageComponent.getEl().dom.style.transformOrigin = "0 0";
-    imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
-  },
-  //
   svgToBase64: function(svgString){
     var base64String = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
     return base64String;
@@ -361,7 +338,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   showChannelPanel: function(){
     this.down("#adhocInvChannelBtn").show();
-    this.down("#zoomInvChannelCombo").show();
+    this.down("#zoomControl").show();
     this.down("#downloadSvgChannelBtn").show();
     this.down("#closeInvChannelBtn").hide();
     this.down("#createInvChannelBtn").hide(); 
@@ -371,7 +348,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   showMagicPanel: function(){
     this.getLayout().setActiveItem(1);
     this.down("#adhocInvChannelBtn").hide();
-    this.down("#zoomInvChannelCombo").hide();
+    this.down("#zoomControl").hide();
     this.down("#downloadSvgChannelBtn").hide();
     this.down("#createInvChannelBtn").show();
     this.down("#closeInvChannelBtn").show();

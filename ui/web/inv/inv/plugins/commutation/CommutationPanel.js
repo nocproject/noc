@@ -8,6 +8,9 @@ console.debug("Defining NOC.inv.inv.plugins.commutation.CommutationPanel");
 
 Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   extend: "Ext.panel.Panel",
+  requires: [
+    "NOC.inv.inv.plugins.Zoom",
+  ],
   title: __("Commutation"),
   closable: false,
   layout: {
@@ -24,26 +27,16 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       handler: "onReload",
     },
     {
-      xtype: "combobox",
-      store: [
-        [0.25, "25%"],
-        [0.5, "50%"],
-        [0.75, "75%"],
-        [1.0, "100%"],
-        [1.25, "125%"],
-        [1.5, "150%"],
-        [2.0, "200%"],
-        [3.0, "300%"],
-        [4.0, "400%"],
-      ],
-      width: 100,
-      value: 1.0,
-      editable: false,
-      valueField: "zoom",
-      displayField: "label",
-      listeners: {
-        select: "onZoom",
-      },    
+      xtype: "invPluginsZoom",
+      itemId: "zoomControl",
+      appPanel: "commutationPanel",
+      setZoom: function(combo){
+        var me = this.up("#commutationPanel"),
+          imageContainer = me.down("#scheme"),
+          image = imageContainer.getEl().dom.querySelector("svg");
+        image.style.transformOrigin = "0 0";
+        image.style.transform = "scale(" + combo.getValue() + ")";
+      },
     },
     {
       xtype: "button",
@@ -205,13 +198,16 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       container.removeAll();
       container.add({
         xtype: "container",
+        itemId: "scheme",
         layout: "fit",
         html: svg.outerHTML,
         listeners: {
           afterrender: function(){
             var svgElement = container.getEl().dom.querySelector("svg"),
-              elements = svgElement.querySelectorAll(".selectable");
+              elements = svgElement.querySelectorAll(".selectable"),
+              zoomControl = me.down("#zoomControl");
 
+            zoomControl.setZoom(zoomControl);
             elements.forEach(function(element){
               element.addEventListener("click", function(){
                 var record = grid.getStore().getById(element.id);
@@ -240,25 +236,20 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   //
   onReload: function(){
     var me = this;
+    me.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/commutation/",
       method: "GET",
       scope: me,
       success: function(response){
+        me.unmask();
         me.preview(Ext.decode(response.responseText), me.currentId);
       },
       failure: function(){
+        me.unmask();
         NOC.error(__("Failed to get data"));
       },
     });
-  },
-  //
-  onZoom: function(combo){
-    var me = this,
-      imageContainer = me.down("#commutationScheme container"),
-      image = imageContainer.getEl().dom.querySelector("svg");
-    image.style.transformOrigin = "0 0";
-    image.style.transform = "scale(" + combo.getValue() + ")";
   },
   //
   afterPanelsRender: function(imagePanel){

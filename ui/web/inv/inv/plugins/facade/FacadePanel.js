@@ -8,9 +8,13 @@ console.debug("Defining NOC.inv.inv.plugins.facade.FacadePanel");
 
 Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   extend: "Ext.panel.Panel",
+  requires: [
+    "NOC.inv.inv.plugins.Zoom",
+  ],
   mixins: [
     "NOC.core.mixins.SVGInteraction",
   ],
+  itemId: "facadePanel",
   title: __("Facade"),
   closable: false,
   scrollable: true,
@@ -47,28 +51,10 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       },
     });
 
-    me.zoomButton = Ext.create("Ext.form.ComboBox", {
-      store: [
-        [0.25, "25%"],
-        [0.5, "50%"],
-        [0.75, "75%"],
-        [1.0, "100%"],
-        [1.25, "125%"],
-        [1.5, "150%"],
-        [2.0, "200%"],
-        [3.0, "300%"],
-        [4.0, "400%"],
-      ],
-      itemId: "zoomCombo",
-      width: 100,
-      value: 1.0,
-      valueField: "zoom",
-      displayField: "label",
-      editable: false,
-      listeners: {
-        scope: me,
-        select: me.onZoom,
-      },
+    me.zoomButton = Ext.create("NOC.inv.inv.plugins.Zoom", {
+      itemId: "zoomControl",
+      appPanel: me.itemId,
+      setZoom: me.setZoom,
     });
 
     me.downloadButton = Ext.create("Ext.button.Button", {
@@ -127,7 +113,8 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
                 scope: me,
                 afterrender: function(container){
                   var app = this,
-                    svgObject = container.getEl().dom.querySelector('#svg-object');              
+                    svgObject = container.getEl().dom.querySelector("#svg-object");
+                  app.zoomButton.setZoom(app.zoomButton); 
                   me.addInteractionEvents(app, svgObject, app.app.showObject.bind(app.app));
                 },
               },
@@ -143,7 +130,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       me.startHeight = me.facadeViewPanel.getHeight();
     }
     // Reset zoom
-    me.zoomButton.setValue(1.0);
+    // me.zoomButton.setValue(1.0);
     // Disable rear button if necessary
     me.sideRearButton.setDisabled(data.views.length < 2);
     // Press front button
@@ -152,21 +139,24 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   //
   onReload: function(){
     var me = this;
+    me.mask("Loading...");
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/facade/",
       method: "GET",
       scope: me,
       success: function(response){
         me.preview(Ext.decode(response.responseText));
+        me.unmask();
       },
       failure: function(){
         NOC.error(__("Failed to get data"));
+        me.unmask();
       },
     });
   },
   //
-  onZoom: function(combo){
-    var me = this,
+  setZoom: function(combo){
+    var me = this.up("#facadePanel"),
       width = me.startWidth,
       height = me.startHeight;
     Ext.each(me.query("#image-front, #image-rear"), function(img){

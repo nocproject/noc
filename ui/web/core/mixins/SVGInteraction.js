@@ -28,7 +28,7 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
             }
             if(action === "info"){
               element.addEventListener(event, function(evt){
-                var scale = container.down("#zoomCombo").getValue();
+                var scale = container.down("#zoomControl").getValue();
                 evt.stopPropagation();
                 Ext.Ajax.request({
                   url: "/inv/inv/baloon/",

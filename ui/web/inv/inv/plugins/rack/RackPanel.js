@@ -9,10 +9,12 @@ console.debug("Defining NOC.inv.inv.plugins.rack.RackPanel");
 Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   extend: "NOC.core.ApplicationPanel",
   requires: [
+    "NOC.inv.inv.plugins.Zoom",
     "NOC.inv.inv.plugins.rack.RackLoadModel",
     "NOC.inv.inv.plugins.rack.Controller",
   ],
   app: null,
+  itemId: "rackPanel",
   scrollable: true,
   title: __("Rack"),
   layout: "border",
@@ -175,27 +177,9 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     },
     "-",
     {
-      xtype: "combo",
-      itemId: "zoomCombo",
-      store: [
-        [0.25, "25%"],
-        [0.5, "50%"],
-        [0.75, "75%"],
-        [1.0, "100%"],
-        [1.25, "125%"],
-        [1.5, "150%"],
-        [2.0, "200%"],
-        [3.0, "300%"],
-        [4.0, "400%"],
-      ],
-      width: 100,
-      value: 1.0,
-      valueField: "zoom",
-      displayField: "label",
-      editable: false,
-      listeners: {
-        select: "onZoom",
-      },
+      xtype: "invPluginsZoom",
+      itemId: "zoomControl",
+      appPanel: "rackPanel",
     },
     {
       text: __("Edit"),
@@ -227,14 +211,14 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     viewPanel.removeAll();
     viewPanel.add({
       xtype: "container",
-      itemId: "image",
+      itemId: "scheme",
       html: "<object id='svg-object' data='" + url + "' type='image/svg+xml'></object>",
       padding: padding,
       listeners: {
         afterrender: "onAfterRender",
       },
     });
-    viewPanel.down("#image").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
-    me.getController().onZoom(me.down("#zoomCombo"));
+    viewPanel.down("#scheme").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
+    me.down("#zoomControl").setZoom(me.down("#zoomControl"));
   },
 });

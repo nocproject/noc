@@ -8,6 +8,9 @@ console.debug("Defining NOC.inv.inv.plugins.crossing.CrossingPanel");
 
 Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
   extend: "Ext.panel.Panel",
+  requires: [
+    "NOC.inv.inv.plugins.Zoom",
+  ],
   title: __("Crossing"),
   closable: false,
   layout: {
@@ -19,26 +22,9 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
   itemId: "crossingPanel",
   tbar: [
     {
-      xtype: "combobox",
-      store: [
-        [0.25, "25%"],
-        [0.5, "50%"],
-        [0.75, "75%"],
-        [1.0, "100%"],
-        [1.25, "125%"],
-        [1.5, "150%"],
-        [2.0, "200%"],
-        [3.0, "300%"],
-        [4.0, "400%"],
-      ],
-      width: 100,
-      value: 1.0,
-      valueField: "zoom",
-      editable: false,
-      displayField: "label",
-      listeners: {
-        select: "onZoom",
-      },    
+      xtype: "invPluginsZoom",
+      itemId: "zoomControl",
+      appPanel: "crossingPanel",
     },
     {
       xtype: "button",
@@ -145,6 +131,7 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
       container.removeAll();
       container.add({
         xtype: "container",
+        itemId: "scheme",
         html: svg.outerHTML,
         listeners: {
           afterrender: function(){
@@ -216,13 +203,6 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
     }
 
     return {grid: halfBodyHeight, image: imageHeight};
-  },
-  onZoom: function(combo){
-    var me = this,
-      imagePanel = me.down("#crossingScheme"),
-      imageStyle = imagePanel.down("container").getEl().dom.style;
-    imageStyle.transformOrigin = "0 0";
-    imageStyle.transform = "scale(" + combo.getValue() + ")";
   },
   //
   onDownloadSVG: function(){

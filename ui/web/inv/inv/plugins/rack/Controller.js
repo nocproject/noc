@@ -91,14 +91,6 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
     me.onReload();
   },
   //
-  onZoom: function(combo){
-    var me = this.getView(),
-      img = me.down("#image"),
-      imgEl = img.getEl().dom;
-    imgEl.style.transformOrigin = "0 0";
-    imgEl.style.transform = "scale(" + combo.getValue() + ")";
-  },
-  //
   onDownloadSVG: function(){
     var me = this,
       vm = me.getViewModel(),
