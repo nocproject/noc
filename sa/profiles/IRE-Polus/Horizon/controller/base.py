@@ -197,7 +197,7 @@ class ChannelMixin(HorizonMixin):
             ep=ep,
             job_type="submit",
             name=f"{self.label} Cleanup: {ep.resource_label}",
-            description="Cleanup {self.label} for endpoint",
+            description=f"Cleanup {self.label} for endpoint",
             jobs=jobs,
         )
 
