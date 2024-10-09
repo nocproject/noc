@@ -232,12 +232,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       scope: me,
       success: function(response){
         var obj = Ext.decode(response.responseText);
+        me.unmask();
         if(Ext.isEmpty(obj)){
           NOC.info(__("No ad-hoc channels available"));
         } else{
           me.showMagicPanel();
           me.down("[xtype=invchannelmagic] grid").getStore().loadData(obj);
-          me.unmask();
         }
       },
       failure: function(response){

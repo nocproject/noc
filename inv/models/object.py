@@ -1707,6 +1707,28 @@ class Object(Document):
             return obj, parts[1]
         return obj, None
 
+    def as_resource_path(self, path: str | None = None) -> list[str] | None:
+        """
+        Get resource path.
+
+        Args:
+            path: Additional conection name.
+
+        Returns:
+            list of path records or None.
+        """
+        r = [self.as_resource(path)]
+        if path:
+            r.append(self.as_resource())
+        obj = self
+        while obj.parent:
+            name = obj.parent_connection
+            obj = obj.parent
+            r.append(obj.as_resource(name))
+            if name:
+                r.append(obj.as_resource())
+        return list(reversed(r))
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)

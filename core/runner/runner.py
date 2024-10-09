@@ -123,6 +123,7 @@ class Runner(object):
             "depends_on": [j.id for j in job.iter_depends_on()],
             "environment": req.environment or None,
             "created_at": datetime.datetime.now(),
+            "resource_path": req.resource_path,
         }
         self._queue.put_nowait((None, r))
 
