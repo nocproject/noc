@@ -176,6 +176,7 @@ class InvApplication(ExtApplication):
                 plugins.append(self.get_plugin_data("channel"))
                 plugins.append(self.get_plugin_data("commutation"))
                 plugins.append(self.get_plugin_data("bom"))
+                plugins.append(self.get_plugin_data("job"))
             if o.model.cross or o.cross or o.get_data("caps", "dynamic_crossing"):
                 plugins.append(self.get_plugin_data("crossing"))
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():

@@ -25,7 +25,6 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
         ],
         listeners: {
           datachanged: "onDataChanged",
-          beforeload: "onBeforeStoreLoad",
         },
       },
     },

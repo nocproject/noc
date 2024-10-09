@@ -103,6 +103,7 @@ class Job(Document):
         "collection": "jobs",
         "strict": False,
         "auto_create_index": False,
+        "indexes": ["resource_path"],
     }
     parent = ReferenceField("self", required=False)
     name = StringField(required=True)
@@ -121,6 +122,7 @@ class Job(Document):
     created_at = DateTimeField(required=True)
     started_at = DateTimeField(required=False)
     completed_at = DateTimeField(required=False)
+    resource_path = ListField(StringField(), required=False)
     # after = DateTimeField(required=False)
     # deadline = DateTimeField(required=False)
     results = DictField(required=False)

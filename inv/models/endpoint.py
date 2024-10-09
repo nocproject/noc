@@ -23,7 +23,7 @@ from bson import ObjectId
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete
-from noc.core.resource import from_resource, resource_label
+from noc.core.resource import from_resource, resource_label, resource_path
 from .channel import Channel
 
 
@@ -126,6 +126,11 @@ class Endpoint(Document):
     def resource_label(self) -> str:
         """Human-readable label for resource."""
         return resource_label(self.resource)
+
+    @property
+    def resource_path(self) -> list[str] | None:
+        """Resource path."""
+        return resource_path(self.resource)
 
 
 signals.pre_save.connect(Endpoint._update_root_resource, sender=Endpoint)

@@ -40,10 +40,6 @@ Ext.define("NOC.inv.inv.plugins.bom.Controller", {
     });
   },
   //
-  onBeforeStoreLoad: function(store){
-    console.log("onBeforeStoreLoad ", store);
-  },
-  //
   onExport: function(){
     var grid = this.getView().down("grid"),
       store = grid.getStore(),

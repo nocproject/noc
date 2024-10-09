@@ -74,3 +74,21 @@ def resource_label(resource: str) -> str:
     if part:
         return f"{rl} @ {part}"
     return rl
+
+
+def resource_path(resource: str) -> list[str] | None:
+    """
+    Get path for resource.
+
+    Args:
+        resource: Current resource.
+
+    Returns:
+        Path to the resource or None.
+    """
+    if not resource.startswith("o:"):
+        return [resource]
+    obj, name = from_resource(resource)
+    if not obj:
+        return None
+    return obj.as_resource_path(name)
