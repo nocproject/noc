@@ -39,21 +39,20 @@ Ext.define("NOC.inv.inv.plugins.job.Controller", {
   //
   onViewJob: function(view, rowIndex){
     var r = view.getStore().getAt(rowIndex),
-      grid = view.up("gridpanel"),
       id = r.get("id");
-    this.viewJob(grid, id);
+    this.viewJob(view, id);
   },
   //
   onRowDblClick: function(view, record){
-    var grid = view.up("gridpanel");
-    this.viewJob(grid, record.id);
+    this.viewJob(view, record.id);
   },
   //
   viewJob: function(view, objectId){
-    view.mask(__("Loading..."));
+    var grid = view.up("gridpanel");
+    grid.mask(__("Loading..."));
     NOC.launch("sa.job", "history", {"args": [objectId]});
     setTimeout(function(){
-      view.unmask();
+      grid.unmask();
     }, 500);    
   },
 });
