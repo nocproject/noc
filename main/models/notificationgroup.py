@@ -95,7 +95,7 @@ class StaticMember(BaseModel):
     notification_method: str
     contact: str
     language: Optional[str] = None
-    time_patter: Optional[int] = None
+    time_pattern: Optional[int] = None
 
 
 StaticMembers = RootModel[List[StaticMember]]
