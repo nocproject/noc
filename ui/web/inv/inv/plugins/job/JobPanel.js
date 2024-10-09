@@ -23,6 +23,14 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
         listeners: {
           datachanged: "onDataChanged",
         },
+        filters: [
+          {
+            property: "name",
+            value: "{searchText}",
+            anyMatch: true,
+            caseSensitive: false,
+          },
+        ],
       },
     },
     data: {
@@ -36,6 +44,38 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
       glyph: NOC.glyph.refresh,
       tooltip: __("Reload"),
       handler: "onReload",
+    },
+    {
+      xtype: "textfield",
+      itemId: "searchText",
+      emptyText: __("Search..."),
+      width: 400,
+      bind: {
+        value: "{searchText}",
+      },
+      listeners: {
+        change: function(field, newValue){
+          var trigger = field.getTrigger("clear");
+          if(newValue){
+            trigger.show();
+          } else{
+            trigger.hide();
+          }
+        },
+      },
+      triggers: {
+        clear: {
+          cls: "x-form-clear-trigger",
+          hidden: true,
+          handler: function(field){
+            field.setValue("");
+            var grid = field.up("panel").down("gridpanel"),
+              store = grid.getStore();
+            store.clearFilter();
+            field.getTrigger("clear").hide();
+          },
+        },
+      },
     },
     "->",
     {
