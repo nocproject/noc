@@ -133,10 +133,7 @@ class MessageRoute(Document):
         super().clean()
 
     def get_route_config(self):
-        """
-        Return data for configured Router
-        :return:
-        """
+        """Return data for configured Router"""
         r = {
             "name": self.name,
             "type": self.type,

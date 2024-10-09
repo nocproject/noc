@@ -16,6 +16,7 @@ from functools import partial
 from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.ioloop.util import run_sync
+from noc.models import get_model_id
 
 
 @dataclass
@@ -43,6 +44,7 @@ MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 MX_LABELS = "Labels"
 MX_RESOURCE_GROUPS = "Resource-Group-Ids"
+MX_WATCH_FOR_ID = "Watch-For-Id"
 # Notification headers
 MX_TO = "To"
 MX_NOTIFICATION = b"notification"
@@ -76,6 +78,40 @@ class MessageType(enum.Enum):
     OTHER = "other"
 
 
+@dataclass(frozen=True)
+class MetaConfig(object):
+    header: str
+    is_list: bool = False
+
+
+CONFIGS = {
+    "watch_for": MetaConfig(MX_WATCH_FOR_ID),
+    "profile": MetaConfig(MX_PROFILE_ID),
+    "groups": MetaConfig(MX_RESOURCE_GROUPS, is_list=True),
+    "administrative_domain": MetaConfig(MX_ADMINISTRATIVE_DOMAIN_ID),
+    "from": MetaConfig(MX_DATA_ID),
+    "labels": MetaConfig(MX_LABELS, is_list=True),
+}
+
+
+class MessageMeta(enum.Enum):
+    @property
+    def config(self) -> MetaConfig:
+        return CONFIGS[self.value]
+
+    WATCH_FOR = "watch_for"
+    PROFILE = "profile"
+    GROUPS = "groups"
+    ADM_DOMAIN = "administrative_domain"
+    FROM = "from"
+    LABELS = "labels"
+
+    def clean_header_value(self, value: Any) -> bytes:
+        if self.config.is_list:
+            return MX_H_VALUE_SPLITTER.join(value).encode(DEFAULT_ENCODING)
+        return str(value).encode(DEFAULT_ENCODING)
+
+
 MESSAGE_HEADERS = {
     MX_SHARDING_KEY,
     MX_CHANGE_ID,
@@ -102,11 +138,11 @@ def send_message(
     """
     Build message and schedule to send to mx service
 
-    :param data: Data for transmit
-    :param message_type: Message type
-    :param headers: additional message headers
-    :param sharding_key: Key for sharding over MX services
-    :return:
+    Attrs:
+        data: Data for transmit
+        message_type: Message type
+        headers: additional message headers
+        sharding_key: Key for sharding over MX services
     """
     msg_headers = {
         MX_MESSAGE_TYPE: message_type.value,
@@ -134,11 +170,11 @@ def send_notification(
 ):
     """
     Send notification to notification_group ot address
-    :param subject: Notification Title
-    :param body: Notification body
-    :param to: notification address
-    :param notification_method: Notification method (for to param)
-    :return:
+    Attrs:
+        subject: Notification Title
+        body: Notification body
+        to: notification address
+        notification_method: Notification method (for to param)
     """
     if notification_method not in NOTIFICATION_METHODS:
         raise ValueError("Unknown notification method: %s" % notification_method)
@@ -155,11 +191,12 @@ def send_notification(
 
 
 def get_mx_partitions() -> int:
-    """
-    Get number of MX stream partitions
-    :return:
-    """
+    """Get number of MX stream partitions"""
     from noc.core.msgstream.config import get_stream
 
     cfg = get_stream(MX_STREAM)
     return cfg.get_partitions()
+
+
+def get_subscription_id(o) -> str:
+    return f"m:{get_model_id(o)}:{o.id}"

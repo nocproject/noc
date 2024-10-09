@@ -11,6 +11,7 @@ from typing import Any, Dict
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.main.models.messageroute import MessageRoute
+from noc.main.models.notificationgroup import NotificationGroup
 
 
 class CfgMetricsCollectorDataStream(DataStream):
@@ -18,7 +19,10 @@ class CfgMetricsCollectorDataStream(DataStream):
 
     @classmethod
     def get_object(cls, oid: str) -> Dict[str, Any]:
-        route: "MessageRoute" = MessageRoute.get_by_id(oid)
+        if oid.startswith("ng:"):
+            route = NotificationGroup.get_by_id(int(oid[3:]))
+        else:
+            route = MessageRoute.get_by_id(oid)
         if not route or not route.is_active:
             raise KeyError()
         r = route.get_route_config()

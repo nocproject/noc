@@ -21,6 +21,8 @@ from noc.core.mx import (
     MX_NOTIFICATION_METHOD,
     MX_NOTIFICATION_DELAY,
     MX_NOTIFICATION_GROUP_ID,
+    MX_WATCH_FOR_ID,
+    MessageMeta,
 )
 from noc.config import config
 
@@ -173,7 +175,10 @@ class NotificationAction(Action):
         ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
         if not ng:
             return
-        for method, headers, render_template in ng.iter_actions():
+        for method, headers, render_template in ng.iter_actions(
+            message_type.decode(),
+            {MessageMeta.WATCH_FOR: msg.headers[MX_WATCH_FOR_ID].decode()},
+        ):
             yield NOTIFICATION_METHODS[method].decode(), headers, body
 
 

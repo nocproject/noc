@@ -27,7 +27,7 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
         case "$regex":
             value = re.compile(value)
         case "$in" | "$all" | "$any":
-            value = frozenset(str(v) for v in value)
+            value = frozenset(v for v in value)
         case "$eq":
             value = value
         case _:
@@ -84,7 +84,7 @@ def match_regex(rx: re.Pattern, field: str, ctx: Dict[str, Any]) -> bool:
 
 
 def match_in(c_iter: FrozenSet, field: str, ctx: Dict[str, Any]) -> bool:
-    return str(ctx[field]) in c_iter
+    return ctx[field] in c_iter
 
 
 def match_all(c_iter: FrozenSet, field: str, ctx: Dict[str, Any]) -> bool:

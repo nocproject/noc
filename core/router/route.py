@@ -6,9 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Tuple, Dict, List, Iterator, Callable, Union, Any, Optional, DefaultDict, Literal
+import re
+from typing import (
+    Tuple,
+    Dict,
+    List,
+    Iterator,
+    Iterable,
+    Callable,
+    Union,
+    Any,
+    Optional,
+    Literal,
+    FrozenSet,
+)
 from dataclasses import dataclass
-from collections import defaultdict
 
 # Third-party modules
 from jinja2 import Template as JTemplate
@@ -16,16 +28,17 @@ import orjson
 
 # NOC modules
 from noc.core.msgstream.message import Message
+from noc.core.matcher import build_matcher
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.mx import (
-    MX_LABELS,
     MX_H_VALUE_SPLITTER,
-    MX_ADMINISTRATIVE_DOMAIN_ID,
-    MX_RESOURCE_GROUPS,
     MX_NOTIFICATION_CHANNEL,
     MX_NOTIFICATION,
     MX_NOTIFICATION_GROUP_ID,
+    MX_LABELS,
+    MX_RESOURCE_GROUPS,
     MessageType,
+    MessageMeta,
 )
 from .action import Action, NotificationAction, ActionCfg
 
@@ -80,7 +93,7 @@ class HeaderMatchItem(object):
 class MatchItem(object):
     labels: Optional[List[str]] = None
     exclude_labels: Optional[List[str]] = None
-    administrative_domain: Optional[int] = None
+    administrative_domain: Optional[List[int]] = None
     resource_groups: Optional[List[str]] = None
     profile: Optional[str] = None
     headers: Optional[List[HeaderMatchItem]] = None
@@ -104,6 +117,31 @@ class MatchItem(object):
             ]
         return r
 
+    def get_match_expr(self):
+        r = {}
+        if self.labels:
+            r[MessageMeta.LABELS] = {"$all": frozenset(ll.encode() for ll in self.labels)}
+        if self.exclude_labels:
+            r[MessageMeta.LABELS] = {"$nin": frozenset(ll.encode() for ll in self.exclude_labels)}
+        if self.resource_groups:
+            r[MessageMeta.GROUPS] = {"$all": frozenset(x.encode() for x in self.resource_groups)}
+        if self.administrative_domain:
+            r[MessageMeta.ADM_DOMAIN.config.header] = {
+                "$in": frozenset(str(ad).encode() for ad in self.administrative_domain),
+            }
+        if self.profile:
+            r[MessageMeta.PROFILE.config.header] = str(self.profile).encode()
+        if not self.headers:
+            return r
+        for h in self.headers:
+            if h.op == "regex":
+                r[h.header] = {"$regex": re.compile(h.value.encode(DEFAULT_ENCODING))}
+            elif h.op == "!=":
+                continue
+            else:
+                r[h.header.encode()] = h.value.encode(DEFAULT_ENCODING)
+        return r
+
 
 class Route(object):
     """
@@ -115,37 +153,52 @@ class Route(object):
 
     def __init__(self, name: str, r_type: str, order: int, telemetry_sample: Optional[int] = None):
         self.name = name
-        self.type = r_type
+        self.type: FrozenSet[bytes] = (
+            frozenset([r_type.encode()])
+            if isinstance(r_type, str)
+            else frozenset(x.encode() for x in r_type)
+        )
         self.order = order
         self.telemetry_sample = telemetry_sample or 0
-        self.match_co: str = ""  # Code object for matcher
+        self.match_co: Optional[Callable] = None  # Code object for matcher
         self.actions: List[Action] = []
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
         self.transmute_template: Optional[TransmuteTemplate] = None
 
+    @property
+    def m_types(self) -> FrozenSet[bytes]:
+        return self.type
+
+    def get_match_ctx(self, msg: Message) -> Dict[MessageMeta, Any]:
+        ctx = {}
+        if MX_LABELS in msg.headers and msg.headers[MX_LABELS]:
+            ctx[MessageMeta.LABELS] = frozenset(
+                msg.headers[MX_LABELS].split(self.MX_H_VALUE_SPLITTER)
+            )
+        if MX_RESOURCE_GROUPS in msg.headers and msg.headers[MX_RESOURCE_GROUPS]:
+            ctx[MessageMeta.GROUPS] = frozenset(
+                msg.headers[MX_RESOURCE_GROUPS].split(self.MX_H_VALUE_SPLITTER)
+            )
+        ctx.update(msg.headers)
+        return ctx
+
     def is_match(self, msg: Message, message_type: bytes) -> bool:
         """
         Check if the route is applicable for messages
-
-        :param msg:
-        :param message_type:
-        :return:
+        Attrs:
+            msg: message for processed
+            message_type: Message Type
         """
-        ctx = {"headers": msg.headers, "labels": set(), "resource_groups": set()}
-        if MX_LABELS in msg.headers and msg.headers[MX_LABELS]:
-            ctx["labels"] = set(msg.headers[MX_LABELS].split(self.MX_H_VALUE_SPLITTER))
-        if MX_RESOURCE_GROUPS in msg.headers and msg.headers[MX_RESOURCE_GROUPS]:
-            ctx["resource_groups"] = set(
-                msg.headers[MX_RESOURCE_GROUPS].split(self.MX_H_VALUE_SPLITTER)
-            )
-        return eval(self.match_co, ctx)
+        if not self.match_co:
+            return True
+        return self.match_co(self.get_match_ctx(msg))
 
     def transmute(self, headers: Dict[str, bytes], data: bytes) -> Union[bytes, Dict[str, Any]]:
         """
         Transmute message body and apply template
-        :param headers:
-        :param data:
-        :return:
+        Attrs:
+            headers: Message Headers
+            data: Message Body
         """
         if self.transmute_handler:
             data = self.transmute_handler(headers, data)
@@ -167,8 +220,11 @@ class Route(object):
         for a in self.actions:
             yield from a.iter_action(msg, message_type)
 
-    def set_type(self, r_type: str):
-        self.type = r_type.encode(encoding=DEFAULT_ENCODING)
+    def set_type(self, r_type: Union[str, FrozenSet]):
+        if isinstance(r_type, Iterable):
+            self.type = frozenset(x.encode() for x in r_type)
+        else:
+            self.type = frozenset([r_type.encode(encoding=DEFAULT_ENCODING)])
 
     def set_order(self, order: int):
         self.order = order
@@ -181,83 +237,40 @@ class Route(object):
         """
         return True
 
+    @classmethod
+    def get_matcher(cls, match) -> Optional[Callable]:
+        """"""
+        expr = []
+        for r in MatchItem.from_data(match):
+            expr.append(r.get_match_expr())
+        if not expr:
+            return None
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
     def update(self, data):
         from noc.main.models.template import Template
         from noc.main.models.handler import Handler
 
-        self.match_co = self.compile_match(MatchItem.from_data(data["match"]))
+        self.match_co = self.get_matcher(data["match"])
         # Compile transmute part
         # r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
         if "transmute_handler" in data:
             h = Handler.get_by_id(data["transmute_handler"])
             self.transmute_handler = h.get_handler() if h else None
         if "transmute_template" in data:
-            template = Template.objects.get(id=data["transmute_template"])
+            template = Template.get_by_id(data["transmute_template"])
             self.transmute_template = TransmuteTemplate(JTemplate(template.body))
         # Compile action part
         self.actions = [Action.from_data(data)]
 
     @classmethod
-    def compile_match(cls, matches: List[MatchItem]):
-        expr = []
-        # Compile match section
-        match_eq: DefaultDict[str, List[bytes]] = defaultdict(list)
-        match_re: DefaultDict[str, List[bytes]] = defaultdict(list)
-        match_ne: List[Tuple[str, bytes]] = []
-        for match in matches:
-            if match.labels:
-                expr += [
-                    f"{set(ll.encode(encoding=DEFAULT_ENCODING) for ll in match.labels)!r}.intersection(labels)"
-                ]
-            if match.exclude_labels:
-                expr += [
-                    f"not {set(ll.encode(encoding=DEFAULT_ENCODING) for ll in match.exclude_labels)!r}.intersection(labels)"
-                ]
-            if match.administrative_domain:
-                expr += [
-                    f"int(headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}]) in {set(match.administrative_domain)}"
-                ]
-            if match.resource_groups:
-                expr += [
-                    f"{set(rg.encode(encoding=DEFAULT_ENCODING) for rg in match.resource_groups)!r}.intersection(resource_groups)"
-                ]
-            for h_match in match.headers:
-                if h_match.is_eq:
-                    match_eq[h_match.header] += [h_match.value.encode(encoding=DEFAULT_ENCODING)]
-                elif h_match.is_ne:
-                    match_ne += [(h_match.header, h_match.value.encode(encoding=DEFAULT_ENCODING))]
-                elif h_match.is_re:
-                    match_re[h_match.header] += [h_match.value.encode(encoding=DEFAULT_ENCODING)]
-        # Expression for ==
-        for header in match_eq:
-            if len(match_eq[header]) == 1:
-                # ==
-                expr += [
-                    f"{header!r} in headers and headers[{header!r}] == {match_eq[header][0]!r}"
-                ]
-            else:
-                # in
-                expr += [
-                    f'{header!r} in headers and headers[{header!r}] in ({", ".join("%r" % x for x in match_eq[header])!r})'
-                ]
-        # Expression for !=
-        for header, value in match_ne:
-            expr += [f"{header!r} in headers and headers[{header!r}] != {value!r}"]
-        # Expression for regex
-        # @todo
-        # Compile matching code
-        if expr:
-            cond_code = " and ".join(expr)
-        else:
-            cond_code = "True"
-        return compile(cond_code, "<string>", "eval")
-
-    @classmethod
     def from_data(cls, data) -> "Route":
         """
         Build Route from data config
-        :param data:
-        :return:
+        Attrs:
+            data: Datastream record
         """
         r = Route(data["name"], data["type"], data["order"], data.get("telemetry_sample"))
         r.update(data)
