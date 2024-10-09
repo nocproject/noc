@@ -5,18 +5,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from dataclasses import dataclass
-from typing import List, Optional, Iterable, Tuple, Dict, DefaultDict, Any, Set
-from collections import defaultdict
-
-# Third party modules
-from bson import ObjectId
-
 # NOC modules
 from noc.inv.models.object import Object
-from noc.inv.models.objectconnection import ObjectConnection
-from noc.core.hash import hash_int
 from noc.sa.models.job import Job
 from .base import InvPlugin
 
