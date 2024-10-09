@@ -1,0 +1,42 @@
+{
+    "name": "IRE-Polus | Horizon | Module Ejected (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cad968f6-9229-41cc-ad12-99be15db40c9",
+    "description": "IPG-MIB::rack",
+    "event_class__name": "IRE-Polus | Horizon | Module ejected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::rack$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCrateId$",
+            "value_re": "^(?P<crate_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSlot$",
+            "value_re": "^(?P<slot_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDevice$",
+            "value_re": "^(?P<card_name>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDeviceModule$",
+            "value_re": "^(?P<module_name>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDescr$",
+            "value_re": "^ejected$"
+        }
+    ]
+}

@@ -1,0 +1,42 @@
+{
+    "name": "IRE-Polus | Horizon | OTN | OTU | SM | Signal Fail (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "dd3e94cd-ce8e-4021-b0b9-c67f7e04e169",
+    "description": "IPG-MIB::rack",
+    "event_class__name": "OTN | OTU | SM | Signal Fail",
+    "preference": 100,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::rack$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCrateId$",
+            "value_re": "^(?P<crate_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSlot$",
+            "value_re": "^(?P<slot_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDevice$",
+            "value_re": "^(?P<card_name>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDeviceModule$",
+            "value_re": "^(?P<module_name>.*)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDescr$",
+            "value_re": "^Alarm raised: (?P<port_name>.+)_OTU(?P<otu_num>.+)_Alarms.+SM-SF$"
+        }
+    ]
+}

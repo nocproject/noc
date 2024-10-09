@@ -1,0 +1,34 @@
+{
+    "name": "IRE-Polus | Horizon | Login (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "26881847-4083-4ddb-88c1-bcef0170288e",
+    "description": "IPG-MIB::ipg.3",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::ipg.3$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessAction$",
+            "value_re": "^login$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessUser$",
+            "value_re": "^(?P<user>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessAddress$",
+            "value_re": "^(?P<ip>.+)$"
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "name": "IRE-Polus | Horizon | Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "747e1c10-5f75-4c90-91fe-650090cf4c0e",
+    "action": "L",
+    "vars": [
+        {
+            "name": "error_code",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "error_message",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Error occured! Code {{error_code}} Message \"{{error_message}}\"",
+    "body_template": "Error occured! Code {{error_code}} Message \"{{error_message}}\"",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

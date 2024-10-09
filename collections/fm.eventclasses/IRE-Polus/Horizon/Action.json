@@ -1,0 +1,72 @@
+{
+    "name": "IRE-Polus | Horizon | Action",
+    "$collection": "fm.eventclasses",
+    "uuid": "132feae5-313d-4731-9581-a5c539f4b62c",
+    "action": "L",
+    "vars": [
+        {
+            "name": "access_interface",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_action",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_address",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_user",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_description",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "access_cu",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "action_description",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "action_code",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "User {{access_user}} via {{access_interface}} on {{access_cu}} from {{access_address}} action_code {{action_code}} access_description \"{{access_description}}\" action_description \"{{action_description}}\"",
+    "body_template": "User {{access_user}} via {{access_interface}} on {{access_cu}} from {{access_address}} action_code {{action_code}} access_description \"{{access_description}}\" action_description \"{{action_description}}\"",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -1,0 +1,46 @@
+{
+    "name": "IRE-Polus | Horizon | Change User (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "57692675-0712-4602-a74a-b35e343887de",
+    "description": "IPG-MIB::ipg.5",
+    "event_class__name": "IRE-Polus | Horizon | Change User",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::ipg.5$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessInterface$",
+            "value_re": "^(?P<access_interface>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessAction$",
+            "value_re": "^(?P<access_action>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessCU$",
+            "value_re": "^(?P<access_cu>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessAddress$",
+            "value_re": "^(?P<access_address>.*)$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessUser$",
+            "value_re": "^(?P<access_user>.*)$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessDescription$",
+            "value_re": "^(?P<access_description>.*)$"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "name": "IRE-Polus | Horizon | Gateway Reachable",
+    "$collection": "fm.eventclasses",
+    "uuid": "d91e7414-2a1a-49eb-9a43-f8f6c2d04114",
+    "action": "L",
+    "vars": [
+        {
+            "name": "dev_name",
+            "description": "part_no of device",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "crate_id",
+            "description": "crate ID",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "slot_id",
+            "description": "slot id",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Gateway is reachable {{dev_name}} on crate {{crate_id}} slot {{slot_id}}",
+    "body_template": "Gateway is reachable {{dev_name}} on crate {{crate_id}} slot {{slot_id}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

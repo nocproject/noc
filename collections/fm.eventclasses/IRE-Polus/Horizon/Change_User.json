@@ -1,0 +1,58 @@
+{
+    "name": "IRE-Polus | Horizon | Change User",
+    "$collection": "fm.eventclasses",
+    "uuid": "09764daa-46d6-4334-b5f2-f891cc94c318",
+    "action": "L",
+    "vars": [
+        {
+            "name": "access_interface",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_action",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_address",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_user",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_description",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "access_cu",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "User {{access_user}} is {{access_action}} via {{access_interface}} on {{access_cu}} from {{access_address}} description {{access_description}}",
+    "body_template": "User {{access_user}} is {{access_action}} via {{access_interface}} on {{access_cu}} from {{access_address}} description {{access_description}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

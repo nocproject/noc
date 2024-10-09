@@ -1,0 +1,30 @@
+{
+    "name": "IRE-Polus | Horizon | Error (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0b1acbba-6631-4fa6-a0eb-adf3fe2ff100",
+    "description": "IPG-MIB::ipg.7",
+    "event_class__name": "IRE-Polus | Horizon | Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::ipg.7$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapErrorCode$",
+            "value_re": "^(?P<error_code>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapMessage$",
+            "value_re": "^(?P<error_message>.+)$"
+        }
+    ]
+}
