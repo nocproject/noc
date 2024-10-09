@@ -136,6 +136,7 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
         {
           text: __("Status"),
           dataIndex: "status",
+          width: 135,
           renderer: NOC.render.JobStatus,
         },
       ],
