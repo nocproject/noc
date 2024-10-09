@@ -355,14 +355,12 @@ class CommutationPlugin(InvPlugin):
                     "tailport": q_conn_name(local_name),
                     "headport": q_conn_name(remote_name),
                     "class": "selectable",
-                    "color": color_map[len(seen_conns) % len(color_map)],
                 },
             }
             top["edges"].append(edge)
             # Add to seen connections
             seen_conns.add(c_hash)
 
-        color_map = ["#000000", "#2c3e50", "#16a085", "#27ae60"]
         seen_conns: Set[str] = set()
         top = get_graph_template()
         top["directed"] = False
