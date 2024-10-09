@@ -21,7 +21,7 @@ from noc.core.mx import (
     MX_NOTIFICATION_METHOD,
     MX_NOTIFICATION_DELAY,
     MX_NOTIFICATION_GROUP_ID,
-    MX_WATCHED_FOR_ID,
+    MX_WATCH_FOR_ID,
     MessageMeta,
 )
 from noc.config import config
@@ -177,7 +177,7 @@ class NotificationAction(Action):
             return
         for method, headers, render_template in ng.iter_actions(
             message_type.decode(),
-            {MessageMeta.WATCHED_FOR: msg.headers[MX_WATCHED_FOR_ID].decode()},
+            {MessageMeta.WATCH_FOR: msg.headers[MX_WATCH_FOR_ID].decode()},
         ):
             yield NOTIFICATION_METHODS[method].decode(), headers, body
 

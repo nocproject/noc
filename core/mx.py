@@ -44,7 +44,7 @@ MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 MX_LABELS = "Labels"
 MX_RESOURCE_GROUPS = "Resource-Group-Ids"
-MX_WATCHED_FOR_ID = "Watched-For-Id"
+MX_WATCH_FOR_ID = "Watch-For-Id"
 # Notification headers
 MX_TO = "To"
 MX_NOTIFICATION = b"notification"
@@ -85,7 +85,7 @@ class MetaConfig(object):
 
 
 CONFIGS = {
-    "watched_for": MetaConfig(MX_WATCHED_FOR_ID),
+    "watch_for": MetaConfig(MX_WATCH_FOR_ID),
     "profile": MetaConfig(MX_PROFILE_ID),
     "groups": MetaConfig(MX_RESOURCE_GROUPS, is_list=True),
     "administrative_domain": MetaConfig(MX_ADMINISTRATIVE_DOMAIN_ID),
@@ -99,7 +99,7 @@ class MessageMeta(enum.Enum):
     def config(self) -> MetaConfig:
         return CONFIGS[self.value]
 
-    WATCHED_FOR = "watched_for"
+    WATCH_FOR = "watch_for"
     PROFILE = "profile"
     GROUPS = "groups"
     ADM_DOMAIN = "administrative_domain"

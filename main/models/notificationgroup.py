@@ -571,7 +571,7 @@ class NotificationGroup(NOCModel):
         """
         now = ts or datetime.datetime.now()
         for c in self.members:
-            if not c.match(now, meta.get(MessageMeta.WATCHED_FOR)):
+            if not c.match(now, meta.get(MessageMeta.WATCH_FOR)):
                 continue
             yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
 

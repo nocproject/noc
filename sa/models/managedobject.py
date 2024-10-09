@@ -2782,7 +2782,7 @@ class ManagedObject(NOCModel):
     def message_meta(self) -> Dict[MessageMeta, Any]:
         """Message Meta for instance"""
         return {
-            MessageMeta.WATCHED_FOR: get_subscription_id(self),
+            MessageMeta.WATCH_FOR: get_subscription_id(self),
             MessageMeta.ADM_DOMAIN: str(self.administrative_domain.id),
             MessageMeta.PROFILE: get_subscription_id(self.object_profile),
             MessageMeta.GROUPS: list(self.effective_service_groups),
