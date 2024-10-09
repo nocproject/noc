@@ -200,7 +200,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
               elements = svgElement.querySelectorAll(".selectable"),
               zoomControl = me.down("#zoomControl");
 
-            zoomControl.restoresZoom();
+            zoomControl.restoreZoom();
             elements.forEach(function(element){
               element.addEventListener("click", function(){
                 var record = grid.getStore().getById(element.id);
