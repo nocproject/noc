@@ -11,6 +11,7 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
   alias: "controller.rack",
   mixins: [
     "NOC.core.mixins.SVGInteraction",
+    "NOC.inv.inv.plugins.Mixins",
   ],
   //
   onDataChanged: function(store){
@@ -56,9 +57,10 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
   //
   onAfterRender: function(container){
     var app = this.getView().up("[appId=inv.inv]"),
-      svgObject = container.getEl().dom.querySelector("#svg-object");
+      svgObject = container.getEl().dom.querySelector("#svg-object"),
+      zoomControl = this.getView().down("#zoomControl");
+    Ext.bind(zoomControl.setZoom, zoomControl, [zoomControl])();
     this.addInteractionEvents(app, svgObject, app.showObject.bind(app));
-
   },
   //
   onReload: function(){
@@ -91,18 +93,7 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
     me.onReload();
   },
   //
-  onDownloadSVG: function(){
-    var me = this,
-      vm = me.getViewModel(),
-      side = vm.get("side"),
-      currentId = vm.get("currentId"),
-      svg = vm.getView().down("#viewPanel").getEl().dom.querySelector("object").contentDocument.documentElement.outerHTML,
-      blob = new Blob([svg], {type: "image/svg+xml"}),
-      url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-    a.href = url;
-    a.download = `rack-${side}-${currentId}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
+  downloadSVG: function(){
+    Ext.bind(this.onDownloadSVG, this.getView())();
   },
 });

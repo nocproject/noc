@@ -17,6 +17,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     "NOC.inv.inv.plugins.Zoom",
     "NOC.inv.inv.plugins.channel.MagicPanel",
   ],
+  mixins: [
+    "NOC.inv.inv.plugins.Mixins",
+  ],
   tbar: [
     {
       text: __("Close"),
@@ -148,10 +151,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           scrollable: true,
           items: [
             {
-              xtype: "image",
+              xtype: "container",
               itemId: "scheme",
+              filenamePrefix: "channel",
               hidden: true,
-              padding: 5,
             },
           ],
         },
@@ -178,7 +181,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       var imageComponent = me.down("#scheme"),
         svg = viz.renderSVGElement(data);
       imageComponent.setHidden(false);
-      imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
+      imageComponent.setHtml(svg.outerHTML);
     });
   },
   //
@@ -272,30 +275,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     if(activeItem.xtype === "invchannelmagic"){
       me.onAddHoc();
     }
-    //   grid = me.down("grid");
-    // Ext.Ajax.request({
-    //   url: `/inv/inv/${me.currentId}/plugin/channel/`,
-    //   method: "GET",
-    //   success: function(response){
-    //     var obj = Ext.decode(response.responseText),
-    //       data = obj.records || [],
-    //       store = grid.getStore(),
-    //       recordIndex = store.findBy(function(record, id){return id === channelId;});
-    //     if(recordIndex !== -1){
-    //       grid.getSelectionModel().select(recordIndex);
-    //     }
-    //     store.loadData(data);
-    //     if(selectRow){
-    //       var selIndex = store.find("id", channelId);
-    //       if(selIndex !== -1){
-    //         grid.getSelectionModel().select(selIndex);
-    //       }
-    //     }
-    //   },
-    //   failure: function(response){
-    //     NOC.error("Error status: " + response.status);
-    //   },
-    // });
   },
   //
   onFavItem: function(grid, rowIndex){
@@ -321,19 +300,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var r = grid.getStore().getAt(rowIndex),
       id = r.get("id");
     NOC.launch("inv.channel", "history", {"args": [id]})
-  },
-  //
-  onDownloadSVG: function(){
-    var me = this,
-      imageComponent = me.down("#scheme"),
-      svgBase64 = imageComponent.getEl().dom.src.replace("data:image/svg+xml;base64,", ""),
-      svg = atob(svgBase64),
-      svgBlob = new Blob([svg], {type: "image/svg+xml"}),
-      svgUrl = URL.createObjectURL(svgBlob),
-      a = document.createElement("a");
-    a.href = svgUrl;
-    a.download = "channel-scheme-" + me.currentId + ".svg";
-    a.click();
   },
   //
   showChannelPanel: function(){

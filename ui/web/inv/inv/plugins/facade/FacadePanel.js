@@ -13,6 +13,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   ],
   mixins: [
     "NOC.core.mixins.SVGInteraction",
+    "NOC.inv.inv.plugins.Mixins",
   ],
   itemId: "facadePanel",
   title: __("Facade"),
@@ -98,8 +99,8 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         {
           xtype: "container",
           itemId: "scheme",
+          filenamePrefix: `facade-${side}`,
           html: "<object id='svg-object' data='" + schemeSVG + "' type='image/svg+xml'></object>",
-          padding: 5,
           listeners: {
             scope: me,
             afterrender: function(container){
@@ -112,12 +113,12 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         },
       ],
     });
-    me.startWidth = 0;
-    me.startHeight = 0;
-    if(me.isVisible()){
-      me.startWidth = me.facadeViewPanel.getWidth();
-      me.startHeight = me.facadeViewPanel.getHeight();
-    }
+    // me.startWidth = 0;
+    // me.startHeight = 0;
+    // if(me.isVisible()){
+    //   me.startWidth = me.facadeViewPanel.getWidth();
+    //   me.startHeight = me.facadeViewPanel.getHeight();
+    // }
     me.sideRearButton.setDisabled(data.views.length < 2);
   },
   //
@@ -137,18 +138,5 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         me.unmask();
       },
     });
-  },
-  //
-  onDownloadSVG: function(){
-    var me = this,
-      side = me.segmentedButton.getValue(),
-      svg = me.facadeViewPanel.down("#scheme").getEl().dom.querySelector("object").contentDocument.documentElement.outerHTML,
-      blob = new Blob([svg], {type: "image/svg+xml"}),
-      url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-    a.href = url;
-    a.download = `facade-${side}-${me.currentId}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
   },
 });

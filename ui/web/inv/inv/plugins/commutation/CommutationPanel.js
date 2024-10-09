@@ -11,6 +11,9 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   requires: [
     "NOC.inv.inv.plugins.Zoom",
   ],
+  mixins: [
+    "NOC.inv.inv.plugins.Mixins",
+  ],
   title: __("Commutation"),
   closable: false,
   layout: {
@@ -192,6 +195,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       container.add({
         xtype: "container",
         itemId: "scheme",
+        filenamePrefix: "commutation",
         layout: "fit",
         html: svg.outerHTML,
         listeners: {
@@ -310,18 +314,5 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     });
 
     return Array.from(result).map(item => JSON.parse(item));
-  },
-  onDownloadSVG: function(){
-    var me = this,
-      imageContainer = me.down("#commutationScheme container"),
-      image = imageContainer.getEl().dom.querySelector("svg"),
-      svgData = new XMLSerializer().serializeToString(image),
-      blob = new Blob([svgData], {type: "image/svg+xml"}),
-      url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-
-    a.href = url;
-    a.download = `commutation-${me.currentId}.svg`;
-    a.click();
   },
 });

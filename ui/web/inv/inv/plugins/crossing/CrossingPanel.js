@@ -11,6 +11,9 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
   requires: [
     "NOC.inv.inv.plugins.Zoom",
   ],
+  mixins: [
+    "NOC.inv.inv.plugins.Mixins",
+  ],
   title: __("Crossing"),
   closable: false,
   layout: {
@@ -132,6 +135,7 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
       container.add({
         xtype: "container",
         itemId: "scheme",
+        filenamePrefix: "crossing",
         html: svg.outerHTML,
         listeners: {
           afterrender: function(){
@@ -204,19 +208,4 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
 
     return {grid: halfBodyHeight, image: imageHeight};
   },
-  //
-  onDownloadSVG: function(){
-    var me = this,
-      imageContainer = me.down("#crossingScheme container"), 
-      image = imageContainer.getEl().dom.querySelector("svg"),
-      svgData = new XMLSerializer().serializeToString(image),
-      blob = new Blob([svgData], {type: "image/svg+xml"}),
-      url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-
-    a.href = url;
-    a.download = `crossing-${me.currentId}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);},
-
 });

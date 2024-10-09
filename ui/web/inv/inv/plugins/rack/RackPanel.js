@@ -197,21 +197,24 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       xtype: "button",
       tooltip: __("Download image as SVG"),
       glyph: NOC.glyph.download,
-      handler: "onDownloadSVG",
+      handler: "downloadSVG",
     },
   ],
   preview: function(data){
     var me = this,
-      padding = 5,
+      padding = 0,
       viewPanel = me.down("#viewPanel"),
       vm = me.getViewModel(),
       url = "/inv/inv/" + data.id + "/plugin/rack/" + vm.get("side") + ".svg";
     vm.get("gridStore").loadData(data.load);
     vm.set("currentId", data.id);
+    // for download mixins
+    me.currentId = data.id;
     viewPanel.removeAll();
     viewPanel.add({
       xtype: "container",
       itemId: "scheme",
+      filenamePrefix: "rack-" + vm.get("side"),
       html: "<object id='svg-object' data='" + url + "' type='image/svg+xml'></object>",
       padding: padding,
       listeners: {
@@ -219,6 +222,5 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       },
     });
     viewPanel.down("#scheme").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
-    me.down("#zoomControl").restoreZoom();
   },
 });

@@ -9,19 +9,27 @@ console.debug("Defining NOC.inv.inv.plugins.Zoom");
 Ext.define("NOC.inv.inv.plugins.Zoom", {
   extend: "Ext.form.field.ComboBox",
   alias: "widget.invPluginsZoom",
-  store: [
-    [0.25, "25%"],
-    [0.5, "50%"],
-    [0.75, "75%"],
-    [1.0, "100%"],
-    [1.25, "125%"],
-    [1.5, "150%"],
-    [2.0, "200%"],
-    [3.0, "300%"],
-    [4.0, "400%"],
-  ],
+  store: {
+    fields: [
+      {name: "zoom", type: "float"},
+      {name: "label", type: 'string'},
+    ],
+    data: [
+      {zoom: 0, label: __("Max Height")},
+      {zoom: 0, label: __("Max Width")},
+      {zoom: 0.25, label: "25%"},
+      {zoom: 0.5, label: "50%"},
+      {zoom: 0.75, label: "75%"},
+      {zoom: 1.0, label: "100%"},
+      {zoom: 1.25, label: "125%"},
+      {zoom: 1.5, label: "150%"},
+      {zoom: 2.0, label: "200%"},
+      {zoom: 3.0, label: "300%"},
+      {zoom: 4.0, label: "400%"},
+    ],
+  },
   defaultListenerScope: true,
-  width: 100,
+  width: 150,
   value: 1.0,
   valueField: "zoom",
   displayField: "label",
@@ -30,11 +38,36 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     select: "setZoom",
   },
   setZoom: function(combo){
-    var me = this.up("#" + this.appPanel), 
+    var svgDoc = undefined,
+      me = this.up("#" + this.appPanel),
       img = me.down("#scheme"),
-      imgEl = img.getEl().dom;
+      scale = combo.getValue(),
+      imgEl = img.getEl().dom,
+      container = img.up();
+    svgDoc = imgEl.querySelector("svg");
+    if(!svgDoc && imgEl.querySelector("object").contentDocument){
+      svgDoc = imgEl.querySelector("object").contentDocument.querySelector("svg");
+    }
     imgEl.style.transformOrigin = "0 0";
-    imgEl.style.transform = "scale(" + combo.getValue() + ")";
+    imgEl.style.transform = "none";
+    if(svgDoc){
+      var record,
+        schemaSize = svgDoc.getBoundingClientRect(),
+        store = this.getStore();
+      if(this.getRawValue() === __("Max Height")){
+        scale = container.getHeight() / schemaSize.height;
+        record = store.findRecord("label", __("Max Height"));
+        record.set("zoom", scale)
+        this.setValue(scale);
+      } else if(this.getRawValue() === __("Max Width")){
+        scale = container.getWidth() / schemaSize.width;
+        record = store.findRecord("label", __("Max Width"));
+        record.set("zoom", scale)
+        this.setValue(scale);
+      }
+      store.commitChanges();
+    }
+    imgEl.style.transform = "scale(" + scale + ")";
   },
   restoreZoom: function(){
     this.setZoom(this);
