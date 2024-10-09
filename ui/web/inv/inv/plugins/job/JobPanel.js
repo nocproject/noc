@@ -114,19 +114,23 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
         {
           text: __("Name"),
           dataIndex: "name",
+          flex: 1,
         },
         {
           text: __("Description"),
           dataIndex: "description",
+          flex: 2,
         },
         {
           text: __("Created At"),
           dataIndex: "created_at",
+          width: 175,
           renderer: NOC.render.DateTime,
         },
         {
           text: __("Completed At"),
           dataIndex: "completed_at",
+          width: 175,
           renderer: NOC.render.DateTime,
         },
         {
