@@ -44,25 +44,23 @@ class Router(object):
         # self.out_queue: Optional[QBuffer] = None
 
     def load(self):
-        """
-        Load up all the rules and populate the chains
-        :return:
-        """
+        """Load up all the rules and populate the chains"""
         from noc.main.models.messageroute import MessageRoute
 
         num = 0
         for num, route in enumerate(
             MessageRoute.objects.filter(is_active=True).order_by("order"), start=1
         ):
-            self.chains[route.type] += [Route.from_data(route.get_route_config())]
+            cfg = route.get_route_config()
+            cfg["type"] = cfg["type"].value
+            self.chains[route.type] += [Route.from_data(cfg)]
         logger.info("Loading %s route", num)
         self.rebuild_chains()
 
     def has_route(self, route_id: str) -> bool:
         """
         Check Route already exists in chains
-        :param route_id:
-        :return:
+            route_id: Router identifier
         """
         return route_id in self.routes
 
@@ -73,28 +71,28 @@ class Router(object):
         * change type = delete + insert
         * change order = reorder
         * change data = update
-        :param data:
-        :return:
+        Attrs:
+            data:
         """
         r = Route.from_data(data)
         route_id = data["id"]
         to_rebuild = set()
         if not self.has_route(route_id):
             self.routes[data["id"]] = r
-            to_rebuild.add(r.type)
+            to_rebuild |= r.m_types
             logger.info("[%s|%s] Insert route", route_id, data["name"])
             self.rebuild_chains(to_rebuild)
             return
-        if self.routes[route_id].type != r.type:
+        if self.routes[route_id].m_types != r.m_types:
             # rebuild
             logger.info(
                 "[%s|%s] Change route chain: %s -> %s",
                 route_id,
                 data["name"],
-                self.routes[route_id].type,
-                r.type,
+                b";".join(sorted(self.routes[route_id].m_types)),
+                b";".join(sorted(r.m_types)),
             )
-            to_rebuild.add([r.type, self.routes[route_id].type])
+            to_rebuild |= r.m_types.symmetric_difference(self.routes[route_id].m_types)
             self.routes[route_id].set_type(r.type)
         if self.routes[route_id].order != r.order:
             logger.info(
@@ -105,7 +103,7 @@ class Router(object):
                 r.order,
             )
             self.routes[route_id].set_order(r.order)
-            to_rebuild.add(r.type)
+            to_rebuild |= r.m_types
         if self.routes[route_id].is_differ(data):
             logger.info("[%s|%s] Update route", route_id, data["name"])
             self.routes[route_id].update(data)
@@ -115,37 +113,43 @@ class Router(object):
     def delete_route(self, route_id: str):
         """
         Delete Route from Chains
-        :param route_id:
-        :return:
+        Attrs:
+            route_id: Router Identifiers
         """
         r_type = None
         if route_id in self.routes:
             logger.info("[%s|%s] Delete route", route_id, self.routes[route_id].name)
-            r_type = self.routes[route_id].type
+            r_type = self.routes[route_id].m_types
             del self.routes[route_id]
         if r_type:
-            self.rebuild_chains([r_type], deleted=True)
+            self.rebuild_chains(r_type, deleted=True)
 
-    def rebuild_chains(self, r_types: Optional[Iterable[str]] = None, deleted: bool = False):
+    def rebuild_chains(self, r_types: Optional[Iterable[bytes]] = None, deleted: bool = False):
         """
         Rebuild Router Chains
         Need lock ?
-        :param r_types: List types for rebuild chains
-        :param deleted: Route was deleted
-        :return:
+        Attrs:
+            r_types: List types for rebuild chains
+            deleted: Route was deleted flag
         """
         chains = defaultdict(list)
+        r_types = frozenset(r_types) if r_types else None
         for rid, r in self.routes.items():
-            if r_types and r.type not in r_types and rid != self.DEFAULT_CHAIN:
+            if r_types and not r.m_types.intersection(r_types) and rid != self.DEFAULT_CHAIN:
                 continue
-            chains[r.type].append(r)
+            elif r_types:
+                updated_types = r.m_types.intersection(r_types)
+            else:
+                updated_types = r.m_types
+            for tt in updated_types:
+                chains[tt].append(r)
         if deleted:
             # Remove last route
             for rt in set(r_types) - set(chains):
                 chains[rt] = []
         for chain in chains:
             logger.info("[%s] Rebuild chain", chain)
-            self.chains[chain.encode(encoding=DEFAULT_ENCODING)] = list(
+            self.chains[chain] = list(
                 sorted(
                     [r for r in chains[chain]],
                     key=operator.attrgetter("order"),
@@ -174,8 +178,7 @@ class Router(object):
     def route_sync(self, msg: Message):
         """
         Synchronize method
-        :param msg:
-        :return:
+            msg: Route Message
         """
         run_sync(partial(self.route_message, msg))
 
@@ -189,13 +192,12 @@ class Router(object):
     ) -> Message:
         """
         Build message
-
-        :param data: Data for transmit
-        :param message_type: Message type
-        :param headers: additional message headers
-        :param sharding_key: Key for sharding
-        :param raw_value:
-        :return:
+        Attrs:
+            data: Data for transmit
+            message_type: Message type
+            headers: additional message headers
+            sharding_key: Key for sharding
+            raw_value:
         """
         msg_headers = {
             MX_MESSAGE_TYPE: message_type.encode(DEFAULT_ENCODING),
@@ -215,9 +217,9 @@ class Router(object):
     async def route_message(self, msg: Message, msg_id: Optional[str] = None):
         """
         Route message by rule
-        :param msg:
-        :param msg_id:
-        :return:
+        Attrs:
+            msg: Received Message
+            msg_id: Message sequence number
         """
         mt = msg.headers.get(MX_MESSAGE_TYPE)
         if not mt:

@@ -36,7 +36,7 @@ id_lock = Lock()
         ("sa.UserAccess", "user"),
         ("kb.KBUserBookmark", "user"),
         ("main.Checkpoint", "user"),
-        ("main.NotificationGroupUser", "user"),
+        ("main.NotificationGroupUserSubscription", "user"),
         ("main.ReportSubscription", "run_as"),
         ("ip.PrefixBookmark", "user"),
         ("kb.KBEntryHistory", "user"),

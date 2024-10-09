@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,24 +9,48 @@
 import datetime
 import logging
 import operator
+from dataclasses import dataclass
 from threading import Lock
-from typing import Tuple, Dict, Iterator, Optional, Any, Set, List
+from typing import Tuple, Dict, Iterable, Optional, Any, Set, List
 
 # Third-party modules
-from django.db import models
+from django.db.models import (
+    TextField,
+    CharField,
+    ForeignKey,
+    BooleanField,
+    DateTimeField,
+    UUIDField,
+    CASCADE,
+)
+from django.contrib.postgres.fields import ArrayField
+from pydantic import BaseModel, RootModel, model_validator
 import cachetools
 
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.core.model.fields import PydanticField, DocumentReferenceField
+from noc.core.timepattern import TimePatternList
+from noc.core.mx import (
+    send_notification,
+    NOTIFICATION_METHODS,
+    MX_TO,
+    MessageType,
+    MessageMeta,
+    get_subscription_id,
+)
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.change.decorator import change
+from noc.core.comp import DEFAULT_ENCODING
+from noc.core.prettyjson import to_json
+from noc.core.text import quote_safe_path
 from noc.aaa.models.user import User
-from noc.settings import LANGUAGE_CODE
 from noc.main.models.systemtemplate import SystemTemplate
 from noc.main.models.template import Template
-from noc.core.timepattern import TimePatternList
-from noc.core.mx import send_notification, NOTIFICATION_METHODS, MX_TO
-from noc.core.model.decorator import on_delete_check
-from noc.core.comp import DEFAULT_ENCODING
-from .timepattern import TimePattern
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.timepattern import TimePattern
+from noc.config import config
+from noc.settings import LANGUAGE_CODE
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -45,6 +69,92 @@ NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_METHODS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
 
 
+@dataclass(frozen=True)
+class NotificationContact:
+    contact: str
+    language: str = LANGUAGE_CODE
+    method: str = "mail"
+    watch: Optional[str] = None
+    time_pattern: Optional[TimePatternList] = None
+
+    def match(self, ts: datetime.datetime, watch: Optional[str] = None):
+        if not self.time_pattern and not self.watch:
+            return True
+        if self.time_pattern and not self.time_pattern.match(ts):
+            return False
+        if self.watch and self.watch != watch:
+            return False
+        return True
+
+
+class StaticMember(BaseModel):
+    """
+    Contact Members for notification Set
+    """
+
+    notification_method: str
+    contact: str
+    language: Optional[str] = None
+    time_pattern: Optional[int] = None
+
+
+StaticMembers = RootModel[List[StaticMember]]
+
+
+class SubscriptionConditionItem(BaseModel):
+    """
+    Rules for Match message
+        Attributes:
+            labels: Match All labels in list
+            resource_groups: Match Any resource group in List
+            administrative_domain: Have Administrative domain in paths
+    """
+
+    labels: Optional[List[str]] = None
+    resource_groups: Optional[List[str]] = None
+    administrative_domain: Optional[int] = None
+    # profile, group, container, administrative_domain
+
+
+class SubscriptionSettingItem(BaseModel):
+    """
+    Attributes:
+        group: User group for apply settings
+        allow_subscribe: Allow subscribe to group
+        auto_subscription: Create subscription record
+        notify_if_subscribed: Send notification if Subscription Changed
+    """
+
+    user: Optional[int] = None
+    group: Optional[int] = None
+    allow_subscribe: bool = False
+    auto_subscription: bool = False
+    notify_if_subscribed: bool = False
+
+    @model_validator(mode="after")
+    def check_passwords_match(self):
+        if not self.user and not self.group:
+            raise ValueError("User or Group must be set")
+        return self
+
+
+SubscriptionSettings = RootModel[List[SubscriptionSettingItem]]
+
+
+SubscriptionConditions = RootModel[List[SubscriptionConditionItem]]
+
+
+class MessageTypeItem(BaseModel):
+    message_type: MessageType
+    template: Optional[int] = None
+    deny: bool = False
+
+
+MessageTypes = RootModel[List[MessageTypeItem]]
+
+
+@on_save
+@change
 @on_delete_check(
     check=[
         ("cm.ObjectNotify", "notification_group"),
@@ -55,8 +165,7 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
         ("fm.AlarmRule", "actions.notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
-        ("main.NotificationGroupOther", "notification_group"),
-        ("main.NotificationGroupUser", "notification_group"),
+        ("main.NotificationGroupUserSubscription", "notification_group"),
         ("main.SystemNotification", "notification_group"),
         ("main.MessageRoute", "notification_group"),
         ("sa.ObjectNotification", "notification_group"),
@@ -75,8 +184,56 @@ class NotificationGroup(NOCModel):
         db_table = "main_notificationgroup"
         ordering = ["name"]
 
-    name = models.CharField("Name", max_length=64, unique=True)
-    description = models.TextField("Description", null=True, blank=True)
+    _json_collection = {
+        "collection": "templates",
+        "json_collection": "main.notificationgroups",
+        "json_unique_fields": ["name"],
+    }
+
+    name: str = CharField("Name", max_length=64, unique=True)
+    uuid = UUIDField()
+    description = TextField("Description", null=True, blank=True)
+    message_register_policy = CharField(
+        max_length=1,
+        choices=[
+            ("d", "Disable"),  # Direct
+            ("a", "Any"),
+            ("t", "By Types"),
+        ],
+        default="d",
+        null=False,
+        blank=False,
+    )
+    message_types: List[MessageTypeItem] = PydanticField(
+        "Message Type Settings",
+        schema=MessageTypes,
+        blank=True,
+        null=True,
+        default=list,
+    )
+    static_members: Optional[List[StaticMember]] = PydanticField(
+        "Notification Contacts",
+        schema=StaticMembers,
+        blank=True,
+        null=True,
+        default=list,
+    )
+    subscription_settings: Optional[List[SubscriptionSettingItem]] = PydanticField(
+        "Subscription Settings",
+        schema=SubscriptionSettings,
+        blank=True,
+        null=True,
+        default=list,
+    )
+    # subscribed = ArrayField(CharField(max_length=100))
+    subscription_to: List[str] = ArrayField(CharField(max_length=100), blank=True, null=True)
+    conditions: Optional[List[SubscriptionConditionItem]] = PydanticField(
+        "Condition for match Notification Group",
+        schema=SubscriptionConditions,
+        blank=True,
+        null=True,
+        default=list,
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -87,42 +244,128 @@ class NotificationGroup(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id: int) -> Optional["NotificationGroup"]:
-        ng = NotificationGroup.objects.filter(id=id)[:1]
-        if ng:
-            return ng[0]
-        return None
+        return NotificationGroup.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
-        ng = NotificationGroup.objects.filter(name=name)[:1]
-        if ng:
-            return ng[0]
-        return None
+    def get_by_name(cls, name: str) -> Optional["NotificationGroup"]:
+        return NotificationGroup.objects.filter(name=name).first()
+
+    @classmethod
+    def get_groups_by_type(cls, message_type: MessageType) -> List["NotificationGroup"]:
+        return list(
+            NotificationGroup.objects.filter(message_types__message_type=message_type.value)
+        )
+
+    @classmethod
+    def get_groups_by_user(cls, user: User) -> List["NotificationGroup"]:
+        return list(NotificationGroup.objects.filter())
+
+    def get_subscription_by_user(
+        self, user: User, watch: Optional[Any] = None
+    ) -> Optional["NotificationGroupUserSubscription"]:
+        """Getting subscription by user"""
+        if watch:
+            watch = get_subscription_id(watch)
+            return NotificationGroupUserSubscription.objects.filter(
+                notification_group=self,
+                user=user,
+                watch=watch,
+            ).first()
+        return NotificationGroupUserSubscription.objects.filter(
+            notification_group=self,
+            user=user,
+            watch="",
+        ).first()
 
     @property
-    def members(self):
+    def is_active(self) -> bool:
+        """For cfgMX datastream add"""
+        return self.message_register_policy != "d"
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgmxroute:
+            yield "cfgmxroute", f"ng:{self.id}"
+
+    def on_save(self):
+        self.ensure_subscriptions()
+
+    def get_route_config(self):
+        """Return data for configured Router"""
+        tt = ["*"]
+        if self.message_types:
+            tt = [x["message_type"] for x in self.message_types]
+        r = {
+            "name": self.name,
+            "type": tt,
+            "order": 998,
+            "action": "notification",
+            "notification_group": str(self.id),
+            # r["render_template"] = str(self.render_template.id)
+            "telemetry_sample": 0,
+            "match": [],
+        }
+        if not self.conditions:
+            return r
+        for m in self.conditions:
+            c = {}
+            if m["resource_groups"]:
+                c[MessageMeta.GROUPS] = list(m["resource_groups"])
+            if m["labels"]:
+                c[MessageMeta.LABELS] = list(m["labels"])
+            if m["administrative_domain"]:
+                c[MessageMeta.ADM_DOMAIN] = m["administrative_domain"]
+            if c:
+                r["match"].append(c)
+        return r
+
+    @property
+    def members(self) -> List[NotificationContact]:
         """
         List of (time pattern, method, params, language)
         """
         default_language = LANGUAGE_CODE
         m = []
         # Collect user notifications
-        for ngu in self.notificationgroupuser_set.filter(user__is_active=True):
+        for ngu in self.notificationgroupusersubscription_set.filter():
+            if ngu.suppress:
+                continue
             lang = ngu.user.preferred_language or default_language
             user_contacts = ngu.user.contacts
             if user_contacts:
                 for tp, method, params in user_contacts:
-                    m += [(TimePatternList([ngu.time_pattern, tp]), method, params, lang)]
+                    if tp:
+                        tp = [tp]
+                    if ngu.time_pattern:
+                        tp.insert(ngu.time_pattern, 0)
+                    m.append(
+                        NotificationContact(
+                            contact=params,
+                            method=method,
+                            language=lang,
+                            time_pattern=TimePatternList(tp),
+                            watch=ngu.watch,
+                        )
+                    )
             else:
-                m += [(TimePatternList([]), "mail", ngu.user.email, lang)]
+                m += [
+                    NotificationContact(
+                        contact=ngu.user.email,
+                        language=lang,
+                        watch=ngu.watch,
+                        time_pattern=ngu.time_pattern or None,
+                    )
+                ]
         # Collect other notifications
-        for ngo in self.notificationgroupother_set.all():
-            if ngo.notification_method == "mail" and "," in ngo.params:
-                for y in ngo.params.split(","):
-                    m += [(ngo.time_pattern, ngo.notification_method, y.strip(), default_language)]
-            else:
-                m += [(ngo.time_pattern, ngo.notification_method, ngo.params, default_language)]
+        for ngo in self.static_members:
+            for c in ngo["contact"].split(","):
+                m.append(
+                    NotificationContact(
+                        contact=c,
+                        method=ngo["notification_method"],
+                        time_pattern=ngo.get("time_pattern") or None,
+                    )
+                )
         return m
 
     @property
@@ -131,19 +374,17 @@ class NotificationGroup(NOCModel):
         List of currently active members: (method, param, language)
         """
         now = datetime.datetime.now()
-        return set(
-            (method, param, lang) for tp, method, param, lang in self.members if tp.match(now)
-        )
+        return set((c.method, c.contact, c.language) for c in self.members if c.match(now))
 
     @property
-    def languages(self):
+    def languages(self) -> Set[str]:
         """
         List of preferred languages for users
         """
-        return set(x[3] for x in self.members)
+        return set(x.language for x in self.members)
 
     @classmethod
-    def get_effective_message(cls, messages, lang):
+    def get_effective_message(cls, messages, lang: str) -> str:
         for cl in (lang, LANGUAGE_CODE, "en"):
             if cl in messages:
                 return messages[cl]
@@ -160,12 +401,12 @@ class NotificationGroup(NOCModel):
     ):
         """
         Send notification message to MX service for processing
-        :param method: Method for sending message: mail, tg...
-        :param address: Address to message
-        :param subject: Notification Subject
-        :param body: Notification body
-        :param attachments:
-        :return:
+        Attrs:
+            method: Method for sending message: mail, tg...
+            address: Address to message
+            subject: Notification Subject
+            body: Notification body
+            attachments:
         """
         if method not in NOTIFICATION_METHODS:
             logger.error("Unknown notification method: %s", method)
@@ -179,13 +420,100 @@ class NotificationGroup(NOCModel):
             attachments=attachments or [],
         )
 
+    def subscribe(
+        self,
+        user: User,
+        expired_at: Optional[datetime.datetime] = None,
+        watch: Optional[Any] = None,
+    ):
+        """Subscribe User to Group"""
+        s = self.get_subscription_by_user(user, watch)
+        if not s:
+            s = NotificationGroupUserSubscription(notification_group=self, user=user)
+            if watch:
+                s.watch = get_subscription_id(watch)
+        if expired_at and s.expired_at != expired_at:
+            s.expired_at = expired_at
+        s.save()
+
+    def unsubscribe(
+        self,
+        user: User,
+        watch: Optional[Any] = None,
+    ):
+        """Unsubscribe User"""
+        s = self.get_subscription_by_user(user, watch)
+        if s:
+            s.delete()
+
+    def supress(
+        self,
+        user: User,
+        watch: Optional[Any] = None,
+    ):
+        """Supress Notification for subscription"""
+        s = self.get_subscription_by_user(user, watch)
+        if not s.suppress:
+            NotificationGroupUserSubscription.objects.filter(id=s.id).update(suppress=True)
+
+    @property
+    def iter_subscription_settings(self) -> Iterable[SubscriptionSettingItem]:
+        for s in self.subscription_settings:
+            yield SubscriptionSettingItem(**s)
+
+    def is_allowed_subscription(self, user: User) -> bool:
+        groups = frozenset(user.groups.values_list("id", flat=True))
+        for s in self.iter_subscription_settings:
+            if s.user == user.id and s.allow_subscribe:
+                return True
+            if s.group in groups and s.allow_subscribe:
+                return True
+        return False
+
+    def ensure_user_subscription(self, user: User):
+        """"""
+        ng = self.get_subscription_by_user(user)
+        if not ng:
+            self.subscribe(user)
+
+    def ensure_subscriptions(self):
+        """Ensure Subscription with settings"""
+        print("Ensure Subscription")
+        for s in self.iter_subscription_settings:
+            if s.user:
+                u = User.get_by_id(s.user)
+                ng = self.get_subscription_by_user(u)
+                if s.auto_subscription and not ng:
+                    self.subscribe(u)
+                elif not s.auto_subscription and ng:
+                    self.unsubscribe(u)
+
+    def register_message(
+        self,
+        message_type: str,
+        ctx: Dict[str, Any],
+        meta: Dict[str, Any],
+        template: Optional["Template"] = None,
+        attachments=None,
+    ):
+        """
+        Register message on Group
+        Attrs:
+            message_type: Message Type
+            ctx: Message Context Vars
+            meta: Sender Metadata
+            template: Template for render body
+            attachments: Include attachments
+        """
+
     def notify(self, subject, body, link=None, attachments=None):
         """
         Send message to active members
-        :param subject: Message subject
-        :param body: Message body
-        :param link: Optional link
-        :param attachments: List of attachments. Each one is a dict
+        Attrs:
+            subject: Message subject
+            body: Message body
+            link: Optional link
+            attachments: List of attachments. Each one is a dict
             with keys *filename* and *data*. *data* is the raw data
         """
         logger.debug("Notify group %s: %s", self.name, subject)
@@ -232,13 +560,20 @@ class NotificationGroup(NOCModel):
                 cls.get_effective_message(body, lang[(method, params)]),
             )
 
-    def iter_actions(self) -> Iterator[Tuple[str, Dict[str, bytes], Optional["Template"]]]:
+    def iter_actions(
+        self,
+        message_type: str,
+        meta: Dict[MessageMeta, Any],
+        ts: Optional[datetime.datetime] = None,
+    ) -> Iterable[Tuple[str, Dict[str, bytes], Optional["Template"]]]:
         """
         mx-compatible actions. Yields tuples of `stream`, `headers`
-        :return:
         """
-        for method, param, _ in self.active_members:
-            yield method, {MX_TO: param.encode(encoding=DEFAULT_ENCODING)}, None
+        now = ts or datetime.datetime.now()
+        for c in self.members:
+            if not c.match(now, meta.get(MessageMeta.WATCH_FOR)):
+                continue
+            yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
 
     @classmethod
     def render_message(
@@ -253,54 +588,63 @@ class NotificationGroup(NOCModel):
             return ctx
         return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
 
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "$collection": self._json_collection["json_collection"],
+            "uuid": self.uuid,
+            "description": self.description,
+            "message_register_policy": self.message_register_policy,
+            "message_types": [t.model_dump() for t in self.message_types],
+        }
+        return r
 
-class NotificationGroupUser(NOCModel):
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "message_register_policy",
+                "message_types",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        return quote_safe_path(self.name.strip("*")) + ".json"
+
+
+class NotificationGroupUserSubscription(NOCModel):
     class Meta(object):
-        verbose_name = "Notification Group User"
+        verbose_name = "Notification Group User Subscription"
         verbose_name_plural = "Notification Group Users"
         app_label = "main"
-        db_table = "main_notificationgroupuser"
-        unique_together = [("notification_group", "time_pattern", "user")]
+        db_table = "main_notificationgroupusersubscription"
+        unique_together = [("notification_group", "user", "watch")]
 
-    notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE
+    notification_group: NotificationGroup = ForeignKey(
+        NotificationGroup, verbose_name="Notification Group", on_delete=CASCADE
     )
-    time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE
+    time_pattern: Optional[TimePattern] = ForeignKey(
+        TimePattern, verbose_name="Time Pattern", on_delete=CASCADE, null=True, blank=True
     )
-    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    user: User = ForeignKey(User, verbose_name="User", on_delete=CASCADE)
+    expired_at = DateTimeField("Expired Subscription After", auto_now_add=False)
+    suppress = BooleanField("Deactivate Subscription", default=False)
+    watch = CharField("Watch key", max_length=100, null=True, blank=True)
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
 
     def __str__(self):
-        return "%s: %s: %s" % (
-            self.notification_group.name,
-            self.time_pattern.name,
-            self.user.username,
-        )
+        if not self.watch:
+            return f"{self.user.username}@{self.notification_group.name}: {self.time_pattern.name if self.time_pattern else ''}"
+        return f"{self.user.username}@{self.notification_group.name}: ({self.watch}) {self.time_pattern.name if self.time_pattern else ''}"
 
-
-class NotificationGroupOther(NOCModel):
-    class Meta(object):
-        verbose_name = "Notification Group Other"
-        verbose_name_plural = "Notification Group Others"
-        app_label = "main"
-        db_table = "main_notificationgroupother"
-        unique_together = [("notification_group", "time_pattern", "notification_method", "params")]
-
-    notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE
-    )
-    time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE
-    )
-    notification_method = models.CharField(
-        "Method", max_length=16, choices=NOTIFICATION_METHOD_CHOICES
-    )
-    params = models.CharField("Params", max_length=256)
-
-    def __str__(self):
-        return "%s: %s: %s: %s" % (
-            self.notification_group.name,
-            self.time_pattern.name,
-            self.notification_method,
-            self.params,
-        )
+    def is_match(self, meta: Dict[MessageMeta, Any]):
+        # time_pattern
+        if not self.watch:
+            return True
+        if self.watch and MessageMeta.FROM not in meta:
+            return False
+        return self.watch == meta[MessageMeta.FROM]

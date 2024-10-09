@@ -58,12 +58,9 @@ from noc.core.wf.interaction import Interaction
 from noc.core.mx import (
     send_message,
     MessageType,
-    MX_LABELS,
-    MX_H_VALUE_SPLITTER,
-    MX_ADMINISTRATIVE_DOMAIN_ID,
-    MX_RESOURCE_GROUPS,
-    MX_PROFILE_ID,
+    get_subscription_id,
     MX_NOTIFICATION_DELAY,
+    MessageMeta,
 )
 from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User
@@ -2777,16 +2774,19 @@ class ManagedObject(NOCModel):
 
     def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
         return {
-            MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels + (labels or [])).encode(
-                DEFAULT_ENCODING
-            ),
-            MX_ADMINISTRATIVE_DOMAIN_ID: str(self.administrative_domain.id).encode(
-                DEFAULT_ENCODING
-            ),
-            MX_PROFILE_ID: str(self.object_profile.id).encode(DEFAULT_ENCODING),
-            MX_RESOURCE_GROUPS: MX_H_VALUE_SPLITTER.join(
-                [str(sg) for sg in self.effective_service_groups]
-            ).encode(DEFAULT_ENCODING),
+            key.config.header: key.clean_header_value(value)
+            for key, value in self.message_meta.items()
+        }
+
+    @property
+    def message_meta(self) -> Dict[MessageMeta, Any]:
+        """Message Meta for instance"""
+        return {
+            MessageMeta.WATCH_FOR: get_subscription_id(self),
+            MessageMeta.ADM_DOMAIN: str(self.administrative_domain.id),
+            MessageMeta.PROFILE: get_subscription_id(self.object_profile),
+            MessageMeta.GROUPS: list(self.effective_service_groups),
+            MessageMeta.LABELS: list(self.effective_labels),
         }
 
     def set_profile(self, profile: str) -> bool:
