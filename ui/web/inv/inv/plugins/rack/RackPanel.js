@@ -219,6 +219,6 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       },
     });
     viewPanel.down("#scheme").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
-    me.down("#zoomControl").setZoom(me.down("#zoomControl"));
+    me.down("#zoomControl").restoreZoom();
   },
 });

@@ -36,4 +36,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     imgEl.style.transformOrigin = "0 0";
     imgEl.style.transform = "scale(" + combo.getValue() + ")";
   },
+  restoreZoom: function(){
+    this.setZoom(this);
+  },
 });

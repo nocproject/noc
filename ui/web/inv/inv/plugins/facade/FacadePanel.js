@@ -36,7 +36,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       pressed: true,
       value: "front",
       handler: function(){
-        me.viewCard.setActiveItem(0);
+        me.preview(me.data);
       },
     });
 
@@ -47,14 +47,13 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       toggleGroup: "side",
       value: "rear",
       handler: function(){
-        me.viewCard.setActiveItem(1);
+        me.preview(me.data);
       },
     });
 
     me.zoomButton = Ext.create("NOC.inv.inv.plugins.Zoom", {
       itemId: "zoomControl",
       appPanel: me.itemId,
-      setZoom: me.setZoom,
     });
 
     me.downloadButton = Ext.create("Ext.button.Button", {
@@ -68,15 +67,8 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       items: [me.sideFrontButton, me.sideRearButton],
     });
 
-    me.viewCard = Ext.create("Ext.container.Container", {
-      xtype: "container",
-      layout: "card",
-      activeItem: 0,
-    });
-
     me.facadeViewPanel = Ext.create("Ext.container.Container", {
       layout: "fit",
-      items: [me.viewCard],
     });
 
     Ext.apply(me, {
@@ -93,48 +85,40 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   },
   //
   preview: function(data){
-    var me = this;
+    var me = this,
+      side = me.segmentedButton.getValue(),
+      schemeSVG = data.views[side === "front" ? 0 : 1].src;
+    me.data = data;
     me.currentId = data.id;
-    // Remove all views
-    if(me.viewCard.items.length > 0) me.viewCard.removeAll();
-    // Add views
-    me.viewCard.add(
-      Ext.Array.map(data.views, function(view, index){
-        return {
+    me.facadeViewPanel.removeAll();
+    me.facadeViewPanel.add({
+      xtype: "container",
+      layout: "fit",
+      items: [
+        {
           xtype: "container",
-          layout: "fit",
-          items: [
-            {
-              xtype: "container",
-              itemId: "image-" + (index === 0 ? "front" : "rear"),
-              html: "<object id='svg-object' data='" + view.src + "' type='image/svg+xml'></object>",
-              padding: 5,
-              listeners: {
-                scope: me,
-                afterrender: function(container){
-                  var app = this,
-                    svgObject = container.getEl().dom.querySelector("#svg-object");
-                  app.zoomButton.setZoom(app.zoomButton); 
-                  me.addInteractionEvents(app, svgObject, app.app.showObject.bind(app.app));
-                },
-              },
+          itemId: "scheme",
+          html: "<object id='svg-object' data='" + schemeSVG + "' type='image/svg+xml'></object>",
+          padding: 5,
+          listeners: {
+            scope: me,
+            afterrender: function(container){
+              var app = this,
+                svgObject = container.getEl().dom.querySelector("#svg-object");
+              app.zoomButton.restoreZoom(); 
+              me.addInteractionEvents(app, svgObject, app.app.showObject.bind(app.app));
             },
-          ],
-        };
-      }),
-    );
+          },
+        },
+      ],
+    });
     me.startWidth = 0;
     me.startHeight = 0;
     if(me.isVisible()){
       me.startWidth = me.facadeViewPanel.getWidth();
       me.startHeight = me.facadeViewPanel.getHeight();
     }
-    // Reset zoom
-    // me.zoomButton.setValue(1.0);
-    // Disable rear button if necessary
     me.sideRearButton.setDisabled(data.views.length < 2);
-    // Press front button
-    me.sideFrontButton.setPressed(true);
   },
   //
   onReload: function(){
@@ -155,24 +139,10 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     });
   },
   //
-  setZoom: function(combo){
-    var me = this.up("#facadePanel"),
-      width = me.startWidth,
-      height = me.startHeight;
-    Ext.each(me.query("#image-front, #image-rear"), function(img){
-      var imgEl = img.getEl().dom;
-      imgEl.style.transformOrigin = "0 0";
-      imgEl.style.transform = "scale(" + combo.getValue() + ")";
-      width = Math.max(width, imgEl.width);
-      height = Math.max(height, imgEl.height);
-      me.facadeViewPanel.setWidth(width);
-    });
-  },
-  //
   onDownloadSVG: function(){
     var me = this,
       side = me.segmentedButton.getValue(),
-      svg = me.viewCard.down(`#image-${side}`).getEl().dom.querySelector("object").contentDocument.documentElement.outerHTML,
+      svg = me.facadeViewPanel.down("#scheme").getEl().dom.querySelector("object").contentDocument.documentElement.outerHTML,
       blob = new Blob([svg], {type: "image/svg+xml"}),
       url = URL.createObjectURL(blob),
       a = document.createElement("a");
