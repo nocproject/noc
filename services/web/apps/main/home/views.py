@@ -25,6 +25,7 @@ from noc.inv.models.channel import Channel
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.sa.models.profile import Profile
 
 
 class HomeAppplication(ExtApplication):
@@ -146,6 +147,10 @@ class HomeAppplication(ExtApplication):
         mo_count_q = ManagedObject.objects.all()
         if not user.is_superuser:
             mo_count_q = mo_count_q.filter(UserAccess.Q(user))
+        p_sae = Profile.get_by_name("NOC.SAE")
+        if p_sae:
+            # Still in system
+            mo_count_q = mo_count_q.exclude(profile=p_sae.id)
         total_mo = mo_count_q.count()
         return {
             "type": "summary",
