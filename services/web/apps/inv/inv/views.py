@@ -36,6 +36,8 @@ from noc.core.inv.attach.module import (
     get_free as get_free_for_module,
 )
 from noc.core.inv.info import info
+from noc.core.inv.clone import clone
+from noc.core.inv.remove import remote_all, remove_root, remove_connections
 from noc.sa.interfaces.base import (
     StringParameter,
     ObjectIdParameter,
@@ -49,8 +51,6 @@ from noc.sa.interfaces.base import (
 from noc.core.translation import ugettext as _
 from noc.core.text import alnum_key
 from .pbuilder import CrossingProposalsBuilder
-from .utils.clone import clone
-from .utils.remove import remote_all, remove_root
 
 translation_map = str.maketrans("<>", "><")
 
@@ -409,6 +409,20 @@ class InvApplication(ExtApplication):
             case _:
                 raise NotImplementedError
         return {"status": True, "message": f"{n} objects deleted"}
+
+    @view(
+        "^remove_connections/$",
+        method=["DELETE"],
+        access="remove_group",
+        api=True,
+        validate={
+            "container": ObjectIdParameter(required=True),
+        },
+    )
+    def api_remove_connections(self, request, container: str):
+        obj = self.get_object_or_404(Object, id=container)
+        remove_connections(obj)
+        return {"status": True, "message": "Conections cleared"}
 
     @view(
         "^insert/$",

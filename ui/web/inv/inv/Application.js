@@ -737,8 +737,9 @@ Ext.define("NOC.inv.inv.Application", {
           if(selectedObject){
             console.log("Remove all connections within object with id: ", selectedObject.id);
             Ext.Ajax.request({
-              url: "/int/inv/" + selectedObject.id + "/connections/",
+              url: "/inv/inv/remove_connections/",
               method: "DELETE",
+              jsonData: {container: selectedObject.id},
               success: function(response){
                 var data = Ext.decode(response.responseText);
                 if(data.status){
