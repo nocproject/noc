@@ -121,6 +121,14 @@ class _SideBuilder(object):
         """
         return f"{obj.id}{name}"
 
+    @staticmethod
+    def object_name(obj: Object) -> str:
+        """
+        Get full name of object.
+        """
+        name = " > ".join(obj.get_local_name_path(True))
+        return f"{name} [{obj.model.get_short_label()}]"
+
     def iter_connections(self) -> Iterable[Dict[str, Any]]:
         """
         Iterate over connections and yield connections structure
@@ -190,7 +198,7 @@ class _SideBuilder(object):
                     )
             else:
                 r["remote_device"] = {
-                    "name": child.name,
+                    "name": self.object_name(child),
                     "id": str(child.id),
                     "slot": child_outer.name,
                 }
@@ -227,7 +235,7 @@ class _SideBuilder(object):
                 )
         else:
             r["remote_device"] = {
-                "name": self.o_from.parent.name,
+                "name": self.object_name(self.o_from.parent),
                 "id": str(self.o_from.parent.id),
                 "slot": self.o_from.parent_connection,
             }
@@ -270,7 +278,7 @@ class _SideBuilder(object):
             rd = self.get_remote_device(c.name, protocols, self.o_from)
             if rd and not self.is_on_map(rd.obj):
                 r["remote_device"] = {
-                    "name": rd.obj.name,
+                    "name": self.object_name(rd.obj),
                     "id": str(rd.obj.id),
                     "slot": rd.connection,
                 }
