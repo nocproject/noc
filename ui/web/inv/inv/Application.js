@@ -91,6 +91,14 @@ Ext.define("NOC.inv.inv.Application", {
         },
         {
           glyph: NOC.glyph.trash_o,
+          itemId: "invNavContextMenuRemoveAllConnectionItem",
+          text: __("Remove all connections"),
+          scope: me,
+          cls: "noc-remove-menu-item",
+          handler: me.onRemoveAllConnections,
+        },
+        {
+          glyph: NOC.glyph.trash_o,
           itemId: "invNavContextMenuRemoveItem",
           text: __("Delete"),
           scope: me,
@@ -194,10 +202,12 @@ Ext.define("NOC.inv.inv.Application", {
                       data = Ext.decode(response.responseText),
                       mapMenuItem = me.menu.down("#invNavContextMenuMapItem"),
                       addMenuItem = me.menu.down("#invNavContextMenuAddItem"),
-                      removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem");
+                      removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem"),
+                      removeAllConnectionMenuItem = me.menu.down("#invNavContextMenuRemoveAllConnectionItem");
                     
                     addMenuItem.setDisabled(!record.get("can_add"));
                     removeMenuItem.setDisabled(!record.get("can_delete"));
+                    removeAllConnectionMenuItem.setDisabled(!record.get("can_delete"));
                     if(mapMenuItem){
                       me.menu.remove(mapMenuItem);
                     }
@@ -612,7 +622,7 @@ Ext.define("NOC.inv.inv.Application", {
     }
   },
   //
-  onRemoveGroup: function(){
+  getSelectedObject: function(){
     var me = this,
       sm = me.navTree.getSelectionModel(),
       sel = sm.getSelection(),
@@ -620,6 +630,12 @@ Ext.define("NOC.inv.inv.Application", {
     if(sel.length > 0){
       container = sel[0];
     }
+    return container;
+  },
+  //
+  onRemoveGroup: function(){
+    var me = this,
+      container = me.getSelectedObject();
     if(container){
       var hasNoChildren = container.get("expandable") === false,
         parent= container.parentNode,
@@ -634,7 +650,7 @@ Ext.define("NOC.inv.inv.Application", {
           glyph: NOC.glyph.question_circle,
           fn: function(rec){
             if(rec === "yes"){
-              sm.deselect(container);
+              me.navTree.getSelectionModel().deselect(container);
               me.removeGroup(container, {container: container.id, action: "r"}, me);
             }
           },
@@ -707,6 +723,39 @@ Ext.define("NOC.inv.inv.Application", {
         }); 
       }
     }
+  },
+  onRemoveAllConnections: function(){
+    Ext.Msg.show({
+      title: __("Remove all connections"),
+      message: __("Do you want to remove all connections within object? This operation cannot be undone!"),
+      buttons: Ext.Msg.YESNO,
+      icon: Ext.Msg.QUESTION,
+      scope: this,
+      fn: function(btn){
+        if(btn === "yes"){
+          var selectedObject = this.getSelectedObject();
+          if(selectedObject){
+            console.log("Remove all connections within object with id: ", selectedObject.id);
+            Ext.Ajax.request({
+              url: "/inv/inv/remove_connections/",
+              method: "DELETE",
+              jsonData: {container: selectedObject.id},
+              success: function(response){
+                var data = Ext.decode(response.responseText);
+                if(data.status){
+                  NOC.info(__("Connections removed"));
+                } else{
+                  NOC.error(data.message);
+                }
+              },
+              failure: function(response){
+                NOC.error(__("Failed to remove connections : ") + response.responseText);
+              },
+            });
+          }
+        }
+      },
+    });
   },
   //
   restoreHistory: function(args){

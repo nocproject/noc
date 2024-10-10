@@ -60,6 +60,16 @@ def remove_root(root: Object, parent: Object, /, keep_connections: bool = False)
     return 1
 
 
+def remove_connections(root: Object) -> None:
+    """
+    Remove all nested connections.
+
+    Args:
+        root: Root object.
+    """
+    _drop_connections(_iter_all(root))
+
+
 def _drop_connections(objects: Iterable[Object]) -> None:
     """
     Drop connections to objects.
