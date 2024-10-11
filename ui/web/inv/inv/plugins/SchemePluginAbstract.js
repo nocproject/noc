@@ -42,11 +42,11 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
       tooltip: __("Reload"),
       handler: "onReload",
     },
-    // {
-    // xtype: "invPluginsZoom",
-    // itemId: "zoomControl",
-    // appPanel: "commutationPanel",
-    // },
+    {
+      xtype: "invPluginsZoom",
+      itemId: "zoomControl",
+      appPanel: "commutationPanel",
+    },
     {
       xtype: "button",
       itemId: "detailsButton",
@@ -61,6 +61,7 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
     },
     {
       xtype: "button",
+      itemId: "downloadSvgButton",
       tooltip: __("Download image as SVG"),
       glyph: NOC.glyph.download,
       handler: "onDownloadSVG",
@@ -125,7 +126,7 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
       records = response.data || response.records || [];
     me.currentId = objectId;
     grid.getStore().loadData(records);
-    if(response.hasOwnProperty("viz")){
+    if(Object.prototype.hasOwnProperty.call(response, "viz")){
       me.renderScheme(response.viz);
     }
   },
