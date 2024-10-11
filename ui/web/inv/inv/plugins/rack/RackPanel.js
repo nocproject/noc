@@ -7,7 +7,8 @@
 console.debug("Defining NOC.inv.inv.plugins.rack.RackPanel");
 
 Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
-  extend: "NOC.core.ApplicationPanel",
+  // extend: "NOC.core.ApplicationPanel",
+  extend: "Ext.panel.Panel",
   requires: [
     "NOC.inv.inv.plugins.Zoom",
     "NOC.inv.inv.plugins.rack.RackLoadModel",
@@ -47,7 +48,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   items: [
     {
       xtype: "container",
-      itemId: "viewPanel",
+      itemId: "schemeContainer",
       layout: "auto",
       scrollable: true,
       region: "center",
@@ -203,15 +204,15 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   preview: function(data){
     var me = this,
       padding = 0,
-      viewPanel = me.down("#viewPanel"),
+      schemeContainer = me.down("#schemeContainer"),
       vm = me.getViewModel(),
       url = "/inv/inv/" + data.id + "/plugin/rack/" + vm.get("side") + ".svg";
     vm.get("gridStore").loadData(data.load);
     vm.set("currentId", data.id);
     // for download mixins
     me.currentId = data.id;
-    viewPanel.removeAll();
-    viewPanel.add({
+    schemeContainer.removeAll();
+    schemeContainer.add({
       xtype: "container",
       itemId: "scheme",
       filenamePrefix: "rack-" + vm.get("side"),
@@ -221,6 +222,6 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         afterrender: "onAfterRender",
       },
     });
-    viewPanel.down("#scheme").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
+    schemeContainer.down("#scheme").getEl().dom.querySelector("object").style.height = schemeContainer.getHeight() - padding * 2 + "px";
   },
 });

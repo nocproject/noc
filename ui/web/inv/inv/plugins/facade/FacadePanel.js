@@ -70,17 +70,16 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
 
     me.facadeViewPanel = Ext.create("Ext.container.Container", {
       layout: "fit",
+      itemId: "schemeContainer",
     });
 
     Ext.apply(me, {
       items: [me.facadeViewPanel],
-      dockedItems: [
-        {
-          xtype: "toolbar",
-          dock: "top",
-          items: [me.reloadButton, "-", me.segmentedButton, me.zoomButton, me.downloadButton],
-        },
-      ],
+      dockedItems: [{
+        xtype: "toolbar",
+        dock: "top",
+        items: [me.reloadButton, "-", me.segmentedButton, me.zoomButton, me.downloadButton],
+      }],
     });
     me.callParent();
   },

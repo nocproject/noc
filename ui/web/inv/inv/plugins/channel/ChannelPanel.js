@@ -7,62 +7,56 @@
 console.debug("Defining NOC.inv.inv.plugins.channel.ChannelPanel");
 
 Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
-  extend: "Ext.panel.Panel",
+  extend: "NOC.inv.inv.plugins.SchemePluginAbstract",
   title: __("Channels"),
   itemId: "channelPanel",
-  closable: false,
-  defaultListenerScope: true,
   layout: "card",
   requires: [
-    "NOC.inv.inv.plugins.Zoom",
     "NOC.inv.inv.plugins.channel.MagicPanel",
   ],
-  mixins: [
-    "NOC.inv.inv.plugins.Mixins",
-  ],
-  tbar: [
-    {
-      text: __("Close"),
-      itemId: "closeInvChannelBtn",
-      glyph: NOC.glyph.arrow_left,
-      hidden: true,
-      handler: "showChannelPanel",
-    },
-    {
-      xtype: "button",
-      glyph: NOC.glyph.refresh,
-      tooltip: __("Reload"),
-      handler: "onReload",
-    },
-    {
-      xtype: "invPluginsZoom",
-      itemId: "zoomControl",
-      appPanel: "channelPanel",
-    },
-    {
-      xtype: "button",
-      text: __("Magic"),
-      itemId: "adhocInvChannelBtn",
-      glyph: NOC.glyph.magic,
-      handler: "onAddHoc",
-    },
-    {
-      text: __("Create"),
-      itemId: "createInvChannelBtn",
-      glyph: NOC.glyph.plus,
-      disabled: true,
-      hidden: true,
-      handler: "onCreateAdHoc",
-    },
-    {
-      xtype: "button",
-      itemId: "downloadSvgChannelBtn",
-      tooltip: __("Download image as SVG"),
-      glyph: NOC.glyph.download,
-      disabled: true,
-      handler: "onDownloadSVG",
-    },
-  ],
+  // tbar: [
+  //   {
+  //     text: __("Close"),
+  //     itemId: "closeInvChannelBtn",
+  //     glyph: NOC.glyph.arrow_left,
+  //     hidden: true,
+  //     handler: "showChannelPanel",
+  //   },
+  //   {
+  //     xtype: "button",
+  //     glyph: NOC.glyph.refresh,
+  //     tooltip: __("Reload"),
+  //     handler: "onReload",
+  //   },
+  //   {
+  //     xtype: "invPluginsZoom",
+  //     itemId: "zoomControl",
+  //     appPanel: "channelPanel",
+  //   },
+  //   {
+  //     xtype: "button",
+  //     text: __("Magic"),
+  //     itemId: "adhocInvChannelBtn",
+  //     glyph: NOC.glyph.magic,
+  //     handler: "onAddHoc",
+  //   },
+  //   {
+  //     text: __("Create"),
+  //     itemId: "createInvChannelBtn",
+  //     glyph: NOC.glyph.plus,
+  //     disabled: true,
+  //     hidden: true,
+  //     handler: "onCreateAdHoc",
+  //   },
+  //   {
+  //     xtype: "button",
+  //     itemId: "downloadSvgChannelBtn",
+  //     tooltip: __("Download image as SVG"),
+  //     glyph: NOC.glyph.download,
+  //     disabled: true,
+  //     handler: "onDownloadSVG",
+  //   },
+  // ],
   items: [
     {
       xtype: "panel",
@@ -75,6 +69,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           xtype: "grid",
           scrollable: "y",
           split: true,
+          allowDeselect: true,
           store: {
             data: [],
           },
@@ -138,6 +133,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           listeners: {
             afterlayout: "afterGridRender",
             selectionchange: "onChangeSelection",
+            deselect: "onDeselect",
           },
         },
         {
@@ -145,18 +141,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         },
         {
           xtype: "container",
-          flex: 1,
           itemId: "schemeContainer",
-          layout: "fit",
+          flex: 1,
+          layout: "auto",
           scrollable: true,
-          items: [
-            {
-              xtype: "container",
-              itemId: "scheme",
-              filenamePrefix: "channel",
-              hidden: true,
-            },
-          ],
+          listeners: {
+            afterlayout: "afterPanelsRender",
+          },
         },
       ],
     },
@@ -167,40 +158,42 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       },
     },
   ],
-  preview: function(data, objectId){
-    var me = this,
-      grid = me.down("grid"),
-      records = data.records || [];
-    me.currentId = objectId;
-    grid.getStore().loadData(records);
+  initComponent: function(){
+    var parentItems = Ext.Array.clone(this.items),
+      tbarItems = Ext.Array.clone(this.tbar),
+      closeBtn = {
+        text: __("Close"),
+        itemId: "closeInvChannelBtn",
+        glyph: NOC.glyph.arrow_left,
+        hidden: true,
+        handler: "showChannelPanel",
+      },
+      magicBtn = {
+        text: __("Magic"),
+        itemId: "adhocInvChannelBtn",
+        glyph: NOC.glyph.magic,
+        handler: "onAddHoc",
+      },
+      createBtn = {
+        text: __("Create"),
+        itemId: "createInvChannelBtn",
+        glyph: NOC.glyph.plus,
+        disabled: true,
+        hidden: true,
+        handler: "onCreateAdHoc",
+      };
+    
+    Ext.Array.remove(tbarItems, Ext.Array.findBy(tbarItems, function(item){
+      return item.itemId === "detailsButton";
+    }));
+
+    tbarItems.splice(0, 0, closeBtn);
+    tbarItems.splice(tbarItems.length - 1, 0, closeBtn, magicBtn);
+    tbarItems.splice(1, 0, createBtn);
+    // this.tbar = tbarItems;
+    console.log("ChannelPanel initComponent", tbarItems);
+    this.callParent(arguments);
   },
-  //
-  _render: function(data){
-    var me = this;
-    Viz.instance().then(function(viz){ 
-      var imageComponent = me.down("#scheme"),
-        svg = viz.renderSVGElement(data);
-      imageComponent.setHidden(false);
-      imageComponent.setHtml(svg.outerHTML);
-    });
-  },
-  //
-  renderScheme: function(data){
-    var me = this;
-    if(typeof Viz === "undefined"){
-      new_load_scripts([
-        "/ui/pkg/viz-js/viz-standalone.js",
-      ], me, Ext.bind(me._render, me, [data]));
-    } else{
-      me._render(data);
-    }
-  },
-  //
-  svgToBase64: function(svgString){
-    var base64String = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
-    return base64String;
-  },
-  //
   onAddHoc: function(){
     var me = this,
       url = "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/";
@@ -227,7 +220,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     });
   },
   //
-  onChangeSelection: function(grid, selected){
+  onChangeSelection: function(rowModel, selected){
     var me = this,
       downloadBtn = me.down("#downloadSvgChannelBtn");
     if(selected.length > 0){
@@ -255,26 +248,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     }
   },
   //
-  afterGridRender: function(grid){
-    var me = this,
-      gridHeight = grid.getHeight(),
-      containerHeight = me.up("tabpanel").body.getHeight();
-    if(gridHeight > containerHeight / 2){
-      grid.setHeight(containerHeight / 2);
-    }
-  },
-  //
-  onReload: function(){
-    var me = this,
-      activeItem = me.getLayout().getActiveItem();
-    
-    if(activeItem.xtype === "panel"){
-      me.reloadChannelGrid(activeItem);
-    }
-
-    if(activeItem.xtype === "invchannelmagic"){
-      me.onAddHoc();
-    }
+  onDeselect: function(){
+    this.down("#schemeContainer").removeAll(); 
   },
   //
   onFavItem: function(grid, rowIndex){

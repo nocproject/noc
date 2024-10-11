@@ -43,33 +43,65 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       img = me.down("#scheme"),
       scale = combo.getValue(),
       imgEl = img.getEl().dom,
-      container = img.up();
+      container = img.up("#schemeContainer");
     svgDoc = imgEl.querySelector("svg");
     if(!svgDoc && imgEl.querySelector("object").contentDocument){
       svgDoc = imgEl.querySelector("object").contentDocument.querySelector("svg");
     }
-    imgEl.style.transformOrigin = "0 0";
-    imgEl.style.transform = "none";
+    // console.log(this._getSvgDoc(). svgDoc);
     if(svgDoc){
-      var record,
-        schemaSize = svgDoc.getBoundingClientRect(),
-        store = this.getStore();
+      var schemaSize = svgDoc.getBoundingClientRect();
+      svgDoc.style.transformOrigin = "0 0";
+      svgDoc.style.transform = "none";
       if(this.getRawValue() === __("Max Height")){
         scale = container.getHeight() / schemaSize.height;
-        record = store.findRecord("label", __("Max Height"));
-        record.set("zoom", scale)
-        this.setValue(scale);
+        this._updateValue(scale, this.getRawValue());
       } else if(this.getRawValue() === __("Max Width")){
         scale = container.getWidth() / schemaSize.width;
-        record = store.findRecord("label", __("Max Width"));
-        record.set("zoom", scale)
-        this.setValue(scale);
+        this._updateValue(scale, this.getRawValue());
       }
-      store.commitChanges();
     }
-    imgEl.style.transform = "scale(" + scale + ")";
+    // imgEl.style.width = container.getWidth() + 'px';
+    // imgEl.style.height = container.getHeight() + 'px';
+    // imgEl.style.objectFit = 'contain'; // или 'cover' в зависимости от нужного эффекта
+    console.log(`container : ${container.getWidth()}x${container.getHeight()}`);
+    if(svgDoc){
+      svgDoc.style.transform = "scale(" + scale + ")";
+      // var scheme = svgDoc.getBoundingClientRect(),
+      //   schemeBB = svgDoc.getBBox();
+      // img.setHeight(scheme.height);
+      // img.setWidth(scheme.width);
+      // console.log(`scheme : ${scheme.width}x${scheme.height}`);
+      // console.log(`schemeBB : ${schemeBB.width}x${schemeBB.height}`);
+    } else{
+      console.log("SVG not found");
+      // imgEl.style.transformOrigin = "0 0";
+      // imgEl.style.transform = "none";
+      // imgEl.style.transform = "scale(" + scale + ")";
+    }
   },
   restoreZoom: function(){
     this.setZoom(this);
+  },
+  _updateValue: function(zoom, label){
+    var store = this.getStore(),
+      record = store.findRecord("label", label);
+    record.set("zoom", zoom);
+    store.commitChanges();
+    this.setValue(zoom);
+  },
+  _getSvgDoc: function(){
+    var me = this.up("#" + this.appPanel),
+      scheme = me.down("#scheme"),
+      schemeEl = scheme.getEl().dom,
+      svgDoc = schemeEl.querySelector("svg");
+    if(Ext.isEmpty(svgDoc)){
+      return schemeEl.querySelector("object").contentDocument.querySelector("svg");
+    }
+    return svgDoc;
+  },
+  _getScale: function(svgDoc){
+    var scale = 1.0;
+    return scale;
   },
 });
