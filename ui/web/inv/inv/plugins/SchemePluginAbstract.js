@@ -45,7 +45,6 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
     {
       xtype: "invPluginsZoom",
       itemId: "zoomControl",
-      appPanel: "commutationPanel",
     },
     {
       xtype: "button",
@@ -75,6 +74,7 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
       bind: {
         hidden: "{!showDetails}",
       },
+      emptyText: __("No data"),
       allowDeselect: true,
       split: true,
       store: {
@@ -148,7 +148,7 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
       var container = me.down("[itemId=schemeContainer]"),
         grid = me.down("grid"),
         svg = viz.renderSVGElement(data);
-     
+           
       container.removeAll();
       container.add({
         xtype: "container",
@@ -162,7 +162,7 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
               elements = svgElement.querySelectorAll(".selectable"),
               zoomControl = me.down("#zoomControl");
 
-            // zoomControl.restoreZoom();
+            zoomControl.fitSvgToContainer();
             elements.forEach(function(element){
               element.addEventListener("click", function(){
                 var record = grid.getStore().getById(element.id);
