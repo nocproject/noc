@@ -45,7 +45,7 @@ class OTNOTUController(BaseController):
         return []
 
     def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
-        self.logger.info("Tracing from %s", start)
+        self.logger.info("Tracing from %s", start.label)
         # Get supported OTU protocols
         protocols = set(self.get_supported_protocols(start))
         self.logger.info("Supported protocols: %s", ", ".join(protocols))
@@ -53,12 +53,12 @@ class OTNOTUController(BaseController):
         self.logger.debug("Go down")
         xcvr = self.down(start.object, start.name)
         if not xcvr:
-            self.logger.info("No transceiver, stoppinng.")
+            self.logger.info("No transceiver, stopping")
             return
         # Find TX
         out_conn = "tx"
         if not self.get_connection(xcvr, out_conn):
-            self.logger.info("No %s connection", out_conn)
+            self.logger.info("No %s connection, stopping", out_conn)
             return
         # Yield transceiver
         path = [
@@ -68,7 +68,7 @@ class OTNOTUController(BaseController):
         #
         ep = self.get_peer(Endpoint(object=xcvr, name=out_conn))
         if not ep:
-            self.logger.info("Transceiver is not connected")
+            self.logger.info("Transceiver is not connected, stopping")
             return
         # Here we have either another transceiver or channel
         nep = self.pass_channel(ep)
@@ -87,28 +87,30 @@ class OTNOTUController(BaseController):
             # Pass to next
             ep = self.get_peer(nep)
             if not ep:
-                self.logger.info("Other side of the channel is not connected")
+                self.logger.info("Other side of the channel is not connected, stopping")
                 return
         if ep.name == "rx":
             end = self.up(ep.object)
             if not end:
-                self.logger.info("%s is not connected", end)
+                self.logger.info("%s is not connected, stopping.", ep.label)
                 return  # Not connected
             path.append(PathItem(object=ep.object, input=ep.name, output="in"))
             other_protocols = self.get_supported_protocols(end)
             if not other_protocols:
-                self.logger.info("Does not support OTU: %s", end)
+                self.logger.info("Does not support OTU: %s, stopping", end)
                 return
             if not (protocols.intersection(other_protocols)):
                 self.logger.info(
-                    "Protocols mismatch. %s supports only %s", end, ", ".join(other_protocols)
+                    "Protocols mismatch. %s supports only %s. Stopping.",
+                    end,
+                    ", ".join(other_protocols),
                 )
                 return
             path.append(PathItem(object=end.object, input=end.name, output=None))
-            self.logger.info("Full path: %s", path)
+            self.logger.info("Traced. Full path: %s", path)
             yield from path
             return
-        self.logger.info("%s is not transceiver and not channel entrypoint", ep)
+        self.logger.info("%s is not transceiver and not channel entrypoint. Stopping.", ep.label)
         return
 
     def sync_ad_hoc_channel(self, ep: Endpoint) -> Tuple[Optional[Channel], str]:

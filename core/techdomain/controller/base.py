@@ -163,13 +163,13 @@ class BaseController(object):
         Returns:
             Peer endpoint if found, None otherwise
         """
-        self.logger.debug("Get peer for %s", ep)
+        self.logger.info("Get peer for %s", ep.label)
         _, ro, rn = ep.object.get_p2p_connection(ep.name)
         if not ro:
-            self.logger.debug("Not connected")
+            self.logger.info("Not connected")
             return None
         if not ro.is_wire:
-            self.logger.debug("Wire not found")
+            self.logger.info("Wire not found")
             return None
         # Pass through cross
         for oc in ro.iter_cross(rn):
@@ -177,10 +177,10 @@ class BaseController(object):
             _, rro, rrn = ro.get_p2p_connection(oc.output)
             if rro:
                 oep = Endpoint(object=rro, name=rrn)
-                self.logger.debug("Peer found: %s", oep)
+                self.logger.info("Peer found: %s", oep.label)
                 return oep
             break
-        self.logger.debug("Broken cable")
+        self.logger.info("Broken cable: %s", ro.model.name)
         return None
 
     def validate_ad_hoc_channel(self, channel: Channel) -> None:
