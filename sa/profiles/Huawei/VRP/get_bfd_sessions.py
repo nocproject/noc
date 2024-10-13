@@ -49,7 +49,7 @@ class Script(BaseScript):
         "IFNET": "IFNET",
         "BFD": "BFD",
         "RSVP": "RSVP",
-       "PIM": "PIM",
+        "PIM": "PIM",
     }
 
     client_ignored = ["CEF", "AUTO", "|"]
