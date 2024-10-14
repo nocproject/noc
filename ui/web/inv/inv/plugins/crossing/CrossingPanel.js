@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.inv.plugins.crossing.CrossingPanel");
 
 Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
-  extend: "NOC.inv.inv.plugins.SchemePluginAbstract",
+  extend: "NOC.inv.inv.plugins.VizSchemePluginAbstract",
   title: __("Crossing"),
   itemId: "crossingPanel",
   viewModel: {

@@ -4,15 +4,11 @@
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.plugins.rack.Controller");
+console.debug("Defining NOC.inv.inv.plugins.rack.RackController");
 
-Ext.define("NOC.inv.inv.plugins.rack.Controller", {
-  extend: "Ext.app.ViewController",
+Ext.define("NOC.inv.inv.plugins.rack.RackController", {
+  extend: "NOC.inv.inv.plugins.FileSchemeController",
   alias: "controller.rack",
-  mixins: [
-    "NOC.core.mixins.SVGInteraction",
-    "NOC.inv.inv.plugins.Mixins",
-  ],
   //
   onDataChanged: function(store){
     var viewModel = this.getViewModel();
@@ -53,47 +49,5 @@ Ext.define("NOC.inv.inv.plugins.rack.Controller", {
         NOC.error(__("Failed to save"));
       },
     });
-  },
-  //
-  onAfterRender: function(container){
-    var app = this.getView().up("[appId=inv.inv]"),
-      svgObject = container.getEl().dom.querySelector("#svg-object"),
-      zoomControl = this.getView().down("#zoomControl");
-    Ext.bind(zoomControl.setZoom, zoomControl, [zoomControl])();
-    this.addInteractionEvents(app, svgObject, app.showObject.bind(app));
-  },
-  //
-  onReload: function(){
-    var me = this,
-      viewModel = me.getViewModel();
-    Ext.Ajax.request({
-      url: "/inv/inv/" + viewModel.get("currentId") + "/plugin/rack/",
-      method: "GET",
-      scope: me,
-      success: function(response){
-        me.getView().preview(Ext.decode(response.responseText));
-      },
-      failure: function(){
-        NOC.error(__("Failed to get data"));
-      },
-    });
-  },
-  //
-  onRearPressed: function(){
-    var me = this,
-      viewModel = me.getViewModel();
-    viewModel.set("side", "rear");
-    me.onReload();
-  },
-  //
-  onFrontPressed: function(){
-    var me = this,
-      viewModel = me.getViewModel();
-    viewModel.set("side", "front");
-    me.onReload();
-  },
-  //
-  downloadSVG: function(){
-    Ext.bind(this.onDownloadSVG, this.getView())();
   },
 });

@@ -28,7 +28,6 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
             }
             if(action === "info"){
               element.addEventListener(event, function(evt){
-                var scale = container.down("#zoomControl").getValue();
                 evt.stopPropagation();
                 Ext.Ajax.request({
                   url: "/inv/inv/baloon/",
@@ -106,7 +105,7 @@ Ext.define("NOC.core.mixins.SVGInteraction", {
                     }
 
                     var tooltip = Ext.create("Ext.tip.ToolTip", tooltipConfig);
-                    tooltip.showAt([evt.pageX * scale + xOffset, evt.pageY * scale + yOffset]);
+                    tooltip.showAt([evt.pageX + xOffset, evt.pageY + yOffset]);
                   },
                   failure: function(){
                     NOC.error(__("Failed to get data"));

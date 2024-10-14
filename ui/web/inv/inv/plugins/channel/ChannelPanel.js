@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.inv.plugins.channel.ChannelPanel");
 
 Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
-  extend: "NOC.inv.inv.plugins.SchemePluginAbstract",
+  extend: "NOC.inv.inv.plugins.VizSchemePluginAbstract",
   title: __("Channels"),
   itemId: "channelPanel",
   layout: "card",
@@ -126,12 +126,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       deselect: "onDeselect",
     };
     this.items = this.mainItems;
-    console.log(this.items);
     this.callParent(arguments);
   },
   onAdHoc: function(){
     var me = this,
-      url = "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/";
+      currentId = me.getViewModel().get("currentId"),
+      url = "/inv/inv/" + currentId + "/plugin/channel/adhoc/";
     me.mask(__("Loading..."));
     me.down("#createInvChannelBtn").setDisabled(true);
     Ext.Ajax.request({
@@ -186,12 +186,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   onCreateAdHoc: function(){
     var me = this,
       grid = me.down("invchannelmagic").down("grid"),
+      currentId = me.getViewModel().get("currentId"),
       selectionModel = grid.getSelectionModel(),
       selectedRecord = selectionModel.getSelection()[0];
 
     me.mask(__("Loading..."));
     Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/channel/adhoc/",
+      url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
       method: "POST",
       jsonData: {endpoint: selectedRecord.get("start_endpoint"), controller: selectedRecord.get("controller")},
       success: function(response){

@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.plugins.SchemePluginAbstract");
+console.debug("Defining NOC.inv.inv.plugins.VizSchemePluginAbstract");
 
-Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
+Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   extend: "Ext.panel.Panel",
   requires: [
     "NOC.inv.inv.plugins.Zoom",
@@ -14,6 +14,7 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
   mixins: [
     "NOC.inv.inv.plugins.Mixins",
   ],
+  xtype: "vizscheme",
   closable: false,
   layout: {
     type: "vbox",
@@ -108,6 +109,10 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
       scrollable: true,
       listeners: {
         afterlayout: "afterPanelsRender",
+        click: {
+          element: "el",
+          fn: "onSchemeClick",
+        },
       },
     },
   ],
@@ -124,7 +129,7 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
     var me = this,
       grid = me.down("grid"),
       records = response.data || response.records || [];
-    me.currentId = objectId;
+    me.getViewModel().set("currentId", objectId);
     grid.getStore().loadData(records);
     if(Object.prototype.hasOwnProperty.call(response, "viz")){
       me.renderScheme(response.viz);
@@ -146,48 +151,27 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
     var me = this;
     Viz.instance().then(function(viz){ 
       var container = me.down("[itemId=schemeContainer]"),
-        grid = me.down("grid"),
         svg = viz.renderSVGElement(data);
-           
-      container.removeAll();
-      container.add({
-        xtype: "container",
-        itemId: "scheme",
-        filenamePrefix: me.itemId.replace("Panel", ""),
-        layout: "fit",
-        html: svg.outerHTML,
-        listeners: {
-          afterrender: function(){
-            var svgElement = container.getEl().dom.querySelector("svg"),
-              elements = svgElement.querySelectorAll(".selectable"),
-              zoomControl = me.down("#zoomControl");
-
-            zoomControl.fitSvgToContainer();
-            elements.forEach(function(element){
-              element.addEventListener("click", function(){
-                var record = grid.getStore().getById(element.id);
-                
-                if(record){
-                  grid.getSelectionModel().select(record);
-                }
-              });
-            });
-          },
-        },
-      });
+      svg.setAttribute("height", "100%");
+      svg.setAttribute("width", "100%");
+      svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+      svg.setAttribute("object-fit", "contain");
+      container.setHtml(svg.outerHTML);
     });
   },
   //
   onReload: function(){
-    var me = this;
+    var me = this,
+      currentId = me.getViewModel().get("currentId");
     me.mask(__("Loading..."));
     Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/" + this.itemId.replace("Panel", "") + "/",
+      url: "/inv/inv/" + currentId + "/plugin/" + this.itemId.replace("Panel", "") + "/",
       method: "GET",
       scope: me,
       success: function(response){
         me.unmask();
-        me.preview(Ext.decode(response.responseText), me.currentId);
+        me.down("#zoomControl").reset();
+        me.preview(Ext.decode(response.responseText), currentId);
       },
       failure: function(){
         me.unmask();
@@ -214,7 +198,6 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
   },
   //
   heightPanels: function(grid){
-    console.log('heightPanels called');
     var tabPanel = grid.up("tabpanel"),
       vm = this.getViewModel(),
       isShowDetails = vm.get("showDetails"),
@@ -244,6 +227,16 @@ Ext.define("NOC.inv.inv.plugins.SchemePluginAbstract", {
       grid = me.down("grid");
     if(!pressed){
       grid.getSelectionModel().deselectAll();
+    }
+  },
+  //
+  onSchemeClick: function(event, target){
+    if(target.parentNode && target.parentNode.classList.contains("selectable")){
+      var grid = this.down("grid");
+      if(grid){
+        var record = grid.getStore().getById(target.parentNode.id);
+        if(record) grid.getSelectionModel().select(record);
+      }
     }
   },
 });
