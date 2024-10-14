@@ -124,7 +124,26 @@ class HorizonMixin(object):
         raise ValueError(msg)
 
 
-class ChannelMixin(HorizonMixin):
+class ChannelMetaclass(type):
+    def __new__(mcs, name, bases, attrs):
+        attrs["_SETUP_HANDLERS"] = {}
+        attrs["_CLEANUP_HANDLERS"] = {}
+        for v in attrs.values():
+            setup = getattr(v, "_SETUP_HANDLERS", None)
+            if setup:
+                for uuid in v._SETUP_HANDLERS:
+                    attrs["_SETUP_HANDLERS"][uuid] = v
+                delattr(v, "_SETUP_HANDLERS")
+            cleanup = getattr(v, "_CLEANUP_HANDLERS", None)
+            if cleanup:
+                for uuid in v._CLEANUP_HANDLERS:
+                    attrs["_CLEANUP_HANDLERS"][uuid] = v
+                delattr(v, "_CLEANUP_HANDLERS")
+        n = type.__new__(mcs, name, bases, attrs)
+        return n
+
+
+class ChannelMixin(HorizonMixin, metaclass=ChannelMetaclass):
     label: str
 
     def submit(
@@ -224,8 +243,7 @@ class ChannelMixin(HorizonMixin):
     @classmethod
     def setup_for(cls, *args: UUID):
         def inner(f):
-            for uuid in args:
-                cls._SETUP_HANDLERS[uuid] = f
+            f._SETUP_HANDLERS = args
             return f
 
         return inner
@@ -233,11 +251,7 @@ class ChannelMixin(HorizonMixin):
     @classmethod
     def cleanup_for(cls, *args: UUID):
         def inner(f):
-            for uuid in args:
-                cls._CLEANUP_HANDLERS[uuid] = f
+            f._CLEANUP_HANDLERS = args
             return f
 
         return inner
-
-    _SETUP_HANDLERS = {}
-    _CLEANUP_HANDLERS = {}
