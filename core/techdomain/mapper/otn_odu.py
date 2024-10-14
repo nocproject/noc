@@ -29,11 +29,19 @@ class DWDMOdUMapper(BaseMapper):
             model = obj.model.get_short_label()
             return f"{o_name}\\n{model}"
 
-        def q_disc(d: str) -> str:
+        def q_disc_forward(d: str) -> str:
             try:
                 _, o, i = d.split("::")
                 i_c, i_n = i.split("-")
-                return f"{i_c}({i_n}) -> {o}"
+                return f"{i_c}({i_n}) \u2192 {o}"
+            except ValueError:
+                return d
+
+        def q_disc_reverse(d: str) -> str:
+            try:
+                _, o, i = d.split("::")
+                i_c, i_n = i.split("-")
+                return f"{o} \u2190 {i_c}({i_n})"
             except ValueError:
                 return d
 
@@ -80,13 +88,13 @@ class DWDMOdUMapper(BaseMapper):
         self.add_edge(
             start="start_odu",
             end="start_otu",
-            label=q_disc(path[0].input_discriminator),
+            label=q_disc_forward(path[0].input_discriminator),
             style="dashed",
         )
         self.add_edge(
             start="end_otu",
             end="end_odu",
-            label=q_disc(path[1].input_discriminator),
+            label=q_disc_reverse(path[1].input_discriminator),
             style="dashed",
         )
-        self.add_edge(start="start_otu", end="end_otu", label=ch_label, penwidth=2)
+        self.add_edge(start="start_otu", end="end_otu", label=ch_label, penwidth=2, dir="both")
