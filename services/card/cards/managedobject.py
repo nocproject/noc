@@ -250,8 +250,8 @@ class ManagedObjectCard(BaseCard):
                     m_tp[MetricType.get_by_id(mt.get("metric_type")).name] = threshold_profile
         data = {}
         meta = []
-        metric_type_name = dict(MetricType.objects.filter().scalar("name", "measure"))
-        metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
+        metric_type_name = {x.name: x.units.label for x in MetricType.objects.filter()}
+        metric_type_field = {x.field_name: x.units.label for x in MetricType.objects.filter()}
         if objects_metrics:
             for path, mres in objects_metrics.items():
                 t_v = False
