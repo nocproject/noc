@@ -42,4 +42,4 @@ class Controller(ChannelMixin, BaseOpticalDwdmProfileController):
         Args:
             name: Port name.
         """
-        yield SetValue(name="{name}Destination", value="-", description="Reset destination")
+        yield SetValue(name=f"{name}Destination", value="-", description="Reset destination")

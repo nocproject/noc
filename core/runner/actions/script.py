@@ -38,7 +38,7 @@ class ScriptAction(BaseAction):
             self.logger.info("Cannot find managed object: %s", mo)
             raise ActionError("Cannot find managed object")
         # Run script
-        self.logger.info("Run managed_object=%s script=%s args=%s")
+        self.logger.info("Run managed_object=%s script=%s args=%s", mo, script, kwargs)
         # @todo: Wrap and catch errors
         scr = mo.scripts[script]
         await asyncio.to_thread(scr, **kwargs)
