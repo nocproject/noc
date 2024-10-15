@@ -143,6 +143,7 @@ class ChannelPlugin(InvPlugin):
                 return
             if ch1 and ch2 and ch1 == ch2:
                 x["status"] = "done"
+                x["id"] = str(ch1)
                 return
             x["status"] = "broken"
 
