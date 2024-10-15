@@ -46,7 +46,7 @@ class OTNOSCController(BaseController):
                 if cc.input_discriminator == self.DISCRIMINATOR:
                     return Endpoint(object=ep.object, name=cc.output)
 
-        self.logger.info("Tracing from %s", start)
+        self.logger.info("Tracing from %s", start.label)
         # From start through crossing
         ep1 = pass_crossing(start)
         if not ep1:

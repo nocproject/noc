@@ -76,7 +76,7 @@ class OpticalDWDMController(BaseController):
                 ep = Endpoint(object=pi.object, name=pi.input)
             yield from reversed(r)
 
-        self.logger.info("Tracing from %s", start)
+        self.logger.info("Tracing from %s", start.label)
         discriminator = get_discriminator(start)
         if not discriminator:
             self.logger.info("No discriminator")

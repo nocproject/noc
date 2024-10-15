@@ -38,14 +38,14 @@ class ChannelPlugin(InvPlugin):
         self.add_view(
             f"api_plugin_{self.name}_create_adhoc",
             self.api_create_adhoc,
-            url="^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/$",
+            url=f"^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/$",
             method=["POST"],
             validate={"endpoint": StringParameter(), "controller": StringParameter()},
         )
         self.add_view(
             f"api_plugin_{self.name}_get_adhoc_config",
             self.api_get_adhoc_config,
-            url="^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/config/$",
+            url=f"^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/config/$",
             method=["POST"],
             validate={
                 "channel_id": ObjectIdParameter(required=False),
