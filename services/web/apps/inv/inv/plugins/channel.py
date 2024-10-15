@@ -14,6 +14,7 @@ from noc.inv.models.object import Object
 from noc.core.resource import resource_label
 from noc.sa.interfaces.base import StringParameter, OBJECT_ID, ObjectIdParameter
 from noc.core.techdomain.controller.loader import loader as controller_loader
+from noc.core.techdomain.controller.base import BaseController
 from noc.core.techdomain.controller.base import Endpoint
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
@@ -147,12 +148,14 @@ class ChannelPlugin(InvPlugin):
                 return
             x["status"] = "broken"
 
-        def ep_hash(controller: str, ep1: Endpoint, ep2: Endpoint) -> Tuple[str, str, str]:
+        def ep_hash(
+            controller: BaseController, ep1: Endpoint, ep2: Endpoint
+        ) -> Tuple[str, str, str]:
             r1 = ep1.as_resource()
             r2 = ep2.as_resource()
-            if r1 < r2:
-                return controller, r1, r2
-            return controller, r2, r1
+            if controller.topology.is_bidirectional and r1 > r2:
+                return controller.name, r2, r1
+            return controller.name, r1, r2
 
         o = self.app.get_object_or_404(Object, id=id)
         is_xcvr = o.is_xcvr and o.parent and o.parent_connection
@@ -172,11 +175,11 @@ class ChannelPlugin(InvPlugin):
                         continue
                     if controller.topology.is_bidirectional:
                         # Supress duplicates in other direction
-                        h = ep_hash(controller.name, sep, eep)
+                        h = ep_hash(controller, sep, eep)
                         if h in seen:
                             continue
                         seen.add(h)
-                    r += [
+                    r.append(
                         {
                             "start_endpoint": sep.as_resource(),
                             "start_endpoint__label": self.get_endpoint_label(sep),
@@ -184,7 +187,7 @@ class ChannelPlugin(InvPlugin):
                             "end_endpoint__label": self.get_endpoint_label(eep),
                             "controller": controller.name,
                         }
-                    ]
+                    )
         # Get channel endpoints
         endpoints = {x["start_endpoint"] for x in r}
         endpoints.update(x["end_endpoint"] for x in r)
