@@ -15,12 +15,13 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       {name: "label", type: 'string'},
     ],
     data: [
-      {zoom: -1, label: __("Max Height")},
-      {zoom: -2, label: __("Max Width")},
+      {zoom: -3, label: __("Zoom to Fit")},
+      {zoom: -1, label: __("Zoom to Height")},
+      {zoom: -2, label: __("Zoom to Width")},
       {zoom: 0.25, label: "25%"},
       {zoom: 0.5, label: "50%"},
       {zoom: 0.75, label: "75%"},
-      {zoom: 1.0, label: "100%" + __(" to fit")},
+      {zoom: 1.0, label: "100%"},
       {zoom: 1.25, label: "125%"},
       {zoom: 1.5, label: "150%"},
       {zoom: 2.0, label: "200%"},
@@ -34,12 +35,12 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   valueField: "zoom",
   displayField: "label",
   editable: false,
-  listeners: {
     select: "setZoom",
   },
   setZoom: function(combo, record){
     var {element, bb} = this._getSvgElement(),
       scale = record.get("zoom");
+    console.log("Zoom to", record.get("label"));
     element.removeAttribute("width");
     element.removeAttribute("height");
     element.removeAttribute("style");
@@ -47,7 +48,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       this.fitSvgToContainer();
       return;
     }
-    if(record.get("zoom") === -1){ // max height
+    if(record.get("zoom") === -1){ // Zoom to Height 
       if(bb.height > bb.width){// h > w 
         element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
       } else{ // w > h 
@@ -55,12 +56,16 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       }
       return;
     }
-    if(record.get("zoom") === -2){ // max width
+    if(record.get("zoom") === -2){ // Zoom to Width
       if(bb.height > bb.width){ // h > w
         element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
       } else{ // w > h
         element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
       }
+      return;
+    }
+    if(record.get("zoom") === -3){ // Zoom to Fit
+      this.fitSvgToContainer();
       return;
     }
     if(bb.height > bb.width){// h > w 
