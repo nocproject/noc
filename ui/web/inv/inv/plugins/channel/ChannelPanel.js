@@ -157,12 +157,11 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   onChangeSelection: function(rowModel, selected){
     var me = this,
-      downloadBtn = me.down("#downloadSvgButton");
+      schemeContainer = me.down("#schemeContainer");
     if(selected.length > 0){
       var recordData = selected[0].getData(),
-        schemeContainer = me.down("#schemeContainer"),
         url = "/inv/channel/" + recordData.id + "/viz/";
-      downloadBtn.setDisabled(false);
+      me.getViewModel().set("downloadSvgButtonDisabled", false);
       schemeContainer.mask(__("Loading..."));
       Ext.Ajax.request({
         url: url,
@@ -179,7 +178,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         },
       });
     } else{
-      downloadBtn.setDisabled(true);
+      me.getViewModel().set("downloadSvgButtonDisabled", true);
+      me.getViewModel().set("zoomDisabled", true);
+      schemeContainer.setHtml("");
     }
   },
   //

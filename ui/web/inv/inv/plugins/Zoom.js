@@ -32,14 +32,14 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         xtype: "numberfield",
         fieldLabel: __("Custom Zoom"),
         labelAlign: "top",
-        minValue: 1,
+        minValue: 10,
         maxValue: 500,
         value: 100,
         step: 1,
         listeners: {
           change: function(field, newValue){
-            var button = field.up('menu').up('button');
-            button.setZoom({zoom: newValue / 100, text: newValue + '%'});
+            var button = field.up("menu").up("button");
+            button.setZoom({zoom: (newValue || 0) / 100, text: newValue + "%"});
           },
         },
       },
@@ -52,6 +52,9 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   setZoom: function(item){
     var {element, bb} = this._getSvgElement(),
       scale = item.zoom;
+    if(element === null){
+      return;
+    }
     this.zoom = scale;
     this.setText(item.text);
     element.removeAttribute("width");
@@ -117,6 +120,11 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         element: svgElement,
         bb: svgElement.getBBox(),
       }
+    } else{
+      return {
+        element: null,
+        bb: null,
+      };
     }
   },
 });
