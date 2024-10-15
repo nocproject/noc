@@ -7,50 +7,35 @@
 console.debug("Defining NOC.inv.inv.plugins.rack.RackPanel");
 
 Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
-  extend: "NOC.core.ApplicationPanel",
+  extend: "NOC.inv.inv.plugins.FileSchemePluginAbstract",
   requires: [
     "NOC.inv.inv.plugins.rack.RackLoadModel",
-    "NOC.inv.inv.plugins.rack.Controller",
+    "NOC.inv.inv.plugins.rack.RackController",
   ],
-  app: null,
-  scrollable: true,
+  itemId: "rackPanel",
   title: __("Rack"),
   layout: "border",
   controller: "rack",
-  viewModel: {
-    stores: {
-      gridStore: {
-        model: "NOC.inv.inv.plugins.rack.RackLoadModel",
-        listeners: {
-          datachanged: "onDataChanged",
-        },
+  initComponent: function(){
+    var tbarItems = Ext.clone(this.tbar);
+    // ToDo remove after refactoring backend to rack like facade plugin
+    this.svgUrlTemplate = new Ext.XTemplate("/inv/inv/{id}/plugin/{name}/{side}.svg");
+    // Add Edit button to tbar
+    tbarItems.splice(tbarItems.length - 1, 0, {
+      text: __("Edit"),
+      glyph: NOC.glyph.edit,
+      enableToggle: true,
+      bind: {
+        pressed: "{edit}",
       },
-    },
-    data: {
-      currentId: null,
-      side: "front",
-      edit: false,
-      totalCount: 0,
-    },
-    formulas: {
-      isFrontPressed: function(get){
-        return get("side") === "front";
+      handler: function(){
+        var vm = this.up("panel").getViewModel();
+        vm.set("edit", !vm.get("edit"));
       },
-      isRearPressed: function(get){
-        return get("side") === "rear";
-      },
-    },
-
-  },
-  items: [
-    {
-      xtype: "container",
-      itemId: "viewPanel",
-      layout: "auto",
-      scrollable: true,
-      region: "center",
-    },
-    {
+    });
+    this.tbar = tbarItems;
+    // Add grid
+    this.items = Ext.apply([], this.items.concat({
       xtype: "grid",
       bind: {
         store: "{gridStore}",
@@ -141,100 +126,16 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         validateedit: "onCellValidateEdit",
         edit: "onCellEdit",
       },
-    },
-  ],
-  tbar: [
-    {
-      glyph: NOC.glyph.refresh,
-      tooltip: __("Reload"),
-      handler: "onReload",
-    },
-    "-",
-    {
-      xtype: "segmentedbutton",
-      items: [
-        {
-          glyph: NOC.glyph.hand_o_right,
-          text: __("Front"),
-          toggleGroup: "side",
-          bind: {
-            pressed: "{isFrontPressed}",
-          },
-          handler: "onFrontPressed",
+    }),
+    );
+    this.getViewModel().setStores({
+      gridStore: {
+        model: "NOC.inv.inv.plugins.rack.RackLoadModel",
+        listeners: {
+          datachanged: "onDataChanged",
         },
-        {
-          glyph: NOC.glyph.hand_o_left,
-          text: __("Rear"),
-          toggleGroup: "side",
-          bind: {
-            pressed: "{isRearPressed}",
-          },
-          handler: "onRearPressed", 
-        },
-      ],
-    },
-    "-",
-    {
-      xtype: "combo",
-      itemId: "zoomCombo",
-      store: [
-        [0.25, "25%"],
-        [0.5, "50%"],
-        [0.75, "75%"],
-        [1.0, "100%"],
-        [1.25, "125%"],
-        [1.5, "150%"],
-        [2.0, "200%"],
-        [3.0, "300%"],
-        [4.0, "400%"],
-      ],
-      width: 100,
-      value: 1.0,
-      valueField: "zoom",
-      displayField: "label",
-      editable: false,
-      listeners: {
-        select: "onZoom",
-      },
-    },
-    {
-      text: __("Edit"),
-      glyph: NOC.glyph.edit,
-      enableToggle: true,
-      bind: {
-        pressed: "{edit}",
-      },
-      handler: function(){
-        var vm = this.up("panel").getViewModel();
-        vm.set("edit", !vm.get("edit"));
-      },
-    },
-    {
-      xtype: "button",
-      tooltip: __("Download image as SVG"),
-      glyph: NOC.glyph.download,
-      handler: "onDownloadSVG",
-    },
-  ],
-  preview: function(data){
-    var me = this,
-      padding = 5,
-      viewPanel = me.down("#viewPanel"),
-      vm = me.getViewModel(),
-      url = "/inv/inv/" + data.id + "/plugin/rack/" + vm.get("side") + ".svg";
-    vm.get("gridStore").loadData(data.load);
-    vm.set("currentId", data.id);
-    viewPanel.removeAll();
-    viewPanel.add({
-      xtype: "container",
-      itemId: "image",
-      html: "<object id='svg-object' data='" + url + "' type='image/svg+xml'></object>",
-      padding: padding,
-      listeners: {
-        afterrender: "onAfterRender",
       },
     });
-    viewPanel.down("#image").getEl().dom.querySelector("object").style.height = viewPanel.getHeight() - padding * 2 + "px";
-    me.getController().onZoom(me.down("#zoomCombo"));
+    this.callParent(arguments);
   },
 });
