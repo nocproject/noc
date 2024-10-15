@@ -41,6 +41,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       isSelectedPinInternal: null,
       cable: null,
       isDirty: false,
+      connectButtonDisabled: true,
     },
   },
   initValues: function(){
@@ -170,6 +171,15 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           },
         },
         me.cableCombo,
+        {
+          glyph: NOC.glyph.arrows_h,
+          scope: me,
+          handler: me.connectPort,
+          tooltip: __("Connect ports"),
+          bind: {
+            disabled: "{connectButtonDisabled}",
+          },
+        },
       ],
     });
     me.callParent();
@@ -252,6 +262,20 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     }
     canvas.getSurface().renderFrame();
   },
+  checkAvailabilityConnection: function(){
+    var vm = this.getViewModel();
+    vm.set("connectButtonDisabled", true);
+    if(Ext.isEmpty(vm.get("cable"))) return;
+    if(Ext.isEmpty(vm.get("rightObject"))) return;
+    var enabledPorts = Ext.Array.filter(this.drawPanel.getSurface().getItems(), function(sprite){
+        return sprite.type === "pin" && sprite.enabled;
+      }),
+      rxTxPorts = Ext.Array.filter(enabledPorts, function(sprite){
+        return sprite.pinName === "rx" || sprite.pinName === "tx";
+      });
+    if(rxTxPorts.length !== 4) return;
+    vm.set("connectButtonDisabled", false);
+  },
   cleanForm: function(){
     var me = this;
     me.initValues();
@@ -264,13 +288,15 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     me.drawEmptyText(me.drawPanel);
   },
   cleanViewModel: function(){
-    this.getViewModel().set("leftObject", null);
-    this.getViewModel().set("rightObject", null);
-    this.getViewModel().set("selectedPin", null);
-    this.getViewModel().set("selectedPinId", null);
-    this.getViewModel().set("isSelectedPinInternal", null);
-    this.getViewModel().set("cable", null);
-    this.getViewModel().set("isDirty", false);
+    var vm = this.getViewModel();
+    vm.set("leftObject", null);
+    vm.set("rightObject", null);
+    vm.set("selectedPin", null);
+    vm.set("selectedPinId", null);
+    vm.set("isSelectedPinInternal", null);
+    vm.set("cable", null);
+    vm.set("isDirty", false);
+    vm.set("connectButtonDisabled", true);
   },
   createInternalConnectionMsg: function(fromSprite, toSprite, side){
     var me = this,
@@ -315,6 +341,33 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         },
       },
     });
+  },
+  connectPort: function(){
+    var leftRx, leftTx, rightRx, rightTx,
+      enabledPorts = Ext.Array.filter(this.drawPanel.getSurface().getItems(), function(sprite){
+        return sprite.type === "pin" && sprite.enabled;
+      }),
+      rxTxPorts = Ext.Array.filter(enabledPorts, function(sprite){
+        return sprite.pinName === "rx" || sprite.pinName === "tx";
+      });
+    for(var i = 0; i < rxTxPorts.length; i++){
+      if(rxTxPorts[i].side === "left"){
+        if(rxTxPorts[i].pinName === "rx"){
+          leftRx = rxTxPorts[i];
+        } else{
+          leftTx = rxTxPorts[i];
+        }
+      } else{
+        if(rxTxPorts[i].pinName === "rx"){
+          rightRx = rxTxPorts[i];
+        } else{
+          rightTx = rxTxPorts[i];
+        }
+      }
+    }
+    this.createWire(leftTx, rightRx);
+    this.createWire(rightTx, leftRx);
+    this.getViewModel().set("connectButtonDisabled", true);
   },
   createWire: function(prevPinSprite, pinSprite){
     var me = this,
@@ -720,6 +773,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             me.drawPanel.getSurface().setRect([0, 0, me.drawPanelSize.w, me.drawPanelSize.h]);
             me.drawPanel.getSurface("left_internal_conn").setRect([0, 0, me.drawPanelSize.w, me.drawPanelSize.h]);
             me.drawPanel.getSurface("right_internal_conn").setRect([0, 0, me.drawPanelSize.w, me.drawPanelSize.h]);
+            if(!Ext.isEmpty(rightObjectId)){
+              me.checkAvailabilityConnection();
+            }
             mainSurface.renderFrame();
           },
           failure: function(){
@@ -1523,6 +1579,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           }
         });
         me.unmask();
+        me.checkAvailabilityConnection();
         NOC.msg.complete(__("The data was successfully updated"));
       },
       failure: function(){
