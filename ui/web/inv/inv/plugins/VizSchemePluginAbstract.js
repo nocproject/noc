@@ -26,6 +26,8 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
     data: {
       currentId: null,
       showDetails: true,
+      zoomDisabled: true,
+      downloadSvgButtonDisabled: true,
     },
     formulas: {
       detailsButtonText: function(get){
@@ -46,6 +48,9 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
     {
       xtype: "invPluginsZoom",
       itemId: "zoomControl",
+      bind: {
+        disabled: "{zoomDisabled}",
+      },
     },
     {
       xtype: "button",
@@ -65,6 +70,9 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       tooltip: __("Download image as SVG"),
       glyph: NOC.glyph.download,
       handler: "onDownloadSVG",
+      bind: {
+        disabled: "{downloadSvgButtonDisabled}",
+      },
     },
   ],
   items: [
@@ -157,6 +165,9 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
       svg.setAttribute("object-fit", "contain");
       container.setHtml(svg.outerHTML);
+      me.down("#zoomControl").reset();
+      me.getViewModel().set("zoomDisabled", false);
+      me.getViewModel().set("downloadSvgButtonDisabled", false);
     });
   },
   //
@@ -170,8 +181,8 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       scope: me,
       success: function(response){
         me.unmask();
-        me.down("#zoomControl").reset();
         me.preview(Ext.decode(response.responseText), currentId);
+        me.down("#zoomControl").reset();
       },
       failure: function(){
         me.unmask();
