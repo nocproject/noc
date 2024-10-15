@@ -105,7 +105,7 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       xtype: "container",
       itemId: "schemeContainer",
       flex: 1,
-      layout: "auto",
+      layout: "fit",
       scrollable: true,
       listeners: {
         afterlayout: "afterPanelsRender",
