@@ -11,13 +11,14 @@ from collections import defaultdict
 
 # NOC modules
 from noc.inv.models.object import Object
-from noc.core.resource import resource_label, from_resource
-from noc.sa.interfaces.base import StringParameter
+from noc.core.resource import resource_label
+from noc.sa.interfaces.base import StringParameter, OBJECT_ID, ObjectIdParameter
 from noc.core.techdomain.controller.loader import loader as controller_loader
 from noc.core.techdomain.controller.base import Endpoint
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.main.models.favorites import Favorites
+from noc.core.inv.result import Result
 from .base import InvPlugin
 
 
@@ -28,17 +29,28 @@ class ChannelPlugin(InvPlugin):
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
-            "api_plugin_%s_get_adhoc_list" % self.name,
+            f"api_plugin_{self.name}_get_adhoc_list",
             self.api_get_adhoc_list,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/adhoc/$" % self.name,
+            url=f"^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/$",
             method=["GET"],
         )
         self.add_view(
-            "api_plugin_%s_create_adhoc" % self.name,
+            f"api_plugin_{self.name}_create_adhoc",
             self.api_create_adhoc,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/adhoc/$" % self.name,
+            url="^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/$",
             method=["POST"],
             validate={"endpoint": StringParameter(), "controller": StringParameter()},
+        )
+        self.add_view(
+            f"api_plugin_{self.name}_get_adhoc_config",
+            self.api_get_adhoc_config,
+            url="^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/config/$",
+            method=["POST"],
+            validate={
+                "channel_id": ObjectIdParameter(required=False),
+                "endpoint": StringParameter(),
+                "controller": StringParameter(),
+            },
         )
 
     def get_data(self, request, object):
@@ -205,11 +217,39 @@ class ChannelPlugin(InvPlugin):
 
     def api_create_adhoc(self, request, id, endpoint, controller):
         self.app.get_object_or_404(Object, id=id)
-        o, n = from_resource(endpoint)
-        ep = Endpoint(object=o, name=n or "")
-        tr = controller_loader[controller]()
-        ch, msg = tr.sync_ad_hoc_channel(ep)
-        r = {"status": ch is not None, "msg": msg}
+        ep = Endpoint.from_resource(endpoint)
+        ctl = controller_loader[controller]()
+        ch, msg = ctl.sync_ad_hoc_channel(ep)
+        r = {"status": ch is not None, "msg": msg}  # @todo: Replace with message
         if ch:
             r["channel"] = str(ch.id)
         return r
+
+    def api_get_adhoc_config(
+        self, request, id: str, channel_id: str | None, endpoint: str, controller: str
+    ) -> None:
+        self.app.get_object_or_404(Object, id=id)
+        ep = Endpoint.from_resource(endpoint)
+        ctl = controller_loader[controller]()
+        data = {}
+        if channel_id:
+            channel = self.app.get_object_or_404(id=channel_id)
+            data["name"] = channel.name
+        else:
+            data["name"] = f"Magic {controller} from {ep.label}"
+        # @todo: Debug
+        data["config"] = [
+            {"name": "p1", "label": "String", "type": "string", "value": "15"},
+            {
+                "name": "p2",
+                "label": "Combo",
+                "type": "string",
+                "value": "2",
+                "options": [
+                    {"id": "1", "label": "One"},
+                    {"id": "2", "label": "Two"},
+                    {"id": "3", "label": "Three"},
+                ],
+            },
+        ]
+        return {"status": True, "data": data}

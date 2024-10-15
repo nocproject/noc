@@ -1033,8 +1033,5 @@ class ColorParameter(Parameter):
                 self.raise_error(value)
         self.raise_error(value)
 
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
+# Patterns
+OBJECT_ID = "[0-9a-f]{24}"
