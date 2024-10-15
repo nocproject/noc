@@ -47,10 +47,6 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
     Ext.bind(this.onDownloadSVG, this.getView())();
   },
   //
-  onZoom: function(combo, record){
-    combo.setZoom(combo, record);
-  },
-  //
   onSchemeClick: function(evt, target){
     var findSelectableAncestor = function(element){
         while(element && element !== document.body){
@@ -156,6 +152,5 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
         });
       }
     });
-    
   },
 });

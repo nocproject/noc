@@ -70,9 +70,6 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
     {
       xtype: "invPluginsZoom",
       itemId: "zoomControl",
-      listeners: {
-        select: "onZoom",
-      },
     },
     {
       xtype: "button",

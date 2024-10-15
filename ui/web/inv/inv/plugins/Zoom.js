@@ -7,48 +7,61 @@
 console.debug("Defining NOC.inv.inv.plugins.Zoom");
 
 Ext.define("NOC.inv.inv.plugins.Zoom", {
-  extend: "Ext.form.field.ComboBox",
+  extend: "Ext.button.Button",
   alias: "widget.invPluginsZoom",
-  store: {
-    fields: [
-      {name: "zoom", type: "float"},
-      {name: "label", type: 'string'},
-    ],
-    data: [
-      {zoom: -3, label: __("Zoom to Fit")},
-      {zoom: -1, label: __("Zoom to Height")},
-      {zoom: -2, label: __("Zoom to Width")},
-      {zoom: 0.25, label: "25%"},
-      {zoom: 0.5, label: "50%"},
-      {zoom: 0.75, label: "75%"},
-      {zoom: 1.0, label: "100%"},
-      {zoom: 1.25, label: "125%"},
-      {zoom: 1.5, label: "150%"},
-      {zoom: 2.0, label: "200%"},
-      {zoom: 3.0, label: "300%"},
-      {zoom: 4.0, label: "400%"},
+  text: __("Fit Page"),
+  menu: {
+    xtype: "menu",
+    plain: true,
+    items: [
+      {zoom: -3, text: __("Fit Page"), handler: "setZoom"},
+      {zoom: -1, text: __("Fit Height"), handler: "setZoom"},
+      {zoom: -2, text: __("Fit Width"), handler: "setZoom"},
+      {xtype: 'menuseparator'},
+      {zoom: 0.25, text: "25%", handler: "setZoom"},
+      {zoom: 0.5, text: "50%", handler: "setZoom"},
+      {zoom: 0.75, text: "75%", handler: "setZoom"},
+      {zoom: 1.0, text: "100%", handler: "setZoom"},
+      {zoom: 1.25, text: "125%", handler: "setZoom"},
+      {zoom: 1.5, text: "150%", handler: "setZoom"},
+      {zoom: 2.0, text: "200%", handler: "setZoom"},
+      {zoom: 3.0, text: "300%", handler: "setZoom"},
+      {zoom: 4.0, text: "400%", handler: "setZoom"},
+      {xtype: 'menuseparator'},
+      {
+        xtype: "numberfield",
+        fieldLabel: __("Custom Zoom"),
+        labelAlign: "top",
+        minValue: 1,
+        maxValue: 500,
+        value: 100,
+        step: 1,
+        listeners: {
+          change: function(field, newValue){
+            var button = field.up('menu').up('button');
+            button.setZoom({zoom: newValue / 100, text: newValue + '%'});
+          },
+        },
+      },
+      {xtype: 'menuseparator'},
     ],
   },
   defaultListenerScope: true,
   width: 150,
-  value: 1.0,
-  valueField: "zoom",
-  displayField: "label",
-  editable: false,
-  listeners: {
-    select: "setZoom",
-  },
-  setZoom: function(combo, record){
+  zoom: -3.0,
+  setZoom: function(item){
     var {element, bb} = this._getSvgElement(),
-      scale = record.get("zoom");
+      scale = item.zoom;
+    this.zoom = scale;
+    this.setText(item.text);
     element.removeAttribute("width");
     element.removeAttribute("height");
     element.removeAttribute("style");
-    if(record.get("zoom") === 1.0){
+    if(scale === 1.0){
       this.fitSvgToContainer();
       return;
     }
-    if(record.get("zoom") === -1){ // Zoom to Height 
+    if(scale === -1){ // Zoom to Height 
       if(bb.height > bb.width){// h > w 
         element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
       } else{ // w > h 
@@ -56,7 +69,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       }
       return;
     }
-    if(record.get("zoom") === -2){ // Zoom to Width
+    if(scale === -2){ // Zoom to Width
       if(bb.height > bb.width){ // h > w
         element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
       } else{ // w > h
@@ -64,7 +77,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       }
       return;
     }
-    if(record.get("zoom") === -3){ // Zoom to Fit
+    if(scale === -3){ // Zoom to Fit
       this.fitSvgToContainer();
       return;
     }
@@ -82,17 +95,19 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     element.setAttribute("object-fit", "contain");
     element.setAttribute("style", "transform: scale(1);transform-origin: center center;");
   },
-  restoreZoom: function(){
-    var store = this.getStore(),
-      record = store.findRecord("zoom", this.getValue());
-    this.setZoom(this, record);
+  reset: function(){
+    this.setZoom({zoom: -3.0, text: __("Fit Page")});
   },
-  _updateValue: function(zoom, label){
-    var store = this.getStore(),
-      record = store.findRecord("label", label);
-    record.set("zoom", zoom);
-    store.commitChanges();
-    this.setValue(zoom);
+  restoreZoom: function(){
+    var text = __("Fit Page");
+    if(this.zoom > 0){
+      text = `${this.zoom * 100}%`;
+    } else if(this.zoom === -1){
+      text = __("Fit Height");
+    } else if(this.zoom === -2){
+      text = __("Fit Width");
+    }
+    this.setZoom({zoom: this.zoom, text: text});
   },
   _getSvgElement: function(){
     var container = this.up("panel").down("#schemeContainer"),
