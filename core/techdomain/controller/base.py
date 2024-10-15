@@ -50,6 +50,11 @@ class Endpoint(object):
         r.append(self.name)
         return " > ".join(r)
 
+    @property
+    def is_qualified(self) -> bool:
+        """Check if endpoint has slot name."""
+        return bool(self.name)
+
 
 @dataclass
 class PathItem(object):

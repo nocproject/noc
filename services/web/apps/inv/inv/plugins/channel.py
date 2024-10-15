@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Iterable
 from collections import defaultdict
 
 # NOC modules
@@ -142,20 +142,51 @@ class ChannelPlugin(InvPlugin):
             if not ch1 and not ch2:
                 x["status"] = "new"
                 return
-            if ch1 and ch2 and ch1 == ch2:
-                x["status"] = "done"
-                x["id"] = str(ch1)
-                return
-            x["status"] = "broken"
+            if x["is_bidirectional"]:
+                if ch1 and ch2:
+                    if ch1 == ch2:
+                        x["status"] = "done"
+                        x["channel_id"] = str(ch1)
+                    else:
+                        x["status"] = "broken"
+            else:
+                # Unidirectional
+                if ch1:
+                    x["status"] = "done"
+                    x["channel_id"] = str(ch1)
+                else:
+                    x["status"] = "new"
 
         def ep_hash(
             controller: BaseController, ep1: Endpoint, ep2: Endpoint
         ) -> Tuple[str, str, str]:
+            # Only for bi-di
             r1 = ep1.as_resource()
             r2 = ep2.as_resource()
-            if controller.topology.is_bidirectional and r1 > r2:
-                return controller.name, r2, r1
-            return controller.name, r1, r2
+            if r1 < r2:
+                return controller, r1, r2
+            return controller, r2, r1
+
+        def merge_q(q1: dict[str, Any] | None, q2: dict[str, Any] | None) -> dict[str, Any] | None:
+            if q1 and q2:
+                return {"$or": [q1, q2]}
+            if q1:
+                return q1
+            if q2:
+                return q2
+            return None
+
+        def in_q(field: str, data: Iterable[str], **kwargs: str | bool) -> dict[str, Any] | None:
+            d = list(data)
+            if not d:
+                return None
+            if len(d) == 1:
+                r = {field: d[0]}
+            else:
+                r = {field: {"$in": d}}
+            if kwargs:
+                r.update(kwargs)
+            return r
 
         o = self.app.get_object_or_404(Object, id=id)
         is_xcvr = o.is_xcvr and o.parent and o.parent_connection
@@ -164,8 +195,12 @@ class ChannelPlugin(InvPlugin):
             xep = Endpoint(object=o.parent, name=o.parent_connection)
         else:
             nested_objects = list(Object.objects.filter(id__in=o.get_nested_ids()))
-        r: List[Dict[str, str]] = []
-        # Check all cotrollers
+        r: List[Dict[str, str | bool]] = []
+        q_udi_q = set()
+        q_udi_unq = set()
+        q_bidi_q = set()
+        q_bidi_unq = set()
+        # Check all controllers
         seen = set()
         for controller_name in controller_loader:
             controller = controller_loader[controller_name]()
@@ -173,7 +208,8 @@ class ChannelPlugin(InvPlugin):
                 for sep, eep in controller.iter_adhoc_endpoints(no):
                     if is_xcvr and not (sep == xep or eep == xep):
                         continue
-                    if controller.topology.is_bidirectional:
+                    is_bidi = controller.topology.is_bidirectional
+                    if is_bidi:
                         # Supress duplicates in other direction
                         h = ep_hash(controller, sep, eep)
                         if h in seen:
@@ -186,37 +222,58 @@ class ChannelPlugin(InvPlugin):
                             "end_endpoint": eep.as_resource(),
                             "end_endpoint__label": self.get_endpoint_label(eep),
                             "controller": controller.name,
+                            "is_bidirectional": is_bidi,
                         }
                     )
-        # Get channel endpoints
-        endpoints = {x["start_endpoint"] for x in r}
-        endpoints.update(x["end_endpoint"] for x in r)
-        qualified = [x for x in endpoints if len(x) > 27]
-        unqualified = [x for x in endpoints if len(x) == 26]
+                    match is_bidi, sep.is_qualified, eep.is_qualified:
+                        case False, False, False:
+                            q_udi_unq.add(sep.as_resource())
+                        case False, True, True:
+                            q_udi_q.add(sep.as_resource())
+                        case True, False, False:
+                            q_bidi_unq.add(sep.as_resource())
+                            q_bidi_unq.add(eep.as_resource())
+                        case True, True, True:
+                            q_bidi_q.add(sep.as_resource())
+                            q_bidi_q.add(eep.as_resource())
+                        case _:
+                            self.logger.error(
+                                "Cannot handle channel combination: is_bidi=%s, sep.is_qualified=%s, eep.is_qualified=%s",
+                                is_bidi,
+                                sep.is_qualified,
+                                eep.is_qualified,
+                            )
+        # Build queries
         ch_ep = {}
-        if qualified:
+        q = merge_q(in_q("resource", q_udi_q, is_root=True), in_q("resource", q_bidi_q))
+        if q:
             ch_ep.update(
                 {
                     x["resource"]: x["channel"]
                     for x in DBEndpoint._get_collection().find(
-                        {"resource": {"$in": qualified}},
+                        q,
                         {"_id": 0, "resource": 1, "channel": 1},
                     )
                 }
             )
-        if unqualified:
+        q = merge_q(
+            in_q("root_resource", q_udi_unq, is_root=True), in_q("root_resource", q_bidi_unq)
+        )
+        if q:
             ch_ep.update(
                 {
                     x["resource"][:26]: x["channel"]
                     for x in DBEndpoint._get_collection().find(
-                        {"root_resource": {"$in": unqualified}},
+                        q,
                         {"_id": 0, "resource": 1, "channel": 1},
                     )
                 }
             )
+        print("CH_EP>>>", ch_ep)
         # Update statuses
         for x in r:
             update_proposal_status(x)
+        print("RESULT>", r)
         return r
 
     def api_create_adhoc(self, request, id, endpoint, controller):
