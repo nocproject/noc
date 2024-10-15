@@ -12,7 +12,7 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
         if(container.filenamePrefix){
           return container.filenamePrefix;
         }
-        var panel = container.up("vizscheme");
+        var panel = container.up("vizscheme, filescheme");
         if(panel.itemId){
           return panel.itemId.replace("Panel", "").toLowerCase();
         }
