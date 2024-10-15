@@ -12,7 +12,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
   mixins: [
     "NOC.inv.inv.plugins.Mixins",
   ],
-  onReload: function(){
+  onReload: function(saveZoom){
     var me = this,
       vm = me.getViewModel(),
       view = me.getView(),
@@ -24,7 +24,11 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
       success: function(response){
         var zoomControl = view.down("#zoomControl");
         view.preview(Ext.decode(response.responseText));
-        zoomControl.restoreZoom();
+        if(saveZoom === true){
+          zoomControl.restoreZoom();
+        } else{
+          zoomControl.reset();
+        }
       },
       failure: function(){
         NOC.error(__("Failed to get data"));
@@ -36,7 +40,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
     var me = this,
       viewModel = me.getViewModel();
     viewModel.set("side", side);
-    me.onReload();
+    me.onReload(true);
   },
   //
   downloadSVG: function(){
