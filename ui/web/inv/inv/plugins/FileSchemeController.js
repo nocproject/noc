@@ -22,8 +22,9 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
       method: "GET",
       scope: me,
       success: function(response){
+        var zoomControl = view.down("#zoomControl");
         view.preview(Ext.decode(response.responseText));
-        view.down("#zoomControl").reset();
+        zoomControl.restoreZoom();
       },
       failure: function(){
         NOC.error(__("Failed to get data"));

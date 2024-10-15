@@ -94,19 +94,15 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       success: function(response){
         var parser = new DOMParser(),
           parserResult = parser.parseFromString(response.responseText, "image/svg+xml"),
-          parserError = parserResult.querySelector("parsererror");
+          parserError = parserResult.querySelector("parsererror"),
+          zoomControl = viewPanel.up().down("#zoomControl"); 
         
         if(parserError){
           NOC.error("Failed to parse SVG: " + parserError.textContent);
           return;
         }
-        var svg = parserResult.documentElement;
-        svg.setAttribute("height", "100%");
-        svg.setAttribute("width", "100%");
-        svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
-        svg.setAttribute("object-fit", "contain");
-        // svg.setAttribute("style", "width: auto; height: auto;max-width: 100%;max-height: 100%;");
-        viewPanel.setHtml(svg.outerHTML);
+        viewPanel.setHtml(parserResult.documentElement.outerHTML);
+        zoomControl.restoreZoom();
       },
       failure: function(response){
         NOC.error("Failed to load SVG: " + response.status);

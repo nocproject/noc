@@ -77,6 +77,11 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     element.setAttribute("object-fit", "contain");
     element.setAttribute("style", "transform: scale(1);transform-origin: center center;");
   },
+  restoreZoom: function(){
+    var store = this.getStore(),
+      record = store.findRecord("zoom", this.getValue());
+    this.setZoom(this, record);
+  },
   _updateValue: function(zoom, label){
     var store = this.getStore(),
       record = store.findRecord("label", label);
