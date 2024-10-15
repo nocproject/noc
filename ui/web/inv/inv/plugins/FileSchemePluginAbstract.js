@@ -18,6 +18,10 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
   scrollable: true,
   closable: false,
   controller: "filescheme",
+  layout: {
+    type: "vbox",
+    align: "stretch",
+  },
   viewModel: {
     data: {
       currentId: null,
@@ -38,6 +42,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
     {
       xtype: "container",
       itemId: "schemeContainer",
+      flex: 1,
       layout: "fit",
       scrollable: true,
       listeners: {
