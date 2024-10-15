@@ -35,8 +35,6 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   valueField: "zoom",
   displayField: "label",
   editable: false,
-    select: "setZoom",
-  },
   setZoom: function(combo, record){
     var {element, bb} = this._getSvgElement(),
       scale = record.get("zoom");
