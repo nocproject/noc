@@ -49,9 +49,10 @@ class Script(BaseScript):
         "IFNET": "IFNET",
         "BFD": "BFD",
         "RSVP": "RSVP",
+        "PIM": "PIM",
     }
 
-    client_ignored = ["CEF", "AUTO"]
+    client_ignored = ["CEF", "AUTO", "|"]
 
     def execute_cli(self, **kwargs):
         r = []
