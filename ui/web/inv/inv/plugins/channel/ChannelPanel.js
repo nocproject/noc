@@ -19,6 +19,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     data: {
       createInvChannelBtnDisabled: true,
       createInvChannelBtnText: __("Create"),
+      panelTitle: __("Create new channel"),
     },
   },
   gridColumns: [
@@ -88,12 +89,18 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     },
     {
       xtype: "invchannelmagic",
+      bind: {
+        title: "{panelTitle}",
+      },
       listeners: {
         magicselectionchange: "onMagicSelectionChange",
       },
     },
     {
       xtype: "invChannelParamsForm",
+      bind: {
+        title: "{panelTitle}",
+      },
       listeners: {
         complete: "onCreateAdHoc",
       },
@@ -241,10 +248,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       form = panel.down("form").getForm(),
       selectedRecord = this.getSelectedRow();
     if(Ext.isEmpty(selectedRecord.get("channel_id"))){
-      panel.setTitle(__("Create new channel"));
       form.reset();
     } else{
-      panel.setTitle(__("Update channel") + " " + selectedRecord.get("channel_name"));
       form.setValues({
         channel_id: selectedRecord.get("channel_id"),
         name: selectedRecord.get("channel_name"),
@@ -282,9 +287,22 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     });
   },
   //
-  onMagicSelectionChange: function(disable, text){
-    this.getViewModel().set("createInvChannelBtnDisabled", disable);
-    this.getViewModel().set("createInvChannelBtnText", text);
+  onMagicSelectionChange: function(disable, text, title){
+    var vm = this.getViewModel();
+    // selectedRecord = this.getSelectedRow();
+    vm.set("createInvChannelBtnDisabled", disable);
+    vm.set("createInvChannelBtnText", text);
+    vm.set("panelTitle", title);
+    // if(Ext.isEmpty(selectedRecord.get("channel_id"))){
+    //   panel.setTitle(__("Create new channel"));
+    //   form.reset();
+    // } else{
+    //   panel.setTitle(__("Update channel") + " " + selectedRecord.get("channel_name"));
+    //   form.setValues({
+    //     channel_id: selectedRecord.get("channel_id"),
+    //     name: selectedRecord.get("channel_name"),
+    //   });
+    // }
   },
   //
   onReload: function(){

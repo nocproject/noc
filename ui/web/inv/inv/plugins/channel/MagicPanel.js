@@ -16,7 +16,6 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
       xtype: "grid",
       scrollable: "y",
       height: 310,
-      title: __("Create channel"),
       allowDeselect: true,
       store: new Ext.data.Store({
         fields: ["controller", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
@@ -74,8 +73,9 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
   ],
   onSelectionChange: function(selModel, selections){
     if(selections.length > 0){
-      var isNew = Ext.isEmpty(selections[0].get("channel_id"));
-      this.fireEvent("magicselectionchange", false, isNew ? __("Create") : __("Update"));
+      var isNew = Ext.isEmpty(selections[0].get("channel_id")),
+        title = isNew ? __("Create new channel") : __("Update channel") + " " + selections[0].get("channel_name");
+      this.fireEvent("magicselectionchange", false, isNew ? __("Create") : __("Update"), title);
     }
   },
   onDeselectChange: function(){
