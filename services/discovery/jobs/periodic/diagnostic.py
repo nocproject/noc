@@ -109,7 +109,9 @@ class DiagnosticCheck(DiscoveryCheck):
                     if cr.data:
                         d_data[d.diagnostic].update(cr.data)
                 # Apply credentials
-                if credentials:
+                if credentials and (
+                    not self.object.auth_profile or self.object.auth_profile.enable_suggest
+                ):
                     self.logger.debug("Apply credentials: %s", credentials)
                     self.apply_credentials(credentials)
                 # Update diagnostics
