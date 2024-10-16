@@ -296,5 +296,5 @@ class ChannelPlugin(InvPlugin):
         ch, msg = ctl.sync_ad_hoc_channel(name=name, ep=ep, channel=channel, dry_run=dry_run)
         r = {"status": ch is not None, "msg": msg}  # @todo: Replace with message
         if ch:
-            r["channel"] = str(ch.id)
+            r["channel_id"] = str(ch.id)
         return r
