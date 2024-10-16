@@ -174,16 +174,22 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   onReload: function(){
     var me = this,
       currentId = me.getViewModel().get("currentId");
+    me.getData(function(response){
+      me.unmask();
+      me.preview(Ext.decode(response.responseText), currentId);
+      me.down("#zoomControl").reset();
+    });
+  },
+  //
+  getData: function(cb){
+    var me = this,
+      currentId = me.getViewModel().get("currentId");
     me.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/" + this.itemId.replace("Panel", "") + "/",
       method: "GET",
       scope: me,
-      success: function(response){
-        me.unmask();
-        me.preview(Ext.decode(response.responseText), currentId);
-        me.down("#zoomControl").reset();
-      },
+      success: cb,
       failure: function(){
         me.unmask();
         NOC.error(__("Failed to get data"));

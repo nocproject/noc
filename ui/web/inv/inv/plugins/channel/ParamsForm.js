@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.inv.plugins.channel.ParamsForm");
 Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
   extend: "Ext.window.Window",
   xtype: "invChannelParamsForm",
+  defaultListenerScope: true,
   title: __("Create Item"),
   modal: true,
   closeAction: "hide",
@@ -16,7 +17,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
   items: [
     {
       xtype: "form",
+      submitEmptyText: false,
       bodyPadding: 10,
+      defaultFocus: "name",
       defaults: {
         anchor: "100%",
         labelWidth: 100,
@@ -31,6 +34,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
           name: "name",
           fieldLabel: __("Name"),
           allowBlank: false,
+          listeners: {
+            specialkey: "onSpecialKey",
+          },
         },
         {
           xtype: "checkbox",
@@ -47,14 +53,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
           bind: {
             text: "{createInvChannelBtnText}",
           },
-          handler: function(button){
-            var form = button.up("form").getForm();
-            if(form.isValid()){
-              var values = form.getValues();
-              this.up("invChannelParamsForm").fireEvent("complete", values);
-              button.up("window").hide();
-            }
-          },
+          handler: "onCreateChannel",
         },
         {
           text: __("Close"),
@@ -84,5 +83,26 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
         win.setHeight(parentHeight * 0.8);
       }
     },
+    show: function(win){
+      Ext.defer(function(){
+        win.down("[name=name]").focus();
+      }, 50);
+    },
+  },
+  onSpecialKey: function(field, e){
+    if(e.getKey() === e.ENTER){
+      this.onCreateChannel(field);
+    }
+  },
+  onCreateChannel: function(field){
+    var form = field.up("form").getForm();
+    if(form.isValid()){
+      var values = form.getValues();
+      if(Ext.isEmpty(values.channel_id)){
+        delete values.channel_id;
+      }
+      this.fireEvent("complete", values);
+      field.up("window").hide();
+    }
   },
 });

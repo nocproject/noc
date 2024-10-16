@@ -79,6 +79,6 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
     }
   },
   onDeselectChange: function(){
-    this.fireEvent("magicselectionchange", true, __("Create"));
+    this.fireEvent("magicselectionchange", true, __("Create"), __("Create new channel"));
   },
 });

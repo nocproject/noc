@@ -149,6 +149,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     this.items = this.mainItems;
     this.callParent(arguments);
   },
+  //
   getSelectedRow: function(){
     var me = this,
       grid = me.down("invchannelmagic").down("grid"),
@@ -156,6 +157,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       selectedRecord = selectionModel.getSelection()[0];
     return selectedRecord;
   },
+  //
   onAdHoc: function(){
     var me = this,
       currentId = me.getViewModel().get("currentId"),
@@ -216,7 +218,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var me = this,
       currentId = me.getViewModel().get("currentId"),
       selectedRecord = this.getSelectedRow(); 
-   
     me.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
@@ -229,7 +230,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         var data = Ext.decode(response.responseText);
         if(data.status){
           NOC.info(data.msg);
-          NOC.launch("inv.channel", "history", {"args": [data.channel_id]});
+          NOC.launch("inv.channel", "history", {"args": [data.channel]});
           me.showChannelPanel();
         } else{
           NOC.error(data.msg);
@@ -289,20 +290,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   onMagicSelectionChange: function(disable, text, title){
     var vm = this.getViewModel();
-    // selectedRecord = this.getSelectedRow();
     vm.set("createInvChannelBtnDisabled", disable);
     vm.set("createInvChannelBtnText", text);
     vm.set("panelTitle", title);
-    // if(Ext.isEmpty(selectedRecord.get("channel_id"))){
-    //   panel.setTitle(__("Create new channel"));
-    //   form.reset();
-    // } else{
-    //   panel.setTitle(__("Update channel") + " " + selectedRecord.get("channel_name"));
-    //   form.setValues({
-    //     channel_id: selectedRecord.get("channel_id"),
-    //     name: selectedRecord.get("channel_name"),
-    //   });
-    // }
   },
   //
   onReload: function(){
@@ -318,21 +308,36 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     }
   },
   //
-  showChannelPanel: function(){
+  showChannelPanel: function(channelId){
     this.down("#adhocInvChannelBtn").show();
     this.down("#zoomControl").show();
     this.down("#downloadSvgButton").show();
     this.down("#closeInvChannelBtn").hide();
     this.down("#createInvChannelBtn").hide(); 
     this.getLayout().setActiveItem(0);
+    this.getData(function(response){
+      var record,
+        obj = Ext.decode(response.responseText),
+        grid = this.down("grid"),
+        store = grid.getStore();        
+      this.unmask();
+      store.loadData(obj.records);
+      record = store.getById(channelId);
+      if(record){
+        grid.getSelectionModel().select(grid.getStore().indexOf(record));
+      }
+    });
   },
   //
   showMagicPanel: function(){
-    this.getLayout().setActiveItem(1);
+    var vm = this.getViewModel();
     this.down("#adhocInvChannelBtn").hide();
     this.down("#zoomControl").hide();
     this.down("#downloadSvgButton").hide();
     this.down("#createInvChannelBtn").show();
     this.down("#closeInvChannelBtn").show();
+    vm.set("panelTitle", __("Create new channel"));
+    vm.set("createInvChannelBtnText", __("Create"));
+    this.getLayout().setActiveItem(1);
   },
 });
