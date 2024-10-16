@@ -146,29 +146,33 @@ class ChannelPlugin(InvPlugin):
                 return {field: d[0]}
             return {field: {"$in": d}}
 
-        def get_qualified_channels(endpoints: set[str], is_bidi: bool) -> dict[str, ObjectId]:
+        def get_qualified_channels(
+            endpoints: set[str], is_bidi: bool
+        ) -> list[tuple[str, ObjectId]]:
             q = in_q("resource", endpoints)
             if not is_bidi:
                 q["is_root"] = True
-            return {
-                x["resource"]: x["channel"]
+            return [
+                (x["resource"], x["channel"])
                 for x in DBEndpoint._get_collection().find(
                     q,
                     {"_id": 0, "resource": 1, "channel": 1},
                 )
-            }
+            ]
 
-        def get_unqualified_channels(endpoints: set[str], is_bidi: bool) -> dict[str, ObjectId]:
+        def get_unqualified_channels(
+            endpoints: set[str], is_bidi: bool
+        ) -> list[tuple[str, ObjectId]]:
             q = in_q("root_resource", endpoints)
             if not is_bidi:
                 q["is_root"] = True
-            return {
-                x["resource"][:26]: x["channel"]
+            return [
+                (x["resource"][:26], x["channel"])
                 for x in DBEndpoint._get_collection().find(
                     q,
                     {"_id": 0, "resource": 1, "channel": 1},
                 )
-            }
+            ]
 
         def get_controller_proposals(controller_name: str) -> list[dict[str, Any]]:
             """
@@ -221,21 +225,23 @@ class ChannelPlugin(InvPlugin):
                         }
                     )
             # Get endpoint to channel bindings
-            ch_ep = {}  # endpoint -> channel
+            ep_ch: list[tuple[str, ObjectId]] = []  # [(endpoint, channel), ...]
             if qualified:
-                ch_ep.update(get_qualified_channels(qualified, is_bidi))
+                ep_ch += get_qualified_channels(qualified, is_bidi)
             if unqualified:
-                ch_ep.update(get_unqualified_channels(unqualified, is_bidi))
+                ep_ch += get_unqualified_channels(unqualified, is_bidi)
             # Get channels
             channel_name = {}
             channel_params = {}
-            if ch_ep:
+            if ep_ch:
                 for x in Channel._get_collection().find(
-                    {"_id": {"$in": list(ch_ep.values())}},
+                    {"_id": {"$in": [e[1] for e in ep_ch]}, "controller": controller_name},
                     {"_id": 1, "name": 1, "params": 1},
                 ):
                     channel_name[x["_id"]] = x["name"]
                     channel_params[x["_id"]] = x.get("params")
+            # Filter out unrelevant channels of other technologies
+            ch_ep = {ep: ch for ep, ch in ep_ch if ch in channel_name}
             # Enrich output
             for x in r:
                 ch1 = ch_ep.get(x["start_endpoint"])
