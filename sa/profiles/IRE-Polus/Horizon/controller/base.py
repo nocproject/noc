@@ -52,7 +52,7 @@ class HorizonMixin(object):
             return (int(obj.parent.parent_connection) - 1) * 2 + int(cn)
         return (int(cn) - 1) * 2 + 1
 
-    def set_request(self, req: SetValue, dry_run:bool=False) -> JobRequest:
+    def set_request(self, req: SetValue, dry_run: bool = False) -> JobRequest:
         """
         Generate
         """
@@ -63,14 +63,16 @@ class HorizonMixin(object):
             inputs=[
                 InputMapping(name="script", value="set_param"),
                 InputMapping(name="managed_object", value="{{ managed_object }}"),
-                InputMapping(name="dry_run"), value=str(dry_run)),
+                InputMapping(name="dry_run", value=str(dry_run)),
                 KVInputMapping(name="card", value="{{ card }}"),
                 KVInputMapping(name="name", value=req.name),
                 KVInputMapping(name="value", value=req.value),
             ],
         )
 
-    def iter_set_requests(self, iter: Iterable[SetValue], dry_run:bool=False) -> Iterable[JobRequest]:
+    def iter_set_requests(
+        self, iter: Iterable[SetValue], dry_run: bool = False
+    ) -> Iterable[JobRequest]:
         """
         Iterate a series of set requests.
         """
@@ -187,7 +189,7 @@ class ChannelMixin(HorizonMixin, metaclass=ChannelMetaclass):
         # Get port
         _, _, port = ep.resource.split(":", 2)
         # Get jobs
-        jobs = list(self.iter_set_requests(self.iter_setup(obj, port, **kwargs),dry_run=dry_run))
+        jobs = list(self.iter_set_requests(self.iter_setup(obj, port, **kwargs), dry_run=dry_run))
         if not jobs:
             self.logger.info("Nothing to setup, skipping")
             return None
