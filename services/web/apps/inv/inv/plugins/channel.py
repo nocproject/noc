@@ -12,7 +12,7 @@ from collections import defaultdict
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.resource import resource_label
-from noc.sa.interfaces.base import StringParameter, OBJECT_ID, ObjectIdParameter
+from noc.sa.interfaces.base import StringParameter, OBJECT_ID, ObjectIdParameter, BooleanParameter
 from noc.core.techdomain.controller.loader import loader as controller_loader
 from noc.core.techdomain.controller.base import BaseController
 from noc.core.techdomain.controller.base import Endpoint
@@ -39,7 +39,13 @@ class ChannelPlugin(InvPlugin):
             self.api_create_adhoc,
             url=f"^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/$",
             method=["POST"],
-            validate={"endpoint": StringParameter(), "controller": StringParameter()},
+            validate={
+                "channel_id": ObjectIdParameter(required=False),
+                "endpoint": StringParameter(),
+                "controller": StringParameter(),
+                "name": StringParameter(),
+                "dry_run": BooleanParameter(required=False, default=False),
+            },
         )
 
     def get_data(self, request, object):
@@ -274,7 +280,16 @@ class ChannelPlugin(InvPlugin):
             update_proposal(x)
         return r
 
-    def api_create_adhoc(self, request, id, endpoint, controller):
+    def api_create_adhoc(
+        self,
+        request,
+        id,
+        name: str,
+        endpoint: str,
+        controller: str,
+        channel_id: str | None = None,
+        dry_run: bool | None = None,
+    ):
         self.app.get_object_or_404(Object, id=id)
         ep = Endpoint.from_resource(endpoint)
         ctl = controller_loader[controller]()
