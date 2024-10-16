@@ -10,6 +10,7 @@ from typing import Iterable, Optional, Tuple
 from dataclasses import dataclass
 import logging
 import datetime
+from enum import Enum
 
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModelConnection
@@ -54,6 +55,26 @@ class Endpoint(object):
     def is_qualified(self) -> bool:
         """Check if endpoint has slot name."""
         return bool(self.name)
+
+
+class ParamType(Enum):
+    STRING = "string"
+
+
+@dataclass
+class Choice(object):
+    id: str
+    label: str
+
+
+@dataclass
+class Param(object):
+    name: str
+    type: ParamType
+    value: str | None
+    label: str | None = None
+    choices: list[Choice] | None = None
+    readonly: bool = False
 
 
 @dataclass
@@ -125,7 +146,9 @@ class BaseController(object):
             return None  # No path
         return Endpoint(object=last.object, name=last.output if last.output else last.input)
 
-    def iter_adhoc_endpoints(self, obj: Object) -> Iterable[Tuple[Endpoint, Endpoint]]:
+    def iter_adhoc_endpoints(
+        self, obj: Object
+    ) -> Iterable[Tuple[Endpoint, Endpoint, list[Param] | None]]:
         """
         Iterate endpoints suitable to create a channel.
 
@@ -136,6 +159,7 @@ class BaseController(object):
             end = self.trace_path(ep)
             if not end:
                 continue
+            params = None
             if self.adhoc_bidirectional:
                 # Trace back
                 start = self.trace_path(end)
@@ -144,16 +168,18 @@ class BaseController(object):
                 # Returned back
                 if ep.as_resource() == start.as_resource():
                     if self.adhoc_endpoints:
-                        yield ep, end
+                        yield ep, end, params
                     else:
                         # Whole object
-                        yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name="")
+                        yield Endpoint(object=obj, name=""), Endpoint(
+                            object=end.object, name=""
+                        ), params
                         return
             elif self.adhoc_endpoints:
-                yield ep, end
+                yield ep, end, params
             else:
                 # Whole object
-                yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name="")
+                yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name=""), params
                 return
 
     def get_peer(self, ep: Endpoint) -> Optional[Endpoint]:
@@ -235,6 +261,18 @@ class BaseController(object):
             Channel instance, message
         """
         raise NotImplementedError
+
+    def get_ad_hoc_params(self, endpoints: list[Endpoint]) -> list[Param] | None:
+        """
+        Get possible channel parameters.
+
+        Args:
+            endpoints: List of endpoints.
+
+        Returns:
+            List of params or None
+        """
+        return None
 
     def is_connected(self, obj: Object, name: str) -> bool:
         """

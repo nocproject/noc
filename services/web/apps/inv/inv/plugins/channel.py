@@ -41,17 +41,6 @@ class ChannelPlugin(InvPlugin):
             method=["POST"],
             validate={"endpoint": StringParameter(), "controller": StringParameter()},
         )
-        self.add_view(
-            f"api_plugin_{self.name}_get_adhoc_config",
-            self.api_get_adhoc_config,
-            url=f"^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/config/$",
-            method=["POST"],
-            validate={
-                "channel_id": ObjectIdParameter(required=False),
-                "endpoint": StringParameter(),
-                "controller": StringParameter(),
-            },
-        )
 
     def get_data(self, request, object):
         def q(ch: Channel) -> Dict[str, Any]:
@@ -135,7 +124,7 @@ class ChannelPlugin(InvPlugin):
         return "".join(parts)
 
     def api_get_adhoc_list(self, request, id):
-        def update_proposal_status(x: Dict[str, str]):
+        def update_proposal(x: Dict[str, str]):
             ch1 = ch_ep.get(x["start_endpoint"])
             ch2 = ch_ep.get(x["end_endpoint"])
             if not ch1 and not ch2:
@@ -146,6 +135,7 @@ class ChannelPlugin(InvPlugin):
                     x["status"] = "done"
                     x["channel_id"] = str(ch1)
                     x["channel_name"] = channel_name.get(ch1, "")
+                    x["params"] = channel_params.get(ch1) or []
                 else:
                     x["status"] = "broken"
             else:
@@ -154,6 +144,7 @@ class ChannelPlugin(InvPlugin):
                     x["status"] = "done"
                     x["channel_id"] = str(ch1)
                     x["channel_name"] = channel_name.get(ch1, "")
+                    x["params"] = channel_params.get(ch1) or []
                 else:
                     x["status"] = "new"
 
@@ -205,7 +196,7 @@ class ChannelPlugin(InvPlugin):
         for controller_name in controller_loader:
             controller = controller_loader[controller_name]()
             for no in nested_objects:
-                for sep, eep in controller.iter_adhoc_endpoints(no):
+                for sep, eep, params in controller.iter_adhoc_endpoints(no):
                     if is_xcvr and not (sep == xep or eep == xep):
                         continue
                     is_bidi = controller.topology.is_bidirectional
@@ -271,16 +262,16 @@ class ChannelPlugin(InvPlugin):
             )
         # Get channel names
         channel_name = {}
+        channel_params = {}
         if ch_ep:
-            channel_name = {
-                x["_id"]: x["name"]
-                for x in Channel._get_collection().find(
-                    {"_id": {"$in": list(ch_ep.values())}}, {"_id": 1, "name": 1}
-                )
-            }
+            for x in Channel._get_collection().find(
+                {"_id": {"$in": list(ch_ep.values())}}, {"_id": 1, "name": 1, "params": 1}
+            ):
+                channel_name[x["_id"]] = x["name"]
+                channel_params[x["_id"]] = x.get("params")
         # Update statuses
         for x in r:
-            update_proposal_status(x)
+            update_proposal(x)
         return r
 
     def api_create_adhoc(self, request, id, endpoint, controller):
@@ -292,33 +283,3 @@ class ChannelPlugin(InvPlugin):
         if ch:
             r["channel"] = str(ch.id)
         return r
-
-    def api_get_adhoc_config(
-        self, request, id: str, channel_id: str | None, endpoint: str, controller: str
-    ) -> None:
-        self.app.get_object_or_404(Object, id=id)
-        ep = Endpoint.from_resource(endpoint)
-        ctl = controller_loader[controller]()
-        data = {}
-        if channel_id:
-            channel = self.app.get_object_or_404(id=channel_id)
-            data["name"] = channel.name
-        else:
-            # @todo: Add sandbox name
-            data["name"] = f"Magic {controller} from {ep.label}"
-        # @todo: Debug
-        data["config"] = [
-            {"name": "p1", "label": "String", "type": "string", "value": "15"},
-            {
-                "name": "p2",
-                "label": "Combo",
-                "type": "string",
-                "value": "2",
-                "options": [
-                    {"id": "1", "label": "One"},
-                    {"id": "2", "label": "Two"},
-                    {"id": "3", "label": "Three"},
-                ],
-            },
-        ]
-        return {"status": True, "data": data}
