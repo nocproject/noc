@@ -53,6 +53,11 @@ class ConstraintItem(EmbeddedDocument):
     resource = StringField()
 
 
+class ParamItem(EmbeddedDocument):
+    name = StringField()
+    value = StringField()
+
+
 @bi_sync
 @Label.model
 @on_delete_check(check=[("inv.Channel", "parent"), ("inv.Endpoint", "channel")])
@@ -81,6 +86,7 @@ class Channel(Document):
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
     constraints = EmbeddedDocumentListField(ConstraintItem)
+    params = EmbeddedDocumentListField(ParamItem)
     # Controller which created the channel
     controller = StringField(required=False)
     # Integration with external NRI and TT systems
