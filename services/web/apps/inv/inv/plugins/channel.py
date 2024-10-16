@@ -142,13 +142,12 @@ class ChannelPlugin(InvPlugin):
                 x["status"] = "new"
                 return
             if x["is_bidirectional"]:
-                if ch1 and ch2:
-                    if ch1 == ch2:
-                        x["status"] = "done"
-                        x["channel_id"] = str(ch1)
-                        x["channel_name"] = channel_name.get(ch1, "")
-                    else:
-                        x["status"] = "broken"
+                if ch1 and ch2 and ch1 == ch2:
+                    x["status"] = "done"
+                    x["channel_id"] = str(ch1)
+                    x["channel_name"] = channel_name.get(ch1, "")
+                else:
+                    x["status"] = "broken"
             else:
                 # Unidirectional
                 if ch1:

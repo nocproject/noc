@@ -27,6 +27,12 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
           text: __("Channel"),
           dataIndex: "channel_name",
           width: 250,
+          renderer: function(v){
+            if(v){
+              return v;
+            }
+            return "<i>" + __("Create new") + "</i>";
+          },
         },
         {
           text: __("Start"),
