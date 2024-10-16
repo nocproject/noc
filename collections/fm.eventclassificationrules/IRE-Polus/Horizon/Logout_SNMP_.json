@@ -1,0 +1,34 @@
+{
+    "name": "IRE-Polus | Horizon | Logout (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f929b9a9-7f88-41b8-b42a-76c9006fc9cd",
+    "description": "IPG-MIB::ipg.3",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::ipg.3$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessAction$",
+            "value_re": "^logout$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessUser$",
+            "value_re": "^(?P<user>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::accessAddress$",
+            "value_re": "^(?P<ip>.+)$"
+        }
+    ]
+}

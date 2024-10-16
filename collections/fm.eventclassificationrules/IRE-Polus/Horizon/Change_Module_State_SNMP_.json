@@ -1,0 +1,50 @@
+{
+    "name": "IRE-Polus | Horizon | Change Module State (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "64d49669-241e-4c6e-bb9d-423d18e42588",
+    "description": "IPG-MIB::ipg.4",
+    "event_class__name": "IRE-Polus | Horizon | Module State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::rack$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSeverity$",
+            "value_re": "^(?P<severity>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCategory$",
+            "value_re": "^(?P<category>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCrateId$",
+            "value_re": "^(?P<crate_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSlot$",
+            "value_re": "^(?P<trap_slot>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDevice$",
+            "value_re": "^(?P<trap_device>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDeviceModule$",
+            "value_re": "^(?P<trap_device_module>.*)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDescr$",
+            "value_re": "^(?P<trap_descr>.*)$"
+        }
+    ]
+}
