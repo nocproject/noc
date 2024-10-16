@@ -291,9 +291,15 @@ class ChannelPlugin(InvPlugin):
         dry_run: bool | None = None,
     ):
         self.app.get_object_or_404(Object, id=id)
+        # Get channel
+        if channel_id:
+            channel = self.app.get_object_or_404(Channel, id=id)
+        else:
+            channel = None
+        # Run controller
         ep = Endpoint.from_resource(endpoint)
         ctl = controller_loader[controller]()
-        ch, msg = ctl.sync_ad_hoc_channel(ep)
+        ch, msg = ctl.sync_ad_hoc_channel(name=name, ep=ep, channel=channel, dry_run=dry_run)
         r = {"status": ch is not None, "msg": msg}  # @todo: Replace with message
         if ch:
             r["channel"] = str(ch.id)

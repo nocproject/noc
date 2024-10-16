@@ -14,5 +14,7 @@ from .channel import ProfileChannelController
 class BaseOpticalDwdmProfileController(ProfileChannelController):
     name = "optical_dwdm"
 
-    def setup(self, ep: Endpoint, destination: str | None = None, **kwargs) -> JobRequest | None:
-        return super().setup(ep, destination=destination, **kwargs)
+    def setup(
+        self, ep: Endpoint, dry_run: bool = False, destination: str | None = None, **kwargs
+    ) -> JobRequest | None:
+        return super().setup(ep, dry_run=dry_run, destination=destination, **kwargs)

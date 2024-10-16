@@ -1033,5 +1033,6 @@ class ColorParameter(Parameter):
                 self.raise_error(value)
         self.raise_error(value)
 
+
 # Patterns
 OBJECT_ID = "[0-9a-f]{24}"
