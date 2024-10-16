@@ -33,13 +33,17 @@ class CrossingProposalsBuilder(object):
         self.internal = internal
         self.cable = ObjectModel.get_by_name(cable_filter) if cable_filter else None
 
-    def _iter_cables(self) -> Iterable[Dict[str, Any]]:
+    def _iter_cables(self, types: set[str] | None = None) -> Iterable[Dict[str, Any]]:
         """
         Iterate over cable models.
         """
         for om in ObjectModel.objects.filter(
             data__match={"interface": "length", "attr": "length", "value__gte": 0}
         ):
+            if len(om.connections) != 2:
+                continue
+            if types and not any(True for cc in om.connections if str(cc.type.id) in types):
+                continue
             yield {"name": om.name, "available": True}
 
     def build(self) -> Dict[str, Any]:
@@ -47,14 +51,12 @@ class CrossingProposalsBuilder(object):
         Build connection proposals
         """
         result = {
-            "left": {"connections": [], "device": {}, "internal_connections": []},
+            "left": {"connections": [], "internal_connections": []},
             "right": {
                 "connections": [],
-                "device": {},
                 "internal_connections": [],
             },
             # @todo: Replace with cable lookup
-            "cable": list(self._iter_cables()),
             "valid": False,
             "wires": [],
         }
@@ -69,6 +71,7 @@ class CrossingProposalsBuilder(object):
         result["left"]["connections"] = list(left.iter_connections())
         result["left"]["internal_connections"] = left.internal_connections or []
         result["wires"] = left.wires
+        conn_types = {c["type"] for c in result["left"]["connections"]}
         if self.ro:
             right = _RightBuilder(
                 self.ro, self.right_filter, self.lo, self.left_filter, self.internal, self.cable
@@ -76,6 +79,9 @@ class CrossingProposalsBuilder(object):
             result["right"]["connections"] = list(right.iter_connections())
             result["right"]["internal_connections"] = right.internal_connections or []
             result["wires"].extend(right.wires)
+            conn_types.update(c["type"] for c in result["right"]["connections"])
+        # Add cables
+        result["cable"] = list(self._iter_cables(conn_types))
         return result
 
 
