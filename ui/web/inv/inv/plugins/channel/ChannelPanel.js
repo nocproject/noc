@@ -230,8 +230,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         var data = Ext.decode(response.responseText);
         if(data.status){
           NOC.info(data.msg);
-          NOC.launch("inv.channel", "history", {"args": [data.channel]});
-          me.showChannelPanel();
+          me.showChannelPanel(data.channel_id);
         } else{
           NOC.error(data.msg);
         }
