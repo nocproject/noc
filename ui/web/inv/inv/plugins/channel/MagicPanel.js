@@ -24,6 +24,11 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
       }),
       columns: [
         {
+          text: __("Channel"),
+          dataIndex: "channel_name",
+          width: 250,
+        },
+        {
           text: __("Start"),
           dataIndex: "start_endpoint",
           flex: 1,

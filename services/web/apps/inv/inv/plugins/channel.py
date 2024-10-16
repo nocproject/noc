@@ -19,7 +19,6 @@ from noc.core.techdomain.controller.base import Endpoint
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.main.models.favorites import Favorites
-from noc.core.inv.result import Result
 from .base import InvPlugin
 
 
@@ -147,6 +146,7 @@ class ChannelPlugin(InvPlugin):
                     if ch1 == ch2:
                         x["status"] = "done"
                         x["channel_id"] = str(ch1)
+                        x["channel_name"] = channel_name.get(ch1, "")
                     else:
                         x["status"] = "broken"
             else:
@@ -154,6 +154,7 @@ class ChannelPlugin(InvPlugin):
                 if ch1:
                     x["status"] = "done"
                     x["channel_id"] = str(ch1)
+                    x["channel_name"] = channel_name.get(ch1, "")
                 else:
                     x["status"] = "new"
 
@@ -269,11 +270,18 @@ class ChannelPlugin(InvPlugin):
                     )
                 }
             )
-        print("CH_EP>>>", ch_ep)
+        # Get channel names
+        channel_name = {}
+        if ch_ep:
+            channel_name = {
+                x["_id"]: x["name"]
+                for x in Channel._get_collection().find(
+                    {"_id": {"$in": list(ch_ep.values())}}, {"_id": 1, "name": 1}
+                )
+            }
         # Update statuses
         for x in r:
             update_proposal_status(x)
-        print("RESULT>", r)
         return r
 
     def api_create_adhoc(self, request, id, endpoint, controller):
@@ -297,6 +305,7 @@ class ChannelPlugin(InvPlugin):
             channel = self.app.get_object_or_404(id=channel_id)
             data["name"] = channel.name
         else:
+            # @todo: Add sandbox name
             data["name"] = f"Magic {controller} from {ep.label}"
         # @todo: Debug
         data["config"] = [
