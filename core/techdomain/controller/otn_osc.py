@@ -89,7 +89,7 @@ class OTNOSCController(BaseController):
             # Create endpoints
             dbe = []
             for x in (start, end):
-                ep = DBEndpoint(channel=ch, resource=x.as_resource(), is_root=x == start)
+                ep = DBEndpoint(channel=channel, resource=x.as_resource(), is_root=x == start)
                 ep.save()
                 dbe.append(ep)
         elif len(dbe) == 1:

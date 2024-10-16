@@ -192,8 +192,8 @@ class OTNOTUController(BaseController):
             channel = self.create_ad_hoc_channel(discriminator=discriminator)
             is_new = True
             # Create endpoints
-            DBEndpoint(channel=ch, resource=start.as_resource()).save()
-            DBEndpoint(channel=ch, resource=end.as_resource()).save()
+            DBEndpoint(channel=channel, resource=start.as_resource()).save()
+            DBEndpoint(channel=channel, resource=end.as_resource()).save()
         elif len(dbe) == 1:
             # Hanging endpoint
             return None, "Hanging endpoint"
