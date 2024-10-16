@@ -1,0 +1,38 @@
+{
+    "name": "IRE-Polus | Horizon | Alarm",
+    "$collection": "fm.alarmclasses",
+    "uuid": "3e2e32db-5bfd-4663-8b7a-d647dafdd596",
+    "is_unique": true,
+    "reference": ["module_name", "alarm_descr", "card_name", "slot_id", "crate_id"],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "alarm_descr",
+            "description": null
+        },
+        {
+            "name": "module_name",
+            "description": null
+        },
+        {
+            "name": "card_name",
+            "description": null
+        },
+        {
+            "name": "crate_id",
+            "description": null
+        },
+        {
+            "name": "slot_id",
+            "description": null
+        }
+    ],
+    "subject_template": "Alarm {{alarm_descr}} raised on module {{module_name}} Linecard {{card_name}} Crate {{crate_id}} Slot {{slot_id}}",
+    "body_template": "Alarm {{alarm_descr}} raised on module {{module_name}} Linecard {{card_name}} Crate {{crate_id}} Slot {{slot_id}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
+}

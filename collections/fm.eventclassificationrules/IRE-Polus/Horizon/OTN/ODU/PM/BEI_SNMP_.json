@@ -1,0 +1,42 @@
+{
+    "name": "IRE-Polus | Horizon | OTN | ODU | PM | BEI (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "76086dc3-ed52-4852-a84c-9fe5bde04d6d",
+    "description": "IPG-MIB::rack",
+    "event_class__name": "OTN | ODU | PM | BEI",
+    "preference": 100,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::rack$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCrateId$",
+            "value_re": "^(?P<crate_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSlot$",
+            "value_re": "^(?P<slot_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDevice$",
+            "value_re": "^(?P<card_name>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDeviceModule$",
+            "value_re": "^(?P<module_name>.*)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDescr$",
+            "value_re": "^Alarm raised: (?P<port_name>.+)_ODU(?P<odu_num>.+)_Alarms.+PM-BEI$"
+        }
+    ]
+}

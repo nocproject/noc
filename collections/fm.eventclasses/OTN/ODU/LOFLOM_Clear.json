@@ -1,0 +1,67 @@
+{
+    "name": "OTN | ODU | LOFLOM Clear",
+    "$collection": "fm.eventclasses",
+    "uuid": "dd65f106-3e8d-482d-baf0-6be6f09080a2",
+    "action": "L",
+    "vars": [
+        {
+            "name": "crate_id",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "slot_id",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "card_name",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "module_name",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "port_name",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "odu_num",
+            "description": "",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "ODU{{odu_num}} LOFLOM cleared on {{port_name}} module {{module_name}} Linecard {{card_name}} crate {{crate_id}} slot {{slot_id}}",
+    "body_template": "ODU{{odu_num}} LOFLOM cleared on {{port_name}} module {{module_name}} Linecard {{card_name}} crate {{crate_id}} slot {{slot_id}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "OTN | ODU | LOFLOM",
+            "stop_disposition": "true"
+        }
+    ]
+}

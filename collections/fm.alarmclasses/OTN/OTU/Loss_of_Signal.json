@@ -1,0 +1,49 @@
+{
+    "name": "OTN | OTU | Loss of Signal",
+    "$collection": "fm.alarmclasses",
+    "uuid": "b3bfbd72-8af5-46c4-94eb-6afc1d826acb",
+    "is_unique": true,
+    "reference": [
+        "module_name",
+        "port_name",
+        "card_name",
+        "slot_id",
+        "crate_id",
+        "otu_num"
+    ],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "port_name",
+            "description": null
+        },
+        {
+            "name": "module_name",
+            "description": null
+        },
+        {
+            "name": "card_name",
+            "description": null
+        },
+        {
+            "name": "crate_id",
+            "description": null
+        },
+        {
+            "name": "slot_id",
+            "description": null
+        },
+        {
+            "name": "otu_num",
+            "description": null
+        }
+    ],
+    "subject_template": "OTU{{otu_num}} LOS detected on {{port_name}} module {{module_name}} Linecard {{card_name}} crate {{crate_id}} slot {{slot_id}}",
+    "body_template": "OTU{{otu_num}} LOS detected on {{port_name}} module {{module_name}} Linecard {{card_name}} crate {{crate_id}} slot {{slot_id}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
+}

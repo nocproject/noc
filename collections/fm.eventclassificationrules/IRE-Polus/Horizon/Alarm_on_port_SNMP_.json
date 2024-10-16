@@ -1,0 +1,42 @@
+{
+    "name": "IRE-Polus | Horizon | Alarm on port (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "116c9ab3-1158-40ba-a41a-7ebcc8659277",
+    "description": "IPG-MIB::rack",
+    "event_class__name": "IRE-Polus | Horizon | Alarm on port",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^IRE-Polus.Horizon$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::rack$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCrateId$",
+            "value_re": "^(?P<crate_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSlot$",
+            "value_re": "^(?P<slot_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDevice$",
+            "value_re": "^(?P<card_name>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDeviceModule$",
+            "value_re": "^(?P<module_name>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDescr$",
+            "value_re": "^Port: (?P<alarm_descr>.+)$"
+        }
+    ]
+}

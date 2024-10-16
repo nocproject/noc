@@ -1,0 +1,62 @@
+{
+    "name": "OTN | OTU | Loss of Frame",
+    "$collection": "fm.alarmclasses",
+    "uuid": "1c039818-fb73-48f8-88bd-88fe13823e28",
+    "is_unique": true,
+    "reference": [
+        "module_name",
+        "port_name",
+        "card_name",
+        "slot_id",
+        "crate_id",
+        "otu_num"
+    ],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "port_name",
+            "description": null
+        },
+        {
+            "name": "module_name",
+            "description": null
+        },
+        {
+            "name": "card_name",
+            "description": null
+        },
+        {
+            "name": "crate_id",
+            "description": null
+        },
+        {
+            "name": "slot_id",
+            "description": null
+        },
+        {
+            "name": "otu_num",
+            "description": null
+        }
+    ],
+    "subject_template": "OTU{{otu_num}} LOF detected on {{port_name}} module {{module_name}} Linecard {{card_name}} crate {{crate_id}} slot {{slot_id}}",
+    "body_template": "OTU{{otu_num}} LOF detected on {{port_name}} module {{module_name}} Linecard {{card_name}} crate {{crate_id}} slot {{slot_id}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "root_cause": [
+        {
+            "name": "LOS",
+            "root__name": "OTN | OTU | Loss of Signal",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id",
+                "vars__port_name": "alarm.vars['port_name']",
+                "vars__slot_id": "alarm.vars['slot_id']"
+            }
+        }
+    ],
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
+}
