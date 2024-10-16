@@ -98,8 +98,9 @@ class OTNOSCController(BaseController):
         elif len(dbe) == 2:
             if not channel:
                 channel = dbe[0].channel
-            elif dbe[0].channel == channel:
+            elif dbe[0].channel != channel:
                 return None, "Belongs to other channel"
+            self.update_name(channel, name)
         else:
             return None, "Total trash inside"
         # Update itermediate channels

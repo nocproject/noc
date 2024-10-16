@@ -204,6 +204,7 @@ class OTNOTUController(BaseController):
                 channel = dbe[0].channel
             elif dbe[0].channel != channel:
                 return None, "Belongs to other channel"
+            self.update_name(channel, name)
             # Cleanup intermediate channels
             for ep in DBEndpoint.objects.filter(used_by__channel=channel.id):
                 ep.used_by = [i for i in ep.used_by if i.channel.id != channel.id]
