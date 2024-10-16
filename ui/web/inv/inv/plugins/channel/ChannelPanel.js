@@ -13,7 +13,14 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   layout: "card",
   requires: [
     "NOC.inv.inv.plugins.channel.MagicPanel",
+    "NOC.inv.inv.plugins.channel.ParamsForm",
   ],
+  viewModel: {
+    data: {
+      createInvChannelBtnDisabled: true,
+      createInvChannelBtnText: __("Create"),
+    },
+  },
   gridColumns: [
     {
       xtype: 'glyphactioncolumn',
@@ -85,6 +92,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         magicselectionchange: "onMagicSelectionChange",
       },
     },
+    {
+      xtype: "invChannelParamsForm",
+      listeners: {
+        complete: "onCreateAdHoc",
+      },
+    },
   ],
   initComponent: function(){
     var parentItems = Ext.clone(this.items),
@@ -103,14 +116,15 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         handler: "onAdHoc",
       },
       createBtn = {
-        text: __("Create"),
         itemId: "createInvChannelBtn",
         glyph: NOC.glyph.plus,
-        disabled: true,
+        bind: {
+          disabled: "{createInvChannelBtnDisabled}",
+          text: "{createInvChannelBtnText}",
+        },
         hidden: true,
-        handler: "onCreateAdHoc",
+        handler: "onCreateBtn",
       };
-    
     // Make tbar
     Ext.Array.remove(tbarItems, Ext.Array.findBy(tbarItems, function(item){
       return item.itemId === "detailsButton";
@@ -128,12 +142,19 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     this.items = this.mainItems;
     this.callParent(arguments);
   },
+  getSelectedRow: function(){
+    var me = this,
+      grid = me.down("invchannelmagic").down("grid"),
+      selectionModel = grid.getSelectionModel(),
+      selectedRecord = selectionModel.getSelection()[0];
+    return selectedRecord;
+  },
   onAdHoc: function(){
     var me = this,
       currentId = me.getViewModel().get("currentId"),
       url = "/inv/inv/" + currentId + "/plugin/channel/adhoc/";
     me.mask(__("Loading..."));
-    me.down("#createInvChannelBtn").setDisabled(true);
+    me.getViewModel().set("createInvChannelBtnDisabled", true);
     Ext.Ajax.request({
       url: url,
       method: "GET",
@@ -184,18 +205,19 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     }
   },
   //
-  onCreateAdHoc: function(){
+  onCreateAdHoc: function(params){
     var me = this,
-      grid = me.down("invchannelmagic").down("grid"),
       currentId = me.getViewModel().get("currentId"),
-      selectionModel = grid.getSelectionModel(),
-      selectedRecord = selectionModel.getSelection()[0];
-
+      selectedRecord = this.getSelectedRow(); 
+   
     me.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
       method: "POST",
-      jsonData: {endpoint: selectedRecord.get("start_endpoint"), controller: selectedRecord.get("controller")},
+      jsonData: Ext.apply(
+        {endpoint: selectedRecord.get("start_endpoint"), controller: selectedRecord.get("controller")},
+        params,
+      ),
       success: function(response){
         var data = Ext.decode(response.responseText);
         if(data.status){
@@ -212,6 +234,23 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         NOC.error("Failure", response);
       },
     });
+  },
+  //
+  onCreateBtn: function(){
+    var panel = this.down("invChannelParamsForm"),
+      form = panel.down("form").getForm(),
+      selectedRecord = this.getSelectedRow();
+    if(Ext.isEmpty(selectedRecord.get("channel_id"))){
+      panel.setTitle(__("Create new channel"));
+      form.reset();
+    } else{
+      panel.setTitle(__("Update channel") + " " + selectedRecord.get("channel_name"));
+      form.setValues({
+        channel_id: selectedRecord.get("channel_id"),
+        name: selectedRecord.get("channel_name"),
+      });
+    }
+    panel.show();
   },
   //
   onDeselect: function(){
@@ -243,8 +282,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     });
   },
   //
-  onMagicSelectionChange: function(disable){
-    this.down("#createInvChannelBtn").setDisabled(disable);
+  onMagicSelectionChange: function(disable, text){
+    this.getViewModel().set("createInvChannelBtnDisabled", disable);
+    this.getViewModel().set("createInvChannelBtnText", text);
   },
   //
   onReload: function(){

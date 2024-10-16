@@ -74,10 +74,11 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
   ],
   onSelectionChange: function(selModel, selections){
     if(selections.length > 0){
-      this.fireEvent("magicselectionchange", false);
+      var isNew = Ext.isEmpty(selections[0].get("channel_id"));
+      this.fireEvent("magicselectionchange", false, isNew ? __("Create") : __("Update"));
     }
   },
   onDeselectChange: function(){
-    this.fireEvent("magicselectionchange", true);
+    this.fireEvent("magicselectionchange", true, __("Create"));
   },
 });
