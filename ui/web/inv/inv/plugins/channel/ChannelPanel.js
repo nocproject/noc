@@ -137,7 +137,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       return item.itemId === "detailsButton";
     }));
     tbarItems.splice(0, 0, closeBtn);
-    tbarItems.splice(tbarItems.length - 1, 0, magicBtn, createBtn);
+    tbarItems.splice(tbarItems.length - 2, 0, magicBtn, createBtn);
     this.tbar = tbarItems;
     // Make items
     this.mainItems[0].items = parentItems;

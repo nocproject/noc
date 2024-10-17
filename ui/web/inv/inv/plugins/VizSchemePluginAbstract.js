@@ -23,11 +23,20 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   defaultListenerScope: true,
   scrollable: false,
   viewModel: {
+    stores: {
+      gridStore: {
+        data: [],
+        listeners: {
+          datachanged: "onDataChanged",
+        },
+      },
+    },
     data: {
       currentId: null,
       showDetails: true,
       zoomDisabled: true,
       downloadSvgButtonDisabled: true,
+      totalCount: 0,
     },
     formulas: {
       detailsButtonText: function(get){
@@ -74,6 +83,13 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
         disabled: "{downloadSvgButtonDisabled}",
       },
     },
+    "->",
+    {
+      xtype: "tbtext",
+      bind: {
+        html: __("Total") + ": {totalCount}",
+      },
+    },
   ],
   items: [
     {
@@ -82,13 +98,11 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       flex: 1,
       bind: {
         hidden: "{!showDetails}",
+        store: "{gridStore}",
       },
       emptyText: __("No data"),
       allowDeselect: true,
       split: true,
-      store: {
-        data: [],
-      },
       columns: [],
       listeners: {
         afterlayout: "afterGridRender",
@@ -244,6 +258,12 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       grid = me.down("grid");
     if(!pressed){
       grid.getSelectionModel().deselectAll();
+    }
+  },
+  onDataChanged: function(store){
+    var vm = this.getViewModel();
+    if(vm){
+      vm.set("totalCount", store.getCount());
     }
   },
   //

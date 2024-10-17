@@ -35,59 +35,61 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     },
   ],
   initComponent: function(){
-    var filterCombo = {
-      xtype: "combobox",
-      itemId: "filterCombo",
-      editable: false,
-      valueField: "id",
-      bind: {
-        disabled: "{!showDetails}",
-      },
-      width: 300,
-      triggers: {
-        clear: {
-          cls: "x-form-clear-trigger",
-          weight: -1,
-          hidden: true,
-          handler: function(combo){
-            var grid = combo.up("panel").down("grid");
-            combo.clearValue();
-            combo.getTrigger("clear").hide();
-            grid.getStore().clearFilter();
+    var tbarItems = Ext.clone(this.tbar),
+      filterCombo = {
+        xtype: "combobox",
+        itemId: "filterCombo",
+        editable: false,
+        valueField: "id",
+        bind: {
+          disabled: "{!showDetails}",
+        },
+        width: 300,
+        triggers: {
+          clear: {
+            cls: "x-form-clear-trigger",
+            weight: -1,
+            hidden: true,
+            handler: function(combo){
+              var grid = combo.up("panel").down("grid");
+              combo.clearValue();
+              combo.getTrigger("clear").hide();
+              grid.getStore().clearFilter();
+            },
           },
         },
-      },
-      listConfig: {
-        minWidth: 400,
-      },
-      listeners: {
-        select: function(combo){
-          var grid = combo.up("panel").down("grid"),
-            store = grid.getStore(),
-            value = combo.getValue();
-          store.clearFilter();
-          store.filterBy(function(record){
-            return record.get("local_object") === value || record.get("remote_object") === value;
-          });
+        listConfig: {
+          minWidth: 400,
         },
-        change: function(combo){
-          var grid = combo.up("panel").down("grid"),
-            value = combo.getValue();
-          if(value === ""){
-            grid.getStore().clearFilter();
-            combo.getTrigger("clear").hide();
-          } else{
-            combo.getTrigger("clear").show();
-          }
+        listeners: {
+          select: function(combo){
+            var grid = combo.up("panel").down("grid"),
+              store = grid.getStore(),
+              value = combo.getValue();
+            store.clearFilter();
+            store.filterBy(function(record){
+              return record.get("local_object") === value || record.get("remote_object") === value;
+            });
+          },
+          change: function(combo){
+            var grid = combo.up("panel").down("grid"),
+              value = combo.getValue();
+            if(value === ""){
+              grid.getStore().clearFilter();
+              combo.getTrigger("clear").hide();
+            } else{
+              combo.getTrigger("clear").show();
+            }
+          },
+          afterrender: function(combo){
+            if(!combo.getValue()){
+              combo.getTrigger("clear").hide();
+            }
+          },
         },
-        afterrender: function(combo){
-          if(!combo.getValue()){
-            combo.getTrigger("clear").hide();
-          }
-        },
-      },
-    };
-    this.tbar = Ext.apply([], this.tbar.concat(filterCombo));
+      };
+    tbarItems.splice(tbarItems.length - 2, 0, filterCombo);
+    this.tbar = tbarItems;
     this.callParent(arguments);
   },
   // Override
