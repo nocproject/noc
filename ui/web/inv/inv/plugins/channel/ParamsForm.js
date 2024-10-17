@@ -48,6 +48,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
       ],
       buttons: [
         {
+          glyph: NOC.glyph.save,
           formBind: true,
           disabled: true,
           bind: {
@@ -57,6 +58,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
         },
         {
           text: __("Close"),
+          glyph: NOC.glyph.times,
           handler: function(button){
             button.up("window").hide();
           },

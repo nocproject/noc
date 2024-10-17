@@ -24,8 +24,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   gridColumns: [
     {
-      xtype: 'glyphactioncolumn',
+      xtype: "glyphactioncolumn",
       width: 50,
+      stopSelection: false,
       items: [
         {
           glyph: NOC.glyph.star,
@@ -94,6 +95,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       },
       listeners: {
         magicselectionchange: "onMagicSelectionChange",
+        magicopenparamsform: "onCreateBtn",
       },
     },
     {

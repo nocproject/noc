@@ -11,6 +11,9 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
   alias: "widget.invchannelmagic",
   layout: "fit",
   defaultListenerScope: true,
+  requires: [
+    "NOC.core.DynamicGlyphAction",
+  ],
   items: [
     {
       xtype: "grid",
@@ -22,6 +25,56 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
         data: [],
       }),
       columns: [
+        {
+          xtype: "actioncolumn",
+          width: 25,
+          stopSelection: false,
+          items: [
+            {
+              glyph: NOC.glyph.plus,
+              tooltip: __("Create or update channel"),
+              handler: function(view, rowIndex){
+                var grid = view.up("grid"),
+                  selectionModel = grid.getSelectionModel();
+                selectionModel.select(rowIndex);
+                view.up("invchannelmagic").fireEvent("magicopenparamsform");
+              },
+            },
+          ],
+          defaultRenderer: function(v, meta, record, rowIdx, colIdx, store, view){
+            var me = this,
+              prefix = Ext.baseCSSPrefix,
+              scope = me.origScope || me,
+              item = me.items[0],
+              ret, disabled, tooltip,
+              glyph = record.get("channel_id") ? NOC.glyph.edit : NOC.glyph.plus,
+              glyphFontFamily = Ext._glyphFontFamily;
+
+            ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
+
+            meta.tdCls += ' ' + Ext.baseCSSPrefix + 'action-col-cell';
+
+            disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
+            tooltip = disabled ? null : (item.tooltip || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
+
+            if(!item.hasActionConfiguration){
+              item.stopSelection = me.stopSelection;
+              item.disable = Ext.Function.bind(me.disableAction, me, [0], 0);
+              item.enable = Ext.Function.bind(me.enableAction, me, [0], 0);
+              item.hasActionConfiguration = true;
+            }
+            ret += '<span role="button" unselectable="on" class="' +
+                    prefix + 'action-col-icon ' +
+                    prefix + 'icon-el ' +
+                    prefix + 'action-col-0' +
+                    ' ' + (disabled ? prefix + 'item-disabled' : ' ') + '" ' +
+                    'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
+                    (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
+                    (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
+                    '>&#' + glyph + ';</span>';
+            return ret;
+          },
+        },
         {
           text: __("Channel"),
           dataIndex: "channel_name",
@@ -69,7 +122,13 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
           selectionchange: "onSelectionChange",
           deselect: "onDeselectChange",
         },
-      } },
+      },
+      listeners: {
+        rowDblClick: function(){
+          this.up("invchannelmagic").fireEvent("magicopenparamsform");
+        },
+      },
+    },
   ],
   onSelectionChange: function(selModel, selections){
     if(selections.length > 0){
