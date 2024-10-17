@@ -119,6 +119,12 @@ Ext.define("NOC.core.ModelApplication", {
         me.loadById(me.noc.cmd.id);
         break;
       case "history":
+        if(!Ext.isEmpty(me.noc.cmd.override)){
+          Ext.each(me.noc.cmd.override, function(override){
+            var [method, cb] = Object.entries(override)[0];
+            me[method] = cb;
+          });
+        }
         me.restoreHistory(me.noc.cmd.args);
         return;
       case "new":

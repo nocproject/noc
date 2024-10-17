@@ -263,9 +263,16 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   onEdit: function(grid, rowIndex){
-    var r = grid.getStore().getAt(rowIndex),
-      id = r.get("id");
-    NOC.launch("inv.channel", "history", {"args": [id]})
+    var record = grid.getStore().getAt(rowIndex),
+      id = record.get("id"),
+      showGrid = function(){
+        this.up().close();
+      };
+    NOC.launch("inv.channel", "history", {
+      "args": [id], "override": [
+        {"showGrid": showGrid},
+      ],
+    });
   },
   //
   onFavItem: function(grid, rowIndex){
