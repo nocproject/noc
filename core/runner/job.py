@@ -500,6 +500,9 @@ class Job(object):
                     )
                 else:
                     value = Template(i.value).render(**self.environment)
+                clean = self.action.clean.get(i.canonical_name)
+                if clean:
+                    value = clean(value)
                 kwargs[i.canonical_name] = value
         action = self.action(env=self.environment, logger=logger)
         r = await action.execute(**kwargs)
