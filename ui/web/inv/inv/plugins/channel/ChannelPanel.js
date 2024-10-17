@@ -263,10 +263,15 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   onEdit: function(grid, rowIndex){
-    var record = grid.getStore().getAt(rowIndex),
+    var me = this,
+      record = grid.getStore().getAt(rowIndex),
       id = record.get("id"),
       showGrid = function(){
-        this.up().close();
+        var panel = this.up();
+        me.showChannelPanel();
+        if(!this.isMasked() && panel){
+          panel.close();
+        }
       };
     NOC.launch("inv.channel", "history", {
       "args": [id], "override": [
@@ -328,6 +333,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         store = grid.getStore();        
       this.unmask();
       store.loadData(obj.records);
+      if(Ext.isEmpty(channelId)){
+        return;
+      }
       record = store.getById(channelId);
       if(record){
         grid.getSelectionModel().select(grid.getStore().indexOf(record));
