@@ -30,7 +30,7 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
             if(v){
               return v;
             }
-            return "<i>" + __("Create new") + "</i>";
+            return "<i>" + __("Create new...") + "</i>";
           },
         },
         {
