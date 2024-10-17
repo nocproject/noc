@@ -11,9 +11,6 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
   alias: "widget.invchannelmagic",
   layout: "fit",
   defaultListenerScope: true,
-  requires: [
-    "NOC.core.DynamicGlyphAction",
-  ],
   items: [
     {
       xtype: "grid",
