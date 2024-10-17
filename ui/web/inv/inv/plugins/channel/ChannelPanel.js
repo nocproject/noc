@@ -269,7 +269,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       showGrid = function(){
         var panel = this.up();
         me.showChannelPanel();
-        if(!this.isMasked() && panel){
+        if(panel){
           panel.close();
         }
       };
