@@ -90,6 +90,10 @@ Ext.define("NOC.inv.channel.Model", {
       type: "auto",
     },
     {
+      name: "params",
+      type: "auto",
+    },
+    {
       name: "remote_system",
       type: "string",
     },

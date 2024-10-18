@@ -52,7 +52,7 @@ class HorizonMixin(object):
             return (int(obj.parent.parent_connection) - 1) * 2 + int(cn)
         return (int(cn) - 1) * 2 + 1
 
-    def set_request(self, req: SetValue) -> JobRequest:
+    def set_request(self, req: SetValue, dry_run: bool = False) -> JobRequest:
         """
         Generate
         """
@@ -63,19 +63,22 @@ class HorizonMixin(object):
             inputs=[
                 InputMapping(name="script", value="set_param"),
                 InputMapping(name="managed_object", value="{{ managed_object }}"),
+                InputMapping(name="dry_run", value=str(dry_run)),
                 KVInputMapping(name="card", value="{{ card }}"),
                 KVInputMapping(name="name", value=req.name),
                 KVInputMapping(name="value", value=req.value),
             ],
         )
 
-    def iter_set_requests(self, iter: Iterable[SetValue]) -> Iterable[JobRequest]:
+    def iter_set_requests(
+        self, iter: Iterable[SetValue], dry_run: bool = False
+    ) -> Iterable[JobRequest]:
         """
         Iterate a series of set requests.
         """
         last_name: str | None = None
         for set_req in iter:
-            job = self.set_request(set_req)
+            job = self.set_request(set_req, dry_run=dry_run)
             if last_name:
                 job.depends_on = [last_name]
             yield job
@@ -176,7 +179,7 @@ class ChannelMixin(HorizonMixin, metaclass=ChannelMetaclass):
             resource_path=resource_path,
         )
 
-    def setup(self, ep: Endpoint, **kwargs) -> JobRequest | None:
+    def setup(self, ep: Endpoint, dry_run: bool = False, **kwargs) -> JobRequest | None:
         self.logger.info("Endpoint setup: %s", ep)
         # Get object
         obj = self.get_object(ep.resource)
@@ -186,7 +189,7 @@ class ChannelMixin(HorizonMixin, metaclass=ChannelMetaclass):
         # Get port
         _, _, port = ep.resource.split(":", 2)
         # Get jobs
-        jobs = list(self.iter_set_requests(self.iter_setup(obj, port, **kwargs)))
+        jobs = list(self.iter_set_requests(self.iter_setup(obj, port, **kwargs), dry_run=dry_run))
         if not jobs:
             self.logger.info("Nothing to setup, skipping")
             return None

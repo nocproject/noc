@@ -17,12 +17,13 @@ from .base import BaseProfileController
 
 
 class ProfileChannelController(BaseProfileController):
-    def setup(self, ep: Endpoint, **kwargs) -> JobRequest | None:
+    def setup(self, ep: Endpoint, dry_run: bool = False, **kwargs) -> JobRequest | None:
         """
         Gennerate Job request to setup endpoint.
 
         Args:
             ep: Endpoint to setup.
+            dry_run: Enable dry_run mode.
 
         Returns:
             JobRequest: with provisioning routines.

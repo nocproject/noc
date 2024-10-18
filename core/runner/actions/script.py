@@ -28,17 +28,18 @@ class ScriptAction(BaseAction):
         dry_run: bool = False,
         **kwargs: str,
     ) -> None:
-        mo = int(managed_object)
-        if dry_run or not mo:
-            self.logger.info("[Dry run] managed_object=%s script=%s args=%s", mo, script, kwargs)
+        if dry_run or not managed_object:
+            self.logger.info(
+                "[Dry run] managed_object=%s script=%s args=%s", managed_object, script, kwargs
+            )
             return
         # Resolve Managed Object
-        mo = await asyncio.to_thread(ManagedObject.get_by_id, mo)
+        mo = await asyncio.to_thread(ManagedObject.get_by_id, managed_object)
         if not mo:
-            self.logger.info("Cannot find managed object: %s", mo)
+            self.logger.info("Cannot find managed object: %s", managed_object)
             raise ActionError("Cannot find managed object")
         # Run script
-        self.logger.info("Run managed_object=%s script=%s args=%s", mo, script, kwargs)
+        self.logger.info("Run managed_object=%s script=%s args=%s", managed_object, script, kwargs)
         # @todo: Wrap and catch errors
         scr = mo.scripts[script]
         await asyncio.to_thread(scr, **kwargs)

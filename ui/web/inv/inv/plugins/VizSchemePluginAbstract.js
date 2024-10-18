@@ -23,11 +23,20 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   defaultListenerScope: true,
   scrollable: false,
   viewModel: {
+    stores: {
+      gridStore: {
+        data: [],
+        listeners: {
+          datachanged: "onDataChanged",
+        },
+      },
+    },
     data: {
       currentId: null,
       showDetails: true,
       zoomDisabled: true,
       downloadSvgButtonDisabled: true,
+      totalCount: 0,
     },
     formulas: {
       detailsButtonText: function(get){
@@ -74,6 +83,13 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
         disabled: "{downloadSvgButtonDisabled}",
       },
     },
+    "->",
+    {
+      xtype: "tbtext",
+      bind: {
+        html: __("Total") + ": {totalCount}",
+      },
+    },
   ],
   items: [
     {
@@ -82,13 +98,11 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       flex: 1,
       bind: {
         hidden: "{!showDetails}",
+        store: "{gridStore}",
       },
       emptyText: __("No data"),
       allowDeselect: true,
       split: true,
-      store: {
-        data: [],
-      },
       columns: [],
       listeners: {
         afterlayout: "afterGridRender",
@@ -147,9 +161,13 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   renderScheme: function(data){
     var me = this;
     if(typeof Viz === "undefined"){
-      new_load_scripts([
-        "/ui/pkg/viz-js/viz-standalone.js",
-      ], me, Ext.bind(me._render, me, [data]));
+      Ext.Loader.loadScript({
+        url: "/ui/pkg/viz-js/viz-standalone.js",
+        onLoad: function(){
+          this._render(data);
+        },
+        scope: me,
+      });
     } else{
       me._render(data);
     }
@@ -174,16 +192,22 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   onReload: function(){
     var me = this,
       currentId = me.getViewModel().get("currentId");
+    me.getData(function(response){
+      me.unmask();
+      me.preview(Ext.decode(response.responseText), currentId);
+      me.down("#zoomControl").reset();
+    });
+  },
+  //
+  getData: function(cb){
+    var me = this,
+      currentId = me.getViewModel().get("currentId");
     me.mask(__("Loading..."));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/" + this.itemId.replace("Panel", "") + "/",
       method: "GET",
       scope: me,
-      success: function(response){
-        me.unmask();
-        me.preview(Ext.decode(response.responseText), currentId);
-        me.down("#zoomControl").reset();
-      },
+      success: cb,
       failure: function(){
         me.unmask();
         NOC.error(__("Failed to get data"));
@@ -238,6 +262,12 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       grid = me.down("grid");
     if(!pressed){
       grid.getSelectionModel().deselectAll();
+    }
+  },
+  onDataChanged: function(store){
+    var vm = this.getViewModel();
+    if(vm){
+      vm.set("totalCount", store.getCount());
     }
   },
   //
