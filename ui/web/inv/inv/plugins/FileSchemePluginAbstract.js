@@ -89,6 +89,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       : data.views[side === "front" ? 0 : 1].src;
     vm.set("currentId", data.id);
     //
+    me.mask("Loading...");
     viewPanel.filenamePrefix = `${name}-${side}`;
     Ext.Ajax.request({
       url: svgUrl,
@@ -105,8 +106,10 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
         }
         viewPanel.setHtml(parserResult.documentElement.outerHTML);
         zoomControl.restoreZoom();
+        me.unmask();
       },
       failure: function(response){
+        me.unmask();
         NOC.error("Failed to load SVG: " + response.status);
       },
     });
