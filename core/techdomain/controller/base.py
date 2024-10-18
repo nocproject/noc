@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Any
 from dataclasses import dataclass
 import logging
-import datetime
+from enum import Enum
 
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModelConnection
@@ -28,7 +28,7 @@ class Endpoint(object):
 
     object: Object
     name: str
-    channel: Optional[Channel] = None
+    channel: Channel | None = None
 
     def __hash__(self) -> int:
         return hash((str(self.object.id), self.name))
@@ -50,15 +50,40 @@ class Endpoint(object):
         r.append(self.name)
         return " > ".join(r)
 
+    @property
+    def is_qualified(self) -> bool:
+        """Check if endpoint has slot name."""
+        return bool(self.name)
+
+
+class ParamType(Enum):
+    STRING = "string"
+
+
+@dataclass
+class Choice(object):
+    id: str
+    label: str
+
+
+@dataclass
+class Param(object):
+    name: str
+    type: ParamType
+    value: str | None
+    label: str | None = None
+    choices: list[Choice] | None = None
+    readonly: bool = False
+
 
 @dataclass
 class PathItem(object):
     object: Object
-    input: Optional[str]
-    output: Optional[str]
-    input_discriminator: Optional[str] = None
-    channel: Optional[Channel] = None
-    output_object: Optional[Object] = None
+    input: str | None
+    output: str | None
+    input_discriminator: str | None = None
+    channel: Channel | None = None
+    output_object: Object | None = None
 
 
 class BaseController(object):
@@ -104,7 +129,7 @@ class BaseController(object):
         """
         return iter(())
 
-    def trace_path(self, start: Endpoint) -> Optional[Endpoint]:
+    def trace_path(self, start: Endpoint) -> Endpoint | None:
         """
         Trace path from starting endpoint to the end.
 
@@ -120,7 +145,9 @@ class BaseController(object):
             return None  # No path
         return Endpoint(object=last.object, name=last.output if last.output else last.input)
 
-    def iter_adhoc_endpoints(self, obj: Object) -> Iterable[Tuple[Endpoint, Endpoint]]:
+    def iter_adhoc_endpoints(
+        self, obj: Object
+    ) -> Iterable[tuple[Endpoint, Endpoint, list[Param] | None]]:
         """
         Iterate endpoints suitable to create a channel.
 
@@ -131,6 +158,7 @@ class BaseController(object):
             end = self.trace_path(ep)
             if not end:
                 continue
+            params = None
             if self.adhoc_bidirectional:
                 # Trace back
                 start = self.trace_path(end)
@@ -139,19 +167,21 @@ class BaseController(object):
                 # Returned back
                 if ep.as_resource() == start.as_resource():
                     if self.adhoc_endpoints:
-                        yield ep, end
+                        yield ep, end, params
                     else:
                         # Whole object
-                        yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name="")
+                        yield Endpoint(object=obj, name=""), Endpoint(
+                            object=end.object, name=""
+                        ), params
                         return
             elif self.adhoc_endpoints:
-                yield ep, end
+                yield ep, end, params
             else:
                 # Whole object
-                yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name="")
+                yield Endpoint(object=obj, name=""), Endpoint(object=end.object, name=""), params
                 return
 
-    def get_peer(self, ep: Endpoint) -> Optional[Endpoint]:
+    def get_peer(self, ep: Endpoint) -> Endpoint | None:
         """
         Get connected peer.
 
@@ -203,13 +233,13 @@ class BaseController(object):
             msg = f"Expecting {self.topology.value}, found {channel.topology}"
             raise ValueError(msg)
 
-    def create_ad_hoc_channel(self, discriminator: Optional[str] = None) -> Channel:
+    def create_ad_hoc_channel(self, name: str, discriminator: str | None = None) -> Channel:
         """
         Create new ad-hoc channel instace
         """
         ch = Channel(
             tech_domain=TechDomain.get_by_code(self.tech_domain),
-            name=f"Magical {self.name} {datetime.datetime.now().isoformat()}",
+            name=name,
             description=f"Created by {self.name} controller",
             kind=self.kind.value,
             topology=self.topology.value,
@@ -219,17 +249,39 @@ class BaseController(object):
         ch.save()
         return ch
 
-    def sync_ad_hoc_channel(self, ep: Endpoint) -> Tuple[Optional[Channel], str]:
+    def sync_ad_hoc_channel(
+        self,
+        name: str,
+        ep: Endpoint,
+        channel: Channel | None = None,
+        dry_run: bool = False,
+        **kwargs: Any,
+    ) -> tuple[Channel | None, str]:
         """
         Create or update ad-hoc channel.
 
         Args:
-            ep: Starting endpoint
+            name: Channel name.
+            ep: Starting endpoint.
+            channel: Channel instance when updating.
+            dry_run: Run jobs in dry_run mode.
 
         Returns:
             Channel instance, message
         """
         raise NotImplementedError
+
+    def get_ad_hoc_params(self, endpoints: list[Endpoint]) -> list[Param] | None:
+        """
+        Get possible channel parameters.
+
+        Args:
+            endpoints: List of endpoints.
+
+        Returns:
+            List of params or None
+        """
+        return None
 
     def is_connected(self, obj: Object, name: str) -> bool:
         """
@@ -246,7 +298,7 @@ class BaseController(object):
         _, ro, _ = obj.get_p2p_connection(name)
         return bool(ro)
 
-    def down(self, obj: Object, name: str) -> Optional[Object]:
+    def down(self, obj: Object, name: str) -> Object | None:
         """
         Go down the connnection.
 
@@ -259,7 +311,7 @@ class BaseController(object):
         """
         return Object.objects.filter(parent=obj.id, parent_connection=name).first()
 
-    def up(self, obj: Object) -> Optional[Endpoint]:
+    def up(self, obj: Object) -> Endpoint | None:
         """
         Go to the parent object
 
@@ -272,7 +324,7 @@ class BaseController(object):
         """
         return Endpoint(object=obj.parent, name=obj.parent_connection)
 
-    def get_connection(self, obj: Object, name: str) -> Optional[ObjectModelConnection]:
+    def get_connection(self, obj: Object, name: str) -> ObjectModelConnection | None:
         """
         Get connection by name.
         """
@@ -281,7 +333,7 @@ class BaseController(object):
                 return c
         return None
 
-    def pass_channel(self, ep: Endpoint) -> Optional[Endpoint]:
+    def pass_channel(self, ep: Endpoint) -> Endpoint | None:
         """
         Pass through the channel.
 
@@ -315,3 +367,16 @@ class BaseController(object):
             return Endpoint(object=o, name=n, channel=ch)
         msg = f"Topology {ch.topology} is not supported"
         raise NotImplementedError(msg)
+
+    @classmethod
+    def update_name(cls, channel: Channel, name: str) -> None:
+        """
+        Update channel name if necessary.
+
+        Args:
+            channel: Channel reference.
+            name: Channel name.
+        """
+        if channel.name != name:
+            channel.name = name
+            channel.save()

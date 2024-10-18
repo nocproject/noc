@@ -6,13 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, Iterable
 from collections import defaultdict
+
+# Third-party modules
+from bson import ObjectId
 
 # NOC modules
 from noc.inv.models.object import Object
-from noc.core.resource import resource_label, from_resource
-from noc.sa.interfaces.base import StringParameter
+from noc.core.resource import resource_label
+from noc.sa.interfaces.base import StringParameter, OBJECT_ID, ObjectIdParameter, BooleanParameter
 from noc.core.techdomain.controller.loader import loader as controller_loader
 from noc.core.techdomain.controller.base import Endpoint
 from noc.inv.models.channel import Channel
@@ -28,17 +31,23 @@ class ChannelPlugin(InvPlugin):
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
-            "api_plugin_%s_get_adhoc_list" % self.name,
+            f"api_plugin_{self.name}_get_adhoc_list",
             self.api_get_adhoc_list,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/adhoc/$" % self.name,
+            url=f"^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/$",
             method=["GET"],
         )
         self.add_view(
-            "api_plugin_%s_create_adhoc" % self.name,
+            f"api_plugin_{self.name}_create_adhoc",
             self.api_create_adhoc,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/adhoc/$" % self.name,
+            url=f"^(?P<id>{OBJECT_ID})/plugin/{self.name}/adhoc/$",
             method=["POST"],
-            validate={"endpoint": StringParameter(), "controller": StringParameter()},
+            validate={
+                "channel_id": ObjectIdParameter(required=False),
+                "endpoint": StringParameter(),
+                "controller": StringParameter(),
+                "name": StringParameter(),
+                "dry_run": BooleanParameter(required=False, default=False),
+            },
         )
 
     def get_data(self, request, object):
@@ -123,23 +132,140 @@ class ChannelPlugin(InvPlugin):
         return "".join(parts)
 
     def api_get_adhoc_list(self, request, id):
-        def update_proposal_status(x: Dict[str, str]):
-            ch1 = ch_ep.get(x["start_endpoint"])
-            ch2 = ch_ep.get(x["end_endpoint"])
-            if not ch1 and not ch2:
-                x["status"] = "new"
-                return
-            if ch1 and ch2 and ch1 == ch2:
-                x["status"] = "done"
-                return
-            x["status"] = "broken"
-
-        def ep_hash(controller: str, ep1: Endpoint, ep2: Endpoint) -> Tuple[str, str, str]:
+        def ep_hash(ep1: Endpoint, ep2: Endpoint) -> tuple[str, str]:
+            # Only for bi-di
             r1 = ep1.as_resource()
             r2 = ep2.as_resource()
             if r1 < r2:
-                return controller, r1, r2
-            return controller, r2, r1
+                return r1, r2
+            return r2, r1
+
+        def in_q(field: str, data: Iterable[str]) -> dict[str, Any]:
+            d = list(data)
+            if len(d) == 1:
+                return {field: d[0]}
+            return {field: {"$in": d}}
+
+        def get_qualified_channels(
+            endpoints: set[str], is_bidi: bool
+        ) -> list[tuple[str, ObjectId]]:
+            q = in_q("resource", endpoints)
+            if not is_bidi:
+                q["is_root"] = True
+            return [
+                (x["resource"], x["channel"])
+                for x in DBEndpoint._get_collection().find(
+                    q,
+                    {"_id": 0, "resource": 1, "channel": 1},
+                )
+            ]
+
+        def get_unqualified_channels(
+            endpoints: set[str], is_bidi: bool
+        ) -> list[tuple[str, ObjectId]]:
+            q = in_q("root_resource", endpoints)
+            if not is_bidi:
+                q["is_root"] = True
+            return [
+                (x["resource"][:26], x["channel"])
+                for x in DBEndpoint._get_collection().find(
+                    q,
+                    {"_id": 0, "resource": 1, "channel": 1},
+                )
+            ]
+
+        def get_controller_proposals(controller_name: str) -> list[dict[str, Any]]:
+            """
+            Build proposals for controller.
+            """
+            r = []
+            controller = controller_loader[controller_name]()
+            is_bidi = controller.topology.is_bidirectional
+            seen = set()
+            # Query conditions
+            qualified = set()
+            unqualified = set()
+            # For all nested objects
+            for no in nested_objects:
+                # Find suitable channels
+                for sep, eep, params in controller.iter_adhoc_endpoints(no):
+                    # Restrict to port if necessary
+                    if is_xcvr and not (sep == xep or eep == xep):
+                        continue
+                    # For bidirectional, suppress duplicates from other direction
+                    if is_bidi:
+                        h = ep_hash(sep, eep)
+                        if h in seen:
+                            continue
+                        seen.add(h)
+                    # Collect query conditions
+                    if sep.is_qualified and eep.is_qualified:
+                        qualified.add(sep.as_resource())
+                        if is_bidi:
+                            qualified.add(eep.as_resource())
+                    elif not sep.is_qualified and not eep.is_qualified:
+                        unqualified.add(sep.as_resource())
+                        if is_bidi:
+                            unqualified.add(eep.as_resource())
+                    else:
+                        self.logger.error(
+                            "Cannot handle channel combination: is_bidi=%s, sep.is_qualified=%s, eep.is_qualified=%s",
+                            is_bidi,
+                            sep.is_qualified,
+                            eep.is_qualified,
+                        )
+                    # Build output record
+                    r.append(
+                        {
+                            "start_endpoint": sep.as_resource(),
+                            "start_endpoint__label": self.get_endpoint_label(sep),
+                            "end_endpoint": eep.as_resource(),
+                            "end_endpoint__label": self.get_endpoint_label(eep),
+                            "controller": controller_name,
+                        }
+                    )
+            # Get endpoint to channel bindings
+            ep_ch: list[tuple[str, ObjectId]] = []  # [(endpoint, channel), ...]
+            if qualified:
+                ep_ch += get_qualified_channels(qualified, is_bidi)
+            if unqualified:
+                ep_ch += get_unqualified_channels(unqualified, is_bidi)
+            # Get channels
+            channel_name = {}
+            channel_params = {}
+            if ep_ch:
+                for x in Channel._get_collection().find(
+                    {"_id": {"$in": [e[1] for e in ep_ch]}, "controller": controller_name},
+                    {"_id": 1, "name": 1, "params": 1},
+                ):
+                    channel_name[x["_id"]] = x["name"]
+                    channel_params[x["_id"]] = x.get("params")
+            # Filter out unrelevant channels of other technologies
+            ch_ep = {ep: ch for ep, ch in ep_ch if ch in channel_name}
+            # Enrich output
+            for x in r:
+                ch1 = ch_ep.get(x["start_endpoint"])
+                ch2 = ch_ep.get(x["end_endpoint"])
+                if not ch1 and not ch2:
+                    x["status"] = "new"
+                elif is_bidi:
+                    if ch1 and ch2 and ch1 == ch2:
+                        x["status"] = "done"
+                        x["channel_id"] = str(ch1)
+                        x["channel_name"] = channel_name.get(ch1) or ""
+                        x["params"] = channel_params.get(ch1) or []
+                    else:
+                        x["status"] = "broken"
+                else:
+                    # Unidirectional
+                    if ch1:
+                        x["status"] = "done"
+                        x["channel_id"] = str(ch1)
+                        x["channel_name"] = channel_name.get(ch1, "")
+                        x["params"] = channel_params.get(ch1) or []
+                    else:
+                        x["status"] = "new"
+            return r
 
         o = self.app.get_object_or_404(Object, id=id)
         is_xcvr = o.is_xcvr and o.parent and o.parent_connection
@@ -148,68 +274,33 @@ class ChannelPlugin(InvPlugin):
             xep = Endpoint(object=o.parent, name=o.parent_connection)
         else:
             nested_objects = list(Object.objects.filter(id__in=o.get_nested_ids()))
-        r: List[Dict[str, str]] = []
-        # Check all cotrollers
-        seen = set()
-        for controller_name in controller_loader:
-            controller = controller_loader[controller_name]()
-            for no in nested_objects:
-                for sep, eep in controller.iter_adhoc_endpoints(no):
-                    if is_xcvr and not (sep == xep or eep == xep):
-                        continue
-                    if controller.topology.is_bidirectional:
-                        # Supress duplicates in other direction
-                        h = ep_hash(controller.name, sep, eep)
-                        if h in seen:
-                            continue
-                        seen.add(h)
-                    r += [
-                        {
-                            "start_endpoint": sep.as_resource(),
-                            "start_endpoint__label": self.get_endpoint_label(sep),
-                            "end_endpoint": eep.as_resource(),
-                            "end_endpoint__label": self.get_endpoint_label(eep),
-                            "controller": controller.name,
-                        }
-                    ]
-        # Get channel endpoints
-        endpoints = {x["start_endpoint"] for x in r}
-        endpoints.update(x["end_endpoint"] for x in r)
-        qualified = [x for x in endpoints if len(x) > 27]
-        unqualified = [x for x in endpoints if len(x) == 26]
-        ch_ep = {}
-        if qualified:
-            ch_ep.update(
-                {
-                    x["resource"]: x["channel"]
-                    for x in DBEndpoint._get_collection().find(
-                        {"resource": {"$in": qualified}},
-                        {"_id": 0, "resource": 1, "channel": 1},
-                    )
-                }
-            )
-        if unqualified:
-            ch_ep.update(
-                {
-                    x["resource"][:26]: x["channel"]
-                    for x in DBEndpoint._get_collection().find(
-                        {"root_resource": {"$in": unqualified}},
-                        {"_id": 0, "resource": 1, "channel": 1},
-                    )
-                }
-            )
-        # Update statuses
-        for x in r:
-            update_proposal_status(x)
+        r: list[dict[str, str | bool]] = []
+        # Check all controllers
+        for name in controller_loader:
+            r += get_controller_proposals(name)
         return r
 
-    def api_create_adhoc(self, request, id, endpoint, controller):
+    def api_create_adhoc(
+        self,
+        request,
+        id,
+        name: str,
+        endpoint: str,
+        controller: str,
+        channel_id: str | None = None,
+        dry_run: bool | None = None,
+    ):
         self.app.get_object_or_404(Object, id=id)
-        o, n = from_resource(endpoint)
-        ep = Endpoint(object=o, name=n or "")
-        tr = controller_loader[controller]()
-        ch, msg = tr.sync_ad_hoc_channel(ep)
-        r = {"status": ch is not None, "msg": msg}
+        # Get channel
+        if channel_id:
+            channel = self.app.get_object_or_404(Channel, id=channel_id)
+        else:
+            channel = None
+        # Run controller
+        ep = Endpoint.from_resource(endpoint)
+        ctl = controller_loader[controller]()
+        ch, msg = ctl.sync_ad_hoc_channel(name=name, ep=ep, channel=channel, dry_run=dry_run)
+        r = {"status": ch is not None, "msg": msg}  # @todo: Replace with message
         if ch:
-            r["channel"] = str(ch.id)
+            r["channel_id"] = str(ch.id)
         return r

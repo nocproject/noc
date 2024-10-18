@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Any
 from itertools import count
 
 # NOC modules
@@ -39,7 +39,7 @@ class OpticalDWDMController(BaseController):
                     break
 
     def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
-        def get_discriminator(ep: Endpoint) -> Optional[str]:
+        def get_discriminator(ep: Endpoint) -> str | None:
             for cc in ep.object.iter_effective_crossing():
                 if cc.input == ep.name and cc.input_discriminator:
                     return cc.input_discriminator
@@ -76,7 +76,7 @@ class OpticalDWDMController(BaseController):
                 ep = Endpoint(object=pi.object, name=pi.input)
             yield from reversed(r)
 
-        self.logger.info("Tracing from %s", start)
+        self.logger.info("Tracing from %s", start.label)
         discriminator = get_discriminator(start)
         if not discriminator:
             self.logger.info("No discriminator")
@@ -100,18 +100,28 @@ class OpticalDWDMController(BaseController):
         self.logger.debug("Failed to trace")
         return None
 
-    def sync_ad_hoc_channel(self, ep: Endpoint) -> Tuple[Optional[Channel], str]:
+    def sync_ad_hoc_channel(
+        self,
+        name: str,
+        ep: Endpoint,
+        channel: Channel | None = None,
+        dry_run: bool = False,
+        **kwargs: Any,
+    ) -> tuple[Channel | None, str]:
         """
         Create or update ad-hoc channel.
 
         Args:
-            ep: Starting endpoint
+            name: Channel name.
+            ep: Starting endpoint.
+            channel: Channel instance when updating.
+            dry_run: Run jobs in dry_run mode.
 
         Returns:
             Channel instance, message
         """
 
-        def next_free_pair() -> Optional[int]:
+        def next_free_pair() -> int | None:
             """
             Generate next free pair number
             """
@@ -138,7 +148,7 @@ class OpticalDWDMController(BaseController):
                 self.logger.info("[%s] Controller is not supported, skipping", label)
                 return None
             self.logger.info("[%s] Preparing setup", label)
-            job = ctl.setup(db_ep, destination=destination)
+            job = ctl.setup(db_ep, destination=destination, dry_run=dry_run)
             if job:
                 if db_ep.is_root:
                     job.name = f"Set up entry of pair {db_ep.pair}"
@@ -171,15 +181,19 @@ class OpticalDWDMController(BaseController):
             cc = {x.channel for x in current_endpoints.values()}
             if len(cc) > 2:
                 return None, "Multiple channels exists"
-            channel = list(cc)[0]
+            if not channel:
+                channel = list(cc)[0]
+            elif list(cc)[0] != channel:
+                return None, "Belongs to other channel"
             try:
                 self.validate_ad_hoc_channel(channel)
             except ValueError as e:
                 return None, str(e)
+            self.update_name(channel, name)
             used_pairs = {x.pair for x in current_endpoints.values() if x.pair}
         else:
             # Brand new channel
-            channel = self.create_ad_hoc_channel()
+            channel = self.create_ad_hoc_channel(name)
             used_pairs = set()
         # Process endpoints
         pair_count = count(1)

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Tuple, Optional, List
+from typing import Iterable, Any, List
 
 # NOC modules
 from noc.inv.models.object import Object
@@ -131,16 +131,14 @@ class OTNODUController(BaseController):
         )
         yield from r
 
-    def sync_ad_hoc_channel(self, ep: Endpoint) -> Tuple[Optional[Channel], str]:
-        """
-        Create or update ad-hoc channel.
-
-        Args:
-            ep: Starting endpoint
-
-        Returns:
-            Channel instance, message
-        """
+    def sync_ad_hoc_channel(
+        self,
+        name: str,
+        ep: Endpoint,
+        channel: Channel | None = None,
+        dry_run: bool = False,
+        **kwargs: Any,
+    ) -> tuple[Channel | None, str]:
 
         def ensure_usage(ch: Channel, ep: Endpoint) -> str:
             e = DBEndpoint.objects.filter(resource=ep.as_resource()).first()
@@ -168,12 +166,14 @@ class OTNODUController(BaseController):
         )
         if not dbe:
             # New channel
-            ch = self.create_ad_hoc_channel(discriminator=get_channel_odu(discriminator))
+            channel = self.create_ad_hoc_channel(
+                name=name, discriminator=get_channel_odu(discriminator)
+            )
             is_new = True
             # Create endpoints
             dbe = []
             for x in (start, end):
-                ep = DBEndpoint(channel=ch, resource=x.as_resource())
+                ep = DBEndpoint(channel=channel, resource=x.as_resource())
                 ep.save()
                 dbe.append(ep)
         elif len(dbe) == 1:
@@ -182,18 +182,22 @@ class OTNODUController(BaseController):
         elif len(dbe) == 2:
             if dbe[0].channel.id != dbe[1].channel.id:
                 return None, "Start and end already belong to the different channels"
-            ch = dbe[0].channel
+            if not channel:
+                channel = dbe[0].channel
+            elif dbe[0].channel != channel:
+                return None, "Belongs to other channel"
+            self.update_name(channel, name)
             # Cleanup intermediate channels
-            for ep in DBEndpoint.objects.filter(used_by__channel=ch.id):
-                ep.used_by = [i for i in ep.used_by if i.channel.id != ch.id]
+            for ep in DBEndpoint.objects.filter(used_by__channel=channel.id):
+                ep.used_by = [i for i in ep.used_by if i.channel.id != channel.id]
                 ep.save()
         else:
             return None, "Total trash inside"
         # Update itermediate channels
         otu_start = Endpoint(object=path[0].object, name=path[0].output)
         otu_end = Endpoint(object=path[1].object, name=path[1].input)
-        ensure_usage(ch, otu_start)
-        ensure_usage(ch, otu_end)
+        ensure_usage(channel, otu_start)
+        ensure_usage(channel, otu_end)
         # Run provisioning
         jobs = []
         for pi, ep in zip(path, dbe):
@@ -203,7 +207,7 @@ class OTNODUController(BaseController):
                 self.logger.info("Controller is not supported, skipping")
                 continue
             self.logger.info("Preparing setup")
-            job = ctl.setup(ep)
+            job = ctl.setup(ep, dry_run=dry_run)
             if job:
                 job.name = f"Set up {ep.resource_label}"
                 ep.set_last_job(job.id)
@@ -216,5 +220,5 @@ class OTNODUController(BaseController):
             self.logger.info("Nothing to submit. skipping.")
         # Return
         if is_new:
-            return ch, "Channel created"
-        return ch, "Channel updated"
+            return channel, "Channel created"
+        return channel, "Channel updated"

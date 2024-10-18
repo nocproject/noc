@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Tuple
+from typing import Iterable, Any
 
 # NOC modules
 from noc.inv.models.object import Object
@@ -46,7 +46,7 @@ class OTNOSCController(BaseController):
                 if cc.input_discriminator == self.DISCRIMINATOR:
                     return Endpoint(object=ep.object, name=cc.output)
 
-        self.logger.info("Tracing from %s", start)
+        self.logger.info("Tracing from %s", start.label)
         # From start through crossing
         ep1 = pass_crossing(start)
         if not ep1:
@@ -66,16 +66,14 @@ class OTNOSCController(BaseController):
         yield PathItem(object=start.object, input=start.name, output=ep1.name)
         yield PathItem(object=ep2.object, input=ep2.name, output=ep3.name)
 
-    def sync_ad_hoc_channel(self, ep: Endpoint) -> Tuple[Channel | None, str]:
-        """
-        Create or update ad-hoc channel.
-
-        Args:
-            ep: Starting endpoint
-
-        Returns:
-            Channel instance, message
-        """
+    def sync_ad_hoc_channel(
+        self,
+        name: str,
+        ep: Endpoint,
+        channel: Channel | None = None,
+        dry_run: bool = False,
+        **kwargs: Any,
+    ) -> tuple[Channel | None, str]:
 
         is_new = False
         path = list(self.iter_path(ep))
@@ -86,19 +84,23 @@ class OTNOSCController(BaseController):
         )
         if not dbe:
             # New channel
-            ch = self.create_ad_hoc_channel(discriminator=self.DISCRIMINATOR)
+            channel = self.create_ad_hoc_channel(discriminator=self.DISCRIMINATOR)
             is_new = True
             # Create endpoints
             dbe = []
             for x in (start, end):
-                ep = DBEndpoint(channel=ch, resource=x.as_resource(), is_root=x == start)
+                ep = DBEndpoint(channel=channel, resource=x.as_resource(), is_root=x == start)
                 ep.save()
                 dbe.append(ep)
         elif len(dbe) == 1:
             # Hanging endpoint
             return None, "Hanging endpoint"
         elif len(dbe) == 2:
-            ch = dbe[0].channel
+            if not channel:
+                channel = dbe[0].channel
+            elif dbe[0].channel != channel:
+                return None, "Belongs to other channel"
+            self.update_name(channel, name)
         else:
             return None, "Total trash inside"
         # Update itermediate channels
@@ -111,7 +113,7 @@ class OTNOSCController(BaseController):
                 self.logger.info("Controller is not supported, skipping")
                 continue
             self.logger.info("Preparing setup")
-            job = ctl.setup(ep)
+            job = ctl.setup(ep, dry_run=dry_run)
             if job:
                 job.name = f"Set up {ep.resource_label}"
                 ep.set_last_job(job.id)
@@ -122,5 +124,5 @@ class OTNOSCController(BaseController):
             job.submit()
         # Return
         if is_new:
-            return ch, "Channel created"
-        return ch, "Channel updated"
+            return channel, "Channel created"
+        return channel, "Channel updated"

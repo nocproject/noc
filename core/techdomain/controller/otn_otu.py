@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, List, Tuple, Optional
+from typing import Iterable, List, Any, Optional
 
 # NOC modules
 from noc.inv.models.object import Object
@@ -113,7 +113,14 @@ class OTNOTUController(BaseController):
         self.logger.info("%s is not transceiver and not channel entrypoint. Stopping.", ep.label)
         return
 
-    def sync_ad_hoc_channel(self, ep: Endpoint) -> Tuple[Optional[Channel], str]:
+    def sync_ad_hoc_channel(
+        self,
+        name: str,
+        ep: Endpoint,
+        channel: Channel | None = None,
+        dry_run: bool = False,
+        **kwargs: Any,
+    ) -> tuple[Channel | None, str]:
         """
         Create or update ad-hoc channel.
 
@@ -143,7 +150,6 @@ class OTNOTUController(BaseController):
             # Get common protocol set
             p1 = set(self.get_supported_protocols(start))
             p2 = set(self.get_supported_protocols(end))
-            print("Supported protocols", p1, p2)
             common = p1.intersection(p2)
             if not common:
                 return None  # No common set
@@ -183,21 +189,25 @@ class OTNOTUController(BaseController):
             discriminator = otu_discriminator(start, end)
             if not discriminator:
                 return None, "Incompatibile OTU types"
-            ch = self.create_ad_hoc_channel(discriminator=discriminator)
+            channel = self.create_ad_hoc_channel(discriminator=discriminator)
             is_new = True
             # Create endpoints
-            DBEndpoint(channel=ch, resource=start.as_resource()).save()
-            DBEndpoint(channel=ch, resource=end.as_resource()).save()
+            DBEndpoint(channel=channel, resource=start.as_resource()).save()
+            DBEndpoint(channel=channel, resource=end.as_resource()).save()
         elif len(dbe) == 1:
             # Hanging endpoint
             return None, "Hanging endpoint"
         elif len(dbe) == 2:
             if dbe[0].channel.id != dbe[1].channel.id:
                 return None, "Start and end already belong to the different channels"
-            ch = dbe[0].channel
+            if not channel:
+                channel = dbe[0].channel
+            elif dbe[0].channel != channel:
+                return None, "Belongs to other channel"
+            self.update_name(channel, name)
             # Cleanup intermediate channels
-            for ep in DBEndpoint.objects.filter(used_by__channel=ch.id):
-                ep.used_by = [i for i in ep.used_by if i.channel.id != ch.id]
+            for ep in DBEndpoint.objects.filter(used_by__channel=channel.id):
+                ep.used_by = [i for i in ep.used_by if i.channel.id != channel.id]
                 ep.save()
         else:
             return None, "Total trash inside"
@@ -207,9 +217,9 @@ class OTNOTUController(BaseController):
                 if pi.channel:
                     sep = Endpoint(object=pi.object, name=pi.input)
                     eep = Endpoint(object=pi.output_object, name=pi.output)
-                    ensure_usage(ch, sep)
-                    ensure_usage(ch, eep)
+                    ensure_usage(channel, sep)
+                    ensure_usage(channel, eep)
         # Return
         if is_new:
-            return ch, "Channel created"
-        return ch, "Channel updated"
+            return channel, "Channel created"
+        return channel, "Channel updated"

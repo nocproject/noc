@@ -119,6 +119,12 @@ Ext.define("NOC.core.ModelApplication", {
         me.loadById(me.noc.cmd.id);
         break;
       case "history":
+        if(!Ext.isEmpty(me.noc.cmd.override)){
+          Ext.each(me.noc.cmd.override, function(override){
+            var [method, cb] = Object.entries(override)[0];
+            me[method] = cb;
+          });
+        }
         me.restoreHistory(me.noc.cmd.args);
         return;
       case "new":
@@ -790,7 +796,6 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.currentQuery[me.idField]){
           delete me.currentQuery[me.idField];
         }
-        me.showGrid();
         me.reloadStore();
         me.saveInlines(
           data[me.idField],
@@ -798,6 +803,7 @@ Ext.define("NOC.core.ModelApplication", {
             return !(Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal);
           }));
         me.unmask();
+        me.showGrid();
         NOC.msg.complete(__("Saved"));
       },
       failure: function(response){
@@ -962,8 +968,8 @@ Ext.define("NOC.core.ModelApplication", {
         // Process result
           me.currentRecord = null;
           me.reloadStore();
-          me.showGrid();
           me.unmask();
+          me.showGrid();
         }
       },
       onFailure = function(response){

@@ -233,6 +233,23 @@ Ext.define("NOC.inv.channel.Application", {
             },
           ],
         },
+        {
+          name: "params",
+          fieldLabel: __("Params"),
+          xtype: "gridfield",
+          columns: [
+            {
+              text: __("Name"),
+              dataIndex: "name",
+              width: 100,
+            },
+            {
+              text: __("Value"),
+              dataIndex: "value",
+              flex: 1,
+            },
+          ],
+        },
         /*
         {
           name: "effective_labels",
