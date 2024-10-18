@@ -161,9 +161,13 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   renderScheme: function(data){
     var me = this;
     if(typeof Viz === "undefined"){
-      new_load_scripts([
-        "/ui/pkg/viz-js/viz-standalone.js",
-      ], me, Ext.bind(me._render, me, [data]));
+      Ext.Loader.loadScript({
+        url: "/ui/pkg/viz-js/viz-standalone.js",
+        onLoad: function(){
+          this._render(data);
+        },
+        scope: me,
+      });
     } else{
       me._render(data);
     }
