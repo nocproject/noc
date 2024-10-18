@@ -122,7 +122,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
               item = me.items[0],
               ret, disabled, tooltip,
               currentId = view.up("#invinvbom").getViewModel().get("currentId"),
-              glyph = record.id !== currentId ? NOC.glyph.eye : NOC.glyph.minus,
+              glyph = record.id !== currentId ? NOC.glyph.eye : "",
               glyphFontFamily = Ext._glyphFontFamily;
 
             ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
@@ -138,15 +138,17 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
               item.enable = Ext.Function.bind(me.enableAction, me, [0], 0);
               item.hasActionConfiguration = true;
             }
-            ret += '<span role="button" unselectable="on" class="' +
-                    prefix + 'action-col-icon ' +
-                    prefix + 'icon-el ' +
-                    prefix + 'action-col-0' +
-                    ' ' + (disabled ? prefix + 'item-disabled' : ' ') + '" ' +
-                    'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
-                    (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
-                    (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
-                    '>&#' + glyph + ';</span>';
+            if(glyph){
+              ret += '<span role="button" unselectable="on" class="' +
+                prefix + 'action-col-icon ' +
+                prefix + 'icon-el ' +
+                prefix + 'action-col-0' +
+                ' ' + (disabled ? prefix + 'item-disabled' : ' ') + '" ' +
+                'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
+                (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
+                (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
+                '>&#' + glyph + ';</span>';
+            }
             return ret;
           },
         },
