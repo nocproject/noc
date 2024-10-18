@@ -80,6 +80,7 @@
   "globals": {
     "Ext": "readonly",
     "NOC": "readonly",
+    "Viz": "readonly",
     "__": "readonly"
   }
 }
