@@ -10,6 +10,7 @@ Ext.define("NOC.sa.job.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.sa.job.Model",
+    "NOC.inv.inv.plugins.Zoom",
   ],
   model: "NOC.sa.job.Model",
   defaultListenerScope: true,
@@ -65,26 +66,8 @@ Ext.define("NOC.sa.job.Application", {
         handler: "onRefresh",
       },
       {
-        xtype: "combobox",
-        store: [
-          [0.25, "25%"],
-          [0.5, "50%"],
-          [0.75, "75%"],
-          [1.0, "100%"],
-          [1.25, "125%"],
-          [1.5, "150%"],
-          [2.0, "200%"],
-          [3.0, "300%"],
-          [4.0, "400%"],
-        ],
-        width: 100,
-        value: 1.0,
-        valueField: "zoom",
-        displayField: "label",
-        editable: false,
-        listeners: {
-          select: "onZoom",
-        },    
+        xtype: "invPluginsZoom",
+        itemId: "zoomControl",
       },
       {
         xtype: "button",
@@ -102,9 +85,15 @@ Ext.define("NOC.sa.job.Application", {
     },
     items: [
       {
-        itemId: "jobScheme",
+        itemId: "schemeContainer",
         region: "center",
         scrollable: true,
+        listeners: {
+          click: {
+            element: "el",
+            fn: "onSchemeClick",
+          },
+        },
       },
       {
         itemId: "jobData",
@@ -215,9 +204,13 @@ Ext.define("NOC.sa.job.Application", {
     var me = this;
 
     if(typeof Viz === "undefined"){
-      new_load_scripts([
-        "/ui/pkg/viz-js/viz-standalone.js",
-      ], me, Ext.bind(me._render, me, [data]));
+      Ext.Loader.loadScript({
+        url: "/ui/pkg/viz-js/viz-standalone.js",
+        onLoad: function(){
+          this._render(data);
+        },
+        scope: me,
+      });
     } else{
       me._render(data);
     }
@@ -227,53 +220,42 @@ Ext.define("NOC.sa.job.Application", {
     var me = this;
 
     Viz.instance().then(function(viz){ 
-      var container = me.down("[itemId=jobScheme]"),
+      var container = me.down("[itemId=schemeContainer]"),
         svg = viz.renderSVGElement(data);
-      
-      container.removeAll();
-      container.add({
-        xtype: "container",
-        html: me.transformSvg(svg).outerHTML,
-        listeners: {
-          afterrender: function(){
-            var svgElement = container.getEl().dom.querySelector("svg"),
-              elements = svgElement.querySelectorAll(".job-selectable");
-
-            elements.forEach(function(element){
-              element.addEventListener("click", function(event){
-                var record = me.grid.getStore().getById(element.id);
-
-                event.stopPropagation();
-                svgElement.querySelectorAll(".active-job").forEach(function(el){
-                  el.classList.remove("active-job");
-                });
-                element.classList.remove("job-selectable");
-                element.classList.add("active-job");
-                if(Ext.isEmpty(record)){
-                  me.sendRequest(element.id, "/", function(response){
-                    var data = Ext.decode(response.responseText);
-                    me.setRightPanelValues(Ext.create('Ext.data.Record', data));
-                  });
-                } else{
-                  me.setRightPanelValues(record);
-                }
-              });
-              element.addEventListener("mouseleave", function(){
-                element.classList.add("job-selectable");
-              });
-            });
-          },
-        },
-      });
+     
+      svg.setAttribute("height", "100%");
+      svg.setAttribute("width", "100%");
+      svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+      svg.setAttribute("object-fit", "contain");
+      container.setHtml(me.transformSvg(svg).outerHTML);
+      me.down("#zoomControl").reset();
     });
   },
   //
-  onZoom: function(combo){
+  onSchemeClick: function(event, target){
     var me = this,
-      imageComponent = me.down("#jobScheme container");
-    
-    imageComponent.getEl().dom.style.transformOrigin = "0 0";
-    imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
+      element = target.closest(".job-selectable");
+    if(element){
+      var record = me.grid.getStore().getById(element.id),
+        svgElement = target.closest("svg");
+      
+      svgElement.querySelectorAll(".active-job").forEach(function(el){
+        el.classList.remove("active-job");
+      });
+      element.classList.remove("job-selectable");
+      element.classList.add("active-job");
+      element.addEventListener("mouseleave", function(){
+        element.classList.add("job-selectable");
+      }, {once: true});
+      if(Ext.isEmpty(record)){
+        me.sendRequest(element.id, "/", function(response){
+          var data = Ext.decode(response.responseText);
+          me.setRightPanelValues(Ext.create('Ext.data.Record', data));
+        });
+      } else{
+        me.setRightPanelValues(record);
+      }
+    }
   },
   //
   onDownloadSVG: function(){
