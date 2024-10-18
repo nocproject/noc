@@ -81,7 +81,7 @@ Ext.define("NOC.inv.inv.plugins.sensor.SensorPanel", {
           e.record.set(e.field + "__label", ed.rawValue);
         }
         data[e.field] = e.value;
-        grid.mask();
+        grid.mask(__("Saving ..."));
         Ext.Ajax.request({
           url: "/inv/inv/" + e.record.data.id + "/plugin/sensor/",
           method: "POST",
