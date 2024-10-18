@@ -179,6 +179,7 @@ Ext.define("NOC.inv.inv.Application", {
       }],
       listeners: {
         scope: me,
+        beforeselect: me.onBeforeSelect,
         select: me.onSelectNav,
         deselect: me.onDeselect,
         afterrender: function(treePanel){
@@ -300,7 +301,6 @@ Ext.define("NOC.inv.inv.Application", {
             pluginName = newCard.pluginName;
 
           me.mask(__("Download data, please wait ..."));
-          me.currentPlugin = newCard.pluginName;
           Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
             method: "GET",
@@ -428,6 +428,13 @@ Ext.define("NOC.inv.inv.Application", {
         NOC.error(__("Failed to launch application") + " " + app);
       },
     });
+  },
+  //
+  onBeforeSelect: function(){
+    var activeTab = this.tabPanel.getActiveTab();
+    if(activeTab && activeTab.pluginName){
+      this.currentPlugin = activeTab.pluginName;
+    }
   },
   //
   onSelectNav: function(rowModel, record){
