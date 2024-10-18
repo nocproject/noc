@@ -179,6 +179,7 @@ Ext.define("NOC.inv.inv.Application", {
       }],
       listeners: {
         scope: me,
+        beforeselect: me.onBeforeSelect,
         select: me.onSelectNav,
         deselect: me.onDeselect,
         afterrender: function(treePanel){
@@ -299,7 +300,7 @@ Ext.define("NOC.inv.inv.Application", {
             objectId = me.selectedObjectId,
             pluginName = newCard.pluginName;
 
-          me.currentPlugin = newCard.pluginName;
+          me.mask(__("Download" + " " + pluginName + " " + "plugin data, please wait ..."));
           Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
             method: "GET",
@@ -307,8 +308,10 @@ Ext.define("NOC.inv.inv.Application", {
             success: function(response){
               var data = Ext.decode(response.responseText);
               newCard.preview(data, objectId);
+              me.unmask();
             },
             failure: function(){
+              me.unmask();
               NOC.error(__("Failed to get data for plugin") + " " + pluginName);
             },
           });
@@ -369,39 +372,69 @@ Ext.define("NOC.inv.inv.Application", {
     });
   },
   //
-  runPlugin: function(objectId, pData){
-    var me = this,
-      plugin = Ext.create(pData.xtype, {app: me});
-    me.tabPanel.add(plugin);
-    me.invPlugins[pData.name] = plugin;
-    plugin.pluginName = pData.name;
+  runPlugin: function(objectId, pData, index){
+    Ext.MessageBox.show({
+      msg: __("Plugin load, please wait..."),
+      progressText: __("Loading..."),
+      width: 300,
+      wait: true,
+      waitConfig: {interval: 300},
+    });
+
+    Ext.Loader.require(pData.xtype, function(){
+      var plugin = Ext.create(pData.xtype, {app: this});
+      this.tabPanel.insert(index, plugin);
+      this.invPlugins[pData.name] = plugin;
+      plugin.pluginName = pData.name;
+      if(Object.keys(this.invPlugins).length === this.tabPanel.items.length){
+        if(this.currentPlugin && this.invPlugins[this.currentPlugin]){
+          this.tabPanel.setActiveTab(this.invPlugins[this.currentPlugin]);
+        } else{
+          this.tabPanel.setActiveTab(0);
+        }
+      }
+      Ext.MessageBox.hide();
+    }, this);
   },
   //
   addAppForm: function(parent, app, objectId){
     var me = this,
       url = "/" + app.replace(".", "/") + "/launch_info/",
       c;
+    me.up().mask(__("Loading" + " " + app + " ..."));
     Ext.Ajax.request({
       url: url,
       method: "GET",
       scope: me,
       success: function(response){
         var li = Ext.decode(response.responseText),
+          xtype = "NOC." + app + ".Application",
           params = {};
         Ext.merge(params, li.params);
-        c = Ext.create("NOC." + app + ".Application", {
-          noc: params,
-          controller: me.controller,
+        Ext.Loader.require(xtype, function(){
+          c = Ext.create(xtype, {
+            noc: params,
+            controller: me.controller,
+          });
+          c.loadById(objectId, function(record){
+            c.onEditRecord(record);
+          });
+          parent.add(c);
+          me.up().unmask();
         });
-        c.loadById(objectId, function(record){
-          c.onEditRecord(record);
-        });
-        parent.items.add(c);
       },
       failure: function(){
+        me.up().unmask();
         NOC.error(__("Failed to launch application") + " " + app);
       },
     });
+  },
+  //
+  onBeforeSelect: function(){
+    var activeTab = this.tabPanel.getActiveTab();
+    if(activeTab && activeTab.pluginName){
+      this.currentPlugin = activeTab.pluginName;
+    }
   },
   //
   onSelectNav: function(rowModel, record){
@@ -416,8 +449,8 @@ Ext.define("NOC.inv.inv.Application", {
     me.selectedObjectId = objectId;
     me.invPlugins = {};
     me.tabPanel.removeAll();
-    Ext.each(plugins, function(p){
-      me.runPlugin(objectId, p);
+    Ext.each(plugins, function(p, index){
+      me.runPlugin(objectId, p, index);
     });
     me.isMenuShow = false;
     me.setHistoryHash(objectId);
@@ -735,7 +768,6 @@ Ext.define("NOC.inv.inv.Application", {
         if(btn === "yes"){
           var selectedObject = this.getSelectedObject();
           if(selectedObject){
-            console.log("Remove all connections within object with id: ", selectedObject.id);
             Ext.Ajax.request({
               url: "/inv/inv/remove_connections/",
               method: "DELETE",
