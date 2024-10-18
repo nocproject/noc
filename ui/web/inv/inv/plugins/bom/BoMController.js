@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.plugins.bom.Controller");
+console.debug("Defining NOC.inv.inv.plugins.bom.BoMController");
 
-Ext.define("NOC.inv.inv.plugins.bom.Controller", {
+Ext.define("NOC.inv.inv.plugins.bom.BoMController", {
   extend: "Ext.app.ViewController",
   alias: "controller.bom",
   mixins: [
