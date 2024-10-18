@@ -10,8 +10,9 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
   extend: "Ext.panel.Panel",
   requires: [
     "NOC.inv.inv.plugins.bom.BoMModel",
-    "NOC.inv.inv.plugins.bom.Controller",
+    "NOC.inv.inv.plugins.bom.BoMController",
   ],
+  itemId: "invinvbom",
   title: __("BoM"),
   closable: false,
   controller: "bom",
@@ -90,6 +91,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       xtype: "gridpanel",
       border: false,
       stateful: true,
+      allowDeselect: true,
       bind: {
         store: "{gridStore}",
       },
@@ -98,6 +100,58 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       }],
       scrollable: "y",
       columns: [
+        {
+          xtype: 'glyphactioncolumn',
+          width: 25,
+          items: [
+            {
+              tooltip: __("View"),
+              handler: function(view, rowIndex, colIndex, item, e, record){
+                var app = view.up("[appId=inv.inv]"),
+                  plugin = view.up("#invinvbom");
+                if(app && plugin.getViewModel().get("currentId") !== record.id){
+                  app.showObject(record.id);
+                }
+              },
+            },
+          ],
+          defaultRenderer: function(v, meta, record, rowIdx, colIdx, store, view){
+            var me = this,
+              prefix = Ext.baseCSSPrefix,
+              scope = me.origScope || me,
+              item = me.items[0],
+              ret, disabled, tooltip,
+              currentId = view.up("#invinvbom").getViewModel().get("currentId"),
+              glyph = record.id !== currentId ? NOC.glyph.eye : "",
+              glyphFontFamily = Ext._glyphFontFamily;
+
+            ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
+
+            meta.tdCls += ' ' + Ext.baseCSSPrefix + 'action-col-cell';
+
+            disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
+            tooltip = disabled ? null : (item.tooltip || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
+
+            if(!item.hasActionConfiguration){
+              item.stopSelection = me.stopSelection;
+              item.disable = Ext.Function.bind(me.disableAction, me, [0], 0);
+              item.enable = Ext.Function.bind(me.enableAction, me, [0], 0);
+              item.hasActionConfiguration = true;
+            }
+            if(glyph){
+              ret += '<span role="button" unselectable="on" class="' +
+                prefix + 'action-col-icon ' +
+                prefix + 'icon-el ' +
+                prefix + 'action-col-0' +
+                ' ' + (disabled ? prefix + 'item-disabled' : ' ') + '" ' +
+                'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
+                (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
+                (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
+                '>&#' + glyph + ';</span>';
+            }
+            return ret;
+          },
+        },
         {
           text: __("Vendor"),
           dataIndex: "vendor",

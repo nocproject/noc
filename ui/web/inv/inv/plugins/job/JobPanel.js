@@ -109,7 +109,6 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
               handler: "onViewJob",
             },
           ],
-
         },
         {
           text: __("Name"),
