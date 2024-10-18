@@ -84,7 +84,7 @@ class OTNOSCController(BaseController):
         )
         if not dbe:
             # New channel
-            channel = self.create_ad_hoc_channel(discriminator=self.DISCRIMINATOR)
+            channel = self.create_ad_hoc_channel(name=name, discriminator=self.DISCRIMINATOR)
             is_new = True
             # Create endpoints
             dbe = []

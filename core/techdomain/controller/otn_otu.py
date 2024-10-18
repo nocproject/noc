@@ -189,7 +189,7 @@ class OTNOTUController(BaseController):
             discriminator = otu_discriminator(start, end)
             if not discriminator:
                 return None, "Incompatibile OTU types"
-            channel = self.create_ad_hoc_channel(discriminator=discriminator)
+            channel = self.create_ad_hoc_channel(name=name, discriminator=discriminator)
             is_new = True
             # Create endpoints
             DBEndpoint(channel=channel, resource=start.as_resource()).save()
