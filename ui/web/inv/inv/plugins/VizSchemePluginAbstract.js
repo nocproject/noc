@@ -201,10 +201,11 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   //
   getData: function(cb){
     var me = this,
+      pluginName = me.itemId.replace("Panel", ""),
       currentId = me.getViewModel().get("currentId");
-    me.mask(__("Loading..."));
+    me.mask(__("Loading" + " " + pluginName + " ..."));
     Ext.Ajax.request({
-      url: "/inv/inv/" + currentId + "/plugin/" + this.itemId.replace("Panel", "") + "/",
+      url: "/inv/inv/" + currentId + "/plugin/" + pluginName + "/",
       method: "GET",
       scope: me,
       success: cb,

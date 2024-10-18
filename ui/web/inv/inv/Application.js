@@ -301,6 +301,7 @@ Ext.define("NOC.inv.inv.Application", {
             pluginName = newCard.pluginName;
 
           me.mask(__("Download" + " " + pluginName + " " + "plugin data, please wait ..."));
+          console.log(__("Download" + " " + pluginName + " " + "plugin data, please wait ..."));
           Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
             method: "GET",
@@ -308,6 +309,7 @@ Ext.define("NOC.inv.inv.Application", {
             success: function(response){
               var data = Ext.decode(response.responseText);
               newCard.preview(data, objectId);
+              console.log(`unmask ${pluginName}`);
               me.unmask();
             },
             failure: function(){

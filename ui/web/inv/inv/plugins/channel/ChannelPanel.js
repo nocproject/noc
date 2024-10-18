@@ -249,6 +249,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var panel = this.down("invChannelParamsForm"),
       form = panel.down("form").getForm(),
       selectedRecord = this.getSelectedRow();
+    if(Ext.isEmpty(selectedRecord)){
+      NOC.error(__("Please select a row"));
+      return;
+    }
     if(Ext.isEmpty(selectedRecord.get("channel_id"))){
       form.reset();
     } else{
