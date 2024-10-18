@@ -387,7 +387,11 @@ Ext.define("NOC.inv.inv.Application", {
       this.invPlugins[pData.name] = plugin;
       plugin.pluginName = pData.name;
       if(Object.keys(this.invPlugins).length === this.tabPanel.items.length){
-        this.tabPanel.setActiveTab(0);
+        if(this.currentPlugin && this.invPlugins[this.currentPlugin]){
+          this.tabPanel.setActiveTab(this.invPlugins[this.currentPlugin]);
+        } else{
+          this.tabPanel.setActiveTab(0);
+        }
       }
       Ext.MessageBox.hide();
     }, this);
