@@ -149,6 +149,6 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
     var me = this,
       vm = me.getViewModel();
     vm.set("currentId", objectId);
-    vm.get("gridStore").loadData(data.data);
+    vm.get("gridStore").loadData(data.data || []);
   },
 });
