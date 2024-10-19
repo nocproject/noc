@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------
 # ManagedObject card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import OrderedDict
 import datetime
 import operator
+from collections import defaultdict
 
 # Third-party modules
 from django.db.models import Q
@@ -27,14 +27,13 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
+from noc.inv.models.sensor import Sensor
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.text import alnum_key, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.pm.utils import get_interface_metrics, get_objects_metrics, get_dict_interface_metrics
-from noc.pm.models.metrictype import MetricType
-from noc.pm.models.metricscope import MetricScope
+from noc.core.pm.utils_ import MetricProxy
 from noc.core.perf import metrics
 
 
@@ -95,7 +94,7 @@ class ManagedObjectCard(BaseCard):
 
         def sortdict(dct):
             kys = sorted(dct.keys())
-            res = OrderedDict()
+            res = {}
             for x in kys:
                 for k, v in dct.items():
                     if k == x:
@@ -155,12 +154,11 @@ class ManagedObjectCard(BaseCard):
         # MAC addresses
         macs = []
         o_macs = DiscoveryID.macs_for_object(self.object)
-        if o_macs:
-            for f, l in o_macs:
-                if f == l:
-                    macs += [f]
-                else:
-                    macs += ["%s - %s" % (f, l)]
+        for f, l in o_macs:
+            if f == l:
+                macs += [f]
+            else:
+                macs += [f"{f} - {l}"]
         # Hostname
         hostname = ""
         did = DiscoveryID.objects.filter(object=self.object.id).first()
@@ -212,56 +210,15 @@ class ManagedObjectCard(BaseCard):
             )
         # Build global services summary
         service_summary = ServiceSummary.get_object_summary(self.object)
-
-        # Interfaces
-        interfaces = []
-
-        mo = ManagedObject.objects.filter(id=self.object.id)
-        mo = mo[0]
-        meric_map = get_dict_interface_metrics(mo).get(mo)
-        meric_map_revert = {v: k for k, v in meric_map.get("map").items()}
-        ifaces_metrics, last_ts = get_interface_metrics(mo, meric_map)
-        ifaces_metrics = ifaces_metrics[mo]
-
-        objects_metrics, last_time = get_objects_metrics(mo)
-        objects_metrics = objects_metrics.get(mo)
-
-        # Sensors
-        sensors_metrics = None
-        s_metrics = None
-        sensors = {}
-        s_meta = []
-        STATUS = {0: "OK", 1: "Alarm"}
-        meric_map = {}
-        if mo.get_caps().get("Sensor | Controller"):
-            for mc in MetricType.objects.filter(scope=MetricScope.objects.get(name="Environment")):
-                if meric_map:
-                    meric_map["map"].update({mc.field_name: mc.name})
-                else:
-                    meric_map = {"table_name": mc.scope.table_name, "map": {mc.field_name: mc.name}}
-            sensors_metrics, last_ts = get_interface_metrics(mo, meric_map)
-            sensors_metrics = sensors_metrics[mo]
-
-        m_tp = {}
-        if mo.object_profile.metrics:
-            for mt in mo.object_profile.metrics:
-                if mt.get("threshold_profile"):
-                    threshold_profile = ThresholdProfile.get_by_id(mt.get("threshold_profile"))
-                    m_tp[MetricType.get_by_id(mt.get("metric_type")).name] = threshold_profile
-        data = {}
-        meta = []
-        metric_type_name = dict(MetricType.objects.filter().scalar("name", "measure"))
-        metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
-        if objects_metrics:
-            for path, mres in objects_metrics.items():
-                t_v = False
-                for key in mres:
-                    m_path = path if any(path.split("|")) else key
-                    m_path = " | ".join(kk.strip() for kk in m_path.split("|"))
-                    if m_tp.get(key):
-                        t_v = self.get_threshold_config(m_tp.get(key), int(mres[key]))
-                    val = {
-                        "name": m_path,
+        # Metrics
+        metric_proxy = MetricProxy(managedob_object=self.object.bi_id)
+        # Object Metrics
+        data = defaultdict(list)
+        for v_scope in metric_proxy.iter_object_metrics():
+            for field, v in v_scope.items():
+                data[v.meta].append(
+                    {
+                        "name": m_path,  # Metric Type + Meta
                         "type": "" if m_path == "Object | SysUptime" else metric_type_name[key],
                         "value": (
                             display_time(int(mres[key]))
@@ -270,47 +227,41 @@ class ManagedObjectCard(BaseCard):
                         ),
                         "threshold": t_v,
                     }
-                    if data.get(key):
-                        data[key] += [val]
-                    else:
-                        data[key] = [val]
-
-        data = sortdict(data)
-        for k, d in data.items():
-            collapsed = False
-            if len(d) == 1:
-                collapsed = True
-            for dd in d:
-                isdanger = False
-                if dd["threshold"]:
-                    isdanger = True
-                    collapsed = True
-            meta.append({"name": k, "value": d, "collapsed": collapsed, "isdanger": isdanger})
-
+                )
+        o_metrics = []
+        for k, values in data.items():
+            collapsed = len(values) == 1
+            is_danger = False
+            for vv in values:
+                if vv["threshold"]:
+                    is_danger |= True
+                    collapsed |= True
+            o_metrics.append({"name": k, "value": values, "collapsed": collapsed, "isdanger": is_danger})
+        sensor_proxy = MetricProxy(sensor__in=[])
+        sensors = defaultdict(list)
+        # Sensors Metrics
+        for s in Sensor.object.filter(managed_object=self.object.id):
+            value = sensor_proxy.sensor.value.status.value(sensor=s.bi_id)
+            sensors[s.label].append(
+                {
+                    "name": s.label,
+                    "type": metric_type_name[key],
+                    "value": value,
+                    "threshold": None,
+                }
+            )
+        s_meta = []
+        if sensors:
+            sensors = sortdict(sensors)
+            for k, d in sensors.items():
+                for dd in d:
+                    is_danger = False
+                    if dd["threshold"]:
+                        is_danger = True
+                s_meta.append({"name": k, "value": d, "isdanger": is_danger})
+        # Interfaces
+        interfaces = []
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
-            load_in = "-"
-            load_out = "-"
-            iface_metrics = ifaces_metrics.get(str(i.name))
-            interface_metrics = {}
-            if iface_metrics:
-                for key, value in iface_metrics.items():
-                    metric_type = metric_type_name.get(key) or metric_type_field.get(key)
-                    if key == "Interface | Load | In":
-                        load_in = (
-                            "%s%s" % (self.humanize_speed(value, metric_type), metric_type)
-                            if value
-                            else "-"
-                        )
-                    if key == "Interface | Load | Out":
-                        load_out = (
-                            "%s%s" % (self.humanize_speed(value, metric_type), metric_type)
-                            if value
-                            else "-"
-                        )
-                    try:
-                        interface_metrics[meric_map_revert[key]] = value if value else "-"
-                    except KeyError:
-                        pass
             interfaces += [
                 {
                     "id": i.id,
@@ -319,8 +270,6 @@ class ManagedObjectCard(BaseCard):
                     "oper_status": i.oper_status,
                     "mac": i.mac or "",
                     "full_duplex": i.full_duplex,
-                    "load_in": load_in,
-                    "load_out": load_out,
                     "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
                     "untagged_vlan": None,
                     "tagged_vlan": None,
@@ -328,44 +277,13 @@ class ManagedObjectCard(BaseCard):
                     "service": i.service,
                     "service_summary": service_summary.get("interface").get(i.id, {}),
                     "description": i.description,
-                    "metrics": interface_metrics,
                 }
             ]
-            if sensors_metrics:
-                s_metrics = sensors_metrics.get(str(i.name))
-            if s_metrics:
-                sens_metrics = []
-                for i_metrics in i.profile.metrics:
-                    sens_metrics.append(i_metrics.metric_type.name)
-                for key, value in s_metrics.items():
-                    if key not in sens_metrics:
-                        continue
-                    val = {
-                        "name": key,
-                        "type": metric_type_name[key],
-                        "value": STATUS.get(value) if metric_type_name[key] == " " else value,
-                        "threshold": None,
-                    }
-                    if sensors.get(i.name):
-                        sensors[i.name] += [val]
-                    else:
-                        sensors[i.name] = [val]
-
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
                 si = si[0]
                 interfaces[-1]["untagged_vlan"] = si.untagged_vlan
                 interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
-
-        if sensors:
-            sensors = sortdict(sensors)
-            for k, d in sensors.items():
-                for dd in d:
-                    isdanger = False
-                    if dd["threshold"]:
-                        isdanger = True
-                s_meta.append({"name": k, "value": d, "isdanger": isdanger})
-
         interfaces = sorted(interfaces, key=lambda x: alnum_key(x["name"]))
         # Resource groups
         # Service groups (i.e. server)
@@ -471,6 +389,7 @@ class ManagedObjectCard(BaseCard):
                     "reason": d.reason or "",
                 }
             )
+        mp = MetricProxy(managed_object=self.object.bi_id)
         r = {
             "id": self.object.id,
             "object": self.object,
@@ -483,6 +402,8 @@ class ManagedObjectCard(BaseCard):
             "description": self.object.description,
             "object_profile": self.object.object_profile.id,
             "object_profile_name": self.object.object_profile.name,
+            "metric_proxy": mp,
+            "mp_ifaces": mp.interface(group_by=["interface", "managed_object"]),
             "hostname": hostname,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
@@ -501,7 +422,7 @@ class ManagedObjectCard(BaseCard):
             "links": links,
             "alarms": alarm_list,
             "interfaces": interfaces,
-            "metrics": meta,
+            "metrics": o_metrics,
             "sensors": s_meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
@@ -607,59 +528,6 @@ class ManagedObjectCard(BaseCard):
                     r += self.flatten_inventory(c, level + 1)
                 del o["children"]
         return r
-
-    @staticmethod
-    def humanize_speed(speed, type_speed):
-        def func_to_bytes(speed):
-            try:
-                speed = float(speed)
-            except ValueError:
-                pass
-                # speed = speed / 8.0
-            if speed < 1024:
-                return speed
-            for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
-                if speed >= t:
-                    if speed // t * t == speed:
-                        return "%d% s" % (speed // t, n)
-                    else:
-                        return "%.2f %s" % (float(speed) / t, n)
-
-        def func_to_bit(speed):
-            if not speed:
-                return "-"
-            try:
-                speed = int(speed)
-            except ValueError:
-                pass
-            if speed < 1000 and speed > 0:
-                return "%s " % speed
-            for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
-                if speed >= t:
-                    if speed // t * t == speed:
-                        return "%d&nbsp;%s" % (speed // t, n)
-                    else:
-                        return "%.2f&nbsp;%s" % (float(speed) / t, n)
-
-        def func_to_bool(speed):
-            return bool(speed)
-
-        result = speed
-        if not speed:
-            result = "-"
-        try:
-            speed = int(speed)
-        except ValueError:
-            pass
-        if type_speed == "bit/s":
-            result = func_to_bit(speed)
-        if type_speed == "bytes":
-            result = func_to_bytes(speed)
-        if type_speed == "bool":
-            result = func_to_bool(speed)
-        if result == speed:
-            result = speed
-        return result
 
     @staticmethod
     def get_root(_root):

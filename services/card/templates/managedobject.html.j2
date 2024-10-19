@@ -491,32 +491,16 @@
                                 {% endif %}
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["load_in"] %}
-                                    <span class="small">{{ i["load_in"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ mp_ifaces.load_in.humanize_value(interface=i["name"]) }}</span>
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["load_out"] %}
-                                    <span class="small">{{ i["load_out"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ mp_ifaces.load_out.humanize_value(interface=i["name"]) }}</span>
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["metrics"]["errors_in"] %}
-                                    <span class="small">{{ i["metrics"]["errors_in"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ mp_ifaces.errors_in.humanize_value(interface=i["name"]) }}</span>
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["metrics"]["errors_out"] %}
-                                    <span class="small">{{ i["metrics"]["errors_out"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ mp_ifaces.errors_out.humanize_value(interface=i["name"]) }}</span>
                             </td>
                             <td>
                                 <span class="small">{{ i["mac"] }}</span>
