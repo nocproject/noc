@@ -1,28 +1,607 @@
 # ----------------------------------------------------------------------
 # PM Utils
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
-from collections import defaultdict
-from typing import Iterable, Union, Tuple, Dict, Optional, DefaultDict, Any, List, Set
-from dataclasses import dataclass
 import itertools
+from collections import defaultdict
+from dataclasses import dataclass
+from typing import Iterable, Union, Tuple, Dict, Optional, Any, List, Set, FrozenSet, DefaultDict
 
 # Third-party modules
 import orjson
 
-# NOC modules
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.core.clickhouse.connect import connection as ch_connection
-from noc.core.clickhouse.error import ClickhouseError
+# NOC Modules
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.scale import Scale
+from noc.pm.models.measurementunits import MeasurementUnits
+from noc.core.clickhouse.connect import connection as ch_connection
+from noc.core.clickhouse.error import ClickhouseError
+
+
+@dataclass(frozen=True)
+class Condition:
+    field: str
+    value: Any
+    condition: str = "="
+    labels: Optional[List[str]] = None
+
+    def get_expr(self) -> str:
+        if self.condition == "in":
+            return f"{self.field} IN {tuple(self.value)!r}"
+        return f"{self.field} = {self.value}"
+
+
+@dataclass(frozen=True)
+class MetricValue:
+    """
+    Metric Value class. Return value when call
+    Attributes:
+        value: Metric Value
+        meta: Dict for meta fields
+        value_scale: Metric Scale
+        value_units: Metric Units
+    """
+
+    value: float
+    meta: Dict[str, str]
+    value_scale: Optional["Scale"] = None
+    value_units: Optional["MeasurementUnits"] = None
+
+    def __str__(self):
+        # Type, Scale for int value
+        if not self.meta:
+            return str(self.value)
+        meta = [f"{v}" for k, v in self.meta.items() if k != "managed_object"]
+        return f"{'@'.join(meta)}: {self.value}"
+
+    def __getattr__(self, item):
+        if item in self.meta:
+            return self.meta[item]
+        raise AttributeError("Unknown Attribute")
+
+    def humanize(self) -> str:
+        """Convert metric value to human output"""
+        if self.value is None:
+            return "-"
+        if not self.value_units:
+            return str(self.value)
+        return str(self.value)
+
+
+@dataclass
+class Function:
+    """
+    Aggregate function class
+    """
+
+    name: str
+    function: Optional["Function"] = None
+    alias: Optional[str] = None
+    args: Optional[str] = None
+
+    def get_expr(self, field: str):
+        if self.function:
+            return f"{self.name}({self.function.get_expr(field)})"
+        if self.args:
+            return f"{self.name}({field}, {self.args})"
+        return f"{self.name}({field})"
+
+
+class QueryField:
+    """
+    Query Field class, Describe field that append to requested from DB
+    """
+
+    function_alias: Dict[str, Function] = {
+        "last": Function("argMax", alias="last", args="ts"),
+        "count": Function("count", alias="count"),
+        "distinct": Function("distinct", alias="distinct"),
+        "count_distinct": Function("count", Function("distinct"), alias="count_distinct"),
+    }
+
+    def __init__(
+        self,
+        field: str,
+        alias: Optional[str] = None,
+        scale: Optional[Scale] = None,
+        measure: Optional[MeasurementUnits] = None,
+        function: Optional[Union[str, Function]] = None,
+    ):
+        self.field: str = field
+        if isinstance(function, str):
+            self.function = self.function_alias[function]
+        else:
+            self.function = function or Function("argMax", alias="last", args="ts")
+        self.scale: Optional[Scale] = scale
+        self.units: Optional[MeasurementUnits] = measure
+        self._alias = alias
+
+    @property
+    def query_expr(self) -> str:
+        """SQL Expression on query"""
+        return self.function.get_expr(self.field)
+
+    @property
+    def alias(self) -> str:
+        """Field Alias"""
+        return self._alias or f"{self.field}_{self.function.alias}"
+
+    @classmethod
+    def from_query(cls, name: str, alias: Optional[str] = None) -> "QueryField":
+        """
+        Build QueryField from query alias
+        Attrs:
+            name: column name on query
+            alias: column alias
+        """
+        # if "__" in name:
+        #    ...
+        mt = MetricType.get_by_field_name(name)
+        if not mt:
+            raise AttributeError("Unknown Field Name: %s" % name)
+        return QueryField(field=mt.field_name, scale=mt.scale, measure=mt.units, alias=alias)
+
+
+class QuerySet:
+    """Clickhouse query description"""
+
+    def __init__(
+        self,
+        proxy: "MetricScopeProxy",
+        group_by: Optional[Tuple[str, ...]] = None,
+    ):
+        """
+        # Cached return values
+        Attrs:
+            proxy: Metric Scope Proxy
+            group_by: Group by fields list ?function
+        """
+        self.metric_proxy: "MetricScopeProxy" = proxy
+        self.fields: Dict[str, QueryField] = {}
+        self.group_by = group_by or []
+        # self.query_cache: Dict[str, List["MetricValue"]] = defaultdict(list)
+        self.query_cache: Dict[FrozenSet[Tuple[str, str], ...], Dict[str, List[MetricValue]]] = {}
+        # List Metric Values - series
+        # Last Field ?
+        self.last_field: Optional[str] = None
+        self.include_last_ts: bool = False
+
+    def __str__(self) -> str:
+        return f"Query Set Fields: {self.fields.keys()}"
+
+    def __getattr__(self, item) -> "QuerySet":
+        self.add_query_field(item, item)
+        return self
+
+    def __call__(
+        self,
+        *args,
+        field: Optional[str] = None,
+        function: Optional[Union[str, Function]] = None,
+        **kwargs,
+    ) -> "QuerySet":
+        if field:
+            self.fields[self.last_field].field = field
+        if function:
+            self.fields[field or self.last_field].function = function
+        return self
+
+    def is_meta_field(self, field: str) -> bool:
+        """Check field is meta (name in labels column)"""
+        for ll in self.metric_proxy.scope.labels:
+            if ll.view_column and ll.view_column == field:
+                return True
+            if ll.store_column and ll.store_column == field:
+                return True
+        return False
+
+    def query_expr(self) -> str:
+        """Build SQL: Expression on query"""
+        select = []
+        if self.include_last_ts:
+            select = ["argMax(ts, ts) as last_ts"]
+        group_by = set()
+        for g in self.group_by:
+            select.append(g)
+            group_by.add(g)
+        # for c in self.metric_proxy.query_conditions:
+        #    select.append(f"argMax({c.field}, ts) AS {c.field}")
+        for alias, f in self.fields.items():
+            if alias in self.requested_fields:
+                # Already Requested
+                continue
+            select.append(f"{f.query_expr} AS {alias}")
+        SQL = """
+              SELECT %s
+              FROM %s
+              WHERE
+              date >= %%s
+              AND ts >= %%s
+              AND (%s)
+              %s
+              FORMAT JSONEachRow
+           """ % (
+            ", ".join(select),
+            self.metric_proxy.scope.table_name,
+            " AND ".join(c.get_expr() for c in self.metric_proxy.query_conditions),
+            # " AND hasAny(labels, [%s]) " % ", ".join(labels) if labels else "",
+            "GROUP BY %s" % ", ".join(group_by) if group_by else "",
+        )
+        return SQL
+
+    def query_metrics(self):
+        """Run build query and fill query_cache result"""
+        ch = ch_connection()
+        print("Query metrics", self.requested_fields, self.fields.keys())
+        # from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(minutes=30)
+        from_date = datetime.datetime.fromisoformat("2024-04-13 18:49:44")
+        result = ch.execute(
+            sql=self.query_expr(),
+            args=[from_date.date().isoformat(), from_date.isoformat(sep=" ")],
+            return_raw=True,
+        )
+        for row in result.splitlines():
+            row = orjson.loads(row)
+            key = self.get_group_key(row)
+            if key not in self.query_cache:
+                self.query_cache[key] = defaultdict(list)
+            meta = {}
+            # group key - group_by fields + key_fields on condition
+            for name, value in row.items():
+                # Metrics
+                if name in self.fields:
+                    self.query_cache[key][name].append(MetricValue(value, meta))
+                elif name == "labels":
+                    meta["value"] = ",".join(value)
+                elif self.is_meta_field(name):
+                    # meta
+                    meta[name] = value
+
+    @classmethod
+    def parse_query(cls, sql: str) -> "QuerySet":
+        """Build Queryset by SQL Expression"""
+
+    def add_query_field(self, query: Union[QueryField, str], alias: Optional[str] = None):
+        """Add Query field for build request"""
+        print("Add Query Field", query)
+        if isinstance(query, str) and self.is_meta_field(query):
+            query = QueryField(field=query)
+        elif isinstance(query, str):
+            query = QueryField.from_query(query, alias=alias)
+        self.fields[query.alias] = query
+        self.last_field = query.alias
+
+    def value(self, name: Optional[str] = None, **kwargs) -> Optional[MetricValue]:  # ? params
+        """Getting value by field name"""
+        name = name or self.last_field
+        if name not in self.requested_fields:
+            self.query_metrics()
+        v = list(self.values(**kwargs))
+        if not v:
+            return None
+        return v[0][name]
+        # key = self.get_group_key(kwargs)
+        # r = self.query_cache[key][name]
+        # return r[0]
+
+    def humanize_value(self, name: Optional[str] = None, **kwargs) -> str:
+        r = self.value(name, **kwargs)
+        if r:
+            return r.humanize()
+        return "-"
+
+    # get_group_keys ?, get_values by key: list keys, -> getting values
+    def get_group_key(self, keys: Dict[str, str]) -> FrozenSet[Tuple[str, str]]:
+        """
+        Create group key by query fields:
+        * Scope key fields
+        * Scope meta fields with group by
+        Attrs:
+            keys: Keys dict
+        """
+        r = {}
+        for kf in self.metric_proxy.scope.key_fields:
+            if kf.field_name in keys:
+                r[kf.field_name] = (kf.field_name, int(keys[kf.field_name]))
+        for k in self.group_by or []:
+            if k in r or k not in keys:
+                continue
+            if k == "labels":
+                r[k] = (k, ",".join(keys[k]))
+                continue
+            r[k] = (k, keys[k])
+        return frozenset(r.values())
+
+    def values(self, **kwargs) -> Iterable[Dict[str, MetricValue]]:
+        """Getting requested query fields"""
+        # **kwargs = group_key, filter by group_key
+        # Other meta field, filter by iterate on for
+        # r = []
+        # managed_object = x, interface = 'xxx'
+        # or if managed_object one, interface = 'xxx', load_in: MV, load_out: MV
+        if not self.query_cache:
+            self.query_metrics()
+        group_key = self.get_group_key(kwargs)
+        print("Requested group key", group_key)
+        if group_key in self.query_cache:
+            yield {k: v[0] for k, v in self.query_cache[group_key].items()}
+            return
+        for gk in self.query_cache:
+            if group_key.intersection(gk):
+                yield {k: v[0] for k, v in self.query_cache[gk].items()}
+
+    def iter_all_values(self, **kwargs):
+        """Iterate over all requested metrics"""
+        if not self.query_cache:
+            self.query_metrics()
+        for gk in self.query_cache:
+            yield {k: v[0] for k, v in self.query_cache[gk].items()}
+
+    # def values_raw(self, **kwargs) -> List[Dict[str, Any]]:
+    #     """"""
+    #     if not self.query_cache:
+    #         self.query_metrics()
+
+    @property
+    def requested_fields(self) -> Set[str]:
+        fields = set()
+        for r in self.query_cache.values():
+            fields |= set(r.keys())
+        return fields
+
+    def metric_values(self, field: Optional[str] = None) -> Iterable[MetricValue]:
+        """Getting requested metrics"""
+        if not self.query_cache or frozenset(
+            self.requested_fields.symmetric_difference(self.fields.keys())
+        ):
+            self.query_metrics()
+        field = field or self.last_field
+        for r in self.query_cache.values():
+            if field in r:
+                yield from r[field]
+        # for v in self.query_cache[field]:
+        #    yield v
+
+
+class MetricScopeProxy:
+    """
+    Proxy Metric Scale
+
+    # Call for multiple fields (cpu_load, cpu_usage).multi
+    # metric.cpu.load_in.load_out.sum
+    """
+
+    def __init__(
+        self,
+        scope: MetricScope,
+        query: Optional[str] = None,
+        # group_by: Optional[List[str]] = None,
+        # queries: List[Union[str, QueryField]] = None,
+    ):
+        """
+        Multiple QuerySet for different group_by query
+        Attrs:
+            scope: MetricScope reference
+            query: Query to Clickhouse for scope data
+        """
+        self.scope = scope
+        self.query = query
+        self.last_group_by = None
+        self.queries: Dict[Optional[Tuple[str, ...]], QuerySet] = {}
+        self.query_conditions: List[Condition] = []
+
+    def add_conditions(self, conditions: Dict[str, Any]):
+        """Add query condition"""
+        for c in conditions:
+            if "__" in c:
+                f, op = c.split("__")
+            else:
+                f, op = c, "="
+            self.query_conditions.append(
+                Condition(
+                    field=f,
+                    condition=op,
+                    value=conditions[c],
+                )
+            )
+
+    def add_queryset(self, group_by: Optional[List[str]] = None):
+        """
+        Add queryset for key by group_by. If not set used default group key
+        Attrs:
+            group_by: Group by key
+        """
+        if group_by:
+            group_by = tuple(group_by)
+        if group_by and group_by not in self.queries:
+            self.queries[group_by] = QuerySet(self, group_by=group_by)
+        elif group_by in self.queries:
+            return self.queries[group_by]
+        elif not group_by:
+            self.queries[None] = QuerySet(self)
+        self.last_group_by = group_by
+        return self.queries[group_by]
+
+    def get_queryset(self, group_by: Optional[List[str]] = None) -> Optional[QuerySet]:
+        """
+        Get queryset by group key
+        Attrs:
+            group_by: Group by key
+        """
+        if group_by:
+            group_by = tuple(group_by)
+        if not self.queries:
+            return None
+        group_by = group_by or self.last_group_by
+        return self.queries.get(group_by)
+
+    def __getattr__(self, item) -> "QuerySet":
+        qs = self.get_queryset()
+        if not qs:
+            qs = self.add_queryset()
+        # raise AttributeError("Unknown group by query")
+        getattr(qs, item)
+        return qs
+
+    def __call__(
+        self,
+        *args,
+        queries: Optional[List[str]] = None,
+        group_by: Optional[List[str]] = None,
+        **kwargs,
+    ) -> "QuerySet":
+        print("Call Item", queries)
+        qs = self.get_queryset(group_by)
+        if not qs:
+            qs = self.add_queryset(group_by)
+        # for f in self.queries or []:
+        #     self.queries[group_by].add_query_field(f)
+        return qs
+
+
+# Clients (Ch.): {% for item in
+# metric.interface(cpe=cpe, group_by=["wlan_channel"]).
+# clients(field=wlan_client, function=count_distinct).values()
+# %} <br/> {{ item.value }} ({{ item.wlan_channel }}) {% endfor %}
+
+
+class MetricProxy:
+    """
+    Proxy Metric Requests to MetricScope table.
+    Example:
+        MetricProxy([("managed_object", 22222222)]).interface.load_in(interface="1/1/1").value()
+        MetricProxy([("managed_object", 22222222)]).interface.load_in().values()
+        MetricProxy([("managed_object", 22222222)]).interface(group_by=None).interface_sum(field="load_in", function="sum").value
+        MetricProxy([("managed_object", 22222222)]).interface.load_in.load_out.values()
+        MetricProxy([("managed_object", 22222222, "interface": "1/1/1")]).interface(queries=["load_in", "load_out"]).values()
+    """
+
+    def __init__(self, query_ts: Optional[datetime.datetime] = None, **kwargs):
+        self._scopes: Dict[str, "MetricScopeProxy"] = {}  # Scope Storage
+        self._conditions = kwargs
+
+    def __getattr__(self, item) -> "MetricScopeProxy":
+        """
+        Getting Metric Scope Proxy for request metrics
+        Attrs:
+            item: MetricScope Table Name
+        """
+        if item in self._scopes:
+            return self._scopes[item]
+        scope = MetricScope.get_by_table_name(item)
+        if not scope:
+            raise AttributeError("Unknown scope: %s" % item)
+        msp = MetricScopeProxy(scope)
+        if self._conditions:
+            msp.add_conditions(self._conditions)
+        self._scopes[scope.table_name] = msp
+        return msp
+
+    def fill_all_scopes(self):
+        """Request all scopes for object"""
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
+        object_profiles = set(
+            ManagedObject.objects.filter(bi_id__in=[3983409262399198747])
+            .distinct("object_profile")
+            .values_list("object_profile", flat=True)
+        )
+        for op in ManagedObjectProfile.objects.filter(id__in=object_profiles):
+            if not op.metrics:
+                continue
+            for mt in op.metrics:
+                mt = MetricType.get_by_id(mt["metric_type"])
+                if mt.scope.table_name not in self._scopes:
+                    msp = MetricScopeProxy(mt.scope)
+                    self._scopes[mt.scope.table_name] = msp
+                    if self._conditions:
+                        msp.add_conditions(self._conditions)
+                msp = self._scopes[mt.scope.table_name]
+                if msp.scope.labels:
+                    qs = msp.add_queryset(group_by=["managed_object", "labels"])
+                else:
+                    qs = msp.add_queryset(group_by=["managed_object"])
+                qs.add_query_field(QueryField.from_query(mt.field_name))
+
+    def iter_object_metrics(self):
+        self.fill_all_scopes()
+        for proxy in self._scopes.values():
+            if proxy.scope.labels:
+                yield from proxy(group_by=["managed_object", "labels"]).iter_all_values()
+            else:
+                yield from proxy(group_by=["managed_object"]).iter_all_values()
+
+
+@dataclass
+class MetricSeries:
+    """
+    Metric Series Structure. Contains MetricKey and Data.
+    MetricKey
+        * series_cache
+    Attributes:
+        type: Metric Type
+        data: Metric series
+        meta: Metadata for metric
+        function: Applying function
+        _alias: Field alias, if not set - equal metric field
+    """
+
+    units: MeasurementUnits
+    scale: Scale
+    data: List[Tuple[int, float]]
+    meta: Dict[str, str]
+    function: Optional[Function] = None  # Generic for default
+    _alias: Optional[str] = None
+
+    # key: Dict[str, int]
+    # key_labels: FrozenSet[str]
+    # labels: List[str]
+
+    def __hash__(self):
+        """Return Metric Key"""
+
+    def alias(self) -> str:
+        if self._alias:
+            return self._alias
+        return self.type.field_name
+
+    @classmethod
+    def from_query(cls, query, key, series: List[Tuple[int, float]]) -> "MetricSeries": ...
+
+    def to_sql(self) -> str:
+        """Return metric expression"""
+
+    def iter_values(self) -> Iterable[MetricValue]:
+        """iterate over series as MetricValue"""
+        for ts, value in self.data:
+            yield self.get_value(ts, value)
+
+    def iter_value_raw(self) -> Iterable[Dict[str, Any]]:
+        """Iterate ove series value"""
+        yield from self.data
+
+    def get_value(self, ts: int, value: float) -> MetricValue:
+        """Build value from timeseries"""
+        return MetricValue(value, self.meta, value_scale=self.scale, value_units=self.units)
+
+    @property
+    def value(self) -> Optional[MetricValue]:
+        """Return last data value"""
+        return self.get_value(*self.data[-1])
+
+    @classmethod
+    def parse_metric_key(cls, data) -> "MetricSeries":
+        """Parse series"""
+
+    @classmethod
+    def get_metric_key(cls): ...
 
 
 def get_objects_metrics(
@@ -31,10 +610,13 @@ def get_objects_metrics(
     Dict["ManagedObject", Dict[str, Dict[str, int]]], Dict["ManagedObject", datetime.datetime]
 ]:
     """
-
-    :param managed_objects:
-    :return: Dictionary ManagedObject -> Path -> MetricName -> value
+    Attrs:
+        managed_objects:
+    Returns:
+        Dictionary ManagedObject -> Path -> MetricName -> value
     """
+    from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
 
@@ -131,10 +713,13 @@ def get_interface_metrics(
 ]:
     """
 
-    :param managed_objects: ManagedObject list or bi_id list
-    :param metrics: For customization getting metrics
-    :return: Dictionary ManagedObject -> Path -> MetricName -> value
+    Attrs:
+        managed_objects: ManagedObject list or bi_id list
+        metrics: For customization getting metrics
+    Returns:
+        Dictionary ManagedObject -> Path -> MetricName -> value
     """
+    from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
     # mo = self.object
     if metrics and "map" not in metrics:
@@ -207,438 +792,6 @@ def get_interface_metrics(
             metric_map[mo][iface][field] = result.get(field, 0.0)
             last_ts[mo] = max(ts, last_ts.get(mo, ts))
     return metric_map, last_ts
-
-
-def get_dict_interface_metrics(
-    managed_objects: Union[Iterable["ManagedObject"], "ManagedObject"]
-) -> Dict[str, Dict[str, Union[str, Dict[str, str]]]]:
-    """
-    Get field_name and name from metric_type for interface.
-    :param managed_objects:
-    :return:
-    metric_map = {
-            "mo_name":{
-                "table_name": "interface",
-                "map": {
-                    "load_in": "Interface | Load | In",
-                    "load_out": "Interface | Load | Out",
-                    "errors_in": "Interface | Errors | In",
-                    "errors_out": "Interface | Errors | Out",
-                }
-            }
-        }
-    """
-    # Avoid circular references
-    metric_map = {}
-    if not isinstance(managed_objects, Iterable):
-        managed_objects = [managed_objects]
-
-    for mo in managed_objects:
-        metric_map[mo] = {"table_name": "interface", "map": _get_dict_interface_metrics(mo)}
-    return metric_map
-
-
-def _get_dict_interface_metrics(managed_object: "ManagedObject") -> Dict[str, str]:
-    """
-    :return:
-    {
-                "load_in": "Interface | Load | In",
-                "load_out": "Interface | Load | Out",
-                "errors_in": "Interface | Errors | In",
-                "errors_out": "Interface | Errors | Out",
-            }
-    """
-    # Avoid circular references
-    from noc.inv.models.interface import Interface
-    from noc.inv.models.interfaceprofile import InterfaceProfile
-
-    i_profile = set()
-    f_n = {}
-    for i in Interface.objects.filter(managed_object=managed_object.id, type="physical"):
-        i_profile.add(i.profile.id)
-    if i_profile:
-        metrics_type = set()
-        for ip in InterfaceProfile.objects.filter(id__in=i_profile):
-            for metric in ip.metrics:
-                if metric.metric_type.scope.table_name == "interface":
-                    metrics_type.add(metric.metric_type)
-        for mt in metrics_type:
-            f_n[mt.field_name] = mt.name
-    return f_n
-
-
-MetricKey = Tuple[Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
-
-
-@dataclass
-class Function:
-    """
-    Aggregate function class
-    """
-
-    name: str
-    function: Optional["Function"] = None
-    alias: Optional[str] = None
-    args: Optional[str] = None
-
-    def get_expr(self, field: str):
-        if self.function:
-            return f"{self.name}({self.function.get_expr(field)})"
-        if self.args:
-            return f"{self.name}({field}, {self.args})"
-        return f"{self.name}({field})"
-
-
-@dataclass(frozen=True)
-class MetricValue:
-    """
-    Metric Value class. Return value when call
-    # def humanize
-    """
-
-    value: float
-    meta: Dict[str, str]
-    value_scale: Optional["Scale"] = None
-    value_units: Optional["MeasurementUnits"] = None
-
-    def __str__(self):
-        # Type, Scale for int value
-        if not self.meta:
-            return str(self.value)
-        meta = [f"{v}" for k, v in self.meta.items() if k != "managed_object"]
-        return f"{'@'.join(meta)}: {self.value}"
-
-    def __hash__(self):
-        return hash(self.meta)
-
-    def __eq__(self, other):
-        if self.meta == other.meta:
-            return True
-        return False
-
-    def __getattr__(self, item):
-        if item in self.meta:
-            return self.meta[item]
-        raise AttributeError("Unknown Attribute")
-
-
-class QueryField:
-    """
-    Query Field class, Describe field that append to requested from DB
-    """
-
-    function_map: Dict[str, Function] = {
-        "last": Function("argMax", alias="last", args="ts"),
-        "count": Function("count", alias="count"),
-        "distinct": Function("distinct", alias="distinct"),
-        "count_distinct": Function("count", Function("distinct"), alias="count_distinct"),
-    }
-
-    def __init__(
-        self,
-        proxy: "MetricScopeProxy",
-        field: str,
-        scale: Optional[Scale] = None,
-        measure: Optional[MeasurementUnits] = None,
-    ):
-        self.metric_proxy = proxy
-        self.field: str = field
-        self.function: Function = self.function_map["last"]
-        self.group_by: Optional[List[str]] = None
-        self.scale: Optional[Scale] = scale
-        self.units: Optional[MeasurementUnits] = measure
-
-    def __hash__(self):
-        return hash(self.function.get_expr(self.field))
-
-    def __str__(self):
-        """
-        Format requested Metrics
-        """
-        r = self.values()
-        return "<br/>".join(str(x) for x in r)
-
-    @property
-    def query_expr(self) -> str:
-        """
-        Field Expression on query
-        """
-        return self.function.get_expr(self.field)
-
-    @property
-    def alias(self) -> str:
-        """
-        Field Alias
-        """
-        return f"{self.field}_{self.function.alias}"
-
-    @property
-    def group_key(self) -> Tuple[str, ...]:
-        if not self.group_by:
-            return tuple()
-        return tuple(self.group_by)
-
-    def __getattr__(self, item) -> "QueryField":
-        """
-        humanize - return str value
-        """
-        if item in self.function_map:
-            self.function = self.function_map[item]
-        return self
-
-    def __call__(self, *args, **kwargs) -> "QueryField":  # MetricValue
-        """
-        scale = convert value by scale
-        """
-        if "group_by" in kwargs:
-            self.group_by = kwargs["group_by"]
-        return self
-
-    def values(self, **kwargs) -> List["MetricValue"]:
-        return self.metric_proxy.query_metrics([self])
-
-
-class MetricScopeProxy:
-    """
-    Proxy Metric Scale
-
-    # Call for multiple fields (cpu_load, cpu_usage).multi
-    # metric.cpu.load_in.load_out.sum
-    """
-
-    def __init__(self, scope: Optional["MetricScope"] = None):
-        self.scope: "MetricScope" = scope
-        self.queries: Dict[str, QueryField] = {}  # Requested Queries to MetricScope
-        self.query_conditions: Set[MetricKey] = set()  # Predefined conditions to query
-        self.query_cache: Dict[QueryField, Dict[MetricKey, List["MetricValue"]]] = (
-            {}
-        )  # Cached return values
-
-    def get_metric_key(self, fields: Set[str] = None, **kwargs) -> "MetricKey":
-        """
-        Getting requested MetricKey. Contains Key Field and Key Label. Unique for Metric Instances
-        :param fields:
-        :param kwargs: Map - KeyFieldName -> KeyFieldValue
-        """
-        keys = []
-        for k in self.scope.key_fields:
-            if k.field_name in kwargs:
-                # Resolve object if f.field_name__ in kwargs
-                keys.append((k.field_name, int(kwargs[k.field_name])))
-        for ll in self.scope.labels:
-            if ll.store_column in kwargs:
-                f = ll.store_column
-            elif ll.view_column in kwargs:
-                f = ll.view_column
-            elif ll.field_name in kwargs:
-                f = ll.field_name
-            else:
-                continue
-            if fields and f in fields:
-                continue
-            keys.append((f, f"{str(kwargs[f])}"))
-        if "labels" in kwargs:
-            labels = tuple(kwargs["labels"])
-        else:
-            labels = tuple([])
-        return tuple(keys), labels
-
-    def get_query(
-        self,
-        req_metrics: List[QueryField],
-        req_conditions: Set[MetricKey],
-        **kwargs,
-    ) -> Iterable[str]:
-        """
-        Build Clickhouse Query by QueryField
-        """
-        # fields: Set[str] = set()
-        group: Dict[Tuple[str, ...], List[QueryField]] = defaultdict(list)
-        conditions = defaultdict(list)
-        select_fields = set()
-        # Processed query group by
-        for q in req_metrics:
-            # fields.add(q.field)
-            group[q.group_key].append(q)
-        # Processed query conditions (where)
-        for mk in req_conditions:
-            key, values = [], []
-            # Keys field
-            for field, value in mk[0]:
-                key.append(field)
-                select_fields.add(field)
-                values.append(str(value))
-            # @todo labels
-            conditions[tuple(key)].append("(%s)" % ", ".join(values))
-        # Build Final Query select and other
-        for g, fields in group.items():
-            select, group_by, condition = list(select_fields), list(select_fields), []
-            # Select
-            for qf in fields:
-                select.append(f"{qf.query_expr} AS {qf.alias}")
-            # Where
-            condition = [
-                " (%s) IN (%s)" % (", ".join(cond), ", ".join(values))
-                for cond, values in conditions.items()
-            ]
-            # Group By
-            if g:
-                select += list(g)
-                group_by += list(g)
-            SQL = """
-                  SELECT argMax(ts, ts), %s
-                  FROM %s
-                  WHERE
-                  date >= %%s
-                  AND ts >= %%s
-                  AND (%s)
-                  %s
-                  FORMAT JSONEachRow
-               """ % (
-                ", ".join(select),
-                self.scope.table_name,
-                " OR ".join(condition),
-                "GROUP BY %s" % ", ".join(group_by) if group_by else "",
-            )
-            yield SQL
-
-    def query_metrics(self, req_metrics: List[QueryField], **kwargs) -> List["MetricValue"]:
-        """
-        Gettinig metrics from database
-        :param req_metrics: List QueryField for requst
-        :param kwargs: Key fields map
-        """
-        # Build requested MetricKey for condition
-        if kwargs:
-            mk = self.get_metric_key(**kwargs)
-        elif self.current_metric_key:
-            mk = self.current_metric_key
-        else:
-            raise ValueError("Not selected Object for request metrics")
-        r: List[MetricValue] = []
-        query_map = {}
-        query_conditions = set()
-        # Proecessed requested metrics for cache check.
-        for qf in req_metrics:
-            # Get chache
-            if qf not in self.query_cache:
-                self.query_cache[qf] = defaultdict(list)
-                for q in self.query_conditions:
-                    query_conditions.add(q)
-                    self.query_cache[qf][q] = []
-            elif mk in self.query_cache[qf]:
-                r += self.query_cache[qf][mk]
-                continue
-            elif mk not in self.query_cache[qf]:
-                self.query_cache[qf][mk] = []
-                query_conditions.add(mk)
-            # elif qf in self.query_cache and mk in self.query_conditions:
-            #     # Nothinп metric on DB for mk
-            #     print("Nothinп metric on DB for mk")
-            #     continue
-            query_map[qf.alias] = qf
-        if not query_map:
-            return r
-        ch = ch_connection()
-        # @todo Custom requested interval by DiscoveryInterval
-        from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(minutes=30)
-        for query in self.get_query(list(query_map.values()), query_conditions, **kwargs):
-            print(query)
-            result = ch.execute(
-                sql=query,
-                args=[from_date.date().isoformat(), from_date.isoformat(sep=" ")],
-                return_raw=True,
-            )
-            for row in result.splitlines():
-                row = orjson.loads(row)
-                for name, value in row.items():
-                    if name not in query_map:
-                        continue
-                    q = query_map[name]
-                    mk = self.get_metric_key(**row)
-                    mv = MetricValue(value, dict(mk[0]), value_scale=q.scale, value_units=q.units)
-                    # Exclude group by for cached values
-                    cache_key = self.get_metric_key(fields=set(q.group_key), **row)
-                    if not self.current_metric_key or self.current_metric_key == cache_key:
-                        r.append(mv)
-                    # Append to Cache
-                    if q not in self.query_cache:
-                        self.query_cache[q] = defaultdict(list)
-                    if mv not in self.query_cache[q][mk]:
-                        self.query_cache[q][cache_key] += [mv]
-        return r
-
-    def add_keys(self, keys: List[Dict[str, Any]]):
-        """
-        Add predefined metric Key for query
-        """
-        for p in keys:
-            mk = self.get_metric_key(**p)
-            self.query_conditions.add(mk)
-
-    def has_field(self, name: str) -> bool:
-        """
-        Check field exists on scope
-        :param name: Field name
-        """
-        for label in self.scope.labels:
-            if label.store_column == name or label.view_column == name:
-                return True
-        return False
-
-    def __getattr__(self, item) -> Union["QueryField", "MetricScopeProxy"]:
-        # print("ProxyX", item)
-        if self.scope and self.scope.table_name == item:
-            return self
-        elif not self.scope:
-            self.scope = MetricScope.get_by_table_name(item)
-            return self
-        mt = MetricType.get_by_field_name(item, scope=self.scope.table_name)
-        if mt:
-            qf = QueryField(self, mt.field_name, mt.scale, mt.measure)
-        elif self.has_field(item):
-            qf = QueryField(self, item)
-        else:
-            raise AttributeError("[%s] Unknown metric: %s" % (self.scope.name, item))
-        if qf.alias in self.queries:
-            return self.queries[qf.alias]
-        self.queries[qf.alias] = qf
-        return qf
-
-    def __call__(self, *args: List[Dict[str, Any]], **kwargs):
-        # print("Call", kwargs)
-        mk = self.get_metric_key(**kwargs)
-        if mk[0] or mk[1]:
-            self.current_metric_key = mk
-            if mk not in self.query_conditions:
-                self.query_conditions.add(mk)
-        return self
-
-
-class MetricProxy:
-    """
-    Proxy Metic Requests to MetricScope table.
-    """
-
-    def __init__(self, metric_keys: Optional[List[Dict[str, Any]]] = None):
-        self._scopes: Dict[str, "MetricScopeProxy"] = {}  # Scope Storage
-        self._metric_keys = metric_keys  # Predefined Request Keys
-
-    def __getattr__(self, item) -> "MetricScopeProxy":
-        """
-        Getting Metric Scope Proxy for request metrics
-        :param item: MetricScope Table Name
-        """
-        if item in self._scopes:
-            return self._scopes[item]
-        scope = MetricScope.get_by_table_name(item)
-        if not scope:
-            raise AttributeError("Unknown scope: %s" % item)
-        msp = MetricScopeProxy(scope)
-        if self._metric_keys:
-            msp.add_keys(self._metric_keys)
-        self._scopes[scope.table_name] = msp
-        return msp
 
 
 # Avoid circular references
