@@ -193,77 +193,74 @@ Ext.define("NOC.inv.inv.Application", {
                 me.menu.hide();
                 return;
               }
-              setTimeout(function(){
-                Ext.Ajax.request({
-                  url: "/inv/inv/" + objectId + "/map_lookup/",
-                  method: "GET",
-                  success: function(response){
-                    var defaultHandler, menuItems,
-                      mapItemPosition = 5,
-                      data = Ext.decode(response.responseText),
-                      mapMenuItem = me.menu.down("#invNavContextMenuMapItem"),
-                      addMenuItem = me.menu.down("#invNavContextMenuAddItem"),
-                      removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem"),
-                      removeAllConnectionMenuItem = me.menu.down("#invNavContextMenuRemoveAllConnectionItem");
+              Ext.Ajax.request({
+                url: "/inv/inv/" + objectId + "/map_lookup/",
+                method: "GET",
+                success: function(response){
+                  var defaultHandler, menuItems,
+                    mapItemPosition = 5,
+                    data = Ext.decode(response.responseText),
+                    mapMenuItem = me.menu.down("#invNavContextMenuMapItem"),
+                    addMenuItem = me.menu.down("#invNavContextMenuAddItem"),
+                    removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem"),
+                    removeAllConnectionMenuItem = me.menu.down("#invNavContextMenuRemoveAllConnectionItem");
                     
-                    addMenuItem.setDisabled(!record.get("can_add"));
-                    removeMenuItem.setDisabled(!record.get("can_delete"));
-                    removeAllConnectionMenuItem.setDisabled(!record.get("can_delete"));
-                    if(mapMenuItem){
-                      me.menu.remove(mapMenuItem);
-                    }
+                  addMenuItem.setDisabled(!record.get("can_add"));
+                  removeMenuItem.setDisabled(!record.get("can_delete"));
+                  removeAllConnectionMenuItem.setDisabled(!record.get("can_delete"));
+                  if(mapMenuItem){
+                    me.menu.remove(mapMenuItem);
+                  }
 
-                    if(Ext.isEmpty(data)){
-                      me.menu.insert(mapItemPosition, {
-                        itemId: "invNavContextMenuMapItem",
-                        text: __("Show Map"),
-                        glyph: NOC.glyph.globe,
-                        disabled: true,
-                      });
-                      return;
-                    }
-                    defaultHandler = data.filter(function(el){
-                      return el.is_default
-                    })[0];
-                    menuItems = data.filter(function(el){
-                      return !el.is_default
-                    }).map(function(el){
-                      return {
-                        text: el.label,
-                        handler: function(){
-                          NOC.launch("inv.map", "history", {
-                            args: el.args,
-                          })
-                        },
-                      }
+                  if(Ext.isEmpty(data)){
+                    me.menu.insert(mapItemPosition, {
+                      itemId: "invNavContextMenuMapItem",
+                      text: __("Show Map"),
+                      glyph: NOC.glyph.globe,
+                      disabled: true,
                     });
-                    // mapMenuItem
-                    if(menuItems.length){
-                      me.menu.insert(mapItemPosition, {
-                        itemId: "invNavContextMenuMapItem",
-                        text: __("Show Map"),
-                        glyph: NOC.glyph.globe,
-                        menu: menuItems,
-                      });
-                    } else{
-                      me.menu.insert(mapItemPosition, {
-                        itemId: "invNavContextMenuMapItem",
-                        text: __("Show Map"),
-                        glyph: NOC.glyph.globe,
-                        handler: function(){
-                          NOC.launch("inv.map", "history", {
-                            args: defaultHandler.args,
-                          });
-                        },
-                      });
+                    return;
+                  }
+                  defaultHandler = data.filter(function(el){
+                    return el.is_default
+                  })[0];
+                  menuItems = data.filter(function(el){
+                    return !el.is_default
+                  }).map(function(el){
+                    return {
+                      text: el.label,
+                      handler: function(){
+                        NOC.launch("inv.map", "history", {
+                          args: el.args,
+                        })
+                      },
                     }
-                  },
-                  failure: function(){
-                    NOC.error(__("Failed get map menu"));
-                  },
-                });
-                me.tabPanel.unmask();
-              }, 0);
+                  });
+                  // mapMenuItem
+                  if(menuItems.length){
+                    me.menu.insert(mapItemPosition, {
+                      itemId: "invNavContextMenuMapItem",
+                      text: __("Show Map"),
+                      glyph: NOC.glyph.globe,
+                      menu: menuItems,
+                    });
+                  } else{
+                    me.menu.insert(mapItemPosition, {
+                      itemId: "invNavContextMenuMapItem",
+                      text: __("Show Map"),
+                      glyph: NOC.glyph.globe,
+                      handler: function(){
+                        NOC.launch("inv.map", "history", {
+                          args: defaultHandler.args,
+                        });
+                      },
+                    });
+                  }
+                },
+                failure: function(){
+                  NOC.error(__("Failed get map menu"));
+                },
+              });
               me.isMenuShow = true;
               me.menu.showAt(event.getXY());
             }
@@ -376,7 +373,7 @@ Ext.define("NOC.inv.inv.Application", {
   //
   runPlugin: function(objectId, pData, index){
     Ext.MessageBox.show({
-      msg: __("Plugin load, please wait..."),
+      msg: __("Plugin" + " " + pData.name + " " + "loading, please wait..."),
       progressText: __("Loading..."),
       width: 300,
       wait: true,
