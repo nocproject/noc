@@ -70,8 +70,14 @@ class MetricValue:
         if self.value is None:
             return "-"
         if not self.value_units:
-            return str(self.value)
-        return str(self.value)
+            return "%s %s" % Scale.humanize(int(self.value))
+        elif self.value_units.code == "s":
+            return Scale.humanize_time(int(self.value))
+        return self.value_units.humanize(self.value)
+
+    @property
+    def humanize_meta(self) -> str:
+        return str(self.meta)
 
 
 @dataclass
@@ -166,9 +172,8 @@ class QuerySet:
         self.fields: Dict[str, QueryField] = {}
         self.group_by = group_by or []
         # self.query_cache: Dict[str, List["MetricValue"]] = defaultdict(list)
-        self.query_cache: Dict[FrozenSet[Tuple[str, str], ...], Dict[str, List[MetricValue]]] = {}
+        self.query_cache: Dict[FrozenSet[Tuple[str, str]], Dict[str, List[MetricValue]]] = {}
         # List Metric Values - series
-        # Last Field ?
         self.last_field: Optional[str] = None
         self.include_last_ts: bool = False
 
@@ -201,6 +206,13 @@ class QuerySet:
                 return True
         return False
 
+    def has_field(self, field: str) -> bool:
+        if isinstance(field, str):
+            return field in self.fields
+        elif isinstance(field, QueryField):
+            return field.alias in self.fields
+        return False
+
     def query_expr(self) -> str:
         """Build SQL: Expression on query"""
         select = []
@@ -231,7 +243,7 @@ class QuerySet:
             self.metric_proxy.scope.table_name,
             " AND ".join(c.get_expr() for c in self.metric_proxy.query_conditions),
             # " AND hasAny(labels, [%s]) " % ", ".join(labels) if labels else "",
-            "GROUP BY %s" % ", ".join(group_by) if group_by else "",
+            "GROUP BY %s" % ", ".join(sorted(group_by)) if group_by else "",
         )
         return SQL
 
@@ -256,7 +268,14 @@ class QuerySet:
             for name, value in row.items():
                 # Metrics
                 if name in self.fields:
-                    self.query_cache[key][name].append(MetricValue(value, meta))
+                    self.query_cache[key][name].append(
+                        MetricValue(
+                            float(value) if value else value,
+                            meta,
+                            value_units=self.fields[name].units,
+                            value_scale=self.fields[name].scale,
+                        )
+                    )
                 elif name == "labels":
                     meta["value"] = ",".join(value)
                 elif self.is_meta_field(name):
@@ -269,11 +288,12 @@ class QuerySet:
 
     def add_query_field(self, query: Union[QueryField, str], alias: Optional[str] = None):
         """Add Query field for build request"""
-        print("Add Query Field", query)
         if isinstance(query, str) and self.is_meta_field(query):
             query = QueryField(field=query)
         elif isinstance(query, str):
-            query = QueryField.from_query(query, alias=alias)
+            query = QueryField.from_query(query, alias=alias or query)
+        # if query.alias not in self.fields:
+        print("Add Query Field", query)
         self.fields[query.alias] = query
         self.last_field = query.alias
 
@@ -328,7 +348,6 @@ class QuerySet:
         if not self.query_cache:
             self.query_metrics()
         group_key = self.get_group_key(kwargs)
-        print("Requested group key", group_key)
         if group_key in self.query_cache:
             yield {k: v[0] for k, v in self.query_cache[group_key].items()}
             return
@@ -371,18 +390,13 @@ class QuerySet:
 
 class MetricScopeProxy:
     """
-    Proxy Metric Scale
-
-    # Call for multiple fields (cpu_load, cpu_usage).multi
-    # metric.cpu.load_in.load_out.sum
+    Proxy for request metric from scope. Contains queryset separated grop by
     """
 
     def __init__(
         self,
         scope: MetricScope,
         query: Optional[str] = None,
-        # group_by: Optional[List[str]] = None,
-        # queries: List[Union[str, QueryField]] = None,
     ):
         """
         Multiple QuerySet for different group_by query
@@ -390,14 +404,15 @@ class MetricScopeProxy:
             scope: MetricScope reference
             query: Query to Clickhouse for scope data
         """
-        self.scope = scope
-        self.query = query
-        self.last_group_by = None
+        self.scope: MetricScope = scope
+        self.query: Optional[str] = query
+        self.last_group_by: Optional[Tuple[str, ...]] = None
         self.queries: Dict[Optional[Tuple[str, ...]], QuerySet] = {}
         self.query_conditions: List[Condition] = []
 
     def add_conditions(self, conditions: Dict[str, Any]):
         """Add query condition"""
+        # Key conditions, Meta Conditions, Label condition
         for c in conditions:
             if "__" in c:
                 f, op = c.split("__")
@@ -445,14 +460,13 @@ class MetricScopeProxy:
         qs = self.get_queryset()
         if not qs:
             qs = self.add_queryset()
-        # raise AttributeError("Unknown group by query")
         getattr(qs, item)
         return qs
 
     def __call__(
         self,
         *args,
-        queries: Optional[List[str]] = None,
+        queries: Optional[List[Union[str, QueryField]]] = None,
         group_by: Optional[List[str]] = None,
         **kwargs,
     ) -> "QuerySet":
@@ -460,15 +474,12 @@ class MetricScopeProxy:
         qs = self.get_queryset(group_by)
         if not qs:
             qs = self.add_queryset(group_by)
-        # for f in self.queries or []:
-        #     self.queries[group_by].add_query_field(f)
+        for f in queries or []:
+            if not qs.has_field(f):
+                qs.add_query_field(f)
         return qs
 
-
-# Clients (Ch.): {% for item in
-# metric.interface(cpe=cpe, group_by=["wlan_channel"]).
-# clients(field=wlan_client, function=count_distinct).values()
-# %} <br/> {{ item.value }} ({{ item.wlan_channel }}) {% endfor %}
+    def render_template(self, template: str) -> str: ...
 
 
 class MetricProxy:
@@ -509,7 +520,7 @@ class MetricProxy:
         from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
         object_profiles = set(
-            ManagedObject.objects.filter(bi_id__in=[3983409262399198747])
+            ManagedObject.objects.filter(bi_id=self._conditions["managed_object"])
             .distinct("object_profile")
             .values_list("object_profile", flat=True)
         )
@@ -531,6 +542,7 @@ class MetricProxy:
                 qs.add_query_field(QueryField.from_query(mt.field_name))
 
     def iter_object_metrics(self):
+        """Iterate over all metrics setting for managed_object"""
         self.fill_all_scopes()
         for proxy in self._scopes.values():
             if proxy.scope.labels:
@@ -539,76 +551,9 @@ class MetricProxy:
                 yield from proxy(group_by=["managed_object"]).iter_all_values()
 
 
-@dataclass
-class MetricSeries:
-    """
-    Metric Series Structure. Contains MetricKey and Data.
-    MetricKey
-        * series_cache
-    Attributes:
-        type: Metric Type
-        data: Metric series
-        meta: Metadata for metric
-        function: Applying function
-        _alias: Field alias, if not set - equal metric field
-    """
-
-    units: MeasurementUnits
-    scale: Scale
-    data: List[Tuple[int, float]]
-    meta: Dict[str, str]
-    function: Optional[Function] = None  # Generic for default
-    _alias: Optional[str] = None
-
-    # key: Dict[str, int]
-    # key_labels: FrozenSet[str]
-    # labels: List[str]
-
-    def __hash__(self):
-        """Return Metric Key"""
-
-    def alias(self) -> str:
-        if self._alias:
-            return self._alias
-        return self.type.field_name
-
-    @classmethod
-    def from_query(cls, query, key, series: List[Tuple[int, float]]) -> "MetricSeries": ...
-
-    def to_sql(self) -> str:
-        """Return metric expression"""
-
-    def iter_values(self) -> Iterable[MetricValue]:
-        """iterate over series as MetricValue"""
-        for ts, value in self.data:
-            yield self.get_value(ts, value)
-
-    def iter_value_raw(self) -> Iterable[Dict[str, Any]]:
-        """Iterate ove series value"""
-        yield from self.data
-
-    def get_value(self, ts: int, value: float) -> MetricValue:
-        """Build value from timeseries"""
-        return MetricValue(value, self.meta, value_scale=self.scale, value_units=self.units)
-
-    @property
-    def value(self) -> Optional[MetricValue]:
-        """Return last data value"""
-        return self.get_value(*self.data[-1])
-
-    @classmethod
-    def parse_metric_key(cls, data) -> "MetricSeries":
-        """Parse series"""
-
-    @classmethod
-    def get_metric_key(cls): ...
-
-
 def get_objects_metrics(
     managed_objects: Union[Iterable, int]
-) -> Tuple[
-    Dict["ManagedObject", Dict[str, Dict[str, int]]], Dict["ManagedObject", datetime.datetime]
-]:
+) -> Tuple[Dict[Any, Dict[str, Dict[str, int]]], Dict[Any, datetime.datetime]]:
     """
     Attrs:
         managed_objects:
@@ -616,6 +561,7 @@ def get_objects_metrics(
         Dictionary ManagedObject -> Path -> MetricName -> value
     """
     from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+    from noc.sa.models.managedobject import ManagedObject
 
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
@@ -708,8 +654,8 @@ def get_objects_metrics(
 def get_interface_metrics(
     managed_objects: Union[Iterable, int], metrics: Optional[Dict[str, Any]] = None
 ) -> Tuple[
-    Dict["ManagedObject", Dict[str, Dict[str, Union[float, int]]]],
-    Dict["ManagedObject", datetime.datetime],
+    Dict[Any, Dict[str, Dict[str, Union[float, int]]]],
+    Dict[Any, datetime.datetime],
 ]:
     """
 
@@ -720,6 +666,7 @@ def get_interface_metrics(
         Dictionary ManagedObject -> Path -> MetricName -> value
     """
     from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+    from noc.sa.models.managedobject import ManagedObject
 
     # mo = self.object
     if metrics and "map" not in metrics:
@@ -736,9 +683,7 @@ def get_interface_metrics(
         }
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
-    bi_map: Dict[str, "ManagedObject"] = {
-        str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects
-    }
+    bi_map: Dict[str, Any] = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
     query_interval: float = (
         ManagedObjectProfile.get_max_metrics_interval(
             set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map)))
@@ -792,7 +737,3 @@ def get_interface_metrics(
             metric_map[mo][iface][field] = result.get(field, 0.0)
             last_ts[mo] = max(ts, last_ts.get(mo, ts))
     return metric_map, last_ts
-
-
-# Avoid circular references
-from noc.sa.models.managedobject import ManagedObject

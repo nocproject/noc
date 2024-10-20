@@ -17,23 +17,23 @@ from mongoengine.errors import DoesNotExist
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
-from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem
+from noc.sa.models.service import Service
+from noc.sa.models.servicesummary import ServiceSummary
+from noc.sa.models.useraccess import UserAccess
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.uptime import Uptime
 from noc.inv.models.object import Object
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.inv.models.sensor import Sensor
-from noc.sa.models.servicesummary import ServiceSummary
-from noc.core.text import alnum_key, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.pm.models.thresholdprofile import ThresholdProfile
-from noc.sa.models.useraccess import UserAccess
-from noc.core.pm.utils_ import MetricProxy
+from noc.core.text import alnum_key, list_to_ranges
+from noc.core.pm.utils import MetricProxy
 from noc.core.perf import metrics
 
 
@@ -71,26 +71,6 @@ class ManagedObjectCard(BaseCard):
 
     # get data function
     def get_data(self):
-        intervals = (
-            ("y", 31557617),  # 60 * 60 * 24 * 7 * 52
-            ("w", 604800),  # 60 * 60 * 24 * 7
-            ("d", 86400),  # 60 * 60 * 24
-            ("h", 3600),  # 60 * 60
-            ("m", 60),
-            ("s", 1),
-        )
-
-        def display_time(seconds):
-            result = []
-
-            for name, count in intervals:
-                value = seconds // count
-                if value:
-                    seconds -= value * count
-                    if value == 1:
-                        name = name.rstrip("s")
-                    result.append("{}{}".format(value, name))
-            return ", ".join(result[:-1])
 
         def sortdict(dct):
             kys = sorted(dct.keys())
@@ -211,21 +191,17 @@ class ManagedObjectCard(BaseCard):
         # Build global services summary
         service_summary = ServiceSummary.get_object_summary(self.object)
         # Metrics
-        metric_proxy = MetricProxy(managedob_object=self.object.bi_id)
+        metric_proxy = MetricProxy(managed_object=self.object.bi_id)
         # Object Metrics
         data = defaultdict(list)
         for v_scope in metric_proxy.iter_object_metrics():
             for field, v in v_scope.items():
-                data[v.meta].append(
+                data[v.humanize_meta].append(
                     {
-                        "name": m_path,  # Metric Type + Meta
-                        "type": "" if m_path == "Object | SysUptime" else metric_type_name[key],
-                        "value": (
-                            display_time(int(mres[key]))
-                            if m_path == "Object | SysUptime"
-                            else mres[key]
-                        ),
-                        "threshold": t_v,
+                        "name": "" + v.humanize_meta,  # Metric Type + Meta
+                        "type": v.value_units.label,
+                        "value": v.humanize(),
+                        "threshold": None,
                     }
                 )
         o_metrics = []
@@ -236,29 +212,36 @@ class ManagedObjectCard(BaseCard):
                 if vv["threshold"]:
                     is_danger |= True
                     collapsed |= True
-            o_metrics.append({"name": k, "value": values, "collapsed": collapsed, "isdanger": is_danger})
-        sensor_proxy = MetricProxy(sensor__in=[])
-        sensors = defaultdict(list)
-        # Sensors Metrics
-        for s in Sensor.object.filter(managed_object=self.object.id):
-            value = sensor_proxy.sensor.value.status.value(sensor=s.bi_id)
-            sensors[s.label].append(
-                {
-                    "name": s.label,
-                    "type": metric_type_name[key],
-                    "value": value,
-                    "threshold": None,
-                }
+            o_metrics.append(
+                {"name": k, "value": values, "collapsed": collapsed, "is_danger": is_danger}
             )
+        sensors = list(Sensor.objects.filter(managed_object=self.object.id).order_by("label"))
         s_meta = []
         if sensors:
-            sensors = sortdict(sensors)
-            for k, d in sensors.items():
-                for dd in d:
-                    is_danger = False
-                    if dd["threshold"]:
-                        is_danger = True
-                s_meta.append({"name": k, "value": d, "isdanger": is_danger})
+            sensor_proxy = MetricProxy(sensor__in=[x.bi_id for x in sensors])
+            # Sensors Metrics
+            for s in sensors:
+                value = sensor_proxy.sensor.value.status.value(sensor=s.bi_id)
+                # sensors[s.label].append(
+                #     {
+                #         "name": s.label,
+                #         "type": s.units.label,
+                #         "value": value,
+                #         "threshold": None,
+                #     }
+                # )
+                s_meta.append(
+                    {
+                        "name": s.label,
+                        "value": {
+                            "name": s.label,
+                            "type": s.units.label,
+                            "value": value,
+                            "threshold": None,
+                        },
+                        "is_danger": False,
+                    }
+                )
         # Interfaces
         interfaces = []
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
@@ -403,7 +386,7 @@ class ManagedObjectCard(BaseCard):
             "object_profile": self.object.object_profile.id,
             "object_profile_name": self.object.object_profile.name,
             "metric_proxy": mp,
-            "mp_ifaces": mp.interface(group_by=["interface", "managed_object"]),
+            "iface_metrics": mp.interface(group_by=["interface", "managed_object"]),
             "hostname": hostname,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,

@@ -25,6 +25,15 @@ from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
+DISPLAY_INTERVALS = (
+    ("y", 31557617),  # 60 * 60 * 24 * 7 * 52
+    ("w", 604800),  # 60 * 60 * 24 * 7
+    ("d", 86400),  # 60 * 60 * 24
+    ("h", 3600),  # 60 * 60
+    ("m", 60),
+    ("s", 1),
+)
+
 
 @on_delete_check(check=[("pm.MetricType", "scale")])
 class Scale(Document):
@@ -101,14 +110,36 @@ class Scale(Document):
         return f"{quote_safe_path(self.name)}.json"
 
     @classmethod
+    def humanize_time(cls, seconds: Union[int]) -> str:
+        """Convert seconds to format"""
+        result = []
+
+        for name, count in DISPLAY_INTERVALS:
+            value = seconds // count
+            if value:
+                seconds -= value * count
+                if value == 1:
+                    name = name.rstrip("s")
+                result.append("{}{}".format(value, name))
+        return ", ".join(result[:-1])
+
+    @classmethod
+    def humanize_speed(cls, value: int) -> str:
+        """"""
+        if 0 < value < 1000:
+            return f"{value} "
+        return "%.2f&nbsp;%s" % cls.humanize(value)
+
+    @classmethod
     def humanize(
         cls, value: Union[int, float], base: int = 10, min_exp: int = 3
     ) -> Tuple[float, str]:
         """
         Humanize integer value for Scale suffix
-        :param value: Value for humanize
-        :param base: Exponent base (10 or 2)
-        :param min_exp: Minimal exponent for humanize
+        Attrs:
+            value: Value for humanize
+            base: Exponent base (10 or 2)
+            min_exp: Minimal exponent for humanize
         """
         s = sorted(
             (base**s.exp, s.code) for s in Scale.objects.filter(base=base) if s.exp >= min_exp
