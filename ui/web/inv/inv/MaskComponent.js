@@ -18,6 +18,7 @@ Ext.define("NOC.inv.inv.MaskComponent", {
       loading: __("Loading {0} plugin, please wait..."),
       fetching: __("Fetching data for {0}..."),
       processing: __("Processing {0} items..."),
+      reloading: __("Reloading {0} ..."),
     };
         
     this.handleMaskTimeout = this.handleMaskTimeout.bind(this);
@@ -51,7 +52,7 @@ Ext.define("NOC.inv.inv.MaskComponent", {
         
     var timeout = setTimeout(function(){
       self.handleMaskTimeout(id);
-    }, 500);
+    }, 5);
         
     this.activeMessages.push({
       id: id, 

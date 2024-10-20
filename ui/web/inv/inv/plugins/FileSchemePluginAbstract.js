@@ -107,10 +107,11 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
         }
         viewPanel.setHtml(parserResult.documentElement.outerHTML);
         zoomControl.restoreZoom();
-        maskComponent.hide(messageId);
       },
       failure: function(response){
         NOC.error("Failed to load SVG: " + response.status);
+      },
+      callback: function(){
         maskComponent.hide(messageId);
       },
     });

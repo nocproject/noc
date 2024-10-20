@@ -23,7 +23,9 @@ Ext.define("NOC.inv.inv.plugins.rack.RackController", {
   //
   onCellEdit: function(editor, context){
     var me = this,
-      viewModel = me.getViewModel();
+      viewModel = me.getViewModel(),
+      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("Saving position ...");
     if(context.field === "position_front"){
       context.record.set("position_rear", 0);
     }
@@ -46,6 +48,9 @@ Ext.define("NOC.inv.inv.plugins.rack.RackController", {
       },
       failure: function(){
         NOC.error(__("Failed to save"));
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },
