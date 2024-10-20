@@ -41,7 +41,6 @@ Ext.define("NOC.inv.inv.plugins.rack.RackController", {
         position_rear: context.record.get("position_rear"),
         shift: context.record.get("shift"),
       },
-      loadMask: me,
       success: function(){
         me.onReload();
       },

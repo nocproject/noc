@@ -337,7 +337,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         obj = Ext.decode(response.responseText),
         grid = this.down("grid"),
         store = grid.getStore();        
-      this.unmask();
       store.loadData(obj.records);
       if(Ext.isEmpty(channelId)){
         return;

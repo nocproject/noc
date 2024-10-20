@@ -10,8 +10,9 @@ Ext.define("NOC.inv.inv.Application", {
   extend: "NOC.core.Application",
   layout: "card",
   requires: [
-    "NOC.inv.inv.NavModel",
     "NOC.inv.inv.CreateConnectionForm",
+    "NOC.inv.inv.MaskComponent",
+    "NOC.inv.inv.NavModel",
   ],
   initComponent: function(){
     var me = this;
@@ -127,7 +128,6 @@ Ext.define("NOC.inv.inv.Application", {
       useArrows: true,
       region: "west",
       split: true,
-      loadMask: true,
       width: 300,
       displayField: "name",
       allowDeselect: true,
@@ -295,10 +295,9 @@ Ext.define("NOC.inv.inv.Application", {
         beforetabchange: function(tabPanel, newCard){
           var me = this,
             objectId = me.selectedObjectId,
-            pluginName = newCard.pluginName;
+            pluginName = newCard.pluginName,
+            messageId = me.maskComponent.show("fetching", [pluginName]);
 
-          me.mask(__("Download" + " " + pluginName + " " + "plugin data, please wait ..."));
-          console.log(__("Download" + " " + pluginName + " " + "plugin data, please wait ..."));
           Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
             method: "GET",
@@ -306,16 +305,17 @@ Ext.define("NOC.inv.inv.Application", {
             success: function(response){
               var data = Ext.decode(response.responseText);
               newCard.preview(data, objectId);
-              console.log(`unmask ${pluginName}`);
-              me.unmask();
+              this.maskComponent.hide(messageId);
             },
             failure: function(){
-              me.unmask();
               NOC.error(__("Failed to get data for plugin") + " " + pluginName);
             },
           });
         },
       },
+    });
+    me.maskComponent = Ext.create("NOC.inv.inv.MaskComponent", {
+      maskedComponent: me.tabPanel,
     });
     //
     me.connectionPanel = Ext.create("NOC.inv.inv.CreateConnectionForm", {
@@ -372,13 +372,8 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   runPlugin: function(objectId, pData, index){
-    Ext.MessageBox.show({
-      msg: __("Plugin" + " " + pData.name + " " + "loading, please wait..."),
-      progressText: __("Loading..."),
-      width: 300,
-      wait: true,
-      waitConfig: {interval: 300},
-    });
+    var me = this,
+      messageId = me.maskComponent.show("loading", [pData.name]);
 
     Ext.Loader.require(pData.xtype, function(){
       var plugin = Ext.create(pData.xtype, {app: this});
@@ -392,15 +387,15 @@ Ext.define("NOC.inv.inv.Application", {
           this.tabPanel.setActiveTab(0);
         }
       }
-      Ext.MessageBox.hide();
+      me.maskComponent.hide(messageId);
     }, this);
   },
   //
   addAppForm: function(parent, app, objectId){
     var me = this,
       url = "/" + app.replace(".", "/") + "/launch_info/",
+      messageId = me.maskComponent.show("processing", [app]),
       c;
-    me.up().mask(__("Loading" + " " + app + " ..."));
     Ext.Ajax.request({
       url: url,
       method: "GET",
@@ -419,11 +414,11 @@ Ext.define("NOC.inv.inv.Application", {
             c.onEditRecord(record);
           });
           parent.add(c);
-          me.up().unmask();
+          me.maskComponent.hide(messageId);
         });
       },
       failure: function(){
-        me.up().unmask();
+        me.maskComponent.hide(messageId);
         NOC.error(__("Failed to launch application") + " " + app);
       },
     });
@@ -568,7 +563,6 @@ Ext.define("NOC.inv.inv.Application", {
                       displayField: "name",
                       rootVisible: false,
                       useArrows: true,
-                      loadMask: true,
                       allowDeselect: true,
                       store: Ext.create("Ext.data.TreeStore", {
                         root: data.choices,
