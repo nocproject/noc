@@ -21,8 +21,7 @@ Ext.define("NOC.inv.inv.plugins.job.JobController", {
     var me = this,
       currentId = me.getViewModel().get("currentId"),
       maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show("fetching", [__("Jobs")]);
-    // me.getView().mask(__("Loading..."));
+      messageId = maskComponent.show("fetching", ["jobs"]);
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/job/",
       method: "GET",

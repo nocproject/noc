@@ -292,26 +292,7 @@ Ext.define("NOC.inv.inv.Application", {
       items: [],
       listeners: {
         scope: me,
-        beforetabchange: function(tabPanel, newCard){
-          var me = this,
-            objectId = me.selectedObjectId,
-            pluginName = newCard.pluginName,
-            messageId = me.maskComponent.show("fetching", [pluginName]);
-
-          Ext.Ajax.request({
-            url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
-            method: "GET",
-            scope: me,
-            success: function(response){
-              var data = Ext.decode(response.responseText);
-              newCard.preview(data, objectId);
-              this.maskComponent.hide(messageId);
-            },
-            failure: function(){
-              NOC.error(__("Failed to get data for plugin") + " " + pluginName);
-            },
-          });
-        },
+        beforetabchange: me.onBeforeTabChange,
       },
     });
     me.maskComponent = Ext.create("NOC.inv.inv.MaskComponent", {
@@ -380,14 +361,15 @@ Ext.define("NOC.inv.inv.Application", {
       this.tabPanel.insert(index, plugin);
       this.invPlugins[pData.name] = plugin;
       plugin.pluginName = pData.name;
-      if(Object.keys(this.invPlugins).length === this.tabPanel.items.length){
+      me.maskComponent.hide(messageId);
+      this.loadedPlugins++;
+      if(this.loadedPlugins === this.maxPlugins){
         if(this.currentPlugin && this.invPlugins[this.currentPlugin]){
           this.tabPanel.setActiveTab(this.invPlugins[this.currentPlugin]);
         } else{
           this.tabPanel.setActiveTab(0);
         }
       }
-      me.maskComponent.hide(messageId);
     }, this);
   },
   //
@@ -423,6 +405,27 @@ Ext.define("NOC.inv.inv.Application", {
       },
     });
   },
+  onBeforeTabChange: function(tabPanel, newCard){
+    var me = this,
+      objectId = me.selectedObjectId,
+      pluginName = newCard.pluginName,
+      messageId = me.maskComponent.show("fetching", [pluginName]);
+    Ext.Ajax.request({
+      url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
+      method: "GET",
+      scope: me,
+      success: function(response){
+        var data = Ext.decode(response.responseText);
+        newCard.preview(data, objectId);
+      },
+      failure: function(){
+        NOC.error(__("Failed to get data for plugin") + " " + pluginName);
+      },
+      callback: function(){
+        me.maskComponent.hide(messageId);
+      },
+    });
+  },
   //
   onBeforeSelect: function(){
     var activeTab = this.tabPanel.getActiveTab();
@@ -439,6 +442,8 @@ Ext.define("NOC.inv.inv.Application", {
     if(node){
       node.querySelector("button").style.display = "block";
     }
+    me.maxPlugins = plugins.length;
+    me.loadedPlugins = 0;
     me.down("#addObjectDock").hide();
     me.selectedObjectId = objectId;
     me.invPlugins = {};
