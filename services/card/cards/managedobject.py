@@ -179,9 +179,9 @@ class ManagedObjectCard(BaseCard):
         data = defaultdict(list)
         for v_scope in metric_proxy.iter_object_metrics():
             for field, v in v_scope.items():
-                data[v.humanize_meta].append(
+                data[v.value_type.name].append(
                     {
-                        "name": "" + v.humanize_meta,  # Metric Type + Meta
+                        "name": f"{v.value_type.name} {v.humanize_meta}",  # Metric Type + Meta
                         "type": v.value_units.label,
                         "value": v.humanize(),
                         "threshold": None,

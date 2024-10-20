@@ -7,7 +7,6 @@
 
 # NOC modules
 from noc.core.pm.utils import MetricProxy
-from noc.core.mongo.connection import connect
 
 SQL_INTERFACE_LOAD_OUT = """
               SELECT interface, managed_object, argMax(load_out, ts) AS load_out
@@ -22,7 +21,6 @@ SQL_INTERFACE_LOAD_OUT = """
 
 
 def test_mp():
-    connect()
     mp = MetricProxy(managed_object=9016826725858827563)
     qs = mp.interface(group_by=["interface", "managed_object"]).load_out
     assert qs.query_expr().strip() == SQL_INTERFACE_LOAD_OUT.strip()

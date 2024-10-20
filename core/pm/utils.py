@@ -52,6 +52,7 @@ class MetricValue:
     meta: Dict[str, str]
     value_scale: Optional["Scale"] = None
     value_units: Optional["MeasurementUnits"] = None
+    value_type: Optional["MetricType"] = None
 
     def __str__(self):
         # Type, Scale for int value
@@ -77,6 +78,8 @@ class MetricValue:
 
     @property
     def humanize_meta(self) -> str:
+        if not self.meta:
+            return ""
         return str(self.meta)
 
 
@@ -118,6 +121,7 @@ class QueryField:
         scale: Optional[Scale] = None,
         measure: Optional[MeasurementUnits] = None,
         function: Optional[Union[str, Function]] = None,
+        metric_type: Optional[MetricType] = None,
     ):
         self.field: str = field
         if isinstance(function, str):
@@ -127,6 +131,7 @@ class QueryField:
         self.scale: Optional[Scale] = scale
         self.units: Optional[MeasurementUnits] = measure
         self._alias = alias
+        self._type = metric_type
 
     @property
     def query_expr(self) -> str:
@@ -139,7 +144,9 @@ class QueryField:
         return self._alias or f"{self.field}_{self.function.alias}"
 
     @classmethod
-    def from_query(cls, name: str, alias: Optional[str] = None) -> "QueryField":
+    def from_query(
+        cls, name: str, alias: Optional[str] = None, table_name: Optional[str] = None
+    ) -> "QueryField":
         """
         Build QueryField from query alias
         Attrs:
@@ -148,10 +155,16 @@ class QueryField:
         """
         # if "__" in name:
         #    ...
-        mt = MetricType.get_by_field_name(name)
+        mt = MetricType.get_by_field_name(name, scope=table_name or None)
         if not mt:
             raise AttributeError("Unknown Field Name: %s" % name)
-        return QueryField(field=mt.field_name, scale=mt.scale, measure=mt.units, alias=alias)
+        return QueryField(
+            field=mt.field_name,
+            scale=mt.scale,
+            measure=mt.units,
+            alias=alias,
+            metric_type=mt,
+        )
 
 
 class QuerySet:
@@ -274,10 +287,11 @@ class QuerySet:
                             meta,
                             value_units=self.fields[name].units,
                             value_scale=self.fields[name].scale,
+                            value_type=self.fields[name]._type,
                         )
                     )
-                elif name == "labels":
-                    meta["value"] = ",".join(value)
+                elif name == "labels" and value:
+                    meta["labels"] = ",".join(value)
                 elif self.is_meta_field(name):
                     # meta
                     meta[name] = value
@@ -291,7 +305,9 @@ class QuerySet:
         if isinstance(query, str) and self.is_meta_field(query):
             query = QueryField(field=query)
         elif isinstance(query, str):
-            query = QueryField.from_query(query, alias=alias or query)
+            query = QueryField.from_query(
+                query, alias=alias or query, table_name=self.metric_proxy.scope.table_name
+            )
         # if query.alias not in self.fields:
         print("Add Query Field", query)
         self.fields[query.alias] = query
@@ -539,7 +555,9 @@ class MetricProxy:
                     qs = msp.add_queryset(group_by=["managed_object", "labels"])
                 else:
                     qs = msp.add_queryset(group_by=["managed_object"])
-                qs.add_query_field(QueryField.from_query(mt.field_name))
+                qs.add_query_field(
+                    QueryField.from_query(mt.field_name, table_name=mt.scope.table_name)
+                )
 
     def iter_object_metrics(self):
         """Iterate over all metrics setting for managed_object"""
