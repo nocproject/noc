@@ -44,7 +44,7 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
       success: function(response){
         var result = Ext.decode(response.responseText),
           tooltipConfig = {},
-          path = Ext.Array.map(result.path, function(item){
+          path = Ext.Array.map(result.path || [], function(item){
             if(!item.id){
               return `<span>${item.label}</span>`
             }

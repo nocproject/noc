@@ -473,7 +473,7 @@ Ext.define("NOC.inv.inv.Application", {
     var me = this;
 
     me.down("#addObjectDock").show();
-    Ext.ComponentQuery.query("tooltip#schemeBalloon").forEach(function(tooltip){
+    Ext.ComponentQuery.query("tooltip#schemeBalloon, tooltip#mapBalloon").forEach(function(tooltip){
       tooltip.destroy();
     });
     if(rowModel){

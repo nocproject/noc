@@ -15,6 +15,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   autoScroll: true,
   minZoomLevel: 0,
   maxZoomLevel: 19,
+  mixins: [
+    "NOC.inv.inv.plugins.Mixins",
+  ],
   // Zoom levels according to
   // http://wiki.openstreetmap.org/wiki/Zoom_levels
   zoomLevels: [
@@ -142,7 +145,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           radius: 5,
         });
       },
-      style: function(json){
+      style: function(){
         return {
           color: cfg.fill_color,
           fillColor: cfg.fill_color,
@@ -150,7 +153,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           weight: cfg.stroke_width,
         };
       },
-      filter: function(geoJsonFeature){
+      filter: function(){
         // Remove invisible layers on zoom
         var zoom = me.map.getZoom();
         return (zoom >= cfg.min_zoom) && (zoom <= cfg.max_zoom)
@@ -215,6 +218,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     me.contextMenuData = data.add_menu;
     me.initScale = data.zoom;
     //
+    if(me.map){
+      me.map.remove();
+    }
     me.map = L.map(mapDom, {
       zoomControl: false,
     }).setView(me.center, me.initScale);
@@ -274,20 +280,10 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   showObjectTip: function(args){
-    var tip = Ext.create("Ext.tip.ToolTip", {}),
-      url = "/inv/inv/" + args.layer.feature.id + "/plugin/map/object_data/";
-    Ext.Ajax.request({
-      url: url,
-      method: "GET",
-      async: false,
-      success: function(response){
-        console.log(response);
-        tip.showAt([args.originalEvent.clientX, args.originalEvent.clientY]);
-      },
-      failure: function(){
-        NOC.error(("Failed to get data"));
-      },
-    });
+    var resource = args.layer.feature.properties.resource,
+      app = this.up("[appId=inv.inv]"),
+      position = [args.originalEvent.clientX, args.originalEvent.clientY];
+    this.showBalloon(app, "mapBalloon", resource, position);
   },
   //
   onContextMenu: function(event){
@@ -377,18 +373,16 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
               type: "FeatureCollection",
               features: [
                 {
-                  geometry:
-                                        {
-                                          type: "Point",
-                                          coordinates: [e.latlng.lng, e.latlng.lat],
-                                        },
+                  geometry: {
+                    type: "Point",
+                    coordinates: [e.latlng.lng, e.latlng.lat],
+                  },
                   type: "Feature",
                   id: me.currentId,
-                  properties:
-                                        {
-                                          object: me.currentId,
-                                          label: "",
-                                        },
+                  properties: {
+                    object: me.currentId,
+                    label: "",
+                  },
                 }],
             },
             layers = me.objectLayer.getLayers().filter(function(layer){
