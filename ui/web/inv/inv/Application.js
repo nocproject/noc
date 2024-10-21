@@ -282,7 +282,6 @@ Ext.define("NOC.inv.inv.Application", {
     });
     me.navTree.getView().on("beforedrop", me.onNavDrop, me);
     me.tabPanel = Ext.create("Ext.tab.Panel", {
-      region: "center",
       layout: "fit",
       border: false,
       scrollable: true,
@@ -307,11 +306,21 @@ Ext.define("NOC.inv.inv.Application", {
       },
     });
     //
+    me.workPanel = Ext.create("Ext.panel.Panel", {
+      layout: "card",
+      region: "center",
+      activeItem: 0,
+      items: [
+        me.tabPanel,
+        me.connectionPanel,
+      ],
+    });
+    //
     me.mainPanel = Ext.create("Ext.panel.Panel", {
       layout: "border",
       items: [
         me.navTree,
-        me.tabPanel,
+        me.workPanel,
       ],
     });
     me.ITEM_MAIN = me.registerItem(me.mainPanel);
@@ -798,11 +807,8 @@ Ext.define("NOC.inv.inv.Application", {
       sm = me.navTree.getSelectionModel(),
       selected = sm.getSelection();
     
-    if(me.mainPanel.items.items.length > 2){
-      me.mainPanel.remove(me.mainPanel.items.items[2], false);
-    }
     if(selected.length > 0){
-      me.mainPanel.add(me.connectionPanel);
+      me.workPanel.setActiveItem(me.connectionPanel);
       me.connectionPanel.onDrop({dragData: {records: selected} });
     }
   },
