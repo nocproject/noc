@@ -34,4 +34,84 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
     a.click();
     URL.revokeObjectURL(url);
   },
+  showBalloon: function(app, itemId, resourceData, pos){
+    Ext.Ajax.request({
+      url: "/inv/inv/baloon/",
+      method: "POST",
+      jsonData: {
+        resource: resourceData,
+      },
+      success: function(response){
+        var result = Ext.decode(response.responseText),
+          tooltipConfig = {},
+          path = Ext.Array.map(result.path, function(item){
+            if(!item.id){
+              return `<span>${item.label}</span>`
+            }
+            return `<span style='cursor: pointer;text-decoration: underline;'`
+                    + `data-item-id="${item.id}"`
+                    + `>${item.label}</span>`
+          }).join(" > "),
+          tooltipHtml = `
+                      ${path}
+                      <div style='padding: 4px 0;'><em>${result.description}</em></div>
+                    `
+
+        Ext.ComponentQuery.query("tooltip#" + itemId).forEach(function(tooltip){
+          tooltip.destroy();
+        });
+                      
+        tooltipConfig = {
+          itemId: itemId,
+          title: result.title,
+          padding: "4 0",
+          html: tooltipHtml,
+          closeAction: "destroy",
+          dismissDelay: 0,
+          tools: [
+            {
+              type: "close",
+              handler: function(){
+                tooltip.destroy();
+              },
+            },
+          ],
+          listeners: {
+            afterrender: function(tooltip){
+              var items = tooltip.el.query("[data-item-id]");
+              items.forEach(function(element){
+                element.addEventListener("click", function(evt){
+                  var value = element.dataset.itemId;
+                  evt.stopPropagation(); 
+                  app.showObject(value);
+                }); 
+              });
+            },
+          },
+        }
+        if(result.buttons && result.buttons.length){
+          Ext.apply(tooltipConfig, {
+            buttons: Ext.Array.map(result.buttons, function(button){ 
+              return {
+                xtype: "button",
+                glyph: button.glyph,
+                tooltip: button.hint,
+                handler: function(){
+                  if(button.action === "go"){
+                    app.showObject(button.args);
+                  }
+                },
+              }
+            }),
+          });
+        }
+
+        var tooltip = Ext.create("Ext.tip.ToolTip", tooltipConfig);
+        tooltip.showAt(pos);
+      },
+      failure: function(){
+        NOC.error(__("Failed to get data"));
+      },
+    });
+  },
 });
