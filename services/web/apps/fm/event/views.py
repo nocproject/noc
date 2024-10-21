@@ -199,10 +199,11 @@ class EventApplication(ExtDocApplication):
                         if "plugins" in dd:
                             plugins += dd["plugins"]
                             del dd["plugins"]
-                        date.update(dd)
+                        data.update(dd)
                 if plugins:
                     data["plugins"] = plugins
-            return {data["id"]:data}
+            return {data["id"]: data}
+
         q = self.parse_request_query(request)
         # Apply row limit if necessary
         limit = q.get(self.limit_param, self.unlimited_row_limit)
@@ -407,9 +408,6 @@ class EventApplication(ExtDocApplication):
             raise Exception("Invalid status")
         model = self.model_map[status]
         return model.objects
-
-
-
 
     @view(
         url=r"^(?P<id>[a-z0-9]{24})/post/",
