@@ -176,11 +176,13 @@ class MeasurementUnits(Document):
     def get_json_path(self) -> str:
         return f"{quote_safe_path(self.name)}.json"
 
-    def humanize(self, value: Union[float, int]) -> str:
+    def humanize(self, value: Union[float, int], with_units: bool = False) -> str:
         if self.code == "1":
             return str(value)
         elif self.code == "s":
             return Scale.humanize_time(value)
-        elif self.code == "bit/s" or self.code == "pps":
-            return Scale.humanize_speed(value)
-        return "%s %s" % Scale.humanize(value)
+        # Enum?
+        value, m = Scale.humanize(value)
+        if with_units and self.label != "Scalar":
+            return f"{value:.2f} {m}{self.label}"
+        return f"{value:.2f} {m}"

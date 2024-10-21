@@ -124,13 +124,6 @@ class Scale(Document):
         return ", ".join(result[:-1])
 
     @classmethod
-    def humanize_speed(cls, value: int) -> str:
-        """"""
-        if 0 < value < 1000:
-            return f"{value} "
-        return "%.2f&nbsp;%s" % cls.humanize(value)
-
-    @classmethod
     def humanize(
         cls, value: Union[int, float], base: int = 10, min_exp: int = 3
     ) -> Tuple[float, str]:

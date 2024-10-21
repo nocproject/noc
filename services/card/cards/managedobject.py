@@ -181,8 +181,8 @@ class ManagedObjectCard(BaseCard):
             for field, v in v_scope.items():
                 data[v.value_type.name].append(
                     {
-                        "name": f"{v.value_type.name} {v.humanize_meta}",  # Metric Type + Meta
-                        "type": v.value_units.label,
+                        "name": v.humanize_meta or v.value_type.name,  # Metric Type + Meta
+                        "type": v.value_units.label if v.value_units != "Scalar" else "",
                         "value": v.humanize(),
                         "threshold": None,
                     }
@@ -369,7 +369,10 @@ class ManagedObjectCard(BaseCard):
             "object_profile": self.object.object_profile.id,
             "object_profile_name": self.object.object_profile.name,
             "metric_proxy": mp,
-            "iface_metrics": mp.interface(group_by=["interface", "managed_object"]),
+            "iface_metrics": mp.interface(
+                group_by=["interface", "managed_object"],
+                queries=["load_in", "load_out", "errors_in", "errors_out"],
+            ),
             "hostname": hostname,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,

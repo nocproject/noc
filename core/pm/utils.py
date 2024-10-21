@@ -16,12 +16,12 @@ from typing import Iterable, Union, Tuple, Dict, Optional, Any, List, Set, Froze
 import orjson
 
 # NOC Modules
+from noc.core.clickhouse.connect import connection as ch_connection
+from noc.core.clickhouse.error import ClickhouseError
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.scale import Scale
 from noc.pm.models.measurementunits import MeasurementUnits
-from noc.core.clickhouse.connect import connection as ch_connection
-from noc.core.clickhouse.error import ClickhouseError
 
 
 @dataclass(frozen=True)
@@ -66,7 +66,7 @@ class MetricValue:
             return self.meta[item]
         raise AttributeError("Unknown Attribute")
 
-    def humanize(self) -> str:
+    def humanize(self, with_units: bool = False) -> str:
         """Convert metric value to human output"""
         if self.value is None:
             return "-"
@@ -74,12 +74,14 @@ class MetricValue:
             return "%s %s" % Scale.humanize(int(self.value))
         elif self.value_units.code == "s":
             return Scale.humanize_time(int(self.value))
-        return self.value_units.humanize(self.value)
+        return self.value_units.humanize(self.value, with_units=with_units)
 
     @property
     def humanize_meta(self) -> str:
         if not self.meta:
             return ""
+        elif "labels" in self.meta:
+            return "|".join(ll.split("::")[-1] for ll in self.meta["labels"])
         return str(self.meta)
 
 
@@ -220,11 +222,27 @@ class QuerySet:
         return False
 
     def has_field(self, field: str) -> bool:
+        """Check field added to request"""
         if isinstance(field, str):
             return field in self.fields
         elif isinstance(field, QueryField):
             return field.alias in self.fields
         return False
+
+    def is_field_requested(self, field: Optional[str] = None) -> bool:
+        """Check fields in Query Cache"""
+        if not self.query_cache:
+            return False
+        elif not field:
+            return not bool(self.requested_fields.symmetric_difference(self.fields.keys()))
+        return field in self.requested_fields
+
+    @property
+    def requested_fields(self) -> Set[str]:
+        fields = set()
+        for r in self.query_cache.values():
+            fields |= set(r.keys())
+        return fields
 
     def query_expr(self) -> str:
         """Build SQL: Expression on query"""
@@ -263,9 +281,8 @@ class QuerySet:
     def query_metrics(self):
         """Run build query and fill query_cache result"""
         ch = ch_connection()
-        print("Query metrics", self.requested_fields, self.fields.keys())
-        # from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(minutes=30)
-        from_date = datetime.datetime.fromisoformat("2024-04-13 18:49:44")
+        # print("Query metrics", self.requested_fields, self.fields.keys())
+        from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(minutes=30)
         result = ch.execute(
             sql=self.query_expr(),
             args=[from_date.date().isoformat(), from_date.isoformat(sep=" ")],
@@ -291,7 +308,7 @@ class QuerySet:
                         )
                     )
                 elif name == "labels" and value:
-                    meta["labels"] = ",".join(value)
+                    meta["labels"] = value
                 elif self.is_meta_field(name):
                     # meta
                     meta[name] = value
@@ -308,29 +325,10 @@ class QuerySet:
             query = QueryField.from_query(
                 query, alias=alias or query, table_name=self.metric_proxy.scope.table_name
             )
-        # if query.alias not in self.fields:
-        print("Add Query Field", query)
-        self.fields[query.alias] = query
         self.last_field = query.alias
-
-    def value(self, name: Optional[str] = None, **kwargs) -> Optional[MetricValue]:  # ? params
-        """Getting value by field name"""
-        name = name or self.last_field
-        if name not in self.requested_fields:
-            self.query_metrics()
-        v = list(self.values(**kwargs))
-        if not v:
-            return None
-        return v[0][name]
-        # key = self.get_group_key(kwargs)
-        # r = self.query_cache[key][name]
-        # return r[0]
-
-    def humanize_value(self, name: Optional[str] = None, **kwargs) -> str:
-        r = self.value(name, **kwargs)
-        if r:
-            return r.humanize()
-        return "-"
+        if query.alias in self.fields:
+            return
+        self.fields[query.alias] = query
 
     # get_group_keys ?, get_values by key: list keys, -> getting values
     def get_group_key(self, keys: Dict[str, str]) -> FrozenSet[Tuple[str, str]]:
@@ -354,14 +352,40 @@ class QuerySet:
             r[k] = (k, keys[k])
         return frozenset(r.values())
 
+    def value(self, name: Optional[str] = None, **kwargs) -> Optional[MetricValue]:  # ? params
+        """
+        Getting value by field name
+        Attrs:
+            name: Metric alias
+            kwargs: Group key filter
+        """
+        name = name or self.last_field
+        if not self.is_field_requested(name):
+            self.query_metrics()
+        v = list(self.values(**kwargs))
+        if not v:
+            return None
+        return v[0][name]
+        # key = self.get_group_key(kwargs)
+        # r = self.query_cache[key][name]
+        # return r[0]
+
+    def humanize_value(self, name: Optional[str] = None, with_units: bool = False, **kwargs) -> str:
+        """Getting human-readable metric form"""
+        r = self.value(name, **kwargs)
+        if r:
+            return r.humanize(with_units=with_units)
+        return "-"
+
     def values(self, **kwargs) -> Iterable[Dict[str, MetricValue]]:
-        """Getting requested query fields"""
-        # **kwargs = group_key, filter by group_key
-        # Other meta field, filter by iterate on for
-        # r = []
-        # managed_object = x, interface = 'xxx'
-        # or if managed_object one, interface = 'xxx', load_in: MV, load_out: MV
-        if not self.query_cache:
+        """
+        Getting requested query fields and filter by meta:
+        Attrs:
+            kwargs: Group key filter
+             * managed_object = x, interface = 'xxx'
+               or if managed_object one, interface = 'xxx', load_in: MV, load_out: MV
+        """
+        if not self.is_field_requested():
             self.query_metrics()
         group_key = self.get_group_key(kwargs)
         if group_key in self.query_cache:
@@ -373,35 +397,19 @@ class QuerySet:
 
     def iter_all_values(self, **kwargs):
         """Iterate over all requested metrics"""
-        if not self.query_cache:
+        if not self.is_field_requested():
             self.query_metrics()
         for gk in self.query_cache:
             yield {k: v[0] for k, v in self.query_cache[gk].items()}
 
-    # def values_raw(self, **kwargs) -> List[Dict[str, Any]]:
-    #     """"""
-    #     if not self.query_cache:
-    #         self.query_metrics()
-
-    @property
-    def requested_fields(self) -> Set[str]:
-        fields = set()
-        for r in self.query_cache.values():
-            fields |= set(r.keys())
-        return fields
-
     def metric_values(self, field: Optional[str] = None) -> Iterable[MetricValue]:
-        """Getting requested metrics"""
-        if not self.query_cache or frozenset(
-            self.requested_fields.symmetric_difference(self.fields.keys())
-        ):
-            self.query_metrics()
+        """Iterate ove all requested metrics"""
         field = field or self.last_field
+        if not self.is_field_requested(field):
+            self.query_metrics()
         for r in self.query_cache.values():
             if field in r:
                 yield from r[field]
-        # for v in self.query_cache[field]:
-        #    yield v
 
 
 class MetricScopeProxy:
@@ -486,7 +494,6 @@ class MetricScopeProxy:
         group_by: Optional[List[str]] = None,
         **kwargs,
     ) -> "QuerySet":
-        print("Call Item", queries)
         qs = self.get_queryset(group_by)
         if not qs:
             qs = self.add_queryset(group_by)

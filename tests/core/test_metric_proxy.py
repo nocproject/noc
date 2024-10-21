@@ -20,7 +20,7 @@ SQL_INTERFACE_LOAD_OUT = """
 """
 
 
-def test_mp():
+def test_query_build():
     mp = MetricProxy(managed_object=9016826725858827563)
     qs = mp.interface(group_by=["interface", "managed_object"]).load_out
     assert qs.query_expr().strip() == SQL_INTERFACE_LOAD_OUT.strip()
