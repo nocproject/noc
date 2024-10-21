@@ -163,8 +163,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   onAdHoc: function(){
     var me = this,
       currentId = me.getViewModel().get("currentId"),
-      url = "/inv/inv/" + currentId + "/plugin/channel/adhoc/";
-    me.mask(__("Loading..."));
+      url = "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
+      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show(__("Fetching data for ad-hoc channels"));
     me.getViewModel().set("createInvChannelBtnDisabled", true);
     Ext.Ajax.request({
       url: url,
@@ -172,7 +173,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       scope: me,
       success: function(response){
         var obj = Ext.decode(response.responseText);
-        me.unmask();
         if(Ext.isEmpty(obj)){
           NOC.info(__("No ad-hoc channels available"));
         } else{
@@ -182,7 +182,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       },
       failure: function(response){
         NOC.error(__("Failed to get data") + ": " + response.status);
-        me.unmask();
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },
@@ -192,9 +194,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       schemeContainer = me.down("#schemeContainer");
     if(selected.length > 0){
       var recordData = selected[0].getData(),
-        url = "/inv/channel/" + recordData.id + "/viz/";
+        url = "/inv/channel/" + recordData.id + "/viz/",
+        maskComponent = me.up("[appId=inv.inv]").maskComponent,
+        messageId = maskComponent.show(__("Fetching data for draw scheme ..."));
       me.getViewModel().set("downloadSvgButtonDisabled", false);
-      schemeContainer.mask(__("Loading..."));
       Ext.Ajax.request({
         url: url,
         method: "GET",
@@ -202,11 +205,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         success: function(response){
           var obj = Ext.decode(response.responseText);
           this.renderScheme(obj.data);
-          schemeContainer.unmask();
         },
         failure: function(response){
           NOC.error(__("Failed to get data") + ": " + response.status);
-          schemeContainer.unmask();
+        },
+        callback: function(){
+          maskComponent.hide(messageId);
         },
       });
     } else{
@@ -219,8 +223,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   onCreateAdHoc: function(params){
     var me = this,
       currentId = me.getViewModel().get("currentId"),
-      selectedRecord = this.getSelectedRow(); 
-    me.mask(__("Loading..."));
+      selectedRecord = this.getSelectedRow(),
+      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show(__("Create mew channel ...")); 
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
       method: "POST",
@@ -236,11 +241,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         } else{
           NOC.error(data.msg);
         }
-        me.unmask();
       },
       failure: function(response){
-        me.unmask();
         NOC.error("Failure", response);
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },
@@ -249,6 +255,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var panel = this.down("invChannelParamsForm"),
       form = panel.down("form").getForm(),
       selectedRecord = this.getSelectedRow();
+    if(Ext.isEmpty(selectedRecord)){
+      NOC.error(__("Please select a row"));
+      return;
+    }
     if(Ext.isEmpty(selectedRecord.get("channel_id"))){
       form.reset();
     } else{
@@ -287,6 +297,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       r = grid.getStore().getAt(rowIndex),
       id = r.get("id"),
       action = r.get("fav_status") ? "reset" : "set",
+      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show(__("Favorite status updating ...")),
       url = "/inv/channel/favorites/item/" + id + "/" + action + "/";
 
     Ext.Ajax.request({
@@ -297,6 +309,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         // Invert current status
         r.set("fav_status", !r.get("fav_status"));
         grid.refresh();
+      },
+      failure: function(response){
+        NOC.error(__("Failed to get data") + ": " + response.status);
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },
@@ -333,7 +351,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         obj = Ext.decode(response.responseText),
         grid = this.down("grid"),
         store = grid.getStore();        
-      this.unmask();
       store.loadData(obj.records);
       if(Ext.isEmpty(channelId)){
         return;

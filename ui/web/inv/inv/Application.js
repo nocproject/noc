@@ -10,8 +10,9 @@ Ext.define("NOC.inv.inv.Application", {
   extend: "NOC.core.Application",
   layout: "card",
   requires: [
-    "NOC.inv.inv.NavModel",
     "NOC.inv.inv.CreateConnectionForm",
+    "NOC.inv.inv.MaskComponent",
+    "NOC.inv.inv.NavModel",
   ],
   initComponent: function(){
     var me = this;
@@ -127,7 +128,6 @@ Ext.define("NOC.inv.inv.Application", {
       useArrows: true,
       region: "west",
       split: true,
-      loadMask: true,
       width: 300,
       displayField: "name",
       allowDeselect: true,
@@ -193,77 +193,74 @@ Ext.define("NOC.inv.inv.Application", {
                 me.menu.hide();
                 return;
               }
-              setTimeout(function(){
-                Ext.Ajax.request({
-                  url: "/inv/inv/" + objectId + "/map_lookup/",
-                  method: "GET",
-                  success: function(response){
-                    var defaultHandler, menuItems,
-                      mapItemPosition = 5,
-                      data = Ext.decode(response.responseText),
-                      mapMenuItem = me.menu.down("#invNavContextMenuMapItem"),
-                      addMenuItem = me.menu.down("#invNavContextMenuAddItem"),
-                      removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem"),
-                      removeAllConnectionMenuItem = me.menu.down("#invNavContextMenuRemoveAllConnectionItem");
+              Ext.Ajax.request({
+                url: "/inv/inv/" + objectId + "/map_lookup/",
+                method: "GET",
+                success: function(response){
+                  var defaultHandler, menuItems,
+                    mapItemPosition = 5,
+                    data = Ext.decode(response.responseText),
+                    mapMenuItem = me.menu.down("#invNavContextMenuMapItem"),
+                    addMenuItem = me.menu.down("#invNavContextMenuAddItem"),
+                    removeMenuItem = me.menu.down("#invNavContextMenuRemoveItem"),
+                    removeAllConnectionMenuItem = me.menu.down("#invNavContextMenuRemoveAllConnectionItem");
                     
-                    addMenuItem.setDisabled(!record.get("can_add"));
-                    removeMenuItem.setDisabled(!record.get("can_delete"));
-                    removeAllConnectionMenuItem.setDisabled(!record.get("can_delete"));
-                    if(mapMenuItem){
-                      me.menu.remove(mapMenuItem);
-                    }
+                  addMenuItem.setDisabled(!record.get("can_add"));
+                  removeMenuItem.setDisabled(!record.get("can_delete"));
+                  removeAllConnectionMenuItem.setDisabled(!record.get("can_delete"));
+                  if(mapMenuItem){
+                    me.menu.remove(mapMenuItem);
+                  }
 
-                    if(Ext.isEmpty(data)){
-                      me.menu.insert(mapItemPosition, {
-                        itemId: "invNavContextMenuMapItem",
-                        text: __("Show Map"),
-                        glyph: NOC.glyph.globe,
-                        disabled: true,
-                      });
-                      return;
-                    }
-                    defaultHandler = data.filter(function(el){
-                      return el.is_default
-                    })[0];
-                    menuItems = data.filter(function(el){
-                      return !el.is_default
-                    }).map(function(el){
-                      return {
-                        text: el.label,
-                        handler: function(){
-                          NOC.launch("inv.map", "history", {
-                            args: el.args,
-                          })
-                        },
-                      }
+                  if(Ext.isEmpty(data)){
+                    me.menu.insert(mapItemPosition, {
+                      itemId: "invNavContextMenuMapItem",
+                      text: __("Show Map"),
+                      glyph: NOC.glyph.globe,
+                      disabled: true,
                     });
-                    // mapMenuItem
-                    if(menuItems.length){
-                      me.menu.insert(mapItemPosition, {
-                        itemId: "invNavContextMenuMapItem",
-                        text: __("Show Map"),
-                        glyph: NOC.glyph.globe,
-                        menu: menuItems,
-                      });
-                    } else{
-                      me.menu.insert(mapItemPosition, {
-                        itemId: "invNavContextMenuMapItem",
-                        text: __("Show Map"),
-                        glyph: NOC.glyph.globe,
-                        handler: function(){
-                          NOC.launch("inv.map", "history", {
-                            args: defaultHandler.args,
-                          });
-                        },
-                      });
+                    return;
+                  }
+                  defaultHandler = data.filter(function(el){
+                    return el.is_default
+                  })[0];
+                  menuItems = data.filter(function(el){
+                    return !el.is_default
+                  }).map(function(el){
+                    return {
+                      text: el.label,
+                      handler: function(){
+                        NOC.launch("inv.map", "history", {
+                          args: el.args,
+                        })
+                      },
                     }
-                  },
-                  failure: function(){
-                    NOC.error(__("Failed get map menu"));
-                  },
-                });
-                me.tabPanel.unmask();
-              }, 0);
+                  });
+                  // mapMenuItem
+                  if(menuItems.length){
+                    me.menu.insert(mapItemPosition, {
+                      itemId: "invNavContextMenuMapItem",
+                      text: __("Show Map"),
+                      glyph: NOC.glyph.globe,
+                      menu: menuItems,
+                    });
+                  } else{
+                    me.menu.insert(mapItemPosition, {
+                      itemId: "invNavContextMenuMapItem",
+                      text: __("Show Map"),
+                      glyph: NOC.glyph.globe,
+                      handler: function(){
+                        NOC.launch("inv.map", "history", {
+                          args: defaultHandler.args,
+                        });
+                      },
+                    });
+                  }
+                },
+                failure: function(){
+                  NOC.error(__("Failed get map menu"));
+                },
+              });
               me.isMenuShow = true;
               me.menu.showAt(event.getXY());
             }
@@ -285,7 +282,6 @@ Ext.define("NOC.inv.inv.Application", {
     });
     me.navTree.getView().on("beforedrop", me.onNavDrop, me);
     me.tabPanel = Ext.create("Ext.tab.Panel", {
-      region: "center",
       layout: "fit",
       border: false,
       scrollable: true,
@@ -295,28 +291,11 @@ Ext.define("NOC.inv.inv.Application", {
       items: [],
       listeners: {
         scope: me,
-        beforetabchange: function(tabPanel, newCard){
-          var me = this,
-            objectId = me.selectedObjectId,
-            pluginName = newCard.pluginName;
-
-          me.mask(__("Download" + " " + pluginName + " " + "plugin data, please wait ..."));
-          Ext.Ajax.request({
-            url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
-            method: "GET",
-            scope: me,
-            success: function(response){
-              var data = Ext.decode(response.responseText);
-              newCard.preview(data, objectId);
-              me.unmask();
-            },
-            failure: function(){
-              me.unmask();
-              NOC.error(__("Failed to get data for plugin") + " " + pluginName);
-            },
-          });
-        },
+        beforetabchange: me.onBeforeTabChange,
       },
+    });
+    me.maskComponent = Ext.create("NOC.inv.inv.MaskComponent", {
+      maskedComponent: me.tabPanel,
     });
     //
     me.connectionPanel = Ext.create("NOC.inv.inv.CreateConnectionForm", {
@@ -327,11 +306,21 @@ Ext.define("NOC.inv.inv.Application", {
       },
     });
     //
+    me.workPanel = Ext.create("Ext.panel.Panel", {
+      layout: "card",
+      region: "center",
+      activeItem: 0,
+      items: [
+        me.tabPanel,
+        me.connectionPanel,
+      ],
+    });
+    //
     me.mainPanel = Ext.create("Ext.panel.Panel", {
       layout: "border",
       items: [
         me.navTree,
-        me.tabPanel,
+        me.workPanel,
       ],
     });
     me.ITEM_MAIN = me.registerItem(me.mainPanel);
@@ -373,35 +362,31 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   runPlugin: function(objectId, pData, index){
-    Ext.MessageBox.show({
-      msg: __("Plugin load, please wait..."),
-      progressText: __("Loading..."),
-      width: 300,
-      wait: true,
-      waitConfig: {interval: 300},
-    });
+    var me = this,
+      messageId = me.maskComponent.show("loading", [pData.name]);
 
     Ext.Loader.require(pData.xtype, function(){
       var plugin = Ext.create(pData.xtype, {app: this});
       this.tabPanel.insert(index, plugin);
       this.invPlugins[pData.name] = plugin;
       plugin.pluginName = pData.name;
-      if(Object.keys(this.invPlugins).length === this.tabPanel.items.length){
+      me.maskComponent.hide(messageId);
+      this.loadedPlugins++;
+      if(this.loadedPlugins === this.maxPlugins){
         if(this.currentPlugin && this.invPlugins[this.currentPlugin]){
           this.tabPanel.setActiveTab(this.invPlugins[this.currentPlugin]);
         } else{
           this.tabPanel.setActiveTab(0);
         }
       }
-      Ext.MessageBox.hide();
     }, this);
   },
   //
   addAppForm: function(parent, app, objectId){
     var me = this,
       url = "/" + app.replace(".", "/") + "/launch_info/",
+      messageId = me.maskComponent.show("processing", [app]),
       c;
-    me.up().mask(__("Loading" + " " + app + " ..."));
     Ext.Ajax.request({
       url: url,
       method: "GET",
@@ -420,12 +405,33 @@ Ext.define("NOC.inv.inv.Application", {
             c.onEditRecord(record);
           });
           parent.add(c);
-          me.up().unmask();
+          me.maskComponent.hide(messageId);
         });
       },
       failure: function(){
-        me.up().unmask();
+        me.maskComponent.hide(messageId);
         NOC.error(__("Failed to launch application") + " " + app);
+      },
+    });
+  },
+  onBeforeTabChange: function(tabPanel, newCard){
+    var me = this,
+      objectId = me.selectedObjectId,
+      pluginName = newCard.pluginName,
+      messageId = me.maskComponent.show("fetching", [pluginName]);
+    Ext.Ajax.request({
+      url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
+      method: "GET",
+      scope: me,
+      success: function(response){
+        var data = Ext.decode(response.responseText);
+        newCard.preview(data, objectId);
+      },
+      failure: function(){
+        NOC.error(__("Failed to get data for plugin") + " " + pluginName);
+      },
+      callback: function(){
+        me.maskComponent.hide(messageId);
       },
     });
   },
@@ -445,6 +451,8 @@ Ext.define("NOC.inv.inv.Application", {
     if(node){
       node.querySelector("button").style.display = "block";
     }
+    me.maxPlugins = plugins.length;
+    me.loadedPlugins = 0;
     me.down("#addObjectDock").hide();
     me.selectedObjectId = objectId;
     me.invPlugins = {};
@@ -569,7 +577,6 @@ Ext.define("NOC.inv.inv.Application", {
                       displayField: "name",
                       rootVisible: false,
                       useArrows: true,
-                      loadMask: true,
                       allowDeselect: true,
                       store: Ext.create("Ext.data.TreeStore", {
                         root: data.choices,
@@ -800,11 +807,8 @@ Ext.define("NOC.inv.inv.Application", {
       sm = me.navTree.getSelectionModel(),
       selected = sm.getSelection();
     
-    if(me.mainPanel.items.items.length > 2){
-      me.mainPanel.remove(me.mainPanel.items.items[2], false);
-    }
     if(selected.length > 0){
-      me.mainPanel.add(me.connectionPanel);
+      me.workPanel.setActiveItem(me.connectionPanel);
       me.connectionPanel.onDrop({dragData: {records: selected} });
     }
   },

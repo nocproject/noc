@@ -10,7 +10,7 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
   extend: "Ext.panel.Panel",
   requires: [
     "NOC.inv.inv.plugins.job.JobModel",
-    "NOC.inv.inv.plugins.job.Controller",
+    "NOC.inv.inv.plugins.job.JobController",
   ],
   title: __("Jobs"),
   closable: false,
@@ -147,8 +147,12 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
   ],
   preview: function(data, objectId){
     var me = this,
-      vm = me.getViewModel();
+      vm = me.getViewModel(),
+      records = data.data || [],
+      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("processing", "jobs");
     vm.set("currentId", objectId);
-    vm.get("gridStore").loadData(data.data || []);
+    vm.get("gridStore").loadData(records);
+    maskComponent.hide(messageId);
   },
 });

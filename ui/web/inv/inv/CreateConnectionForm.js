@@ -1059,8 +1059,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     var me = this,
       action = function(){
         me.cleanForm();
-        me.app.mainPanel.remove(me.app.connectionPanel, false);
-        me.app.mainPanel.add(me.app.tabPanel);
+        me.app.workPanel.setActiveItem(me.app.tabPanel);
       };
 
     me.fireEvent("reloadInvNav");

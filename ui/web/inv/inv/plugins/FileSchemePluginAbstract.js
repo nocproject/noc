@@ -84,13 +84,13 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       viewPanel = me.down("#schemeContainer"),
       vm = me.getViewModel(),
       name = me.itemId.replace("Panel", "").toLowerCase(),
-      maskPanel = me.up(),
       side = vm.get("side"),
       svgUrl = me.svgUrlTemplate ? me.svgUrlTemplate.apply({id: data.id, name: name, side: side})
-      : data.views[side === "front" ? 0 : 1].src;
+      : data.views[side === "front" ? 0 : 1].src,
+      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("fetching", [name]);
     vm.set("currentId", data.id);
     //
-    maskPanel.mask(__("Loading plugin") + " " + name + " ...");
     viewPanel.filenamePrefix = `${name}-${side}`;
     Ext.Ajax.request({
       url: svgUrl,
@@ -107,11 +107,12 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
         }
         viewPanel.setHtml(parserResult.documentElement.outerHTML);
         zoomControl.restoreZoom();
-        maskPanel.unmask();
       },
       failure: function(response){
-        maskPanel.unmask();
         NOC.error("Failed to load SVG: " + response.status);
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
     // ToDo refactoring backend to rack like facade plugin
