@@ -448,7 +448,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     if(Ext.isEmpty(this.getViewModel().get("leftObject"))){
       container.getSurface().removeAll(true);
     } else if(Ext.isEmpty(this.getViewModel().get("rightObject"))){
-      this.drawPanelSize.w = parent.dom.clientWidth;  
+      this.drawPanelSize.w = parent.dom.clientWidth;
       var remoteLength = this.getWiresOffset("left", "right", true),
         x = this.bodiesWidth.left + remoteLength[0] + this.arrowLength,
         squareWidth = this.drawPanelSize.w - x - offset * 2;
@@ -478,12 +478,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     surface.add(this.makeLegend(__("Free slot"), this.AVAILABLE_COLOR, 10, height));
     surface.add(this.makeLegend(__("Occupied slot"), this.OCCUPIED_COLOR, 115, height));
   },
-  drawObject: function(pins, surface, side, hasDiscriminator){
+  drawObject: function(info, pins, surface, side, hasDiscriminator){
     var me = this;
 
     surface.add(me.makePins(pins, side, hasDiscriminator));
     surface.add(me.makeExternalConnection(pins, side));
-    surface.add(me.makeBody(pins, side));
+    surface.add(me.makeBody(info, pins, side));
   },
   drawWires: function(wires, surface){
     var me = this,
@@ -759,7 +759,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 var hasDiscriminator = me.hasDiscriminator(data[side].internal_connections);
 
                 bodiesWidth[side] = me.getBodyWidth(me, data[side].connections, side);
-                me.drawObject(data[side].connections, mainSurface, side, hasDiscriminator, me.maxPins);
+                me.drawObject(data[side].object, data[side].connections, mainSurface, side, hasDiscriminator, me.maxPins);
                 me.drawInternalConnections(data[side], me.drawPanel.getSurface(side + "_internal_conn"), side, hasDiscriminator);
               }
             });
@@ -795,12 +795,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       action();
     }
   },
-  makeBody: function(pins, side){
+  makeBody: function(info, pins, side){
     var me = this,
-      object = me.getViewModel().get(side + "Object"),
       bodyWidth = me.getBodyWidth(me, pins, side),
       xOffset = me.xOffset(side, pins),
-      name = object ? object.get("name") : "none";
+      name = info.path ?
+        Ext.Array.map(info.path, function(p){return p.label}).join(" > ")
+        : "none";
 
     return {
       type: "body",
