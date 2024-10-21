@@ -159,7 +159,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     if(cfg.code === objectLayer){
       me.objectLayer = layer;
     }
-    layer.bindPopup(Ext.bind(me.onFeatureClick, me));
+    layer.on("click", Ext.bind(me.showObjectTip, me));
     layer.on("add", Ext.bind(me.visibilityHandler, me));
     layer.on("remove", Ext.bind(me.visibilityHandler, me));
     if(cfg.is_visible){
@@ -273,44 +273,21 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     me.updateZoomButtons();
   },
   //
-  onFeatureClick: function(e){
-    var me = this, result;
-    if(!e.feature.properties.object){
-      return __("no object");
-    }
+  showObjectTip: function(args){
+    var tip = Ext.create("Ext.tip.ToolTip", {}),
+      url = "/inv/inv/" + args.layer.feature.id + "/plugin/map/object_data/";
     Ext.Ajax.request({
-      url: "/inv/inv/" + e.feature.properties.object + "/plugin/map/object_data/",
+      url: url,
       method: "GET",
       async: false,
-      scope: me,
       success: function(response){
-        var me = this;
-        result = me.showObjectPopup(e.feature, Ext.decode(response.responseText));
+        console.log(response);
+        tip.showAt([args.originalEvent.clientX, args.originalEvent.clientY]);
       },
       failure: function(){
-        result = __("Failed to get data");
+        NOC.error(("Failed to get data"));
       },
     });
-    return result;
-  },
-  //
-  showObjectPopup: function(feature, data){
-    var me = this,
-      showLinkId = "noc-leaf-tip-show-link-" + me.id,
-      text;
-    text = Ext.String.format(me.infoTemplate, data.name, data.model, showLinkId, data.id);
-    if(!Ext.Object.isEmpty(data.moname)){
-      var listLength = 10;
-      var objects = Object.keys(data.moname).map(function(key){
-        return '<li><a href="api/card/view/managedobject/' + key + '/" target="_blank">'
-                    + data.moname[key].moname.replace(/\s/g, "&nbsp;") + '</a></li>'
-      }).slice(0, listLength).join("");
-      text += "<br><hr>Objects:<br><ul>" + objects + "</ul>";
-      if(Object.keys(data.moname).length >= listLength){
-        text += "<br>More...";
-      }
-    }
-    return text;
   },
   //
   onContextMenu: function(event){
