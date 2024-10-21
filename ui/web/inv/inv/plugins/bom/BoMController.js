@@ -22,8 +22,9 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMController", {
   //
   onReload: function(){
     var me = this,
-      currentId = me.getViewModel().get("currentId");
-    me.getView().mask(__("Loading..."));
+      currentId = me.getViewModel().get("currentId"),
+      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("reloading", ["bom"]);
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/bom/",
       method: "GET",
@@ -31,11 +32,12 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMController", {
         var data = Ext.decode(response.responseText),
           view = me.getView();
         view.preview(data, currentId);
-        view.unmask();
       },
       failure: function(){
         NOC.error(__("Failed to load data"));
-        me.getView().unmask();
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },

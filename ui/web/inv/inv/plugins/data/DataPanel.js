@@ -105,6 +105,8 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
   //
   onEdit: function(editor, e){
     var me = this,
+      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("Saving data ..."),
       toReload = e.record.get("interface") === "Common" && e.record.get("name") === "Name";
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/data/",
@@ -124,6 +126,9 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
       failure: function(){
         NOC.error(__("Failed to save"));
       },
+      callback: function(){
+        maskComponent.hide(messageId);
+      },
     });
   },
   //
@@ -132,18 +137,18 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
       return false;
     }
     if(record.get("choices")){
-      return{
+      return {
         xtype: "combobox",
         store: record.get("choices"),
       }
     }
     switch(record.get("type")){
-      case"int":
-        return"numberfield";
-      case"float":
-        return"numberfield";
+      case "int":
+        return "numberfield";
+      case "float":
+        return "numberfield";
       default:
-        return"textfield";
+        return "textfield";
     }
   },
   //

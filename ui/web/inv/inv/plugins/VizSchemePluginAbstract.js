@@ -149,10 +149,11 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   //
   preview: function(response, objectId){
     var me = this,
-      grid = me.down("grid"),
+      vm = me.getViewModel(),
       records = response.data || response.records || [];
-    me.getViewModel().set("currentId", objectId);
-    grid.getStore().loadData(records);
+    vm.set("currentId", objectId);
+    vm.getStore("gridStore").removeAll();
+    vm.getStore("gridStore").loadData(records);
     if(Object.prototype.hasOwnProperty.call(response, "viz")){
       me.renderScheme(response.viz);
     }
@@ -193,7 +194,6 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
     var me = this,
       currentId = me.getViewModel().get("currentId");
     me.getData(function(response){
-      me.unmask();
       me.preview(Ext.decode(response.responseText), currentId);
       me.down("#zoomControl").reset();
     });
@@ -201,16 +201,20 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   //
   getData: function(cb){
     var me = this,
-      currentId = me.getViewModel().get("currentId");
-    me.mask(__("Loading..."));
+      pluginName = me.itemId.replace("Panel", ""),
+      currentId = me.getViewModel().get("currentId"),
+      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("fetching", [pluginName]);
     Ext.Ajax.request({
-      url: "/inv/inv/" + currentId + "/plugin/" + this.itemId.replace("Panel", "") + "/",
+      url: "/inv/inv/" + currentId + "/plugin/" + pluginName + "/",
       method: "GET",
       scope: me,
       success: cb,
       failure: function(){
-        me.unmask();
         NOC.error(__("Failed to get data"));
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },

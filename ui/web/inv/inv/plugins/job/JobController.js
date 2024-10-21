@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.plugins.job.Controller");
+console.debug("Defining NOC.inv.inv.plugins.job.JobController");
 
-Ext.define("NOC.inv.inv.plugins.job.Controller", {
+Ext.define("NOC.inv.inv.plugins.job.JobController", {
   extend: "Ext.app.ViewController",
   alias: "controller.job",
   //
@@ -19,8 +19,9 @@ Ext.define("NOC.inv.inv.plugins.job.Controller", {
   //
   onReload: function(){
     var me = this,
-      currentId = me.getViewModel().get("currentId");
-    me.getView().mask(__("Loading..."));
+      currentId = me.getViewModel().get("currentId"),
+      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("fetching", ["jobs"]);
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/job/",
       method: "GET",
@@ -28,11 +29,12 @@ Ext.define("NOC.inv.inv.plugins.job.Controller", {
         var data = Ext.decode(response.responseText),
           view = me.getView();
         view.preview(data, currentId);
-        view.unmask();
       },
       failure: function(){
         NOC.error(__("Failed to load data"));
-        me.getView().unmask();
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },

@@ -16,6 +16,8 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
     var me = this,
       vm = me.getViewModel(),
       view = me.getView(),
+      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("reloading", ["scheme"]),
       name = view.itemId.replace("Panel", "").toLowerCase();
     Ext.Ajax.request({
       url: "/inv/inv/" + vm.get("currentId") + "/plugin/" + name + "/",
@@ -32,6 +34,9 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
       },
       failure: function(){
         NOC.error(__("Failed to get data"));
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },
@@ -72,6 +77,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
         app.showObject(value);
       }
       if(action === "info"){
+        var messageId = app.maskComponent.show("fetching", ["balloon info "]);
         Ext.Ajax.request({
           url: "/inv/inv/baloon/",
           method: "POST",
@@ -149,6 +155,9 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
           failure: function(){
             NOC.error(__("Failed to get data"));
           },
+          callback: function(){
+            app.maskComponent.hide(messageId);
+          }, 
         });
       }
     });
