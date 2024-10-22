@@ -1402,6 +1402,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           }
           break;
         }
+        case "body": {
+          if(sprite.labelTooltip && !sprite.labelTooltip.isHidden()){
+            sprite.labelTooltip.hide();
+          }
+          break; 
+        }
       }
     }
   },
@@ -1484,6 +1490,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           sprite.setAttributes({isSelected: true});
           sprite.remoteNameTooltip.showAt([event.pageX + (sprite.side === "left" ? me.toolTipOffset : -1 * me.toolTipOffset), event.pageY + me.toolTipOffset]);
           break;
+        }
+        case "body": {
+          if(sprite.labelTooltip && sprite.labelTooltip.isHidden()){
+            var labelTipOffset = 5;
+            sprite.labelTooltip.showAt([event.pageX + (sprite.side === "left" ? labelTipOffset : -1 * labelTipOffset), event.pageY + labelTipOffset]);
+          }
+          break; 
         }
       }
     }
