@@ -777,18 +777,24 @@ table {
     stroke: black !important;
 }
 
-.noc-home-container > div > div {
+.noc-home-container > div {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
+    grid-auto-rows: minmax(200px, auto);
+    min-height: calc(100vh - 88px);
 }
 
 .noc-home-widget {
     grid-column: span 2;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0;
+    min-width: 0;
 }
 
 @media only screen and (max-width: 767px) {
-    .noc-home-container > div > div{
+    .noc-home-container > div{
         grid-template-columns: 1fr;
     }
 
@@ -798,7 +804,7 @@ table {
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
-    .noc-home-container > div > div{
+    .noc-home-container > div{
         grid-template-columns: repeat(4, 1fr);
     }
 
