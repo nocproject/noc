@@ -28,6 +28,23 @@ class PathItem(object):
             r["id"] = self.id
         return r
 
+    @classmethod
+    def from_object(cls, obj: Object) -> "list[PathItem] | None":
+        """Get path for object."""
+        r: list[PathItem] = []
+        current = obj.parent
+        while current:
+            r.append(
+                PathItem(
+                    label=current.parent_connection if current.parent_connection else current.name,
+                    id=str(current.id),
+                )
+            )
+            # if current.is_container:
+            #    break
+            current = current.parent
+        return list(reversed(r)) if r else None
+
 
 class ButtonAction(Enum):
     GO = "go"
@@ -100,32 +117,13 @@ def info(resource: str) -> Info | None:
     return _info_for_connection(obj, name)
 
 
-def _get_path(obj: Object) -> list[PathItem] | None:
-    """Get path for object."""
-    if obj.is_container:
-        return None
-    r: list[PathItem] = []
-    current = obj.parent
-    while current:
-        r.append(
-            PathItem(
-                label=current.parent_connection if current.parent_connection else current.name,
-                id=str(current.id),
-            )
-        )
-        if current.is_container:
-            break
-        current = current.parent
-    return list(reversed(r)) if r else None
-
-
 def _info_for_object(obj: Object) -> Info:
     """
     Build info for object.
     """
     return Info(
         title=obj.parent_connection if obj.parent_connection else obj.name,
-        path=_get_path(obj),
+        path=PathItem.from_object(obj),
         description=f"{obj.model.get_short_label()}",
         buttons=[
             Button(
@@ -150,4 +148,4 @@ def _info_for_connection(obj: Object, name: str) -> Info:
             description += " - not connected"
     else:
         description = "Unknown connection"
-    return Info(title=name, path=_get_path(obj), description=description)
+    return Info(title=name, path=PathItem.from_object(obj), description=description)
