@@ -23,6 +23,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.expr import get_fn
+from noc.pm.models.scale import Scale
 
 DEFAULT_UNITS_NAME = "Scalar"
 
@@ -174,3 +175,14 @@ class MeasurementUnits(Document):
 
     def get_json_path(self) -> str:
         return f"{quote_safe_path(self.name)}.json"
+
+    def humanize(self, value: Union[float, int], with_units: bool = False) -> str:
+        if self.code == "1":
+            return str(value)
+        elif self.code == "s":
+            return Scale.humanize_time(value)
+        # Enum?
+        value, m = Scale.humanize(value)
+        if with_units and self.label != "Scalar":
+            return f"{value:.2f} {m}{self.label}"
+        return f"{value:.2f} {m}"
