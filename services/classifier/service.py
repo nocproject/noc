@@ -355,7 +355,7 @@ class ClassifierService(FastAPIService):
             return None, None
         if rule.is_unknown_syslog:
             # Append to codebook
-            msg = event.raw_vars.get("message", "")
+            msg = raw_vars.get("message", "")
             cb = self.get_msg_codebook(msg)
             o_id = event.target.id
             if o_id not in self.unclassified_codebook:
@@ -685,6 +685,8 @@ class ClassifierService(FastAPIService):
         # Detect profile by rule (for SNMP message)
         # Syslog - ignore profile
         raw_vars, snmp_vars = {"profile": event.type.profile}, {}
+        if event.message:
+            raw_vars["message"] = event.message
         for d in event.data:
             if d.snmp_raw:
                 snmp_vars[d.name] = d.value

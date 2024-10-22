@@ -142,7 +142,7 @@ class RuleSet(object):
         # Get chain
         if event.type.source == EventSource.SYSLOG:
             chain = "syslog"
-            if "message" not in event.raw_vars:
+            if "message" not in vars:
                 return None, None
         elif event.type.source == EventSource.SNMP_TRAP:
             chain = "snmp_trap"

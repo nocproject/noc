@@ -122,14 +122,14 @@ class SyslogCollectorService(FastAPIService):
                         },
                         "type": {
                             "source": EventSource.SYSLOG.value,
-                            "facility": facility,
+                            "facility": str(facility),
                             "severity": SyslogSeverity(severity).noc_severity.value,
                         },
                         "message": message,
                         "data": [
-                            {"name": "facility", "value": facility},
-                            {"name": "severity", "value": severity},
-                            {"name": "message_id", "value": message_id},
+                            {"name": "facility", "value": str(facility)},
+                            {"name": "severity", "value": str(severity)},
+                            {"name": "message_id", "value": str(message_id)},
                         ],
                     }
                 ),
@@ -147,8 +147,8 @@ class SyslogCollectorService(FastAPIService):
                         "date": now.date().isoformat(),
                         "ts": now.isoformat(sep=" "),
                         "managed_object": cfg.bi_id,
-                        "facility": facility,
-                        "severity": severity,
+                        "facility": str(facility),
+                        "severity": str(severity),
                         "message": message,
                     }
                 ],
@@ -175,8 +175,8 @@ class SyslogCollectorService(FastAPIService):
                         "address": source_address,
                         "managed_object": asdict(cfg.managed_object),
                         "data": {
-                            "facility": facility,
-                            "severity": severity,
+                            "facility": str(facility),
+                            "severity": str(severity),
                             "message": message,
                         },
                     }
