@@ -298,16 +298,18 @@ class EventApplication(ExtDocApplication):
         d = {}
         for r in res["data"]:
             event = ActiveEvent.create_from_dict(r)
+            if not event.event_class:
+                continue
             d = {
                 "id": r["id"],
-                "managed_object": r["managed_object"]["id"],
-                "managed_object__label": r["managed_object"]["name"],
-                "managed_object_address": r["managed_object"]["address"],
-                "managed_object_profile": r["managed_object"]["profile"],
-                "managed_object_platform": r["managed_object"]["platform"],
-                "managed_object_version": r["managed_object"]["version"],
-                "administrative_domain": r["administrative_domain"]["id"],
-                "administrative_domain__label": r["administrative_domain"]["name"],
+                "managed_object": r["managed_object"][0],
+                "managed_object__label": r["managed_object"][1],
+                "managed_object_address": r["managed_object"][2],
+                "managed_object_profile": r["managed_object"][3],
+                "managed_object_platform": r["managed_object"][4],
+                "managed_object_version": r["managed_object"][5],
+                "administrative_domain": r["administrative_domain"][0],
+                "administrative_domain__label": r["administrative_domain"][1],
                 "segment": event.managed_object.segment.name,
                 "segment_id": event.managed_object.segment.id,
                 "tags": event.managed_object.labels,
