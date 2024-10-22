@@ -88,7 +88,11 @@ class Map(object):
             geojson.Feature(
                 id=str(d["_id"]),
                 geometry=self.transform(d["point"], self.db_proj, srid),
-                properties={"object": str(d["_id"]), "label": d.get("name", "")},
+                properties={
+                    "object": str(d["_id"]),
+                    "label": d.get("name", ""),
+                    "resource": f"o:{d['_id']}",
+                },
             )
             for d in Object._get_collection().find(
                 {"layer": lr.id, "point": {"$geoWithin": {"$geometry": bbox}}},
