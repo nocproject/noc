@@ -8,8 +8,9 @@ console.debug("Defining NOC.main.home.Application");
 
 Ext.define("NOC.main.home.Application", {
   extend: "NOC.core.Application",
-  baseCls: "noc-home-container",
   padding: 10,
+  layout: "auto",
+  baseCls: "noc-home-container",
   scrollable: true,
   smallHeight: 90,
   normalHeight: 200,
@@ -17,7 +18,7 @@ Ext.define("NOC.main.home.Application", {
   doubleHeight: 420,
   listeners: {
     render: function(panel){
-      panel.mask(__("Loading..."));
+      panel.up().mask(__("Loading..."));
       Ext.Ajax.request({
         method: "GET",
         url: "/main/home/dashboard/",
@@ -25,32 +26,21 @@ Ext.define("NOC.main.home.Application", {
         success: function(response){
           var data = Ext.decode(response.responseText);
           if(Object.prototype.hasOwnProperty.call(data, "widgets") && !Ext.isEmpty(data.widgets)){
+            var html = "";
             Ext.Array.each(data.widgets, function(widget){
-              var items;
               switch(widget.type){
                 case "favorites":
-                  var html = "<ul style='list-style-type: none;margin: 0;padding-left: 5px'>";
+                  var fav = "<ul style='list-style-type: none;margin: 0;padding-left: 5px'>";
                   Ext.each(widget.data.items, function(item){
-                    html += "<li><a href='" + item.link + "'>" + item.title
-                              + "</a></li><ul style='list-style-type: none;margin: 0;padding-left: 5px'>";
+                    fav += "<li><a href='" + item.link + "'>" + item.title
+                                  + "</a></li><ul style='list-style-type: none;margin: 0;padding-left: 5px'>";
                     Ext.each(item.items, function(subitem){
-                      html += "<li><a href='" + subitem.link + "'>" + subitem.text + "</a></li>";
+                      fav += "<li><a href='" + subitem.link + "'>" + subitem.text + "</a></li>";
                     });
-                    html += "</ul>";
+                    fav += "</ul>";
                   });
-                  html += "</ul>";
-                  items = [
-                    {
-                      xtype: "container",
-                      margin: 4,
-                      html: html,
-                      listeners: {
-                        render: function(p){
-                          console.log(p.getWidth());
-                        },
-                      },
-                    },
-                  ];    
+                  fav += "</ul>";
+                  html += this.createWidget(widget.title, fav);
                   break;
                 case "summary":
                   var rows = Ext.Array.map(widget.items, function(item){
@@ -60,71 +50,38 @@ Ext.define("NOC.main.home.Application", {
                     }
                     return "<tr class='noc-home-summary-select'><td>" + item.text + "</td><td style='padding-left: 5px;text-align: right;'>" + value + "</td></tr>";
                   });
-                  html = "<table style='width: 100%'>" + rows.join("") + "</table>"; 
-                  items = [
-                    {
-                      xtype: "container",
-                      margin: 4,
-                      html: "<table style='width: 100%'>" + rows.join("") + "</table>",
-                      listeners: {
-                        render: function(p){
-                          console.log(p.getWidth());
-                        },
-                      },
-                    },
-                  ];    
+                  html += this.createWidget(widget.title, "<table style='width: 100%;font-size: inherit;'>" + rows.join("") + "</table>");
                   break;
                 case "text":
-                  html = widget.data.text;
-                  items = [
-                    {
-                      xtype: "container",
-                      margin: 4,
-                      html: widget.data.text,
-                      listeners: {
-                        render: function(p){
-                          console.log(p.getWidth());
-                        },
-                      },
-                    },
-                  ];
+                  html += this.createWidget(widget.title, widget.data.text);
                   break;
               }
-              panel.add({
-                xtype: "panel",
-                title: widget.title,
-                cls: "noc-home-widget",
-                border: true,
-                // layout: "fit",
-                style: {
-                  borderRadius: "8px 8px 0 0",
-                },
-                bodyStyle: {
-                  // padding: "4px",
-                  borderRadius: "0 0 8px 8px",
-                  backgroundColor: "#ecf0f1",
-                  borderColor: "#ecf0f1 !important",
-                },
-                shrinkWrap: true,
-                scrollable: true,
-                // html: html,
-                // items: items,
-                listeners: {
-                  render: function(p){
-                    console.log(p.getWidth());
-                  },
-                },
-              });
             }, this);
+            panel.setHtml(html);
           }
         },
         failure: function(){
           NOC.error(__("Failed to get home data"));
         },
         callback: function(){
-          panel.unmask();
+          panel.up().unmask();
         },
       });
     },
+  },
+  makeHeader: function(title){
+    return `<div class="noc-home-widget-header x-panel-header x-header x-panel-header-default x-horizontal x-panel-header-horizontal x-panel-header-default-horizontal">\
+              <div class="x-box-inner" style="height: 20px;">\
+                  <div class="x-title x-panel-header-title x-panel-header-title-default x-box-item x-title-default x-title-rotate-none x-title-align-left">\
+                    <div class="x-title-text x-title-text-default x-title-item" unselectable="on">${title}</div>\
+                  </div>\
+              </div>\
+            </div>`;
+  },
+  makeContent: function(content){
+    return `<div class="noc-home-widget-content">${content}</div>`;
+  },
+  createWidget: function(title, content){
+    return `<div class="noc-home-widget">${this.makeHeader(title)}${this.makeContent(content)}</div>`;
   },
 });

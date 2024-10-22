@@ -777,24 +777,38 @@ table {
     stroke: black !important;
 }
 
-.noc-home-container > div {
+
+.noc-home-container > div > div > div{
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
     grid-auto-rows: minmax(200px, auto);
+    gap: 10px;
     min-height: calc(100vh - 108px); /* 88px is the height of the header and gap 2x10px */
+    height: calc(100vh - 108px); /* 88px is the height of the header and gap 2x10px */
 }
 
 .noc-home-widget {
     grid-column: span 2;
-    width: auto !important;
-    height: auto !important;
-    min-height: 0;
-    min-width: 0;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.noc-home-widget-header {
+    border-radius: 8px 8px 0 0;
+}
+
+.noc-home-widget-content {
+    padding: 4px;
+    overflow-y: auto;
+    flex: 1;
+    background-color: #ecf0f1;
+    border-color: #ecf0f1;
 }
 
 @media only screen and (max-width: 767px) {
-    .noc-home-container > div{
+    .noc-home-container > div > div > div{
         grid-template-columns: 1fr;
     }
 
@@ -804,7 +818,7 @@ table {
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
-    .noc-home-container > div{
+    .noc-home-container > div > div > div{
         grid-template-columns: repeat(4, 1fr);
     }
 
