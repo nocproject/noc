@@ -782,7 +782,7 @@ table {
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     grid-auto-rows: minmax(200px, auto);
-    min-height: calc(100vh - 88px);
+    min-height: calc(100vh - 108px); /* 88px is the height of the header and gap 2x10px */
 }
 
 .noc-home-widget {
