@@ -46,15 +46,39 @@ class CrossingProposalsBuilder(object):
                 continue
             yield {"name": om.name, "available": True}
 
+    def get_object(self, obj: Object | None) -> dict[str, Any] | None:
+        """
+        Get object structure.
+        """
+        if obj is None:
+            return None
+        path = [obj]
+        current = obj
+        while current.parent:
+            current = current.parent
+            path.insert(0, current)
+        return {
+            "path": [
+                {"id": str(x.id), "label": x.parent_connection if x.parent_connection else x.name}
+                for x in path
+            ],
+            "model": obj.model.get_short_label(),
+        }
+
     def build(self) -> Dict[str, Any]:
         """
         Build connection proposals
         """
         result = {
-            "left": {"connections": [], "internal_connections": []},
+            "left": {
+                "connections": [],
+                "internal_connections": [],
+                "object": self.get_object(self.lo),
+            },
             "right": {
                 "connections": [],
                 "internal_connections": [],
+                "object": self.get_object(self.ro),
             },
             # @todo: Replace with cable lookup
             "valid": False,
