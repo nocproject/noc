@@ -47,9 +47,9 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
     viewModel.set("side", side);
     me.onReload(true);
   },
-  //
-  downloadSVG: function(){
-    Ext.bind(this.onDownloadSVG, this.getView())();
+  // set context
+  onDownloadSVG: function(){
+    Ext.bind(this.downloadSVG, this.getView())();
   },
   //
   onSchemeClick: function(evt, target){

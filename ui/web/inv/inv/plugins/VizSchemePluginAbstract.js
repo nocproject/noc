@@ -10,9 +10,10 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   extend: "Ext.panel.Panel",
   requires: [
     "NOC.inv.inv.plugins.Zoom",
+    "NOC.inv.inv.plugins.DownloadButton",
   ],
   mixins: [
-    "NOC.inv.inv.plugins.Mixins",
+    "NOC.core.mixins.Export",
   ],
   xtype: "vizscheme",
   closable: false,
@@ -36,6 +37,7 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       showDetails: true,
       zoomDisabled: true,
       downloadSvgButtonDisabled: true,
+      downloadCsvButtonDisabled: true,
       totalCount: 0,
     },
     formulas: {
@@ -74,14 +76,7 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       toggleHandler: "showHideDetails",
     },
     {
-      xtype: "button",
-      itemId: "downloadSvgButton",
-      tooltip: __("Download image as SVG"),
-      glyph: NOC.glyph.download,
-      handler: "onDownloadSVG",
-      bind: {
-        disabled: "{downloadSvgButtonDisabled}",
-      },
+      xtype: "invPluginsDownloadButton",
     },
     "->",
     {
