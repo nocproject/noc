@@ -809,6 +809,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       boxWidth: me.boxWidth,
       boxHeight: me.boxHeight,
       label: name,
+      model: info.model,
       side: side,
       width: bodyWidth,
       height: me.maxPins * (me.boxHeight + me.gap) + me.gap,

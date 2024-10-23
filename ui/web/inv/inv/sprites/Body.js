@@ -18,6 +18,7 @@ Ext.define("NOC.inv.inv.sprites.Body", {
         height: "number",
         gap: "number",
         label: "string",
+        model: "string",
         boxWidth: "number",
         boxHeight: "number",
         x: "number",
@@ -55,7 +56,7 @@ Ext.define("NOC.inv.inv.sprites.Body", {
             });
           }
           me.label.setAttributes({
-            text: label,
+            text: label + "\n" + attr.model,
             textAlign: attr.side === "left" ? "start" : "end",
             x: pointX + (attr.side === "left" ? 0 : attr.width),
             y: attr.y - attr.gap,
