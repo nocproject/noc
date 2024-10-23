@@ -8,12 +8,17 @@ console.debug("Defining NOC.main.desktop.HeaderPanel");
 Ext.define("NOC.main.desktop.HeaderPanel", {
   extend: "Ext.Panel",
   requires: [
+    "NOC.core.layout.Flex",
     "Ext.ux.form.SearchField",
   ],
   region: "north",
   layout: {
     type: "hbox",
     align: "middle",
+
+    // type: "flex",
+    // gap: "0",
+    // flexWrap: "nowrap",
   },
   pollingInterval: 3600000,
   localStoreName: "header-last-update",
@@ -120,7 +125,6 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         // Installation name
         {
           xtype: "container",
-          flex: 1,
           html: NOC.settings.installation_name,
           style: {
             fontSize: "18px",
@@ -133,6 +137,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
               click: me.openHome,
             },
           },
+        },
+        {
+          xtype: "container",
+          flex: 1,
         },
         me.emptyField,
         // Last update
