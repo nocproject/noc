@@ -10,6 +10,11 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   extend: "NOC.inv.inv.plugins.VizSchemePluginAbstract",
   title: __("Commutation"),
   itemId: "commutationPanel",
+  viewModel: {
+    data: {
+      downloadCsvButtonDisabled: false,
+    },
+  },
   gridColumns: [
     {
       text: __("Local Object"),
