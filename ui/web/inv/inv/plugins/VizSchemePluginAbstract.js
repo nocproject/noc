@@ -12,6 +12,9 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
     "NOC.inv.inv.plugins.Zoom",
     "NOC.inv.inv.plugins.DownloadButton",
   ],
+  mixins: [
+    "NOC.core.mixins.Export",
+  ],
   xtype: "vizscheme",
   closable: false,
   layout: {

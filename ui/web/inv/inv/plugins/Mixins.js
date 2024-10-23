@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.inv.plugins.Mixins");
 
 Ext.define("NOC.inv.inv.plugins.Mixins", {
-  onDownloadSVG: function(){
+  downloadSVG: function(){
     var _getFilenamePrefix = function(container){
         if(container.filenamePrefix){
           return container.filenamePrefix;
@@ -113,5 +113,23 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
         NOC.error(__("Failed to get data"));
       },
     });
+  },
+  exportCSV: function(){
+    var date = "_" + Ext.Date.format(new Date(), "YmdHis"),
+      prefix = this.itemId.replace("Panel", "").toLowerCase(),
+      filename = prefix + date + ".csv",
+      grid = this.down("grid"),
+      store = this.getViewModel().getStore("gridStore"),
+      records = store.getData().items,
+      columns = grid.getColumns().map(function(column){
+        return {
+          dataIndex: column.dataIndex,
+        };
+      });
+    this.downloadCsv(
+      new Blob([this.export(records, columns)],
+               {type: "text/plain;charset=utf-8"}),
+      filename,
+    );
   },
 });

@@ -14,7 +14,7 @@ Ext.define("NOC.inv.inv.plugins.DownloadButton", {
   alias: "widget.invPluginsDownloadButton",
   glyph: NOC.glyph.download,
   defaultListenerScope: true,
-  selectedMenuItem: "SVG", // Default selected item
+  selectedMenuItem: "svgMenuItem", // Default selected item
   viewModel: {
     formulas: {
       buttonDisabled: function(get){
@@ -50,26 +50,24 @@ Ext.define("NOC.inv.inv.plugins.DownloadButton", {
     click: "onButtonClick",
   },
   onMenuSelect: function(item){
-    this.selectedMenuItem = item.itemId === "csvMenuItem" ? "CSV" : "SVG";
+    this.selectedMenuItem = item.itemId;
     this.updateMenuCheckMarks();
     item.up("menu").hide();
   },
   updateMenuCheckMarks: function(){
     this.menu.items.each(function(item){
-      item.setChecked(item.itemId === (this.selectedMenuItem === "CSV" ? "csvMenuItem" : "svgMenuItem"));
-      this.setText(this.selectedMenuItem);
-      this.setTooltip(__("Download") + " " + this.selectedMenuItem);
+      var buttonText = this.selectedMenuItem === "csvMenuItem" ? "CSV" : "SVG";
+      item.setChecked(item.itemId === this.selectedMenuItem);
+      this.setText(buttonText);
+      this.setTooltip(__("Download") + " " + buttonText);
     }, this);
   },
   onButtonClick: function(){
     NOC.info(__("Download button clicked") + " " + this.selectedMenuItem);
-    if(this.selectedMenuItem === "CSV"){
-      this.onExportCSV();
-    } else{
-      Ext.bind(this.onDownloadSVG, this.up("vizscheme"))();
+    if(this.selectedMenuItem === "csvMenuItem"){
+      Ext.bind(this.exportCSV, this.up("vizscheme"))();
+    } else if(this.selectedMenuItem === "svgMenuItem"){
+      Ext.bind(this.downloadSVG, this.up("vizscheme"))();
     }
-  },
-  onExportCSV: function(){
-    console.log("Export CSV");
   },
 });

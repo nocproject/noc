@@ -75,7 +75,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       xtype: "button",
       tooltip: __("Download image as SVG"),
       glyph: NOC.glyph.download,
-      handler: "downloadSVG",
+      handler: "onDownloadSVG",
     },
   ],
   preview: function(data){
