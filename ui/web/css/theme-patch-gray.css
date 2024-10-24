@@ -1,3 +1,26 @@
 .x-form-clear-trigger {
   background-image: url(images/form/clear-trigger.gif) !important;
 }
+
+.noc-home-container > div > div > div {
+    min-height: calc(100vh - 142px); /* 88px is the height of the header and container padding 2x40px */
+    height: calc(100vh - 142px); /* 88px is the height of the header and container padding 2x40px */
+}
+
+.noc-home-widget-header > .x-box-inner {
+    height: 16px;
+}
+
+@media only screen and (max-width: 767px) {
+    .noc-home-container > div > div > div{
+        min-height: calc(100vh - 82px); /* 88px is the height of the header and container padding 2x20px */
+        height: calc(100vh - 82px); /* 88px is the height of the header and container padding 2x20px */
+    }
+ }
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+    .noc-home-container > div > div > div{
+        min-height: calc(100vh - 102px); /* 88px is the height of the header and container padding 2x20px */
+        height: calc(100vh - 102px); /* 88px is the height of the header and container padding 2x20px */
+    }
+}
