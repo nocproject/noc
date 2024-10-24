@@ -292,7 +292,7 @@
                     <div class="panel-group">
                         {% for m in metrics %}
                         <div class="panel" style="width: 50%">
-                            <div class="panel-heading metric-header{%- if m.isdanger %} bg-danger{% endif %}"
+                            <div class="panel-heading metric-header{%- if m.is_danger %} bg-danger{% endif %}"
                                  style="padding: 0;">
                                 <a data-toggle="collapse" {% if not m.collapsed %} class="collapsed" {% endif %} href="#metric-{{ loop.index }}">
                                     <i class="fa fa-chevron-down pull-right"></i>
@@ -491,32 +491,16 @@
                                 {% endif %}
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["load_in"] %}
-                                    <span class="small">{{ i["load_in"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ iface_metrics.load_in.humanize_value(interface=i["name"], with_units=True) }}</span>
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["load_out"] %}
-                                    <span class="small">{{ i["load_out"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ iface_metrics.load_out.humanize_value(interface=i["name"], with_units=True) }}</span>
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["metrics"]["errors_in"] %}
-                                    <span class="small">{{ i["metrics"]["errors_in"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ iface_metrics.errors_in.humanize_value(interface=i["name"], with_units=True) }}</span>
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["metrics"]["errors_out"] %}
-                                    <span class="small">{{ i["metrics"]["errors_out"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="small">{{ iface_metrics.errors_out.humanize_value(interface=i["name"], with_units=True) }}</span>
                             </td>
                             <td>
                                 <span class="small">{{ i["mac"] }}</span>
