@@ -3,8 +3,8 @@
 }
 
 .noc-home-container > div > div > div {
-    min-height: calc(100vh - 142px); /* 88px is the height of the header and container padding 2x40px */
-    height: calc(100vh - 142px); /* 88px is the height of the header and container padding 2x40px */
+    min-height: calc(100vh - 122px); /* 88px is the height of the header and container padding 2x40px */
+    height: calc(100vh - 122px); /* 88px is the height of the header and container padding 2x40px */
 }
 
 .noc-home-widget-header > .x-box-inner {

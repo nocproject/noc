@@ -804,8 +804,8 @@ table {
 .noc-home-container > div > div > div{
         display: grid;
         grid-auto-rows: minmax(200px, auto);
-        min-height: calc(100vh - 170px); /* 88px is the height of the header and container padding 2x40px */
-        height: calc(100vh - 170px); /* 88px is the height of the header and container padding 2x40px */
+        min-height: calc(100vh - 150px); /* 88px is the height of the header and container padding 2x40px */
+        height: calc(100vh - 150px); /* 88px is the height of the header and container padding 2x40px */
     }
 
 @media only screen and (max-width: 767px) {
@@ -853,7 +853,7 @@ table {
 @media screen and (min-width: 1024px) {
     .noc-home-container > div > div > div{
         grid-template-columns: repeat(6, 1fr);
-        gap: 40px;
+        gap: 30px;
     }
 
     .noc-home-widget:nth-child(3n+1):is(:nth-last-child(2)) {
@@ -861,7 +861,7 @@ table {
     }
 
     .noc-home-container {
-        padding: 40px;
+        padding: 30px;
     }
 
     .noc-home-widget:nth-child(3n+1):is(:nth-last-child(1)) {
