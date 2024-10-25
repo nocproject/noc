@@ -45,31 +45,36 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
   },
   // Launch application in tab
   launchTab: function(panel_class, title, params, node){
-    var me = this, tab,
-      app = Ext.create(panel_class, {
+    this.mask(__("Loading tab with") + " " + panel_class + " ...");
+    Ext.Loader.require(panel_class, function(){
+      var app = Ext.create(panel_class, {
         noc: params,
         title: title,
         closable: true,
       });
-    tab = me.add({
-      title: title,
-      closable: true,
-      layout: "fit",
-      items: app,
-      listeners: {
-        scope: me,
-        beforeclose: me.onTabClose,
-      },
-      menuNode: node,
-    });
-    // Close Home tab, if any
-    var first = me.items.first();
-    if(first && first.title !== title && first.title === "Home"){
-      first.close();
-    }
-    //
-    me.setActiveTab(tab);
-    return tab;
+      var tab = this.add({
+        title: title,
+        closable: true,
+        layout: "fit",
+        items: app,
+        listeners: {
+          scope: this,
+          beforeclose: this.onTabClose,
+        },
+        menuNode: node,
+      });
+      // Close Home tab, if any
+      var first = this.items.first();
+      if(first && first.title !== title && first.title === "Home"){
+        first.close();
+      }
+      //
+      this.setActiveTab(tab);
+      if(node){
+        this.up().launchedTabs[node] = tab;
+      }
+      this.unmask();
+    }, this);
   },
   //
   onTabChange: function(panel, tab){
