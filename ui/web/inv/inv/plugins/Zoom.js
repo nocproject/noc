@@ -89,12 +89,22 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       this.fitSvgToContainer();
       return;
     }
-    if(scale === -1){ // Zoom to Height 
-      element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
+    if(scale === -1){ // Zoom to Height
+      if(bb.height > bb.width){
+        this.fitSvgToContainer();
+      } else{
+        // ToDo calculate scale
+        element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
+      }
       return;
     }
     if(scale === -2){ // Zoom to Width
-      element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
+      if(bb.height > bb.width){
+        // ToDo calculate scale
+        element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
+      } else{
+        this.fitSvgToContainer();
+      }
       return;
     }
     if(scale === -3){ // Zoom to Fit
@@ -112,7 +122,13 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     }
   },
   fitSvgToContainer: function(){
-    var {element} = this._getSvgElement();
+    var {element} = this._getSvgElement(),
+      customZoomField = this.menu.query("numberfield")[0];
+    if(customZoomField){
+      customZoomField.setValue(100);
+    }
+    this.zoom = 1.0;
+    this.setText(100 + "%");
     element.setAttribute("height", "100%");
     element.setAttribute("width", "100%");
     element.setAttribute("preserveAspectRatio", "xMinYMin meet");
@@ -131,6 +147,9 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       text = __("Fit Height");
     } else if(this.zoom === -2){
       text = __("Fit Width");
+    } else if(this.zoom === -3){
+      this.zoom = 1.0;
+      text = "100%";
     }
     this.setZoom({zoom: this.zoom, text: text});
   },
