@@ -173,14 +173,25 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
-      var container = me.down("[itemId=schemeContainer]"),
-        svg = viz.renderSVGElement(data);
-      svg.setAttribute("height", "100%");
-      svg.setAttribute("width", "100%");
-      svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
-      svg.setAttribute("object-fit", "contain");
-      container.setHtml(svg.outerHTML);
-      me.down("#zoomControl").reset();
+      var svg,
+        container = me.down("[itemId=schemeContainer]"),
+        svgData = viz.renderSVGElement(data),
+        scale = 1,
+        zoomControl = me.down("#zoomControl"),
+        zoom = function(event){
+          event.preventDefault();
+          scale += event.deltaY * -0.01;
+          scale = Math.min(Math.max(0.125, scale), 6);
+          zoomControl.setZoomByValue(scale);
+        };
+      svgData.setAttribute("height", "100%");
+      svgData.setAttribute("width", "100%");
+      svgData.setAttribute("preserveAspectRatio", "xMinYMin meet");
+      svgData.setAttribute("object-fit", "contain");
+      container.setHtml(svgData.outerHTML);
+      svg = container.getEl().dom.querySelector("svg");
+      svg.onwheel = zoom;
+      zoomControl.reset();
       me.getViewModel().set("zoomDisabled", false);
       me.getViewModel().set("downloadSvgItemDisabled", false);
     });

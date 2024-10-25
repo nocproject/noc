@@ -49,6 +49,17 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   defaultListenerScope: true,
   width: 150,
   zoom: -3.0,
+  setZoomByValue: function(scale){
+    var {element, bb} = this._getSvgElement();
+    if(element === null){
+      return;
+    }
+    if(bb.height > bb.width){// h > w 
+      element.setAttribute("style", `width: auto;height: ${100 * scale}%`);
+    } else{ // w > h
+      element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
+    }
+  },
   setZoom: function(item){
     var {element, bb} = this._getSvgElement(),
       scale = item.zoom;

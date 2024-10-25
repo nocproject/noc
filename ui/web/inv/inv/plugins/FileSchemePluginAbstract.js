@@ -96,7 +96,15 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       url: svgUrl,
       method: "GET",
       success: function(response){
-        var parser = new DOMParser(),
+        var svg,
+          parser = new DOMParser(),
+          scale = 1,
+          zoom = function(event){
+            event.preventDefault();
+            scale += event.deltaY * -0.01;
+            scale = Math.min(Math.max(0.125, scale), 6);
+            zoomControl.setZoomByValue(scale);
+          },
           parserResult = parser.parseFromString(response.responseText, "image/svg+xml"),
           parserError = parserResult.querySelector("parsererror"),
           zoomControl = viewPanel.up().down("#zoomControl"); 
@@ -106,6 +114,8 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
           return;
         }
         viewPanel.setHtml(parserResult.documentElement.outerHTML);
+        svg = viewPanel.getEl().dom.querySelector("svg");
+        svg.onwheel = zoom;
         zoomControl.restoreZoom();
       },
       failure: function(response){
