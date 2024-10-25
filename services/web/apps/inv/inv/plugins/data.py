@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -71,6 +71,7 @@ class DataPlugin(InvPlugin):
         type: Optional[str] = None,
         scope: Optional[str] = None,
         choices: Optional[List[Tuple[str, str]]] = None,
+        item_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Generate item.
@@ -90,6 +91,8 @@ class DataPlugin(InvPlugin):
             r["scope"] = scope
         if choices is not None:
             r["choices"] = choices
+        if item_id:
+            r["item_id"] = item_id
         return r
 
     def iter_common(self, o: Object) -> Iterable[Dict[str, Any]]:
@@ -124,6 +127,7 @@ class DataPlugin(InvPlugin):
             description="Inventory Model",
             is_const=model_choices is None,
             choices=model_choices,
+            item_id=str(o.model.id),
         )
         # ID
         yield self.item(
