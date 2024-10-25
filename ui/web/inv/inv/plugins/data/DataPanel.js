@@ -157,7 +157,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
       value = "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + value;
     }
     if(record.get("name") === "Model"){
-      value += "<i class='fas fa fa-eye' style='padding-left: 4px;cursor: pointer;' title='" + __("Edit model") + "' data-record-id='" + this.up().currentId + "'></i>";
+      value += "<i class='fas fa fa-eye' style='padding-left: 4px;cursor: pointer;' title='" + __("Edit model") + "' data-record-id='" + record.get("item_id") + "'></i>";
     }
     if(record.get("type") === "bool"){
       return NOC.render.Bool(value);
