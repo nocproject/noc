@@ -147,4 +147,28 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       };
     }
   },
+  onWheel: function(event){
+    event.preventDefault();
+    var scale = this.getZoom(),
+      delta = this.getWheelDelta(event);
+    scale += delta * -0.01;
+    scale = Math.min(Math.max(0.125, scale), 6);
+    this.setZoomByValue(scale);
+  },
+  getWheelPxFactor: function(){
+    var ratio = window.devicePixelRatio;
+    return Ext.isLinux && Ext.isChrome ? ratio :
+      Ext.isMac ? ratio * 3 :
+      ratio > 0 ? 2 * ratio : 1;
+  },
+  getWheelDelta: function(e){
+    return (e.deltaY && e.deltaMode === 0) ? -e.deltaY / this.getWheelPxFactor() : 
+      (e.deltaY && e.deltaMode === 1) ? -e.deltaY * 20 :
+      (e.deltaY && e.deltaMode === 2) ? -e.deltaY * 60 :
+      (e.deltaX || e.deltaZ) ? 0 :
+      e.wheelDelta ? (e.wheelDeltaY || e.wheelDelta) / 2 :
+      (e.detail && Math.abs(e.detail) < 32765) ? -e.detail * 20 :
+      e.detail ? e.detail / -32765 * 60 :
+      0;
+  },
 });

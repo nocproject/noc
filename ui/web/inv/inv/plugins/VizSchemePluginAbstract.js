@@ -176,21 +176,14 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       var svg,
         container = me.down("[itemId=schemeContainer]"),
         svgData = viz.renderSVGElement(data),
-        zoomControl = me.down("#zoomControl"),
-        zoom = function(event){
-          event.preventDefault();
-          scale += event.deltaY * -0.01;
-          scale = Math.min(Math.max(0.125, scale), 6);
-          zoomControl.setZoomByValue(scale);
-        },
-        scale = zoomControl.getZoom();
+        zoomControl = me.down("#zoomControl");
       svgData.setAttribute("height", "100%");
       svgData.setAttribute("width", "100%");
       svgData.setAttribute("preserveAspectRatio", "xMinYMin meet");
       svgData.setAttribute("object-fit", "contain");
       container.setHtml(svgData.outerHTML);
       svg = container.getEl().dom.querySelector("svg");
-      svg.onwheel = zoom;
+      svg.onwheel = Ext.bind(zoomControl.onWheel, zoomControl);
       zoomControl.reset();
       me.getViewModel().set("zoomDisabled", false);
       me.getViewModel().set("downloadSvgItemDisabled", false);
