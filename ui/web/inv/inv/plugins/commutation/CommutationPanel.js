@@ -12,7 +12,7 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
   itemId: "commutationPanel",
   viewModel: {
     data: {
-      downloadCsvButtonDisabled: false,
+      downloadCsvItemDisabled: false,
     },
   },
   gridColumns: [

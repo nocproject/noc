@@ -36,8 +36,8 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       currentId: null,
       showDetails: true,
       zoomDisabled: true,
-      downloadSvgButtonDisabled: true,
-      downloadCsvButtonDisabled: true,
+      downloadSvgItemDisabled: true,
+      downloadCsvItemDisabled: true,
       totalCount: 0,
     },
     formulas: {
@@ -77,6 +77,7 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
     },
     {
       xtype: "invPluginsDownloadButton",
+      itemId: "downloadButton",
     },
     "->",
     {
@@ -181,7 +182,7 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       container.setHtml(svg.outerHTML);
       me.down("#zoomControl").reset();
       me.getViewModel().set("zoomDisabled", false);
-      me.getViewModel().set("downloadSvgButtonDisabled", false);
+      me.getViewModel().set("downloadSvgItemDisabled", false);
     });
   },
   //
