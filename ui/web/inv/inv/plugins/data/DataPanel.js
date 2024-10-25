@@ -156,6 +156,9 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     if(record.get("is_const")){
       value = "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + value;
     }
+    if(record.get("name") === "Model"){
+      value += "<i class='fas fa fa-eye' style='padding-left: 4px;cursor: pointer;' title='" + __("Edit model") + "' data-record-id='" + record.get("item_id") + "'></i>";
+    }
     if(record.get("type") === "bool"){
       return NOC.render.Bool(value);
     }
@@ -170,5 +173,36 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
       return value + NOC.clipboardIcon(record.get("value"));
     }
     return value;
+  },
+  //
+  afterRender: function(){
+    var me = this;
+    me.callParent(arguments);
+    me.el.on('click', function(event, target){
+      if(target.classList.contains('fa-eye')){
+        var recordId = target.getAttribute('data-record-id');
+        me.handleEyeClick(recordId);
+      }
+    }, me, {delegate: '.fa-eye'});
+  },
+  //
+  handleEyeClick: function(recordId){
+    var showGrid = function(){
+      var panel = this.up();
+      if(panel){
+        panel.close();
+      }
+    };
+    this.mask(__("Loading object model panel ..."));
+    NOC.launch("inv.objectmodel", "history", {
+      "args": [recordId],
+      "override": [
+        {"showGrid": showGrid},
+      ],
+      "callback": Ext.bind(function(){
+        this.unmask();
+      }, this),
+
+    });
   },
 });
