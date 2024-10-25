@@ -113,6 +113,9 @@ Ext.define("NOC.core.ModelApplication", {
     // Initialize component
     me.callParent();
     me.currentRecord = null;
+    if(me.noc.cmd && me.noc.cmd.callback){
+      me.noc.cmd.callback(); 
+    }
     // Process commands
     switch(me.getCmd()){
       case "open":

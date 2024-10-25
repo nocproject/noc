@@ -18,7 +18,7 @@ Ext.define("NOC.inv.inv.plugins.DownloadButton", {
   viewModel: {
     formulas: {
       buttonDisabled: function(get){
-        return get("downloadCsvButtonDisabled") && get("downloadSvgButtonDisabled");
+        return get("downloadCsvItemDisabled") && get("downloadSvgItemDisabled");
       },
     },
   },
@@ -32,7 +32,7 @@ Ext.define("NOC.inv.inv.plugins.DownloadButton", {
       handler: "onMenuSelect",
       itemId: "csvMenuItem",
       bind: {
-        disabled: "{downloadCsvButtonDisabled}",
+        disabled: "{downloadCsvItemDisabled}",
       },
     },
     {
@@ -41,7 +41,7 @@ Ext.define("NOC.inv.inv.plugins.DownloadButton", {
       handler: "onMenuSelect",
       itemId: "svgMenuItem",
       bind: {
-        disabled: "{downloadSvgButtonDisabled}",
+        disabled: "{downloadSvgItemDisabled}",
       },
     },
   ],

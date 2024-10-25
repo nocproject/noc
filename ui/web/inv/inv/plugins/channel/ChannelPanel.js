@@ -197,7 +197,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         url = "/inv/channel/" + recordData.id + "/viz/",
         maskComponent = me.up("[appId=inv.inv]").maskComponent,
         messageId = maskComponent.show(__("Fetching data for draw scheme ..."));
-      me.getViewModel().set("downloadSvgButtonDisabled", false);
+      me.getViewModel().set("downloadSvgItemDisabled", false);
       Ext.Ajax.request({
         url: url,
         method: "GET",
@@ -214,7 +214,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         },
       });
     } else{
-      me.getViewModel().set("downloadSvgButtonDisabled", true);
+      me.getViewModel().set("downloadSvgItemDisabled", true);
       me.getViewModel().set("zoomDisabled", true);
       schemeContainer.setHtml("");
     }
@@ -285,10 +285,15 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           panel.close();
         }
       };
+    me.mask(__("Loading channel panel ..."));
     NOC.launch("inv.channel", "history", {
-      "args": [id], "override": [
+      "args": [id],
+      "override": [
         {"showGrid": showGrid},
       ],
+      "callback": Ext.bind(function(){
+        this.unmask();
+      }, me),
     });
   },
   //
@@ -342,7 +347,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   showChannelPanel: function(channelId){
     this.down("#adhocInvChannelBtn").show();
     this.down("#zoomControl").show();
-    this.down("#downloadSvgButton").show();
+    this.down("#downloadButton").show();
     this.down("#closeInvChannelBtn").hide();
     this.down("#createInvChannelBtn").hide(); 
     this.getLayout().setActiveItem(0);
@@ -366,7 +371,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var vm = this.getViewModel();
     this.down("#adhocInvChannelBtn").hide();
     this.down("#zoomControl").hide();
-    this.down("#downloadSvgButton").hide();
+    this.down("#downloadButton").hide();
     this.down("#createInvChannelBtn").show();
     this.down("#closeInvChannelBtn").show();
     vm.set("panelTitle", __("Create new channel"));
