@@ -59,6 +59,14 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     } else{ // w > h
       element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
     }
+    this.zoom = scale;
+    this.setText(Math.round(scale * 100) + "%");
+  },
+  getZoom: function(){
+    if(this.zoom > 0){
+      return this.zoom;
+    }
+    return 1;
   },
   setZoom: function(item){
     var {element, bb} = this._getSvgElement(),
@@ -115,7 +123,8 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   restoreZoom: function(){
     var text = __("Fit Page");
     if(this.zoom > 0){
-      text = `${this.zoom * 100}%`;
+      var scale = Math.round(this.zoom * 100);
+      text = `${scale}%`;
     } else if(this.zoom === -1){
       text = __("Fit Height");
     } else if(this.zoom === -2){

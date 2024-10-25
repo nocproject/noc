@@ -98,7 +98,6 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       success: function(response){
         var svg,
           parser = new DOMParser(),
-          scale = 1,
           zoom = function(event){
             event.preventDefault();
             scale += event.deltaY * -0.01;
@@ -107,7 +106,8 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
           },
           parserResult = parser.parseFromString(response.responseText, "image/svg+xml"),
           parserError = parserResult.querySelector("parsererror"),
-          zoomControl = viewPanel.up().down("#zoomControl"); 
+          zoomControl = viewPanel.up().down("#zoomControl"), 
+          scale = zoomControl.getZoom();
         
         if(parserError){
           NOC.error("Failed to parse SVG: " + parserError.textContent);

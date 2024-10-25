@@ -176,14 +176,14 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       var svg,
         container = me.down("[itemId=schemeContainer]"),
         svgData = viz.renderSVGElement(data),
-        scale = 1,
         zoomControl = me.down("#zoomControl"),
         zoom = function(event){
           event.preventDefault();
           scale += event.deltaY * -0.01;
           scale = Math.min(Math.max(0.125, scale), 6);
           zoomControl.setZoomByValue(scale);
-        };
+        },
+        scale = zoomControl.getZoom();
       svgData.setAttribute("height", "100%");
       svgData.setAttribute("width", "100%");
       svgData.setAttribute("preserveAspectRatio", "xMinYMin meet");
