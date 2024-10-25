@@ -152,10 +152,7 @@ Ext.define("NOC.main.desktop.Application", {
         p = panel_class.split(".");
         params.app_id = [p[1], p[2]].join(".");
       }
-      var tab = me.workplacePanel.launchTab(panel_class, title, params, node);
-      if(node){
-        me.launchedTabs[node] = tab;
-      }
+      me.workplacePanel.launchTab(panel_class, title, params, node);
     }
   },
   launchApp: function(app, cmd, data){
