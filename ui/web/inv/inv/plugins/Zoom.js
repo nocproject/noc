@@ -17,7 +17,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       {zoom: -3, text: __("Fit Page"), handler: "setZoom"},
       {zoom: -1, text: __("Fit Height"), handler: "setZoom"},
       {zoom: -2, text: __("Fit Width"), handler: "setZoom"},
-      {xtype: 'menuseparator'},
+      {xtype: "menuseparator"},
       {zoom: 0.25, text: "25%", handler: "setZoom"},
       {zoom: 0.5, text: "50%", handler: "setZoom"},
       {zoom: 0.75, text: "75%", handler: "setZoom"},
@@ -27,7 +27,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       {zoom: 2.0, text: "200%", handler: "setZoom"},
       {zoom: 3.0, text: "300%", handler: "setZoom"},
       {zoom: 4.0, text: "400%", handler: "setZoom"},
-      {xtype: 'menuseparator'},
+      {xtype: "menuseparator"},
       {
         xtype: "numberfield",
         fieldLabel: __("Custom Zoom"),
@@ -43,7 +43,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
           },
         },
       },
-      {xtype: 'menuseparator'},
+      {xtype: "menuseparator"},
     ],
   },
   defaultListenerScope: true,
@@ -69,7 +69,8 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     return 1;
   },
   setZoom: function(item){
-    var {element, bb} = this._getSvgElement(),
+    var customZoomField,
+      {element, bb} = this._getSvgElement(),
       scale = item.zoom;
     if(element === null){
       return;
@@ -84,19 +85,11 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       return;
     }
     if(scale === -1){ // Zoom to Height 
-      if(bb.height > bb.width){// h > w 
-        element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
-      } else{ // w > h 
-        element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
-      }
+      element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
       return;
     }
     if(scale === -2){ // Zoom to Width
-      if(bb.height > bb.width){ // h > w
-        element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
-      } else{ // w > h
-        element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
-      }
+      element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
       return;
     }
     if(scale === -3){ // Zoom to Fit
@@ -107,6 +100,10 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       element.setAttribute("style", `width: auto;height: ${100 * scale}%`);
     } else{ // w > h
       element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
+    }
+    customZoomField = this.menu.query("numberfield")[0];
+    if(customZoomField){
+      customZoomField.setValue(Math.round(scale * 100));
     }
   },
   fitSvgToContainer: function(){
@@ -133,7 +130,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     this.setZoom({zoom: this.zoom, text: text});
   },
   _getSvgElement: function(){
-    var container = this.up("panel").down("#schemeContainer"),
+    var container = this.up("filescheme, vizscheme").down("#schemeContainer"),
       svgElement = container.getEl().dom.querySelector("svg");
     if(svgElement){
       return {
