@@ -50,7 +50,8 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   width: 150,
   zoom: -3.0,
   setZoomByValue: function(scale){
-    var {element, bb} = this._getSvgElement();
+    var customZoomField,
+      {element, bb} = this._getSvgElement();
     if(element === null){
       return;
     }
@@ -61,6 +62,10 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     }
     this.zoom = scale;
     this.setText(Math.round(scale * 100) + "%");
+    customZoomField = this.menu.query("numberfield")[0];
+    if(customZoomField){
+      customZoomField.setValue(Math.round(scale * 100));
+    }
   },
   getZoom: function(){
     if(this.zoom > 0){
