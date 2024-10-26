@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MAC Vendor
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,10 +9,15 @@
 import logging
 
 # Third-party modules
+from gufo.http import DEFLATE, GZIP
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne, InsertOne, DeleteOne
 from mongoengine.document import Document
 from mongoengine.fields import StringField
+
+# NOC Modules
+from noc.core.http.sync_client import HttpClient
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +33,7 @@ class MACVendor(Document):
     oui = StringField(primary_key=True)
     vendor = StringField()
 
-    DOWNLOAD_URL = "http://standards-oui.ieee.org/oui.txt"
+    DOWNLOAD_URL = config.path.mac_vendor_url
 
     def __str__(self):
         return self.oui
@@ -47,14 +52,15 @@ class MACVendor(Document):
 
     @classmethod
     def update(cls):
-        import requests
-
         # Get new values
         new = {}
         logger.info("Fetching new items from %s", cls.DOWNLOAD_URL)
-        r = requests.get(cls.DOWNLOAD_URL)
-        assert r.status_code == 200
-        for l in r.text.splitlines():
+        client = HttpClient(
+            max_redirects=1, compression=DEFLATE | GZIP, connect_timeout=10, validate_cert=False
+        )
+        status, h, content = client.get(cls.DOWNLOAD_URL)
+        assert status == 200
+        for l in content.decode().splitlines():
             if "(hex)" in l:
                 oui, vendor = l.split("(hex)")
                 oui = oui.strip().replace("-", "").upper()
