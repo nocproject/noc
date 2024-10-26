@@ -1,5 +1,5 @@
 {
-    "name": "Trasceiver",
+    "name": "Transceiver",
     "$collection": "inv.technologies",
     "uuid": "aef9bb4a-4ff1-4c6e-b7d7-cd7309b8debd",
     "single_service": false,
