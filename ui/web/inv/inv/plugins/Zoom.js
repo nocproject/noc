@@ -51,7 +51,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   width: 150,
   zoom: -3.0,
   setZoomByValue: function(scale){
-    var {element, bb} = this._getSvgElement();
+    var element = this._getSvgElement();
     if(element === null){
       return;
     }
@@ -59,9 +59,9 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     this.setText(Math.round(scale * 100) + "%");
     this.setCustomField(scale);
 
-    this.setScale(element, bb, scale);
+    this.setScale(element, scale);
   },
-  setScale: function(element, bb, scale){
+  setScale: function(element, scale){
     var isWidthAuto = element.style.width === "auto",
       isHeightAuto = element.style.height === "auto";
     if(isWidthAuto){
@@ -72,11 +72,6 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
       return;
     }
-    if(bb.height > bb.width){// h > w 
-      element.setAttribute("style", `width: auto;height: ${100 * scale}%`);
-    } else{ // w > h
-      element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
-    }
   },
   getZoom: function(){
     if(this.zoom > 0){
@@ -85,35 +80,32 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     return 1;
   },
   setZoom: function(item){
-    var {element, bb} = this._getSvgElement(),
+    var element = this._getSvgElement(),
       scale = item.zoom;
     if(element === null){
       return;
     }
     this.zoom = scale;
     this.setText(item.text);
+    if(scale > 0){
+      this.setScale(element, scale);
+      return;      
+    }
     if(scale === -3){
-      this.fitSvgToContainer();
+      this.fitSvgToContainer(element);
       return;
     }
     if(scale === -1){ // Zoom to Height
-      this.fitSvgToContainer();
-      if(bb.width > bb.height){
-        element.setAttribute("style", "height: 100%;width: auto;");
-      }
+      element.setAttribute("style", "height: 100%;width: auto;");
       return;
     }
     if(scale === -2){ // Zoom to Width
-      this.fitSvgToContainer();
-      if(bb.height > bb.width){
-        element.setAttribute("style", "height: auto;width: 100%;");
-      }
+      element.setAttribute("style", "height: auto;width: 100%;");
       return;
     }
-    this.setScale(element, bb, scale);
   },
-  fitSvgToContainer: function(){
-    var {element} = this._getSvgElement();
+  fitSvgToContainer: function(element){
+
     this.setText("100%");
     this.setCustomField(1.0);
     this.zoom = 1.0;
@@ -121,7 +113,15 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     element.setAttribute("width", "100%");
     element.setAttribute("preserveAspectRatio", "xMinYMin meet");
     element.setAttribute("object-fit", "contain");
-    element.setAttribute("style", "transform: scale(1);transform-origin: center center;");
+    var container = element.parentNode;
+    var containerAspectRatio = container.clientWidth / container.clientHeight;
+    var svgAspectRatio = element.viewBox.baseVal.width / element.viewBox.baseVal.height; // исходя из viewBox
+
+    if(containerAspectRatio > svgAspectRatio){
+      element.setAttribute("style", "width: auto; height: 100%;");
+    } else{
+      element.setAttribute("style", "width: 100%; height: auto;");
+    }
   },
   reset: function(){
     this.setZoom({zoom: -3.0, text: __("Fit Page")});
@@ -136,7 +136,6 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     } else if(this.zoom === -2){
       text = __("Fit Width");
     } else if(this.zoom === -3){
-      this.zoom = 1.0;
       text = "100%";
     }
     this.setZoom({zoom: this.zoom, text: text});
@@ -144,17 +143,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   _getSvgElement: function(){
     var container = this.up("filescheme, vizscheme").down("#schemeContainer"),
       svgElement = container.getEl().dom.querySelector("svg");
-    if(svgElement){
-      return {
-        element: svgElement,
-        bb: svgElement.getBBox(),
-      }
-    } else{
-      return {
-        element: null,
-        bb: null,
-      };
-    }
+    return svgElement;
   },
   onWheel: function(event){
     event.preventDefault();
