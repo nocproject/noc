@@ -173,7 +173,9 @@ class HomeAppplication(ExtApplication):
         if user.is_superuser:
             total_alarms = ActiveAlarm.objects.filter().count()
         else:
-            total_alarms = ActiveAlarm.objects.filter(adm_path__in=UserAccess.get_domains(user)).count()
+            total_alarms = ActiveAlarm.objects.filter(
+                adm_path__in=UserAccess.get_domains(user)
+            ).count()
         return {
             "type": "summary",
             "title": _("Total Alarms"),
