@@ -40,7 +40,7 @@ bands:
                 "administrativedomain": "default",
                 "object_labels": []},
                {"managed_object_id": 1,
-                "profile": "Generic.Host",
+                "profile": "Eltex.MES",
                 "model": "",
                 "sw_version": "",
                 "administrativedomain": "default",
