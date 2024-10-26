@@ -30,10 +30,11 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       {xtype: "menuseparator"},
       {
         xtype: "numberfield",
+        itemId: "customZoomField",
         fieldLabel: __("Custom Zoom"),
         labelAlign: "top",
         minValue: 10,
-        maxValue: 500,
+        maxValue: 1000,
         value: 100,
         step: 1,
         listeners: {
@@ -50,21 +51,31 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   width: 150,
   zoom: -3.0,
   setZoomByValue: function(scale){
-    var customZoomField,
-      {element, bb} = this._getSvgElement();
+    var {element, bb} = this._getSvgElement();
     if(element === null){
+      return;
+    }
+    this.zoom = scale;
+    this.setText(Math.round(scale * 100) + "%");
+    this.setCustomField(scale);
+
+    this.setScale(element, bb, scale);
+  },
+  setScale: function(element, bb, scale){
+    var isWidthAuto = element.style.width === "auto",
+      isHeightAuto = element.style.height === "auto";
+    if(isWidthAuto){
+      element.setAttribute("style", `width: auto;height: ${100 * scale}%`);
+      return;
+    }
+    if(isHeightAuto){
+      element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
       return;
     }
     if(bb.height > bb.width){// h > w 
       element.setAttribute("style", `width: auto;height: ${100 * scale}%`);
     } else{ // w > h
       element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
-    }
-    this.zoom = scale;
-    this.setText(Math.round(scale * 100) + "%");
-    customZoomField = this.menu.query("numberfield")[0];
-    if(customZoomField){
-      customZoomField.setValue(Math.round(scale * 100));
     }
   },
   getZoom: function(){
@@ -74,61 +85,38 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     return 1;
   },
   setZoom: function(item){
-    var customZoomField,
-      {element, bb} = this._getSvgElement(),
+    var {element, bb} = this._getSvgElement(),
       scale = item.zoom;
     if(element === null){
       return;
     }
     this.zoom = scale;
     this.setText(item.text);
-    element.removeAttribute("width");
-    element.removeAttribute("height");
-    element.removeAttribute("style");
-    if(scale === 1.0){
+    if(scale === -3){
       this.fitSvgToContainer();
       return;
     }
     if(scale === -1){ // Zoom to Height
-      if(bb.height > bb.width){
-        this.fitSvgToContainer();
-      } else{
-        // ToDo calculate scale
-        element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
+      this.fitSvgToContainer();
+      if(bb.width > bb.height){
+        element.setAttribute("style", "height: 100%;width: auto;");
       }
       return;
     }
     if(scale === -2){ // Zoom to Width
+      this.fitSvgToContainer();
       if(bb.height > bb.width){
-        // ToDo calculate scale
-        element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
-      } else{
-        this.fitSvgToContainer();
+        element.setAttribute("style", "height: auto;width: 100%;");
       }
       return;
     }
-    if(scale === -3){ // Zoom to Fit
-      this.fitSvgToContainer();
-      return;
-    }
-    if(bb.height > bb.width){// h > w 
-      element.setAttribute("style", `width: auto;height: ${100 * scale}%`);
-    } else{ // w > h
-      element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
-    }
-    customZoomField = this.menu.query("numberfield")[0];
-    if(customZoomField){
-      customZoomField.setValue(Math.round(scale * 100));
-    }
+    this.setScale(element, bb, scale);
   },
   fitSvgToContainer: function(){
-    var {element} = this._getSvgElement(),
-      customZoomField = this.menu.query("numberfield")[0];
-    if(customZoomField){
-      customZoomField.setValue(100);
-    }
+    var {element} = this._getSvgElement();
+    this.setText("100%");
+    this.setCustomField(1.0);
     this.zoom = 1.0;
-    this.setText(100 + "%");
     element.setAttribute("height", "100%");
     element.setAttribute("width", "100%");
     element.setAttribute("preserveAspectRatio", "xMinYMin meet");
@@ -172,8 +160,9 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     event.preventDefault();
     var scale = this.getZoom(),
       delta = this.getWheelDelta(event);
+    console.log("onWheel", scale, delta)
     scale += delta * -0.01;
-    scale = Math.min(Math.max(0.125, scale), 6);
+    scale = Math.min(Math.max(0.125, scale), 10);
     this.setZoomByValue(scale);
   },
   getWheelPxFactor: function(){
@@ -191,5 +180,11 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       (e.detail && Math.abs(e.detail) < 32765) ? -e.detail * 20 :
       e.detail ? e.detail / -32765 * 60 :
       0;
+  },
+  setCustomField: function(scale){
+    var customZoomField = this.menu.down("#customZoomField");
+    if(customZoomField){
+      customZoomField.setValue(Math.round(scale * 100));
+    }
   },
 });
