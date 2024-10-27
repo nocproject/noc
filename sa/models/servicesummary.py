@@ -145,7 +145,7 @@ class ServiceSummary(Document):
                 add_dict(ri[iface.id]["service"], svc_profiles)
                 add_dict(ri[iface.id]["subscriber"], subscriber_profiles)
             else:
-                ri[iface] = {
+                ri[iface.id] = {
                     "service": dict(svc_profiles),  # defaultdict -> dict
                     "subscriber": subscriber_profiles,
                 }

@@ -208,9 +208,9 @@ class AlarmStatusRule(EmbeddedDocument):
 
     def is_match(self, alarm) -> bool:
         """"""
-        if self.min_severity and alarm.severity < self.min_severity:
+        if self.min_severity and alarm.severity < self.min_severity.severity:
             return False
-        if self.max_severity and alarm.severity > self.max_severity:
+        if self.max_severity and alarm.severity > self.max_severity.severity:
             return False
         if self.alarm_class_template:
             return bool(re.match(self.alarm_class_template, alarm.alarm_class.name))
