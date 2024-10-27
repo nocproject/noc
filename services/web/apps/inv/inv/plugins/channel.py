@@ -21,6 +21,7 @@ from noc.core.techdomain.controller.base import Endpoint
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.main.models.favorites import Favorites
+from noc.sa.models.job import Job
 from .base import InvPlugin
 
 
@@ -117,6 +118,17 @@ class ChannelPlugin(InvPlugin):
         fav_items = set(f.favorites) if f else set()
         # Format result
         r = [q(i) for i in Channel.objects.filter(id__in=items)]
+        # Place job statuses
+        jobs = {job.entity: job for job in Job.iter_last_for_entities(f"ch:{x['id']}" for x in r)}
+        if jobs:
+            for x in r:
+                job = jobs.get(f"ch:{x['id']}")
+                if job:
+                    x["job_id"] = str(job.id)
+                    x["job_status"] = job.status
+                else:
+                    x["job_id"] = ""
+                    x["job_status"] = ""
         return {"records": r}
 
     def get_endpoint_label(self, ep: Endpoint) -> str:
@@ -278,6 +290,7 @@ class ChannelPlugin(InvPlugin):
         # Check all controllers
         for name in controller_loader:
             r += get_controller_proposals(name)
+        # Get channel statuses
         return r
 
     def api_create_adhoc(

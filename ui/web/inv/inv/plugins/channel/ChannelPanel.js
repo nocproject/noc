@@ -79,6 +79,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       dataIndex: "to_endpoint",
       flex: 1,
     },
+    {
+      text: __("Job"),
+      dataIndex: "job_status",
+      width: 120,
+      renderer: NOC.render.JobStatus,
+    },
   ],
   mainItems: [
     {
@@ -225,7 +231,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       currentId = me.getViewModel().get("currentId"),
       selectedRecord = this.getSelectedRow(),
       maskComponent = me.up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show(__("Create mew channel ...")); 
+      messageId = maskComponent.show(__("Create new channel ...")); 
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
       method: "POST",

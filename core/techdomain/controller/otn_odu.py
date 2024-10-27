@@ -210,10 +210,10 @@ class OTNODUController(BaseController):
             job = ctl.setup(ep, dry_run=dry_run)
             if job:
                 job.name = f"Set up {ep.resource_label}"
-                ep.set_last_job(job.id)
+                job.entity = f"ep:{ep.id}"
                 jobs.append(job)
         if jobs:
-            job = JobRequest(name="Setup ODU channel", jobs=jobs)
+            job = JobRequest(name="Setup ODU channel", jobs=jobs, entity=f"ch:{channel.id}")
             self.logger.info("Submitting job %s", job.id)
             job.submit()
         else:
