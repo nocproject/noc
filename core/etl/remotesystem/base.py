@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class StepResult:
     step: str
     loader: str
-    duration: int
+    duration: float
     error: Optional[str] = None
     summary: Optional[Dict[str, int]] = None
 
@@ -97,11 +97,11 @@ class BaseRemoteSystem(object):
                     step="extract",
                     loader=en,
                     summary={
-                        "extract": 0,
+                        "extract": xc.extracted,
                         "fatal_problems": len(xc.fatal_problems),
                         "quality_problems": len(xc.quality_problems),
                     },
-                    duration=int(perf_counter() - t0),
+                    duration=round(perf_counter() - t0, 2),
                 )
             )
         return r
@@ -128,7 +128,7 @@ class BaseRemoteSystem(object):
                         "change": ll.c_change,
                         "delete": len(ll.pending_deletes),
                     },
-                    duration=int(perf_counter() - t0),
+                    duration=round(perf_counter() - t0, 2),
                 )
             )
         # Remove in reverse order
@@ -136,7 +136,7 @@ class BaseRemoteSystem(object):
             ll.purge()
         return r
 
-    def check(self, out) -> Tuple[int, List[StepResult]]:
+    def check(self, extractors=None, out=None) -> Tuple[int, List[StepResult]]:
         chain = self.get_loader_chain()
         # Check
         summary = []
@@ -149,17 +149,17 @@ class BaseRemoteSystem(object):
                 ss = "%d errors" % n
             else:
                 ss = "OK"
-            summary += ["%s.%s: %s" % (self.name, ll.name, ss)]
+            summary += [f"{self.name}.{ll.name}: {ss}"]
             n_errors += n
             r.append(
                 StepResult(
                     step="check",
                     loader=ll.name,
                     summary={"check_errors": n},
-                    duration=int(perf_counter() - t0),
+                    duration=round(perf_counter() - t0, 2),
                 )
             )
-        if summary:
+        if summary and out:
             out.write("Summary:\n")
             out.write("\n".join(summary) + "\n")
         return n_errors, r
