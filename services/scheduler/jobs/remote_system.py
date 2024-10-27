@@ -18,7 +18,6 @@ from noc.core.mx import send_message, MessageType
 
 class ETLSyncJob(PeriodicJob):
     model = RemoteSystem
-    object: RemoteSystem
 
     # catch lock, run, processed error
     # Add Lock to model
@@ -65,7 +64,7 @@ class ETLSyncJob(PeriodicJob):
                 "summary": summary,
             },
             message_type=MessageType.ETL_SYNC_REPORT,
-            headers=None,
+            headers=self.object.get_mx_message_headers(),
         )
 
     def register_error(self, step, error):

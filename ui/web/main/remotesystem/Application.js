@@ -224,7 +224,7 @@ Ext.define("NOC.main.remotesystem.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    layout: "hbox",
+                    layout: "vbox",
                     title: __("Sync Settings"),
                     defaults: {
                         padding: 4,

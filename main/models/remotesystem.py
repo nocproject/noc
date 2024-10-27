@@ -9,7 +9,7 @@
 from threading import Lock
 import operator
 import datetime
-from typing import Optional, Union, List, Dict, Tuple
+from typing import Optional, Union, List, Dict, Tuple, Any
 
 # Third-party modules
 import bson
@@ -30,7 +30,7 @@ from noc.core.model.decorator import on_delete_check, on_save, on_delete
 from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
 from noc.core.debug import error_report
-from noc.core.mx import send_message, MessageType
+from noc.core.mx import send_message, MessageType, MessageMeta, get_subscription_id
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.etl.remotesystem.base import BaseRemoteSystem, StepResult
 
@@ -233,13 +233,18 @@ class RemoteSystem(Document):
         except Exception as e:
             if not quiet:
                 raise e
-            error_report()
+            error_report(suppress_log=quiet)
             error = str(e)
-        self.last_extract = datetime.datetime.now()
+        self.last_extract = datetime.datetime.now().replace(microsecond=0)
         if not error:
             self.last_successful_extract = self.last_extract
         self.extract_error = error
-        self.save()
+        RemoteSystem.objects.filter(id=self.id).update(
+            last_extract=self.last_extract,
+            extract_error=error,
+            last_successful_extract=self.last_successful_extract,
+        )
+        # self.save()
         return r
 
     def load(
@@ -252,21 +257,26 @@ class RemoteSystem(Document):
         except Exception as e:
             if not quiet:
                 raise e
-            error_report()
+            error_report(suppress_log=quiet)
             error = str(e)
-        self.last_load = datetime.datetime.now()
+        self.last_load = datetime.datetime.now().replace(microsecond=0)
         if not error:
             self.last_successful_load = self.last_load
         self.load_error = error
-        self.save()
+        RemoteSystem.objects.filter(id=self.id).update(
+            last_extract=self.last_load,
+            extract_error=error,
+            last_successful_extract=self.last_successful_load,
+        )
+        # self.save()
         return r
 
     def check(
-        self, extractors: Optional[List[str]] = None
+        self, extractors: Optional[List[str]] = None, out=None
     ) -> Optional[Tuple[int, List[StepResult]]]:
         extractors = extractors or self.get_extractors()
         try:
-            return self.get_handler().check(extractors)
+            return self.get_handler().check(extractors, out=out)
         except Exception:
             error_report()
 
@@ -288,7 +298,7 @@ class RemoteSystem(Document):
                 "retry_at": "",
             },
             message_type=MessageType.ETL_SYNC_FAILED,
-            headers=None,
+            headers=self.get_mx_message_headers(),
         )
 
     def get_loader_chain(self):
@@ -297,6 +307,19 @@ class RemoteSystem(Document):
     @property
     def enable_sync(self) -> bool:
         return self.sync_policy != "M"
+
+    def get_mx_message_headers(self) -> Dict[str, bytes]:
+        return {
+            key.config.header: key.clean_header_value(value)
+            for key, value in self.message_meta.items()
+        }
+
+    @property
+    def message_meta(self) -> Dict[MessageMeta, Any]:
+        """Message Meta for instance"""
+        return {
+            MessageMeta.WATCH_FOR: get_subscription_id(self),
+        }
 
     def on_save(self):
         self.ensure_job()

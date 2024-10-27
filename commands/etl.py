@@ -123,7 +123,7 @@ class Command(BaseCommand):
         remote_system = RemoteSystem.get_by_name(options["system"])
         if not remote_system:
             self.die("Invalid remote system: %s" % options["system"])
-        n_errors, _ = remote_system.check(self.stdout)
+        n_errors, _ = remote_system.check(out=self.stdout)
         return 1 if n_errors else 0
 
     def handle_diff(self, summary=False, *args, **options):
