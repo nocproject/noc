@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ./noc wipe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,25 +9,84 @@
 import argparse
 import sys
 from contextlib import contextmanager
+from typing import List
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
 from noc.core.validators import is_int
 from noc.core.change.policy import change_tracker
-from noc.core.comp import smart_text
+from noc.models import get_model
 
 
 class Command(BaseCommand):
     args = "<model> <object id> [.. <object id>]. Model is managed_object or user"
     help = "Completely wipe object and related data"
 
-    models = ["managed_object", "user"]
+    models = {"managed_object": "sa.ManagedObject", "user": "aaa.User"}
 
     def add_arguments(self, parser):
-        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
+        parser.add_argument("model", nargs=1, help="List of extractor names")
+        parser.add_argument("--state", help="Filter by state (if model supported")
+        parser.add_argument(
+            "--dry-run",
+            dest="dry_run",
+            action="store_true",
+            help="Dump statistics. Do not perform updates",
+        )
+        parser.add_argument("ids", nargs=argparse.REMAINDER, help="List of extractor names")
 
-    def handle(self, *args, **options):
+    def handle(
+        self, model, state=None, dry_run: bool = False, ids: List[str] = None, *args, **options
+    ):
+        """"""
+        print(model, state, args, ids)
+        connect()
+        objects = []
+        if model[0] in self.models:
+            wiper = getattr(self, f"wipe_{model[0]}")
+            model = self.models[model[0]]
+        else:
+            wiper = self.wipe_default
+            model = model[0]
+        for o in self.iter_objects(model, ids, state):
+            objects += [o]
+        if dry_run:
+            self.print(f"Wiping {len(objects)} objects")
+            return
+        # Wipe objects
+        from noc.core.debug import error_report
+
+        with change_tracker.bulk_changes():
+            for o in objects:
+                with self.log(f"Wiping '{o}':", True):
+                    try:
+                        wiper(o)
+                    except KeyboardInterrupt:
+                        raise CommandError("Interrupted. Wiping is not complete")
+                    except Exception:
+                        error_report()
+
+    def iter_objects(self, mid, ids: List[str], state=None):
+        if state:
+            self.print("Iter objects with state")
+        model = get_model(mid)
+        if state:
+            for o in model.objects.filter(state=state):
+                yield o
+        if mid == "sa.ManagedObject":
+            g = self.get_managed_object
+        elif mid == "aaa.User":
+            g = self.get_user
+        else:
+            g = model.get_by_id
+        for o_id in ids:
+            o = g(o_id)
+            if not o:  # Not found
+                raise CommandError("Object '%s' is not found" % o_id)
+            yield o
+
+    def handle_1(self, *args, **options):
         if len(args) < 1:
             print("USAGE: %s <model> <object id> [.. <object id>]" % sys.argv[0])
             sys.exit(1)
@@ -51,7 +110,7 @@ class Command(BaseCommand):
 
         with change_tracker.bulk_changes():
             for o in objects:
-                with self.log("Wiping '%s':" % smart_text(o), True):
+                with self.log(f"Wiping '{o}':", True):
                     try:
                         wiper(o)
                     except KeyboardInterrupt:
@@ -100,6 +159,9 @@ class Command(BaseCommand):
             return ManagedObject.objects.get(name=o_id)
         except ManagedObject.DoesNotExist:
             return None
+
+    def wipe_default(self, o):
+        o.delete()
 
     def wipe_managed_object(self, o):
         """
