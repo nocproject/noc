@@ -106,7 +106,7 @@ class BaseRemoteSystem(object):
             )
         return r
 
-    def load(self, loaders=None, check_current_state: bool = False) -> List[StepResult]:
+    def load(self, loaders=None) -> List[StepResult]:
         loaders = loaders or []
         # Build chain
         chain = self.get_loader_chain()
@@ -117,7 +117,7 @@ class BaseRemoteSystem(object):
                 ll.load_mappings()
                 continue
             t0 = perf_counter()
-            ll.load(check_state_exists=check_current_state)
+            ll.load()
             ll.save_state()
             r.append(
                 StepResult(
@@ -137,12 +137,15 @@ class BaseRemoteSystem(object):
         return r
 
     def check(self, extractors=None, out=None) -> Tuple[int, List[StepResult]]:
+        extractors = extractors or []
         chain = self.get_loader_chain()
         # Check
         summary = []
         r = []
         n_errors = 0
         for ll in chain:
+            if extractors and ll.name not in extractors:
+                continue
             t0 = perf_counter()
             n = ll.check(chain)
             if n:
