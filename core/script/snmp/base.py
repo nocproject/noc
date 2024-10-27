@@ -28,6 +28,7 @@ from noc.core.error import (
 )
 from noc.core.ioloop.util import run_sync
 from noc.core.mib import mib
+from noc.config import config
 
 
 GUFO_SNMP_VERSION_MAP = {
@@ -35,7 +36,7 @@ GUFO_SNMP_VERSION_MAP = {
     SNMP_v2c: SnmpVersion.v2c,
     SNMP_v3: SnmpVersion.v3,
 }
-BULK_MAX_REPETITIONS = 20
+BULK_MAX_REPETITIONS_LIMIT = config.activator.snmp_bulk_max_repetitions_limit
 
 AUTH_PROTO_MAP = {
     "MD5": Md5Key,
@@ -303,7 +304,7 @@ class SNMP(object):
             result = 0
             oids_iter = session.getnext(oid)
             if self.script.has_snmp_bulk():
-                oids_iter = session.getbulk(oid, max_repetitions=BULK_MAX_REPETITIONS)
+                oids_iter = session.getbulk(oid, max_repetitions=20)
             try:
                 async for oid_, v in oids_iter:
                     if filter(oid_, v):
@@ -317,6 +318,14 @@ class SNMP(object):
             return result
 
         return run_sync(partial(run, filter or (lambda x, y: True)), close_all=False)
+
+    @classmethod
+    def get_max_repetitions(cls, max_repetitions: Optional[int] = None) -> Optional[int]:
+        if not BULK_MAX_REPETITIONS_LIMIT:
+            return max_repetitions
+        elif max_repetitions:
+            return min(max_repetitions, BULK_MAX_REPETITIONS_LIMIT)
+        return BULK_MAX_REPETITIONS_LIMIT
 
     def getnext(
         self,
@@ -362,7 +371,7 @@ class SNMP(object):
             oids_iter = session.getnext(oid)
             if bulk:
                 oids_iter = session.getbulk(
-                    oid, max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
+                    oid, max_repetitions=self.get_max_repetitions(max_repetitions)
                 )
             result = []
             while True:
