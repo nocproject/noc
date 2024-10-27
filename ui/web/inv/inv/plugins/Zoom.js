@@ -25,21 +25,48 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   // Configuration
   text: __("Fit Page"),
   width: 150,
-  zoom: -3.0,
   defaultListenerScope: true,
-
+  bind: {
+    zoom: "{zoom}",
+    text: "{buttonText}",
+  },
+  viewModel: {
+    data: {
+      zoom: -3.0,
+    },
+    formulas: {
+      buttonText: {
+        bind: {
+          bindTo: "{zoom}",
+        },
+        get: function(zoom){
+          return zoom === -3 ? __("Fit Page") :
+            zoom === -1 ? __("Fit Height") :
+            zoom === -2 ? __("Fit Width") : `${zoom}%`;
+        },
+      },
+      customField: {
+        bind: {
+          bindTo: "{zoom}",
+        },
+        get: function(zoom){
+          return zoom > 0 ? zoom : 100;
+        },
+      },
+    },
+  },
   // Menu configuration
   menu: {
     xtype: "menu",
     plain: true,
     items: [
-      {zoom: -3, text: __("Fit Page"), handler: "setZoom"},
-      {zoom: -1, text: __("Fit Height"), handler: "setZoom"},
-      {zoom: -2, text: __("Fit Width"), handler: "setZoom"},
+      {zoom: -3, text: __("Fit Page"), handler: "menuHandler"},
+      {zoom: -1, text: __("Fit Height"), handler: "menuHandler"},
+      {zoom: -2, text: __("Fit Width"), handler: "menuHandler"},
       {xtype: "menuseparator"},
       ...Array.from({length: 9}, (_, i) => {
-        var zoom = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0][i];
-        return {zoom, text: `${zoom * 100}%`, handler: "setZoom"};
+        var zoom = [25, 50, 75, 100, 125, 150, 200, 300, 400][i];
+        return {zoom, text: `${zoom}%`, handler: "menuHandler"};
       }),
       {xtype: "menuseparator"},
       {
@@ -49,15 +76,14 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         labelAlign: "top",
         minValue: 10,
         maxValue: 1000,
-        value: 100,
+        bind: {
+          value: "{customField}",
+        },
         step: 1,
         listeners: {
           change: function(field, newValue){
             var button = field.up("menu").up("button");
-            button.setZoom({
-              zoom: (newValue || 0) / 100,
-              text: `${newValue}%`,
-            });
+            button.setZoom(newValue || 0);
           },
         },
       },
@@ -66,7 +92,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   },
 
   // Private methods
-  _calculateWheelDelta(event){
+  _calculateWheelDelta: function(event){
     var ratio = window.devicePixelRatio,
       pxFactor;
 
@@ -105,21 +131,16 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     return 0;
   },
 
-  _getSvgElement(){
+  _getSvgElement: function(){
     var container = this.up("filescheme, vizscheme").down("#schemeContainer");
     return container.getEl().dom.querySelector("svg");
   },
 
-  _updateCustomField(scale){
-    var customZoomField = this.menu.down("#customZoomField");
-    if(customZoomField){
-      customZoomField.setValue(Math.round(scale * 100));
-    }
-  },
-
   // Public methods
-  fitSvgToContainer(element){
-    var container = element.parentNode,
+  fitSvgToContainer: function(element, zoom){
+    var vm = this.getViewModel(),
+      size = zoom < 0 ? 100 : zoom || 100,
+      container = element.parentNode,
       containerAspectRatio = container.clientWidth / container.clientHeight,
       svgAspectRatio = element.viewBox.baseVal.width / element.viewBox.baseVal.height,
       attributes = {
@@ -128,74 +149,72 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         preserveAspectRatio: "xMinYMin meet",
         "object-fit": "contain",
         style: containerAspectRatio > svgAspectRatio ?
-          "width: auto; height: 100%;" :
-          "width: 100%; height: auto;",
+          `width: auto; height: ${size}%;` :
+          `width: ${size}%; height: auto;`,
       };
 
     Object.entries(attributes).forEach(([key, value]) => 
       element.setAttribute(key, value),
     );
-    this._updateCustomField(1.0);
-    this.zoom = 1.0;
+    if(vm.get("zoom") > 0){
+      vm.set("zoom", size);
+    }
   },
 
-  getZoom(){
-    return this.zoom > 0 ? this.zoom : 1;
+  getScale: function(){
+    var zoom = this.getViewModel().get("zoom");
+    return zoom > 0 ? zoom / 100 : 1;
+  },
+  
+  menuHandler: function(item){
+    this.getViewModel().set("zoom", item.zoom);
   },
 
-  onWheel(event){
+  onWheel: function(event){
     event.preventDefault();
-    var scale = this.getZoom(),
+    var scale = this.getScale(),
       delta = this._calculateWheelDelta(event),
       newScale = Math.min(
         Math.max(this.MIN_ZOOM, scale + delta * -this.WHEEL_ZOOM_STEP),
         this.MAX_ZOOM,
       );
-    
-    this.setZoomByValue(newScale);
+    console.log("onWheel :", delta, event.deltaY);
+    this.getViewModel().set("zoom", Math.round(newScale * 100));
   },
 
-  reset(){
-    this.setZoom({zoom: this.ZOOM_LEVELS.FIT_PAGE, text: __("Fit Page")});
+  reset: function(){
+    this.getViewModel().set("zoom", this.ZOOM_LEVELS.FIT_PAGE);
   },
 
-  restoreZoom(){
-    var zoomText = this.zoom > 0 ? 
-      `${Math.round(this.zoom * 100)}%` :
-      this.zoom === this.ZOOM_LEVELS.FIT_HEIGHT ? __("Fit Height") :
-      this.zoom === this.ZOOM_LEVELS.FIT_WIDTH ? __("Fit Width") :
-      this.zoom === this.ZOOM_LEVELS.FIT_PAGE ? __("Fit Page") :
-      __("Fit Page");
-
-    this.setZoom({zoom: this.zoom, text: zoomText});
+  restoreZoom: function(){
+    var vm = this.getViewModel(),
+      zoom = vm.get("zoom"),
+      element = this._getSvgElement();
+    this.fitSvgToContainer(element, zoom);
   },
 
-  setScale(element, scale){
+  setStyle: function(element, scale){
     var isWidthAuto = element.style.width === "auto",
       isHeightAuto = element.style.height === "auto",
       style = isWidthAuto ? 
-        `width: auto; height: ${100 * scale}%` :
+        `width: auto; height: ${scale}%` :
         isHeightAuto ?
-          `height: auto; width: ${100 * scale}%` :
-          null;
-                 
+          `height: auto; width: ${scale}%` :
+          null;           
     if(style) element.setAttribute("style", style);
   },
-
-  setZoom(item){
+  
+  setZoom: function(zoom){
+    console.log("setZoom", zoom);
     var element = this._getSvgElement();
     if(!element) return;
-
-    const{zoom: scale, text} = item;
-    this.zoom = scale;
-    this.setText(text);
-
-    if(scale > 0){
-      this.setScale(element, scale);
+    
+    if(zoom > 0){
+      this.setStyle(element, zoom);
       return;
     }
 
-    switch(scale){
+    switch(zoom){
       case this.ZOOM_LEVELS.FIT_PAGE:
         this.fitSvgToContainer(element);
         break;
@@ -206,15 +225,5 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         element.setAttribute("style", "height: auto; width: 100%;");
         break;
     }
-  },
-  
-  setZoomByValue(scale){
-    var element = this._getSvgElement();
-    if(!element) return;
-
-    this.zoom = scale;
-    this.setText(`${Math.round(scale * 100)}%`);
-    this._updateCustomField(scale);
-    this.setScale(element, scale);
   },
 });
