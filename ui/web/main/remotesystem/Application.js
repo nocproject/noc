@@ -256,7 +256,6 @@ Ext.define("NOC.main.remotesystem.Application", {
                             xtype: "numberfield",
                             fieldLabel: __("Sync Interval, sec"),
                             labelWidth: 200,
-                            allowBlank: false,
                             uiStyle: "small",
                             minValue: 0,
                             listeners: {
@@ -265,6 +264,15 @@ Ext.define("NOC.main.remotesystem.Application", {
                                     me.form.findField("sync_interval").setValue(newValue);
                                 }
                             }
+                        },
+                        {
+                            name: "run_sync_at",
+                            xtype: "datefield",
+                            startDay: 1,
+                            fieldLabel: __("Run Sync At"),
+                            allowBlank: true,
+                            format: "d-M-Y H:i",
+                            submitFormat: "d.m.Y H:i"
                         },
                         {
                             name: "event_sync_interval",
@@ -285,7 +293,6 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "sync_notification",
                             xtype: "combobox",
                             fieldLabel: __("Sync Notification Policy"),
-                            allowBlank: false,
                             labelWidth: 200,
                             queryMode: "local",
                             displayField: "label",

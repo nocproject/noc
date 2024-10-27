@@ -152,7 +152,7 @@ class RemoteSystem(Document):
         ],
         default="M",
     )
-    run_at = DateTimeField()
+    run_sync_at = DateTimeField()
     sync_interval = IntField()
     sync_notification = StringField(
         choices=[("D", "Disable"), ("F", "Failed Only"), ("A", "All")], default="F"
