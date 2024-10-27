@@ -9,7 +9,9 @@
 import time
 from typing import List
 
+# Third-party modules
 import orjson
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, ProfileMetricConfig
 from noc.core.models.cfgmetrics import MetricCollectorConfig
@@ -21,6 +23,7 @@ class Script(GetMetricsScript):
     """
     WLAN Statistics: /v2/api/site/default/wlan/enriched-configuration
     """
+
     name = "Ubiquiti.Controller.get_metrics"
     CPE_METRICS_CONFIG = {
         "Radio | TxRetries | Ratio": ProfileMetricConfig(
@@ -147,10 +150,10 @@ class Script(GetMetricsScript):
                     "end": round(end * 1_1000),
                     # "macs": ["60:22:32:2c:5e:c5", "68:d7:9a:c3:49:a9"],
                     "macs": list(ape.keys()),
-                 }),
+                }
+            ),
             json=True,
         )
-        print("XXX", v)
         for r in v["data"]:
             probe = r["ap"]
             if probe not in ape:
