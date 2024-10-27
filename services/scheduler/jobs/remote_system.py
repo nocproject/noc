@@ -37,13 +37,13 @@ class ETLSyncJob(PeriodicJob):
             self.register_error("extract", error=self.object.extract_error)
             return
         details = r
-        r = self.object.check()
+        _, r = self.object.check()
         if not r:
             self.register_error("check", error="Error when checking records")
             return
         details += r
         # Report self.object.di
-        r += self.object.load(quiet=True)
+        r = self.object.load(quiet=True)
         if not r:
             self.register_error("load", error=self.object.load_error)
             return
