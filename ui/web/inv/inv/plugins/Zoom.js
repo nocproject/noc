@@ -100,14 +100,14 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       case ratio === 0:
         pxFactor = 1;
         break;
-      case Ext.isLinux && Ext.isChrome:
-        pxFactor = ratio;
-        break;
+      // case Ext.isLinux && Ext.isChrome:
+      //   pxFactor = ratio * 25;
+      //   break;
       case Ext.isMac:
         pxFactor = ratio * 3;
         break;
       default:
-        pxFactor = 2 * ratio;
+        pxFactor = ratio * 25;
     }
     
     if(event.deltaY){
@@ -121,13 +121,13 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
       }
     }
     
-    if(event.deltaX || event.deltaZ) return 0;
-    if(event.wheelDelta) return (event.wheelDeltaY || event.wheelDelta) / 2;
-    if(event.detail){
-      return Math.abs(event.detail) < 32765 ? 
-        -event.detail * 20 : 
-        event.detail / -32765 * 60;
-    }
+    // if(event.deltaX || event.deltaZ) return 0;
+    // if(event.wheelDelta) return (event.wheelDeltaY || event.wheelDelta) / 2;
+    // if(event.detail){
+    //   return Math.abs(event.detail) < 32765 ? 
+    //     -event.detail * 20 : 
+    //     event.detail / -32765 * 60;
+    // }
     return 0;
   },
 
@@ -178,7 +178,6 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         Math.max(this.MIN_ZOOM, scale + delta * -this.WHEEL_ZOOM_STEP),
         this.MAX_ZOOM,
       );
-    console.log("onWheel :", delta, event.deltaY);
     this.getViewModel().set("zoom", Math.round(newScale * 100));
   },
 
@@ -205,7 +204,6 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   },
   
   setZoom: function(zoom){
-    console.log("setZoom", zoom);
     var element = this._getSvgElement();
     if(!element) return;
     
