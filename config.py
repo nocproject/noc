@@ -61,6 +61,9 @@ class Config(BaseConfig):
         http_connect_timeout = IntParameter(default=20)
         http_request_timeout = IntParameter(default=30)
         http_validate_cert = BooleanParameter(default=False)
+        snmp_bulk_max_repetitions_limit = IntParameter(
+            default=0, help="Upper limit for SNMP getnext BULK query"
+        )
 
     class audit(ConfigSection):
         command_ttl = SecondsParameter(default="1m")

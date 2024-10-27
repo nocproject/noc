@@ -240,13 +240,15 @@ class Command(BaseCommand):
             a = await queue.get()
             if a:
                 for c, user, v in self.iter_credentials(community, username, version):
-                    async with SnmpSession(
-                        addr=a,
-                        community=c,
-                        user=user,
-                        timeout=timeout,
-                        version=v,
-                    ) as session:
+                        session = SnmpSession(
+                            addr=a,
+                            community=c,
+                            user=user,
+                            timeout=timeout,
+                            version=v,
+                            engine_id=bytes.fromhex("80003a8c04"),
+                            t0=perf_counter()
+                        )
                         t0 = perf_counter()
                         try:
                             r = await session.get(oid)
