@@ -74,6 +74,8 @@ class MessageType(enum.Enum):
     VERSION_CHANGED = "version_changed"
     CONFIG_POLICY_VIOLATION = "config_policy_violation"
     DIAGNOSTIC_CHANGE = "diagnostic_change"
+    ETL_SYNC_FAILED = "etl_sync_failed"
+    ETL_SYNC_REPORT = "etl_sync_report"
     NOTIFICATION = "notification"
     OTHER = "other"
 
