@@ -249,7 +249,7 @@ class BaseLoader(object):
         self.new_state_path = path
         return compressor(path, "r").open()
 
-    def get_current_state(self, check_state_exists: bool = False) -> TextIOWrapper:
+    def get_current_state(self) -> TextIOWrapper:
         """
         Returns file object of current state
         """
@@ -265,9 +265,7 @@ class BaseLoader(object):
             fn = list(sorted(f for f in os.listdir(self.archive_dir) if self.rx_archive.match(f)))
         else:
             fn = []
-        if check_state_exists and not fn:
-            raise Exception("Current state does not exists")
-        elif not fn:
+        if not fn:
             return StringIO("")
         path = os.path.join(self.archive_dir, fn[-1])
         logger.info("Current state from %s", path)
@@ -332,7 +330,7 @@ class BaseLoader(object):
                     yield o, None
                     o = next(old, None)
 
-    def load(self, return_wo_changes: bool = False, check_state_exists: bool = False):
+    def load(self, return_wo_changes: bool = False):
         """
         Import new data
         """
@@ -342,9 +340,7 @@ class BaseLoader(object):
             self.logger.info("No new state, skipping")
             self.load_mappings()
             return
-        current_state = self.iter_jsonl(
-            self.get_current_state(check_state_exists=check_state_exists)
-        )
+        current_state = self.iter_jsonl(self.get_current_state())
         new_state = self.iter_jsonl(ns)
         deferred_add = []
         deferred_change = []
