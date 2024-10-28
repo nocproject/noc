@@ -7,6 +7,7 @@
 
 # Python modules
 import random
+from typing import Optional
 
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
@@ -46,17 +47,23 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             else:
                 self.run_checks()
 
-    def is_run_interval(self, interval: int, run: int) -> bool:
+    def is_run_interval(self, interval: int, run: int, name: Optional[str] = None) -> bool:
         """
 
-        :param run: Number of job runs
-        :param interval: Job interval
-        :return:
+        Attrs:
+            interval: Job interval
+            run: Number of job runs
+            name: Discovery name
         """
         d_interval = self.get_interval()
         if run and interval != d_interval:
             p_sc = interval / d_interval
             if run % p_sc:  # runs
+                self.logger.info(
+                    "[%s] Skip due to schedule, next run in %s sec",
+                    name or self.name,
+                    interval - (run % p_sc) * d_interval,
+                )
                 return False
         return True
 
@@ -65,6 +72,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
         if self.object.object_profile.enable_periodic_discovery_uptime and self.is_run_interval(
             self.get_discovery_interval("uptime"),
             runs,
+            name="uptime",
         ):
             UptimeCheck(self).run()
         if (
@@ -72,6 +80,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             and self.is_run_interval(
                 self.get_discovery_interval("interface_status"),
                 runs,
+                name="interface_status",
             )
         ):
             InterfaceStatusCheck(self).run()
@@ -80,16 +89,19 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
         if self.object.object_profile.enable_periodic_discovery_cpestatus and self.is_run_interval(
             self.get_discovery_interval("cpestatus"),
             runs,
+            name="cpestatus",
         ):
             CPEStatusCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_alarms and self.is_run_interval(
             self.get_discovery_interval("alarms"),
             runs,
+            name="alarms",
         ):
             AlarmsCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_mac and self.is_run_interval(
             self.get_discovery_interval("mac"),
             runs,
+            name="mac",
         ):
             MACCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
@@ -119,7 +131,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             or self.object.object_profile.periodic_discovery_interval
         )
 
-    def get_interval(self):
+    def get_interval(self) -> int:
+        """Calculate discovery interval"""
         if not self.object:
             # Dereference error
             return random.randint(60, 120)
