@@ -9,122 +9,219 @@ console.debug("Defining NOC.inv.inv.plugins.Zoom");
 Ext.define("NOC.inv.inv.plugins.Zoom", {
   extend: "Ext.button.Button",
   alias: "widget.invPluginsZoom",
+  
+  // Constants
+  ZOOM_LEVELS: {
+    FIT_PAGE: -3,
+    FIT_HEIGHT: -1,
+    FIT_WIDTH: -2,
+  },
+  
+  MIN_ZOOM: 0.125,
+  MAX_ZOOM: 10,
+  DEFAULT_ZOOM: -3,
+  WHEEL_ZOOM_STEP: 0.01,
+  
+  // Configuration
   text: __("Fit Page"),
+  width: 150,
+  defaultListenerScope: true,
+  bind: {
+    zoom: "{zoom}",
+    text: "{buttonText}",
+  },
+  viewModel: {
+    data: {
+      zoom: -3.0,
+    },
+    formulas: {
+      buttonText: {
+        bind: {
+          bindTo: "{zoom}",
+        },
+        get: function(zoom){
+          return zoom === -3 ? __("Fit Page") :
+            zoom === -1 ? __("Fit Height") :
+            zoom === -2 ? __("Fit Width") : `${zoom}%`;
+        },
+      },
+      customField: {
+        bind: {
+          bindTo: "{zoom}",
+        },
+        get: function(zoom){
+          return zoom > 0 ? zoom : 100;
+        },
+      },
+    },
+  },
+  // Menu configuration
   menu: {
     xtype: "menu",
     plain: true,
     items: [
-      {zoom: -3, text: __("Fit Page"), handler: "setZoom"},
-      {zoom: -1, text: __("Fit Height"), handler: "setZoom"},
-      {zoom: -2, text: __("Fit Width"), handler: "setZoom"},
-      {xtype: 'menuseparator'},
-      {zoom: 0.25, text: "25%", handler: "setZoom"},
-      {zoom: 0.5, text: "50%", handler: "setZoom"},
-      {zoom: 0.75, text: "75%", handler: "setZoom"},
-      {zoom: 1.0, text: "100%", handler: "setZoom"},
-      {zoom: 1.25, text: "125%", handler: "setZoom"},
-      {zoom: 1.5, text: "150%", handler: "setZoom"},
-      {zoom: 2.0, text: "200%", handler: "setZoom"},
-      {zoom: 3.0, text: "300%", handler: "setZoom"},
-      {zoom: 4.0, text: "400%", handler: "setZoom"},
-      {xtype: 'menuseparator'},
+      {zoom: -3, text: __("Fit Page"), handler: "menuHandler"},
+      {zoom: -1, text: __("Fit Height"), handler: "menuHandler"},
+      {zoom: -2, text: __("Fit Width"), handler: "menuHandler"},
+      {xtype: "menuseparator"},
+      ...Array.from({length: 9}, (_, i) => {
+        var zoom = [25, 50, 75, 100, 125, 150, 200, 300, 400][i];
+        return {zoom, text: `${zoom}%`, handler: "menuHandler"};
+      }),
+      {xtype: "menuseparator"},
       {
         xtype: "numberfield",
+        itemId: "customZoomField",
         fieldLabel: __("Custom Zoom"),
         labelAlign: "top",
         minValue: 10,
-        maxValue: 500,
-        value: 100,
+        maxValue: 1000,
+        bind: {
+          value: "{customField}",
+        },
         step: 1,
         listeners: {
           change: function(field, newValue){
             var button = field.up("menu").up("button");
-            button.setZoom({zoom: (newValue || 0) / 100, text: newValue + "%"});
+            button.setZoom(newValue || 0);
           },
         },
       },
-      {xtype: 'menuseparator'},
+      {xtype: "menuseparator"},
     ],
   },
-  defaultListenerScope: true,
-  width: 150,
-  zoom: -3.0,
-  setZoom: function(item){
-    var {element, bb} = this._getSvgElement(),
-      scale = item.zoom;
-    if(element === null){
-      return;
+
+  // Private methods
+  _calculateWheelDelta: function(event){
+    var ratio = window.devicePixelRatio,
+      pxFactor;
+
+    switch(true){
+      case ratio === 0:
+        pxFactor = 1;
+        break;
+      // case Ext.isLinux && Ext.isChrome:
+      //   pxFactor = ratio * 25;
+      //   break;
+      case Ext.isMac:
+        pxFactor = ratio * 3;
+        break;
+      default:
+        pxFactor = ratio * 25;
     }
-    this.zoom = scale;
-    this.setText(item.text);
-    element.removeAttribute("width");
-    element.removeAttribute("height");
-    element.removeAttribute("style");
-    if(scale === 1.0){
-      this.fitSvgToContainer();
-      return;
-    }
-    if(scale === -1){ // Zoom to Height 
-      if(bb.height > bb.width){// h > w 
-        element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
-      } else{ // w > h 
-        element.setAttribute("style", "height: 100%;width: auto;max-width: none;max-height: 100%;");
+    
+    if(event.deltaY){
+      switch(event.deltaMode){
+        case 0: // DOM_DELTA_PIXEL
+          return -event.deltaY / pxFactor;
+        case 1: // DOM_DELTA_LINE
+          return -event.deltaY * 20;
+        case 2: // DOM_DELTA_PAGE
+          return -event.deltaY * 60;
       }
-      return;
     }
-    if(scale === -2){ // Zoom to Width
-      if(bb.height > bb.width){ // h > w
-        element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
-      } else{ // w > h
-        element.setAttribute("style", "width: 100%;height: auto;max-height: none;max-width: 100%;");
-      }
-      return;
-    }
-    if(scale === -3){ // Zoom to Fit
-      this.fitSvgToContainer();
-      return;
-    }
-    if(bb.height > bb.width){// h > w 
-      element.setAttribute("style", `width: auto;height: ${100 * scale}%`);
-    } else{ // w > h
-      element.setAttribute("style", `height: auto;width: ${100 * scale}%`);
-    }
+    
+    // if(event.deltaX || event.deltaZ) return 0;
+    // if(event.wheelDelta) return (event.wheelDeltaY || event.wheelDelta) / 2;
+    // if(event.detail){
+    //   return Math.abs(event.detail) < 32765 ? 
+    //     -event.detail * 20 : 
+    //     event.detail / -32765 * 60;
+    // }
+    return 0;
   },
-  fitSvgToContainer: function(){
-    var {element} = this._getSvgElement();
-    element.setAttribute("height", "100%");
-    element.setAttribute("width", "100%");
-    element.setAttribute("preserveAspectRatio", "xMinYMin meet");
-    element.setAttribute("object-fit", "contain");
-    element.setAttribute("style", "transform: scale(1);transform-origin: center center;");
-  },
-  reset: function(){
-    this.setZoom({zoom: -3.0, text: __("Fit Page")});
-  },
-  restoreZoom: function(){
-    var text = __("Fit Page");
-    if(this.zoom > 0){
-      text = `${this.zoom * 100}%`;
-    } else if(this.zoom === -1){
-      text = __("Fit Height");
-    } else if(this.zoom === -2){
-      text = __("Fit Width");
-    }
-    this.setZoom({zoom: this.zoom, text: text});
-  },
+
   _getSvgElement: function(){
-    var container = this.up("panel").down("#schemeContainer"),
-      svgElement = container.getEl().dom.querySelector("svg");
-    if(svgElement){
-      return {
-        element: svgElement,
-        bb: svgElement.getBBox(),
-      }
-    } else{
-      return {
-        element: null,
-        bb: null,
+    var container = this.up("filescheme, vizscheme").down("#schemeContainer");
+    return container.getEl().dom.querySelector("svg");
+  },
+
+  // Public methods
+  fitSvgToContainer: function(element, zoom){
+    var vm = this.getViewModel(),
+      size = zoom < 0 ? 100 : zoom || 100,
+      container = element.parentNode,
+      containerAspectRatio = container.clientWidth / container.clientHeight,
+      svgAspectRatio = element.viewBox.baseVal.width / element.viewBox.baseVal.height,
+      attributes = {
+        height: "100%",
+        width: "100%",
+        preserveAspectRatio: "xMinYMin meet",
+        "object-fit": "contain",
+        style: containerAspectRatio > svgAspectRatio ?
+          `width: auto; height: ${size}%;` :
+          `width: ${size}%; height: auto;`,
       };
+
+    Object.entries(attributes).forEach(([key, value]) => 
+      element.setAttribute(key, value),
+    );
+    if(vm.get("zoom") > 0){
+      vm.set("zoom", size);
+    }
+  },
+
+  getScale: function(){
+    var zoom = this.getViewModel().get("zoom");
+    return zoom > 0 ? zoom / 100 : 1;
+  },
+  
+  menuHandler: function(item){
+    this.getViewModel().set("zoom", item.zoom);
+  },
+
+  onWheel: function(event){
+    event.preventDefault();
+    var scale = this.getScale(),
+      delta = this._calculateWheelDelta(event),
+      newScale = Math.min(
+        Math.max(this.MIN_ZOOM, scale + delta * -this.WHEEL_ZOOM_STEP),
+        this.MAX_ZOOM,
+      );
+    this.getViewModel().set("zoom", Math.round(newScale * 100));
+  },
+
+  reset: function(){
+    this.getViewModel().set("zoom", this.ZOOM_LEVELS.FIT_PAGE);
+  },
+
+  restoreZoom: function(){
+    var vm = this.getViewModel(),
+      zoom = vm.get("zoom"),
+      element = this._getSvgElement();
+    this.fitSvgToContainer(element, zoom);
+  },
+
+  setStyle: function(element, scale){
+    var isWidthAuto = element.style.width === "auto",
+      isHeightAuto = element.style.height === "auto",
+      style = isWidthAuto ? 
+        `width: auto; height: ${scale}%` :
+        isHeightAuto ?
+          `height: auto; width: ${scale}%` :
+          null;           
+    if(style) element.setAttribute("style", style);
+  },
+  
+  setZoom: function(zoom){
+    var element = this._getSvgElement();
+    if(!element) return;
+    
+    if(zoom > 0){
+      this.setStyle(element, zoom);
+      return;
+    }
+
+    switch(zoom){
+      case this.ZOOM_LEVELS.FIT_PAGE:
+        this.fitSvgToContainer(element);
+        break;
+      case this.ZOOM_LEVELS.FIT_HEIGHT:
+        element.setAttribute("style", "height: 100%; width: auto;");
+        break;
+      case this.ZOOM_LEVELS.FIT_WIDTH:
+        element.setAttribute("style", "height: auto; width: 100%;");
+        break;
     }
   },
 });

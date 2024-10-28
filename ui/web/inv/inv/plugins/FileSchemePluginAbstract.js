@@ -96,16 +96,18 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       url: svgUrl,
       method: "GET",
       success: function(response){
-        var parser = new DOMParser(),
+        var svg,
+          parser = new DOMParser(),
           parserResult = parser.parseFromString(response.responseText, "image/svg+xml"),
           parserError = parserResult.querySelector("parsererror"),
-          zoomControl = viewPanel.up().down("#zoomControl"); 
-        
+          zoomControl = viewPanel.up().down("#zoomControl");
         if(parserError){
           NOC.error("Failed to parse SVG: " + parserError.textContent);
           return;
         }
         viewPanel.setHtml(parserResult.documentElement.outerHTML);
+        svg = viewPanel.getEl().dom.querySelector("svg");
+        svg.onwheel = Ext.bind(zoomControl.onWheel, zoomControl);
         zoomControl.restoreZoom();
       },
       failure: function(response){
