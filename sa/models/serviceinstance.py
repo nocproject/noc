@@ -30,6 +30,7 @@ from noc.core.resource import from_resource
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.main.models.pool import Pool
 
 SOURCES = {"discovery", "etl", "manual"}
@@ -235,6 +236,8 @@ class ServiceInstance(Document):
             bulk += [UpdateOne({"_id": self.id}, {"$addToSet": {"resources": rid}})]
         else:
             ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+        if self.managed_object:
+            ServiceSummary.refresh_object(self.managed_object)
 
     def clean_resource(self, code: str, bulk=None):
         """Clean resource by Key"""
@@ -248,6 +251,8 @@ class ServiceInstance(Document):
             bulk += [UpdateOne({"_id": self.id}, {"$set": resources})]
         else:
             ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+        if self.managed_object:
+            ServiceSummary.refresh_object(self.managed_object)
 
     @classmethod
     def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
