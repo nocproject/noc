@@ -271,8 +271,8 @@ Ext.define("NOC.main.remotesystem.Application", {
                             startDay: 1,
                             fieldLabel: __("Run Sync At"),
                             allowBlank: true,
-                            format: "d-M-Y H:i",
-                            submitFormat: "d.m.Y H:i"
+                            format: "d-M-Y Н:i",
+                            submitFormat: "Y-m-d\\TH:i:s"
                         },
                         {
                             name: "event_sync_interval",
