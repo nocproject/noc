@@ -66,7 +66,7 @@ class Command(BaseCommand):
         # extract command
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument(
-            "--quiet", action="store_true", default=True, help="Remote system name"
+            "--quiet", action="store_true", default=False, help="Remote system name"
         )
         extract_parser.add_argument(
             "--incremental", action="store_true", default=False, help="Incremental extracting"
