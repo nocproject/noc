@@ -164,7 +164,7 @@ Ext.define("NOC.main.remotesystem.Model", {
             defaultValue: "M"
         },
         {
-            name: "run_at",
+            name: "run_sync_at",
             type: "string"
         },
         {
