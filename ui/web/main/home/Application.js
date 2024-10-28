@@ -8,7 +8,6 @@ console.debug("Defining NOC.main.home.Application");
 
 Ext.define("NOC.main.home.Application", {
   extend: "NOC.core.Application",
-  padding: 10,
   layout: "auto",
   baseCls: "noc-home-container",
   scrollable: true,
@@ -71,7 +70,7 @@ Ext.define("NOC.main.home.Application", {
   },
   makeHeader: function(title){
     return `<div class="noc-home-widget-header x-panel-header x-header x-panel-header-default x-horizontal x-panel-header-horizontal x-panel-header-default-horizontal">\
-              <div class="x-box-inner" style="height: 20px;">\
+              <div class="x-box-inner">\
                   <div class="x-title x-panel-header-title x-panel-header-title-default x-box-item x-title-default x-title-rotate-none x-title-align-left">\
                     <div class="x-title-text x-title-text-default x-title-item" unselectable="on">${title}</div>\
                   </div>\
