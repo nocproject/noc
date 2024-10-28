@@ -230,6 +230,9 @@ class RemoteSystem(Document):
             r = self.get_handler().extract(
                 extractors, incremental=incremental, checkpoint=checkpoint
             )
+        except PermissionError as e:
+            error_report(suppress_log=True)
+            error = str(e)
         except Exception as e:
             if not quiet:
                 raise e
@@ -331,7 +334,7 @@ class RemoteSystem(Document):
         """Create or remove scheduler job"""
         scheduler = Scheduler(self.SCHEDULER)
         if self.enable_sync and self.sync_interval:
-            ts = self.run_at or datetime.datetime.now().replace(microsecond=0)
+            ts = self.run_sync_at or datetime.datetime.now().replace(microsecond=0)
             if ts:
                 scheduler.submit(jcls=self.JCLS, key=self.id, ts=ts)
                 return
