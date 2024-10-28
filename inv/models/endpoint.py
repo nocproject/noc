@@ -17,7 +17,6 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
 )
 from mongoengine import signals
-from bson import ObjectId
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
