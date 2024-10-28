@@ -8,6 +8,7 @@
 # NOC modules
 from .base import BaseLoader
 from ..models.subscriber import Subscriber
+from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.crm.models.subscriber import Subscriber as SubscriberModel
 
 
@@ -19,6 +20,7 @@ class SubscriberLoader(BaseLoader):
     name = "subscriber"
     model = SubscriberModel
     data_model = Subscriber
+    model_mappings = {"profile": SubscriberProfile}
 
     discard_deferred = True
 
