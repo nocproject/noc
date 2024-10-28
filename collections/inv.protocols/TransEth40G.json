@@ -3,8 +3,8 @@
     "code": "TransEth40G",
     "$collection": "inv.protocols",
     "uuid": "0246c61e-1247-4a12-91e5-efab706a8c37",
-    "description": "Interface for device transievers module",
+    "description": "Interface for device transceivers module",
     "data": [],
     "connection_schema": "BO",
-    "technology__name": "Trasceiver"
+    "technology__name": "Transceiver"
 }

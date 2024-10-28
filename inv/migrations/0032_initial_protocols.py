@@ -741,7 +741,7 @@ class Migration(BaseMigration):
                 {"_id": ObjectId("653277c66aad5b611082bf5e")},
                 {
                     "$set": {
-                        "name": "Trasceiver",
+                        "name": "Transceiver",
                         "uuid": UUID("aef9bb4a-4ff1-4c6e-b7d7-cd7309b8debd"),
                         "single_service": False,
                         "single_client": False,

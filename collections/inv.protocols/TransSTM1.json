@@ -3,8 +3,8 @@
     "code": "TransSTM1",
     "$collection": "inv.protocols",
     "uuid": "4229fadc-55e0-4fd4-9f72-a87155350f01",
-    "description": "Interface for device transievers module",
+    "description": "Interface for device transceivers module",
     "data": [],
     "connection_schema": "BO",
-    "technology__name": "Trasceiver"
+    "technology__name": "Transceiver"
 }
