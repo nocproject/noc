@@ -128,6 +128,7 @@ class Config(BaseConfig):
     class card(ConfigSection):
         language = StringParameter(default="en")
         alarmheat_tooltip_limit = IntParameter(default=5)
+        metric_request_interval = SecondsParameter(default="1h")
 
     class chwriter(ConfigSection):
         # LiftBridge partition (CH shard id)
@@ -505,6 +506,7 @@ class Config(BaseConfig):
         custom_path = StringParameter()
         mib_path = StringParameter(default="/var/lib/noc/mibs/")
         cdn_url = StringParameter()
+        mac_vendor_url = StringParameter(default="https://standards-oui.ieee.org/oui/oui.txt")
 
     class pg(ConfigSection):
         addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
