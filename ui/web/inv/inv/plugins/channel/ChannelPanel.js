@@ -180,9 +180,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   handleEyeClick: function(recordId, rowIndex){
     var me = this,
+      tableView = this.down("grid").getView(),
       showGrid = function(){
         var panel = this.up();
-        me.showChannelPanel();
+        if(!Ext.isEmpty(tableView.getSelectionModel())){
+          tableView.getSelectionModel().select(parseInt(rowIndex));
+          me.showChannelPanel();
+        }
         if(panel){
           panel.close();
         }
@@ -194,8 +198,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         {"showGrid": showGrid},
       ],
       "callback": Ext.bind(function(){
-        var grid = this.down("grid");
-        grid.getView().getSelectionModel().select(parseInt(rowIndex));
+        tableView.getSelectionModel().select(parseInt(rowIndex));
         this.unmask();
       }, me),
     });
@@ -330,7 +333,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       id = record.get("id"),
       showGrid = function(){
         var panel = this.up();
-        me.showChannelPanel();
+        if(!Ext.isEmpty(tableView.getSelectionModel())){
+          me.showChannelPanel();
+          tableView.getSelectionModel().select(rowIndex);
+        }
         if(panel){
           panel.close();
         }
