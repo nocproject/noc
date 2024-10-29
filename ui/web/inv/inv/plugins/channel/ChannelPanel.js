@@ -85,8 +85,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       width: 120,
       renderer: function(value, metaData, record){
         if(!Ext.isEmpty(value) && !Ext.isEmpty(record.get("job_id"))){
-          return "<i class='fas fa fa-eye' style='padding-right: 4px;cursor: pointer;' title='"
-            + __("View job") + "' data-record-id='" + record.get("job_id") + "'></i>"
+          return "<i class='fas fa fa-eye' style='padding-right: 4px;cursor: pointer;' "
+            + "title='" + __("View job")
+            + "' data-record-id='" + record.get("job_id")
+            + "' data-row-index='" + metaData.rowIndex + "'></i>"
             + NOC.render.JobStatus(value);
         }
       },
@@ -167,15 +169,16 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   afterRender: function(){
     var me = this;
     me.callParent(arguments);
-    me.el.on('click', function(event, target){
+    me.el.on("click", function(event, target){
       if(target.classList.contains('fa-eye')){
-        var recordId = target.getAttribute('data-record-id');
-        me.handleEyeClick(recordId);
+        var recordId = target.getAttribute('data-record-id'),
+          rowIndex = target.getAttribute('data-row-index');
+        me.handleEyeClick(recordId, rowIndex);
       }
     }, me, {delegate: '.fa-eye'});
   },
   //
-  handleEyeClick: function(recordId){
+  handleEyeClick: function(recordId, rowIndex){
     var me = this,
       showGrid = function(){
         var panel = this.up();
@@ -184,13 +187,15 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           panel.close();
         }
       };
-    me.mask(__("Loading channel panel ..."));
+    me.mask(__("Loading jpb panel ..."));
     NOC.launch("sa.job", "history", {
       "args": [recordId],
       "override": [
         {"showGrid": showGrid},
       ],
       "callback": Ext.bind(function(){
+        var grid = this.down("grid");
+        grid.getView().getSelectionModel().select(parseInt(rowIndex));
         this.unmask();
       }, me),
     });
@@ -319,9 +324,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     this.down("#schemeContainer").removeAll(); 
   },
   //
-  onEdit: function(grid, rowIndex){
+  onEdit: function(tableView, rowIndex){
     var me = this,
-      record = grid.getStore().getAt(rowIndex),
+      record = tableView.getStore().getAt(rowIndex),
       id = record.get("id"),
       showGrid = function(){
         var panel = this.up();
@@ -337,6 +342,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         {"showGrid": showGrid},
       ],
       "callback": Ext.bind(function(){
+        tableView.getSelectionModel().select(rowIndex);
         this.unmask();
       }, me),
     });
