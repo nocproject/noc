@@ -82,14 +82,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     {
       text: __("Job"),
       dataIndex: "job_status",
-      width: 120,
+      width: 30,
       renderer: function(value, metaData, record){
         if(!Ext.isEmpty(value) && !Ext.isEmpty(record.get("job_id"))){
-          return "<i class='fas fa fa-eye' style='padding-right: 4px;cursor: pointer;' "
-            + "title='" + __("View job")
+          return "<span class='job-status' "
             + "' data-record-id='" + record.get("job_id")
-            + "' data-row-index='" + metaData.rowIndex + "'></i>"
-            + NOC.render.JobStatus(value);
+            + "' data-row-index='" + metaData.rowIndex + "'>"
+            + NOC.render.JobStatusIcon(value) + "</span>"
         }
       },
     },
@@ -170,12 +169,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var me = this;
     me.callParent(arguments);
     me.el.on("click", function(event, target){
-      if(target.classList.contains('fa-eye')){
+      if(target.classList.contains('job-status')){
         var recordId = target.getAttribute('data-record-id'),
           rowIndex = target.getAttribute('data-row-index');
         me.handleEyeClick(recordId, rowIndex);
       }
-    }, me, {delegate: '.fa-eye'});
+    }, me, {delegate: '.job-status'});
   },
   //
   handleEyeClick: function(recordId, rowIndex){
