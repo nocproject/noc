@@ -168,8 +168,6 @@ class InvApplication(ExtApplication):
                 plugins.append(self.get_plugin_data("inventory"))
             if o.get_data("geopoint", "layer"):
                 plugins.append(self.get_plugin_data("map"))
-            if o.get_data("management", "managed_object"):
-                plugins.append(self.get_plugin_data("managedobject"))
             if o.get_data("contacts", "has_contacts"):
                 plugins.append(self.get_plugin_data("contacts"))
             if self.can_show_topo(o):
