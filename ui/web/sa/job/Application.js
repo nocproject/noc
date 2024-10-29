@@ -85,10 +85,16 @@ Ext.define("NOC.sa.job.Application", {
     },
     items: [
       {
+        xtype: "container",
         itemId: "schemeContainer",
         region: "center",
+        layout: "fit",
         scrollable: true,
+        style: {
+          backgroundColor: "white",
+        },
         listeners: {
+          afterrender: "afterPanelsRender",
           click: {
             element: "el",
             fn: "onSchemeClick",
@@ -176,6 +182,15 @@ Ext.define("NOC.sa.job.Application", {
     me.getLayout().setActiveItem(0);
   },
 
+  afterPanelsRender: function(panel){
+    var tabPanel = panel.up("tabpanel"),
+      bodyHeight = tabPanel.body.getHeight(),
+      dockedItemsHeight = this.getDockedItems().reduce(function(totalHeight, item){
+        return totalHeight + item.getHeight();
+      }, 0);
+    panel.setHeight(bodyHeight - dockedItemsHeight);
+  },
+
   onEditRecord: function(record){
     var me = this;
     
@@ -220,15 +235,19 @@ Ext.define("NOC.sa.job.Application", {
     var me = this;
 
     Viz.instance().then(function(viz){ 
-      var container = me.down("[itemId=schemeContainer]"),
-        svg = viz.renderSVGElement(data);
+      var svg,
+        container = me.down("[itemId=schemeContainer]"),
+        svgData = viz.renderSVGElement(data),
+        zoomControl = me.down("#zoomControl");
      
-      svg.setAttribute("height", "100%");
-      svg.setAttribute("width", "100%");
-      svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
-      svg.setAttribute("object-fit", "contain");
-      container.setHtml(me.transformSvg(svg).outerHTML);
-      me.down("#zoomControl").reset();
+      svgData.setAttribute("height", "100%");
+      svgData.setAttribute("width", "100%");
+      svgData.setAttribute("preserveAspectRatio", "xMinYMin meet");
+      svgData.setAttribute("object-fit", "contain");
+      container.setHtml(me.transformSvg(svgData).outerHTML);
+      svg = container.getEl().dom.querySelector("svg");
+      svg.onwheel = Ext.bind(zoomControl.onWheel, zoomControl);
+      zoomControl.reset();
     });
   },
   //
@@ -260,7 +279,7 @@ Ext.define("NOC.sa.job.Application", {
   //
   onDownloadSVG: function(){
     var me = this,
-      imageContainer = me.down("#jobScheme container"),
+      imageContainer = me.down("#schemeContainer"),
       image = imageContainer.getEl().dom.querySelector("svg"),
       svgData = new XMLSerializer().serializeToString(image),
       blob = new Blob([svgData], {type: "image/svg+xml"}),

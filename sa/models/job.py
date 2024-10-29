@@ -1,12 +1,14 @@
 # ---------------------------------------------------------------------
 # Pipeline Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from enum import Enum
+from typing import Iterable
+
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -103,7 +105,7 @@ class Job(Document):
         "collection": "jobs",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["resource_path"],
+        "indexes": ["resource_path", "entity"],
     }
     parent = ReferenceField("self", required=False)
     name = StringField(required=True)
@@ -123,6 +125,8 @@ class Job(Document):
     started_at = DateTimeField(required=False)
     completed_at = DateTimeField(required=False)
     resource_path = ListField(StringField(), required=False)
+    # Resource starting job
+    entity = StringField(required=False)
     # after = DateTimeField(required=False)
     # deadline = DateTimeField(required=False)
     results = DictField(required=False)
@@ -141,3 +145,33 @@ class Job(Document):
                 if k not in env:
                     env[k] = v
         return env
+
+    @classmethod
+    def iter_last_for_entities(cls, entities: Iterable[str]) -> Iterable["Job"]:
+        """
+        Iterate last jobs for entities.
+
+        Args:
+            entities: Iterable of entity strings.
+
+        Returns:
+            Yield last jobs for entitites.
+        """
+        ids = [
+            x["_id"]
+            for x in cls._get_collection().aggregate(
+                [
+                    # Filter entities
+                    {"$match": {"entity": {"$in": list(entities)}}},
+                    #
+                    {
+                        "$sort": {"entity": 1, "_id": -1},
+                    },
+                    #
+                    {"$group": {"_id": "$entity", "max_id": {"$first": "$_id"}}},
+                    #
+                    {"$project": {"_id": "$max_id"}},
+                ]
+            )
+        ]
+        yield from cls.objects.filter(id__in=ids)

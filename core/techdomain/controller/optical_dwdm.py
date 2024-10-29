@@ -154,7 +154,7 @@ class OpticalDWDMController(BaseController):
                     job.name = f"Set up entry of pair {db_ep.pair}"
                 else:
                     job.name = f"Set up exit of pair {db_ep.pair}"
-                db_ep.set_last_job(job.id)
+                job.entity = f"ep:{db_ep.id}"
             else:
                 self.logger.info("[%s] Nothing to setup", label)
             return job
@@ -223,7 +223,7 @@ class OpticalDWDMController(BaseController):
         # Submit jobs
         jobs = [job for job in jobs if job]
         if jobs:
-            job = JobRequest(name="Setup optical channel", jobs=jobs)
+            job = JobRequest(name="Setup optical channel", jobs=jobs, entity=f"ch:{channel.id}")
             job.submit()
         # @todo: Remove hanging endpoints
         if current_endpoints:

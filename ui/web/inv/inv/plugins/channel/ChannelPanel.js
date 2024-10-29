@@ -79,6 +79,19 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       dataIndex: "to_endpoint",
       flex: 1,
     },
+    {
+      text: __("Job"),
+      dataIndex: "job_status",
+      width: 30,
+      renderer: function(value, metaData, record){
+        if(!Ext.isEmpty(value) && !Ext.isEmpty(record.get("job_id"))){
+          return "<span class='job-status' "
+            + "' data-record-id='" + record.get("job_id")
+            + "' data-row-index='" + metaData.rowIndex + "'>"
+            + NOC.render.JobStatusIcon(value) + "</span>"
+        }
+      },
+    },
   ],
   mainItems: [
     {
@@ -150,6 +163,45 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     };
     this.items = this.mainItems;
     this.callParent(arguments);
+  },
+  //
+  afterRender: function(){
+    var me = this;
+    me.callParent(arguments);
+    me.el.on("click", function(event, target){
+      if(target.classList.contains('job-status')){
+        var recordId = target.getAttribute('data-record-id'),
+          rowIndex = target.getAttribute('data-row-index');
+        me.handleEyeClick(recordId, rowIndex);
+      }
+    }, me, {delegate: '.job-status'});
+  },
+  //
+  handleEyeClick: function(recordId, rowIndex){
+    var me = this,
+      tableView = this.down("grid").getView(),
+      showGrid = function(){
+        var panel = this.up();
+        if(!Ext.isEmpty(tableView.getSelectionModel())){
+          tableView.getSelectionModel().select(parseInt(rowIndex));
+          me.showChannelPanel();
+        }
+        if(panel){
+          panel.close();
+        }
+      };
+    me.mask(__("Loading jpb panel ..."));
+    NOC.launch("sa.job", "history", {
+      "args": [recordId],
+      "override": [
+        {"showGrid": showGrid},
+      ],
+      "callback": Ext.bind(function(){
+        tableView.getSelectionModel().select(parseInt(rowIndex));
+        this.unmask();
+      }, me),
+    });
+
   },
   //
   getSelectedRow: function(){
@@ -225,7 +277,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       currentId = me.getViewModel().get("currentId"),
       selectedRecord = this.getSelectedRow(),
       maskComponent = me.up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show(__("Create mew channel ...")); 
+      messageId = maskComponent.show(__("Create new channel ...")); 
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
       method: "POST",
@@ -274,13 +326,16 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     this.down("#schemeContainer").removeAll(); 
   },
   //
-  onEdit: function(grid, rowIndex){
+  onEdit: function(tableView, rowIndex){
     var me = this,
-      record = grid.getStore().getAt(rowIndex),
+      record = tableView.getStore().getAt(rowIndex),
       id = record.get("id"),
       showGrid = function(){
         var panel = this.up();
-        me.showChannelPanel();
+        if(!Ext.isEmpty(tableView.getSelectionModel())){
+          me.showChannelPanel();
+          tableView.getSelectionModel().select(rowIndex);
+        }
         if(panel){
           panel.close();
         }
@@ -292,6 +347,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         {"showGrid": showGrid},
       ],
       "callback": Ext.bind(function(){
+        tableView.getSelectionModel().select(rowIndex);
         this.unmask();
       }, me),
     });

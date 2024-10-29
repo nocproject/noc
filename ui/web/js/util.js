@@ -350,6 +350,22 @@ Ext.apply(NOC.render, {
     };
     return map[v];
   },
+
+  JobStatusIcon: function(v){
+    var map = {
+      p: ["clock-o", "Pending", NOC.colors.asbestos],
+      w: ["pause-circle-o", "Waiting", NOC.colors.midnightblue],
+      r: ["play-circle-o", "Running", NOC.colors.belizehole],
+      S: ["stop-circle-o", "Suspended", NOC.colors.asbestos],
+      s: ["check-circle-o", "Success", NOC.colors.yes],
+      f: ["exclamation-triangle", "Failed", NOC.colors.no],
+      W: ["exclamation-circle", "Warning", NOC.colors.pumpkin],
+      c: ["ban", "Cancelled", NOC.colors.no],
+    };
+    var d = map[v];
+    if(d === undefined){return "";}
+    return '<i class="fa fa-' + d[0] + '" title="' + d[1] + '" style="color: ' + d[2] + '"></i>';
+  },
 });
 
 //
