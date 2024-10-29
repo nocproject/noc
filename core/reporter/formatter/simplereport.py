@@ -115,8 +115,6 @@ class SimpleReportFormatter(DataFormatter):
         columns = []
         if header_format:
             columns = self.get_columns_format(header_format)
-        if not columns and self.root_band.has_rows:
-            columns = [TableColumn(name=c, title=c) for c in self.root_band.get_columns()]
         if columns:
             return columns
         # Getting last data band
@@ -130,6 +128,9 @@ class SimpleReportFormatter(DataFormatter):
                     return columns
             if rb.has_rows:
                 return [TableColumn(name=c, title=c) for c in rb.get_columns()]
+        if not columns and self.root_band.has_rows:
+            columns = [TableColumn(name=c, title=c) for c in self.root_band.get_columns()]
+        return columns
 
     def render_sections(self):
         columns = self.get_report_columns()
