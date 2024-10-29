@@ -71,6 +71,7 @@ class JobRequest(BaseModel):
         deadline: Job must be completed before deadline, or it
             became cancelled.
         resource_path: List representing path to resource.
+        entity: Resource pointing to entity demanding job.
         jobs: List of nested jobs. Mutual exclusive with actions.
     """
 
@@ -89,6 +90,7 @@ class JobRequest(BaseModel):
     after: Optional[datetime.datetime] = None
     deadline: Optional[datetime.datetime] = None
     resource_path: Optional[List[str]] = None
+    entity: Optional[str] = None
     jobs: Optional[List["JobRequest"]] = None
 
     def submit(self) -> None:
