@@ -84,11 +84,11 @@ class BaseRemoteSystem(object):
             if extractors and en not in extractors:
                 self.logger.info("Skipping extractor %s", en)
                 continue
-            if en not in self.extractors:
+            if not self.extractors or en not in self.extractors[self.__module__]:
                 self.logger.info("Extractor %s is not implemented. Skipping", en)
                 continue
             # @todo: Config
-            xc = self.extractors[en](self)
+            xc = self.extractors[self.__module__][en](self)
             xc._force_checkpoint = checkpoint
             t0 = perf_counter()
             xc.extract(incremental=incremental)
@@ -170,5 +170,8 @@ class BaseRemoteSystem(object):
     @classmethod
     def extractor(cls, c):
         """Decorator for extractor"""
+        if cls.__module__ not in cls.ext:
+            cls.extractors[cls.__module__] = {}
+        cls.extractors[cls.__module__][c.name] = c
         cls.extractors[c.name] = c
         return c
