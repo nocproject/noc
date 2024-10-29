@@ -83,7 +83,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       text: __("Job"),
       dataIndex: "job_status",
       width: 120,
-      renderer: NOC.render.JobStatus,
+      renderer: function(value, metaData, record){
+        if(!Ext.isEmpty(value) && !Ext.isEmpty(record.get("job_id"))){
+          return "<i class='fas fa fa-eye' style='padding-right: 4px;cursor: pointer;' title='"
+            + __("View job") + "' data-record-id='" + record.get("job_id") + "'></i>"
+            + NOC.render.JobStatus(value);
+        }
+      },
     },
   ],
   mainItems: [
@@ -156,6 +162,39 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     };
     this.items = this.mainItems;
     this.callParent(arguments);
+  },
+  //
+  afterRender: function(){
+    var me = this;
+    me.callParent(arguments);
+    me.el.on('click', function(event, target){
+      if(target.classList.contains('fa-eye')){
+        var recordId = target.getAttribute('data-record-id');
+        me.handleEyeClick(recordId);
+      }
+    }, me, {delegate: '.fa-eye'});
+  },
+  //
+  handleEyeClick: function(recordId){
+    var me = this,
+      showGrid = function(){
+        var panel = this.up();
+        me.showChannelPanel();
+        if(panel){
+          panel.close();
+        }
+      };
+    me.mask(__("Loading channel panel ..."));
+    NOC.launch("sa.job", "history", {
+      "args": [recordId],
+      "override": [
+        {"showGrid": showGrid},
+      ],
+      "callback": Ext.bind(function(){
+        this.unmask();
+      }, me),
+    });
+
   },
   //
   getSelectedRow: function(){
