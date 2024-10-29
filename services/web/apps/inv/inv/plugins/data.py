@@ -162,8 +162,8 @@ class DataPlugin(InvPlugin):
                 yield self.item(
                     interface=interface,
                     name="Managed Object",
-                    value=mo.name,
-                    description="Managed Object Name",
+                    value=f"{mo.name} [{mo.profile.name}]",
+                    description="Managed Object",
                     is_const=True,
                     item_id=mo_id,
                 )
