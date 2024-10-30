@@ -184,6 +184,16 @@
                     "name": "project",
                     "title": "Project",
                     "format_type": "string"
+                },
+                {
+                    "name": "trouble_syslog",
+                    "title": "Syslog received",
+                    "format_type": "string"
+                },
+                {
+                    "name": "trouble_snmptrap",
+                    "title": "SNMP Trap received",
+                    "format_type": "string"
                 }
             ],
             "title_template": ""

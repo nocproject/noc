@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject DataSource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,7 +30,14 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
 from noc.core.validators import is_objectid
-from noc.core.wf.diagnostic import DiagnosticState, SNMP_DIAG, CLI_DIAG, PROFILE_DIAG
+from noc.core.wf.diagnostic import (
+    DiagnosticState,
+    SNMP_DIAG,
+    CLI_DIAG,
+    PROFILE_DIAG,
+    SYSLOG_DIAG,
+    SNMPTRAP_DIAG,
+)
 
 caps_dtype_map = {
     "bool": FieldType.BOOL,
@@ -225,6 +232,20 @@ class ManagedObjectDS(BaseDataSource):
                 name="trouble_detail",
                 description="Trouble detail message",
                 internal_name="diagnostics",
+            ),
+            FieldInfo(
+                name="trouble_syslog",
+                type=FieldType.BOOL,
+                description="SNMP Trap is received",
+                is_diagnostic_state=True,
+                internal_name=SYSLOG_DIAG,
+            ),
+            FieldInfo(
+                name="trouble_snmptrap",
+                type=FieldType.BOOL,
+                description="SNMP Trap is received",
+                is_diagnostic_state=True,
+                internal_name=SNMPTRAP_DIAG,
             ),
         ]
         # Capabilities
@@ -486,6 +507,10 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "trouble_profile", mo["trouble_profile"]
             if "trouble_cli" in mo:
                 yield num, "trouble_cli", mo["trouble_cli"]
+            if "trouble_syslog" in mo:
+                yield num, "trouble_syslog", mo["trouble_syslog"]
+            if "trouble_snmptrap" in mo:
+                yield num, "trouble_snmptrap", mo["trouble_snmptrap"]
             if "diagnostics" in mo:
                 yield num, "trouble_detail", cls.get_diagnostic_trouble(
                     mo["diagnostics"],
