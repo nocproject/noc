@@ -347,7 +347,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       ],
       "callback": Ext.bind(function(){
         tableView.getSelectionModel().select(rowIndex);
-        this.unmask();
       }, me),
     });
   },
