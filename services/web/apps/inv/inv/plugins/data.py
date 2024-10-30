@@ -18,6 +18,7 @@ from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
 from noc.sa.interfaces.base import StringParameter
+from noc.sa.models.managedobject import ManagedObject
 from .base import InvPlugin
 
 
@@ -154,6 +155,18 @@ class DataPlugin(InvPlugin):
                 description="Remote System ID",
                 is_const=True,
             )
+        mo_id = o.get_data("management", "managed_object")
+        if mo_id:
+            mo = ManagedObject.get_by_id(int(mo_id))
+            if mo:
+                yield self.item(
+                    interface=interface,
+                    name="Managed Object",
+                    value=f"{mo.name} [{mo.profile.name}]",
+                    description="Managed Object",
+                    is_const=True,
+                    item_id=mo_id,
+                )
 
     def iter_summary(self, o: Object) -> Iterable[Dict[str, Any]]:
         """

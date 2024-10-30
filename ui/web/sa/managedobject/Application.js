@@ -32,7 +32,7 @@ defaultColumns = [
       } else if(value === "full"){
         color = "green";
       }
-      return"<div class='noc-object-oper-state' style='background-color: " + color + "'></div>";
+      return "<div class='noc-object-oper-state' style='background-color: " + color + "'></div>";
     },
   },
   {
@@ -164,7 +164,7 @@ Ext.define('NOC.sa.managedobject.Application', {
       itemId: 'managedobject-select',
       activeItem: 0,
       items: [
-        {   // device panel
+        { // device panel
           xtype: 'panel',
           layout: 'border',
           region: 'center',
@@ -436,7 +436,7 @@ Ext.define('NOC.sa.managedobject.Application', {
           items: [
             {
               xtype: 'searchfield',
-              itemId: '__query',  // name of http request query param
+              itemId: '__query', // name of http request query param
               width: 400,
               emptyText: __('Search ...'),
               triggers: {
