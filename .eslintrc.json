@@ -82,6 +82,7 @@
     "NOC": "readonly",
     "Viz": "readonly",
     "joint": "readonly",
-    "__": "readonly"
+    "__": "readonly",
+    "L": "readonly"
   }
 }
