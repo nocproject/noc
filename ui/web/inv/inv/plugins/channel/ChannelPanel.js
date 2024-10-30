@@ -285,15 +285,11 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           panel.close();
         }
       };
-    me.mask(__("Loading channel panel ..."));
     NOC.launch("inv.channel", "history", {
       "args": [id],
       "override": [
         {"showGrid": showGrid},
       ],
-      "callback": Ext.bind(function(){
-        this.unmask();
-      }, me),
     });
   },
   //

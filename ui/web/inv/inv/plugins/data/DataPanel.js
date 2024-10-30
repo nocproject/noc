@@ -153,11 +153,14 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
   },
   //
   onValueRender: function(value, meta, record){
-    if(record.get("is_const")){
-      value = "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + value;
+    if(record.get("name") === "Managed Object"){
+      return this.up("panel").addIcon(value, "eye", __("Edit MO"), "sa.managedobject", record.get("item_id"));      
     }
     if(record.get("name") === "Model"){
-      value += "<i class='fas fa fa-eye' style='padding-left: 4px;cursor: pointer;' title='" + __("Edit model") + "' data-record-id='" + record.get("item_id") + "'></i>";
+      return this.up("panel").addIcon(value, "eye", __("Edit model"), "inv.objectmodel", record.get("item_id"));
+    }
+    if(record.get("is_const")){
+      value = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + value;
     }
     if(record.get("type") === "bool"){
       return NOC.render.Bool(value);
@@ -166,6 +169,9 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
       return value + NOC.clipboardIcon(record.get("value"));
     }
     return value;
+  },
+  addIcon: function(value, icon, title, url, itemId){
+    return `<i class='fa fa-${icon}' style='padding-right: 4px;cursor: pointer;' title='${title}' data-url='${url}' data-item-id='${itemId}'></i>${value}`;
   },
   //
   nameRenderer: function(value, meta, record){
@@ -178,31 +184,27 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
   afterRender: function(){
     var me = this;
     me.callParent(arguments);
-    me.el.on('click', function(event, target){
-      if(target.classList.contains('fa-eye')){
-        var recordId = target.getAttribute('data-record-id');
-        me.handleEyeClick(recordId);
+    me.el.on("click", function(event, target){
+      if(target.hasAttribute("data-url")){
+        var recordId = target.getAttribute("data-item-id"),
+          url = target.getAttribute("data-url");
+        me.handleEyeClick(url, recordId);
       }
-    }, me, {delegate: '.fa-eye'});
+    }, me, {delegate: '[data-url]'});
   },
   //
-  handleEyeClick: function(recordId){
+  handleEyeClick: function(url, recordId){
     var showGrid = function(){
       var panel = this.up();
       if(panel){
         panel.close();
       }
     };
-    this.mask(__("Loading object model panel ..."));
-    NOC.launch("inv.objectmodel", "history", {
+    NOC.launch(url, "history", {
       "args": [recordId],
       "override": [
         {"showGrid": showGrid},
       ],
-      "callback": Ext.bind(function(){
-        this.unmask();
-      }, this),
-
     });
   },
 });

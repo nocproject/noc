@@ -16,6 +16,7 @@ Ext.define("NOC.inv.inv.MaskComponent", {
     this.uuidGenerator = new Ext.data.identifier.Uuid();
     this.templates = {
       loading: __("Loading {0} plugin, please wait..."),
+      loadingApp: __("Loading {0} application, please wait..."),
       fetching: __("Fetching data for {0}..."),
       processing: __("Processing {0} items..."),
       reloading: __("Reloading {0} ..."),
@@ -37,11 +38,11 @@ Ext.define("NOC.inv.inv.MaskComponent", {
   },
 
   show: function(templateKeyOrMessage, args){
-    var self = this;
-    var id = this.uuidGenerator.generate();
-    var message = this.templates[templateKeyOrMessage] || templateKeyOrMessage;
-    var formattedMessage = Ext.String.format.apply(Ext.String, [message].concat(args || []));
-        
+    var self = this,
+      id = this.uuidGenerator.generate(),
+      message = this.templates[templateKeyOrMessage] || templateKeyOrMessage,
+      formattedMessage = Ext.String.format.apply(Ext.String, [message].concat(args || []));
+    console.log("MaskComponent.show", this.maskedComponent.id, formattedMessage);    
     if(this.activeMessages.length > 100){
       var oldestMessage = this.activeMessages[0];
       if(oldestMessage && oldestMessage.timeout){
