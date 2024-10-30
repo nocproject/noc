@@ -12,6 +12,7 @@ from typing import Dict, Any, List
 from noc.inv.models.capability import Capability
 from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sa.models.serviceprofile import ServiceProfile
 from .base import BaseLoader
 from ..models.service import Service, Instance
 
@@ -27,6 +28,7 @@ class ServiceLoader(BaseLoader):
 
     discard_deferred = True
     workflow_state_sync = True
+    model_mappings = {"profile": ServiceProfile}
 
     post_save_fields = {"capabilities", "instances"}
 

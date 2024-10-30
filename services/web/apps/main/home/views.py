@@ -144,7 +144,7 @@ class HomeAppplication(ExtApplication):
         """
         if not Permission.has_perm(user, "sa:managedobject:launch"):
             return None  # No access to MO
-        mo_count_q = ManagedObject.objects.all()
+        mo_count_q = ManagedObject.objects
         if not user.is_superuser:
             mo_count_q = mo_count_q.filter(UserAccess.Q(user))
         p_sae = Profile.get_by_name("NOC.SAE")
@@ -170,10 +170,12 @@ class HomeAppplication(ExtApplication):
         """
         if not Permission.has_perm(user, "fm:alarm:launch"):
             return None  # No access to alarms
-        mo_count_q = ManagedObject.objects.all()
-        if not user.is_superuser:
-            mo_count_q = list(mo_count_q.filter(UserAccess.Q(user)).values("id"))
-        total_alarms = ActiveAlarm.objects.filter(managed_object__in=mo_count_q).count()
+        if user.is_superuser:
+            total_alarms = ActiveAlarm.objects.filter().count()
+        else:
+            total_alarms = ActiveAlarm.objects.filter(
+                adm_path__in=UserAccess.get_domains(user)
+            ).count()
         return {
             "type": "summary",
             "title": _("Total Alarms"),

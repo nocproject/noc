@@ -72,7 +72,6 @@
 .x-display-tag {
   display: inline-block;
   position: relative;
-  zoom: 1; /* IE */
   border-radius: 7px;
   padding: 0px 4px 0px 4px !important;
   margin: 0px 1px 0px 0px;

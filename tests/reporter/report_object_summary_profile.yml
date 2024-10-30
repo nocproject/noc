@@ -1,0 +1,76 @@
+name: report
+parameters:
+  - name: report_type
+    alias: Report Type
+    required: true
+    type: string
+    default_value: profile
+templates:
+  DEFAULT:
+    code: DEFAULT
+    formatter: simplereport
+    output_type: html
+    bands_format:
+      header:
+        title_template: Object Summary
+      profile:
+        columns:
+          - name: profile
+            title: Profile
+            format_type: string
+          - name: quantity
+            title: Quantity
+            format_type: integer
+      domain:
+        columns:
+          - name: domain
+            title: Administrative Domain
+            format_type: string
+          - name: quantity
+            title: Quantity
+            format_type: integer
+bands:
+  - name: Root
+    queries:
+      - name: Root
+        json_data: '[{"managed_object_id": 91792,
+                "profile": "Generic.Host",
+                "model": "",
+                "sw_version": "",
+                "administrativedomain": "default",
+                "object_labels": []},
+               {"managed_object_id": 1,
+                "profile": "Eltex.MES",
+                "model": "",
+                "sw_version": "",
+                "administrativedomain": "default",
+                "object_labels": []},
+                {"managed_object_id": 2,
+                "profile": "Eltex.MES",
+                "model": "sw1",
+                "sw_version": "",
+                "administrativedomain": "default",
+                "object_labels": []},
+                {"managed_object_id": 3,
+                "profile": "Eltex.MES",
+                "model": "sw2",
+                "sw_version": "",
+                "administrativedomain": "default",
+                "object_labels": []}
+              ]'
+  - name: profile
+    orientation: H
+    conditions:
+      - param: report_type
+        value: profile
+    queries:
+      - name: q1
+        query: select profile, count() as quantity from Root group by profile order by quantity desc
+  - name: domain
+    orientation: H
+    conditions:
+      - param: report_type
+        value: domain
+    queries:
+      - name: q1
+        query: select administrativedomain, count() as quantity from Root group by administrativedomain order by quantity desc

@@ -74,7 +74,7 @@ class Template(NOCModel):
     uuid = models.UUIDField()
     is_system: bool = models.BooleanField("SystemTemplate", default=False)
     message_type = models.TextField(
-        "MessageType", choices=[(m.name, m.name) for m in MessageType], null=True, blank=True
+        "MessageType", choices=[(m.value, m.name) for m in MessageType], null=True, blank=True
     )
     context_data: str = models.TextField("ContextTestData", blank=True, null=True)
     # ? RU
@@ -128,10 +128,12 @@ class Template(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_message_type_cache"), lock=lambda _: id_lock)
     def get_by_message_type(cls, m_type: MessageType) -> Optional["Template"]:
-        return Template.objects.filter(message_type=m_type.name).first()
+        return Template.objects.filter(message_type=m_type.value).first()
 
     def render_subject(self, LANG=None, **kwargs):
         return jinja2.Template(self.subject).render(**kwargs)
 
     def render_body(self, LANG=None, **kwargs):
+        if not self.body:
+            return ""
         return jinja2.Template(self.body).render(**kwargs)

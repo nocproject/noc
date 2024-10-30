@@ -236,6 +236,7 @@ class ReportEngine(object):
                 band = Band.from_report(b)
             f_map = self.parse_fields(b, template, params.pop("fields", None))
             for num, d in enumerate(self.get_dataset(b.queries, params, f_map)):
+                self.logger.debug("[%s] Add dataset: %s", b.name, d)
                 band.add_dataset(d, name=b.name if not num else None)
             if band.name == ROOT_BAND:
                 continue

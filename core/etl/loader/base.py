@@ -401,8 +401,12 @@ class BaseLoader(object):
         try:
             return self.model.objects.get(**find_query)
         except self.model.MultipleObjectsReturned:
-            if self.unique_field:
-                find_query[self.unique_field] = v.get(self.unique_field)
+            if self.unique_field or self.unique_index:
+                if self.unique_field:
+                    find_query[self.unique_field] = v.get(self.unique_field)
+                else:
+                    for i in self.unique_index:
+                        find_query[i] = v.get(i)
                 r = self.model.objects.filter(**find_query)
                 if not r:
                     r = self.model.objects.filter(

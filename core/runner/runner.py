@@ -124,6 +124,7 @@ class Runner(object):
             "environment": req.environment or None,
             "created_at": datetime.datetime.now(),
             "resource_path": req.resource_path,
+            "entity": req.entity,
         }
         self._queue.put_nowait((None, r))
 

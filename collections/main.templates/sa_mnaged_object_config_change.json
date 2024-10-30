@@ -4,6 +4,6 @@
     "uuid": "ac712d9b-df24-4d21-9cf1-d8528330c630",
     "subject": "{% if is_new %}New config for {{ managed_object.name }}{% else %}{{ managed_object.name }} config has been changed{% endif %}",
     "body": "{% if is_new %}\n{{config|safe}}\n{% else %}\n{{diff|safe}}\n{% endif %}\n",
-    "message_type": "CONFIG_CHANGED",
+    "message_type": "config_changed",
     "is_system": true
 }
