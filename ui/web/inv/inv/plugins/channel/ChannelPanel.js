@@ -340,7 +340,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
           panel.close();
         }
       };
-    me.mask(__("Loading channel panel ..."));
     NOC.launch("inv.channel", "history", {
       "args": [id],
       "override": [
@@ -348,7 +347,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       ],
       "callback": Ext.bind(function(){
         tableView.getSelectionModel().select(rowIndex);
-        this.unmask();
       }, me),
     });
   },
