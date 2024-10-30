@@ -4,6 +4,6 @@
     "uuid": "9680f3bc-95ce-44e6-b5ce-71783daec237",
     "subject": "New managed object: {{ managed_object.name }}",
     "body": "New managed object just has been created.\nName: {{ managed_object.name }}\nAddress: {{ managed_object.address }}\nProfile: {{ managed_object.profile.name }}\n",
-    "message_type": "OBJECT_NEW",
+    "message_type": "object_new",
     "is_system": true
 }
