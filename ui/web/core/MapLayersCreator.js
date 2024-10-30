@@ -28,7 +28,6 @@ Ext.define("NOC.core.MapLayersCreator", {
   },
   //
   run: function(L, me, options={}){
-    console.log("MapLayersCreator.run");
     var ___ = options.translator ? options.translator : function(s){ return s}
     var optionsLayersControl = options.layersControl ? options.layersControl : {}
     var optionsDefaultLayer = options.default_layer ? options.default_layer : ""
@@ -93,7 +92,7 @@ Ext.define("NOC.core.MapLayersCreator", {
     //     "<someName2>": layer2
     // }
     var baseLayersToAdd = {}
-    Object.keys(baseLayers).forEach(function(key, index){
+    Object.keys(baseLayers).forEach(function(key){
       if(baseLayers[key]){
         baseLayersToAdd[baseLayers[key][1]] = baseLayers[key][0];
       }
