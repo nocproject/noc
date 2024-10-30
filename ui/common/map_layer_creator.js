@@ -5,6 +5,7 @@
 //          default_layer = [
 //              osm, 
 //              google_roadmap, google_hybrid, google_sat, google_terrain, 
+//              tile1, tile2, tile3,
 //              yandex_roadmap, yandex_hybrid, yandex_sat
 //          ]
 //          allowed_layers = {
@@ -21,8 +22,9 @@ class MapLayersCreator{
         var valid_values = [
             "osm", 
             "google_roadmap", "google_hybrid", "google_sat", "google_terrain", 
+            "tile1", "tile2", "tile3",
             "yandex_roadmap", "yandex_hybrid", "yandex_sat"
-        ]
+        ];
 
         return valid_values.includes(s)
     }
@@ -35,6 +37,14 @@ class MapLayersCreator{
         return true
     }
     run = function(L, me, options={}) {
+        function tile_cfg(options) {
+            if (options && Array.isArray(options.subdomains) && options.subdomains.length > 0) {
+                return { subdomains: options.subdomains };
+            } else {
+                return {};
+            }        
+        };
+
         var ___ = options.translator ? options.translator : function(s) { return s}
         var optionsLayersControl = options.layersControl ? options.layersControl : {}
         var optionsDefaultLayer  = options.default_layer ? options.default_layer : ""
@@ -47,7 +57,6 @@ class MapLayersCreator{
         } else {
             default_layer_name = optionsDefaultLayer
         }
-
         if (!this.validate_allowed_layers(optionsAllowedLayers)) {
             console.warn("Allowed layers is not valid", optionsAllowedLayers)
         }
@@ -89,7 +98,15 @@ class MapLayersCreator{
                     }
                 ), ___("Google Terrain") 
             ] : undefined),
-
+            tile1: (optionsAllowedLayers.enable_tile1 ? [
+                L.tileLayer(NOC.settings.gis.custom.tile1.url, tile_cfg(NOC.settings.gis.custom.tile1)), NOC.settings.gis.custom.tile1.name
+            ] : undefined),
+            tile2: (optionsAllowedLayers.enable_tile2 ? [
+                L.tileLayer(NOC.settings.gis.custom.tile2.url, tile_cfg(NOC.settings.gis.custom.tile2)), NOC.settings.gis.custom.tile2.name
+            ] : undefined),
+            tile3: (optionsAllowedLayers.enable_tile3 ? [
+                L.tileLayer(NOC.settings.gis.custom.tile3.url, tile_cfg(NOC.settings.gis.custom.tile3)), NOC.settings.gis.custom.tile3.name
+            ] : undefined),
             yandex_roadmap : (optionsAllowedLayers.enable_yandex_roadmap && yandex_supported ? [  
                 L.yandex('yandex#map'), ___("Yandex Roadmap") 
             ] : undefined),
@@ -100,7 +117,6 @@ class MapLayersCreator{
                 L.yandex('yandex#satellite'), ___("Yandex Satellite") 
             ] : undefined),
         }
-
         var default_layer = baseLayers[default_layer_name]
         if (default_layer) {
             default_layer = default_layer[0]
