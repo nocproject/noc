@@ -1,14 +1,16 @@
 //---------------------------------------------------------------------
 // inv.inv Leaflet Map panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.plugins.map.MapPanel");
 
 Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   extend: "Ext.panel.Panel",
-  requires: [],
+  requires: [
+    "NOC.core.MapLayersCreator",
+  ],
   title: __("Map"),
   closable: false,
   layout: "fit",
@@ -45,6 +47,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
   initComponent: function(){
     var me = this;
+    //
+    me.infoTemplate = '<b>{0}</b><br><i>{1}</i><br><hr><a id="{2}" href="api/card/view/object/{3}/" target="_blank">Show...</a>';
     // Layers holder
     me.layers = [];
     // Object layer
@@ -80,6 +84,11 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         toggle: me.onSetPositionToggle,
       },
     });
+    me.mapPanel = Ext.create("Ext.panel.Panel", {
+      xtype: "panel",
+      // Generate unique id
+      html: "<div id='leaf-map-" + me.id + "' style='width: 100%; height: 100%;'></div>",
+    });
     // Map panel
     Ext.apply(me, {
       dockedItems: [{
@@ -92,37 +101,40 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           me.setPositionButton,
         ],
       }],
-      items: [
-        {
-          xtype: "panel",
-          // Generate unique id
-          html: "<div id='leaf-map-" + me.id + "' style='width: 100%; height: 100%;'></div>",
-        },
-      ],
+      items: [me.mapPanel],
     });
     me.callParent();
   },
   //
   preview: function(data){
-    var me = this
-    var urls = [
-      "/ui/pkg/leaflet/leaflet.js",
-      "/ui/pkg/leaflet/leaflet.css",
-      "/ui/common/map_layer_creator.js",
-    ]
+    var me = this,
+      // var jsUrls = [
+      // "/ui/pkg/leaflet/leaflet.js",
+      // "/ui/common/map_layer_creator.js",
+      // ];
+      cssUrls = [
+        "/ui/pkg/leaflet/leaflet.css",
+      ];
 
-    if(NOC.settings.gis.yandex_supported){
-      urls = [
-        ...urls,
-        "/ui/pkg/leaflet/yapi.js",
-        "/ui/pkg/leaflet/Yandex.js",
-      ]
-    }
+    // if(NOC.settings.gis.yandex_supported){
+    // jsUrls = [
+    // ...jsUrls,
+    // "/ui/pkg/leaflet/yapi.js",
+    // "/ui/pkg/leaflet/Yandex.js",
+    // ];
+    // }
 
-    me.currentId = data.id;
-    new_load_scripts(urls, me, function(){
+    Ext.Loader.setPath("L", "/ui/pkg/leaflet/leaflet.js");
+    // Dosn't load
+    // Ext.Loader.setPath("L_yapi", "/ui/pkg/leaflet/yapi.js");
+    // Ext.Loader.setPath("L_Yandex", "/ui/pkg/leaflet/Yandex.js");
+
+    Ext.require(["L"], function(){
+      cssUrls.forEach(function(url, index){
+        Ext.util.CSS.swapStyleSheet("style" + index, url);
+      });
       me.createMap(data);
-    });
+    }, me);
   },
   //
   createLayer: function(cfg, objectLayer){
@@ -211,6 +223,12 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   createMap: function(data){
     var me = this,
       mapDiv = "leaf-map-" + me.id,
+      mapLayersCreator = Ext.create("NOC.core.MapLayersCreator", {
+        default_layer: NOC.settings.gis.default_layer, 
+        allowed_layers: NOC.settings.gis.base,
+        yandex_supported: NOC.settings.gis.yandex_supported,
+        translator: __,
+      }),
       mapDom = Ext.select("#" + mapDiv).elements[0];
     me.center = [data.y, data.x];
     me.contextMenuData = data.add_menu;
@@ -233,12 +251,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       zoomOutTitle: __("Zoom out..."),
     }).addTo(me.map);
     //
-    mapLayersCreator.run(L, this, {
-      default_layer: NOC.settings.gis.default_layer, 
-      allowed_layers: NOC.settings.gis.base,
-      yandex_supported: NOC.settings.gis.yandex_supported,
-      translator: __,
-    });
+
+    mapLayersCreator.run(me);
 
     me.layers = [];
     Ext.each(data.layers, function(cfg){
@@ -294,9 +308,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     var me = this,
       addHandler = function(items){
         Ext.each(items, function(item){
-          if(item.hasOwnProperty("menu")){
+          if(Object.prototype.hasOwnProperty.call(item, "menu")){
             addHandler(item.menu);
-          } else if(item.hasOwnProperty("objectTypeId")){
+          } else if(Object.prototype.hasOwnProperty.call(item, "objectTypeId")){
             item.listeners = {
               scope: me,
               click: me.onContextMenuAdd,
@@ -402,10 +416,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   onSetPositionToggle: function(self){
-    if(self.pressed){
-      $('.leaflet-container').css('cursor', 'crosshair');
-    } else{
-      $('.leaflet-container').css('cursor', '');
-    }
+    this.mapPanel.getEl().dom.querySelector(".leaflet-container").style.cursor = self.pressed ? "crosshair" : "";
   },
 });
