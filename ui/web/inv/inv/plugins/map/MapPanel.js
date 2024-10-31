@@ -224,7 +224,12 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   createMap: function(data){
     var me = this,
       mapDiv = "leaf-map-" + me.id,
-      mapLayersCreator = Ext.create("NOC.core.MapLayersCreator"),
+      mapLayersCreator = Ext.create("NOC.core.MapLayersCreator", {
+        default_layer: NOC.settings.gis.default_layer, 
+        allowed_layers: NOC.settings.gis.base,
+        yandex_supported: NOC.settings.gis.yandex_supported,
+        translator: __,
+      }),
       mapDom = Ext.select("#" + mapDiv).elements[0];
     me.center = [data.y, data.x];
     me.contextMenuData = data.add_menu;
@@ -248,12 +253,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     }).addTo(me.map);
     //
 
-    mapLayersCreator.run(L, this, {
-      default_layer: NOC.settings.gis.default_layer, 
-      allowed_layers: NOC.settings.gis.base,
-      yandex_supported: NOC.settings.gis.yandex_supported,
-      translator: __,
-    });
+    mapLayersCreator.run(me);
 
     me.layers = [];
     Ext.each(data.layers, function(cfg){

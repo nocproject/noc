@@ -7,6 +7,37 @@
 console.debug("Defining NOC.core.MapLayersCreator");
 
 Ext.define("NOC.core.MapLayersCreator", {
+  defaultOptions: {
+    translator: function(s){ return s },
+    layersControl: {},
+    default_layer: "",
+    yandex_supported: false,
+    allowed_layers: {"enable_osm": true},
+  },
+  //
+  constructor: function(options){
+    this.options = Ext.apply({}, options, this.defaultOptions);
+  },
+  //
+  getTranslator: function(){
+    return this.options.translator;
+  },
+  //
+  getLayersControl: function(){
+    return this.options.layersControl;
+  },
+  //
+  getDefaultLayer: function(){
+    return this.options.default_layer;
+  },
+  //
+  isYandexSupported: function(){
+    return this.options.yandex_supported;
+  },
+  //
+  getAllowedLayers: function(){
+    return this.options.allowed_layers;
+  },
   //
   validate_def_layer: function(s){
     var valid_values = [
@@ -27,52 +58,52 @@ Ext.define("NOC.core.MapLayersCreator", {
     return true
   },
   //
-  run: function(L, me, options={}){
-    var ___ = options.translator ? options.translator : function(s){ return s}
-    var optionsLayersControl = options.layersControl ? options.layersControl : {}
-    var optionsDefaultLayer = options.default_layer ? options.default_layer : ""
-    var yandex_supported = options.yandex_supported ? options.yandex_supported : false
-    var optionsAllowedLayers = options.allowed_layers ? options.allowed_layers : {"enable_osm": true}
-
-    var default_layer_name = "osm"
+  run: function(scope){
+    var translator = this.getTranslator(),
+      optionsLayersControl = this.getLayersControl(),
+      optionsDefaultLayer = this.getDefaultLayer(),
+      yandex_supported = this.isYandexSupported(),
+      optionsAllowedLayers = this.getAllowedLayers(),
+      default_layer_name = "osm";
+    
     if(!this.validate_def_layer(optionsDefaultLayer)){
-      console.warn("Default layer name is not valid", optionsDefaultLayer, "Using osm")
+      console.warn("Default layer name is not valid", optionsDefaultLayer, "Using osm");
     } else{
-      default_layer_name = optionsDefaultLayer
+      default_layer_name = optionsDefaultLayer;
     }
 
     if(!this.validate_allowed_layers(optionsAllowedLayers)){
-      console.warn("Allowed layers is not valid", optionsAllowedLayers)
+      console.warn("Allowed layers is not valid", optionsAllowedLayers);
     }
 
     var baseLayers = {
       osm: (optionsAllowedLayers.enable_osm ? [ 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { }), ___("OpenStreetMap"),
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { }), translator("OpenStreetMap"),
       ] : undefined),
       google_roadmap: (optionsAllowedLayers.enable_google_roadmap ? [ 
         L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), ___("Google Roadmap"), 
+                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), translator("Google Roadmap"), 
       ] : undefined),
       google_hybrid: (optionsAllowedLayers.enable_google_hybrid ? [ 
         L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
-                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), ___("Google Hybrid"), 
+                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), translator("Google Hybrid"), 
       ] : undefined),
       google_sat: (optionsAllowedLayers.enable_google_sat ? [ 
         L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), ___("Google Satellite"), 
+                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), translator("Google Satellite"), 
       ] : undefined),
       google_terrain: (optionsAllowedLayers.enable_google_terrain ? [ 
         L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
-                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), ___("Google Terrain"), 
+                    {subdomains: ['mt0', 'mt1', 'mt2', 'mt3']}), translator("Google Terrain"), 
       ] : undefined),
       yandex_roadmap: (optionsAllowedLayers.enable_yandex_roadmap && yandex_supported ? [  
-        L.yandex('yandex#map'), ___("Yandex Roadmap"), 
+        L.yandex('yandex#map'), translator("Yandex Roadmap"), 
       ] : undefined),
       yandex_hybrid: (optionsAllowedLayers.enable_yandex_hybrid && yandex_supported ? [ 
-        L.yandex('yandex#hybrid'), ___("Yandex Hybrid"), 
+        L.yandex('yandex#hybrid'), translator("Yandex Hybrid"), 
       ] : undefined),
       yandex_sat: (optionsAllowedLayers.enable_yandex_sat && yandex_supported ? [  
-        L.yandex('yandex#satellite'), ___("Yandex Satellite"), 
+        L.yandex('yandex#satellite'), translator("Yandex Satellite"), 
       ] : undefined),
     }
 
@@ -84,7 +115,7 @@ Ext.define("NOC.core.MapLayersCreator", {
       default_layer = baseLayers.osm[0]
     }
 
-    me.map.addLayer(default_layer);
+    scope.map.addLayer(default_layer);
 
     // Generate object 
     // {
@@ -98,8 +129,8 @@ Ext.define("NOC.core.MapLayersCreator", {
       }
     });
 
-    me.layersControl = L.control.layers(baseLayersToAdd, {}, optionsLayersControl)
+    scope.layersControl = L.control.layers(baseLayersToAdd, {}, optionsLayersControl)
         
-    me.layersControl.addTo(me.map);
+    scope.layersControl.addTo(scope.map);
   },
 });
