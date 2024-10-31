@@ -45,8 +45,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
   initComponent: function(){
     var me = this;
-    //
-    me.infoTemplate = '<b>{0}</b><br><i>{1}</i><br><hr><a id="{2}" href="api/card/view/object/{3}/" target="_blank">Show...</a>';
     // Layers holder
     me.layers = [];
     // Object layer
@@ -235,7 +233,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       zoomOutTitle: __("Zoom out..."),
     }).addTo(me.map);
     //
-
     mapLayersCreator.run(L, this, {
       default_layer: NOC.settings.gis.default_layer, 
       allowed_layers: NOC.settings.gis.base,

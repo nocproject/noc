@@ -37,9 +37,29 @@ class SettingsLoader {
                         "enable_google_hybrid": setup.gis.base.enable_google_hybrid,
                         "enable_google_sat": setup.gis.base.enable_google_sat,
                         "enable_google_terrain": setup.gis.base.enable_google_terrain,
+                        "enable_tile1": setup.gis.base.enable_tile1,
+                        "enable_tile2": setup.gis.base.enable_tile2,
+                        "enable_tile3": setup.gis.base.enable_tile3,
                         "enable_yandex_roadmap": setup.gis.base.enable_yandex_roadmap,
                         "enable_yandex_hybrid": setup.gis.base.enable_yandex_hybrid,
                         "enable_yandex_sat": setup.gis.base.enable_yandex_sat,
+                    },
+                    custom: {
+                        tile1: {
+                            name: setup.gis.custom.tile1.name,
+                            url: setup.gis.custom.tile1.url,
+                            subdomains: setup.gis.custom.tile1.subdomains,
+                        },
+                        tile2: {
+                            name: setup.gis.custom.tile2.name,
+                            url: setup.gis.custom.tile2.url,
+                            subdomains: setup.gis.custom.tile2.subdomains,
+                        },
+                        tile3: {
+                            name: setup.gis.custom.tile3.name,
+                            url: setup.gis.custom.tile3.url,
+                            subdomains: setup.gis.custom.tile3.subdomains,
+                        }
                     },
                     "yandex_supported": setup.gis.yandex_supported,
                     default_layer: setup.gis.default_layer,
