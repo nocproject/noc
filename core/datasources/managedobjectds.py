@@ -234,14 +234,14 @@ class ManagedObjectDS(BaseDataSource):
                 internal_name="diagnostics",
             ),
             FieldInfo(
-                name="trouble_syslog",
+                name="recv_syslog",
                 type=FieldType.BOOL,
                 description="SNMP Trap is received",
                 is_diagnostic_state=True,
                 internal_name=SYSLOG_DIAG,
             ),
             FieldInfo(
-                name="trouble_snmptrap",
+                name="recv_snmptrap",
                 type=FieldType.BOOL,
                 description="SNMP Trap is received",
                 is_diagnostic_state=True,
@@ -401,13 +401,18 @@ class ManagedObjectDS(BaseDataSource):
                     continue
                 q_caps[str(c.id)] += [(f.name, cls.get_caps_default(c))]
             elif f.is_diagnostic_state:
+                if f.name.startswith("recv_"):
+                    q_ann = {
+                        f"diagnostics__{f.internal_name}__changed__isnull": False,
+                        "then": Value(True),
+                    }
+                else:
+                    q_ann = {
+                        f"diagnostics__{f.internal_name}__state": DiagnosticState.failed.value,
+                        "then": Value(True),
+                    }
                 annotations[f.name] = Case(
-                    When(
-                        **{
-                            f"diagnostics__{f.internal_name}__state": DiagnosticState.failed.value,
-                            "then": Value(True),
-                        }
-                    ),
+                    When(**q_ann),
                     default=Value(False),
                     output_field=BooleanField(),
                 )

@@ -186,12 +186,12 @@
                     "format_type": "string"
                 },
                 {
-                    "name": "trouble_syslog",
+                    "name": "recv_syslog",
                     "title": "Syslog received",
                     "format_type": "string"
                 },
                 {
-                    "name": "trouble_snmptrap",
+                    "name": "recv_snmptrap",
                     "title": "SNMP Trap received",
                     "format_type": "string"
                 }
