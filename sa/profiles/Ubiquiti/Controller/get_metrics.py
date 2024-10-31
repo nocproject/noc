@@ -9,9 +9,6 @@
 import time
 from typing import List
 
-# Third-party modules
-import orjson
-
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, ProfileMetricConfig
 from noc.core.models.cfgmetrics import MetricCollectorConfig
@@ -93,7 +90,6 @@ class Script(GetMetricsScript):
         ape = {}
         # Group metric by port
         for probe in metrics:
-            hints = probe.get_hints()
             _, mac = probe.labels[0].rsplit("::", 1)
             ape[mac] = probe
         if not ape:
@@ -116,7 +112,7 @@ class Script(GetMetricsScript):
                 continue
             probe = ape[probe]
             labels = [
-                f"noc::interface::0",
+                "noc::interface::0",
                 f"noc::radio::standart::{r['standard']}",
                 f"noc::wlan::band::{r['standard']}",
                 f"noc::wlan::channel::{r['channel']}",
@@ -139,24 +135,22 @@ class Script(GetMetricsScript):
                     scale=mc.scale,
                     units=mc.units,
                 )
-        v = self.http.post(
-            "/api/s/default/stat/report/daily.device",
-            orjson.dumps(
-                {
-                    "attrs": ["tx_bytes", "rx_bytes", "num_sta"],
-                    # "start": 1701575700000,
-                    "start": round(start * 1_000),
-                    # "end": 1701662100000,
-                    "end": round(end * 1_1000),
-                    # "macs": ["60:22:32:2c:5e:c5", "68:d7:9a:c3:49:a9"],
-                    "macs": list(ape.keys()),
-                }
-            ),
-            json=True,
-        )
-        for r in v["data"]:
-            probe = r["ap"]
-            if probe not in ape:
-                self.logger.warning("[%s] Unknown AP", probe)
-                continue
-            probe = ape[probe]
+        # Example needed
+        # v = self.http.post(
+        #     "/api/s/default/stat/report/daily.device",
+        #     orjson.dumps(
+        #         {
+        #             "attrs": ["tx_bytes", "rx_bytes", "num_sta"],
+        #             "start": round(start * 1_000),
+        #             "end": round(end * 1_1000),
+        #             "macs": list(ape.keys()),
+        #         }
+        #     ),
+        #     json=True,
+        # )
+        # for r in v["data"]:
+        #     probe = r["ap"]
+        #     if probe not in ape:
+        #         self.logger.warning("[%s] Unknown AP", probe)
+        #         continue
+        #     probe = ape[probe]
