@@ -211,21 +211,21 @@ class ManagedObjectDS(BaseDataSource):
                 name="trouble_snmp",
                 type=FieldType.BOOL,
                 description="SNMP is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=True,
+                is_diagnostic_state=DiagnosticState.failed,
                 internal_name=SNMP_DIAG,
             ),
             FieldInfo(
                 name="trouble_profile",
                 type=FieldType.BOOL,
                 description="Profile is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=True,
+                is_diagnostic_state=DiagnosticState.failed,
                 internal_name=PROFILE_DIAG,
             ),
             FieldInfo(
                 name="trouble_cli",
                 type=FieldType.BOOL,
                 description="CLI is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=True,
+                is_diagnostic_state=DiagnosticState.failed,
                 internal_name=CLI_DIAG,
             ),
             FieldInfo(
@@ -237,14 +237,14 @@ class ManagedObjectDS(BaseDataSource):
                 name="recv_syslog",
                 type=FieldType.BOOL,
                 description="SNMP Trap is received",
-                is_diagnostic_state=True,
+                is_diagnostic_state=DiagnosticState.enabled,
                 internal_name=SYSLOG_DIAG,
             ),
             FieldInfo(
                 name="recv_snmptrap",
                 type=FieldType.BOOL,
                 description="SNMP Trap is received",
-                is_diagnostic_state=True,
+                is_diagnostic_state=DiagnosticState.enabled,
                 internal_name=SNMPTRAP_DIAG,
             ),
         ]
@@ -374,7 +374,7 @@ class ManagedObjectDS(BaseDataSource):
             x = [SNMP_DIAG, PROFILE_DIAG, CLI_DIAG]
         for d in x:
             if d in diagnostics and diagnostics[d]["state"] == DiagnosticState.failed.value:
-                for c in diagnostics[d]["checks"]:
+                for c in diagnostics[d]["checks"] or []:
                     if c["error"]:
                         return c["error"]
         return ""
@@ -401,18 +401,13 @@ class ManagedObjectDS(BaseDataSource):
                     continue
                 q_caps[str(c.id)] += [(f.name, cls.get_caps_default(c))]
             elif f.is_diagnostic_state:
-                if f.name.startswith("recv_"):
-                    q_ann = {
-                        f"diagnostics__{f.internal_name}__changed__isnull": False,
-                        "then": Value(True),
-                    }
-                else:
-                    q_ann = {
-                        f"diagnostics__{f.internal_name}__state": DiagnosticState.failed.value,
-                        "then": Value(True),
-                    }
                 annotations[f.name] = Case(
-                    When(**q_ann),
+                    When(
+                        **{
+                            f"diagnostics__{f.internal_name}__state": f.is_diagnostic_state,
+                            "then": Value(True),
+                        }
+                    ),
                     default=Value(False),
                     output_field=BooleanField(),
                 )
@@ -512,10 +507,10 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "trouble_profile", mo["trouble_profile"]
             if "trouble_cli" in mo:
                 yield num, "trouble_cli", mo["trouble_cli"]
-            if "trouble_syslog" in mo:
-                yield num, "trouble_syslog", mo["trouble_syslog"]
-            if "trouble_snmptrap" in mo:
-                yield num, "trouble_snmptrap", mo["trouble_snmptrap"]
+            if "recv_syslog" in mo:
+                yield num, "recv_syslog", mo["recv_syslog"]
+            if "recv_snmptrap" in mo:
+                yield num, "recv_snmptrap", mo["recv_snmptrap"]
             if "diagnostics" in mo:
                 yield num, "trouble_detail", cls.get_diagnostic_trouble(
                     mo["diagnostics"],
