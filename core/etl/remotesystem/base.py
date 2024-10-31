@@ -170,7 +170,7 @@ class BaseRemoteSystem(object):
     @classmethod
     def extractor(cls, c):
         """Decorator for extractor"""
-        if cls.__module__ not in cls.ext:
+        if cls.__module__ not in cls.extractors:
             cls.extractors[cls.__module__] = {}
         cls.extractors[cls.__module__][c.name] = c
         cls.extractors[c.name] = c
