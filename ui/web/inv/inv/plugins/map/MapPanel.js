@@ -10,6 +10,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   extend: "Ext.panel.Panel",
   requires: [
     "NOC.core.MapLayersCreator",
+    "NOC.core.ResourceLoader",
   ],
   title: __("Map"),
   closable: false,
@@ -107,34 +108,17 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   preview: function(data){
-    var me = this,
-      // var jsUrls = [
-      // "/ui/pkg/leaflet/leaflet.js",
-      // "/ui/common/map_layer_creator.js",
-      // ];
-      cssUrls = [
-        "/ui/pkg/leaflet/leaflet.css",
-      ];
+    var me = this;
 
-    // if(NOC.settings.gis.yandex_supported){
-    // jsUrls = [
-    // ...jsUrls,
-    // "/ui/pkg/leaflet/yapi.js",
-    // "/ui/pkg/leaflet/Yandex.js",
-    // ];
-    // }
-
-    Ext.Loader.setPath("L", "/ui/pkg/leaflet/leaflet.js");
-    // Dosn't load
-    // Ext.Loader.setPath("L_yapi", "/ui/pkg/leaflet/yapi.js");
-    // Ext.Loader.setPath("L_Yandex", "/ui/pkg/leaflet/Yandex.js");
-
-    Ext.require(["L"], function(){
-      cssUrls.forEach(function(url, index){
-        Ext.util.CSS.swapStyleSheet("style" + index, url);
-      });
+    NOC.core.ResourceLoader.loadSet("leaflet", {
+      yandex: NOC.settings.gis.yandex_supported,
+    })
+    .then(() => {
       me.createMap(data);
-    }, me);
+    })
+    .catch(() => {
+      NOC.error(__("Failed to load map resources"));
+    });
   },
   //
   createLayer: function(cfg, objectLayer){
