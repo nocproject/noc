@@ -70,6 +70,10 @@ class OTNOTUController(BaseController):
         if not ep:
             self.logger.info("Transceiver is not connected, stopping")
             return
+        # Check for loop
+        if ep.object == xcvr:
+            self.logger.info("Transceiver loop detected, skipping")
+            return
         # Here we have either another transceiver or channel
         nep = self.pass_channel(ep)
         if nep:
