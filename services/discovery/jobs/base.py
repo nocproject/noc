@@ -33,6 +33,7 @@ from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.debug import error_report
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.purgatorium import register, NEIGHBOR_SOURCE
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
@@ -823,6 +824,15 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             if not remote_object:
                 problems[li] = "Remote object '%s' is not found" % str(ro)
                 self.logger.info("Remote object '%s' is not found. Skipping", str(ro))
+                if "remote_mgmt_address" in ro and ro.get("remote_system_name"):
+                    register(
+                        ro["remote_mgmt_address"],
+                        self.object.pool.bi_id,
+                        NEIGHBOR_SOURCE,
+                        chassis_id=ro.get("remote_chassis_id"),
+                        hostname=ro.get("remote_system_name"),
+                        description=ro.get("remote_system_description"),
+                    )
                 continue
             # Resolve remote interface name
             remote_interface = self.get_remote_interface(remote_object, ri)
