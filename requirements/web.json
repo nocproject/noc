@@ -104,6 +104,10 @@
     {
       "name": "viz-js",
       "version": "3.7.0"
+    },
+    {
+      "name": "leaflet.featuregroup.subgroup",
+      "version": "1.9.4"
     }
   ]
 }
