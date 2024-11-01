@@ -175,7 +175,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     var scale = this.getScale(),
       delta = this._calculateWheelDelta(event),
       newScale = Math.min(
-        Math.max(this.MIN_ZOOM, scale + delta * -this.WHEEL_ZOOM_STEP),
+        Math.max(this.MIN_ZOOM, scale + delta * this.WHEEL_ZOOM_STEP),
         this.MAX_ZOOM,
       );
     this.getViewModel().set("zoom", Math.round(newScale * 100));
