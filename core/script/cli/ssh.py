@@ -111,9 +111,12 @@ class SSHStream(BaseStream):
     async def read(self, n: int) -> bytes:
         while True:
             try:
-                await self.wait_for_read()
-                metrics["ssh_reads"] += 1
                 code, data = self.channel.read(n)
+                if code == LIBSSH2_ERROR_EAGAIN:
+                    await self.wait_for_read()
+                    metrics["ssh_reads_blocked"] += 1
+                    continue
+                metrics["ssh_reads"] += 1
                 if code == 0:
                     if self.channel.eof():
                         self.logger.info("SSH session reset")
@@ -125,9 +128,7 @@ class SSHStream(BaseStream):
                     n = len(data)
                     metrics["ssh_read_bytes"] += n
                     return data
-                elif code == LIBSSH2_ERROR_EAGAIN:
-                    metrics["ssh_reads_blocked"] += 1
-                    continue
+
                 metrics["ssh_errors", ("code", code)] += 1
                 raise CLISSHProtocolError("SSH Error code %s" % code)
             except SSH2Error as e:
