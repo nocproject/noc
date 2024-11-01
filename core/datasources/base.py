@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from functools import partial
 from collections import defaultdict
 from typing import Tuple, Union, Optional, Iterable, List, Dict, AsyncIterable, Set
+from noc.core.wf.diagnostic import DiagnosticState
 
 # Third-party modules
 import polars as pl
@@ -42,7 +43,7 @@ class FieldInfo(object):
     is_caps: bool = False  # Capability field
     is_virtual: bool = False  # Virtual Field not sending to output
     is_vector: bool = False  # Multiple column by requested one field
-    is_diagnostic_state: bool = False  # Request Diagnostic State field
+    is_diagnostic_state: Optional[DiagnosticState] = None  # Request Diagnostic State field
 
 
 class BaseDataSource(object):
