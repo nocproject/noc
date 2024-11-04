@@ -12,7 +12,12 @@ class SettingsLoader {
         if(httpRequest.status === 200) {
             var setup = JSON.parse(httpRequest.responseText);
             console.log("!!! NOC settings successfully received")
-            return {
+            if(typeof NOC === "undefined") {
+                window.NOC = {
+                    settings: {}
+                };
+            }
+            NOC.settings = {
                 systemId: setup.system_uuid ? setup.system_uuid : null,
                 brand: setup.brand,
                 installation_name: setup.installation_name,
@@ -74,6 +79,7 @@ class SettingsLoader {
                 enableHelp: setup.helpUrl && setup.helpUrl !== "",
                 has_geocoder: setup.has_geocoder
             };
+            return NOC.settings;
         } else {
             console.warn("!!! NOC settings receiving failed!")
             return {}
