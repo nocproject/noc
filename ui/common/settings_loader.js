@@ -32,6 +32,7 @@ class SettingsLoader {
                 },
                 gis: {
                     base: {
+                        enable_blank: setup.gis.base.enable_blank,
                         "enable_osm": setup.gis.base.enable_osm,
                         "enable_google_roadmap": setup.gis.base.enable_google_roadmap,
                         "enable_google_hybrid": setup.gis.base.enable_google_hybrid,

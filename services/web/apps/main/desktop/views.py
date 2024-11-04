@@ -149,6 +149,7 @@ class DesktopApplication(ExtApplication):
             "gis": {
                 "yandex_supported": config.gis.yandex_supported,
                 "base": {
+                    "enable_blank": config.gis.enable_blank,
                     "enable_osm": config.gis.enable_osm,
                     "enable_google_sat": config.gis.enable_google_sat,
                     "enable_google_roadmap": config.gis.enable_google_roadmap,

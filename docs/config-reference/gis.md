@@ -13,6 +13,17 @@ Gis service configuration
 
 ## enable_osm
 
+Enable blank layer on maps.
+|                |                        |
+| -------------- | ---------------------- |
+| Default value  | `False`                |
+| YAML Path      | `gis.enable_blank`     |
+| Key-Value Path | `gis/enable_blank`     |
+| Environment    | `NOC_GIS_ENABLE_BLANK` |
+
+## enable_osm
+
+Enable OpenStreetMap layer on maps.
 |                |                      |
 | -------------- | -------------------- |
 | Default value  | `True`               |
