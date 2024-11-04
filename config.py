@@ -319,6 +319,7 @@ class Config(BaseConfig):
 
     class gis(ConfigSection):
         ellipsoid = StringParameter(default="PZ-90")
+        enable_blank = BooleanParameter(default=False)
         enable_osm = BooleanParameter(default=True)
         enable_google_roadmap = BooleanParameter(default=False)
         enable_google_hybrid = BooleanParameter(default=False)

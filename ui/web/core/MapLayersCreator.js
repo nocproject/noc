@@ -119,6 +119,11 @@ Ext.define("NOC.core.MapLayersCreator", {
   //
   createBaseLayers: function(translator, isYandexSupported, options){
     return {
+      blank: options.enable_blank && [
+        this.createTileLayer(""),
+        translator("Blank") ,
+      ] || undefined,
+
       osm: options.enable_osm && [
         this.createTileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"),
         translator("OpenStreetMap") ,
