@@ -151,11 +151,11 @@ Ext.define("Ext.ux.form.StringsField", {
     },
     //
     onCellEdit: function(editor, e) {
-        var me = this,
-            editor = e.grid.columns[e.colIdx].getEditor();
-        if(editor.rawValue) {
-            e.record.set(e.field + "__label", editor.rawValue);
+        var me = this;
+        var cellEditor = e.grid.columns[e.colIdx].getEditor();
+        if (cellEditor.rawValue) {
+            e.record.set(e.field + "__label", cellEditor.rawValue);
         }
         me.fireEvent("dirtychange", me);
-    }
+    },
 });

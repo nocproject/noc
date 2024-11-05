@@ -179,8 +179,8 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             restoreTagField = function(name) {
                 var me = this, acc = [], filter = {},
                     // resultMock = [],
-                    keys = Object.keys(params);
-                length = keys.length;
+                    keys = Object.keys(params),
+                    length = keys.length;
                 for(var i = 0; i < length; i++) {
                     var key = keys[i];
                     if(Ext.String.startsWith(key, name)) {

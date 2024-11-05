@@ -660,7 +660,8 @@ Ext.define("NOC.inv.map.Application", {
     },
 
     selectCell: function(searched) {
-        var zoom = this.zoomCombo.getValue(),
+        var scrollX, scrollY,
+            zoom = this.zoomCombo.getValue(),
             getScroll = function(pos, offset) {
                 var value = pos * zoom - offset;
                 return value > 0 ? value : 0;
