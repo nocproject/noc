@@ -25,6 +25,13 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
       };
     
     if(vm){
+      var groupStore = vm.getStore("groupStore"),
+        groupValues = Ext.Array.map(store.collect("group"),
+                                    function(value){
+                                      return {value: value};
+                                    });
+      groupStore.loadData(groupValues);
+      groupStore.insert(0, {value: __("All")});
       vm.set("totalCount", store.getCount());
     }
     vm.set("statusDisabled", hasStatuses);
@@ -197,5 +204,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
     if(statusFilter){
       filters.remove(statusFilter);
     }
+  },
+  onGroupParamChange: function(){
+    console.log("onGroupParamChange");
+    // this.removeFilter();
   },
 });

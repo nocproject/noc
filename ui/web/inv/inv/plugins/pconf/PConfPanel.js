@@ -56,6 +56,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           },
         ],
       },
+      groupStore: {
+        fields: ["value"],
+        data: [],
+      },
     },
     data: {
       searchText: "",
@@ -67,6 +71,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         o: false,
       },
       tabType: 1,
+      groupParam: __("All"),
       totalCount: 0,
     },
   },
@@ -129,10 +134,26 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       bind: {
         value: "{tabType}",
       },
-      value: 1,
       editable: false,
       listeners: {
         select: "onTabTypeChange",
+      },
+    },
+    {
+      xtype: "combo",
+      itemId: "groupParam",
+      bind: {
+        store: "{groupStore}",
+        value: "{groupParam}",
+      },
+      queryMode: "local",
+      displayField: "value",
+      valueField: "value",
+      fieldLabel: __("Group"),
+      labelAlign: "right",
+      editable: false,
+      listeners: {
+        select: "onGroupParamChange",
       },
     },
     {
