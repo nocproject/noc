@@ -262,7 +262,8 @@ class PConfPlugin(InvPlugin):
             }
             if options:
                 c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
-            conf.append(c)
+            if c["group"]:
+                conf.append(c)
             if table == Table.THRESHOLD:
                 match name[-4:]:
                     case "CMin":
