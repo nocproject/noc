@@ -21,6 +21,7 @@ function appendFile(name, file){
       console.error(`Error at line ${error.line}, column ${error.col}`);
     }
     console.error(error.stack);
+    process.exit(1);
   }
 }
 

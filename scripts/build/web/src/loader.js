@@ -194,11 +194,16 @@ const parse = function(entry) {
         if(fs.existsSync(cacheFile)) {
             tree = JSON.parse(fs.readFileSync(cacheFile).toString());
         } else {
-            tree = esprima.parseScript(content, {
-                range: true,
-                comment: true
-            });
-            fs.writeFileSync(cacheFile, JSON.stringify(tree));
+            try {
+                tree = esprima.parseScript(content, {
+                    range: true,
+                    comment: true
+                });
+                fs.writeFileSync(cacheFile, JSON.stringify(tree));
+            } catch(error) {
+                console.error(filename, chalk.red('error parsing: ') + error);
+                process.exit(1);
+            }
         }
 
         esUtils.parentize(tree);
@@ -237,8 +242,8 @@ const parse = function(entry) {
         return {global: root, order: k};
         // return {global: root, order: toposort(filtered).reverse()};
 
-    } catch(e) {
-        console.error(chalk.red('error parsing: ') + e);
+    } catch(error) {
+        console.error(chalk.red('error parsing: ') + error);
     }
 
 };
