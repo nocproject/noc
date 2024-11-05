@@ -30,7 +30,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   },
   requires: [
     "NOC.inv.inv.plugins.pconf.PConfModel",
-    "NOC.inv.inv.plugins.pconf.Controller",
+    "NOC.inv.inv.plugins.pconf.PConfController",
     "NOC.inv.inv.plugins.pconf.PConfEditPlugin",
   ],
   title: __("Config"),
@@ -54,6 +54,15 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
             property: "table",
             value: "{tabType}",
           },
+          {
+            property: "status",
+            value: "{status}",
+          },
+          {
+            id: "groupFilter",
+            property: "group",
+            value: "{groupParam}",
+          },
         ],
       },
       groupStore: {
@@ -63,15 +72,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     },
     data: {
       searchText: "",
-      status: null,
-      statusDisabled: {
-        u: false,
-        c: false,
-        w: false,
-        o: false,
-      },
+      status: "u",
       tabType: 1,
-      groupParam: __("All"),
+      groupParam: "", 
       totalCount: 0,
     },
   },
@@ -127,17 +130,17 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       queryMode: "local",
       displayField: "text",
       valueField: "value",
-      fieldLabel: __("Mode"),
-      labelWidth: 130,
+      // fieldLabel: __("Mode"),
+      // labelWidth: 130,
       allowBlank: false,
       labelAlign: "right",
       bind: {
         value: "{tabType}",
       },
       editable: false,
-      listeners: {
-        select: "onTabTypeChange",
-      },
+      // listeners: {
+      //   select: "onTabTypeChange",
+      // },
     },
     {
       xtype: "combo",
@@ -149,12 +152,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       queryMode: "local",
       displayField: "value",
       valueField: "value",
-      fieldLabel: __("Group"),
+      // fieldLabel: __("Group"),
       labelAlign: "right",
       editable: false,
-      listeners: {
-        select: "onGroupParamChange",
-      },
+      // listeners: {
+      //   select: "onGroupParamChange",
+      // },
     },
     {
       xtype: "segmentedbutton",
@@ -168,49 +171,26 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           tooltip: __("Unknown"),
           toggleGroup: "status",
           value: "u",
-          bind: {
-            disabled: "{statusDisabled.u}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
         },
         {
           tooltip: __("Ok"),
           toggleGroup: "status",
           value: "o",
-          bind: {
-            disabled: "{statusDisabled.o}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
         },
         {
           tooltip: __("Warning"),
           toggleGroup: "status",
           value: "w",
-          bind: {
-            disabled: "{statusDisabled.w}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
         },
         {
           tooltip: __("Critical"),
           toggleGroup: "status",
           value: "c",
-          bind: {
-            disabled: "{statusDisabled.c}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
         },
       ],
       listeners: {
-        toggle: "onStatusChange",
+        afterrender: "onButtonsRender",
+        // toggle: "onStatusChange",
       },
     },
     "->",
@@ -270,12 +250,21 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   ],
   //
   preview: function(data){
-    var me = this;
+    var me = this,
+      vm = me.getViewModel(),
+      gridStore = vm.getStore("gridStore"),
+      groupStore = vm.getStore("groupStore"),
+      uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
+      firstGroup = Ext.isEmpty(uniqueGroups) ? __("no groups") : uniqueGroups[0].value;
+ 
+    console.log(firstGroup);
     if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
       NOC.error(data.message);
       return
     }
     me.currentId = data.id;
-    me.getViewModel().get("gridStore").loadData(data.conf);
+    groupStore.loadData(uniqueGroups);
+    gridStore.loadData(data.conf);
+    vm.set("groupParam", firstGroup);
   },
 });

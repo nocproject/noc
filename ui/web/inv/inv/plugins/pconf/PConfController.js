@@ -4,37 +4,17 @@
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.plugins.pconf.Controller");
+console.debug("Defining NOC.inv.inv.plugins.pconf.PConfController");
 
-Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
+Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   extend: "Ext.app.ViewController",
   alias: "controller.pconf",
 
   onDataChanged: function(store){
-    var vm = this.getViewModel(),
-      hasStatus = function(value){
-        return store.findBy(function(record){
-          return !Ext.isEmpty(record.get("status")) && record.get("status") === value;
-        }) === -1;
-      },
-      hasStatuses = {
-        u: hasStatus("u"),
-        c: hasStatus("c"),
-        w: hasStatus("w"),
-        o: hasStatus("o"),
-      };
-    
+    var vm = this.getViewModel();
     if(vm){
-      var groupStore = vm.getStore("groupStore"),
-        groupValues = Ext.Array.map(store.collect("group"),
-                                    function(value){
-                                      return {value: value};
-                                    });
-      groupStore.loadData(groupValues);
-      groupStore.insert(0, {value: __("All")});
       vm.set("totalCount", store.getCount());
     }
-    vm.set("statusDisabled", hasStatuses);
   },
   onReload: function(){
     var me = this,
@@ -79,7 +59,8 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   onStatusChange: function(group, button){
     var store = this.getViewModel().getStore("gridStore"),
       filters = store.getFilters();
-    
+   
+    console.log("onStatusChange", group, button);
     this.removeFilter();
     if(button.pressed){
       filters.add({
@@ -94,10 +75,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   onTabTypeChange: function(){
     this.removeFilter();
   },
-  onButtonRender: function(button){
-    var config = this.getView().getStatus()[button.value];
-    button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
-    button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
+  onButtonsRender: function(segmented){
+    Ext.each(segmented.getRefItems(), function(button){
+      var config = this.getView().getStatus()[button.value];
+      button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
+      button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
+    }, this);
   },
   valueRenderer: function(value, metaData, record){
     var displayValue,
@@ -208,5 +191,21 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
   onGroupParamChange: function(){
     console.log("onGroupParamChange");
     // this.removeFilter();
+  },
+  collectWithoutFilter: function(store, fieldName, filterId){
+    var uniqueValues, filters = store.getFilters(),
+      filterToRemove = filters.findBy(function(filter){
+        return filter.getId() === filterId;
+      });
+    store.suspendEvents();
+    if(filterToRemove){
+      filters.remove(filterToRemove);
+    }
+    uniqueValues = store.collect(fieldName);
+    if(filterToRemove){
+      filters.add(filterToRemove);
+    }
+    store.resumeEvents();
+    return uniqueValues;
   },
 });

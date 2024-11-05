@@ -134,7 +134,7 @@ class PConfPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.pconf.PConfPanel"
 
     # Set to config path for debugging
-    JSON_PATH: Path | None = Path("var", "small-f.json")
+    JSON_PATH: Path | None = None
 
     def init_plugin(self):
         super().init_plugin()
