@@ -162,7 +162,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     {
       xtype: "segmentedbutton",
       itemId: "statusFilter",
-      allowDepress: true,
+      allowDepress: false,
       bind: {
         value: "{status}",
       },
