@@ -58,7 +58,7 @@ Ext.define("NOC.core.ModelApplication", {
   formHelpId: undefined,
   canAdd: true,
   //
-  navTooltipTemplate: new Ext.XTemplate
+  navTooltipTemplate: new Ext.XTemplate(
     '<tpl if="data.name">',
     '{data.name} - ',
     '</tpl>{title}',
