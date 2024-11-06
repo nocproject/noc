@@ -1,0 +1,43 @@
+{
+    "name": "Generic | Transceiver | QSFP28",
+    "$collection": "inv.objectmodels",
+    "uuid": "9628851a-0d89-4f62-9c9c-5267f1739703",
+    "vendor__code": "GENERIC",
+    "description": "Generic | Transceiver | QSFP28",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "rx",
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "tx",
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        }
+    ],
+    "front_facade__name": "Transceiver | QSFP28 LC"
+}
