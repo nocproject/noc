@@ -160,40 +160,40 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       //   select: "onGroupParamChange",
       // },
     },
-    {
-      xtype: "segmentedbutton",
-      itemId: "statusFilter",
-      allowDepress: false,
-      bind: {
-        value: "{status}",
-      },
-      items: [
-        {
-          tooltip: __("Unknown"),
-          toggleGroup: "status",
-          value: "u",
-        },
-        {
-          tooltip: __("Ok"),
-          toggleGroup: "status",
-          value: "o",
-        },
-        {
-          tooltip: __("Warning"),
-          toggleGroup: "status",
-          value: "w",
-        },
-        {
-          tooltip: __("Critical"),
-          toggleGroup: "status",
-          value: "c",
-        },
-      ],
-      listeners: {
-        afterrender: "onButtonsRender",
-        // toggle: "onStatusChange",
-      },
-    },
+    // {
+    //   xtype: "segmentedbutton",
+    //   itemId: "statusFilter",
+    //   allowDepress: false,
+    //   bind: {
+    //     value: "{status}",
+    //   },
+    //   items: [
+    //     {
+    //       tooltip: __("Unknown"),
+    //       toggleGroup: "status",
+    //       value: "u",
+    //     },
+    //     {
+    //       tooltip: __("Ok"),
+    //       toggleGroup: "status",
+    //       value: "o",
+    //     },
+    //     {
+    //       tooltip: __("Warning"),
+    //       toggleGroup: "status",
+    //       value: "w",
+    //     },
+    //     {
+    //       tooltip: __("Critical"),
+    //       toggleGroup: "status",
+    //       value: "c",
+    //     },
+    //   ],
+    //   listeners: {
+    //     afterrender: "onButtonsRender",
+    //     // toggle: "onStatusChange",
+    //   },
+    // },
     "->",
     {
       xtype: "tbtext",
@@ -258,7 +258,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
       firstGroup = Ext.isEmpty(uniqueGroups) ? __("no groups") : uniqueGroups[0].value;
  
-    console.log(firstGroup);
     if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
       NOC.error(data.message);
       return

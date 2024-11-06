@@ -25,8 +25,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       method: "GET",
       scope: me,
       success: function(response){
-        var data = Ext.decode(response.responseText);
+        var data = Ext.decode(response.responseText),
+          vm = me.getViewModel(),
+          group = vm.get("groupParam");
         panel.preview(data);
+        vm.set("groupParam", group);
         panel.unmask();
       },
       failure: function(){
@@ -75,13 +78,13 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   onTabTypeChange: function(){
     this.removeFilter();
   },
-  onButtonsRender: function(segmented){
-    Ext.each(segmented.getRefItems(), function(button){
-      var config = this.getView().getStatus()[button.value];
-      button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
-      button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
-    }, this);
-  },
+  // onButtonsRender: function(segmented){
+  //   Ext.each(segmented.getRefItems(), function(button){
+  //     var config = this.getView().getStatus()[button.value];
+  //     button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
+  //     button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
+  //   }, this);
+  // },
   valueRenderer: function(value, metaData, record){
     var displayValue,
       units = record.get("units"),
