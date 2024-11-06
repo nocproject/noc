@@ -45,6 +45,9 @@ class Script(BaseScript):
     @classmethod
     def parse_json_out(cls, v):
         r = []
+        v = v.strip()
+        if not v:
+            return r
         v = orjson.loads(v)
         if "probe" in v["configuration"]["services"]["rpm"]:
             for p in v["configuration"]["services"]["rpm"]["probe"]:
@@ -62,11 +65,14 @@ class Script(BaseScript):
         return r
 
     def execute_cli(self):
+        r = []
         try:
             v = self.cli("show configuration services rpm | display json")
             r = self.parse_json_out(v)
+        except orjson.JSONDecodeError as e:
+            self.logger.info("Error while decoding JSON |%s|", e)
+            return r
         except self.CLISyntaxError:
-            r = []
             v = self.cli("show services rpm probe-results")
             for match in self.rx_res.finditer(v):
                 r += [
