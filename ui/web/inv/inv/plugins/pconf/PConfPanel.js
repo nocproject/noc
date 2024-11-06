@@ -54,10 +54,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
             property: "table",
             value: "{tabType}",
           },
-          {
-            property: "status",
-            value: "{status}",
-          },
+          // {
+          //   property: "status",
+          //   value: "{status}",
+          // },
           {
             id: "groupFilter",
             property: "group",
@@ -73,7 +73,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     },
     data: {
       searchText: "",
-      status: "u",
+      // status: "u",
       tabType: 1,
       groupParam: "", 
       totalCount: 0,
