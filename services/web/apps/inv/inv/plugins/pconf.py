@@ -258,12 +258,11 @@ class PConfPlugin(InvPlugin):
                 "read_only": (row.get("acs") or "") != "W",
                 "type": dt,
                 "table": table,
-                "group": g_map.get(name, ""),
+                "group": g_map.get(name, "") or "Card",
             }
             if options:
                 c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
-            if c["group"]:
-                conf.append(c)
+            conf.append(c)
             if table == Table.THRESHOLD:
                 match name[-4:]:
                     case "CMin":
