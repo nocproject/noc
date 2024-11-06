@@ -136,7 +136,7 @@ class Script(BaseScript):
     def get_switchport_cli(self) -> DefaultDict[str, Dict[str, Union[int, list, None]]]:
         result = defaultdict(lambda: {"untagged": None, "tagged": []})
         try:
-            if self.is_cloud_engine_switch or self.is_quidway_S9xxx:
+            if self.is_cloud_engine_switch or self.is_quidway_S9xxx or self.is_quidway_S5xxx:
                 v = self.cli("display vlan", cached=True, allow_empty_response=False)
             else:
                 v = self.cli("display vlan", cached=True)
