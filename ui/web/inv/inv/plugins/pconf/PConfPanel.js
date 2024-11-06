@@ -77,9 +77,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       tabType: 1,
       groupParam: "", 
       totalCount: 0,
+      currentId: null,
     },
   },
   controller: "pconf",
+  timer: undefined,
+  timerInterval: 3000,
   tbar: [
     {
       glyph: NOC.glyph.refresh,
@@ -139,9 +142,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         value: "{tabType}",
       },
       editable: false,
-      // listeners: {
-      //   select: "onTabTypeChange",
-      // },
+      listeners: {
+        select: "onTabTypeChange",
+      },
     },
     {
       xtype: "combo",
@@ -262,7 +265,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       NOC.error(data.message);
       return
     }
-    me.currentId = data.id;
+    vm.set("currentId", data.id);
     groupStore.loadData(uniqueGroups);
     gridStore.loadData(data.conf);
     vm.set("groupParam", firstGroup);

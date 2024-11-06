@@ -18,10 +18,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   },
   onReload: function(){
     var me = this,
-      panel = me.getView();
-    panel.mask(__("Loading..."));
+      currentId = me.getViewModel().get("currentId"),
+      panel = me.getView(),
+      maskComponent = panel.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("fetching", "pconf");
     Ext.Ajax.request({
-      url: "/inv/inv/" + me.getView().currentId + "/plugin/pconf/",
+      url: "/inv/inv/" + currentId + "/plugin/pconf/",
       method: "GET",
       scope: me,
       success: function(response){
@@ -30,18 +32,22 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
           group = vm.get("groupParam");
         panel.preview(data);
         vm.set("groupParam", group);
-        panel.unmask();
       },
       failure: function(){
         NOC.error(__("Failed to load data"));
-        panel.unmask();
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },
   onValueChanged: function(data){
-    var me = this;
+    var me = this,
+      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("saving", "pconf"),
+      currentId = me.getViewModel().get("currentId");
     Ext.Ajax.request({
-      url: "/inv/inv/" + this.getView().currentId + "/plugin/pconf/set/",
+      url: "/inv/inv/" + currentId + "/plugin/pconf/set/",
       method: 'POST',
       jsonData: data,
       success: function(response){
@@ -57,26 +63,42 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       failure: function(){
         NOC.error(__("Failed to set parameter"));
       },
+      callback: function(){
+        maskComponent.hide(messageId);
+      },
     });
   },
-  onStatusChange: function(group, button){
-    var store = this.getViewModel().getStore("gridStore"),
-      filters = store.getFilters();
+  // onStatusChange: function(group, button){
+  //   var store = this.getViewModel().getStore("gridStore"),
+  //     filters = store.getFilters();
    
-    console.log("onStatusChange", group, button);
-    this.removeFilter();
-    if(button.pressed){
-      filters.add({
-        id: "invConfigStatusFilter",
-        filterFn: function(record){
-          var status = record.get("status");
-          return button.value === status
+  //   this.removeFilter();
+  //   if(button.pressed){
+  //     filters.add({
+  //       id: "invConfigStatusFilter",
+  //       filterFn: function(record){
+  //         var status = record.get("status");
+  //         return button.value === status
+  //       },
+  //     });
+  //   }
+  // },
+  onTabTypeChange: function(combo){
+    var me = this.getView();
+    if(combo.getValue() === 2){
+      me.timer = Ext.TaskManager.start({
+        run: function(){
+          this.onReload();
         },
+        interval: me.timerInterval,
+        scope: this,
       });
+    } else{
+      if(me.timer){
+        Ext.TaskManager.stop(me.timer);
+        me.timer = null;
+      }
     }
-  },
-  onTabTypeChange: function(){
-    this.removeFilter();
   },
   // onButtonsRender: function(segmented){
   //   Ext.each(segmented.getRefItems(), function(button){
@@ -191,24 +213,8 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       filters.remove(statusFilter);
     }
   },
-  onGroupParamChange: function(){
-    console.log("onGroupParamChange");
-    // this.removeFilter();
-  },
-  collectWithoutFilter: function(store, fieldName, filterId){
-    var uniqueValues, filters = store.getFilters(),
-      filterToRemove = filters.findBy(function(filter){
-        return filter.getId() === filterId;
-      });
-    store.suspendEvents();
-    if(filterToRemove){
-      filters.remove(filterToRemove);
-    }
-    uniqueValues = store.collect(fieldName);
-    if(filterToRemove){
-      filters.add(filterToRemove);
-    }
-    store.resumeEvents();
-    return uniqueValues;
-  },
+  // onGroupParamChange: function(){
+  // console.log("onGroupParamChange");
+  // this.removeFilter();
+  // },
 });
