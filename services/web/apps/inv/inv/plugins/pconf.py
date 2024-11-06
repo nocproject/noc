@@ -222,6 +222,15 @@ class PConfPlugin(InvPlugin):
         slot_cfg = filter_slot()
         if not slot_cfg:
             return []
+        # Groups
+        g_map: dict[str, str] = {}  # param -> group
+        gm = slot_cfg.get("GM")
+        if gm:
+            for g in gm:
+                gn = g["nam"]
+                for v in g["val"]:
+                    g_map[v] = gn
+        # Parameters
         pm = slot_cfg.get("PM")
         if not pm:
             return []
@@ -249,6 +258,7 @@ class PConfPlugin(InvPlugin):
                 "read_only": (row.get("acs") or "") != "W",
                 "type": dt,
                 "table": table,
+                "group": g_map.get(name, "") or "Card",
             }
             if options:
                 c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
@@ -271,7 +281,7 @@ class PConfPlugin(InvPlugin):
                 if c["name"] in threholds:
                     th = threholds[c["name"]]
                     c["thresholds"] = th.to_json()
-                    c["status"] = th.get_status(c["value"])
+                    c["status"] = th.get_status(c["value"]).value
         return conf
 
     @staticmethod

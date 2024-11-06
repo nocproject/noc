@@ -30,7 +30,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   },
   requires: [
     "NOC.inv.inv.plugins.pconf.PConfModel",
-    "NOC.inv.inv.plugins.pconf.Controller",
+    "NOC.inv.inv.plugins.pconf.PConfController",
     "NOC.inv.inv.plugins.pconf.PConfEditPlugin",
   ],
   title: __("Config"),
@@ -54,23 +54,35 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
             property: "table",
             value: "{tabType}",
           },
+          // {
+          //   property: "status",
+          //   value: "{status}",
+          // },
+          {
+            id: "groupFilter",
+            property: "group",
+            exactMatch: true,
+            value: "{groupParam}",
+          },
         ],
+      },
+      groupStore: {
+        fields: ["value"],
+        data: [],
       },
     },
     data: {
       searchText: "",
-      status: null,
-      statusDisabled: {
-        u: false,
-        c: false,
-        w: false,
-        o: false,
-      },
+      // status: "u",
       tabType: 1,
+      groupParam: "", 
       totalCount: 0,
+      currentId: null,
     },
   },
   controller: "pconf",
+  timer: undefined,
+  timerInterval: 3000,
   tbar: [
     {
       glyph: NOC.glyph.refresh,
@@ -122,76 +134,69 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       queryMode: "local",
       displayField: "text",
       valueField: "value",
-      fieldLabel: __("Mode"),
-      labelWidth: 130,
+      // fieldLabel: __("Mode"),
+      // labelWidth: 130,
       allowBlank: false,
       labelAlign: "right",
       bind: {
         value: "{tabType}",
       },
-      value: 1,
       editable: false,
       listeners: {
         select: "onTabTypeChange",
       },
     },
     {
-      xtype: "segmentedbutton",
-      itemId: "statusFilter",
-      allowDepress: true,
+      xtype: "combo",
+      itemId: "groupParam",
       bind: {
-        value: "{status}",
+        store: "{groupStore}",
+        value: "{groupParam}",
       },
-      items: [
-        {
-          tooltip: __("Unknown"),
-          toggleGroup: "status",
-          value: "u",
-          bind: {
-            disabled: "{statusDisabled.u}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
-        },
-        {
-          tooltip: __("Ok"),
-          toggleGroup: "status",
-          value: "o",
-          bind: {
-            disabled: "{statusDisabled.o}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
-        },
-        {
-          tooltip: __("Warning"),
-          toggleGroup: "status",
-          value: "w",
-          bind: {
-            disabled: "{statusDisabled.w}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
-        },
-        {
-          tooltip: __("Critical"),
-          toggleGroup: "status",
-          value: "c",
-          bind: {
-            disabled: "{statusDisabled.c}",
-          },
-          listeners: {
-            afterrender: "onButtonRender",
-          },
-        },
-      ],
-      listeners: {
-        toggle: "onStatusChange",
-      },
+      queryMode: "local",
+      displayField: "value",
+      valueField: "value",
+      // fieldLabel: __("Group"),
+      labelAlign: "right",
+      editable: false,
+      // listeners: {
+      //   select: "onGroupParamChange",
+      // },
     },
+    // {
+    //   xtype: "segmentedbutton",
+    //   itemId: "statusFilter",
+    //   allowDepress: false,
+    //   bind: {
+    //     value: "{status}",
+    //   },
+    //   items: [
+    //     {
+    //       tooltip: __("Unknown"),
+    //       toggleGroup: "status",
+    //       value: "u",
+    //     },
+    //     {
+    //       tooltip: __("Ok"),
+    //       toggleGroup: "status",
+    //       value: "o",
+    //     },
+    //     {
+    //       tooltip: __("Warning"),
+    //       toggleGroup: "status",
+    //       value: "w",
+    //     },
+    //     {
+    //       tooltip: __("Critical"),
+    //       toggleGroup: "status",
+    //       value: "c",
+    //     },
+    //   ],
+    //   listeners: {
+    //     afterrender: "onButtonsRender",
+    //     // toggle: "onStatusChange",
+    //   },
+    // },
     "->",
     {
       xtype: "tbtext",
@@ -249,12 +254,20 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   ],
   //
   preview: function(data){
-    var me = this;
+    var me = this,
+      vm = me.getViewModel(),
+      gridStore = vm.getStore("gridStore"),
+      groupStore = vm.getStore("groupStore"),
+      uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
+      firstGroup = Ext.isEmpty(uniqueGroups) ? __("no groups") : uniqueGroups[0].value;
+ 
     if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
       NOC.error(data.message);
       return
     }
-    me.currentId = data.id;
-    me.getViewModel().get("gridStore").loadData(data.conf);
+    vm.set("currentId", data.id);
+    groupStore.loadData(uniqueGroups);
+    gridStore.loadData(data.conf);
+    vm.set("groupParam", firstGroup);
   },
 });

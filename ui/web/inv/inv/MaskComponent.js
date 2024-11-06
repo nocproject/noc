@@ -20,6 +20,7 @@ Ext.define("NOC.inv.inv.MaskComponent", {
       fetching: __("Fetching data for {0}..."),
       processing: __("Processing {0} items..."),
       reloading: __("Reloading {0} ..."),
+      saving: __("Saving {0} ..."),
     };
         
     this.handleMaskTimeout = this.handleMaskTimeout.bind(this);

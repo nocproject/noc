@@ -4,54 +4,50 @@
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.plugins.pconf.Controller");
+console.debug("Defining NOC.inv.inv.plugins.pconf.PConfController");
 
-Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
+Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   extend: "Ext.app.ViewController",
   alias: "controller.pconf",
 
   onDataChanged: function(store){
-    var vm = this.getViewModel(),
-      hasStatus = function(value){
-        return store.findBy(function(record){
-          return !Ext.isEmpty(record.get("status")) && record.get("status") === value;
-        }) === -1;
-      },
-      hasStatuses = {
-        u: hasStatus("u"),
-        c: hasStatus("c"),
-        w: hasStatus("w"),
-        o: hasStatus("o"),
-      };
-    
+    var vm = this.getViewModel();
     if(vm){
       vm.set("totalCount", store.getCount());
     }
-    vm.set("statusDisabled", hasStatuses);
   },
   onReload: function(){
     var me = this,
-      panel = me.getView();
-    panel.mask(__("Loading..."));
+      currentId = me.getViewModel().get("currentId"),
+      panel = me.getView(),
+      maskComponent = panel.up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("fetching", "pconf");
     Ext.Ajax.request({
-      url: "/inv/inv/" + me.getView().currentId + "/plugin/pconf/",
+      url: "/inv/inv/" + currentId + "/plugin/pconf/",
       method: "GET",
       scope: me,
       success: function(response){
-        var data = Ext.decode(response.responseText);
+        var data = Ext.decode(response.responseText),
+          vm = me.getViewModel(),
+          group = vm.get("groupParam");
         panel.preview(data);
-        panel.unmask();
+        vm.set("groupParam", group);
       },
       failure: function(){
         NOC.error(__("Failed to load data"));
-        panel.unmask();
+      },
+      callback: function(){
+        maskComponent.hide(messageId);
       },
     });
   },
   onValueChanged: function(data){
-    var me = this;
+    var me = this,
+      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+      messageId = maskComponent.show("saving", "pconf"),
+      currentId = me.getViewModel().get("currentId");
     Ext.Ajax.request({
-      url: "/inv/inv/" + this.getView().currentId + "/plugin/pconf/set/",
+      url: "/inv/inv/" + currentId + "/plugin/pconf/set/",
       method: 'POST',
       jsonData: data,
       success: function(response){
@@ -67,31 +63,50 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
       failure: function(){
         NOC.error(__("Failed to set parameter"));
       },
+      callback: function(){
+        maskComponent.hide(messageId);
+      },
     });
   },
-  onStatusChange: function(group, button){
-    var store = this.getViewModel().getStore("gridStore"),
-      filters = store.getFilters();
-    
-    this.removeFilter();
-    if(button.pressed){
-      filters.add({
-        id: "invConfigStatusFilter",
-        filterFn: function(record){
-          var status = record.get("status");
-          return button.value === status
+  // onStatusChange: function(group, button){
+  //   var store = this.getViewModel().getStore("gridStore"),
+  //     filters = store.getFilters();
+   
+  //   this.removeFilter();
+  //   if(button.pressed){
+  //     filters.add({
+  //       id: "invConfigStatusFilter",
+  //       filterFn: function(record){
+  //         var status = record.get("status");
+  //         return button.value === status
+  //       },
+  //     });
+  //   }
+  // },
+  onTabTypeChange: function(combo){
+    var me = this.getView();
+    if(combo.getValue() === 2){
+      me.timer = Ext.TaskManager.start({
+        run: function(){
+          this.onReload();
         },
+        interval: me.timerInterval,
+        scope: this,
       });
+    } else{
+      if(me.timer){
+        Ext.TaskManager.stop(me.timer);
+        me.timer = null;
+      }
     }
   },
-  onTabTypeChange: function(){
-    this.removeFilter();
-  },
-  onButtonRender: function(button){
-    var config = this.getView().getStatus()[button.value];
-    button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
-    button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
-  },
+  // onButtonsRender: function(segmented){
+  //   Ext.each(segmented.getRefItems(), function(button){
+  //     var config = this.getView().getStatus()[button.value];
+  //     button.setGlyph("x" + NOC.glyph[config.glyph].toString(16));
+  //     button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
+  //   }, this);
+  // },
   valueRenderer: function(value, metaData, record){
     var displayValue,
       units = record.get("units"),
@@ -198,4 +213,8 @@ Ext.define("NOC.inv.inv.plugins.pconf.Controller", {
       filters.remove(statusFilter);
     }
   },
+  // onGroupParamChange: function(){
+  // console.log("onGroupParamChange");
+  // this.removeFilter();
+  // },
 });
