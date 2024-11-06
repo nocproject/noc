@@ -281,7 +281,7 @@ class PConfPlugin(InvPlugin):
                 if c["name"] in threholds:
                     th = threholds[c["name"]]
                     c["thresholds"] = th.to_json()
-                    c["status"] = th.get_status(c["value"])
+                    c["status"] = th.get_status(c["value"]).value
         return conf
 
     @staticmethod
