@@ -61,6 +61,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
           {
             id: "groupFilter",
             property: "group",
+            exactMatch: true,
             value: "{groupParam}",
           },
         ],
