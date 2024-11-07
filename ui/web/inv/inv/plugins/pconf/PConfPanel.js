@@ -83,6 +83,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   controller: "pconf",
   timer: undefined,
   timerInterval: 3000,
+  listeners: {
+    activate: "onActivate",
+  },
   tbar: [
     {
       glyph: NOC.glyph.refresh,

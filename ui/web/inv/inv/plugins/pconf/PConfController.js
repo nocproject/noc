@@ -127,6 +127,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   //     button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
   //   }, this);
   // },
+  onActivate: function(){
+    var combo = this.getView().down("combo[itemId=tabType]");
+    this.onTabTypeChange(combo);
+  },
   valueRenderer: function(value, metaData, record){
     var displayValue,
       units = record.get("units"),
