@@ -22,6 +22,7 @@ from noc.inv.models.object import Object, Crossing
 from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.connection import get_db
+from noc.main.models.extstorage import ExtStorage
 from .base import InvPlugin
 
 DEFAULT_GROUP = "Card"
@@ -176,9 +177,6 @@ class PConfPlugin(InvPlugin):
     name = "pconf"
     js = "NOC.inv.inv.plugins.pconf.PConfPanel"
 
-    # Set to config path for debugging
-    JSON_PATH: Path | None = None
-
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
@@ -227,14 +225,14 @@ class PConfPlugin(InvPlugin):
         return {"status": True, "conf": [x.to_json() for x in data.conf]}
 
     def fetch_data(self, obj: Object, /, table: Table, group: str) -> ParsedData:
-        if self.JSON_PATH:
-            # Beef
-            with open(self.JSON_PATH, "rb") as fp:
-                return self.parse_data(obj, orjson.loads(fp.read()), table, group)
         mo = self.get_managed_object(obj)
         if mo:
             # Managed
             return self.parse_data(obj, mo.scripts.get_params(), table, group)
+        # Beef
+        data = self.get_pconf_beef(obj)
+        if data:
+            return self.parse_data(obj, data, table, group)
         # Headless
         items = list(self.iter_headless(obj))
         return ParsedData(
@@ -557,7 +555,24 @@ class PConfPlugin(InvPlugin):
         """
         box = obj.get_box()
         mo_id = box.get_data("management", "managed_object")
+        if not mo_id:
+            return None
         return ManagedObject.get_by_id(mo_id)
+
+    def get_pconf_beef(self, obj: Object) -> None:
+        box = obj.get_box()
+        d = box.get_data("debug", "beef_path", scope="get_params")
+        if not d:
+            return None
+        storage_name, path = d.split(":", 1)
+        self.logger.info("Trying to get beef fron %s", d)
+        storage = ExtStorage.get_by_name(storage_name)
+        if not storage:
+            self.logger.info("Storage %s is not found, skipping", storage_name)
+            return None
+        fs = storage.open_fs()
+        with fs.open(path) as fp:
+            return orjson.loads(fp.read())
 
     @classmethod
     def get_model_name(cls, obj: Object) -> str:
