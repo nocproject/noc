@@ -21,7 +21,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       currentId = me.getViewModel().get("currentId"),
       panel = me.getView(),
       vm = me.getViewModel();
-    vm.set("icon", this.generateIcon("spinner", "grey"));
+    vm.set("icon", this.generateIcon("spinner", "grey", __("loading")));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/",
       method: "GET",
@@ -31,10 +31,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
           group = vm.get("groupParam");
         panel.preview(data);
         vm.set("groupParam", group);
-        vm.set("icon", this.generateIcon("circle", NOC.colors.yes));
+        vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
       },
       failure: function(){
-        vm.set("icon", this.generateIcon("circle", NOC.colors.no));
+        vm.set("icon", this.generateIcon("circle", NOC.colors.no, __("offline")));
         NOC.error(__("Failed to load data"));
       },
     });
@@ -100,10 +100,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
             isFocused = document.hasFocus(),
             isIntersecting = panel.isIntersecting;
           if(isIntersecting && isVisible && isFocused){
-            vm.set("icon", this.generateIcon("circle", NOC.colors.yes));
+            vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
             this.onReload();
           } else{
-            vm.set("icon", this.generateIcon("stop-circle-o", "grey"));
+            vm.set("icon", this.generateIcon("stop-circle-o", "grey", __("suspend")));
           }
         },
         interval: me.timerInterval,
@@ -234,9 +234,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       filters.remove(statusFilter);
     }
   },
-  generateIcon(icon, color){
+  generateIcon(icon, color, msg){
     if(this.getView().down("combo[itemId=tabType]").getValue() === 2){
-      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;'></i>`;
+      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
     }
     return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
