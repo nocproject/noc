@@ -86,9 +86,29 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   onTabTypeChange: function(combo){
     var me = this.getView();
     if(combo.getValue() === 2){
+      if(Ext.isEmpty(me.observer)){
+        me.observer = new IntersectionObserver(function(entries){
+          me.isIntersecting = entries[0].isIntersecting;
+        }, {
+          threshold: 1.0,
+        });
+      }
+      me.observer.observe(me.getEl().dom);
       me.timer = Ext.TaskManager.start({
         run: function(){
-          this.onReload();
+          var panel = this.getView(),
+            isVisible = !document.hidden,
+            isFocused = document.hasFocus(),
+            isIntersecting = panel.isIntersecting;
+          if(isIntersecting && isVisible && isFocused){
+            panel.up("[appId=inv.inv]").maskComponent.hide(panel.messageId);
+            panel.messageId = undefined;
+            this.onReload();
+          } else{
+            if(Ext.isEmpty(panel.messageId)){
+              panel.messageId = panel.up("[appId=inv.inv]").maskComponent.show("auto reload suspended");
+            }
+          }
         },
         interval: me.timerInterval,
         scope: this,
