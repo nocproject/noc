@@ -19,18 +19,20 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   onReload: function(){
     var me = this,
       currentId = me.getViewModel().get("currentId"),
-      panel = me.getView(),
       vm = me.getViewModel();
     vm.set("icon", this.generateIcon("spinner", "grey", __("loading")));
     Ext.Ajax.request({
-      url: "/inv/inv/" + currentId + "/plugin/pconf/",
+      url: "/inv/inv/" + currentId + "/plugin/pconf/data/",
       method: "GET",
       scope: me,
+      params: {
+        t: vm.get("tabType"),
+        g: vm.get("groupParam"),
+      },
       success: function(response){
         var data = Ext.decode(response.responseText),
-          group = vm.get("groupParam");
-        panel.preview(data);
-        vm.set("groupParam", group);
+          gridStore = vm.getStore("gridStore");
+        gridStore.loadData(data.conf);
         vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
       },
       failure: function(){
@@ -81,9 +83,17 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   //     });
   //   }
   // },
-  onTabTypeChange: function(combo){
-    var me = this.getView();
-    if(combo.getValue() === 2){
+  onTabTypeChange: function(combo, record){
+    var me = this.getView(),
+      getTimerInterval = function(value){
+        if(!Ext.isEmpty(value)){
+          var interval = value.get("autoreload");
+          return interval ? interval * 1000 : undefined;
+        }
+        return undefined;
+      },
+      timerInterval = getTimerInterval(record);
+    if(!Ext.isEmpty(timerInterval)){
       if(Ext.isEmpty(me.observer)){
         me.observer = new IntersectionObserver(function(entries){
           me.isIntersecting = entries[0].isIntersecting;
@@ -106,15 +116,15 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
             vm.set("icon", this.generateIcon("stop-circle-o", "grey", __("suspend")));
           }
         },
-        interval: me.timerInterval,
+        interval: timerInterval,
         scope: this,
       });
     } else{
       if(me.timer){
         Ext.TaskManager.stop(me.timer);
         me.timer = null;
-        me.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
       }
+      me.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
     }
   },
   // onButtonsRender: function(segmented){
@@ -126,7 +136,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   // },
   onActivate: function(){
     var combo = this.getView().down("combo[itemId=tabType]");
-    this.onTabTypeChange(combo);
+    this.onTabTypeChange(combo, combo.getStore().getById(combo.getValue()));
   },
   valueRenderer: function(value, metaData, record){
     var displayValue,

@@ -67,14 +67,18 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         ],
       },
       groupStore: {
-        fields: ["value"],
+        fields: ["id", "label"],
+        data: [],
+      },
+      tableStore: {
+        fields: ["id", "label"],
         data: [],
       },
     },
     data: {
       searchText: "",
       // status: "u",
-      tabType: 1,
+      tabType: "",
       groupParam: "", 
       totalCount: 0,
       currentId: null,
@@ -83,7 +87,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   },
   controller: "pconf",
   timer: undefined,
-  timerInterval: 3000,
   listeners: {
     activate: "onActivate",
   },
@@ -128,24 +131,18 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     {
       xtype: "combo",
       itemId: "tabType",
-      store: [
-        [1, "Info"],
-        [2, "Status"],
-        [3, "Config"],
-        [4, "Thresholds"],
-        [5, "Metrics"],
-      ],
       queryMode: "local",
-      displayField: "text",
-      valueField: "value",
+      displayField: "label",
+      valueField: "id",
+      editable: false,
       // fieldLabel: __("Mode"),
       // labelWidth: 130,
-      allowBlank: false,
-      labelAlign: "right",
+      // allowBlank: false,
+      // labelAlign: "right",
       bind: {
+        store: "{tableStore}",
         value: "{tabType}",
       },
-      editable: false,
       listeners: {
         select: "onTabTypeChange",
       },
@@ -158,11 +155,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
         value: "{groupParam}",
       },
       queryMode: "local",
-      displayField: "value",
-      valueField: "value",
-      // fieldLabel: __("Group"),
-      labelAlign: "right",
+      displayField: "label",
+      valueField: "id",
       editable: false,
+      // fieldLabel: __("Group"),
+      // labelAlign: "right",
       // listeners: {
       //   select: "onGroupParamChange",
       // },
@@ -257,21 +254,27 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     },
   ],
   //
-  preview: function(data){
+  preview: function(data, id){
     var me = this,
       vm = me.getViewModel(),
       gridStore = vm.getStore("gridStore"),
       groupStore = vm.getStore("groupStore"),
-      uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
-      firstGroup = Ext.isEmpty(uniqueGroups) ? __("no groups") : uniqueGroups[0].value;
+      tableStore = vm.getStore("tableStore"),
+      // uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
+      firstTable = Ext.isEmpty(data.tables) ? __("no tables") : data.tables[0].id,
+      firstGroup = Ext.isEmpty(data.groups) ? __("no groups") : data.groups[0].id;
  
     if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
       NOC.error(data.message);
       return
     }
-    vm.set("currentId", data.id);
-    groupStore.loadData(uniqueGroups);
+    vm.set("currentId", id);
+    groupStore.loadData(data.groups);
+    tableStore.loadData(data.tables);
     gridStore.loadData(data.conf);
+    if(vm.get("tabType") === ""){
+      vm.set("tabType", firstTable);
+    }
     vm.set("groupParam", firstGroup);
   },
 });
