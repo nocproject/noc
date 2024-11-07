@@ -31,7 +31,7 @@ Ext.define("Ext.ux.form.ColorField", {
                 defaultAlign: "tl-bl",
                 alignTarget: me.inputEl,
                 style: {
-                    backgroundColor: "#ffffff"
+                    backgroundColor: "#FFFFFF"
                 },
                 listeners: {
                     scope: me,
@@ -39,28 +39,28 @@ Ext.define("Ext.ux.form.ColorField", {
                     show: me.onShowPicker
                 },
                 colors: [
-                    '1abc9c',
-                    '2ecc71',
-                    '3498db',
-                    '9b59b6',
-                    '34495e',
-                    '16a085',
-                    '27ae60',
-                    '2980b9',
-                    '8e44ad',
-                    '2c3e50',
-                    'f1c40f',
-                    'e67e22',
-                    'e74c3c',
-                    'ecf0f1',
-                    '95a5a6',
-                    'f39c12',
-                    'd35400',
-                    'c0392b',
-                    'bdc3c7',
-                    '7f8c8d',
+                    '1ABC9C',
+                    '2ECC71',
+                    '3498DB',
+                    '9B59B6',
+                    '34495E',
+                    '16A085',
+                    '27AE60',
+                    '2980B9',
+                    '8E44AD',
+                    '2C3E50',
+                    'F1C40F',
+                    'E67E22',
+                    'E74C3C',
+                    'ECF0F1',
+                    '95A5A6',
+                    'F39C12',
+                    'D35400',
+                    'C0392B',
+                    'BDC3C7',
+                    '7F8C8D',
                     '000000',
-                    'ffffff'
+                    'FFFFFF'
                 ]
             });
         }
@@ -97,7 +97,7 @@ Ext.define("Ext.ux.form.ColorField", {
         while(hex.length < 6) {
             hex = "0" + hex;
         }
-        return "#" + hex;
+        return "#" + hex.toUpperCase();
     },
     //
     getValue: function() {
