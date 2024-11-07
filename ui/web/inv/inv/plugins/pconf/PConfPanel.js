@@ -78,6 +78,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       groupParam: "", 
       totalCount: 0,
       currentId: null,
+      icon: "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>",
     },
   },
   controller: "pconf",
@@ -204,7 +205,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     {
       xtype: "tbtext",
       bind: {
-        html: __("Total") + ": {totalCount}",
+        html: __("Total") + ": {totalCount}" + "{icon}",
       },
     },
   ],

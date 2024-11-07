@@ -20,24 +20,22 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     var me = this,
       currentId = me.getViewModel().get("currentId"),
       panel = me.getView(),
-      maskComponent = panel.up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show("fetching", "pconf");
+      vm = me.getViewModel();
+    vm.set("icon", this.generateIcon("spinner", "grey"));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/",
       method: "GET",
       scope: me,
       success: function(response){
         var data = Ext.decode(response.responseText),
-          vm = me.getViewModel(),
           group = vm.get("groupParam");
         panel.preview(data);
         vm.set("groupParam", group);
+        vm.set("icon", this.generateIcon("circle", NOC.colors.yes));
       },
       failure: function(){
+        vm.set("icon", this.generateIcon("circle", NOC.colors.no));
         NOC.error(__("Failed to load data"));
-      },
-      callback: function(){
-        maskComponent.hide(messageId);
       },
     });
   },
@@ -97,17 +95,15 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       me.timer = Ext.TaskManager.start({
         run: function(){
           var panel = this.getView(),
+            vm = this.getViewModel(),
             isVisible = !document.hidden,
             isFocused = document.hasFocus(),
             isIntersecting = panel.isIntersecting;
           if(isIntersecting && isVisible && isFocused){
-            panel.up("[appId=inv.inv]").maskComponent.hide(panel.messageId);
-            panel.messageId = undefined;
+            vm.set("icon", this.generateIcon("circle", NOC.colors.yes));
             this.onReload();
           } else{
-            if(Ext.isEmpty(panel.messageId)){
-              panel.messageId = panel.up("[appId=inv.inv]").maskComponent.show("auto reload suspended");
-            }
+            vm.set("icon", this.generateIcon("stop-circle-o", "grey"));
           }
         },
         interval: me.timerInterval,
@@ -117,6 +113,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       if(me.timer){
         Ext.TaskManager.stop(me.timer);
         me.timer = null;
+        me.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
       }
     }
   },
@@ -236,6 +233,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     if(statusFilter){
       filters.remove(statusFilter);
     }
+  },
+  generateIcon(icon, color){
+    if(this.getView().down("combo[itemId=tabType]").getValue() === 2){
+      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;'></i>`;
+    }
+    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
   // onGroupParamChange: function(){
   // console.log("onGroupParamChange");
