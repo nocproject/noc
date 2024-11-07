@@ -18,8 +18,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   },
   onReload: function(){
     var me = this,
-      currentId = me.getViewModel().get("currentId"),
-      vm = me.getViewModel();
+      vm = me.getViewModel(),
+      currentId = vm.get("currentId");
+    if(Ext.isEmpty(currentId)) return;
     vm.set("icon", this.generateIcon("spinner", "grey", __("loading")));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/data/",
@@ -93,6 +94,8 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
         return undefined;
       },
       timerInterval = getTimerInterval(record);
+    if(Ext.isEmpty(me.getViewModel().get("currentId"))) return;
+    this.onReload();
     if(!Ext.isEmpty(timerInterval)){
       if(Ext.isEmpty(me.observer)){
         me.observer = new IntersectionObserver(function(entries){

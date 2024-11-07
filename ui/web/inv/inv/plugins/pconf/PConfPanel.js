@@ -50,20 +50,20 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
             anyMatch: true,
             caseSensitive: false,
           },
-          {
-            property: "table",
-            value: "{tabType}",
-          },
+          // {
+          // property: "table",
+          // value: "{tabType}",
+          // },
           // {
           //   property: "status",
           //   value: "{status}",
           // },
-          {
-            id: "groupFilter",
-            property: "group",
-            exactMatch: true,
-            value: "{groupParam}",
-          },
+          // {
+          // id: "groupFilter",
+          // property: "group",
+          // exactMatch: true,
+          // value: "{groupParam}",
+          // },
         ],
       },
       groupStore: {
@@ -160,9 +160,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       editable: false,
       // fieldLabel: __("Group"),
       // labelAlign: "right",
-      // listeners: {
-      //   select: "onGroupParamChange",
-      // },
+      listeners: {
+        select: "onReload",
+      },
     },
     // {
     //   xtype: "segmentedbutton",
@@ -275,6 +275,8 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     if(vm.get("tabType") === ""){
       vm.set("tabType", firstTable);
     }
-    vm.set("groupParam", firstGroup);
+    if(vm.get("groupParam") === ""){
+      vm.set("groupParam", firstGroup);
+    }
   },
 });
