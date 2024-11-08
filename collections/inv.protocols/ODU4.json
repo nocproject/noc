@@ -1,0 +1,12 @@
+{
+    "name": "ODU4",
+    "code": "ODU4",
+    "$collection": "inv.protocols",
+    "uuid": "70daa40c-ab6b-45d5-96eb-f5029aace40c",
+    "description": "100G",
+    "data": [],
+    "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODU4",
+    "technology__name": "OTN"
+}
