@@ -6,12 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any, List
+from typing import Any, Iterable
 from enum import IntEnum, Enum
 from dataclasses import dataclass
 import uuid
 from collections import defaultdict
-from pathlib import Path
 
 # Third-party modules
 import orjson
@@ -22,54 +21,10 @@ from noc.inv.models.object import Object, Crossing
 from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.connection import get_db
+from noc.main.models.extstorage import ExtStorage
 from .base import InvPlugin
 
-
-class Table(IntEnum):
-    INFO = 1
-    STATUS = 2
-    CONFIG = 3
-    THRESHOLD = 4
-
-
-class Type(Enum):
-    STRING = "string"
-    ENUM = "enum"
-
-
-@dataclass
-class Item(object):
-    """
-    Configuration item
-    """
-
-    name: str
-    value: str
-    description: str = ""
-    units: str = ""
-    read_only: bool = False
-    type: Type = Type.STRING
-    table: Table = Table.CONFIG
-    options: Optional[Dict[str, str]] = None
-
-    def to_json(self) -> Dict[str, Any]:
-        r = {
-            "name": self.name,
-            "value": self.value,
-            "description": self.description,
-            "units": self.units,
-            "read_only": self.read_only,
-            "type": self.type.value,
-            "table": self.table.value,
-        }
-        if self.options is not None:
-            r["options"] = [{"id": k, "label": v} for k, v in self.options.items()]
-        return r
-
-
-H8_CT_UUID = uuid.UUID("4aa9afdc-7420-4dde-9727-2c3de1c3a8f4")
-CU_UUID = uuid.UUID("1cde0558-d43d-4485-9be2-89f08d85ed61")
-HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
+DEFAULT_GROUP = "Card"
 
 
 class Status(Enum):
@@ -129,15 +84,110 @@ class Threshold(object):
         return Status.OK
 
 
+class Table(IntEnum):
+    INFO = 1
+    STATUS = 2
+    CONFIG = 3
+    THRESHOLD = 4
+
+
+class Type(Enum):
+    STRING = "string"
+    ENUM = "enum"
+
+
+@dataclass
+class Item(object):
+    """
+    Configuration item
+    """
+
+    name: str
+    value: str
+    description: str = ""
+    units: str = ""
+    read_only: bool = False
+    type: Type = Type.STRING
+    table: Table | None = None
+    group: str | None = None
+    options: dict[str, str] | None = None
+    thresholds: Threshold | None = None
+
+    def to_json(self) -> dict[str, Any]:
+        r = {
+            "name": self.name,
+            "value": self.value,
+            "description": self.description,
+            "units": self.units,
+            "read_only": self.read_only,
+            "type": self.type.value,
+        }
+        if self.options is not None:
+            r["options"] = [{"id": k, "label": v} for k, v in self.options.items()]
+        if self.thresholds is not None:
+            r["thresholds"] = self.thresholds.to_json()
+            r["status"] = self.thresholds.get_status(self.value).value
+        return r
+
+    @classmethod
+    def from_dict(cls, row: dict[str, Any]) -> "Item":
+        # Determine type
+        name = row["nam"]
+        options = row.get("EM")
+        t = row.get("typ")
+        if options:
+            dt = Type.ENUM
+        elif t == 32:
+            dt = Type.STRING
+        else:
+            dt = Type.STRING
+        table = row.get("tbl", 1)
+        value = row.get("val") or ""
+        r = Item(
+            name=name,
+            value=value,
+            description=row.get("dsc") or "",
+            units=row.get("unt") or "",
+            read_only=(row.get("acs") or "") != "W",
+            type=dt,
+            table=table,
+        )
+        if options:
+            r.options = {x["val"]: x["dsc"] for x in options}
+        return r
+
+
+@dataclass
+class ParsedData(object):
+    groups: list[str]
+    conf: list[Item]
+
+    @classmethod
+    def empty(cls) -> "ParsedData":
+        return ParsedData(groups={}, conf=[])
+
+
+H8_CT_UUID = uuid.UUID("4aa9afdc-7420-4dde-9727-2c3de1c3a8f4")
+CU_UUID = uuid.UUID("1cde0558-d43d-4485-9be2-89f08d85ed61")
+HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
+
+
 class PConfPlugin(InvPlugin):
     name = "pconf"
     js = "NOC.inv.inv.plugins.pconf.PConfPanel"
 
-    # Set to config path for debugging
-    JSON_PATH: Path | None = None
-
     def init_plugin(self):
         super().init_plugin()
+        self.add_view(
+            "f_api_plugin_{self.name}_data",
+            self.api_data,
+            url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/data/$",
+            method=["GET"],
+            validate={
+                "t": StringParameter(default="1"),
+                "g": StringParameter(default=DEFAULT_GROUP),
+            },
+        )
         self.add_view(
             f"api_plugin_{self.name}_set",
             self.api_set,
@@ -146,16 +196,48 @@ class PConfPlugin(InvPlugin):
             validate={"name": StringParameter(), "value": StringParameter()},
         )
 
-    def get_data(self, request, o):
-        # Debugging
-        if self.JSON_PATH:
-            return self.get_beef(o, self.JSON_PATH)
+    def get_data(self, request, o: Object):
+        def q_table(t: Table) -> dict[str, str | int]:
+            r = {"id": t.value, "label": t.name.capitalize()}
+            if t == Table.STATUS:
+                r["autoreload"] = 3
+            return r
+
+        # Build sections
+        data = self.fetch_data(o, table=Table.INFO, group=DEFAULT_GROUP)
+        return {
+            "status": True,
+            "tables": [
+                q_table(x) for x in (Table.INFO, Table.STATUS, Table.CONFIG, Table.THRESHOLD)
+            ],
+            "groups": [{"id": x, "label": x} for x in data.groups],
+            "conf": [x.to_json() for x in data.conf],
+        }
+
+    def api_data(self, request, id: str, t: str, g: str) -> dict[str, Any]:
+        obj = self.app.get_object_or_404(Object, id=id)
+        try:
+            tbl = Table(int(t))
+        except ValueError:
+            return self.app.response_not_found("Invalid table")
+        data = self.fetch_data(obj, tbl, group=g)
+        return {"status": True, "conf": [x.to_json() for x in data.conf]}
+
+    def fetch_data(self, obj: Object, /, table: Table, group: str) -> ParsedData:
+        mo = self.get_managed_object(obj)
+        if mo:
+            # Managed
+            return self.parse_data(obj, mo.scripts.get_params(), table, group)
+        # Beef
+        data = self.get_pconf_beef(obj)
+        if data:
+            return self.parse_data(obj, data, table, group)
         # Headless
-        mo = self.get_managed_object(o)
-        if mo is None:
-            return self.get_headless(o)
-        # Managed
-        return self.get_managed(o, mo)
+        items = list(self.iter_headless(obj))
+        return ParsedData(
+            groups=list(set(i.group or DEFAULT_GROUP for i in items)),
+            conf=[i for i in items if i.table == table and i.group == group],
+        )
 
     @staticmethod
     def get_nvram_collection() -> Collection:
@@ -167,7 +249,7 @@ class PConfPlugin(InvPlugin):
         """
         return get_db()["pconf_nvram"]
 
-    def get_nvram(self, obj: Object, defaults: Dict[str, Any]) -> Dict[str, Any]:
+    def get_nvram(self, obj: Object, defaults: dict[str, Any]) -> dict[str, Any]:
         """
         Get headless NVRAM config.
 
@@ -196,74 +278,56 @@ class PConfPlugin(InvPlugin):
         coll = self.get_nvram_collection()
         coll.update_one({"_id": obj.id}, {"$set": {f"config.{name}": value}}, upsert=True)
 
-    @staticmethod
-    def _parse_for_slot(data: dict[str, Any], slot: int) -> list[dict[str, Any]]:
+    def parse_data(self, obj: Object, data: dict[str, Any], table: Table, group: str) -> ParsedData:
         """
-        Extract config for given slot.
+        Extract config for given slot and filters.
 
         Args:
+            obj: Object reference.
             data: Input data.
-            slot: Slot number.
+            table: Current table.
+            group: Current group.
 
         Returns:
-            Parsed config.
+            Parsed data
         """
+        slot = self._get_card(obj)
+        for item in data["RK"][0]["DV"]:
+            s = item.get("slt")
+            if not s:
+                continue
+            if s == slot:
+                slot_cfg = item
+                break
+        else:
+            return ParsedData.empty()
 
-        def filter_slot() -> dict[str, Any] | None:
-            for item in data["RK"][0]["DV"]:
-                s = item.get("slt")
-                if not s:
-                    continue
-                if s == slot:
-                    return item
-            return None
-
-        conf: list[dict[str, Any]] = []
-        slot_cfg = filter_slot()
-        if not slot_cfg:
-            return []
+        conf: list[Item] = []
+        pm = slot_cfg.get("PM")
+        if not pm:
+            return ParsedData.empty()
         # Groups
         g_map: dict[str, str] = {}  # param -> group
+        groups: list[str] = [DEFAULT_GROUP]
         gm = slot_cfg.get("GM")
         if gm:
             for g in gm:
                 gn = g["nam"]
-                for v in g["val"]:
-                    g_map[v] = gn
+                if gn:
+                    groups.append(gn)
+                    for v in g["val"]:
+                        g_map[v] = gn
         # Parameters
-        pm = slot_cfg.get("PM")
-        if not pm:
-            return []
         threholds: defaultdict[str, Threshold] = defaultdict(Threshold)
         for row in pm:
             name = row.get("nam")
             if not name:
                 continue
-            # Determine type
-            options = row.get("EM")
-            t = row.get("typ")
-            if options:
-                dt = "enum"
-            elif t == 32:
-                dt = "string"
-            else:
-                dt = "string"
-            table = row.get("tbl", 1)
-            value = row.get("val") or ""
-            c = {
-                "name": name,
-                "value": value,
-                "description": row.get("dsc") or "",
-                "units": row.get("unt") or "",
-                "read_only": (row.get("acs") or "") != "W",
-                "type": dt,
-                "table": table,
-                "group": g_map.get(name, "") or "Card",
-            }
-            if options:
-                c["options"] = [{"id": x["val"], "label": x["dsc"]} for x in options]
-            conf.append(c)
-            if table == Table.THRESHOLD:
+            row_table = row.get("tbl", 1)
+            row_group = g_map.get(name, "") or DEFAULT_GROUP
+            if row_table == Table.THRESHOLD and table == Table.STATUS:
+                # Get threshold
+                value = row.get("val") or ""
                 match name[-4:]:
                     case "CMin":
                         threholds[name[:-4]].c_min = value
@@ -275,14 +339,14 @@ class PConfPlugin(InvPlugin):
                         threholds[name[:-4]].c_max = value
                     case _:
                         pass
+            elif row_table == table and row_group == group:
+                conf.append(Item.from_dict(row))
         # Apply thresholds
         if threholds:
             for c in conf:
-                if c["name"] in threholds:
-                    th = threholds[c["name"]]
-                    c["thresholds"] = th.to_json()
-                    c["status"] = th.get_status(c["value"]).value
-        return conf
+                if c.name in threholds:
+                    c.thresholds = threholds[c.name]
+        return ParsedData(groups=groups, conf=conf)
 
     @staticmethod
     def _get_card(obj: Object) -> int:
@@ -310,78 +374,40 @@ class PConfPlugin(InvPlugin):
             return (int(obj.parent.parent_connection) - 1) * 2 + int(obj.parent_connection)
         return (int(obj.parent_connection) - 1) * 2 + 1
 
-    def get_managed(self, obj: Object, mo: ManagedObject) -> Dict[str, Any]:
-        """
-        Get config from managed object.
-
-        Args:
-            obj: Object instance.
-            mo: Managed object instance.
-        Returns:
-            Response data.
-        """
-        data = mo.scripts.get_params()
-        conf = self._parse_for_slot(data, self._get_card(obj))
-        return {"id": str(obj.id), "conf": conf}
-
-    def get_beef(self, obj: Object, path: Path) -> dict[str, Any]:
-        """
-        Get data from JSON.
-
-        For debugging.
-
-        Args:
-            obj: Object reference.
-            path: JSON file path.
-
-        Returns:
-            Response data.
-        """
-        with open(path, "rb") as fp:
-            data = orjson.loads(fp.read())
-        conf = self._parse_for_slot(data, self._get_card(obj))
-        return {"id": str(obj.id), "conf": conf}
-
-    def get_headless(self, obj: Object) -> Dict[str, Any]:
+    def iter_headless(self, obj: Object) -> Iterable[Item]:
         """
         Generate data for headless mode.
         """
         match self.get_model_name(obj):
             case "ADM-200":
-                return self.get_headless_adm200(obj)
+                yield from self.iter_headless_adm200(obj)
             case _:
-                return self.error_response("Headless mode is not supported")
+                return
 
-    def get_headless_adm200(self, obj: Object) -> Dict[str, Any]:
+    def iter_headless_adm200(self, obj: Object) -> Iterable[Item]:
         """
         Generate headless config for ADM200
         """
-        conf: List[Item] = []
         nvram = self.get_nvram(obj, {"SetMode": "AGG-200"})
         # pId
-        conf.append(
-            Item(
-                name="pId",
-                value=obj.get_data("asset", "part_no"),
-                description="Идентификатор блока",
-                type=Type.STRING,
-                table=Table.INFO,
-                read_only=True,
-            )
+        yield Item(
+            name="pId",
+            value=obj.get_data("asset", "part_no"),
+            description="Идентификатор блока",
+            type=Type.STRING,
+            table=Table.INFO,
+            read_only=True,
         )
         # SetMode
-        conf.append(
-            Item(
-                name="SetMode",
-                value=nvram["SetMode"],
-                description="Установка режима",
-                type=Type.ENUM,
-                table=Table.CONFIG,
-                read_only=False,
-                options={k: v for k, v in ADM200_VMAP.items()},
-            )
+        yield Item(
+            name="SetMode",
+            value=nvram["SetMode"],
+            description="Установка режима",
+            type=Type.ENUM,
+            table=Table.CONFIG,
+            read_only=False,
+            options={k: v for k, v in ADM200_VMAP.items()},
         )
-        return {"id": str(obj.id), "conf": [c.to_json() for c in conf]}
 
     def api_set(self, request, id: str, name: str, value: str):
         obj = self.app.get_object_or_404(Object, id=id)
@@ -390,7 +416,7 @@ class PConfPlugin(InvPlugin):
             return self.set_headless(obj, name, value)
         return self.set_managed(obj, mo, name, value)
 
-    def set_headless(self, obj: Object, name: str, value: Any) -> Dict[str, Any]:
+    def set_headless(self, obj: Object, name: str, value: Any) -> dict[str, Any]:
         """
         Set operation in headless mode.
 
@@ -408,7 +434,7 @@ class PConfPlugin(InvPlugin):
             case _:
                 return self.error_response("Headless mode is not supported")
 
-    def set_headless_adm200(self, obj: Object, name: str, value: Any) -> Dict[str, Any]:
+    def set_headless_adm200(self, obj: Object, name: str, value: Any) -> dict[str, Any]:
         """
         Emulate ADM-200 commands.
 
@@ -426,7 +452,7 @@ class PConfPlugin(InvPlugin):
             case _:
                 return self.error_response("Command is unsupported in headless mode")
 
-    def set_headless_adm200_set_mode(self, obj: Object, mode: Any) -> Dict[str, Any]:
+    def set_headless_adm200_set_mode(self, obj: Object, mode: Any) -> dict[str, Any]:
         """
         ADM-200 SetMode emulation.
 
@@ -462,7 +488,7 @@ class PConfPlugin(InvPlugin):
         obj.save()
         return self.success_response("Crossings has been set")
 
-    def set_managed(self, obj: Object, mo: ManagedObject, name: str, value: Any) -> Dict[str, Any]:
+    def set_managed(self, obj: Object, mo: ManagedObject, name: str, value: Any) -> dict[str, Any]:
         """
         Apply settings to managed object.
 
@@ -518,7 +544,7 @@ class PConfPlugin(InvPlugin):
                 return False
 
     @classmethod
-    def get_managed_object(cls, obj: Object) -> Optional[ManagedObject]:
+    def get_managed_object(cls, obj: Object) -> ManagedObject | None:
         """
         Get M.O. related to module.
 
@@ -528,7 +554,24 @@ class PConfPlugin(InvPlugin):
         """
         box = obj.get_box()
         mo_id = box.get_data("management", "managed_object")
+        if not mo_id:
+            return None
         return ManagedObject.get_by_id(mo_id)
+
+    def get_pconf_beef(self, obj: Object) -> None:
+        box = obj.get_box()
+        d = box.get_data("debug", "beef_path", scope="get_params")
+        if not d:
+            return None
+        storage_name, path = d.split(":", 1)
+        self.logger.info("Trying to get beef fron %s", d)
+        storage = ExtStorage.get_by_name(storage_name)
+        if not storage:
+            self.logger.info("Storage %s is not found, skipping", storage_name)
+            return None
+        fs = storage.open_fs()
+        with fs.open(path) as fp:
+            return orjson.loads(fp.read())
 
     @classmethod
     def get_model_name(cls, obj: Object) -> str:
@@ -544,7 +587,7 @@ class PConfPlugin(InvPlugin):
         return obj.model.name.split("|")[-1].strip()
 
     @classmethod
-    def success_response(cls, msg: str) -> Dict[str, Any]:
+    def success_response(cls, msg: str) -> dict[str, Any]:
         """
         Generate success response.
 
@@ -557,7 +600,7 @@ class PConfPlugin(InvPlugin):
         return {"status": True, "message": msg}
 
     @classmethod
-    def error_response(cls, msg: str) -> Dict[str, Any]:
+    def error_response(cls, msg: str) -> dict[str, Any]:
         """
         Generate error response.
 

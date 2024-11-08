@@ -80,6 +80,9 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
     "->",
     {
       xtype: "tbtext",
+      style: {
+        paddingRight: "20px",
+      },
       bind: {
         html: __("Total") + ": {totalCount}",
       },
