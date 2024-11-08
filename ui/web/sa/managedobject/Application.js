@@ -3,7 +3,7 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 
-defaultColumns = [
+const defaultColumns = [
   {
     xtype: 'glyphactioncolumn',
     width: 25,
@@ -201,7 +201,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                     handler: 'onEdit',
                   },
                 ],
-              }].concat(this.defaultColumns),
+              }].concat(defaultColumns),
               bind: {
                 store: '{selectionStore}',
                 selection: '{selectionRow}',
@@ -348,7 +348,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                   glyph: NOC.glyph.minus_circle,
                   handler: 'onRemoveObject',
                 }],
-              }].concat(this.defaultColumns),
+              }].concat(defaultColumns),
               split: {
                 xtype: 'splitter',
               },
@@ -535,7 +535,7 @@ Ext.define('NOC.sa.managedobject.Application', {
           border: false,
           scrollable: true,
           bind: '{selectedStore}',
-          columns: this.defaultColumns.concat([{
+          columns: defaultColumns.concat([{
             xtype: 'glyphactioncolumn',
             width: 25,
             items: [{
@@ -659,7 +659,7 @@ Ext.define('NOC.sa.managedobject.Application', {
           border: false,
           scrollable: true,
           bind: '{selectedStore}',
-          columns: this.defaultColumns.concat({
+          columns: defaultColumns.concat({
             text: __('Status'),
             dataIndex: 'status',
             width: 70,
