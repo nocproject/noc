@@ -79,10 +79,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       searchText: "",
       // status: "u",
       tabType: "",
-      groupParam: "", 
+      groupParam: "",
       totalCount: 0,
       currentId: null,
       icon: "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>",
+      mgmt_url: "",
     },
   },
   controller: "pconf",
@@ -162,6 +163,14 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       // labelAlign: "right",
       listeners: {
         select: "onReload",
+      },
+    },
+    {
+      glyph: NOC.glyph.wrench,
+      tooltip: __("Management console"),
+      handler: "onMgmtClick",
+      bind: {
+        disabled: "{!mgmt_url}",
       },
     },
     // {
@@ -272,6 +281,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     groupStore.loadData(data.groups);
     tableStore.loadData(data.tables);
     gridStore.loadData(data.conf);
+    vm.set("mgmt_url", data.mgmt_url || "");
     if(vm.get("tabType") === ""){
       vm.set("tabType", firstTable);
     }

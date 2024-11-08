@@ -161,6 +161,7 @@ class Item(object):
 class ParsedData(object):
     groups: list[str]
     conf: list[Item]
+    mgmt_url: str | None = None
 
     @classmethod
     def empty(cls) -> "ParsedData":
@@ -205,7 +206,7 @@ class PConfPlugin(InvPlugin):
 
         # Build sections
         data = self.fetch_data(o, table=Table.INFO, group=DEFAULT_GROUP)
-        return {
+        r = {
             "status": True,
             "tables": [
                 q_table(x) for x in (Table.INFO, Table.STATUS, Table.CONFIG, Table.THRESHOLD)
@@ -213,6 +214,9 @@ class PConfPlugin(InvPlugin):
             "groups": [{"id": x, "label": x} for x in data.groups],
             "conf": [x.to_json() for x in data.conf],
         }
+        if data.mgmt_url:
+            r["mgmt_url"] = data.mgmt_url
+        return r
 
     def api_data(self, request, id: str, t: str, g: str) -> dict[str, Any]:
         obj = self.app.get_object_or_404(Object, id=id)
@@ -227,11 +231,13 @@ class PConfPlugin(InvPlugin):
         mo = self.get_managed_object(obj)
         if mo:
             # Managed
-            return self.parse_data(obj, mo.scripts.get_params(), table, group)
+            return self.parse_data(
+                obj, mo.scripts.get_params(), table=table, group=group, address=mo.address
+            )
         # Beef
         data = self.get_pconf_beef(obj)
         if data:
-            return self.parse_data(obj, data, table, group)
+            return self.parse_data(obj, data, table=table, group=group, address="10.10.10.10")
         # Headless
         items = list(self.iter_headless(obj))
         return ParsedData(
@@ -278,7 +284,15 @@ class PConfPlugin(InvPlugin):
         coll = self.get_nvram_collection()
         coll.update_one({"_id": obj.id}, {"$set": {f"config.{name}": value}}, upsert=True)
 
-    def parse_data(self, obj: Object, data: dict[str, Any], table: Table, group: str) -> ParsedData:
+    def parse_data(
+        self,
+        obj: Object,
+        data: dict[str, Any],
+        /,
+        table: Table,
+        group: str,
+        address: str | None = None,
+    ) -> ParsedData:
         """
         Extract config for given slot and filters.
 
@@ -346,7 +360,10 @@ class PConfPlugin(InvPlugin):
             for c in conf:
                 if c.name in threholds:
                     c.thresholds = threholds[c.name]
-        return ParsedData(groups=groups, conf=conf)
+        r = ParsedData(groups=groups, conf=conf)
+        if address:
+            r.mgmt_url = f"https://{address}/?devcrate=1&devslot={slot}"
+        return r
 
     @staticmethod
     def _get_card(obj: Object) -> int:

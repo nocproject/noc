@@ -253,6 +253,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     }
     return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
+  onMgmtClick: function(){
+    var vm = this.getViewModel(),
+      url = vm.get("mgmt_url");
+    if(Ext.isEmpty(url)) return;
+    window.open(url, "_blank");
+  },
   // onGroupParamChange: function(){
   // console.log("onGroupParamChange");
   // this.removeFilter();
