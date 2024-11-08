@@ -686,7 +686,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Packet size, bytes"),
                                                     labelWidth: 220,
-                                                    minValue: 0,
                                                     uiStyle: "small",
                                                     defautlValue: 64,
                                                     minValue: 64

@@ -62,7 +62,6 @@ Ext.define("NOC.fm.event.ApplicationController", {
         this.initFilter(this.getViewModel());
     },
     dateValidator: function() {
-        debugger;
         return true;
     },
     // Returns true if polling is locked

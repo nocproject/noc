@@ -151,10 +151,10 @@ Ext.define("Ext.ux.form.DictField", {
     },
     //
     onCellEdit: function(editor, e) {
-        var me = this,
-            editor = e.grid.columns[e.colIdx].getEditor();
-        if(editor.rawValue) {
-            e.record.set(e.field + "__label", editor.rawValue);
+            var me = this,
+                cellEditor = e.grid.columns[e.colIdx].getEditor();
+            if(cellEditor.rawValue) {
+                e.record.set(e.field + "__label", cellEditor.rawValue);
+            }
         }
-    }
 });
