@@ -414,18 +414,25 @@ Ext.define("NOC.inv.inv.Application", {
       },
     });
   },
-  onBeforeTabChange: function(tabPanel, newCard){
+  onBeforeTabChange: function(tabPanel, currentPanel, oldPanel){
     var me = this,
       objectId = me.selectedObjectId,
-      pluginName = newCard.pluginName,
+      pluginName = currentPanel.pluginName,
       messageId = me.maskComponent.show("fetching", [pluginName]);
+    if(oldPanel && !Ext.isEmpty(oldPanel.messageId)){
+      me.maskComponent.hide(me.messageId);
+    }
+    if(oldPanel && !Ext.isEmpty(oldPanel.timer)){
+      Ext.TaskManager.stop(oldPanel.timer);
+      oldPanel.timer = null;
+    }
     Ext.Ajax.request({
       url: "/inv/inv/" + objectId + "/plugin/" + pluginName + "/",
       method: "GET",
       scope: me,
       success: function(response){
         var data = Ext.decode(response.responseText);
-        newCard.preview(data, objectId);
+        currentPanel.preview(data, objectId);
       },
       failure: function(){
         NOC.error(__("Failed to get data for plugin") + " " + pluginName);

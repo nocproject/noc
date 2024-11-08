@@ -1,0 +1,15 @@
+{
+    "name": "debug",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "93682059-fcf8-4306-9249-1d617976f3a9",
+    "description": "Debugging hints",
+    "attrs": [
+        {
+            "name": "beef_path",
+            "type": "str",
+            "description": "Path to beef in form <ext storage>:<path>",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

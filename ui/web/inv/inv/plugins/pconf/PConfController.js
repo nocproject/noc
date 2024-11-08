@@ -18,26 +18,27 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   },
   onReload: function(){
     var me = this,
-      currentId = me.getViewModel().get("currentId"),
-      panel = me.getView(),
-      maskComponent = panel.up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show("fetching", "pconf");
+      vm = me.getViewModel(),
+      currentId = vm.get("currentId");
+    if(Ext.isEmpty(currentId)) return;
+    vm.set("icon", this.generateIcon("spinner", "grey", __("loading")));
     Ext.Ajax.request({
-      url: "/inv/inv/" + currentId + "/plugin/pconf/",
+      url: "/inv/inv/" + currentId + "/plugin/pconf/data/",
       method: "GET",
       scope: me,
+      params: {
+        t: vm.get("tabType"),
+        g: vm.get("groupParam"),
+      },
       success: function(response){
         var data = Ext.decode(response.responseText),
-          vm = me.getViewModel(),
-          group = vm.get("groupParam");
-        panel.preview(data);
-        vm.set("groupParam", group);
+          gridStore = vm.getStore("gridStore");
+        gridStore.loadData(data.conf);
+        vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
       },
       failure: function(){
+        vm.set("icon", this.generateIcon("circle", NOC.colors.no, __("offline")));
         NOC.error(__("Failed to load data"));
-      },
-      callback: function(){
-        maskComponent.hide(messageId);
       },
     });
   },
@@ -83,14 +84,42 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   //     });
   //   }
   // },
-  onTabTypeChange: function(combo){
-    var me = this.getView();
-    if(combo.getValue() === 2){
+  onTabTypeChange: function(combo, record){
+    var me = this.getView(),
+      getTimerInterval = function(value){
+        if(!Ext.isEmpty(value)){
+          var interval = value.get("autoreload");
+          return interval ? interval * 1000 : undefined;
+        }
+        return undefined;
+      },
+      timerInterval = getTimerInterval(record);
+    if(Ext.isEmpty(me.getViewModel().get("currentId"))) return;
+    this.onReload();
+    if(!Ext.isEmpty(timerInterval)){
+      if(Ext.isEmpty(me.observer)){
+        me.observer = new IntersectionObserver(function(entries){
+          me.isIntersecting = entries[0].isIntersecting;
+        }, {
+          threshold: 1.0,
+        });
+      }
+      me.observer.observe(me.getEl().dom);
       me.timer = Ext.TaskManager.start({
         run: function(){
-          this.onReload();
+          var panel = this.getView(),
+            vm = this.getViewModel(),
+            isVisible = !document.hidden,
+            isFocused = document.hasFocus(),
+            isIntersecting = panel.isIntersecting;
+          if(isIntersecting && isVisible && isFocused){
+            vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
+            this.onReload();
+          } else{
+            vm.set("icon", this.generateIcon("stop-circle-o", "grey", __("suspend")));
+          }
         },
-        interval: me.timerInterval,
+        interval: timerInterval,
         scope: this,
       });
     } else{
@@ -98,6 +127,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
         Ext.TaskManager.stop(me.timer);
         me.timer = null;
       }
+      me.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
     }
   },
   // onButtonsRender: function(segmented){
@@ -107,6 +137,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   //     button.getEl().down(".x-btn-glyph").setStyle("color", config.color);
   //   }, this);
   // },
+  onActivate: function(){
+    var combo = this.getView().down("combo[itemId=tabType]");
+    this.onTabTypeChange(combo, combo.getStore().getById(combo.getValue()));
+  },
   valueRenderer: function(value, metaData, record){
     var displayValue,
       units = record.get("units"),
@@ -212,6 +246,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     if(statusFilter){
       filters.remove(statusFilter);
     }
+  },
+  generateIcon(icon, color, msg){
+    if(this.getView().down("combo[itemId=tabType]").getValue() === 2){
+      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
   // onGroupParamChange: function(){
   // console.log("onGroupParamChange");

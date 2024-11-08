@@ -82,6 +82,9 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
     "->",
     {
       xtype: "tbtext",
+      style: {
+        paddingRight: "20px",
+      },
       bind: {
         html: __("Total") + ": {totalCount}",
       },
