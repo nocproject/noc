@@ -165,7 +165,7 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                                     editor[el.mapTo] = new RegExp(record.get(el.param));
                                                 } else if(el.param === "step") {
                                                     var step = Number(record.get(el.param));
-                                                    if(step !== NaN) {
+                                                    if(!Number.isNaN(step)) {
                                                         editor[el.mapTo] = step;
                                                     }
                                                 } else {
@@ -179,13 +179,13 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                     }
                                     switch(type) {
                                         case "number":
-                                            var editor = {
+                                            var numberEditor = {
                                                 xtype: "numberfield",
                                             };
                                             if(record.get("minValue") || record.get("maxValue")) {
-                                                editor.fieldLabel = record.get("minValue") + " - " + record.get("maxValue");
+                                                numberEditor.fieldLabel = record.get("minValue") + " - " + record.get("maxValue");
                                                 if(record.get("step")) {
-                                                    editor.fieldLabel += "," + record.get("step");
+                                                    numberEditor.fieldLabel += "," + record.get("step");
                                                 }
                                             }
                                             Ext.each([
@@ -195,21 +195,21 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                                 {param: "step", mapTo: "step"}
                                             ],
                                                 mappingValidationParams);
-                                            context.column.setEditor(editor);
+                                            context.column.setEditor(numberEditor);
                                             break;
                                         case "bool":
-                                            var editor = {
+                                            var boolEditor = {
                                                 xtype: "checkboxfield"
                                             };
                                             Ext.each([
                                                 {param: "allowBlank", mapTo: "allowBlank"},
                                             ],
                                                 mappingValidationParams);
-                                            context.column.setEditor(editor);
+                                            context.column.setEditor(boolEditor);
                                             break;
                                         default:
                                             if(record.get("choices")) {
-                                                var editor = {
+                                                var defaultEditor = {
                                                     xtype: "combobox",
                                                     store: {
                                                         data: Ext.Array.map(record.get("choices"), function(el) {
@@ -223,9 +223,9 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                                 Ext.each([
                                                     {param: "allowBlank", mapTo: "allowBlank"}],
                                                     mappingValidationParams);
-                                                context.column.setEditor(editor);
+                                                context.column.setEditor(defaultEditor);
                                             } else {
-                                                var editor = {
+                                                var textEditor = {
                                                     xtype: "textfield",
                                                 };
                                                 Ext.each([
@@ -235,7 +235,7 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                                     {param: "regex", mapTo: "regex"}
                                                 ],
                                                     mappingValidationParams);
-                                                context.column.setEditor(editor);
+                                                context.column.setEditor(textEditor);
                                             }
                                     }
                                 }

@@ -47,7 +47,7 @@ Ext.define("NOC.fm.alarm.model.Filter", {
         },
         {
             name: "resource_group",
-            type: "str"
+            type: "string"
         },
         {
             name: "alarm_class",

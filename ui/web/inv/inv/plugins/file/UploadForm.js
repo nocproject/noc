@@ -13,7 +13,6 @@ Ext.define("NOC.inv.inv.plugins.file.UploadForm", {
     app: undefined,
     title: __("Upload Files"),
     layout: "fit",
-    app: null,
 
     initComponent: function() {
         var me = this;

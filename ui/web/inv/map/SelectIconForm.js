@@ -15,7 +15,6 @@ Ext.define("NOC.inv.map.SelectIconForm", {
     ],
     title: __("Select Shape"),
     autoShow: true,
-    closable: false,
     modal: true,
     app: null,
     closable: true,

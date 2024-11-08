@@ -13,9 +13,7 @@ Ext.define('Ext.ux.form.MultiSelect', {
     alternateClassName: 'Ext.ux.Multiselect',
     alias: ['widget.multiselectfield', 'widget.multiselect'],
     
-    requires: ['Ext.panel.Panel', 'Ext.view.BoundList', 'Ext.layout.container.Fit'],
-    
-    requires: ['Ext.view.DragZone', 'Ext.view.DropZone'],
+    requires: ['Ext.panel.Panel', 'Ext.view.BoundList', 'Ext.layout.container.Fit', 'Ext.view.DragZone', 'Ext.view.DropZone'],
     
     layout: 'anchor',
     

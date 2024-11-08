@@ -142,7 +142,6 @@ Ext.define("NOC.cm.configurationparam.Application", {
                         {
                             dataIndex: "key",
                             text: __("Key"),
-                            editor: "textfield",
                             width: 150,
                             editor: {
                                 xtype: "combobox",

@@ -39,7 +39,7 @@ Ext.define("NOC.pm.scale.Application", {
                     text: __("Scale"),
                     dataIndex: "exp",
                     flex: 1,
-                    renderer: function (_, _, record) {
+                    renderer: function (value, metaData, record) {
                         let exp = record.get("exp");
                         if(exp === 0) {
                             return "1"
