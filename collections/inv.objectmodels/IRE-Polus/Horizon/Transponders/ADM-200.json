@@ -49,6 +49,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTUC2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ODU4"
                 }
             ],
             "type__name": "Transceiver | CFP2"

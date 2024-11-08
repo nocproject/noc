@@ -109,7 +109,7 @@ class Item(object):
     read_only: bool = False
     type: Type = Type.STRING
     table: Table | None = None
-    group: str | None = None
+    group: str = DEFAULT_GROUP
     options: dict[str, str] | None = None
     thresholds: Threshold | None = None
 
@@ -237,7 +237,7 @@ class PConfPlugin(InvPlugin):
         # Beef
         data = self.get_pconf_beef(obj)
         if data:
-            return self.parse_data(obj, data, table=table, group=group, address="10.10.10.10")
+            return self.parse_data(obj, data, table=table, group=group)
         # Headless
         items = list(self.iter_headless(obj))
         return ParsedData(
@@ -714,6 +714,6 @@ ADM200_MAP = {
         {"input": "CLIENT8", "output": "CLIENT18", "output_discriminator": "odu::ODU2"},
         {"input": "CLIENT9", "output": "CLIENT19", "output_discriminator": "odu::ODU2"},
         {"input": "CLIENT10", "output": "CLIENT20", "output_discriminator": "odu::ODU2"},
-        {"input": "LINE2", "output": "LINE1", "output_discriminator": "odu::ODUC4"},
+        {"input": "LINE2", "output": "LINE1", "output_discriminator": "odu::ODU4"},
     ],
 }
