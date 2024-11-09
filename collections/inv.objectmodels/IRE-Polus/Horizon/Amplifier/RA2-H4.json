@@ -64,6 +64,10 @@
             "description": "Оптический адаптер LC/APC, вход служебного канала.",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "OSC"
+            }],
             "type__name": "Optical | LC"
         },
         {
@@ -71,6 +75,10 @@
             "description": "Оптический адаптер LC/APC, выход служебного канала.",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "OSC"
+            }],
             "type__name": "Optical | LC"
         }
     ],
