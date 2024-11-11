@@ -82,8 +82,10 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         step: 1,
         listeners: {
           change: function(field, newValue){
-            var button = field.up("menu").up("button");
-            button.setZoom(newValue || 0);
+            var button = field.up("menu").up("button"),
+              value = newValue || 0;
+            this.up("invPluginsZoom").getViewModel().set("zoom", value);
+            button.setZoom(value);
           },
         },
       },
