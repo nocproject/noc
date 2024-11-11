@@ -18,5 +18,5 @@ postgres_data_dir: /var/lib/pgsql/14/data
 postgresql_conf_prefix: /var/lib/pgsql/14/data
 postgres_proccess: postmaster
 
-jemalloc_path: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+jemalloc_path: /usr/lib64/libjemalloc.so.2
 fake_shell: /sbin/nologin
