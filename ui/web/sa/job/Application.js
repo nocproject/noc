@@ -15,6 +15,7 @@ Ext.define("NOC.sa.job.Application", {
   model: "NOC.sa.job.Model",
   defaultListenerScope: true,
   canAdd: false,
+  xtype: "sajob",
   columns: [
     {
       text: __("Name"),
@@ -269,7 +270,7 @@ Ext.define("NOC.sa.job.Application", {
       if(Ext.isEmpty(record)){
         me.sendRequest(element.id, "/", function(response){
           var data = Ext.decode(response.responseText);
-          me.setRightPanelValues(Ext.create('Ext.data.Record', data));
+          me.setRightPanelValues(Ext.create("Ext.data.Record", data));
         });
       } else{
         me.setRightPanelValues(record);
@@ -297,7 +298,7 @@ Ext.define("NOC.sa.job.Application", {
 
     me.sendRequest(parentId, "/", function(response){
       var data = Ext.decode(response.responseText);
-      me.onEditRecord(Ext.create('Ext.data.Record', data));
+      me.onEditRecord(Ext.create("Ext.data.Record", data));
       me.setHistoryHash(parentId);
     });
   },

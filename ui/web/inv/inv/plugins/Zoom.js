@@ -82,8 +82,10 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
         step: 1,
         listeners: {
           change: function(field, newValue){
-            var button = field.up("menu").up("button");
-            button.setZoom(newValue || 0);
+            var button = field.up("menu").up("button"),
+              value = newValue || 0;
+            this.up("invPluginsZoom").getViewModel().set("zoom", value);
+            button.setZoom(value);
           },
         },
       },
@@ -132,7 +134,11 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   },
 
   _getSvgElement: function(){
-    var container = this.up("[appId]").down("#schemeContainer");
+    var container, parent = this.up("filescheme,vizscheme,sajob");
+    if(Ext.isEmpty(parent)){
+      return undefined
+    }
+    container = parent.down("#schemeContainer");
     return container.getEl().dom.querySelector("svg");
   },
 
@@ -190,6 +196,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
     var vm = this.getViewModel(),
       zoom = vm.get("zoom"),
       element = this._getSvgElement();
+    if(!element) return;
     this.fitSvgToContainer(element, zoom);
   },
 
