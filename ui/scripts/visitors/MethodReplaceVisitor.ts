@@ -1,4 +1,5 @@
 import type {CallExpression, Expression, Identifier, MemberExpression, Node} from "estree";
+import type {RequireInfo} from "../ExtJsParser.ts";
 import {BaseMethodVisitor} from "./BaseMethodVisitor.ts";
 
 export interface Replacement {
@@ -8,7 +9,8 @@ export interface Replacement {
     argument?: Expression;
     operator?: string;
     prefix?: boolean;
-  }
+}
+
 export interface MethodReplacement {
   name: string;
   replacement: Replacement;
@@ -50,12 +52,39 @@ export class MethodReplaceVisitor extends BaseMethodVisitor{
 
       if(currentFullMethodName === this.fullMethodName){
         this.applyReplacement(node, this.replacement);
+        // let finalReplacement = this.replacement;
+        // if(typeof this.replacement.callee === "function"){
+        //   finalReplacement = {
+        //     ...this.replacement,
+        //     callee: this.replacement.callee(node),
+        //   };
+        // }
+        // Object.assign(node, finalReplacement);
+        // Object.assign(node, {
+        //   type: "UnaryExpression",
+        //   operator: "void",
+        //   prefix: true,
+        //   argument: {type: "Literal", value: 0},
+        // });
       }
     }
     if(node.callee.type === "Identifier"){
       const identifier = node.callee as Identifier;
       if(identifier.name === this.fullMethodName){
         this.applyReplacement(node, this.replacement);
+        // let finalReplacement = this.replacement;
+        // if(typeof this.replacement.callee === "function"){
+        //   finalReplacement = {
+        //     ...this.replacement,
+        //     callee: this.replacement.callee(node),
+        //   };
+        // }
+        // Object.assign(node, finalReplacement);
+        // Object.assign(node, {
+        //   type: "CallExpression",
+        //   callee: node.arguments[2],
+        //   arguments: [],
+        // });
       }
     }
     node.arguments.forEach(arg => {
@@ -63,6 +92,13 @@ export class MethodReplaceVisitor extends BaseMethodVisitor{
     });
 
     this.visitNode(node.callee);
+  }
+
+  walk(): RequireInfo{
+    return {
+      className: this.fullMethodName,
+      requires: [],
+    }
   }
 
   getResults(): Node{

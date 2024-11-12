@@ -1,17 +1,19 @@
 import type {CallExpression, MemberExpression, Node} from "estree";
+import type {RequireInfo} from "../ExtJsParser.ts";
 
-export interface Visitor {
-  visitNode(node: Node): void;
-  visitCallExpression(node: CallExpression): void;
-}
-
-export abstract class BaseMethodVisitor implements Visitor{
+export abstract class MethodVisitor{
   protected fullMethodName: string;
 
   constructor(fullMethodName: string){
     this.fullMethodName = fullMethodName;
   }
 
+  abstract visitNode(node: Node): void;
+  abstract visitCallExpression(node: CallExpression): void;
+  abstract walk(ast: Node): RequireInfo;
+}
+
+export abstract class BaseMethodVisitor extends MethodVisitor{
   visitNode(node: Node): void{
     if(!node) return;
     switch(node.type){
@@ -35,6 +37,8 @@ export abstract class BaseMethodVisitor implements Visitor{
         });
     }
   }
+
+  abstract walk(ast: Node): RequireInfo;
 
   abstract visitCallExpression(node: CallExpression): void;
 
