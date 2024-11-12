@@ -63,8 +63,7 @@ class ClickhouseClient(object):
             # @todo: quote dates
             if isinstance(v, str):
                 return "'%s'" % (v.replace("\\", "\\\\").replace("'", "\\'"))
-            else:
-                return str(v)
+            return str(v)
 
         qs = []
         if not nodb:
@@ -115,5 +114,5 @@ class ClickhouseClient(object):
         self.execute(post=f"RENAME TABLE `{from_table}` TO `{to_table}`;")
 
 
-def connection(host=None, port=None, read_only=True):
+def connection(host=None, port=None, read_only=True) -> ClickhouseClient:
     return ClickhouseClient(host=host, port=port, read_only=read_only)

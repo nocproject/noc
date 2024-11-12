@@ -28,7 +28,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.service.loader import get_service
-from noc.core.fm.event import Event, EVENT_QUERY as EVENT_QUERY_1
+from noc.core.fm.event import Event
 from noc.core.escape import json_escape
 from noc.core.comp import smart_text
 from noc.core.clickhouse.connect import connection
@@ -306,7 +306,7 @@ class EventApplication(ExtApplication):
         validate={"msg": UnicodeParameter()},
     )
     def api_post(self, request, id, msg):
-        event = Event.get_event_by_id(id)
+        event = Event.get_by_id(id)
         if not event:
             self.response_not_found()
         managed_object = ManagedObject.get_by_id(int(event.target.id))
@@ -331,7 +331,7 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True, access="launch")
     def api_json(self, request, id):
-        event = Event.get_event_by_id(id)
+        event = Event.get_by_id(id)
         if not event:
             self.response_not_found()
         # Get event class
@@ -355,7 +355,7 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="launch")
     def api_reclassify(self, request, id):
-        event = Event.get_event_by_id(id)
+        event = Event.get_by_id(id)
         if not event:
             self.response_not_found()
         if event.target.id:
@@ -397,12 +397,9 @@ class EventApplication(ExtApplication):
         """
         Returns dict with event's fields and values
         """
-        cursor = connection()
-        res = orjson.loads(cursor.execute(EVENT_QUERY_1, args=[id, id], return_raw=True))
-        if not res or not res["data"]:
-            return HttpResponse("", status=self.NOT_FOUND)
-        res = res["data"][0]
-        event = Event.from_json(res)
+        event = Event.get_by_id(id)
+        if not event:
+            return self.response_not_found()
         if not event.target.id and res["managed_object_bi_id"]:
             # Unknown object
             mo = ManagedObject.get_by_bi_id(res["managed_object_bi_id"])
@@ -410,7 +407,6 @@ class EventApplication(ExtApplication):
             mo = ManagedObject.get_by_id(int())
         else:
             mo = None
-
         event_class = EventClass.get_by_name(event.type.event_class)
         ctx = {"event": event}
         ctx.update(event.vars)

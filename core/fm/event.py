@@ -12,12 +12,16 @@ from typing import Optional, List, Dict, Any, Tuple
 # Third-party modules
 import orjson
 from pydantic import BaseModel
+from bson import ObjectId
 
 # NOC modules
 from noc.core.bi.decorator import bi_hash
 from noc.config import config
+from noc.core.clickhouse.connect import ClickhouseClient, connection
+from noc.core.clickhouse.fields import DateField, DateTimeField
 from .enum import EventSeverity, EventSource
 
+MAX_DISPOSE_DELAY = datetime.timedelta(hours=1)
 
 EVENT_QUERY = f"""
     SELECT
@@ -31,13 +35,29 @@ EVENT_QUERY = f"""
         dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
         dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
         e.start_ts as start_timestamp,
-        e.source, e.raw_vars, e.resolved_vars, e.vars, e.labels, e.message, e.data,
+        e.source,
+        e.raw_vars,
+        e.resolved_vars,
+        e.vars, e.labels,
+        e.message,
+        e.data,
         d.alarms as alarms
     FROM events e
         LEFT OUTER JOIN (
-            SELECT event_id, groupArray(alarm_id) as alarms FROM disposelog  WHERE event_id=%s AND alarm_id != '' GROUP BY event_id) as d
+            SELECT event_id, groupArray(alarm_id) as alarms
+            FROM disposelog
+            WHERE
+                event_id = %s
+                AND alarm_id != ''
+                AND ts BETWEEN %s AND %s
+                AND date BETWEEN %s AND %s
+            GROUP BY event_id
+        ) as d
         ON e.event_id == d.event_id
-    WHERE event_id=%s
+    WHERE
+        event_id = %s
+        AND e.ts BETWEEN %s AND %s
+        AND e.date BETWEEN %s AND %s
     FORMAT JSON
 """
 
@@ -201,16 +221,42 @@ class Event(BaseModel):
         return Event.model_validate(r)
 
     @classmethod
-    def get_event_by_id(cls, event_id: str) -> Optional["Event"]:
+    def get_by_id(cls, id: str, /, client: ClickhouseClient | None = None) -> Optional["Event"]:
         """
 
         :param event_id:
         :return:
         """
-        from noc.core.clickhouse.connect import connection
-
-        cursor = connection()
-        res = orjson.loads(cursor.execute(EVENT_QUERY, args=[event_id, event_id], return_raw=True))
-        if res:
-            return Event.from_json(res["data"][0])
-        return
+        event_id = str(ObjectId(id))
+        # Determine possible date
+        oid = ObjectId(event_id)
+        ts: datetime.datetime = oid.generation_time
+        from_ts = ts - MAX_DISPOSE_DELAY
+        to_ts = ts + MAX_DISPOSE_DELAY
+        # Make query
+        conn = client or connection()
+        df = DateField()
+        dtf = DateTimeField()
+        data = conn.execute(
+            EVENT_QUERY,
+            args=[
+                event_id,
+                dtf.to_json(from_ts),
+                dtf.to_json(to_ts),
+                df.to_json(from_ts),
+                df.to_json(to_ts),
+                event_id,
+                dtf.to_json(from_ts),
+                dtf.to_json(to_ts),
+                df.to_json(from_ts),
+                df.to_json(to_ts),
+            ],
+            return_raw=True,
+        )
+        if not data:
+            return None
+        # Convert to Event
+        res = orjson.loads(data)
+        if not res.get("data"):
+            return None
+        return Event.from_json(res["data"][0])
