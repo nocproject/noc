@@ -1,6 +1,6 @@
 import * as espree from "espree";
 import type {Node} from "estree";
-import {ExtDefineVisitor} from "./visitors/ExtDefineVisitor.ts";
+import type {MethodVisitor} from "./visitors/BaseMethodVisitor.ts";
 
 export interface RequireInfo {
   className: string;
@@ -14,11 +14,11 @@ interface ParseOptions {
 
 export class ExtJsParser{
   private readonly ast: Node;
-  private visitor: ExtDefineVisitor;
+  private visitor: MethodVisitor;
 
-  constructor(contents: string, options: ParseOptions){
-    this.visitor = new ExtDefineVisitor();
-    
+  constructor(contents: string, options: ParseOptions, visitor: MethodVisitor){
+    this.visitor = visitor;
+
     try{
       this.ast = espree.parse(contents, options.parserOptions) as Node;
     } catch(error){

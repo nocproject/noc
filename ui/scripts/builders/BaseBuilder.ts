@@ -6,13 +6,17 @@ import path from "path";
 import {NocLoaderPlugin} from "../plugins/NocLoaderPlugin.ts";
 import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
 import type {MethodReplacement} from "../visitors/MethodReplaceVisitor.ts";
+// import {ApplicationLoaderPlugin} from "../plugins/ApplicationLoaderPlugin.ts";
+// import {CopyLibPlugin} from "../plugins/CopyLibPlugin.ts";
+// import {HtmlPlugin} from "../plugins/HtmlPlugin.ts";
+import {LoggerPlugin} from "../plugins/LoggerPlugin.ts";
 
 export interface BuilderOptions {
   buildDir: string;
   entryPoint: string;
   pluginDebug: boolean;
   cacheDir?: string;
-  isDev?: boolean;
+  isDev: boolean;
   toReplaceMethods?: MethodReplacement[];
   esbuildOptions?: Partial<esbuild.BuildOptions>;
   parserOptions?: espree.Options;
@@ -67,7 +71,7 @@ export abstract class BaseBuilder{
     const nocPlugin = new NocLoaderPlugin({
       basePath: process.cwd(),
       paths: {"NOC": "web"},
-      entryFile: this.options.entryPoint,
+      entryPoint: this.options.entryPoint,
       debug: this.options.pluginDebug,
       parserOptions: this.options.parserOptions,
     });
@@ -78,16 +82,37 @@ export abstract class BaseBuilder{
       parserOptions: this.options.parserOptions,
       generateOptions: this.options.generateOptions,
     });
-
+    // const applicationPlugin = new ApplicationLoaderPlugin({
+      // basePath: process.cwd(),
+      // paths: {"NOC": "src/ui"},
+      // entryPoint: this.options.entryPoint,
+      // debug: this.options.pluginDebug,
+      // parserOptions: this.options.parserOptions,
+    // });
+    // const htmlPlugin = new HtmlPlugin(
+      // this.options.buildDir,
+      // path.join(process.cwd(), "src/index.html"),
+      // this.options.isDev,
+    // );
+    // const copyLibPlugin = new CopyLibPlugin("lib", this.options.buildDir);
+    // const plugins = [
+    //   htmlPlugin.getPlugin(),
+    //   copyLibPlugin.getPlugin(),
+    //   applicationPlugin.getPlugin(),
+    // ];
+    const plugins = this.options.isDev ? [
+      nocPlugin.getPlugin(),
+    ] : [
+      nocPlugin.getPlugin(),
+      removePlugin.getPlugin(),
+    ];
     return {
       entryPoints: [this.options.entryPoint],
       outdir: this.options.buildDir,
       plugins: this.options.isDev ? [
-        nocPlugin.getPlugin(),
-      ] : [
-        nocPlugin.getPlugin(),
-        removePlugin.getPlugin(),
-      ],
+        ...plugins,
+        new LoggerPlugin().getPlugin(),
+      ] : plugins,
       ...this.options.esbuildOptions,
     };
   }

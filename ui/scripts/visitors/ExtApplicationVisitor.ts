@@ -7,12 +7,14 @@ export interface ValueResult {
   values: string[];
 }
 
-export class ExtDefineVisitor extends BaseMethodVisitor{
+const METHOD_NAME = "Ext.application";
+
+export class ExtApplicationVisitor extends BaseMethodVisitor{
   private keys: string[];
   private results: ValueResult = {argument: "", values: []};
 
   constructor(){
-    super("Ext.define");
+    super(METHOD_NAME);
     this.keys = ["requires", "extend", "mixins", "uses", "model"];
   }
 
@@ -38,26 +40,16 @@ export class ExtDefineVisitor extends BaseMethodVisitor{
       if(currentFullMethodName === this.fullMethodName){
         const args = node.arguments;
 
-        if(args.length >= 2 && args[1].type === "ObjectExpression"){
-          const firstArg = this.extractFirstArgument(args[0]);
-          const configValues = this.extractConfigValues(args[1]);
+        if(args.length == 1 && args[0].type === "ObjectExpression"){
+          const configValues = this.extractConfigValues(args[0]);
 
-          // if(firstArg && configValues.length > 0){
           this.results = {
-            argument: firstArg || "no argument",
+            argument: METHOD_NAME,
             values: configValues,
           };
-          // }
         }
       }
     }
-  }
-
-  private extractFirstArgument(node: Node): string | null{
-    if(node.type === "Literal" && typeof node.value === "string"){
-      return node.value;
-    }
-    return null;
   }
 
   private extractConfigValues(node: Node): string[]{

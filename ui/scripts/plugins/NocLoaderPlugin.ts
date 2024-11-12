@@ -4,11 +4,12 @@ import fs from "fs-extra";
 import path from "path";
 import {DependencyGraph} from "../DependencyGraph.ts";
 import {ExtJsParser} from "../ExtJsParser.ts";
+import {ExtDefineVisitor} from "../visitors/ExtDefineVisitor.ts";
 
 interface PluginOptions {
   basePath: string;
   paths: Record<string, string>;
-  entryFile: string;
+  entryPoint: string;
   parserOptions?: Options;
   cacheDir?: string;
   debug?: boolean;
@@ -46,7 +47,7 @@ export class NocLoaderPlugin{
         // this.log("NocLoaderPlugin started");
         // });
         build.onLoad(
-          {filter: new RegExp(this.options.entryFile)},
+          {filter: new RegExp(this.options.entryPoint)},
           async(args) => {
             const content = await fs.readFile(args.path, "utf8");
             for(const [namespace, dirPath] of Object.entries(this.options.paths)){
@@ -91,7 +92,8 @@ export class NocLoaderPlugin{
           const {isExt, contents} = await this.isExtClass(fullPath);
 
           if(isExt && contents){
-            const parser: ExtJsParser = new ExtJsParser(contents, {parserOptions: this.options.parserOptions});
+            const visitor = new ExtDefineVisitor();
+            const parser: ExtJsParser = new ExtJsParser(contents, {parserOptions: this.options.parserOptions}, visitor);
             this.log(`Found Ext class in ${fullPath}`);
             this.graph.add(parser.findDependencies());
           }

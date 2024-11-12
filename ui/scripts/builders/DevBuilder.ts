@@ -1,7 +1,6 @@
 import type {ServeResult} from "esbuild";
 import * as esbuild from "esbuild";
 import {BaseBuilder} from "./BaseBuilder.ts";
-import {LoggerPlugin} from "../plugins/LoggerPlugin.ts";
 
 export class DevBuilder extends BaseBuilder{
   async start(): Promise<void>{
@@ -22,13 +21,8 @@ export class DevBuilder extends BaseBuilder{
 
   private async createContext(): Promise<void>{
     const options = this.getBaseBuildOptions();
-    const loggerPlugin = new LoggerPlugin();
     this.context = await esbuild.context({
       ...options,
-      plugins: [
-        ...options.plugins || [],
-        loggerPlugin.getPlugin(),
-      ],
     });
   }
 
