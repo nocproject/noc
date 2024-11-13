@@ -31,7 +31,7 @@ def get_event(event_id):
     """
     Get event by event_id
     """
-    sql = f"""
+    sql = """
         SELECT
             e.event_id as id,
             e.ts as timestamp,
