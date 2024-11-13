@@ -3,13 +3,14 @@ import type * as esbuild from "esbuild";
 import type * as espree from "espree";
 import fs from "fs-extra";
 import path from "path";
-import {NocLoaderPlugin} from "../plugins/NocLoaderPlugin.ts";
-import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
-import type {MethodReplacement} from "../visitors/MethodReplaceVisitor.ts";
-// import {ApplicationLoaderPlugin} from "../plugins/ApplicationLoaderPlugin.ts";
-// import {CopyLibPlugin} from "../plugins/CopyLibPlugin.ts";
-// import {HtmlPlugin} from "../plugins/HtmlPlugin.ts";
+// import {NocLoaderPlugin} from "../plugins/NocLoaderPlugin.ts";
+// import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
+import {ApplicationLoaderPlugin} from "../plugins/ApplicationLoaderPlugin.ts";
+import {CopyLibPlugin} from "../plugins/CopyLibPlugin.ts";
+import {CssPlugin} from "../plugins/CssPlugin.ts";
+import {HtmlPlugin} from "../plugins/HtmlPlugin.ts";
 import {LoggerPlugin} from "../plugins/LoggerPlugin.ts";
+import type {MethodReplacement} from "../visitors/MethodReplaceVisitor.ts";
 
 export interface BuilderOptions {
   buildDir: string;
@@ -21,6 +22,8 @@ export interface BuilderOptions {
   esbuildOptions?: Partial<esbuild.BuildOptions>;
   parserOptions?: espree.Options;
   generateOptions?: astring.Options;
+  cssEntryPoints?: string[]; 
+  cssOutdir?: string;
 }
 
 export abstract class BaseBuilder{
@@ -53,13 +56,17 @@ export abstract class BaseBuilder{
     console.log(`Cleaned ${this.options.cacheDir} directory`);
 
     for(const file of files){
-      if(filePattern.test(file) || sourcemapPattern.test(file)){
+      if(filePattern.test(file)
+        || sourcemapPattern.test(file)
+        || file.endsWith(".css")
+        || file.endsWith(".css.map")
+      ){
         const filePath = path.join(this.options.buildDir, file);
         await fs.remove(filePath);
         console.log(`Removed bundle: ${file}`);
       }
     }
-    console.log(`Cleared bundle files matching pattern: '${searchPattern}' in ${this.options.buildDir} directory`);
+    console.log(`Cleared bundle files matching pattern: '${searchPattern}' and styles in ${this.options.buildDir} directory`);
   }
 
   protected async initialize(): Promise<void>{
@@ -68,46 +75,55 @@ export abstract class BaseBuilder{
   }
 
   protected getBaseBuildOptions(): esbuild.BuildOptions{
-    const nocPlugin = new NocLoaderPlugin({
+    // const nocPlugin = new NocLoaderPlugin({
+    // basePath: process.cwd(),
+    // paths: {"NOC": "web"},
+    // entryPoint: this.options.entryPoint,
+    // debug: this.options.pluginDebug,
+    // parserOptions: this.options.parserOptions,
+    // });
+    //
+    // const removePlugin = new ReplaceMethodsPlugin({
+    // toReplaceMethods: this.options.toReplaceMethods,
+    // debug: this.options.pluginDebug,
+    // parserOptions: this.options.parserOptions,
+    // generateOptions: this.options.generateOptions,
+    // });
+    const applicationPlugin = new ApplicationLoaderPlugin({
       basePath: process.cwd(),
-      paths: {"NOC": "web"},
+      paths: {"NOC": "src/ui"},
       entryPoint: this.options.entryPoint,
       debug: this.options.pluginDebug,
       parserOptions: this.options.parserOptions,
     });
-
-    const removePlugin = new ReplaceMethodsPlugin({
-      toReplaceMethods: this.options.toReplaceMethods,
+    const htmlPlugin = new HtmlPlugin(
+      this.options.buildDir,
+      path.join(process.cwd(), "src/index.html"),
+      this.options.isDev,
+    );
+    const copyLibPlugin = new CopyLibPlugin("lib", this.options.buildDir);
+    const cssPlugin = new CssPlugin({
+      entryPoints: this.options.cssEntryPoints || [],
+      isDev: this.options.isDev,
       debug: this.options.pluginDebug,
-      parserOptions: this.options.parserOptions,
-      generateOptions: this.options.generateOptions,
     });
-    // const applicationPlugin = new ApplicationLoaderPlugin({
-      // basePath: process.cwd(),
-      // paths: {"NOC": "src/ui"},
-      // entryPoint: this.options.entryPoint,
-      // debug: this.options.pluginDebug,
-      // parserOptions: this.options.parserOptions,
-    // });
-    // const htmlPlugin = new HtmlPlugin(
-      // this.options.buildDir,
-      // path.join(process.cwd(), "src/index.html"),
-      // this.options.isDev,
-    // );
-    // const copyLibPlugin = new CopyLibPlugin("lib", this.options.buildDir);
-    // const plugins = [
-    //   htmlPlugin.getPlugin(),
-    //   copyLibPlugin.getPlugin(),
-    //   applicationPlugin.getPlugin(),
-    // ];
-    const plugins = this.options.isDev ? [
-      nocPlugin.getPlugin(),
-    ] : [
-      nocPlugin.getPlugin(),
-      removePlugin.getPlugin(),
+    const plugins = [
+      htmlPlugin.getPlugin(),
+      copyLibPlugin.getPlugin(),
+      applicationPlugin.getPlugin(),
+      cssPlugin.getPlugin(),
     ];
+    // const plugins = this.options.isDev ? [
+    //   nocPlugin.getPlugin(),
+    // ] : [
+    //   nocPlugin.getPlugin(),
+    //   removePlugin.getPlugin(),
+    // ];
     return {
-      entryPoints: [this.options.entryPoint],
+      entryPoints: [
+        this.options.entryPoint,
+        ...(this.options.cssEntryPoints || []),
+      ],
       outdir: this.options.buildDir,
       plugins: this.options.isDev ? [
         ...plugins,
