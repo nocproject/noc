@@ -17,6 +17,8 @@ const commonOptions: BuilderOptions = {
   cacheDir: ".cache",
   pluginDebug: false,
   isDev,
+  cssEntryPoints: ["web/css/index.css"],
+  
   toReplaceMethods: [
     // { // replace new_load_scripts() with the third argument of the call expression
     //   // new_load_scripts([], me, me._render); => me._render();

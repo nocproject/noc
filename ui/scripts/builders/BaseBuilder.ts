@@ -16,13 +16,15 @@ export interface BuilderOptions {
   buildDir: string;
   entryPoint: string;
   pluginDebug: boolean;
+  htmlTemplate?: string;
+  libDir?: string;
   cacheDir?: string;
   isDev: boolean;
   toReplaceMethods?: MethodReplacement[];
   esbuildOptions?: Partial<esbuild.BuildOptions>;
   parserOptions?: espree.Options;
   generateOptions?: astring.Options;
-  cssEntryPoints?: string[]; 
+  cssEntryPoints?: string[];
   cssOutdir?: string;
 }
 
@@ -96,23 +98,27 @@ export abstract class BaseBuilder{
       debug: this.options.pluginDebug,
       parserOptions: this.options.parserOptions,
     });
-    const htmlPlugin = new HtmlPlugin(
-      this.options.buildDir,
-      path.join(process.cwd(), "src/index.html"),
-      this.options.isDev,
-    );
-    const copyLibPlugin = new CopyLibPlugin("lib", this.options.buildDir);
     const cssPlugin = new CssPlugin({
       entryPoints: this.options.cssEntryPoints || [],
       isDev: this.options.isDev,
       debug: this.options.pluginDebug,
     });
     const plugins = [
-      htmlPlugin.getPlugin(),
-      copyLibPlugin.getPlugin(),
       applicationPlugin.getPlugin(),
       cssPlugin.getPlugin(),
     ];
+    if(this.options.libDir){
+      const copyLibPlugin = new CopyLibPlugin(this.options.libDir, this.options.buildDir);
+      plugins.push(copyLibPlugin.getPlugin());
+    }
+    if(this.options.htmlTemplate){
+      const htmlPlugin = new HtmlPlugin(
+        this.options.buildDir,
+        path.join(process.cwd(), this.options.htmlTemplate || ""),
+        this.options.isDev,
+      );
+      plugins.push(htmlPlugin.getPlugin());
+    }
     // const plugins = this.options.isDev ? [
     //   nocPlugin.getPlugin(),
     // ] : [
