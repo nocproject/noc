@@ -25,39 +25,28 @@ MAX_DISPOSE_DELAY = datetime.timedelta(hours=1)
 
 EVENT_QUERY = f"""
     SELECT
-        e.event_id as id,
-        e.ts as timestamp,
-        nullIf(e.event_class, 0) as event_class_bi_id,
-        nullIf(e.managed_object, 0) as managed_object_bi_id,
-        e.target as target,
-        IPv4NumToString(e.ip) as address,
-        dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,
-        dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
-        dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
-        e.start_ts as start_timestamp,
-        e.source,
-        e.raw_vars,
-        e.resolved_vars,
-        e.vars, e.labels,
-        e.message,
-        e.data,
-        d.alarms as alarms
-    FROM events e
-        LEFT OUTER JOIN (
-            SELECT event_id, groupArray(alarm_id) as alarms
-            FROM disposelog
-            WHERE
-                event_id = %s
-                AND alarm_id != ''
-                AND ts BETWEEN %s AND %s
-                AND date BETWEEN %s AND %s
-            GROUP BY event_id
-        ) as d
-        ON e.event_id == d.event_id
+        event_id as id,
+        ts as timestamp,
+        nullIf(event_class, 0) as event_class_bi_id,
+        nullIf(managed_object, 0) as managed_object_bi_id,
+        target as target,
+        IPv4NumToString(ip) as address,
+        dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', pool) as pool_name,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), event_class) as event_class,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), managed_object) as managed_object,
+        start_ts as start_timestamp,
+        source,
+        raw_vars,
+        resolved_vars,
+        vars,
+        labels,
+        message,
+        data
+    FROM events
     WHERE
         event_id = %s
-        AND e.ts BETWEEN %s AND %s
-        AND e.date BETWEEN %s AND %s
+        AND ts BETWEEN %s AND %s
+        AND date BETWEEN %s AND %s
     FORMAT JSON
 """
 
@@ -240,11 +229,6 @@ class Event(BaseModel):
         data = conn.execute(
             EVENT_QUERY,
             args=[
-                event_id,
-                dtf.to_json(from_ts),
-                dtf.to_json(to_ts),
-                df.to_json(from_ts),
-                df.to_json(to_ts),
                 event_id,
                 dtf.to_json(from_ts),
                 dtf.to_json(to_ts),
