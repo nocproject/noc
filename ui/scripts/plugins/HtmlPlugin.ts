@@ -50,14 +50,21 @@ export class HtmlPlugin{
     outputs: Record<string, MetafileOutput>,
   ): Promise<void>{
     const jsFile = Object.keys(outputs).find((file) => file.endsWith(".js"));
+    const cssFile = Object.keys(outputs).find((file) => file.endsWith(".css"));
     if(!jsFile){
       throw new Error("JS file not found in build output");
     }
 
-    const fileName = jsFile.split("/").pop()!;
+    if(!cssFile){
+      throw new Error("CSS file not found in build output");
+    }
+
+    const jsFileName = jsFile.split("/").pop()!;
+    const cssFileName = cssFile.split("/").pop()!;
     let html = await fs.readFile(this.templatePath, "utf8");
 
-    html = html.replace(/app.js/g, fileName);
+    html = html.replace(/app.js/g, jsFileName);
+    html = html.replace(/app.css/g, cssFileName);
 
     if(this.isDev){
       const liveReloadScript =
