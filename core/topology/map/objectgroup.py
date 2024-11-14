@@ -86,6 +86,10 @@ class ObjectGroupTopology(TopologyBase):
             self.add_link(link)
 
     @classmethod
+    def is_empty(cls) -> bool:
+        return not bool(ResourceGroup._get_collection().find_one({}, {"_id": 1}))
+
+    @classmethod
     def iter_maps(
         cls,
         parent: str = None,
