@@ -11,25 +11,11 @@ export class LoggerPlugin{
     return {
       name: this.name,
       setup: (build: esbuild.PluginBuild) => {
-        build.onStart(() => {
-          const entryPoints = build.initialOptions.entryPoints as string[];
-          if(!this.isFirstBuild){
-            const changedFiles = this.getChangedFiles(entryPoints);
-            if(changedFiles.length > 0){
-              console.log("\nChanged files:");
-              changedFiles.forEach(file => {
-                const fullPath = path.resolve(process.cwd(), file);
-                const stats = fs.statSync(fullPath);
-                this.fileTimestamps.set(fullPath, stats.mtimeMs);
-                console.log(stats.mtime.toISOString());
-                console.log(`• ${file}`);
-              });
-            }
-          }
-          this.scanAllFiles(entryPoints);
-          this.isFirstBuild = false;
-        });
+        // build.onStart(() => {
+        // this.handleBuildStart(build.initialOptions.entryPoints as string[]);
+        // });
         build.onEnd((result) => {
+          this.handleBuildStart(build.initialOptions.entryPoints as string[]);
           if(result.errors.length > 0){
             console.error("\nBuild failed:", result.errors);
           } else if(!this.isFirstBuild){
@@ -38,6 +24,24 @@ export class LoggerPlugin{
         });
       },
     };
+  }
+
+  private handleBuildStart(entryPoints: string[]): void{
+    if(!this.isFirstBuild){
+      const changedFiles = this.getChangedFiles(entryPoints);
+      if(changedFiles.length > 0){
+        console.log("\nChanged files:");
+        changedFiles.forEach(file => {
+          // const fullPath = path.resolve(process.cwd(), file);
+          // const stats = fs.statSync(fullPath);
+          // this.fileTimestamps.set(fullPath, stats.mtimeMs);
+          // console.log(stats.mtime.toISOString());
+          console.log(`• ${file}`);
+        });
+      }
+    }
+    this.scanAllFiles(entryPoints);
+    this.isFirstBuild = false;
   }
 
   private scanAllFiles(entryPoints: string[]): void{
@@ -71,20 +75,20 @@ export class LoggerPlugin{
 
   private getChangedFiles(entryPoints: string[]): string[]{
     const changedFiles: string[] = [];
+    const rootDirs: Set<string> = new Set();
 
     entryPoints.forEach(entryPoint => {
       if(typeof entryPoint === "string"){
-        const rootDir = this.getRootDir(entryPoint);
-        this.checkDirectory(rootDir, changedFiles, entryPoint);
+        rootDirs.add(this.getRootDir(entryPoint));
       }
     });
-
-    this.scanAllFiles(entryPoints);
-
+    rootDirs.forEach(rootDir => {
+      this.checkDirectory(rootDir, changedFiles);
+    });
     return changedFiles;
   }
 
-  private checkDirectory(dir: string, changedFiles: string[], exclude: string): void{
+  private checkDirectory(dir: string, changedFiles: string[]): void{
     const files = fs.readdirSync(dir);
 
     files.forEach(file => {
@@ -92,10 +96,10 @@ export class LoggerPlugin{
       const stats = fs.statSync(fullPath);
 
       if(stats.isDirectory()){
-        this.checkDirectory(fullPath, changedFiles, exclude);
+        this.checkDirectory(fullPath, changedFiles);
       } else{
-        const entryBasename = path.basename(exclude).replace(path.extname(exclude), "") + "-bundle";  
-        if(fullPath.includes(entryBasename)){
+        // bundle file in src directory
+        if(fullPath.includes("-bundle")){
           return
         }
         const previousTimestamp = this.fileTimestamps.get(fullPath);

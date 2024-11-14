@@ -2,13 +2,24 @@ import * as esbuild from "esbuild";
 import fs from "fs-extra";
 import path from "path";
 
-export class CopyLibPlugin{
-  private readonly sourcePath: string;
-  private readonly targetDir: string;
+export interface CopyLibPluginOptions {
+  sourcePath?: string;
+  targetDir: string;
+  isDev?: boolean;
+  debug?: boolean;
+}
 
-  constructor(sourcePath: string = "lib", targetDir: string){
-    this.sourcePath = sourcePath;
-    this.targetDir = targetDir;
+export class CopyLibPlugin{
+  private readonly options: CopyLibPluginOptions;
+  private hasInitialCopy: boolean = false;
+
+  constructor(options: CopyLibPluginOptions){
+    this.options = {
+      sourcePath: "lib",
+      isDev: false,
+      debug: false,
+      ...options,
+    };
   }
 
   getPlugin(): esbuild.Plugin{
@@ -16,19 +27,37 @@ export class CopyLibPlugin{
       name: "copy-lib",
       setup: (build: esbuild.PluginBuild) => {
         build.onStart(() => {
-          console.log("Starting to copy lib folder...");
+          if(!this.options.isDev || !this.hasInitialCopy){
+            this.log("Starting to copy lib folder...");
+          }
         });
 
         build.onEnd(async() => {
-          try{
-            const targetPath = path.join(this.targetDir, "lib");
-            await fs.copy(this.sourcePath, targetPath);
-            console.log(`Lib folder copied successfully from ${this.sourcePath} to ${targetPath}`);
-          } catch(error){
-            console.error("Error copying lib folder:", error);
+          if(!this.options.isDev || !this.hasInitialCopy){
+            try{
+              const targetPath = path.join(this.options.targetDir, "lib");
+              await fs.copy(this.options.sourcePath!, targetPath);
+              this.log(`Lib folder copied successfully from ${this.options.sourcePath} to ${targetPath}`);
+              this.hasInitialCopy = true;
+            } catch(error){
+              this.logError(error as Error, "copying lib folder");
+            }
           }
         });
       },
     };
+  }
+
+  private log(...args: (string | number | boolean | object)[]): void{
+    if(this.options.debug){
+      console.log("[CopyLibPlugin]", ...args);
+    }
+  }
+
+  private logError(error: Error, context?: string): void{
+    console.error(
+      "[CopyLibPlugin] Error" + (context ? ` in ${context}` : ""),
+    );
+    console.error(error);
   }
 }
