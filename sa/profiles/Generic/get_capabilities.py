@@ -10,7 +10,7 @@ import functools
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.core.script.cli.error import CLIConnectionRefused
+from noc.core.script.cli.error import CLIError
 from noc.sa.interfaces.igetcapabilities import IGetCapabilities
 from noc.core.mib import mib
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
@@ -24,7 +24,7 @@ def false_on_cli_error(f):
     def wrapper(*args, **kwargs):
         try:
             return f(*args, **kwargs)
-        except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError, CLIConnectionRefused):
+        except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError, CLIError):
             return False
 
     return wrapper
