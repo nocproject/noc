@@ -447,6 +447,11 @@ class TopologyBase(object):
             yield self.G[u][v]
 
     @classmethod
+    def is_empty(cls) -> bool:
+        """Check if topology is empty."""
+        return False
+
+    @classmethod
     def iter_maps(
         cls,
         parent: str = None,

@@ -9,7 +9,7 @@
 import itertools
 import threading
 from collections import defaultdict
-from typing import List, Set, Dict
+from typing import List, Set, Dict, Any
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -305,15 +305,16 @@ class MapApplication(ExtApplication):
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
         """
-        Lookup available map by generator
-        :param request:
-        :return:
+        Lookup available map by generator.
         """
-        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
-        r = []
-        if not q.get(self.q_parent):
+
+        def get_root() -> list[dict[str, Any]]:
+            """Render root node."""
+            r = []
             for mi in loader:
                 mi = loader[mi]
+                if mi.is_empty():
+                    continue
                 r.append(
                     {
                         "id": mi.name,
@@ -324,20 +325,29 @@ class MapApplication(ExtApplication):
                     }
                 )
             return r
-        gen = loader[q[self.gen_param]]
+
+        # Get parent
+        g = request.GET
+        parent = g.get("parent") or ""
+        # Render parent?
+        if not parent:
+            return get_root()
+        # Check generator
+        generator_name = g.get(self.gen_param) or ""
+        gen = loader[generator_name]
         if not gen:
             return self.render_json(
-                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
+                {"success": False, "message": f"Unknown generator: {generator_name}"},
                 status=self.NOT_FOUND,
             )
-        if gen.name == q.get(self.q_parent):
-            q["parent"] = None
+        # Search for maps
+        r = []
         for mi in gen.iter_maps(
-            parent=q.get("parent"),
-            query=q.get(self.query_param),
-            limit=int(q.get(self.limit_param, 500)),
-            start=int(q.get(self.start_param, 0)),
-            page=int(q.get(self.page_param, 1)),
+            parent=parent if gen.name != parent else None,
+            query=g.get(self.query_param, ""),
+            limit=int(g.get(self.limit_param, 500)),
+            start=int(g.get(self.start_param, 0)),
+            page=int(g.get(self.page_param, 1)),
         ):
             r.append(
                 {

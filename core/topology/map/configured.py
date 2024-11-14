@@ -57,9 +57,13 @@ class ConfiguredTopology(TopologyBase):
         )
 
     @classmethod
+    def is_empty(cls) -> bool:
+        return not bool(ConfiguredMap._get_collection().find_one({}, {"_id": 1}))
+
+    @classmethod
     def iter_maps(
         cls,
-        parent: str = None,
+        parent: str | None = None,
         query: Optional[str] = None,
         limit: Optional[int] = None,
         start: Optional[int] = None,
