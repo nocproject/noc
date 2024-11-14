@@ -223,6 +223,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     }
     me.map = L.map(mapDom, {
       zoomControl: false,
+      attributionControl: false,
     }).setView(me.center, me.initScale);
 
     me.map.on("contextmenu", Ext.bind(me.onContextMenu, me));
