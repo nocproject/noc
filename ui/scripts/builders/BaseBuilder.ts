@@ -3,12 +3,12 @@ import type * as esbuild from "esbuild";
 import type * as espree from "espree";
 import fs from "fs-extra";
 import path from "path";
-// import {NocLoaderPlugin} from "../plugins/NocLoaderPlugin.ts";
-// import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
-import {ApplicationLoaderPlugin} from "../plugins/ApplicationLoaderPlugin.ts";
-import {CopyLibPlugin} from "../plugins/CopyLibPlugin.ts";
+import {NocLoaderPlugin} from "../plugins/NocLoaderPlugin.ts";
+import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
+// import {ApplicationLoaderPlugin} from "../plugins/ApplicationLoaderPlugin.ts";
+// import {CopyLibPlugin} from "../plugins/CopyLibPlugin.ts";
 import {CssPlugin} from "../plugins/CssPlugin.ts";
-import {HtmlPlugin} from "../plugins/HtmlPlugin.ts";
+// import {HtmlPlugin} from "../plugins/HtmlPlugin.ts";
 import {LoggerPlugin} from "../plugins/LoggerPlugin.ts";
 import type {MethodReplacement} from "../visitors/MethodReplaceVisitor.ts";
 
@@ -77,54 +77,58 @@ export abstract class BaseBuilder{
   }
 
   protected getBaseBuildOptions(): esbuild.BuildOptions{
-    // const nocPlugin = new NocLoaderPlugin({
-    // basePath: process.cwd(),
-    // paths: {"NOC": "web"},
-    // entryPoint: this.options.entryPoint,
-    // debug: this.options.pluginDebug,
-    // parserOptions: this.options.parserOptions,
-    // });
-    //
-    // const removePlugin = new ReplaceMethodsPlugin({
-    // toReplaceMethods: this.options.toReplaceMethods,
-    // debug: this.options.pluginDebug,
-    // parserOptions: this.options.parserOptions,
-    // generateOptions: this.options.generateOptions,
-    // });
-    const applicationPlugin = new ApplicationLoaderPlugin({
+    const nocPlugin = new NocLoaderPlugin({
       basePath: process.cwd(),
-      paths: {"NOC": "src/ui"},
+      paths: {"NOC": "web"},
       entryPoint: this.options.entryPoint,
       debug: this.options.pluginDebug,
       parserOptions: this.options.parserOptions,
     });
+    
+    const removePlugin = new ReplaceMethodsPlugin({
+      toReplaceMethods: this.options.toReplaceMethods,
+      debug: this.options.pluginDebug,
+      parserOptions: this.options.parserOptions,
+      generateOptions: this.options.generateOptions,
+    });
+    // const applicationPlugin = new ApplicationLoaderPlugin({
+    //   basePath: process.cwd(),
+    //   paths: {"NOC": "src/ui"},
+    //   entryPoint: this.options.entryPoint,
+    //   debug: this.options.pluginDebug,
+    //   parserOptions: this.options.parserOptions,
+    // });
     const cssPlugin = new CssPlugin({
       entryPoints: this.options.cssEntryPoints || [],
       isDev: this.options.isDev,
       debug: this.options.pluginDebug,
     });
-    const plugins = [
-      applicationPlugin.getPlugin(),
-      cssPlugin.getPlugin(),
-    ];
-    if(this.options.libDir){
-      const copyLibPlugin = new CopyLibPlugin(this.options.libDir, this.options.buildDir);
-      plugins.push(copyLibPlugin.getPlugin());
-    }
-    if(this.options.htmlTemplate){
-      const htmlPlugin = new HtmlPlugin(
-        this.options.buildDir,
-        path.join(process.cwd(), this.options.htmlTemplate || ""),
-        this.options.isDev,
-      );
-      plugins.push(htmlPlugin.getPlugin());
-    }
-    // const plugins = this.options.isDev ? [
-    //   nocPlugin.getPlugin(),
-    // ] : [
-    //   nocPlugin.getPlugin(),
-    //   removePlugin.getPlugin(),
+    // const plugins = [
+    //   applicationPlugin.getPlugin(),
+    //   cssPlugin.getPlugin(),
     // ];
+    // if(this.options.libDir){
+    //   const copyLibPlugin = new CopyLibPlugin({
+    //     sourcePath: this.options.libDir,
+    //     targetDir: this.options.buildDir,
+    //   });
+    //   plugins.push(copyLibPlugin.getPlugin());
+    // }
+    // if(this.options.htmlTemplate){
+    //   const htmlPlugin = new HtmlPlugin(
+    //     this.options.buildDir,
+    //     path.join(process.cwd(), this.options.htmlTemplate || ""),
+    //     this.options.isDev,
+    //   );
+    //   plugins.push(htmlPlugin.getPlugin());
+    // }
+    const plugins = this.options.isDev ? [
+      nocPlugin.getPlugin(),
+      cssPlugin.getPlugin(),
+    ] : [
+      nocPlugin.getPlugin(),
+      removePlugin.getPlugin(),
+    ];
     return {
       entryPoints: [
         this.options.entryPoint,

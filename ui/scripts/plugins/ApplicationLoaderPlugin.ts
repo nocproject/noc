@@ -19,6 +19,9 @@ interface PluginOptions {
 export class ApplicationLoaderPlugin{
   private readonly options: PluginOptions;
   private readonly graph = new DependencyGraph();
+  private processedFiles = new Set<string>();
+  private lastProcessTime = 0;
+  private readonly DEBOUNCE_TIME = 100; // ms
 
   constructor(options: PluginOptions){
     this.options = options;
@@ -28,12 +31,18 @@ export class ApplicationLoaderPlugin{
     return {
       name: "noc-loader-plugin",
       setup: (build) => {
-        // build.onStart(async() => {
-        // this.log("NocLoaderPlugin started");
-        // });
+        build.onStart(async() => {
+          this.log("NocLoaderPlugin started");
+          this.processedFiles.clear();
+        });
         build.onLoad(
           {filter: new RegExp(this.options.entryPoint)},
           async(args) => {
+            const now = Date.now();
+            if(now - this.lastProcessTime < this.DEBOUNCE_TIME){
+              return null; 
+            }
+            this.lastProcessTime = now;
             this.log(`Scanning application ${args.path}`);
             const content = await fs.readFile(args.path, "utf8");
             const visitor = new ExtApplicationVisitor();
@@ -64,8 +73,12 @@ export class ApplicationLoaderPlugin{
 
   private async addDependencies(dependencies: string[]): Promise<void>{
     for(const dep of dependencies){
-      this.log(dep);
       const filePath = this.getFilePath(dep);
+      if(this.processedFiles.has(filePath)){
+        continue;
+      }
+      this.processedFiles.add(filePath);
+      this.log(dep);
       if(fs.existsSync(filePath)){
         const content = await fs.readFile(filePath, "utf8");
         const visitor = new ExtDefineVisitor();

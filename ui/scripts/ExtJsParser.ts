@@ -23,6 +23,7 @@ export class ExtJsParser{
       this.ast = espree.parse(contents, options.parserOptions) as Node;
     } catch(error){
       if(error instanceof SyntaxError){
+        console.error(`Syntax error while parsing contents: ${error.message}`);
         throw new Error(`Syntax error while parsing contents: ${error.message}`);
       }
       throw new Error(`Failed to parse contents: ${error}`);
