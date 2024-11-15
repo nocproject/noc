@@ -400,21 +400,16 @@ class EventApplication(ExtApplication):
         event = Event.get_by_id(id)
         if not event:
             return self.response_not_found()
-        if not event.target.id and res["managed_object_bi_id"]:
-            # Unknown object
-            mo = ManagedObject.get_by_bi_id(res["managed_object_bi_id"])
-        elif event.target.id:
-            mo = ManagedObject.get_by_id(int())
-        else:
-            mo = None
+
+        mo = ManagedObject.get_by_id(int(event.target.id))
         event_class = EventClass.get_by_name(event.type.event_class)
         ctx = {"event": event}
         ctx.update(event.vars)
         d = {
             "id": str(event.id),
             "status": "A",
-            "managed_object": mo.id if mo else event.target.id,
-            "managed_object__label": mo.name if mo else event.target.name,
+            "managed_object": event.target.id,
+            "managed_object__label": event.target.name,
             "administrative_domain": mo.administrative_domain_id if mo else None,
             "administrative_domain__label": mo.administrative_domain.name if mo else "",
             "event_class": str(event_class.id) if event_class else None,
@@ -428,7 +423,7 @@ class EventApplication(ExtApplication):
             "alarms": [],
             "log": None,
             # Vars
-            "raw_vars": sorted(res["raw_vars"].items()),
+            "raw_vars": sorted([(x.name, x.value) for x in event.data]),
             "vars": [],
             "resolved_vars": [],
             #
@@ -475,26 +470,4 @@ class EventApplication(ExtApplication):
                 "segment_id": str(mo.segment.id),
                 "tags": mo.labels,
             }
-        # Alarms
-        for a_id in res["alarms"]:
-            a = get_alarm(a_id)
-            if not a:
-                continue
-            if a.opening_event == event.id:
-                role = "O"
-            elif a.closing_event == event.id:
-                role = "C"
-            else:
-                role = ""
-            d["alarms"] += [
-                {
-                    "id": str(a.id),
-                    "status": a.status,
-                    "alarm_class": str(a.alarm_class.id),
-                    "alarm_class__label": a.alarm_class.name,
-                    "subject": a.subject,
-                    "role": role,
-                    "timestamp": self.to_json(a.timestamp),
-                }
-            ]
         return self.response(d, status=self.OK)

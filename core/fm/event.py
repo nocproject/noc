@@ -25,24 +25,24 @@ MAX_DISPOSE_DELAY = datetime.timedelta(hours=1)
 
 EVENT_QUERY = f"""
     SELECT
-        event_id as id,
-        ts as timestamp,
-        nullIf(event_class, 0) as event_class_bi_id,
-        nullIf(managed_object, 0) as managed_object_bi_id,
-        target as target,
-        IPv4NumToString(ip) as address,
-        dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', pool) as pool_name,
-        dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), event_class) as event_class,
-        dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), managed_object) as managed_object,
-        start_ts as start_timestamp,
-        source,
-        raw_vars,
-        resolved_vars,
-        vars,
-        labels,
-        message,
-        data
-    FROM events
+        e.event_id as id,
+        e.ts as timestamp,
+        nullIf(e.event_class, 0) as event_class_bi_id,
+        nullIf(e.managed_object, 0) as managed_object_bi_id,
+        e.target as target,
+        IPv4NumToString(e.ip) as address,
+        dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
+        e.start_ts as start_timestamp,
+        e.source,
+        e.raw_vars,
+        e.resolved_vars,
+        e.vars,
+        e.labels,
+        e.message,
+        e.data
+    FROM events e
     WHERE
         event_id = %s
         AND ts BETWEEN %s AND %s
@@ -219,7 +219,7 @@ class Event(BaseModel):
         event_id = str(ObjectId(id))
         # Determine possible date
         oid = ObjectId(event_id)
-        ts: datetime.datetime = oid.generation_time
+        ts: datetime.datetime = oid.generation_time.astimezone(config.timezone)
         from_ts = ts - MAX_DISPOSE_DELAY
         to_ts = ts + MAX_DISPOSE_DELAY
         # Make query
