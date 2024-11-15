@@ -92,33 +92,6 @@ Path service configuration
 | Key-Value Path | `path/bi_data_prefix`     |
 | Environment    | `NOC_PATH_BI_DATA_PREFIX` |
 
-## babel_cfg
-
-|                |                      |
-| -------------- | -------------------- |
-| Default value  | `etc/babel.cfg`      |
-| YAML Path      | `path.babel_cfg`     |
-| Key-Value Path | `path/babel_cfg`     |
-| Environment    | `NOC_PATH_BABEL_CFG` |
-
-## babel
-
-|                |                  |
-| -------------- | ---------------- |
-| Default value  | `./bin/pybabel`  |
-| YAML Path      | `path.babel`     |
-| Key-Value Path | `path/babel`     |
-| Environment    | `NOC_PATH_BABEL` |
-
-## pojson
-
-|                |                   |
-| -------------- | ----------------- |
-| Default value  | `./bin/pojson`    |
-| YAML Path      | `path.pojson`     |
-| Key-Value Path | `path/pojson`     |
-| Environment    | `NOC_PATH_POJSON` |
-
 ## collection_fm_mibs
 
 |                |                               |

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # translation cli
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,15 +9,31 @@
 import subprocess
 import argparse
 import os
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 # Third-party modules
 from babel.util import pathmatch
+from functools import cache
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.settings import LANGUAGES
 from noc.config import config
 from noc.core.comp import smart_text
+
+BABEL_CFG = b"""# Translation extraction config
+[python: **.py]
+
+[javascript: **.js]
+extract_messages = _, __
+
+[jinja2: **.j2]
+extensions=jinja2.ext.autoescape,jinja2.ext.with_
+"""
+
+BABEL = "pybabel"
+POJSON = "pojson"
 
 
 class Command(BaseCommand):
@@ -32,16 +48,13 @@ class Command(BaseCommand):
         },
         "login": {"messages": ["services/login/**.py"], "messages_js": ["ui/login/**.js"]},
         "web": {
-            "messages": ["services/web/apps/**.py", "lib/app/**.py"],
+            "messages": ["services/web/apps/**.py", "core/**.py"],
             "messages_js": ["ui/web/**.js"],
         },
     }
 
     TRANSLATIONS = [x[0] for x in LANGUAGES if x[0] != "en"]
 
-    BABEL_CFG = config.path.babel_cfg
-    BABEL = config.path.babel
-    POJSON = config.path.pojson
     PROJECT = "The NOC Project"
     COPYRIGHT = "The NOC Project"
 
@@ -64,84 +77,77 @@ class Command(BaseCommand):
         edit_parser.add_argument("language", nargs=1, help="Language to translate")
 
     def handle(self, cmd, *args, **options):
-        return getattr(self, "handle_%s" % cmd)(*args, **options)
+        return getattr(self, f"handle_{cmd}")(*args, **options)
 
     def glob(self, expr):
-        if not hasattr(self, "_files"):
-            # @fixme: Remove hg
-            f = subprocess.Popen(["git", "ls-files"], stdout=subprocess.PIPE).stdout
-            self._files = f.read().splitlines()
-        return [smart_text(p) for p in self._files if pathmatch(expr, smart_text(p))]
+        return [smart_text(p) for p in ls() if pathmatch(expr, smart_text(p))]
 
     def handle_extract(self, services=None):
         if not services:
             services = sorted(self.SERVICES)
         for svc in services:
             if svc not in self.SERVICES:
-                self.die("Unknown service: %s" % svc)
-            t_dir = "services/%s/translations" % svc
-            if not os.path.exists(t_dir):
+                self.die(f"Unknown service: {svc}")
+            t_dir = Path("services", svc, "translations")
+            if not t_dir.exists():
                 os.makedirs(t_dir)
-            for domain in self.SERVICES[svc]:
-                args = [
-                    self.BABEL,
-                    "extract",
-                    "-F",
-                    self.BABEL_CFG,
-                    "--sort-by-file",
-                    "--project=%s" % self.PROJECT,
-                    "--copyright-holder=%s" % self.COPYRIGHT,
-                    "-o",
-                    "%s/%s.pot" % (t_dir, domain),
-                ]
-                if domain.endswith("_js"):
-                    args += ["-k", "__"]
-                for expr in self.SERVICES[svc][domain]:
-                    if os.path.isfile(expr):
-                        args += [expr]
-                    else:
-                        args += self.glob(expr)
-                subprocess.check_call(args)
+            with NamedTemporaryFile() as cfg:
+                cfg.write(BABEL_CFG)
+                cfg.flush()
+                for domain in self.SERVICES[svc]:
+                    pot = (t_dir / domain).with_suffix(".pot")
+                    args = [
+                        "extract",
+                        "-F",
+                        cfg.name,
+                        "--sort-by-file",
+                        f"--project={self.PROJECT}",
+                        f"--copyright-holder={self.COPYRIGHT}",
+                        "-o",
+                        pot,
+                    ]
+                    if domain.endswith("_js"):
+                        args += ["-k", "__"]
+                    for expr in self.SERVICES[svc][domain]:
+                        if os.path.isfile(expr):
+                            args += [expr]
+                        else:
+                            args += self.glob(expr)
+                    self.babel(*tuple(args))
 
     def handle_update(self, services=None):
         if not services:
             services = sorted(self.SERVICES)
         for svc in services:
             if svc not in self.SERVICES:
-                self.die("Unknown service: %s" % svc)
-            t_dir = "services/%s/translations" % svc
+                self.die(f"Unknown service: {svc}")
+            t_dir = Path("services", svc, "translations")
             for domain in self.SERVICES[svc]:
-                pot = os.path.join(t_dir, "%s.pot" % domain)
+                pot = t_dir / f"{domain}.pot"
                 for lang in self.TRANSLATIONS:
-                    po = os.path.join(t_dir, lang, "LC_MESSAGES", "%s.po" % domain)
-                    if not os.path.exists(po):
-                        subprocess.check_call(
-                            [
-                                self.BABEL,
-                                "init",
-                                "-i",
-                                pot,
-                                "--domain=%s" % domain,
-                                "-d",
-                                t_dir,
-                                "-l",
-                                lang,
-                            ]
+                    po = (t_dir / lang / "LC_MESSAGES" / domain).with_suffix(".po")
+                    if not po.exists():
+                        self.babel(
+                            "init",
+                            "-i",
+                            pot,
+                            f"--domain={domain}",
+                            "-d",
+                            t_dir,
+                            "-l",
+                            lang,
                         )
                     else:
-                        subprocess.check_call(
-                            [
-                                self.BABEL,
-                                "update",
-                                "-i",
-                                pot,
-                                "--domain=%s" % domain,
-                                "-d",
-                                t_dir,
-                                "-l",
-                                lang,
-                                "--previous",
-                            ]
+                        self.babel(
+                            "update",
+                            "-i",
+                            pot,
+                            f"--domain={domain}",
+                            "-d",
+                            t_dir,
+                            "-l",
+                            lang,
+                            "--previous",
                         )
 
     def handle_compile(self, services=None):
@@ -149,29 +155,41 @@ class Command(BaseCommand):
             services = sorted(self.SERVICES)
         for svc in services:
             if svc not in self.SERVICES:
-                self.die("Unknown service: %s" % svc)
-            t_dir = "services/%s/translations" % svc
+                self.die(f"Unknown service: {svc}")
+            t_dir = Path("services", svc, "translations")
             for domain in self.SERVICES[svc]:
                 for lang in self.TRANSLATIONS:
-                    po = os.path.join(t_dir, lang, "LC_MESSAGES", "%s.po" % domain)
+                    po = (t_dir / lang / "LC_MESSAGES" / domain).with_suffix(".po")
                     if domain.endswith("_js"):
-                        jsp = os.path.join("ui", svc, "translations")
-                        js = os.path.join(jsp, "%s.json" % lang)
+                        jsp = Path("ui", svc, "translations")
+                        js = (jsp / lang).with_suffix(".json")
                         if not os.path.isdir(jsp):
                             os.makedirs(jsp)
-                        print("compiling catalog '%s' to '%s'" % (po, js), file=self.stdout)
-                        with open(js, "w") as f:
-                            subprocess.check_call([self.POJSON, "-p", po], stdout=f)
+                        print(f"compiling catalog '{po}' to '{js}'", file=self.stdout)
+                        with open(js, "w") as fp:
+                            subprocess.check_call([POJSON, "-p", po], stdout=fp)
                     else:
-                        mo = os.path.join(t_dir, lang, "LC_MESSAGES", "%s.mo" % domain)
-                        subprocess.check_call([self.BABEL, "compile", "-i", po, "-o", mo])
+                        mo = (t_dir / lang / "LC_MESSAGES" / domain).with_suffix(".mo")
+                        subprocess.check_call([BABEL, "compile", "-i", po, "-o", mo])
 
     @staticmethod
     def handle_edit(self, service=None, language=None):
-        pfx = os.path.join("services", service[0], "translations", language[0], "LC_MESSAGES")
+        pfx = Path("services", service[0], "translations", language[0], "LC_MESSAGES")
 
-        for path in [os.path.join(pfx, "messages.po"), os.path.join(pfx, "messages_js.po")]:
-            subprocess.check_call(["open", path])
+        for po in ["messages", "messages_js"]:
+            path = (pfx / po).with_suffix(".po")
+            subprocess.check_call(["open", str(path)])
+
+    @staticmethod
+    def babel(*args: tuple[str]) -> None:
+        args = [BABEL] + [str(x) for x in args]
+        subprocess.check_call(args)
+
+
+@cache
+def ls() -> list[str]:
+    f = subprocess.Popen(["git", "ls-files"], stdout=subprocess.PIPE).stdout
+    return f.read().splitlines()
 
 
 if __name__ == "__main__":
