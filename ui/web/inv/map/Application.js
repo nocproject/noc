@@ -82,6 +82,11 @@ Ext.define("NOC.inv.map.Application", {
             minWidth: 400,
             emptyText: __("Select segment..."),
             appId: 'inv.map',
+            rootNode: {
+                label: __('All Maps'),
+                id: '_root_',
+                level: 0
+            },
             listeners: {
                 scope: me,
                 select: me.onSelectSegment
