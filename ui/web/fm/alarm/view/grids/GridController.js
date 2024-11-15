@@ -16,6 +16,13 @@ Ext.define("NOC.fm.alarm.view.grids.GridController", {
     });
   },
   //
+  onShowNeighborMap: function(grid, rowIndex){
+    var record = grid.store.getAt(rowIndex);
+    NOC.launch("inv.map", "history", {
+      args: ["objectlevelneighbor", record.get("managed_object")],
+    });
+  },
+  //
   onShowObject: function(grid, rowIndex){
     var record = grid.store.getAt(rowIndex);
     NOC.launch("sa.managedobject", "history", {

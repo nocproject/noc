@@ -24,13 +24,18 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
     },
     {
       xtype: "glyphactioncolumn",
-      width: 20 * 2,
+      width: 22 * 3,
       sortable: false,
       items: [
         {
           glyph: NOC.glyph.globe,
           tooltip: __("Show map"),
           handler: "onShowMap",
+        },
+        {
+          glyph: NOC.glyph.map_o,
+          tooltip: __("Show neighbor map"),
+          handler: "onShowNeighborMap",
         },
         {
           glyph: NOC.glyph.eye,
@@ -134,14 +139,13 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
       flex: 1,
       innerCls: undefined,
       defaultRenderer: function(v, cellValues, record, rowIdx, colIdx, store, view){
-        var me = this,
-          scope = me.origScope || me,
-          items = me.items,
+        var scope = this.origScope || this,
+          items = this.items,
           len = items.length,
           i, item, ret, disabled, tooltip, altText, icon,
-          tooltipFromData = me.getView().tooltip(record);
+          tooltipFromData = this.getView().tooltip(record);
 
-        ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || "" : "";
+        ret = Ext.isFunction(this.origRenderer) ? this.origRenderer.apply(scope, arguments) || "" : "";
 
         cellValues.tdCls += " " + Ext.baseCSSPrefix + "action-col-cell";
         for(i = 0; i < len; i++){
@@ -153,19 +157,19 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
           }
           disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
           tooltip = disabled ? null : (tooltipFromData || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
-          altText = item.getAltText ? item.getAltText.apply(item.scope || scope, arguments) : item.altText || me.altText;
+          altText = item.getAltText ? item.getAltText.apply(item.scope || scope, arguments) : item.altText || this.altText;
 
           if(!item.hasActionConfiguration){
-            item.stopSelection = me.stopSelection;
-            item.disable = Ext.Function.bind(me.disableAction, me, [i], 0);
-            item.enable = Ext.Function.bind(me.enableAction, me, [i], 0);
+            item.stopSelection = this.stopSelection;
+            item.disable = Ext.Function.bind(this.disableAction, this, [i], 0);
+            item.enable = Ext.Function.bind(this.enableAction, this, [i], 0);
             item.hasActionConfiguration = true;
           }
 
           ret += "<" + (icon ? "img" : "div") + ' tabIndex="0" role="button"' + (icon ? (' alt="' + altText + '" src="' + item.icon + '"') : "") +
-                        ' class="' + me.actionIconCls + " " + Ext.baseCSSPrefix + "action-col-" + String(i) + " " +
-                        (disabled ? me.disabledCls + " " : " ") +
-                        (Ext.isFunction(item.getClass) ? item.getClass.apply(item.scope || scope, arguments) : (item.iconCls || me.iconCls || "")) + '"' +
+                        ' class="' + this.actionIconCls + " " + Ext.baseCSSPrefix + "action-col-" + String(i) + " " +
+                        (disabled ? this.disabledCls + " " : " ") +
+                        (Ext.isFunction(item.getClass) ? item.getClass.apply(item.scope || scope, arguments) : (item.iconCls || this.iconCls || "")) + '"' +
                         (tooltip ? ' data-qclass="noc-alarm-tooltip" data-qtip="' + tooltip + '"' : "") + (icon ? "/>" : "></div>");
         }
         return ret;
