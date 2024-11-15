@@ -8,20 +8,117 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-05-07 15:42+0300\n"
+"POT-Creation-Date: 2024-11-15 17:15+0300\n"
 "PO-Revision-Date: 2024-05-07 19:02+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
-"Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.13.1\n"
-"X-Generator: Poedit 3.4.2\n"
-"X-Poedit-Basepath: ../../../../..\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: scripts\n"
+
+#: core/dateutils.py:24
+msgid "less than a minute"
+msgstr ""
+
+#: core/dateutils.py:26
+#, fuzzy
+#| msgid "1 month"
+msgid "1 minute"
+msgstr "1 месяц"
+
+#: core/dateutils.py:28
+#, python-format
+msgid "%d minutes"
+msgstr ""
+
+#: core/dateutils.py:30
+msgid "about 1 hour"
+msgstr ""
+
+#: core/dateutils.py:32
+#, python-format
+msgid "about %d hours"
+msgstr ""
+
+#: core/dateutils.py:39
+#, python-format
+#| msgid "In Days"
+msgid "%d days"
+msgstr "%d дней"
+
+#: core/dateutils.py:41
+#, fuzzy
+#| msgid "1 month"
+msgid "about 1 month"
+msgstr "1 месяц"
+
+#: core/dateutils.py:43
+#, fuzzy, python-format
+#| msgid "1 month"
+msgid "%d months"
+msgstr "%d месяцев"
+
+#: core/dateutils.py:45
+msgid "about 1 year"
+msgstr "примерно 1 год"
+
+#: core/dateutils.py:47
+msgid "over 1 year"
+msgstr ""
+
+#: core/dateutils.py:49
+msgid "almost 2 years"
+msgstr ""
+
+#: core/dateutils.py:54
+#, python-format
+msgid "about %d years"
+msgstr ""
+
+#: core/dateutils.py:56
+#, fuzzy, python-format
+#| msgid "Moved MACs"
+msgid "over %d years"
+msgstr "более %d лет"
+
+#: core/dateutils.py:58
+#, python-format
+msgid "almost %d years"
+msgstr ""
+
+#: core/dateutils.py:65
+#, fuzzy
+#| msgid "never"
+msgid "Never"
+msgstr "никогда"
+
+#: core/inv/info.py:131
+#, fuzzy
+#| msgid "Remote Object"
+msgid "Go to object"
+msgstr "Соседнее устройство"
+
+#: core/topology/map/objectcontainer.py:32
+#, fuzzy
+#| msgid "ManagedObject Container: "
+msgid "Object Containers Map"
+msgstr "Локация (место)"
+
+#: core/topology/map/objectgroup.py:31
+msgid "Object Group Schemas"
+msgstr "Схемы групп объектов"
+
+#: core/topology/map/objectlevelneighbor.py:30
+msgid "Object Level Neighbor Schemas"
+msgstr "Схемы соседей объекта"
+
+#: core/topology/map/segment.py:36
+msgid "Network Segment Schemas"
+msgstr "Схемы сегментов сети"
 
 #: services/web/apps/aaa/__init__.py:11
 msgid "AAA"
@@ -56,6 +153,7 @@ msgstr "Ключи доступа к API"
 #: services/web/apps/fm/alarmseverity/views.py:20
 #: services/web/apps/fm/alarmtrigger/views.py:20
 #: services/web/apps/fm/classificationrule/views.py:33
+#: services/web/apps/fm/escalationprofile/views.py:20
 #: services/web/apps/fm/eventclass/views.py:20
 #: services/web/apps/fm/eventtrigger/views.py:20
 #: services/web/apps/fm/ignoreeventrule/views.py:21
@@ -76,6 +174,7 @@ msgstr "Ключи доступа к API"
 #: services/web/apps/inv/connectiontype/views.py:22
 #: services/web/apps/inv/coverage/views.py:23
 #: services/web/apps/inv/cpeprofile/views.py:36
+#: services/web/apps/inv/endpoint/views.py:21
 #: services/web/apps/inv/facade/views.py:24
 #: services/web/apps/inv/firmware/views.py:20
 #: services/web/apps/inv/firmwarepolicy/views.py:20
@@ -93,6 +192,7 @@ msgstr "Ключи доступа к API"
 #: services/web/apps/inv/resourcepool/views.py:20
 #: services/web/apps/inv/sensor/views.py:22
 #: services/web/apps/inv/sensorprofile/views.py:20
+#: services/web/apps/inv/techdomain/views.py:20
 #: services/web/apps/inv/technology/views.py:20
 #: services/web/apps/inv/vendor/views.py:20
 #: services/web/apps/ip/addressprofile/views.py:20
@@ -118,7 +218,7 @@ msgstr "Ключи доступа к API"
 #: services/web/apps/main/language/views.py:17
 #: services/web/apps/main/metricstream/views.py:20
 #: services/web/apps/main/mimetype/views.py:17
-#: services/web/apps/main/notificationgroup/views.py:26
+#: services/web/apps/main/modeltemplate/views.py:21
 #: services/web/apps/main/pool/views.py:20
 #: services/web/apps/main/prefixtable/views.py:26
 #: services/web/apps/main/pyrule/views.py:21
@@ -282,7 +382,7 @@ msgid "Subscriber"
 msgstr "Абонент"
 
 #: services/web/apps/crm/subscriber/views.py:22
-#: services/web/apps/fm/alarm/views.py:970
+#: services/web/apps/fm/alarm/views.py:1035
 #: services/web/apps/fm/reportescalations/views.py:91
 msgid "Subscribers"
 msgstr "Абоненты"
@@ -391,15 +491,16 @@ msgstr "Сводка по зонам NS"
 msgid "Fault Management"
 msgstr "Управление авариями"
 
-#: services/web/apps/fm/alarm/views.py:86
+#: services/web/apps/fm/alarm/views.py:88
 msgid "Alarm"
 msgstr "Авария"
 
-#: services/web/apps/fm/alarm/views.py:87
+#: services/web/apps/fm/alarm/views.py:89
+#: services/web/apps/main/home/views.py:185
 msgid "Alarms"
 msgstr "Аварии"
 
-#: services/web/apps/fm/alarm/views.py:969
+#: services/web/apps/fm/alarm/views.py:1034
 #: services/web/apps/fm/reportttsystemstat/views.py:73
 #: services/web/apps/fm/reportttsystemstat/views.py:88
 msgid "Service"
@@ -453,8 +554,15 @@ msgstr "Правило классификации"
 msgid "Classification Rules"
 msgstr "Правила классификации"
 
-#: services/web/apps/fm/event/views.py:43
-#: services/web/apps/fm/event/views.py:44
+#: services/web/apps/fm/escalationprofile/views.py:19
+#: services/web/apps/fm/escalationprofile/views.py:20
+#, fuzzy
+#| msgid "SLA Profiles"
+msgid "Escalation Profile"
+msgstr "Профиль SLA"
+
+#: services/web/apps/fm/event/views.py:69
+#: services/web/apps/fm/event/views.py:70
 msgid "Events"
 msgstr "События"
 
@@ -654,8 +762,12 @@ msgid "One params - FROM_DATE/TO_DATE or IDS required"
 msgstr "Для отчёта требуется задать дату или список аварий"
 
 #: services/web/apps/fm/reportalarmdetail/views.py:202
-msgid "Report more than 1 year not allowed. If nedeed - request it from Administrator"
-msgstr "Диапазон больше одного года не доступен для выгрузки. Если необходимо - обратитесь к администратору системы"
+msgid ""
+"Report more than 1 year not allowed. If nedeed - request it from "
+"Administrator"
+msgstr ""
+"Диапазон больше одного года не доступен для выгрузки. Если необходимо - "
+"обратитесь к администратору системы"
 
 #: services/web/apps/fm/reportavailability/views.py:42
 #: services/web/apps/fm/reportescalations/views.py:30
@@ -717,9 +829,11 @@ msgstr "З.О."
 #: services/web/apps/fm/reportescalations/views.py:85
 #: services/web/apps/fm/reportoutages/views.py:121
 #: services/web/apps/fm/reportreboots/views.py:102
+#: services/web/apps/fm/reportttsystemstat/views.py:89
 #: services/web/apps/inv/reportdiscoverycaps/views.py:56
 #: services/web/apps/inv/reportdiscoverypoison/views.py:80
 #: services/web/apps/inv/reportpendinglinks/views.py:258
+#: services/web/apps/ip/reportaddressfilter/views.py:35
 #: services/web/apps/ip/reportvpnstatus/views.py:42
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:223
 msgid "Managed Object"
@@ -786,6 +900,7 @@ msgstr "Качество классификации"
 msgid "Range"
 msgstr "Диапазон"
 
+#: core/dateutils.py:34 core/dateutils.py:37
 #: services/web/apps/fm/reportescalations/views.py:27
 #: services/web/apps/fm/reportoutages/views.py:29
 #: services/web/apps/fm/reportreboots/views.py:26
@@ -1007,11 +1122,6 @@ msgstr "95% перцентиль (мс)"
 msgid "max (ms)"
 msgstr "макс. время (мс)"
 
-#: services/web/apps/fm/reportttsystemstat/views.py:89
-#: services/web/apps/ip/reportaddressfilter/views.py:35
-msgid "Managed object"
-msgstr ""
-
 #: services/web/apps/fm/reportttsystemstat/views.py:90
 msgid "TT ID"
 msgstr "Номер ТТ"
@@ -1083,8 +1193,8 @@ msgstr "Улица"
 msgid "Streets"
 msgstr "Улицы"
 
-#: services/web/apps/inv/__init__.py:12 services/web/apps/inv/inv/views.py:45
-#: services/web/apps/inv/inv/views.py:46
+#: services/web/apps/inv/__init__.py:12 services/web/apps/inv/inv/views.py:63
+#: services/web/apps/inv/inv/views.py:64
 msgid "Inventory"
 msgstr "Учет объектов"
 
@@ -1106,6 +1216,13 @@ msgstr "Свойства"
 msgid "Cards"
 msgstr "Карточки"
 
+#: services/web/apps/inv/channel/views.py:35
+#: services/web/apps/inv/channel/views.py:36
+#: services/web/apps/main/home/views.py:210
+msgid "Channels"
+msgstr "Каналы"
+
+#: core/topology/map/configured.py:30
 #: services/web/apps/inv/configuredmap/views.py:19
 msgid "Configured Map"
 msgstr "Пользовательская карта"
@@ -1129,20 +1246,22 @@ msgstr "Типы соединения"
 msgid "Coverage"
 msgstr "Покрытие"
 
-# | msgid "Specs"
 #: services/web/apps/inv/cpe/views.py:21 services/web/apps/inv/cpe/views.py:22
 msgid "CPEs"
-msgstr ""
+msgstr "CPE"
 
-# | msgid "User Profile"
 #: services/web/apps/inv/cpeprofile/views.py:35
 msgid "CPE Profile"
 msgstr "Профиль CPE"
 
-# | msgid "Zone Profiles"
 #: services/web/apps/inv/cpeprofile/views.py:36
 msgid "CPE Profiles"
 msgstr "Профили CPE"
+
+#: services/web/apps/inv/endpoint/views.py:21
+#, fuzzy
+msgid "Endpoints"
+msgstr "Точки подключения"
 
 #: services/web/apps/inv/facade/views.py:23
 #: services/web/apps/inv/facade/views.py:24
@@ -1178,15 +1297,15 @@ msgstr "Профиль интерфейса"
 msgid "Interface Profiles"
 msgstr "Профили интерфейсов"
 
-#: services/web/apps/inv/inv/plugins/metric.py:233
+#: services/web/apps/inv/inv/plugins/metric.py:231
 msgid "OK"
 msgstr ""
 
-#: services/web/apps/inv/inv/views.py:713
+#: services/web/apps/inv/inv/views.py:715
 msgid "ManagedObject Container: "
 msgstr "Локация (место)"
 
-#: services/web/apps/inv/inv/views.py:722
+#: services/web/apps/inv/inv/views.py:724
 msgid "Configured Map Container: "
 msgstr ""
 
@@ -1302,10 +1421,12 @@ msgstr "Исключить строки из Чёрного списка MAC'о�
 msgid "Discovery ID cache poison"
 msgstr "Дубликаты в кэше Идентификаторов"
 
+#: core/datasources/discoveryidcachepoisonds.py:67
 #: services/web/apps/inv/reportdiscoverypoison/views.py:63
 msgid "Duplicate MO"
 msgstr "Дублирование объекта"
 
+#: core/datasources/discoveryidcachepoisonds.py:69
 #: services/web/apps/inv/reportdiscoverypoison/views.py:65
 msgid "MO is move"
 msgstr "Объект был перемещён"
@@ -1478,6 +1599,7 @@ msgid "Managed Object Serial Number"
 msgstr "Серийные номера"
 
 #: services/web/apps/inv/reportobjectsserial/views.py:51
+#: services/web/apps/main/home/views.py:161
 #: services/web/apps/sa/managedobject/views.py:77
 #: services/web/apps/sa/managedobject/views.py:78
 msgid "Managed Objects"
@@ -1571,6 +1693,18 @@ msgstr "Сенсор"
 #: services/web/apps/inv/sensorprofile/views.py:20
 msgid "Sensor Profiles"
 msgstr "Профили сенсора"
+
+#: services/web/apps/inv/techdomain/views.py:19
+#, fuzzy
+#| msgid "Domain"
+msgid "Tech Domain"
+msgstr "Домен"
+
+#: services/web/apps/inv/techdomain/views.py:20
+#, fuzzy
+#| msgid "LDAP Domains"
+msgid "Tech Domains"
+msgstr "LDAP Домены"
 
 #: services/web/apps/inv/technology/views.py:19
 msgid "Technology"
@@ -1803,8 +1937,8 @@ msgstr "Записи"
 msgid "Templates"
 msgstr "Шаблоны"
 
-#: services/web/apps/main/audittrail/views.py:28
 #: services/web/apps/main/audittrail/views.py:29
+#: services/web/apps/main/audittrail/views.py:30
 msgid "Audit Trail"
 msgstr "Аудит событий"
 
@@ -1817,7 +1951,9 @@ msgid "CIR(bps). K, M and G suffixes can be used"
 msgstr "CIR(bps). Можно использовать множители K, M и G"
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:24
-msgid "Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 is default)"
+msgid ""
+"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 "
+"is default)"
 msgstr ""
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:31
@@ -1841,7 +1977,10 @@ msgid "CIR/CAR(bps) to Burst-rate"
 msgstr ""
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:60
-msgid "Recommended way for policy-map values calculating is: normal-burst-bytes=bits-per-second*Tc/8.Recommended way for rate-limit values calculating is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
+msgid ""
+"Recommended way for policy-map values calculating is: normal-burst-bytes"
+"=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
+"is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
 msgstr ""
 
 #: services/web/apps/main/calculator/views.py:18
@@ -1892,7 +2031,7 @@ msgstr ""
 msgid "DataStream Config"
 msgstr "Пользовательские DataStream"
 
-#: services/web/apps/main/desktop/views.py:282
+#: services/web/apps/main/desktop/views.py:308
 msgid "Failed to change credentials"
 msgstr "Не удалось сменить пароль"
 
@@ -1916,7 +2055,62 @@ msgstr "Иконки"
 msgid "Handlers"
 msgstr "Обработчики"
 
-# | msgid "is managed"
+#: services/web/apps/main/home/views.py:36
+#, fuzzy
+#| msgid "Phone"
+msgid "Home"
+msgstr "Телефон"
+
+#: services/web/apps/main/home/views.py:89
+#, fuzzy
+#| msgid "Welcome"
+msgid "Welcome to "
+msgstr "Добро пожаловать"
+
+#: services/web/apps/main/home/views.py:101
+#, fuzzy
+#| msgid "Comment"
+msgid "Community"
+msgstr "Комментарий"
+
+#: services/web/apps/main/home/views.py:129
+#, fuzzy
+#| msgid "Inventory Object Summary"
+msgid "Inventory summary"
+msgstr "Сводка по инвентаризации объектов"
+
+#: services/web/apps/main/home/views.py:132
+#, fuzzy
+#| msgid "Objects"
+msgid "Total objects"
+msgstr "Объекты"
+
+#: services/web/apps/main/home/views.py:135
+msgid "Points of presence"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:136
+msgid "Racks"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:137
+#, fuzzy
+#| msgid "Remote Chassis"
+msgid "Chassis"
+msgstr "Соседний MAC адрес (по данным LLDP)"
+
+#: services/web/apps/main/home/views.py:157
+#, fuzzy
+#| msgid "Managed Objects Summary"
+msgid "Managed Object Summary"
+msgstr "Сводка по объектам"
+
+#: services/web/apps/main/home/views.py:181
+#, fuzzy
+#| msgid "Alarms"
+msgid "Total Alarms"
+msgstr "Аварии"
+
 #: services/web/apps/main/imagestore/views.py:19
 #: services/web/apps/main/imagestore/views.py:21
 msgid "Images"
@@ -1949,12 +2143,25 @@ msgstr "Настройки Отправки метрик"
 msgid "MIME Types"
 msgstr "Типы MIME"
 
-#: services/web/apps/main/notificationgroup/views.py:25
+#: services/web/apps/main/modeltemplate/views.py:21
+#, fuzzy
+#| msgid "VLAN Templates"
+msgid "Model Templates"
+msgstr "Шаблоны VLAN"
+
+#: services/web/apps/main/notificationgroup/views.py:22
 msgid "Notification Group"
 msgstr "Группа уведомлений"
 
-#: services/web/apps/main/notificationgroup/views.py:26
+#: services/web/apps/main/notificationgroup/views.py:23
 msgid "Notification Groups"
+msgstr "Группы уведомлений"
+
+#: services/web/apps/main/notificationgroupusersubscription/views.py:19
+#: services/web/apps/main/notificationgroupusersubscription/views.py:20
+#, fuzzy
+#| msgid "Notification Groups"
+msgid "Notification User Subscriptions"
 msgstr "Группы уведомлений"
 
 #: services/web/apps/main/pool/views.py:20
@@ -1985,7 +2192,7 @@ msgstr "Справочники"
 msgid "Remote Systems"
 msgstr "Внешние системы"
 
-#: services/web/apps/main/remotesystem/views.py:31
+#: services/web/apps/main/remotesystem/views.py:32
 msgid "never"
 msgstr "никогда"
 
@@ -2053,10 +2260,6 @@ msgstr "Маски времени"
 #: services/web/apps/main/userprofile/views.py:23
 msgid "User Profile"
 msgstr "Профиль пользователя"
-
-#: services/web/apps/main/welcome/views.py:25
-msgid "Welcome"
-msgstr "Добро пожаловать"
 
 #: services/web/apps/maintenance/__init__.py:11
 #: services/web/apps/maintenance/maintenance/views.py:33
@@ -2319,14 +2522,10 @@ msgstr "Правило проверки доступа"
 msgid "Credential Check Rules"
 msgstr "Правила проверки доступа"
 
+#: services/web/apps/sa/discoveredobject/views.py:29
 #: services/web/apps/sa/discoveredobject/views.py:30
-#: services/web/apps/sa/discoveredobject/views.py:31
 msgid "Discovered Object"
 msgstr "Обнаруженные устройства"
-
-#: services/web/apps/sa/discoveredobject/views.py:112
-msgid "Default Managed Object"
-msgstr "Шаблон устройства по умолчанию"
 
 #: services/web/apps/sa/getnow/views.py:20
 #: services/web/apps/sa/getnow/views.py:21
@@ -2337,6 +2536,12 @@ msgstr "Текущая информация"
 #: services/web/apps/sa/groupaccess/views.py:20
 msgid "Group Access"
 msgstr "Права групп"
+
+#: services/web/apps/sa/job/views.py:46 services/web/apps/sa/job/views.py:47
+#, fuzzy
+#| msgid "Job"
+msgid "Jobs"
+msgstr "Задача (Job)"
 
 #: services/web/apps/sa/managedobject/views.py:237
 msgid "Warning"
@@ -2358,12 +2563,10 @@ msgstr "ОК"
 msgid "Topology Neighbors"
 msgstr "Соседи по топологии"
 
-# | msgid "Segment"
 #: services/web/apps/sa/managedobject/views.py:1264
 msgid "Segment: "
 msgstr "Сегмент:"
 
-# | msgid "Maintainers"
 #: services/web/apps/sa/managedobject/views.py:1273
 msgid "Container: "
 msgstr "Локация (PoP)"
@@ -2561,7 +2764,7 @@ msgstr "Запуск команд"
 msgid "Run Commands (On Group Edit option)"
 msgstr ""
 
-#: services/web/apps/sa/service/views.py:28
+#: services/web/apps/sa/service/views.py:32
 msgid "Services"
 msgstr "Сервисы"
 
@@ -2661,3 +2864,16 @@ msgstr "Переходы"
 #: services/web/apps/wf/wfmigration/views.py:20
 msgid "Migrations"
 msgstr "Миграции"
+
+#: services/web/apps/wf/workflow/views.py:34
+#, fuzzy
+#| msgid "Workflow"
+msgid "Workflows"
+msgstr "Редактор процессов"
+
+#~ msgid "Managed object"
+#~ msgstr ""
+
+#~ msgid "Default Managed Object"
+#~ msgstr "Шаблон устройства по умолчанию"
+

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Configured Map class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,11 +22,12 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.cpe import CPE
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.translation import ugettext as _
 
 
 class ConfiguredTopology(TopologyBase):
     name = "configured"
-    header = "Configured Map"
+    header = _("Configured Map")
 
     NORMALIZE_POSITION = False
     ISOLATED_WIDTH = 600

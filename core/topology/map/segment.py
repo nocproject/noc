@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SegmentTopology class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,13 +26,14 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.topology.base import TopologyBase
 from noc.core.topology.types import MapItem, PathItem, Portal, MapMeta
+from noc.core.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
 
 
 class SegmentTopology(TopologyBase):
     name = "segment"
-    header = "Network Segment Schemas"
+    header = _("Network Segment Schemas")
     CAPS: Set[str] = {"Network | STP"}
     PARAMS = {"segment"}
 

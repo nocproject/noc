@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # PoP Access Map class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,13 +22,14 @@ from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.core.topology.base import TopologyBase
 from noc.core.topology.types import MapItem, PathItem
+from noc.core.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
 
 
 class ObjectContainerTopology(TopologyBase):
     name = "objectcontainer"
-    header = "Object Container Map"
+    header = _("Object Containers Map")
     POP_MODEL = "PoP | Access"
     POP_REGIONAL_MODEL = "PoP | Regional"
     PARAMS = {"container"}
