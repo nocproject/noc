@@ -7,13 +7,13 @@
 console.debug("Defining NOC.fm.alarm.ApplicationModel");
 
 Ext.define("NOC.fm.alarm.ApplicationModel", {
-    extend: "Ext.app.ViewModel",
-    alias: "viewmodel.fm.alarm",
-    data: {
-        activeFilter: {},
-        recentFilter: {},
-        displayFilter: {},
-        selected: {},
-        activeItem: "fm-alarm-list"
-    }
+  extend: "Ext.app.ViewModel",
+  alias: "viewmodel.fm.alarm",
+  data: {
+    activeFilter: {},
+    recentFilter: {},
+    displayFilter: {},
+    selected: {},
+    activeItem: "fm-alarm-list",
+  },
 });
