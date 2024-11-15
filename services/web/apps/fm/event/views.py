@@ -22,7 +22,7 @@ from noc.services.web.base.extapplication import ExtApplication, view
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.mib import MIB
-from noc.fm.models.utils import get_alarm, get_severity
+from noc.fm.models.utils import get_severity
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
