@@ -839,18 +839,12 @@ Ext.define('NOC.sa.managedobject.Controller', {
       method: "GET",
       scope: this,
       success: function(response){
-        var me = this,
-          defaultHandler, menuItems,
+        var me = this,  menuItems,
           showMapBtn = this.getView().down('[itemId=showMapBtn]'),
           data = Ext.decode(response.responseText);
 
-        defaultHandler = data.filter(function(el){
-          return el.is_default
-        })[0];
         showMapBtn.setHandler(function(){
-          NOC.launch("inv.map", "history", {
-            args: defaultHandler.args,
-          });
+          showMapBtn.showMenu();
         }, me);
         showMapBtn.getMenu().removeAll();
         menuItems = data.filter(function(el){
