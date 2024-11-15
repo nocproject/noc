@@ -91,7 +91,7 @@ class TopologyBase(object):
         Map Title
         :return:
         """
-        return f"{self.gen_id}"
+        return f"{self.name}"
 
     @property
     def meta(self) -> MapMeta:
