@@ -6,6 +6,6 @@
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.DisplayFilterController");
 Ext.define("NOC.fm.alarm.view.grids.DisplayFilterController", {
-    extend: "Ext.app.ViewController",
-    alias: "controller.fm.alarm.display"
+  extend: "Ext.app.ViewController",
+  alias: "controller.fm.alarm.display",
 });

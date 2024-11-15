@@ -382,7 +382,8 @@ class MapApplication(ExtApplication):
                 status=self.NOT_FOUND,
             )
         return {
-            "data": [
+            "data": [{"level": 0, "id": 0, "generator": gen.name, "label": gen.header}]
+            + [
                 {"level": p.level, "id": str(p.id), "generator": gen.name, "label": p.title}
                 for p in gen.iter_path(gen_id)
             ]

@@ -99,7 +99,7 @@ Ext.define("NOC.inv.map.MapPanel", {
 
   resizeHandles: "onResize",
 
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
 
     me.shapeRegistry = NOC.inv.map.ShapeRegistry;
@@ -132,6 +132,13 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.nodeMenu = Ext.create("Ext.menu.Menu", {
       items: [
         {
+          text: __("Topology Neighbors"),
+          glyph: NOC.glyph.map_o,
+          scope: me,
+          handler: me.onNodeMenuViewMap,
+          menuOn: ["managedobject"],
+        },
+        {
           text: __("View Card"),
           glyph: NOC.glyph.eye,
           scope: me,
@@ -139,7 +146,7 @@ Ext.define("NOC.inv.map.MapPanel", {
           menuOn: ["managedobject"],
         },
         {
-          text: __("Edit"),
+          text: __("Object Settings"),
           glyph: NOC.glyph.pencil,
           scope: me,
           handler: me.onNodeMenuEdit,
@@ -200,14 +207,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         "<tpl for='.'>",
         "<tr><td>{values}</td><td>|</td><td>Load {names} Mb</td><td>|</td><td>{port}</td></tr>",
         "</tpl>",
-        "</table>"
+        "</table>",
       ),
     });
     //
     me.callParent();
   },
 
-  afterRender: function () {
+  afterRender: function(){
     var me = this;
     me.callParent();
     new_load_scripts(
@@ -217,11 +224,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         "/ui/pkg/joint/joint.min.js",
       ],
       me,
-      me.initMap
+      me.initMap,
     );
   },
   // Initialize JointJS Map
-  initMap: function () {
+  initMap: function(){
     var me = this,
       dom = me.items.first().el.dom;
     me.graph = new joint.dia.Graph();
@@ -231,18 +238,18 @@ Ext.define("NOC.inv.map.MapPanel", {
       model: me.graph,
       preventContextMenu: false,
       async: false,
-      guard: function (evt) {
+      guard: function(evt){
         return evt.type === "mousedown" && evt.buttons === 2;
       },
       interactive: Ext.bind(me.onInteractive, me),
     });
     // Apply SVG filters
-    Ext.Object.each(me.svgFilters, function (fn) {
+    Ext.Object.each(me.svgFilters, function(fn){
       var ft = me.getFilter(fn, me.svgFilters[fn]),
         fd = V(ft);
       V(me.paper.svg).defs().append(fd);
     });
-    Ext.each(me.svgDefaultFilters, function (f) {
+    Ext.each(me.svgDefaultFilters, function(f){
       V(me.paper.svg).defs().append(V(f));
     });
     // Subscribe to events
@@ -258,12 +265,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.fireEvent("mapready");
   },
   // Load segment data
-  loadSegment: function (generator, segmentId, forceSpring) {
+  loadSegment: function(generator, segmentId, forceSpring){
     var me = this,
       url;
     me.generator = generator || "segment";
     url = "/inv/map/" + me.generator + "/" + segmentId + "/data/";
-    if (forceSpring) {
+    if(forceSpring){
       url += "?force=spring";
     }
     me.segmentId = segmentId;
@@ -272,37 +279,36 @@ Ext.define("NOC.inv.map.MapPanel", {
       url: url,
       method: "GET",
       scope: me,
-      success: function (response) {
+      success: function(response){
         var data = Ext.decode(response.responseText);
-        if (data.error) {
+        if(data.error){
           NOC.error(data.error);
-        } else {
+        } else{
           me.renderMap(data);
         }
         me.unmask();
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to get data"));
       },
     });
   },
   //
-  renderMap: function (data) {
+  renderMap: function(data){
     var me = this,
       backgroundOpt = {},
       nodes = [],
       badges = [],
       links = [],
-      pushNodeAndBadges = function (data) {
+      pushNodeAndBadges = function(data){
         nodes.push(data.node);
-        if (data.badges.length) {
+        if(data.badges.length){
           badges.push(data.badges);
         }
       };
-    if (
-      data.hasOwnProperty("normalize_position") &&
+    if(Object.prototype.hasOwnProperty.call(data, "normalize_position") &&
       data.normalize_position === false
-    ) {
+    ){
       me.normalize_position = data.normalize_position;
       me.bg_width = data.width;
       me.bg_height = data.height;
@@ -320,7 +326,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.pollingInterval =
       data.object_status_refresh_interval * 1000 || me.pollingInterval;
     // Set background
-    if (data.background_image) {
+    if(data.background_image){
       backgroundOpt = {
         image: "/main/imagestore/" + data.background_image + "/image/",
         position: "left top;",
@@ -329,19 +335,19 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     me.paper.drawBackground(backgroundOpt);
     // Create nodes
-    Ext.each(data.nodes, function (node) {
-      if (
+    Ext.each(data.nodes, function(node){
+      if(
         !me.app.viewAllNodeButton.pressed &&
         data.links.length > data.max_links &&
         node.external === true
-      ) {
+      ){
         // skip create
         return;
       }
       pushNodeAndBadges(me.createNode(node));
-      Ext.each(node.ports, function (port) {
+      Ext.each(node.ports, function(port){
         me.portObjects[port.id] = node.id;
-        Ext.each(port.ports, function (ifname) {
+        Ext.each(port.ports, function(ifname){
           me.interfaceMetrics.push({
             id: port.id,
             tags: {
@@ -353,8 +359,8 @@ Ext.define("NOC.inv.map.MapPanel", {
       });
     });
     // Create links
-    Ext.each(data.links, function (link) {
-      if (
+    Ext.each(data.links, function(link){
+      if(
         me.objectNodes[me.portObjects[link.ports[0]]] &&
         me.objectNodes[me.portObjects[link.ports[1]]]
       )
@@ -364,9 +370,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.graph.addCells(links);
     me.graph.addCells(badges);
     // Run status polling
-    if (me.statusPollingTaskId) {
+    if(me.statusPollingTaskId){
       me.getObjectStatus();
-    } else {
+    } else{
       me.statusPollingTaskId = Ext.TaskManager.start({
         run: me.getObjectStatus,
         interval: me.pollingInterval,
@@ -379,19 +385,19 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.fireEvent("renderdone");
   },
   //
-  createNode: function (data) {
+  createNode: function(data){
     var me = this,
       badges = [],
       sclass,
       node;
     var dataName = data.name;
-    if (dataName.indexOf("#") > 0) {
+    if(dataName.indexOf("#") > 0){
       var tokens = data.name.split("#");
       tokens.pop();
       dataName = tokens.join("#");
     }
     var name = this.symbolName(dataName, data.metrics_label, data.shape_width);
-    if (!me.usedImages[data.shape]) {
+    if(!me.usedImages[data.shape]){
       var img = me.shapeRegistry.getImage(data.shape);
       V(me.paper.svg).defs().append(V(img));
       me.usedImages[data.shape] = true;
@@ -433,7 +439,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         metrics_label: data.metrics_label,
       },
     });
-    Ext.each(data.shape_overlay, function (config) {
+    Ext.each(data.shape_overlay, function(config){
       var badge = me.createBadge(node, config);
       node.embed(badge);
       badges.push(badge);
@@ -449,16 +455,15 @@ Ext.define("NOC.inv.map.MapPanel", {
     return {node: node, badges: badges};
   },
   //
-  createLink: function (data) {
+  createLink: function(data){
     var me = this,
       cfg,
       src,
       dst,
-      connector,
-      getConnectionStyle = function (bw) {
-        for (var i = 0; i < me.bwStyle.length; i++) {
+      getConnectionStyle = function(bw){
+        for(var i = 0; i < me.bwStyle.length; i++){
           var s = me.bwStyle[i];
-          if (s[0] <= bw) {
+          if(s[0] <= bw){
             return s[1];
           }
         }
@@ -511,23 +516,23 @@ Ext.define("NOC.inv.map.MapPanel", {
       ],
     };
     //
-    if (data.connector) {
+    if(data.connector){
       cfg.connector = {name: data.connector};
-    } else {
+    } else{
       cfg.connector = {name: "normal"};
     }
 
-    if (data.vertices && data.vertices.length > 0) {
+    if(data.vertices && data.vertices.length > 0){
       cfg.vertices = data.vertices;
     }
     //
-    if (src.get("external")) {
+    if(src.get("external")){
       cfg["attrs"][".marker-source"] = {
         fill: "black",
         d: "M 10 0 L 0 5 L 10 10 z",
       };
     }
-    if (dst.get("external")) {
+    if(dst.get("external")){
       cfg["attrs"][".marker-target"] = {
         fill: "black",
         d: "M 10 0 L 0 5 L 10 10 z",
@@ -542,20 +547,20 @@ Ext.define("NOC.inv.map.MapPanel", {
     return new joint.dia.Link(cfg);
   },
   //
-  unhighlight: function () {
+  unhighlight: function(){
     var me = this;
-    if (me.currentHighlight) {
+    if(me.currentHighlight){
       me.currentHighlight.unhighlight();
       me.currentHighlight = null;
     }
     me.nodeMenu.hide();
   },
   //
-  onCellSelected: function (view, evt, x, y) {
+  onCellSelected: function(view){
     var me = this,
       data = view.model.get("data");
     me.unhighlight();
-    switch (data.type) {
+    switch(data.type){
       case "managedobject":
         view.highlight();
         me.currentHighlight = view;
@@ -592,37 +597,37 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
   },
 
-  onSegmentContextMenu: function (evt) {
+  onSegmentContextMenu: function(evt){
     var me = this;
     evt.preventDefault();
     me.segmentMenu.showAt(evt.clientX, evt.clientY);
   },
 
-  onLinkOver: function (link, evt) {
+  onLinkOver: function(link, evt){
     var me = this,
       data,
       rows = [],
-      nameByPort = function (portId) {
+      nameByPort = function(portId){
         var elementNameAttr = "name";
-        if (me.app.addressIPButton.pressed) {
+        if(me.app.addressIPButton.pressed){
           elementNameAttr = "address";
         }
-        if (link.model.getTargetElement().get("data").id === me.portObjects[portId]) {
+        if(link.model.getTargetElement().get("data").id === me.portObjects[portId]){
           return link.model.getTargetElement().get(elementNameAttr);
         }
-        if (link.model.getSourceElement().get("data").id === me.portObjects[portId]) {
+        if(link.model.getSourceElement().get("data").id === me.portObjects[portId]){
           return link.model.getSourceElement().get(elementNameAttr);
         }
       };
     // prevent bounce
     me.popupOffsetX = evt.offsetX;
     me.popupOffsetY = evt.offsetY;
-    if (me.overlayMode === me.LO_LOAD && me.tip.isHidden()) {
+    if(me.overlayMode === me.LO_LOAD && me.tip.isHidden()){
       data = link.model.get("data");
-      Ext.each(data.metrics, function (metric) {
+      Ext.each(data.metrics, function(metric){
         var names = [],
           values = [];
-        Ext.each(metric.metrics, function (dat) {
+        Ext.each(metric.metrics, function(dat){
           values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
           names.push(dat.metric === "Interface | Load | Out" ? "Out" : "In");
         });
@@ -632,69 +637,68 @@ Ext.define("NOC.inv.map.MapPanel", {
           port: nameByPort(metric.port),
         });
       });
-      if (rows.length) {
+      if(rows.length){
         me.tip.setData(rows);
         me.tip.showAt([evt.pageX, evt.pageY]);
       }
     }
   },
 
-  onLinkOut: function (link, evt) {
+  onLinkOut: function(link, evt){
     var me = this;
     // prevent bounce
-    if (me.popupOffsetX !== evt.offsetX && me.popupOffsetY !== evt.offsetY) {
+    if(me.popupOffsetX !== evt.offsetX && me.popupOffsetY !== evt.offsetY){
       me.tip.hide();
     }
   },
 
-  onContextMenu: function (view, evt, x, y) {
+  onContextMenu: function(view, evt){
     var me = this;
 
     evt.preventDefault();
     me.nodeMenuObject = view.model.get("id").split(":")[1];
     me.nodeMenuObjectType = view.model.get("data").type;
-    if ("wrench" !== me.nodeMenuObjectType) {
-      me.nodeMenu.items.items.map(function (item) {
+    if("wrench" !== me.nodeMenuObjectType){
+      me.nodeMenu.items.items.map(function(item){
         item.setVisible(item.menuOn.indexOf(me.nodeMenuObjectType) !== -1);
       });
       me.nodeMenu.showAt(evt.clientX, evt.clientY);
     }
   },
   //
-  onCellDoubleClick: function (view, evt, x, y) {
-    var me = this,
-      data = view.model.get("data");
-    if (data.type === "managedobject") {
+  onCellDoubleClick: function(view){
+    var data = view.model.get("data");
+    if(data.type === "managedobject"){
       window.open("/api/card/view/managedobject/" + data.id + "/");
     }
   },
   //
-  onBlankSelected: function () {
+  onBlankSelected: function(){
     var me = this;
     me.unhighlight();
     me.app.inspectSegment();
   },
   // Change interactive flag
-  setInteractive: function (interactive) {
+  setInteractive: function(interactive){
     var me = this;
     me.isInteractive = interactive;
   },
   //
-  onInteractive: function () {
+  onInteractive: function(){
     var me = this;
     return me.isInteractive;
   },
   //
-  onChange: function () {
+  onChange: function(){
     var me = this;
     me.isDirty = true;
     me.fireEvent("changed");
   },
   //
-  onRotate: function () {
+  onRotate: function(){
     var me = this,
       bbox = me.paper.getContentBBox();
-    Ext.each(me.graph.getElements(), function (e) {
+    Ext.each(me.graph.getElements(), function(e){
       var pos = e.get("position");
       e.set("position", {
         x: -pos.y + bbox.height,
@@ -704,20 +708,20 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.setPaperDimension();
   },
   //
-  save: function () {
+  save: function(){
     var me = this,
       r = {
         nodes: [],
         links: [],
       };
-    if (me.normalize_position) {
+    if(me.normalize_position){
       var bbox = me.paper.getContentBBox();
       r.width = bbox.width - bbox.x;
       r.height = bbox.height - bbox.y;
     }
     // Get nodes position
-    Ext.each(me.graph.getElements(), function (e) {
-      if ("wrench" !== e.get("data").type && "badge" !== e.get("data").type) {
+    Ext.each(me.graph.getElements(), function(e){
+      if("wrench" !== e.get("data").type && "badge" !== e.get("data").type){
         var v = e.get("id").split(":");
         r.nodes.push({
           type: v[0],
@@ -728,7 +732,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       }
     });
     // Get links position
-    Ext.each(me.graph.getLinks(), function (e) {
+    Ext.each(me.graph.getLinks(), function(e){
       var vertices = e.get("vertices"),
         v = e.get("id").split(":"),
         lr = {
@@ -736,8 +740,8 @@ Ext.define("NOC.inv.map.MapPanel", {
           id: v[1],
           connector: e.get("connector").name,
         };
-      if (vertices) {
-        lr.vertices = vertices.map(function (o) {
+      if(vertices){
+        lr.vertices = vertices.map(function(o){
           return {
             x: o.x,
             y: o.y,
@@ -751,18 +755,18 @@ Ext.define("NOC.inv.map.MapPanel", {
       method: "POST",
       jsonData: r,
       scope: me,
-      success: function (response) {
+      success: function(){
         NOC.info(__("Map has been saved"));
         me.isDirty = false;
         me.app.saveButton.setDisabled(true);
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to save data"));
       },
     });
   },
 
-  getObjectStatus: function () {
+  getObjectStatus: function(){
     var me = this;
     Ext.Ajax.request({
       url: "/inv/map/objects_statuses/",
@@ -771,42 +775,42 @@ Ext.define("NOC.inv.map.MapPanel", {
         nodes: me.objectsList,
       },
       scope: me,
-      success: function (response) {
+      success: function(response){
         var data = Ext.decode(response.responseText);
         me.startUpdatedTimer();
         me.applyObjectStatuses(data);
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Objects statuses failure!"));
       },
     });
   },
 
-  startUpdatedTimer: function () {
+  startUpdatedTimer: function(){
     var me = this,
       interval = 5;
 
-    if (me.updatedPollingTaskId) {
+    if(me.updatedPollingTaskId){
       Ext.TaskManager.stop(me.updatedPollingTaskId);
       me.updatedPollingTaskId = null;
     }
 
     me.updatedPollingTaskId = Ext.TaskManager.start({
-      run: function (counter) {
+      run: function(counter){
         var text = (counter - 1) * interval + " " + __("sec");
         this.fireEvent("updateTick", text);
       },
       interval: interval * 1000,
-      onError: function () {
+      onError: function(){
         console.error("Updated Polling Task!");
       },
       scope: me,
     });
   },
 
-  resetOverlayData: function () {
+  resetOverlayData: function(){
     var me = this;
-    Ext.each(me.graph.getLinks(), function (link) {
+    Ext.each(me.graph.getLinks(), function(link){
       link.attr({
         ".connection": {
           stroke: "black",
@@ -824,12 +828,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
-  getOverlayData: function () {
+  getOverlayData: function(){
     var me = this;
-    switch (me.overlayMode) {
+    switch(me.overlayMode){
       case me.LO_LOAD:
         var r = [];
-        Ext.each(me.interfaceMetrics, function (m) {
+        Ext.each(me.interfaceMetrics, function(m){
           r.push({
             id: m.id,
             metric: "Interface | Load | In",
@@ -848,7 +852,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             metrics: r,
           },
           scope: me,
-          success: function (response) {
+          success: function(response){
             me.setLoadOverlayData(Ext.decode(response.responseText));
           },
           failure: Ext.emptyFn,
@@ -857,14 +861,14 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
   },
 
-  createBadge: function (node, config) {
+  createBadge: function(node, config){
     var nodeSize = node.get("size"),
       size = Math.max(Math.min(nodeSize.height / 3, nodeSize.width / 3), 18),
       shape = config.form === "s" ? "Rectangle" : "Circle",
       // default NE
       x = node.get("position").x + nodeSize.width - 0.62 * size,
       y = node.get("position").y - 0.38 * size;
-    switch (config.position) {
+    switch(config.position){
       case "N":
         x = node.get("position").x + nodeSize.width / 2 - size / 2;
         y = node.get("position").y - 0.38 * size;
@@ -914,11 +918,11 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
-  applyObjectStatuses: function (data) {
+  applyObjectStatuses: function(data){
     var me = this;
-    Ext.Object.each(data, function (s) {
+    Ext.Object.each(data, function(s){
       var node = me.objectNodes[s];
-      if (!node) {
+      if(!node){
         return;
       }
       // Update metrics
@@ -927,28 +931,28 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.symbolName(
           node.attributes.name,
           data[s].metrics_label,
-          node.attributes.data.shape_width
-        )
+          node.attributes.data.shape_width,
+        ),
       );
       node.attributes.data.metrics_label = data.metrics_label;
       node.attributes.text = node.setFilter(
-        me.statusFilter[data[s].status_code & 0x1f]
+        me.statusFilter[data[s].status_code & 0x1f],
       ); // Remove maintenance bit
-      if (data[s].status_code & 0x20) {
+      if(data[s].status_code & 0x20){
         // Maintenance mode
-        if (!node.get("data").isMaintenance) {
+        if(!node.get("data").isMaintenance){
           var wrench = me.createBadge(node, {position: "NE", form: "c", code: 61613});
           node.attributes.data.isMaintenance = true;
           wrench.set("data", {type: "wrench"});
           node.embed(wrench);
           me.graph.addCell(wrench);
         }
-      } else {
-        if (node.get("data").isMaintenance) {
+      } else{
+        if(node.get("data").isMaintenance){
           var embeddedCells = node.getEmbeddedCells();
           node.attributes.data.isMaintenance = false;
-          Ext.each(embeddedCells, function (cell) {
-            if (cell.get(data) && cell.get(data).type === "wrench") {
+          Ext.each(embeddedCells, function(cell){
+            if(cell.get(data) && cell.get(data).type === "wrench"){
               node.unembed(cell);
               cell.remove();
             }
@@ -966,13 +970,13 @@ Ext.define("NOC.inv.map.MapPanel", {
     "0    {g0} 0    0 {g1} ",
     "0    0    {b0} 0 {b1} ",
     '0    0    0    1 0    " />',
-    "</filter>"
+    "</filter>",
   ),
   //
   // Get SVG filter text
   //   c = [R, G, B]
   //
-  getFilter: function (filterId, c) {
+  getFilter: function(filterId, c){
     var me = this,
       r1 = c[0] / 256.0,
       g1 = c[1] / 256.0,
@@ -991,28 +995,28 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
-  stopPolling: function () {
+  stopPolling: function(){
     var me = this;
-    if (me.statusPollingTaskId) {
+    if(me.statusPollingTaskId){
       Ext.TaskManager.stop(me.statusPollingTaskId);
       me.statusPollingTaskId = null;
     }
-    if (me.overlayPollingTaskId) {
+    if(me.overlayPollingTaskId){
       Ext.TaskManager.stop(me.overlayPollingTaskId);
       me.overlayPollingTaskId = null;
     }
   },
 
-  setOverlayMode: function (mode) {
+  setOverlayMode: function(mode){
     var me = this;
     // Stop polling when necessary
-    if (mode === me.LO_NONE && me.overlayPollingTaskId) {
+    if(mode === me.LO_NONE && me.overlayPollingTaskId){
       Ext.TaskManager.stop(me.overlayPollingTaskId);
       me.overlayPollingTaskId = null;
     }
     me.overlayMode = mode;
     // Start polling when necessary
-    if (mode !== me.LO_NONE && !me.overlayPollingTaskId) {
+    if(mode !== me.LO_NONE && !me.overlayPollingTaskId){
       me.overlayPollingTaskId = Ext.TaskManager.start({
         run: me.getOverlayData,
         interval: me.pollingInterval,
@@ -1020,9 +1024,9 @@ Ext.define("NOC.inv.map.MapPanel", {
       });
     }
     //
-    if (mode === me.LO_NONE) {
+    if(mode === me.LO_NONE){
       me.resetOverlayData();
-    } else {
+    } else{
       me.getOverlayData();
     }
   },
@@ -1030,9 +1034,9 @@ Ext.define("NOC.inv.map.MapPanel", {
   // Display links load
   // data is dict of
   // metric -> {ts: .., value: }
-  setLoadOverlayData: function (data) {
+  setLoadOverlayData: function(data){
     var me = this;
-    Ext.each(me.graph.getLinks(), function (link) {
+    Ext.each(me.graph.getLinks(), function(link){
       var sIn,
         sOut,
         dIn,
@@ -1047,35 +1051,36 @@ Ext.define("NOC.inv.map.MapPanel", {
         ports = link.get("data").ports,
         linkId = link.get("data").id,
         luStyle = null,
-        getTotal = function (port, metric) {
-          if (data[port] && data[port][metric]) {
+        getTotal = function(port, metric){
+          if(data[port] && data[port][metric]){
             return data[port][metric];
-          } else {
+          } else{
             return 0.0;
           }
         },
-        hasMetric = function (port, metric) {
-          return data.hasOwnProperty(port) && data[port].hasOwnProperty(metric);
+        hasMetric = function(port, metric){
+          return Object.prototype.hasOwnProperty.call(data, port)
+            && Object.prototype.hasOwnProperty.call(data[port], metric);
         },
-        getStatus = function (port, status) {
-          if (data[port] && data[port][status] !== undefined) {
+        getStatus = function(port, status){
+          if(data[port] && data[port][status] !== undefined){
             return data[port][status];
-          } else {
+          } else{
             return true;
           }
         };
       //
-      if (
+      if(
         !getStatus(ports[0], "admin_status") ||
         !getStatus(ports[1], "admin_status")
-      ) {
+      ){
         me.setLinkStyle(link, me.LINK_ADMIN_DOWN);
-      } else if (
+      } else if(
         !getStatus(ports[0], "oper_status") ||
         !getStatus(ports[1], "oper_status")
-      ) {
+      ){
         me.setLinkStyle(link, me.LINK_OPER_DOWN);
-      } else if (!me.currentStpBlocked[linkId]) {
+      } else if(!me.currentStpBlocked[linkId]){
         // Get bandwidth
         sIn = getTotal(ports[0], "Interface | Load | In");
         sOut = getTotal(ports[0], "Interface | Load | Out");
@@ -1087,26 +1092,26 @@ Ext.define("NOC.inv.map.MapPanel", {
         td = Math.max(sOut, dIn);
         // Target to destination
         dt = Math.max(sIn, dOut);
-        if (bw) {
+        if(bw){
           // Link utilization
           lu = 0.0;
-          if (bw.in) {
+          if(bw.in){
             lu = Math.max(lu, dt / bw.in);
           }
-          if (bw.out) {
+          if(bw.out){
             lu = Math.max(lu, td / bw.out);
           }
           // Apply proper style according to load
-          for (var i = 0; i < me.luStyle.length; i++) {
+          for(var i = 0; i < me.luStyle.length; i++){
             var t = me.luStyle[i][0],
               style = me.luStyle[i][1];
-            if (lu >= t) {
+            if(lu >= t){
               cfg = {};
               cfg = Ext.apply(cfg, style);
               luStyle = cfg;
               link.attr({
                 ".connection": cfg,
-                ".": {filter: {name: "dropShadow", args: {dx: 1, dy: 1, blur: 2}}},
+                ".": {filter: {name: "dropShadow", args: {dx: 1, dy: 1, blur: 2} } },
               });
               break;
             }
@@ -1114,25 +1119,25 @@ Ext.define("NOC.inv.map.MapPanel", {
         }
         // Show balance point
         tb = td + dt;
-        if (tb > 0) {
+        if(tb > 0){
           balance = td / tb;
           link.label(0, {position: balance});
-          if (luStyle) {
+          if(luStyle){
             luStyle.fill = luStyle.stroke;
             luStyle.visibility = "visible";
             luStyle.text = "\uf111";
             luStyle["font-size"] = 5;
-            link.label(0, {attrs: {text: luStyle}});
+            link.label(0, {attrs: {text: luStyle} });
           }
         }
         // save link utilization
         var values = [];
-        Ext.each(ports, function (port) {
+        Ext.each(ports, function(port){
           var metrics = [],
             metricsName = ["Interface | Load | In", "Interface | Load | Out"];
-          Ext.each(metricsName, function (metric) {
+          Ext.each(metricsName, function(metric){
             var value = "-";
-            if (hasMetric(port, metric)) {
+            if(hasMetric(port, metric)){
               value = getTotal(port, metric);
             }
             metrics.push({metric: metric, value: value});
@@ -1144,21 +1149,21 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
-  onCellHighlight: function (view, el) {
+  onCellHighlight: function(view, el){
     var me = this;
     V(el).attr("filter", "url(#highlight)");
     me.fireEvent("onSelectCell", view.model.get("data").id);
   },
 
-  onCellUnhighlight: function (view, el) {
+  onCellUnhighlight: function(view, el){
     var me = this;
     V(el).attr("filter", "");
     me.fireEvent("onUnselectCell", null);
   },
 
-  resetLayout: function (forceSpring) {
+  resetLayout: function(forceSpring){
     var me = this;
-    if (!me.segmentId || !me.generator) {
+    if(!me.segmentId || !me.generator){
       return;
     }
     forceSpring = forceSpring || false;
@@ -1166,45 +1171,51 @@ Ext.define("NOC.inv.map.MapPanel", {
       url: "/inv/map/" + me.generator + "/" + me.segmentId + "/data/",
       method: "DELETE",
       scope: me,
-      success: function (response) {
+      success: function(){
         me.loadSegment(me.generator, me.segmentId, forceSpring);
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to reset layout"));
       },
     });
   },
 
-  setZoom: function (zoom) {
+  setZoom: function(zoom){
     var me = this;
     me.paper.scale(zoom, zoom);
     me.setPaperDimension(zoom);
   },
 
-  onNodeMenuViewCard: function () {
+  onNodeMenuViewMap: function(){
+    NOC.launch("inv.map", "history", {
+      args: ["objectlevelneighbor", this.nodeMenuObject, this.nodeMenuObject ],
+    });
+  },
+
+  onNodeMenuViewCard: function(){
     var me = this;
     window.open("/api/card/view/managedobject/" + me.nodeMenuObject + "/");
   },
 
-  onNodeMenuEdit: function () {
+  onNodeMenuEdit: function(){
     var me = this;
     NOC.launch("sa.managedobject", "history", {args: [me.nodeMenuObject]});
   },
 
-  onNodeMenuDashboard: function () {
+  onNodeMenuDashboard: function(){
     var me = this,
       objectType = me.nodeMenuObjectType;
 
-    if ("managedobject" === me.nodeMenuObjectType) objectType = "mo";
+    if("managedobject" === me.nodeMenuObjectType) objectType = "mo";
     window.open(
       "/ui/grafana/dashboard/script/noc.js?dashboard=" +
         objectType +
         "&id=" +
-        me.nodeMenuObject
+        me.nodeMenuObject,
     );
   },
 
-  onNodeMenuMaintainceMode: function () {
+  onNodeMenuMaintainceMode: function(){
     var me = this,
       objectId = Number(me.nodeMenuObject);
 
@@ -1221,9 +1232,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
-  addToMaintaince: function (objects) {
+  addToMaintaince: function(objects){
     var elements = [];
-    Ext.Array.forEach(objects, function (item) {
+    Ext.Array.forEach(objects, function(item){
       elements.push({
         object: item.get("object"),
         object__label: item.get("object__label"),
@@ -1234,7 +1245,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
-  newMaintaince: function (objects) {
+  newMaintaince: function(objects){
     var args = {
       direct_objects: objects,
       subject: __("created from map at ") + Ext.Date.format(new Date(), "d.m.Y H:i P"),
@@ -1249,8 +1260,8 @@ Ext.define("NOC.inv.map.MapPanel", {
       .getStore()
       .load({
         params: {__query: "РНР"},
-        callback: function (records) {
-          if (records.length > 0) {
+        callback: function(records){
+          if(records.length > 0){
             Ext.apply(args, {
               type: records[0].id,
             });
@@ -1262,7 +1273,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       });
   },
 
-  onNodeMenuNewMaintaince: function () {
+  onNodeMenuNewMaintaince: function(){
     var me = this,
       objectId = Number(me.nodeMenuObject);
     me.newMaintaince([
@@ -1273,37 +1284,37 @@ Ext.define("NOC.inv.map.MapPanel", {
     ]);
   },
 
-  onNodeMenuAddToBasket: function () {
+  onNodeMenuAddToBasket: function(){
     var me = this,
       objectId = Number(me.nodeMenuObject);
     var store = Ext.data.StoreManager.lookup("basketStore");
 
-    if (store.getCount() === 0) {
+    if(store.getCount() === 0){
       me.fireEvent("openbasket");
     }
     me.addObjectToBasket(objectId, store);
   },
 
-  onSegmentMenuAddToBasket: function () {
+  onSegmentMenuAddToBasket: function(){
     var me = this;
     var store = Ext.data.StoreManager.lookup("basketStore");
 
-    if (store.getCount() === 0) {
+    if(store.getCount() === 0){
       me.fireEvent("openbasket");
     }
-    Ext.each(this.graph.getElements(), function (e) {
-      if ("managedobject" === e.get("id").split(":")[0]) {
+    Ext.each(this.graph.getElements(), function(e){
+      if("managedobject" === e.get("id").split(":")[0]){
         var objectId = Number(e.get("id").split(":")[1]);
         me.addObjectToBasket(objectId, store);
       }
     });
   },
 
-  addObjectToBasket: function (id, store) {
+  addObjectToBasket: function(id, store){
     Ext.Ajax.request({
       url: "/sa/managedobject/" + id + "/",
       method: "GET",
-      success: function (response) {
+      success: function(response){
         var data = Ext.decode(response.responseText);
         var object = {
           id: id,
@@ -1315,28 +1326,28 @@ Ext.define("NOC.inv.map.MapPanel", {
         };
         store.add(object);
       },
-      failure: function () {
+      failure: function(){
         NOC.msg.failed(__("Failed to get object data"));
       },
     });
   },
 
-  setStp: function (status) {
+  setStp: function(status){
     var me = this;
-    if (status) {
+    if(status){
       me.pollStp();
     }
   },
 
-  pollStp: function () {
+  pollStp: function(){
     var me = this,
       stpNodes = [];
     // Get STP nodes
-    Ext.Object.each(me.objectNodes, function (k, v) {
-      if (
-        v.attributes.data.hasOwnProperty("caps") &&
+    Ext.Object.each(me.objectNodes, function(k, v){
+      if(
+        Object.prototype.hasOwnProperty.call(v.attributes.data, "caps") &&
         v.attributes.data.caps.indexOf(me.CAP_STP) !== -1
-      ) {
+      ){
         stpNodes.push(k);
       }
     });
@@ -1348,33 +1359,33 @@ Ext.define("NOC.inv.map.MapPanel", {
         objects: stpNodes,
       },
       scope: me,
-      success: function (response) {
+      success: function(response){
         var data = Ext.decode(response.responseText);
         me.setStpBlocked(data.blocked);
         me.setStpRoots(data.roots);
       },
-      failure: function () {
+      failure: function(){
         NOC.msg.failed(__("Failed to get STP status"));
       },
     });
   },
 
-  setStpRoots: function (roots) {
+  setStpRoots: function(roots){
     var me = this,
       newStpRoots = {};
     // Set new STP roots
-    Ext.each(roots, function (rootId) {
+    Ext.each(roots, function(rootId){
       var root = me.objectNodes[rootId];
-      if (root) {
-        if (!me.currentStpRoots[rootId]) {
+      if(root){
+        if(!me.currentStpRoots[rootId]){
           me.objectNodes[rootId].attr("text/class", "stp-root");
         }
         newStpRoots[rootId] = true;
       }
     });
     // Remove previous STP roots
-    Ext.Object.each(me.currentStpRoots, function (k) {
-      if (!newStpRoots[k]) {
+    Ext.Object.each(me.currentStpRoots, function(k){
+      if(!newStpRoots[k]){
         // Remove node style
         me.objectNodes[k].attr("text/class", "");
       }
@@ -1382,12 +1393,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.currentStpRoots = newStpRoots;
   },
 
-  setStpBlocked: function (blocked) {
+  setStpBlocked: function(blocked){
     var me = this,
       newStpBlocked = {};
-    Ext.each(me.graph.getLinks(), function (link) {
+    Ext.each(me.graph.getLinks(), function(link){
       var linkId = link.get("data").id;
-      if (blocked.indexOf(linkId) !== -1) {
+      if(blocked.indexOf(linkId) !== -1){
         newStpBlocked[linkId] = true;
         me.setLinkStyle(link, me.LINK_STP_BLOCKED);
       }
@@ -1397,14 +1408,14 @@ Ext.define("NOC.inv.map.MapPanel", {
     console.log("blocked", me.currentStpBlocked);
   },
 
-  setLinkStyle: function (link, status) {
+  setLinkStyle: function(link, status){
     var me = this,
       style,
       glyph,
       fontSize = 10,
       luStyle;
 
-    switch (status) {
+    switch(status){
       case me.LINK_OK:
         break;
       case me.LINK_ADMIN_DOWN:
@@ -1434,40 +1445,40 @@ Ext.define("NOC.inv.map.MapPanel", {
         position: 0.5,
         fill: style.stroke,
       },
-      style
+      style,
     );
     // @todo: Remove?
     luStyle.fill = luStyle.stroke;
     luStyle.visibility = "visible";
     luStyle.text = glyph;
     luStyle["font-size"] = fontSize;
-    link.label(0, {attrs: {text: luStyle}});
+    link.label(0, {attrs: {text: luStyle} });
     link.label(0, {position: 0.5});
   },
 
-  onResize: function (width, height) {
+  onResize: function(){
     var me = this;
-    if ("paper" in me) {
+    if("paper" in me){
       me.setPaperDimension();
     }
   },
 
-  setPaperDimension: function (zoom) {
+  setPaperDimension: function(zoom){
     var me = this,
       paddingX = 15,
       paddingY = 15,
       w = me.getWidth(),
       h = me.getHeight();
 
-    if (me.paper) {
+    if(me.paper){
       me.paper.fitToContent();
       var contentBB = me.paper.getContentBBox();
-      if (contentBB && contentBB.width && contentBB.height) {
-        if (me.normalize_position) {
+      if(contentBB && contentBB.width && contentBB.height){
+        if(me.normalize_position){
           w = Ext.Array.max([contentBB.width, me.getWidth()]);
           h = Ext.Array.max([contentBB.height, me.getHeight()]);
           me.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
-        } else {
+        } else{
           w = me.bg_width * (zoom || 1);
           h = me.bg_height * (zoom || 1);
         }
@@ -1476,34 +1487,34 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
   },
 
-  changeLabelText: function (showIPAddress) {
+  changeLabelText: function(showIPAddress){
     var me = this;
-    if (showIPAddress) {
-      Ext.each(this.graph.getElements(), function (e) {
+    if(showIPAddress){
+      Ext.each(this.graph.getElements(), function(e){
         e.attr(
           "text/text",
           me.symbolName(
             e.get("address"),
             e.get("data").metrics_label,
-            e.get("data").shape_width
-          )
+            e.get("data").shape_width,
+          ),
         );
       });
-    } else {
-      Ext.each(this.graph.getElements(), function (e) {
+    } else{
+      Ext.each(this.graph.getElements(), function(e){
         e.attr(
           "text/text",
           me.symbolName(
             e.get("name"),
             e.get("data").metrics_label,
-            e.get("data").shape_width
-          )
+            e.get("data").shape_width,
+          ),
         );
       });
     }
   },
 
-  breakText: function (text, size, styles, opt) {
+  breakText: function(text, size, styles, opt){
     opt = opt || {};
     var width = size.width;
     var height = size.height;
@@ -1524,7 +1535,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     textSpan.style.display = "block";
     textSpan.appendChild(textNode);
     svgDocument.appendChild(textElement);
-    if (!opt.svgDocument) {
+    if(!opt.svgDocument){
       document.body.appendChild(svgDocument);
     }
 
@@ -1534,27 +1545,27 @@ Ext.define("NOC.inv.map.MapPanel", {
     var p;
     var lineHeight;
 
-    for (var i = 0, l = 0, len = words.length; i < len; i++) {
+    for(var i = 0, l = 0, len = words.length; i < len; i++){
       var word = words[i];
 
       textNode.data = lines[l] ? lines[l] + word : word;
-      if (textSpan.getComputedTextLength() <= width) {
+      if(textSpan.getComputedTextLength() <= width){
         // the current line fits
         lines[l] = textNode.data;
-        if (p) {
+        if(p){
           // We were partitioning. Put rest of the word onto next line
           full[l++] = true;
           // cancel partitioning
           p = 0;
         }
-      } else {
-        if (!lines[l] || p) {
+      } else{
+        if(!lines[l] || p){
           var partition = !!p;
           p = word.length - 1;
-          if (partition || !p) {
+          if(partition || !p){
             // word has only one character.
-            if (!p) {
-              if (!lines[l]) {
+            if(!p){
+              if(!lines[l]){
                 // we won't fit this text within our rect
                 lines = [];
                 break;
@@ -1572,13 +1583,13 @@ Ext.define("NOC.inv.map.MapPanel", {
             // move last letter to the beginning of the next word
             words[i] = word.substring(0, p);
             words[i + 1] = word.substring(p) + words[i + 1];
-          } else {
+          } else{
             // We initiate partitioning
             // split the long word into two words
             words.splice(i, 1, word.substring(0, p), word.substring(p));
             // adjust words length
             len++;
-            if (l && !full[l - 1]) {
+            if(l && !full[l - 1]){
               // if the previous line is not full, try to fit max part of
               // the current word there
               l--;
@@ -1592,49 +1603,49 @@ Ext.define("NOC.inv.map.MapPanel", {
       }
       // if size.height is defined we have to check whether the height of the entire
       // text exceeds the rect height
-      if (height !== undefined) {
-        if (lineHeight === undefined) {
+      if(height !== undefined){
+        if(lineHeight === undefined){
           var heightValue;
           // use the same defaults as in V.prototype.text
-          if (styles.lineHeight === "auto") {
+          if(styles.lineHeight === "auto"){
             heightValue = {value: 1.5, unit: "em"};
-          } else {
+          } else{
             heightValue = joint.util.parseCssNumeric(styles.lineHeight, ["em"]) || {
               value: 1,
               unit: "em",
             };
           }
           lineHeight = heightValue.value;
-          if (heightValue.unit === "em") {
+          if(heightValue.unit === "em"){
             lineHeight *= textElement.getBBox().height;
           }
         }
-        if (lineHeight * lines.length > height) {
+        if(lineHeight * lines.length > height){
           // remove overflowing lines
           lines.splice(Math.floor(height / lineHeight));
           break;
         }
       }
     }
-    if (opt.svgDocument) {
+    if(opt.svgDocument){
       // svg document was provided, remove the text element only
       svgDocument.removeChild(textElement);
-    } else {
+    } else{
       // clean svg document
       document.body.removeChild(svgDocument);
     }
     return lines.join("\n");
   },
-  symbolName: function (name, metrics_label, shape_width) {
+  symbolName: function(name, metrics_label, shape_width){
     var me = this,
       metrics;
-    if (!Ext.isEmpty(metrics_label)) {
+    if(!Ext.isEmpty(metrics_label)){
       metrics = metrics_label.split("<br/>");
-      metrics = metrics.map(function (metric) {
+      metrics = metrics.map(function(metric){
         return me.breakText(metric, {width: shape_width * 2});
       });
       return name + "\n" + metrics.join("\n");
-    } else {
+    } else{
       return name;
     }
   },
