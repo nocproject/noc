@@ -8,7 +8,7 @@
 # Python modules
 import logging
 import itertools
-from typing import Dict, List, Optional, Iterable
+from typing import Iterable
 
 # Third-party modules
 from bson import ObjectId
@@ -36,7 +36,7 @@ class ObjectLevelNeighborTopology(TopologyBase):
         self.logger = PrefixLoggerAdapter(logger, self.mo.name)
         super().__init__(**settings)
 
-    def gen_id(self) -> Optional[str]:
+    def gen_id(self) -> str | None:
         return str(self.mo.id)
 
     def load(self):
@@ -44,7 +44,11 @@ class ObjectLevelNeighborTopology(TopologyBase):
         Load all managed objects from Object Group
         """
         # Group objects
-        object_mos: List[int] = self.mo.links[:]
+        object_mos: list[int] = self.mo.links[:]
+        if not object_mos:
+            # Only current node
+            self.add_node(self.mo.get_topology_node(), {"role": "segment"})
+            return
         level = self.mo.object_profile.level
         while object_mos:
             for links, n_level in ManagedObject.objects.filter(id__in=object_mos).values_list(
@@ -57,13 +61,13 @@ class ObjectLevelNeighborTopology(TopologyBase):
                 break
 
         # Get all links, belonging to segment
-        links: List[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
+        links: list[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
         # All linked interfaces from map
-        all_ifaces: List["ObjectId"] = list(
+        all_ifaces: list["ObjectId"] = list(
             itertools.chain.from_iterable(link.interface_ids for link in links)
         )
         # Bulk fetch all interfaces data
-        self._interface_cache: Dict["ObjectId", "Interface"] = {
+        self._interface_cache: dict["ObjectId", "Interface"] = {
             i["_id"]: i
             for i in Interface._get_collection().find(
                 {"_id": {"$in": all_ifaces}},
@@ -78,13 +82,13 @@ class ObjectLevelNeighborTopology(TopologyBase):
             )
         }
         # Bulk fetch all managed objects
-        all_mos: List[int] = list(
+        all_mos: list[int] = list(
             set(
                 i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i
             )
             | set(object_mos)
         )
-        mos: Dict[int, "ManagedObject"] = {
+        mos: dict[int, ManagedObject] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
         o_mos = set(object_mos)
@@ -103,10 +107,10 @@ class ObjectLevelNeighborTopology(TopologyBase):
     def iter_maps(
         cls,
         parent: str = None,
-        query: Optional[str] = None,
-        limit: Optional[int] = None,
-        start: Optional[int] = None,
-        page: Optional[int] = None,
+        query: str | None = None,
+        limit: int | None = None,
+        start: int | None = None,
+        page: int | None = None,
     ) -> Iterable[MapItem]:
         data = ManagedObject.objects.filter().order_by("name")
         if query:
