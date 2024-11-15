@@ -414,182 +414,163 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   loadSegment: function(segmentId){
-    var me = this;
-
-    if(me.segmentCombo.getValue() == null){
-      me.segmentCombo.restoreById(segmentId, true);
+    if(this.segmentCombo.getValue() == null){
+      this.segmentCombo.restoreById(segmentId, true);
     }
-    me.setHistoryHash(segmentId);
-    me.mapPanel.loadSegment(me.generator, segmentId);
-    me.currentSegmentId = segmentId;
+    this.setHistoryHash(segmentId);
+    this.mapPanel.loadSegment(this.generator, segmentId);
+    this.currentSegmentId = segmentId;
     // @todo: Restrict to permissions
-    me.editButton.setDisabled(me.readOnly);
-    me.saveButton.setDisabled(true);
-    me.setStateMapButtons(!me.editButton.pressed);
-    me.editButton.setPressed(false);
+    this.editButton.setDisabled(this.readOnly);
+    this.saveButton.setDisabled(true);
+    this.setStateMapButtons(!this.editButton.pressed);
+    this.editButton.setPressed(false);
     // me.inspectSegment();
-    me.viewMapButton.setPressed(true);
-    me.viewStpButton.setPressed(false);
-    me.zoomCombo.setValue(1.0);
-    me.mapPanel.setZoom(1.0);
-    me.mapPanel.paper.clearGrid();
+    this.viewMapButton.setPressed(true);
+    this.viewStpButton.setPressed(false);
+    this.zoomCombo.setValue(1.0);
+    this.mapPanel.setZoom(1.0);
+    this.mapPanel.paper.clearGrid();
   },
 
   onMapReady: function(){
-    var me = this, hash, segmentId;
+    var hash, segmentId;
 
-    if(me.getCmd() === "history"){
-      me.generator = me.noc.cmd.args[0];
-      segmentId = me.noc.cmd.args[1];
+    if(this.getCmd() === "history"){
+      this.generator = this.noc.cmd.args[0];
+      segmentId = this.noc.cmd.args[1];
       if(typeof segmentId === "string"){
         if(segmentId.indexOf(":") !== -1){
           hash = segmentId.split(":");
           segmentId = hash[0];
-          me.selectedObjectId = hash[1];
+          this.selectedObjectId = hash[1];
         }
       }
-      me.loadSegment(segmentId);
-      if(me.noc.cmd.args.length > 2){
-        me.selectedObjectId = me.noc.cmd.args[2];
+      this.loadSegment(segmentId);
+      if(this.noc.cmd.args.length > 2){
+        this.selectedObjectId = this.noc.cmd.args[2];
       }
     }
-    me.miniMapPanel.createMini(me.mapPanel);
+    this.miniMapPanel.createMini(this.mapPanel);
   },
 
-  onSelectSegment: function(combo, record, opts){
-    var me = this;
+  onSelectSegment: function(combo, record){
     if(record){
-      me.generator = record.get("generator");
-      me.loadSegment(record.get("id"));
+      this.generator = record.get("generator");
+      this.loadSegment(record.get("id"));
     }
   },
 
-  onZoom: function(combo, record, opts){
-    var me = this;
-    me.mapPanel.setZoom(record.get("field1"));
+  onZoom: function(combo, record){
+    this.mapPanel.setZoom(record.get("field1"));
   },
 
   inspectSegment: function(){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.segmentInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.segmentInspector,
     );
-    if(me.currentSegmentId){
-      me.segmentInspector.preview(me.currentSegmentId, null);
+    if(this.currentSegmentId){
+      this.segmentInspector.preview(this.currentSegmentId, null);
     }
   },
 
   inspectManagedObject: function(objectId){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.managedObjectInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.managedObjectInspector,
     );
-    me.managedObjectInspector.preview(me.currentSegmentId, objectId);
+    this.managedObjectInspector.preview(this.currentSegmentId, objectId);
   },
 
   inspectLink: function(linkId){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.linkInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.linkInspector,
     );
-    me.linkInspector.preview(me.currentSegmentId, linkId);
+    this.linkInspector.preview(this.currentSegmentId, linkId);
   },
 
   inspectCloud: function(linkId){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.cloudInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.cloudInspector,
     );
-    me.cloudInspector.preview(me.currentSegmentId, linkId);
+    this.cloudInspector.preview(this.currentSegmentId, linkId);
   },
 
   inspectObjectGroup: function(objectId){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.objectGroupInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.objectGroupInspector,
     );
-    me.objectGroupInspector.preview(me.currentSegmentId, objectId);
+    this.objectGroupInspector.preview(this.currentSegmentId, objectId);
   },
 
   inspectObjectSegment: function(objectId){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.objectSegmentInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.objectSegmentInspector,
     );
-    me.objectSegmentInspector.preview(me.currentSegmentId, objectId);
+    this.objectSegmentInspector.preview(this.currentSegmentId, objectId);
   },
 
   inspectObjectPortal: function(objectId){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.objectPortalInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.objectPortalInspector,
     );
-    me.objectPortalInspector.preview(me.currentSegmentId, objectId);
+    this.objectPortalInspector.preview(this.currentSegmentId, objectId);
   },
 
   inspectCPE: function(objectId){
-    var me = this;
-    me.inspectorPanel.getLayout().setActiveItem(
-      me.cpeInspector,
+    this.inspectorPanel.getLayout().setActiveItem(
+      this.cpeInspector,
     );
-    me.cpeInspector.preview(me.currentSegmentId, objectId);
+    this.cpeInspector.preview(this.currentSegmentId, objectId);
   },
 
   onEdit: function(){
-    var me = this;
-    me.mapPanel.paper.clearGrid();
-    if(me.editButton.pressed){
-      me.mapPanel.setOverlayMode(0);
-      me.mapPanel.paper.setGrid({
+    this.mapPanel.paper.clearGrid();
+    if(this.editButton.pressed){
+      this.mapPanel.setOverlayMode(0);
+      this.mapPanel.paper.setGrid({
         name: "doubleMesh",
         args: [
           {color: "#bdc3c7", thickness: 1}, // settings for the primary mesh
           {color: "#bdc3c7", scaleFactor: 5, thickness: 2}, //settings for the secondary mesh
         ],
       });
-      me.mapPanel.paper.drawGrid();
-      me.viewMapButton.setPressed(true);
-      me.saveButton.setDisabled(true);
-      me.setStateMapButtons(false);
+      this.mapPanel.paper.drawGrid();
+      this.viewMapButton.setPressed(true);
+      this.saveButton.setDisabled(true);
+      this.setStateMapButtons(false);
     } else{
-      me.setStateMapButtons(true);
-      me.saveButton.setDisabled(true);
+      this.setStateMapButtons(true);
+      this.saveButton.setDisabled(true);
     }
-    me.mapPanel.setInteractive(me.editButton.pressed);
+    this.mapPanel.setInteractive(this.editButton.pressed);
   },
 
   onSave: function(){
-    var me = this;
-    me.mapPanel.save();
+    this.mapPanel.save();
   },
 
   onRevert: function(){
-    var me = this;
-    me.loadSegment(me.currentSegmentId);
-    me.editButton.setPressed(true);
+    this.loadSegment(this.currentSegmentId);
+    this.editButton.setPressed(true);
   },
 
   onReload: function(){
-    var me = this;
-    me.loadSegment(me.currentSegmentId);
+    this.loadSegment(this.currentSegmentId);
   },
 
   onChanged: function(){
-    var me = this;
-    if(me.editButton.pressed){
-      me.saveButton.setDisabled(me.readOnly);
-      me.setStateMapButtons(me.readOnly);
+    if(this.editButton.pressed){
+      this.saveButton.setDisabled(this.readOnly);
+      this.setStateMapButtons(this.readOnly);
     }
   },
 
   onCloseApp: function(){
-    var me = this;
-    me.mapPanel.stopPolling();
+    this.mapPanel.stopPolling();
   },
 
   onSetOverlay: function(button){
-    var me = this;
-    me.mapPanel.setOverlayMode(button.mapOverlay);
+    this.mapPanel.setOverlayMode(button.mapOverlay);
   },
 
   onNewLayout: function(btn, ev){
@@ -609,18 +590,15 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   onRotate: function(){
-    var me = this;
-    me.mapPanel.onRotate();
+    this.mapPanel.onRotate();
   },
 
   onChangeName: function(){
-    var me = this;
-    me.mapPanel.changeLabelText(me.addressIPButton.pressed);
+    this.mapPanel.changeLabelText(this.addressIPButton.pressed);
   },
 
   onStp: function(){
-    var me = this;
-    me.mapPanel.setStp(me.viewStpButton.pressed);
+    this.mapPanel.setStp(this.viewStpButton.pressed);
   },
 
   onLegend: function(){
@@ -636,12 +614,11 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   setStateMapButtons: function(state){
-    var me = this;
-    me.newLayoutButton.setDisabled(state);
-    me.rotateButton.setDisabled(state);
-    me.revertButton.setDisabled(state);
-    if(!me.mapPanel.normalize_position){
-      me.rotateButton.setDisabled(true);
+    this.newLayoutButton.setDisabled(state);
+    this.rotateButton.setDisabled(state);
+    this.revertButton.setDisabled(state);
+    if(!this.mapPanel.normalize_position){
+      this.rotateButton.setDisabled(true);
     }
   },
 
@@ -698,25 +675,22 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   selected: function(objectId){
-    var me = this;
-    me.selectedObjectId = objectId;
-    me.setHistoryHash(me.currentSegmentId);
+    this.selectedObjectId = objectId;
+    this.setHistoryHash(this.currentSegmentId);
   },
 
   getHistoryHash: function(){
-    var me = this;
-    if(me.currentSegmentId){
-      me.mapPanel.loadSegment(me.generator, me.currentSegmentId);
+    if(this.currentSegmentId){
+      this.mapPanel.loadSegment(this.generator, this.currentSegmentId);
     }
-    return me.currentHistoryHash;
+    return this.currentHistoryHash;
   },
 
   setHistoryHash: function(segmentId){
-    var me = this;
-    me.currentHistoryHash = [me.appId, me.generator || "segment"].concat([].slice.call([segmentId], 0)).join("/");
-    if(me.selectedObjectId){
-      me.currentHistoryHash += ":" + me.selectedObjectId;
+    this.currentHistoryHash = [this.appId, this.generator || "segment"].concat([].slice.call([segmentId], 0)).join("/");
+    if(this.selectedObjectId){
+      this.currentHistoryHash += ":" + this.selectedObjectId;
     }
-    Ext.History.setHash(me.currentHistoryHash);
+    Ext.History.setHash(this.currentHistoryHash);
   },
 });

@@ -215,16 +215,15 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   afterRender: function(){
-    var me = this;
-    me.callParent();
+    this.callParent();
     new_load_scripts(
       [
         "/ui/pkg/lodash/lodash.min.js",
         "/ui/pkg/backbone/backbone.min.js",
         "/ui/pkg/joint/joint.min.js",
       ],
-      me,
-      me.initMap,
+      this,
+      this.initMap,
     );
   },
   // Initialize JointJS Map
