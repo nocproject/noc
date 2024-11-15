@@ -24,6 +24,8 @@ from noc.core.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
 
+MAX_NEIGHBORS = 100
+
 
 class ObjectLevelNeighborTopology(TopologyBase):
     name = "objectlevelneighbor"
@@ -59,7 +61,9 @@ class ObjectLevelNeighborTopology(TopologyBase):
                     level = n_level
             if level > self.mo.object_profile.level:
                 break
-
+        # Cut too large neighborhood
+        if len(object_mos) > MAX_NEIGHBORS:
+            object_mos = [self.mo] + self.mo.links[:]
         # Get all links, belonging to segment
         links: list[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
         # All linked interfaces from map
