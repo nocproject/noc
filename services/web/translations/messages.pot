@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-05-07 15:42+0300\n"
+"POT-Creation-Date: 2024-11-15 17:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,93 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.13.1\n"
+
+#: core/dateutils.py:24
+msgid "less than a minute"
+msgstr ""
+
+#: core/dateutils.py:26
+msgid "1 minute"
+msgstr ""
+
+#: core/dateutils.py:28
+#, python-format
+msgid "%d minutes"
+msgstr ""
+
+#: core/dateutils.py:30
+msgid "about 1 hour"
+msgstr ""
+
+#: core/dateutils.py:32
+#, python-format
+msgid "about %d hours"
+msgstr ""
+
+#: core/dateutils.py:39
+#, python-format
+msgid "%d days"
+msgstr ""
+
+#: core/dateutils.py:41
+msgid "about 1 month"
+msgstr ""
+
+#: core/dateutils.py:43
+#, python-format
+msgid "%d months"
+msgstr ""
+
+#: core/dateutils.py:45
+msgid "about 1 year"
+msgstr ""
+
+#: core/dateutils.py:47
+msgid "over 1 year"
+msgstr ""
+
+#: core/dateutils.py:49
+msgid "almost 2 years"
+msgstr ""
+
+#: core/dateutils.py:54
+#, python-format
+msgid "about %d years"
+msgstr ""
+
+#: core/dateutils.py:56
+#, python-format
+msgid "over %d years"
+msgstr ""
+
+#: core/dateutils.py:58
+#, python-format
+msgid "almost %d years"
+msgstr ""
+
+#: core/dateutils.py:65
+msgid "Never"
+msgstr ""
+
+#: core/inv/info.py:131
+msgid "Go to object"
+msgstr ""
+
+#: core/topology/map/objectcontainer.py:32
+msgid "Object Containers Map"
+msgstr ""
+
+#: core/topology/map/objectgroup.py:31
+msgid "Object Group Schemas"
+msgstr ""
+
+#: core/topology/map/objectlevelneighbor.py:30
+msgid "Object Level Neighbor Schemas"
+msgstr ""
+
+#: core/topology/map/segment.py:36
+msgid "Network Segment Schemas"
+msgstr ""
 
 #: services/web/apps/aaa/__init__.py:11
 msgid "AAA"
@@ -51,6 +138,7 @@ msgstr ""
 #: services/web/apps/fm/alarmseverity/views.py:20
 #: services/web/apps/fm/alarmtrigger/views.py:20
 #: services/web/apps/fm/classificationrule/views.py:33
+#: services/web/apps/fm/escalationprofile/views.py:20
 #: services/web/apps/fm/eventclass/views.py:20
 #: services/web/apps/fm/eventtrigger/views.py:20
 #: services/web/apps/fm/ignoreeventrule/views.py:21
@@ -71,6 +159,7 @@ msgstr ""
 #: services/web/apps/inv/connectiontype/views.py:22
 #: services/web/apps/inv/coverage/views.py:23
 #: services/web/apps/inv/cpeprofile/views.py:36
+#: services/web/apps/inv/endpoint/views.py:21
 #: services/web/apps/inv/facade/views.py:24
 #: services/web/apps/inv/firmware/views.py:20
 #: services/web/apps/inv/firmwarepolicy/views.py:20
@@ -88,6 +177,7 @@ msgstr ""
 #: services/web/apps/inv/resourcepool/views.py:20
 #: services/web/apps/inv/sensor/views.py:22
 #: services/web/apps/inv/sensorprofile/views.py:20
+#: services/web/apps/inv/techdomain/views.py:20
 #: services/web/apps/inv/technology/views.py:20
 #: services/web/apps/inv/vendor/views.py:20
 #: services/web/apps/ip/addressprofile/views.py:20
@@ -113,7 +203,7 @@ msgstr ""
 #: services/web/apps/main/language/views.py:17
 #: services/web/apps/main/metricstream/views.py:20
 #: services/web/apps/main/mimetype/views.py:17
-#: services/web/apps/main/notificationgroup/views.py:26
+#: services/web/apps/main/modeltemplate/views.py:21
 #: services/web/apps/main/pool/views.py:20
 #: services/web/apps/main/prefixtable/views.py:26
 #: services/web/apps/main/pyrule/views.py:21
@@ -277,7 +367,7 @@ msgid "Subscriber"
 msgstr ""
 
 #: services/web/apps/crm/subscriber/views.py:22
-#: services/web/apps/fm/alarm/views.py:970
+#: services/web/apps/fm/alarm/views.py:1035
 #: services/web/apps/fm/reportescalations/views.py:91
 msgid "Subscribers"
 msgstr ""
@@ -386,15 +476,16 @@ msgstr ""
 msgid "Fault Management"
 msgstr ""
 
-#: services/web/apps/fm/alarm/views.py:86
+#: services/web/apps/fm/alarm/views.py:88
 msgid "Alarm"
 msgstr ""
 
-#: services/web/apps/fm/alarm/views.py:87
+#: services/web/apps/fm/alarm/views.py:89
+#: services/web/apps/main/home/views.py:185
 msgid "Alarms"
 msgstr ""
 
-#: services/web/apps/fm/alarm/views.py:969
+#: services/web/apps/fm/alarm/views.py:1034
 #: services/web/apps/fm/reportttsystemstat/views.py:73
 #: services/web/apps/fm/reportttsystemstat/views.py:88
 msgid "Service"
@@ -448,8 +539,13 @@ msgstr ""
 msgid "Classification Rules"
 msgstr ""
 
-#: services/web/apps/fm/event/views.py:43
-#: services/web/apps/fm/event/views.py:44
+#: services/web/apps/fm/escalationprofile/views.py:19
+#: services/web/apps/fm/escalationprofile/views.py:20
+msgid "Escalation Profile"
+msgstr ""
+
+#: services/web/apps/fm/event/views.py:69
+#: services/web/apps/fm/event/views.py:70
 msgid "Events"
 msgstr ""
 
@@ -714,9 +810,11 @@ msgstr ""
 #: services/web/apps/fm/reportescalations/views.py:85
 #: services/web/apps/fm/reportoutages/views.py:121
 #: services/web/apps/fm/reportreboots/views.py:102
+#: services/web/apps/fm/reportttsystemstat/views.py:89
 #: services/web/apps/inv/reportdiscoverycaps/views.py:56
 #: services/web/apps/inv/reportdiscoverypoison/views.py:80
 #: services/web/apps/inv/reportpendinglinks/views.py:258
+#: services/web/apps/ip/reportaddressfilter/views.py:35
 #: services/web/apps/ip/reportvpnstatus/views.py:42
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:223
 msgid "Managed Object"
@@ -783,6 +881,7 @@ msgstr ""
 msgid "Range"
 msgstr ""
 
+#: core/dateutils.py:34 core/dateutils.py:37
 #: services/web/apps/fm/reportescalations/views.py:27
 #: services/web/apps/fm/reportoutages/views.py:29
 #: services/web/apps/fm/reportreboots/views.py:26
@@ -1004,11 +1103,6 @@ msgstr ""
 msgid "max (ms)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:89
-#: services/web/apps/ip/reportaddressfilter/views.py:35
-msgid "Managed object"
-msgstr ""
-
 #: services/web/apps/fm/reportttsystemstat/views.py:90
 msgid "TT ID"
 msgstr ""
@@ -1080,8 +1174,8 @@ msgstr ""
 msgid "Streets"
 msgstr ""
 
-#: services/web/apps/inv/__init__.py:12 services/web/apps/inv/inv/views.py:45
-#: services/web/apps/inv/inv/views.py:46
+#: services/web/apps/inv/__init__.py:12 services/web/apps/inv/inv/views.py:63
+#: services/web/apps/inv/inv/views.py:64
 msgid "Inventory"
 msgstr ""
 
@@ -1103,6 +1197,13 @@ msgstr ""
 msgid "Cards"
 msgstr ""
 
+#: services/web/apps/inv/channel/views.py:35
+#: services/web/apps/inv/channel/views.py:36
+#: services/web/apps/main/home/views.py:210
+msgid "Channels"
+msgstr ""
+
+#: core/topology/map/configured.py:30
 #: services/web/apps/inv/configuredmap/views.py:19
 msgid "Configured Map"
 msgstr ""
@@ -1136,6 +1237,10 @@ msgstr ""
 
 #: services/web/apps/inv/cpeprofile/views.py:36
 msgid "CPE Profiles"
+msgstr ""
+
+#: services/web/apps/inv/endpoint/views.py:21
+msgid "Endpoints"
 msgstr ""
 
 #: services/web/apps/inv/facade/views.py:23
@@ -1172,15 +1277,15 @@ msgstr ""
 msgid "Interface Profiles"
 msgstr ""
 
-#: services/web/apps/inv/inv/plugins/metric.py:233
+#: services/web/apps/inv/inv/plugins/metric.py:231
 msgid "OK"
 msgstr ""
 
-#: services/web/apps/inv/inv/views.py:713
+#: services/web/apps/inv/inv/views.py:715
 msgid "ManagedObject Container: "
 msgstr ""
 
-#: services/web/apps/inv/inv/views.py:722
+#: services/web/apps/inv/inv/views.py:724
 msgid "Configured Map Container: "
 msgstr ""
 
@@ -1296,10 +1401,12 @@ msgstr ""
 msgid "Discovery ID cache poison"
 msgstr ""
 
+#: core/datasources/discoveryidcachepoisonds.py:67
 #: services/web/apps/inv/reportdiscoverypoison/views.py:63
 msgid "Duplicate MO"
 msgstr ""
 
+#: core/datasources/discoveryidcachepoisonds.py:69
 #: services/web/apps/inv/reportdiscoverypoison/views.py:65
 msgid "MO is move"
 msgstr ""
@@ -1472,6 +1579,7 @@ msgid "Managed Object Serial Number"
 msgstr ""
 
 #: services/web/apps/inv/reportobjectsserial/views.py:51
+#: services/web/apps/main/home/views.py:161
 #: services/web/apps/sa/managedobject/views.py:77
 #: services/web/apps/sa/managedobject/views.py:78
 msgid "Managed Objects"
@@ -1564,6 +1672,14 @@ msgstr ""
 
 #: services/web/apps/inv/sensorprofile/views.py:20
 msgid "Sensor Profiles"
+msgstr ""
+
+#: services/web/apps/inv/techdomain/views.py:19
+msgid "Tech Domain"
+msgstr ""
+
+#: services/web/apps/inv/techdomain/views.py:20
+msgid "Tech Domains"
 msgstr ""
 
 #: services/web/apps/inv/technology/views.py:19
@@ -1797,8 +1913,8 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-#: services/web/apps/main/audittrail/views.py:28
 #: services/web/apps/main/audittrail/views.py:29
+#: services/web/apps/main/audittrail/views.py:30
 msgid "Audit Trail"
 msgstr ""
 
@@ -1891,7 +2007,7 @@ msgstr ""
 msgid "DataStream Config"
 msgstr ""
 
-#: services/web/apps/main/desktop/views.py:282
+#: services/web/apps/main/desktop/views.py:308
 msgid "Failed to change credentials"
 msgstr ""
 
@@ -1913,6 +2029,46 @@ msgstr ""
 
 #: services/web/apps/main/handler/views.py:20
 msgid "Handlers"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:36
+msgid "Home"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:89
+msgid "Welcome to "
+msgstr ""
+
+#: services/web/apps/main/home/views.py:101
+msgid "Community"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:129
+msgid "Inventory summary"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:132
+msgid "Total objects"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:135
+msgid "Points of presence"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:136
+msgid "Racks"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:137
+msgid "Chassis"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:157
+msgid "Managed Object Summary"
+msgstr ""
+
+#: services/web/apps/main/home/views.py:181
+msgid "Total Alarms"
 msgstr ""
 
 #: services/web/apps/main/imagestore/views.py:19
@@ -1947,12 +2103,21 @@ msgstr ""
 msgid "MIME Types"
 msgstr ""
 
-#: services/web/apps/main/notificationgroup/views.py:25
+#: services/web/apps/main/modeltemplate/views.py:21
+msgid "Model Templates"
+msgstr ""
+
+#: services/web/apps/main/notificationgroup/views.py:22
 msgid "Notification Group"
 msgstr ""
 
-#: services/web/apps/main/notificationgroup/views.py:26
+#: services/web/apps/main/notificationgroup/views.py:23
 msgid "Notification Groups"
+msgstr ""
+
+#: services/web/apps/main/notificationgroupusersubscription/views.py:19
+#: services/web/apps/main/notificationgroupusersubscription/views.py:20
+msgid "Notification User Subscriptions"
 msgstr ""
 
 #: services/web/apps/main/pool/views.py:20
@@ -1983,7 +2148,7 @@ msgstr ""
 msgid "Remote Systems"
 msgstr ""
 
-#: services/web/apps/main/remotesystem/views.py:31
+#: services/web/apps/main/remotesystem/views.py:32
 msgid "never"
 msgstr ""
 
@@ -2050,10 +2215,6 @@ msgstr ""
 
 #: services/web/apps/main/userprofile/views.py:23
 msgid "User Profile"
-msgstr ""
-
-#: services/web/apps/main/welcome/views.py:25
-msgid "Welcome"
 msgstr ""
 
 #: services/web/apps/maintenance/__init__.py:11
@@ -2317,13 +2478,9 @@ msgstr ""
 msgid "Credential Check Rules"
 msgstr ""
 
+#: services/web/apps/sa/discoveredobject/views.py:29
 #: services/web/apps/sa/discoveredobject/views.py:30
-#: services/web/apps/sa/discoveredobject/views.py:31
 msgid "Discovered Object"
-msgstr ""
-
-#: services/web/apps/sa/discoveredobject/views.py:112
-msgid "Default Managed Object"
 msgstr ""
 
 #: services/web/apps/sa/getnow/views.py:20
@@ -2334,6 +2491,10 @@ msgstr ""
 #: services/web/apps/sa/groupaccess/views.py:19
 #: services/web/apps/sa/groupaccess/views.py:20
 msgid "Group Access"
+msgstr ""
+
+#: services/web/apps/sa/job/views.py:46 services/web/apps/sa/job/views.py:47
+msgid "Jobs"
 msgstr ""
 
 #: services/web/apps/sa/managedobject/views.py:237
@@ -2557,7 +2718,7 @@ msgstr ""
 msgid "Run Commands (On Group Edit option)"
 msgstr ""
 
-#: services/web/apps/sa/service/views.py:28
+#: services/web/apps/sa/service/views.py:32
 msgid "Services"
 msgstr ""
 
