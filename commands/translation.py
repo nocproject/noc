@@ -19,7 +19,6 @@ from functools import cache
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.settings import LANGUAGES
-from noc.config import config
 from noc.core.comp import smart_text
 
 BABEL_CFG = b"""# Translation extraction config
