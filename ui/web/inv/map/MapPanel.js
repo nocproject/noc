@@ -15,7 +15,6 @@ Ext.define("NOC.inv.map.MapPanel", {
   readOnly: false,
   pollingInterval: 180000,
   updatedPollingTaskId: null,
-
   svgFilters: {
     // Asbestos, #7f8c8d
     osUnknown: [127, 140, 141],
@@ -123,7 +122,6 @@ Ext.define("NOC.inv.map.MapPanel", {
       items: [
         {
           xtype: "component",
-          autoScroll: true,
           layout: "fit",
         },
       ],
@@ -225,6 +223,15 @@ Ext.define("NOC.inv.map.MapPanel", {
       this,
       this.initMap,
     );
+    this.boundScrollHandler = Ext.bind(this.moveViewPort, this);
+    this.body.dom.addEventListener("scroll", this.boundScrollHandler);
+  },
+  destroy: function(){
+    var dom = this.body.dom;
+    if(this.boundScrollHandler){
+      dom.removeEventListener("scroll", this.boundScrollHandler);
+    }
+    this.callParent();
   },
   // Initialize JointJS Map
   initMap: function(){
@@ -465,6 +472,19 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
     return {node: node, badges: badges};
   },
+  //
+  moveViewPort: function(evt){
+    var scrollLeft = evt.target.scrollLeft,
+      scrollTop = evt.target.scrollTop;
+
+    if(this.viewPort){
+      var {sx, sy} = this.paper.scale(),
+        moveX = Math.trunc(scrollLeft / sx),
+        moveY = Math.trunc(scrollTop / sy);
+      this.viewPort.position(moveX, moveY);
+    }
+  },
+  //
   setViewPortSize: function(){
     if(Ext.isEmpty(this.viewPort)) return;
     var {sx, sy} = this.paper.scale(),
