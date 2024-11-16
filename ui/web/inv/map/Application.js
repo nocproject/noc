@@ -76,7 +76,7 @@ Ext.define("NOC.inv.map.Application", {
     me.segmentCombo = Ext.create("NOC.core.TreeCombo", {
       restUrl: "/inv/map",
       fieldLabel: __("Segment"),
-      labelWidth: 50,
+      labelWidth: 70,
       labelAlign: "left",
       listAlign: "left",
       minWidth: 400,
@@ -95,7 +95,7 @@ Ext.define("NOC.inv.map.Application", {
 
     me.zoomCombo = Ext.create("Ext.form.ComboBox", {
       store: me.zoomLevels,
-      width: 60,
+      width: 97,
       value: 1.0,
       valueField: "zoom",
       displayField: "label",
