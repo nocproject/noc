@@ -7,7 +7,6 @@
 console.debug("Defining NOC.inv.map.MiniMap");
 
 Ext.define("NOC.inv.map.MiniMap", {
-  // extend: 'Ext.container.Container',
   extend: "Ext.panel.Panel",
   alias: "widget.minimap",
 
@@ -19,10 +18,15 @@ Ext.define("NOC.inv.map.MiniMap", {
   },
 
   createMini: function(mapPanel){
+    var w = this.width,
+      h = this.height - 10,
+      scrollMap = function(){
+        var [x, y] = Object.values(arguments).slice(-2),
+          {sx, sy} = mapPanel.paper.scale();
+        mapPanel.scrollTo(x * sx, y * sy);
+      };
     this.paperEl = this.items.first().el.dom;
     this.paper = mapPanel.paper;
-    var w = this.width;
-    var h = this.height - 10;
 
     this.miniPaper = new joint.dia.Paper({
       el: this.paperEl,
@@ -32,9 +36,11 @@ Ext.define("NOC.inv.map.MiniMap", {
       gridSize: 1,
       interactive: false,
     });
-    this.miniPaper.on("blank:pointerdown", function(evt, x, y){
-      mapPanel.scrollTo(x, y);
-    });
+
+    this.miniPaper.on("cell:pointerdown", scrollMap);
+    this.miniPaper.on("link:pointerdown", scrollMap);
+    this.miniPaper.on("element:pointerdown", scrollMap);
+    this.miniPaper.on("blank:pointerdown", scrollMap);
   },
 
   scaleContentToFit: function(){

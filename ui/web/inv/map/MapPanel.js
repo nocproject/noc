@@ -15,7 +15,6 @@ Ext.define("NOC.inv.map.MapPanel", {
   readOnly: false,
   pollingInterval: 180000,
   updatedPollingTaskId: null,
-
   svgFilters: {
     // Asbestos, #7f8c8d
     osUnknown: [127, 140, 141],
@@ -123,7 +122,6 @@ Ext.define("NOC.inv.map.MapPanel", {
       items: [
         {
           xtype: "component",
-          autoScroll: true,
           layout: "fit",
         },
       ],
@@ -215,17 +213,25 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   afterRender: function(){
-    var me = this;
-    me.callParent();
+    this.callParent();
     new_load_scripts(
       [
         "/ui/pkg/lodash/lodash.min.js",
         "/ui/pkg/backbone/backbone.min.js",
         "/ui/pkg/joint/joint.min.js",
       ],
-      me,
-      me.initMap,
+      this,
+      this.initMap,
     );
+    this.boundScrollHandler = Ext.bind(this.moveViewPort, this);
+    this.body.dom.addEventListener("scroll", this.boundScrollHandler);
+  },
+  destroy: function(){
+    var dom = this.body.dom;
+    if(this.boundScrollHandler){
+      dom.removeEventListener("scroll", this.boundScrollHandler);
+    }
+    this.callParent();
   },
   // Initialize JointJS Map
   initMap: function(){
@@ -255,11 +261,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     // Subscribe to events
     me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
     me.paper.on("cell:pointerdblclick", Ext.bind(me.onCellDoubleClick, me));
-    me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
     me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight, me));
     me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight, me));
     me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
-    me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
     me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
     me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
     me.fireEvent("mapready");
@@ -382,6 +386,20 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.hasStp = data.caps.indexOf("Network | STP") !== -1;
     me.app.viewStpButton.setDisabled(!me.hasStp);
     me.setPaperDimension();
+    this.viewPort = new joint.shapes.standard.Rectangle({
+      position: {x: 0, y: 0},
+      attrs: {
+        rect: {
+          stroke: "black",
+          "stroke-width": 1,
+          vectorEffect: "non-scaling-stroke",
+        },
+      },
+      z: -1,
+    });
+    this.graph.addCell(this.viewPort);
+    this.setViewPortSize();
+    me.setPaperDimension();
     me.fireEvent("renderdone");
   },
   //
@@ -453,6 +471,29 @@ Ext.define("NOC.inv.map.MapPanel", {
       metrics_template: data.metrics_template,
     });
     return {node: node, badges: badges};
+  },
+  //
+  moveViewPort: function(evt){
+    var scrollLeft = evt.target.scrollLeft,
+      scrollTop = evt.target.scrollTop;
+
+    if(this.viewPort){
+      var {sx, sy} = this.paper.scale(),
+        moveX = Math.trunc(scrollLeft / sx),
+        moveY = Math.trunc(scrollTop / sy);
+      this.viewPort.position(moveX, moveY);
+    }
+  },
+  //
+  setViewPortSize: function(){
+    if(Ext.isEmpty(this.viewPort)) return;
+    var {sx, sy} = this.paper.scale(),
+      width = Math.trunc(this.body.dom.clientWidth / sx),
+      height = Math.trunc(this.body.dom.clientHeight / sy);
+    this.viewPort.set("size", {
+      width: width,
+      height: height, 
+    });
   },
   //
   createLink: function(data){
@@ -557,50 +598,52 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   //
   onCellSelected: function(view){
-    var me = this,
-      data = view.model.get("data");
-    me.unhighlight();
+    var data = view.model.get("data");
+    this.unhighlight();
+    if(Ext.isEmpty(data)){
+      this.onBlankSelected();
+      return;
+    }
     switch(data.type){
       case "managedobject":
         view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectManagedObject(data.id);
+        this.currentHighlight = view;
+        this.app.inspectManagedObject(data.id);
         break;
       case "link":
-        me.app.inspectLink(data.id);
+        this.app.inspectLink(data.id);
         break;
       case "cloud":
         view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectCloud(data.id);
+        this.currentHighlight = view;
+        this.app.inspectCloud(data.id);
         break;
       case "objectgroup":
         view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectObjectGroup(data.node_id);
+        this.currentHighlight = view;
+        this.app.inspectObjectGroup(data.node_id);
         break;
       case "objectsegment":
         view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectObjectSegment(data.node_id);
+        this.currentHighlight = view;
+        this.app.inspectObjectSegment(data.node_id);
         break;
       case "cpe":
         view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectCPE(data.node_id);
+        this.currentHighlight = view;
+        this.app.inspectCPE(data.node_id);
         break;
       case "other":
         view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectObjectPortal(data.portal);
+        this.currentHighlight = view;
+        this.app.inspectObjectPortal(data.portal);
         break;
     }
   },
 
   onSegmentContextMenu: function(evt){
-    var me = this;
     evt.preventDefault();
-    me.segmentMenu.showAt(evt.clientX, evt.clientY);
+    this.segmentMenu.showAt(evt.clientX, evt.clientY);
   },
 
   onLinkOver: function(link, evt){
@@ -653,21 +696,25 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onContextMenu: function(view, evt){
-    var me = this;
-
     evt.preventDefault();
-    me.nodeMenuObject = view.model.get("id").split(":")[1];
-    me.nodeMenuObjectType = view.model.get("data").type;
-    if("wrench" !== me.nodeMenuObjectType){
-      me.nodeMenu.items.items.map(function(item){
-        item.setVisible(item.menuOn.indexOf(me.nodeMenuObjectType) !== -1);
+    var data = view.model.get("data");
+    if(Ext.isEmpty(data)){
+      this.onSegmentContextMenu(evt);
+      return;
+    }
+    this.nodeMenuObject = view.model.get("id").split(":")[1];
+    this.nodeMenuObjectType = data.type;
+    if("wrench" !== this.nodeMenuObjectType){
+      this.nodeMenu.items.items.map(function(item){
+        item.setVisible(item.menuOn.indexOf(this.nodeMenuObjectType) !== -1);
       });
-      me.nodeMenu.showAt(evt.clientX, evt.clientY);
+      this.nodeMenu.showAt(evt.clientX, evt.clientY);
     }
   },
   //
   onCellDoubleClick: function(view){
     var data = view.model.get("data");
+    if(Ext.isEmpty(data)) return;
     if(data.type === "managedobject"){
       window.open("/api/card/view/managedobject/" + data.id + "/");
     }
@@ -1181,9 +1228,9 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setZoom: function(zoom){
-    var me = this;
-    me.paper.scale(zoom, zoom);
-    me.setPaperDimension(zoom);
+    this.paper.scale(zoom, zoom);
+    this.setViewPortSize();
+    this.setPaperDimension(zoom);
   },
 
   onNodeMenuViewMap: function(){
@@ -1457,32 +1504,31 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onResize: function(){
-    var me = this;
-    if("paper" in me){
-      me.setPaperDimension();
+    if("paper" in this){
+      this.setViewPortSize();
+      this.setPaperDimension();
     }
   },
 
   setPaperDimension: function(zoom){
-    var me = this,
-      paddingX = 15,
+    var paddingX = 15,
       paddingY = 15,
-      w = me.getWidth(),
-      h = me.getHeight();
+      w = this.getWidth(),
+      h = this.getHeight();
 
-    if(me.paper){
-      me.paper.fitToContent();
-      var contentBB = me.paper.getContentBBox();
+    if(this.paper){
+      this.paper.fitToContent();
+      var contentBB = this.paper.getContentBBox();
       if(contentBB && contentBB.width && contentBB.height){
-        if(me.normalize_position){
-          w = Ext.Array.max([contentBB.width, me.getWidth()]);
-          h = Ext.Array.max([contentBB.height, me.getHeight()]);
-          me.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
+        if(this.normalize_position){
+          w = Ext.Array.max([contentBB.width, this.getWidth()]);
+          h = Ext.Array.max([contentBB.height, this.getHeight()]);
+          this.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
         } else{
-          w = me.bg_width * (zoom || 1);
-          h = me.bg_height * (zoom || 1);
+          w = this.bg_width * (zoom || 1);
+          h = this.bg_height * (zoom || 1);
         }
-        me.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
+        this.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
       }
     }
   },
