@@ -56,7 +56,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
             {xtype: "displayfield", width: 30, bind: {value: "{total.objectsFiltered}"} },
           ],
         },
-        {xtype: "button", text: __("Reset"), width: 50, margin: "0 0 5 0", handler: "onResetStatuses"},
+        {xtype: "button", text: __("Reset"), margin: "0 0 5 0", handler: "onResetStatuses"},
       ],
     },
     {

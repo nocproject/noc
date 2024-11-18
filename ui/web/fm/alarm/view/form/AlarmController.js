@@ -162,7 +162,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
   },
   onSetRoot: function(){
     Ext.MessageBox.prompt(
-      __("Set root cause"),
+      __("Set root"),
       __("Please enter root cause alarm id"),
       function(btn, text){
         if(btn === "ok"){

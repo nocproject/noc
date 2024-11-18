@@ -24,7 +24,8 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
     },
     {
       xtype: "glyphactioncolumn",
-      width: 25,
+      width: 22 * 4,
+      sortable: false,
       items: [
         {
           glyph: NOC.glyph.star,
@@ -34,13 +35,6 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
           },
           handler: "onFavItem",
         },
-      ],
-    },
-    {
-      xtype: "glyphactioncolumn",
-      width: 22 * 3,
-      sortable: false,
-      items: [
         {
           glyph: NOC.glyph.globe,
           tooltip: __("Show map"),

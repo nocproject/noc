@@ -247,7 +247,6 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
       handler: "onClose",
     },
     {
-      text: __("Refresh"),
       glyph: NOC.glyph.refresh,
       handler: "onRefreshForm",
     },
@@ -292,11 +291,11 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
         pressed: "{isSubscribe}",
         disabled: "{isNotActive}",
       },
-      glyph: NOC.glyph.star,
+      glyph: NOC.glyph.eyes,
       handler: "onWatch",
     },
     {
-      text: __("Set Root Cause"),
+      text: __("Set Root"),
       glyph: NOC.glyph.paperclip,
       handler: "onSetRoot",
       bind: {
