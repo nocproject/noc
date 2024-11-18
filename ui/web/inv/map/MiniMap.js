@@ -22,8 +22,12 @@ Ext.define("NOC.inv.map.MiniMap", {
       h = this.height - 10,
       scrollMap = function(){
         var [x, y] = Object.values(arguments).slice(-2),
-          {sx, sy} = mapPanel.paper.scale();
-        mapPanel.scrollTo(x * sx, y * sy);
+          {sx, sy} = mapPanel.paper.scale(),
+          offsetX = mapPanel.viewPort.getBBox().width / 2,
+          offsetY = mapPanel.viewPort.getBBox().height / 2,
+          moveX = x - offsetX > 0 ? x - offsetX : 0,
+          moveY = y - offsetY > 0 ? y - offsetY : 0;
+        mapPanel.scrollTo(moveX * sx, moveY * sy);
       };
     this.paperEl = this.items.first().el.dom;
     this.paper = mapPanel.paper;
