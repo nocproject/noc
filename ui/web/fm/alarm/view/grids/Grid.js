@@ -24,6 +24,20 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
     },
     {
       xtype: "glyphactioncolumn",
+      width: 25,
+      items: [
+        {
+          glyph: NOC.glyph.star,
+          tooltip: __("Mark/Unmark"),
+          getColor: function(cls, meta, r){
+            return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
+          },
+          handler: "onFavItem",
+        },
+      ],
+    },
+    {
+      xtype: "glyphactioncolumn",
       width: 22 * 3,
       sortable: false,
       items: [

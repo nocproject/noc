@@ -29,4 +29,19 @@ Ext.define("NOC.fm.alarm.view.grids.GridController", {
       args: [record.get("managed_object")],
     });
   },
+  //
+  onFavItem: function(gridView, rowIndex, colIndex, item, e, record){
+    var action = record.get("fav_status") ? "reset" : "set",
+      url = "/fm/alarm/favorites/item/" + record.id + "/" + action + "/";
+
+    Ext.Ajax.request({
+      url: url,
+      method: "POST",
+      success: function(){
+        // Invert current status
+        record.set("fav_status", !record.get("fav_status"));
+        gridView.refresh();
+      },
+    });
+  },
 });
