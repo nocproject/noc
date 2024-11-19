@@ -113,6 +113,24 @@ Ext.define("NOC.fm.alarm.view.form.AlarmModel", {
         return value != null;
       },
     },
+    isFavorite: {
+      bind: "{selected.fav_status}",
+      get: function(value){
+        return value == true;
+      },
+    },
+    favoriteText: {
+      bind: "{selected.fav_status}",
+      get: function(value){
+        return (value == true) ? __("Remove from Favorites") : __("Add to Favorites");
+      },
+    }, 
+    favIconCls: {
+      bind: "{selected.fav_status}",
+      get: function(value){
+        return (value == true) ? "noc-starred" : "noc-unstarred";
+      },
+    },
     acknowledgeText: function(get){
       return get("isAcknowledge") ? get("selected.ack_user") : __("Ack");
     },
