@@ -88,5 +88,9 @@ Ext.define("NOC.fm.alarm.model.Alarm", {
       name: "ack_ts",
       type: "date",
     },
+    {
+      name: "fav_status",
+      type: "boolean",
+    },
   ],
 });

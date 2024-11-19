@@ -17,6 +17,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     "NOC.core.combotree.ComboTree",
     "NOC.core.ComboBox",
     "NOC.core.tagfield.Tagfield",
+    "NOC.fm.alarm.view.grids.FavoriteStatusGroup",
     "NOC.fm.alarm.view.grids.SidebarModel",
     "NOC.fm.alarm.view.grids.SidebarController",
     "NOC.fm.alarm.view.grids.ProfileFilter",
@@ -44,7 +45,6 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     {
       title: __("Summary"),
       bind: {hidden: "{isActiveAlarmsSelected}"},
-
       items: [
         {
           layout: "column",
@@ -261,6 +261,13 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
         width: "100%",
       },
       items: [
+        {
+          xtype: "fm.alarm.fav.status",
+          name: "fav_status",
+          bind: {
+            value: "{activeFilter.fav_status}",
+          },
+        },
         {
           xtype: "core.combo",
           restUrl: "/sa/managedobject/lookup/",

@@ -25,6 +25,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     timestamp__gte: null,
     timestamp__lte: null,
     profiles: [],
+    fav_status: null,
   },
   recentFiltersInitValues: {
     status: "C",
@@ -300,6 +301,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
       {key: "status"},
       {key: "maintenance"},
       {key: "alarm_group"},
+      {key: "fav_status"},
       {key: "collapse", defaultValue: 1},
       {key: "ephemeral", defaultValue: 0},
       {key: "wait_tt", defaultValue: 1},
