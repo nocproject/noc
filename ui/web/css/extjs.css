@@ -868,8 +868,3 @@ table {
         grid-column: 3 / span 2;
     }
 }
-
-.compact-display-field .x-form-display-field-default {
-    min-height: unset;
-    margin-top: 2px;
-}
