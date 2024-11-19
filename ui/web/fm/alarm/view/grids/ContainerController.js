@@ -252,4 +252,17 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   collapseFilter: function(){
     this.lookupReference("fm-alarm-sidebar").toggleCollapse();
   },
+  onGroupUnmarkFavorites: function(){
+    this.groupFavoritesOperation("reset");
+  },
+  onGroupMarkFavorites: function(){
+    this.groupFavoritesOperation("set"); 
+  },
+  groupFavoritesOperation(action){
+    var grid = this.lookupReference("fm-alarm-active"),
+      ids = grid.getSelection().map(function(alarm){
+        return alarm.id
+      });
+    console.log(action, ids);
+  },
 });
