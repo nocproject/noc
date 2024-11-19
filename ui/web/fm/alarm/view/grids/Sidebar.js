@@ -44,19 +44,30 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
   items: [
     {
       title: __("Summary"),
+      layout: {
+        type: "table",
+        columns: 2,
+        tableAttrs: {
+          style: {
+            width: "100%",
+          },
+        },
+      },
+      defaults: {
+        xtype: "displayfield",
+        margin: "0 20",
+        cls: "compact-display-field",
+      },
+      bodyPadding: 0,
       bind: {hidden: "{isActiveAlarmsSelected}"},
       items: [
-        {
-          layout: "column",
-          border: false,
-          items: [
-            {xtype: "displayfield", columnWidth: 1, bind: {value: "{summaryTotal}"} },
-            {xtype: "displayfield", width: 30, bind: {value: "{total.objects}"} },
-            {xtype: "displayfield", columnWidth: 1, bind: {value: "{summaryFiltered}"} },
-            {xtype: "displayfield", width: 30, bind: {value: "{total.objectsFiltered}"} },
-          ],
-        },
-        {xtype: "button", text: __("Reset"), margin: "0 0 5 0", handler: "onResetStatuses"},
+        {value: __("Total"), tdAttrs: {align: "right"} },
+        {value: __("Objects"), tdAttrs: {align: "right"} },
+        {bind: {value: "{summaryTotal}"}, tdAttrs: {align: "right"} },
+        {bind: {value: "{total.objects}"}, tdAttrs: {align: "right"} },
+        {bind: {value: "{summaryFiltered}"}, tdAttrs: {align: "right"} },
+        {bind: {value: "{total.objectsFiltered}"}, tdAttrs: {align: "right"} },
+        {xtype: "button", colspan: 2, text: __("Reset"), margin: "5 0 5 0", handler: "onResetStatuses"},
       ],
     },
     {
