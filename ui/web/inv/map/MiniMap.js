@@ -31,12 +31,13 @@ Ext.define("NOC.inv.map.MiniMap", {
       };
     this.paperEl = this.items.first().el.dom;
     this.paper = mapPanel.paper;
+    this.miniGraph = new joint.dia.Graph();
 
     this.miniPaper = new joint.dia.Paper({
       el: this.paperEl,
       height: h,
       width: w,
-      model: mapPanel.graph,
+      model: this.miniGraph,
       gridSize: 1,
       interactive: false,
     });

@@ -310,10 +310,8 @@ Ext.define("NOC.inv.map.MapPanel", {
           badges.push(data.badges);
         }
       };
-    if(Object.prototype.hasOwnProperty.call(data, "normalize_position") &&
-      data.normalize_position === false
-    ){
-      me.normalize_position = data.normalize_position;
+    me.normalize_position = data.normalize_position;
+    if(Ext.isDefined(data.normalize_position) && data.normalize_position === false){
       me.bg_width = data.width;
       me.bg_height = data.height;
     }
@@ -385,18 +383,23 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     me.hasStp = data.caps.indexOf("Network | STP") !== -1;
     me.app.viewStpButton.setDisabled(!me.hasStp);
-    me.setPaperDimension();
     this.viewPort = new joint.shapes.standard.Rectangle({
       position: {x: 0, y: 0},
       attrs: {
         rect: {
-          stroke: "black",
+          fill: "transparent",
+          stroke: "#4f4f4f",
           "stroke-width": 1,
           vectorEffect: "non-scaling-stroke",
         },
       },
       z: -1,
     });
+    this.app.miniMapPanel.miniGraph.addCells(nodes);
+    this.app.miniMapPanel.miniGraph.addCells(links);
+    this.app.miniMapPanel.miniGraph.addCells(badges);
+    this.app.miniMapPanel.miniGraph.addCell(this.viewPort);
+
     this.graph.addCell(this.viewPort);
     this.setViewPortSize();
     me.setPaperDimension();
@@ -1390,11 +1393,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     var me = this,
       stpNodes = [];
     // Get STP nodes
+    // ToDo: Refactor using Ext.Array.filter
     Ext.Object.each(me.objectNodes, function(k, v){
-      if(
-        Object.prototype.hasOwnProperty.call(v.attributes.data, "caps") &&
-        v.attributes.data.caps.indexOf(me.CAP_STP) !== -1
-      ){
+      if(Ext.isDefined(v.attributes.data.caps) && v.attributes.data.caps.indexOf(me.CAP_STP) !== -1){
         stpNodes.push(k);
       }
     });
@@ -1511,26 +1512,23 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setPaperDimension: function(zoom){
-    var paddingX = 15,
-      paddingY = 15,
+    var padding = 0,
       w = this.getWidth(),
       h = this.getHeight();
 
-    if(this.paper){
-      this.paper.fitToContent();
-      var contentBB = this.paper.getContentBBox();
-      if(contentBB && contentBB.width && contentBB.height){
-        if(this.normalize_position){
-          w = Ext.Array.max([contentBB.width, this.getWidth()]);
-          h = Ext.Array.max([contentBB.height, this.getHeight()]);
-          this.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
-        } else{
-          w = this.bg_width * (zoom || 1);
-          h = this.bg_height * (zoom || 1);
-        }
-        this.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
-      }
+    if(Ext.isEmpty(this.paper)) return;
+    this.paper.fitToContent(w, h, padding);
+    var {width, height, x, y} = this.paper.getContentBBox();
+    if(Ext.isEmpty(width) || Ext.isEmpty(height)) return;
+    if(this.normalize_position){
+      w = Ext.Array.max([width, this.getWidth()]);
+      h = Ext.Array.max([height, this.getHeight()]);
+      this.paper.translate(-x, -y);
+    } else{
+      w = this.bg_width * (zoom || 1);
+      h = this.bg_height * (zoom || 1);
     }
+    this.paper.setDimensions(w, h);
   },
 
   changeLabelText: function(showIPAddress){
@@ -1682,6 +1680,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     return lines.join("\n");
   },
+  
   symbolName: function(name, metrics_label, shape_width){
     var me = this,
       metrics;
