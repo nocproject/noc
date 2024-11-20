@@ -16,6 +16,7 @@ from mongoengine.errors import DoesNotExist
 
 # NOC modules
 from .base import BaseCard
+from noc.core.validators import ValidationError
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.servicesummary import SummaryItem
 from noc.sa.models.service import Service
@@ -405,7 +406,7 @@ class ManagedObjectCard(BaseCard):
         }
         try:
             r["confdb"] = self.object.get_confdb()
-        except (SyntaxError, ValueError):
+        except (SyntaxError, ValueError, ValidationError):
             pass
         return r
 
