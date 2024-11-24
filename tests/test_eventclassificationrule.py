@@ -53,10 +53,6 @@ def iter_json_loader(urls):
 
 @pytest.fixture(scope="module")
 def ruleset():
-    from noc.core.mongo.connection import connect
-
-    connect()
-
     ruleset = RuleSet()
     ruleset.load()
     return ruleset
