@@ -142,12 +142,14 @@ class RuleSet(object):
         # Get chain
         if event.type.source == EventSource.SYSLOG:
             chain = "syslog"
-            if "message" not in event.raw_vars:
+            if not event.message:
                 return None, None
+            vars["message"] = event.message
         elif event.type.source == EventSource.SNMP_TRAP:
             chain = "snmp_trap"
         else:
             chain = "other"
+            vars["message"] = event.message
         # Find rules lookup
         lookup = self.rules.get((event.type.profile, chain))
         if lookup:

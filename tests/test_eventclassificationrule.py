@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # EventClassificationRule test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.config import config
 
 
@@ -52,6 +53,10 @@ def iter_json_loader(urls):
 
 @pytest.fixture(scope="module")
 def ruleset():
+    from noc.core.mongo.connection import connect
+
+    connect()
+
     ruleset = RuleSet()
     ruleset.load()
     return ruleset
@@ -97,3 +102,14 @@ def test_event(ruleset, event):
     )
     ruleset.eval_vars(event, rule.event_class, e_vars)
     assert e_vars == expected_vars, "Mismatched vars"
+
+
+def test_rules_collection_cases(ruleset):
+    for e_rule in EventClassificationRule.objects.filter(test_cases__exists=True):
+        for e, v in e_rule.iter_cases():
+            rule, e_vars = ruleset.find_rule(e, v)
+            assert rule is not None, "Cannot find matching rule"
+            assert rule.event_class == e_rule.event_class, "Mismatched event class %s vs %s" % (
+                rule.event_class.name,
+                e_rule.event_class.name,
+            )
