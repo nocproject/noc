@@ -425,6 +425,8 @@ class DiscoveredObject(Document):
         s_groups = set()
         for d in self.data:
             for k, v in d.data.items():
+                if k == "remote_id":
+                    continue
                 r.data.append(
                     ResourceDataItem(
                         name=k,
