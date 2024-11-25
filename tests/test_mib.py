@@ -151,6 +151,13 @@ def test_invalid_name(clean_mib, name):
             {"1.0.8802.1.1.2.1.4.1.1.5": render_mac},
             "01:02:03:04:05:06",
         ),
+        (
+            "CISCO-MAC-NOTIFICATION-MIB",
+            "1.3.6.1.4.1.9.9.215.1.1.8.1.2",
+            b"\x02\x05$\xae 7F`\xdb\x00\x04",
+            {},
+            f"\x02\x05$® 7F`Û\x00\x04",
+        ),
     ],
 )
 def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected):

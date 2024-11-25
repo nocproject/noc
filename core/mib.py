@@ -133,10 +133,7 @@ class MIBRegistry(object):
         value: bytes,
         display_hints: Dict[str, Callable[[str, bytes], Union[str, bytes]]] = None,
     ) -> str:
-        """
-        Apply display-hint
-        :return:
-        """
+        """Apply display-hint"""
         if display_hints:
             hint = self.longest_match(display_hints, oid)
             if hint:
@@ -144,7 +141,7 @@ class MIBRegistry(object):
         hint = self.longest_match(self.hints, oid)
         if hint:
             return render_tc(value, hint[0], hint[1])
-        return smart_text(value, errors="ignore")
+        return value.decode(encoding="latin1", errors="backslashreplace")
 
 
 # MIB singleton
