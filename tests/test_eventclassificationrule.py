@@ -100,12 +100,21 @@ def test_event(ruleset, event):
     assert e_vars == expected_vars, "Mismatched vars"
 
 
-def test_rules_collection_cases(ruleset):
+def iter_rules_tests():
     for e_rule in EventClassificationRule.objects.filter(test_cases__exists=True):
-        for e, v in e_rule.iter_cases():
-            rule, e_vars = ruleset.find_rule(e, v)
-            assert rule is not None, "Cannot find matching rule"
-            assert rule.event_class == e_rule.event_class, "Mismatched event class %s vs %s" % (
-                rule.event_class.name,
-                e_rule.event_class.name,
-            )
+        yield e_rule
+
+
+@pytest.fixture(params=list(iter_rules_tests()), ids=lambda v: v.name)
+def test_rule(request):
+    return request.param
+
+
+def test_rules_collection_cases(ruleset, test_rule):
+    for e, v in test_rule.iter_cases():
+        rule, e_vars = ruleset.find_rule(e, v)
+        assert rule is not None, "Cannot find matching rule"
+        assert rule.event_class == test_rule.event_class, "Mismatched event class %s vs %s" % (
+            rule.event_class.name,
+            test_rule.event_class.name,
+        )
