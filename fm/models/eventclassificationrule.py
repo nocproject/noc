@@ -25,6 +25,7 @@ from mongoengine.document import EmbeddedDocument, Document
 from .eventclass import EventClass
 from .datasource import DataSource
 from noc.fm.models.mib import MIB
+from noc.sa.models.profile import GENERIC_PROFILE
 from noc.core.fm.event import Event, MessageType, EventSource, Target
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.escape import fm_unescape
@@ -43,7 +44,8 @@ class EventClassificationRuleVar(EmbeddedDocument):
     def __eq__(self, other):
         return self.name == other.name and self.value == other.value
 
-    def to_json(self, *args, **kwargs):
+    @property
+    def json_data(self):
         return {"name": self.name, "value": self.value}
 
 
@@ -83,7 +85,8 @@ class EventClassificationPattern(EmbeddedDocument):
     def __eq__(self, other):
         return self.key_re == other.key_re and self.value_re == other.value_re
 
-    def to_json(self, *args, **kwargs):
+    @property
+    def json_data(self):
         return {
             "key_re": self.key_re,
             "value_re": self.value_re,
@@ -94,7 +97,8 @@ class EventClassificationTestCase(EmbeddedDocument):
     message = StringField()
     raw_vars = ListField(DictField())
 
-    def to_json(self, *args, **kwargs):
+    @property
+    def json_data(self):
         return {
             "message": self.message,
             "value_re": self.raw_vars,
@@ -146,23 +150,27 @@ class EventClassificationRule(Document):
     def short_name(self):
         return self.name.split(" | ")[-1]
 
-    def to_json(self) -> str:
+    @property
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "event_class__name": self.event_class.name,
             "preference": self.preference,
-            "patterns": [p.to_json() for p in self.patterns],
+            "patterns": [p.json_data for p in self.patterns],
         }
         if self.description:
             r["description"] = self.description
         if self.vars:
-            r["vars"] = [s.to_json() for s in self.vars]
+            r["vars"] = [s.json_data for s in self.vars]
         if self.test_cases:
-            r["test_cases"] = [t.to_json() for t in self.test_cases]
+            r["test_cases"] = [t.json_data for t in self.test_cases]
+        return r
+
+    def to_json(self) -> str:
         return to_json(
-            r,
+            self.json_data,
             order=[
                 "name",
                 "$collection",
@@ -194,7 +202,7 @@ class EventClassificationRule(Document):
 
     def iter_cases(self) -> Iterable[Tuple[Event, Dict[str, Any]]]:
         ts = 0
-        mt = MessageType()
+        mt = MessageType(profile=GENERIC_PROFILE)
         for p in self.patterns:
             if p.key_re == "^source$" or p.key_re == "source":
                 mt.source = EventSource(p.value_re.strip("^$"))
