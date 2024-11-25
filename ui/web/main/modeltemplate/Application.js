@@ -161,6 +161,13 @@ Ext.define("NOC.main.modeltemplate.Application", {
               width: 50,
             },
             {
+              text: __("Preferred"),
+              dataIndex: "preferred_template_value",
+              editor: "checkbox",
+              renderer: NOC.render.Bool,
+              width: 50,
+            },
+            {
               text: __("Param"),
               dataIndex: "param",
               width: 200,

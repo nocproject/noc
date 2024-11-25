@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from mongoengine.queryset import Q
+
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
@@ -17,6 +20,8 @@ from noc.sa.interfaces.base import (
 )
 from noc.wf.models.workflow import Workflow
 from noc.wf.models.transition import Transition
+from noc.core.validators import is_ipv4_prefix
+from noc.core.ip import IP
 from noc.core.translation import ugettext as _
 
 
@@ -94,12 +99,25 @@ class DiscoveredObjectApplication(ExtDocApplication):
         r = super().cleaned_query(q)
         return r
 
+    def get_Q(self, request, query):
+        q = super().get_Q(request, query)
+        query = query.strip()
+        if query and is_ipv4_prefix(query):
+            print("GetQ, query", query)
+            prefix = IP.prefix(query)
+            q |= Q(address_bin__gte=int(prefix.first.d), address_bin__lte=int(prefix.last.d))
+        return q
+
     @view(url=r"actions/sync_records/$", method=["POST"], access="action", api=True)
     def api_sync_action(self, request):
         req = self.parse_request_query(request)
+        if "template" in req["args"]:
+            template = ModelTemplate.get_by_id(req["args"]["template"])
+        else:
+            template = None
         for do in DiscoveredObject.objects.filter(id__in=req["ids"]):
-            do.fire_event("approved")  # ?set state
-            do.sync(force=True, template=req.get("template"))
+            do.fire_event("approve")  # ?set state
+            do.sync(force=True, template=template)
         return {"status": True}
 
     @view(url=r"actions/send_event/$", method=["POST"], access="action", api=True)

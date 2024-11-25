@@ -17,6 +17,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
         "NOC.main.handler.LookupField",
         "NOC.main.ref.check.LookupField",
         "NOC.main.modeltemplate.LookupField",
+        "NOC.main.remotesystem.LookupField",
         "Ext.ux.form.GridField",
         "NOC.core.ListFormField",
         "NOC.core.JSONPreview"
@@ -164,6 +165,15 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                     ["manual", _("Manual")]
                                 ]
                             }
+                        },
+                        {
+                            text: __("Remote System"),
+                            dataIndex: "remote_system",
+                            width: 200,
+                            editor: {
+                                xtype: "main.remote_system.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("remote_system")
                         },
                         {
                             text: __("Update Last Seen"),
