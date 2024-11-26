@@ -15,7 +15,6 @@ from typing import Union, Tuple, Dict, Optional, Any, Callable
 # NOC modules
 from noc.config import config
 from noc.core.snmp.util import render_tc
-from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
