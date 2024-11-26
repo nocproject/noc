@@ -335,10 +335,9 @@ class ManagedObjectManager(Manager):
     ],
     clean=[
         ("ip.Address", "managed_object"),
-        ("sa.Service", "managed_object"),
         ("maintenance.Maintenance", "escalate_managed_object"),
         ("maintenance.Maintenance", "direct_objects__object"),
-        ("sa.DiscoveredObject", "managed_object"),
+        ("sa.DiscoveredObject", "managed_object_id"),
         ("sa.ServiceInstance", "managed_object"),
     ],
 )
@@ -1100,8 +1099,6 @@ class ManagedObject(NOCModel):
         # Rebuild summary
         if "object_profile" in self.changed_fields:
             NetworkSegment.update_summary(self.segment)
-        # Apply discovery jobs
-        self.ensure_discovery_jobs()
         #
         self._reset_caches(self.id, credential=True)
         cache.delete_many(deleted_cache_keys)
@@ -1139,6 +1136,8 @@ class ManagedObject(NOCModel):
         elif "effective_labels" in self.changed_fields:
             # Update configured diagnostic
             self.diagnostic.refresh_diagnostics()
+        # Apply discovery jobs
+        self.ensure_discovery_jobs()
         # self.update_init()
 
     def on_delete(self):
@@ -2921,6 +2920,28 @@ class ManagedObject(NOCModel):
                 return m["remote_id"]
         return None
 
+    def update_object_mappings(self, mappings: Dict[RemoteSystem, str]) -> bool:
+        """Update managed Object mappings"""
+        new_mapps = []
+        changed = False
+        seen = set()
+        for m in self.mappings:
+            rs = RemoteSystem.get_by_id(m["remote_system"])
+            if rs not in mappings:
+                continue
+            elif mappings[rs] != m["remote_id"]:
+                # Change ID
+                m["remote_id"] = mappings[rs]
+                changed |= True
+            new_mapps.append(m)
+            seen.add(rs)
+        for rs in set(mappings) - seen:
+            new_mapps.append({"remote_system": str(rs.id), "remote_id": mappings[rs]})
+            changed |= True
+        if changed:
+            self.mappings = new_mapps
+        return changed
+
     @classmethod
     def from_template(
         cls,
@@ -2959,9 +2980,9 @@ class ManagedObject(NOCModel):
             mo.static_service_groups = [str(g.id) for g in static_service_groups]
         if state:
             mo.state = state
-        if mappings:
-            for ris, rid in mappings.items():
-                mo.set_mapping(ris, rid)
+        # if mappings:
+        #     for ris, rid in mappings.items():
+        #         mo.set_mapping(ris, rid)
         for field, value in data.items():
             if hasattr(mo, field):
                 setattr(mo, field, value)
@@ -3202,9 +3223,7 @@ class ScriptsProxy(object):
         return getattr(self, item)
 
     def __contains__(self, item):
-        """
-        Check object has script name
-        """
+        """Check object has script name"""
         if "." not in item:
             # Normalize to full name
             item = "%s.%s" % (self._object.profile.name, item)
