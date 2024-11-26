@@ -24,6 +24,10 @@ Ext.define("NOC.fm.classificationrule.Model", {
             type: "auto"
         },
         {
+            name: "test_cases",
+            type: "auto"
+        },
+        {
             name: "name",
             type: "string"
         },
