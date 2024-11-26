@@ -115,7 +115,7 @@ def iter_test_rules():
     params=list(iter_test_rules()),
     ids=operator.attrgetter("name"),
 )
-def rule_case(database, request):
+def rule_case(request):
     return request.param
 
 
