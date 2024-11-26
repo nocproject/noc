@@ -14,6 +14,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
         "NOC.fm.classificationrule.Model",
         "NOC.fm.classificationrule.TestForm",
         "NOC.fm.eventclass.LookupField",
+        'Ext.ux.form.JSONField',
         "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.classificationrule.Model",
@@ -156,6 +157,27 @@ Ext.define("NOC.fm.classificationrule.Application", {
                             flex: 1,
                             editor: "textfield",
                             renderer: NOC.render.htmlEncode
+                        }
+                    ]
+                },
+                {
+                    xtype: "gridfield",
+                    name: "test_cases",
+                    fieldLabel: __("Test cases"),
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Message"),
+                            dataIndex: "message",
+                            width: 200,
+                            editor: "textfield",
+                        },
+                        {
+                            text: __("Raw Vars"),
+                            dataIndex: "raw_vars",
+                            flex: 1,
+                            editor: 'jsonfield',
+                            renderer: NOC.render.JSON
                         }
                     ]
                 }
