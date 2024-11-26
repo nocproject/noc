@@ -114,7 +114,7 @@ class Param(EmbeddedDocument):
     default_expression = StringField()
     param = StringField(required=False)
     set_capability: Optional[Capability] = PlainReferenceField(Capability, required=False)
-    # preferred_template_value = BooleanField(default=False)  # Template value override user
+    preferred_template_value = BooleanField(default=False)  # Template value override user
 
     def __str__(self):
         return self.name
@@ -325,6 +325,11 @@ class ModelTemplate(Document):
                 continue
             elif p.name not in data and p.required:
                 raise ValueError("Parameter %s is required" % p.name)
+            elif p.preferred_template_value and p.default_expression and p.name in data:
+                r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
+                # May be used in next expression ?
+                data.pop(p.name, None)
+                continue
             elif p.name not in data and p.default_expression:
                 if p.name in params:
                     r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
@@ -357,6 +362,9 @@ class ModelTemplate(Document):
                 deny_sg.add(str(g.group.id))
         for g in item.service_groups or []:
             g = ResourceGroup.get_by_id(g)
+            if not g:
+                print(f"[{g} Unknown ID for Resource Group")
+                continue
             if str(g.id) in deny_sg:
                 continue
             elif g not in r["static_service_groups"]:

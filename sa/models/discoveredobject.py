@@ -425,6 +425,8 @@ class DiscoveredObject(Document):
         s_groups = set()
         for d in self.data:
             for k, v in d.data.items():
+                if k == "remote_id":
+                    continue
                 r.data.append(
                     ResourceDataItem(
                         name=k,
@@ -450,7 +452,7 @@ class DiscoveredObject(Document):
         self, pool: Optional[Pool] = None, addresses: Optional[List[str]] = None
     ):
         """Query for request Managed Object"""
-        q = d_Q(name=self.hostname)
+        q = d_Q(name__iexact=self.hostname)
         if pool:
             q |= d_Q(address=self.address, pool=pool)
         if addresses and pool:
@@ -539,11 +541,13 @@ class DiscoveredObject(Document):
         """
         from noc.inv.models.discoveryid import DiscoveryID
 
+        logger.debug("[%s] Sync Object", self)
         if self.origin:
             logger.info("Duplicate Record. Skipping")
             return
         template = template or self.rule.default_template
-        if template:
+        if not template:
+            logger.warning("[%s] Unknown Template for sync: %s", self, template)
             return
         if self.managed_object_id:
             # Sync data
@@ -722,9 +726,20 @@ class DiscoveredObject(Document):
             mo = managed_object
         else:
             mo = ManagedObject.get_by_id(int(self.managed_object_id))
-        if mo and self.rule.default_template and not dry_run:
+        if dry_run or not mo:
+            return
+        changed = False
+        if mo.address != self.address:
+            logger.info("Sync address to Discovered Object: %s -> %s", mo.address, self.address)
+            mo.address = self.address
+            changed |= True
+        ctx = self.get_ctx()
+        if self.rule.default_template:
             logger.info("[%s] Update existing ManagedObject from data", mo.name)
-            self.rule.default_template.update_instance_data(mo, self.get_ctx(), dry_run=dry_run)
+            changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
+        changed |= mo.update_object_mappings(ctx.mappings)
+        if changed:
+            mo.save()
 
     @property
     def managed_object(self) -> Optional[ManagedObject]:
