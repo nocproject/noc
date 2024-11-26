@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import operator
 import datetime
 
 # Third-party modules
@@ -105,8 +106,9 @@ def iter_rules_tests():
         yield e_rule
 
 
-@pytest.fixture(params=list(iter_rules_tests()), ids=lambda v: v.name)
-def test_rule(request):
+@pytest.mark.usefixtures("database")
+@pytest.fixture(params=list(iter_rules_tests()), ids=operator.attrgetter("name"))
+def test_rule(database, request):
     return request.param
 
 
