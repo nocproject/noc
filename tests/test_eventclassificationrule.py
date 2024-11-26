@@ -101,22 +101,29 @@ def test_event(ruleset, event):
     assert e_vars == expected_vars, "Mismatched vars"
 
 
-def iter_rules_tests():
+def iter_test_rules():
+    from noc.core.mongo.connection import connect
+
+    connect()
+
     for e_rule in EventClassificationRule.objects.filter(test_cases__exists=True):
         yield e_rule
 
 
-@pytest.mark.usefixtures("database")
-@pytest.fixture(params=list(iter_rules_tests()), ids=operator.attrgetter("name"))
-def test_rule(database, request):
+@pytest.fixture(
+    scope="module",
+    params=list(iter_test_rules()),
+    ids=operator.attrgetter("name"),
+)
+def rule_case(database, request):
     return request.param
 
 
-def test_rules_collection_cases(ruleset, test_rule):
-    for e, v in test_rule.iter_cases():
+def test_rules_collection_cases(ruleset, rule_case):
+    for e, v in rule_case.iter_cases():
         rule, e_vars = ruleset.find_rule(e, v)
         assert rule is not None, "Cannot find matching rule"
-        assert rule.event_class == test_rule.event_class, "Mismatched event class %s vs %s" % (
+        assert rule.event_class == rule_case.event_class, "Mismatched event class %s vs %s" % (
             rule.event_class.name,
-            test_rule.event_class.name,
+            rule_case.event_class.name,
         )
