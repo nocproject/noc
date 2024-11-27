@@ -252,4 +252,38 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   collapseFilter: function(){
     this.lookupReference("fm-alarm-sidebar").toggleCollapse();
   },
+  onGroupUnmarkFavorites: function(){
+    this.groupFavoritesOperation("reset");
+  },
+  onGroupMarkFavorites: function(){
+    this.groupFavoritesOperation("set"); 
+  },
+  groupFavoritesOperation(action){
+    var grid = this.lookupReference("fm-alarm-active"),
+      ids = grid.getSelection().map(function(alarm){
+        return alarm.id
+      });
+    Ext.Ajax.request({
+      url: "/fm/alarm/group/favorites/",
+      method: "POST",
+      scope: this,
+      jsonData: {
+        ids: ids,
+        fav_status: action === "set",
+      },
+      success: function(response){
+        var data = Ext.decode(response.responseText);
+        if(data.status){
+          this.getView().up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+          NOC.info(__("Success"));
+        } else{
+          NOC.error(__("Failed to " + action + " favorites"));
+        }
+      },
+      failure: function(){
+        NOC.error(__("Failed to " + action + " favorites"));
+      },
+    });
+
+  },
 });

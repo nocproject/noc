@@ -67,6 +67,11 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
               handler: this.onContextMenuRefresh,
             },
             {
+              itemId: "favItemMenu",
+              glyph: NOC.glyph.star,
+              scope: this,
+            },
+            {
               text: __("Save screen"),
               glyph: NOC.glyph.arrow_down,
               scope: this,
@@ -80,18 +85,21 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
               glyph: NOC.glyph.filter,
               menu: [
                 {
+                  itemId: "objectFilterMenuItem",
                   text: __("Object"),
                   reference: "managed_object",
                   scope: this,
                   handler: Ext.pass(this.onContextMenuFilter, record),
                 },
                 {
+                  itemId: "segmentFilterMenuItem",
                   text: __("Segment"),
                   reference: "segment",
                   scope: this,
                   handler: Ext.pass(this.onContextMenuFilter, record),
                 },
                 {
+                  itemId: "classFilterMenuItem",
                   text: __("Class"),
                   reference: "alarm_class",
                   scope: this,
@@ -103,16 +111,28 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
         });
       }
       event.stopEvent();
+      var favItemMenu = this.contextMenu.items.get("favItemMenu"),
+        objectFilterMenuItem = this.contextMenu.down("#objectFilterMenuItem"),
+        segmentFilterMenuItem = this.contextMenu.down("#segmentFilterMenuItem"),
+        classFilterMenuItem = this.contextMenu.down("#classFilterMenuItem");
+
+      favItemMenu.setText(record.get("fav_status") ? __("Remove from favorites") : __("Add to favorites"));  
+      favItemMenu.setHandler(Ext.pass(this.onContextMenuAddToFavorites, record), this);
+      classFilterMenuItem.setHandler(Ext.pass(this.onContextMenuFilter, record), this);
+      objectFilterMenuItem.setHandler(Ext.pass(this.onContextMenuFilter, record), this);
+      segmentFilterMenuItem.setHandler(Ext.pass(this.onContextMenuFilter, record), this);
+
       this.contextMenu.showAt(event.getXY());
       return false;
     },
-    //     beforerefresh: function(cmp) {
-    //         me.gridPanel.plugins[0].bodyTop = 0;
-    //     }
   },
   //
   onContextMenuRefresh: function(){
     this.getRefOwner().getController().fireViewEvent("fmAlarmReload", this.getRefOwner());
+  },
+  //
+  onContextMenuAddToFavorites: function(record){
+    this.getRefOwner().getController().onFavItem(this, undefined, undefined, undefined, undefined, record);
   },
   //
   onContextMenuFilter: function(record, item){
