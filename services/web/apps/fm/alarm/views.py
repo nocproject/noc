@@ -43,6 +43,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.gis.utils.addr.ru import normalize_division
 from noc.aaa.models.user import User
 from noc.sa.models.useraccess import UserAccess
+from noc.main.models.favorites import Favorites
 from noc.sa.interfaces.base import (
     ModelParameter,
     UnicodeParameter,
@@ -50,6 +51,7 @@ from noc.sa.interfaces.base import (
     StringParameter,
     StringListParameter,
     ObjectIdParameter,
+    BooleanParameter,
 )
 from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -656,6 +658,23 @@ class AlarmApplication(ExtApplication):
         for alarm in alarms:
             alarm.log_message(msg, source=request.user.username)
         return True
+
+    @view(
+        url=r"^group/favorites/",
+        method=["POST"],
+        api=True,
+        access="launch",
+        validate={
+            "ids": StringListParameter(required=True),
+            "fav_status": BooleanParameter(),
+        },
+    )
+    def api_group_favorites(self, request, ids: list[str], fav_status: bool):
+        if fav_status:
+            Favorites.add_items(request.user, self.app_id, ids)
+        else:
+            Favorites.remove_items(request.user, self.app_id, ids)
+        return {"status": True}
 
     @view(
         url=r"^(?P<id>[a-z0-9]{24})/acknowledge/",

@@ -7,7 +7,7 @@
 
 # Python modules
 import logging
-from typing import Any
+from typing import Any, Iterable
 
 # Third-party modules
 from mongoengine.document import Document
@@ -48,6 +48,20 @@ class Favorites(Document):
             fv.save()
 
     @classmethod
+    def add_items(cls, user: User, app_id: str, items: Iterable[Any]) -> None:
+        fv = Favorites.objects.filter(user=user.id, app=app_id).first()
+        if not fv:
+            fv = Favorites(user=user.id, app=app_id, favorites=[])
+        fi = list(fv.favorites) or []
+        current = set(fi)
+        to_add = set(items) - current
+        if to_add:
+            for item in to_add:
+                logger.info("Setting favorite item %s@%s for user %s", item, app_id, user.username)
+            fv.favorites = fi + list(to_add)
+            fv.save()
+
+    @classmethod
     def remove_item(cls, user: User, app_id: str, item: Any):
         fv = Favorites.objects.filter(user=user.id, app=app_id).first()
         fi = list(fv.favorites) or []
@@ -55,4 +69,21 @@ class Favorites(Document):
             logger.info("Resetting favorite item %s@%s for user %s", item, app_id, user.username)
             fi.remove(item)
             fv.favorites = fi
+            fv.save()
+
+    @classmethod
+    def remove_items(cls, user: User, app_id: str, items: Iterable[Any]):
+        fv = Favorites.objects.filter(user=user.id, app=app_id).first()
+        if not fv:
+            return
+        fi = list(fv.favorites) or []
+        current = set(fi)
+        s_items = set(items)
+        to_remove = current.intersection(s_items)
+        if to_remove:
+            for item in to_remove:
+                logger.info(
+                    "Resetting favorite item %s@%s for user %s", item, app_id, user.username
+                )
+            fv.favorites = [item for item in fv.favorites if item not in s_items]
             fv.save()
