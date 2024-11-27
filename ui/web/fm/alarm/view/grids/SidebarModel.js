@@ -90,5 +90,16 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarModel", {
         this.set("activeFilter.alarm_group", value.alarm_group);
       },
     },
+    fav_status: {
+      bind: "{activeFilter.fav_status}",
+      get: function(value){
+        return {
+          fav_status: value,
+        }
+      },
+      set: function(value){
+        this.set("activeFilter.fav_status", value.fav_status);
+      },
+    },
   },
 });

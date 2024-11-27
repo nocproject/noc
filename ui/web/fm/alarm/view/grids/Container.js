@@ -68,6 +68,18 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
               click: "openAlarmDetailReport",
             },
           },
+          {
+            text: __("Mark to favorites"),
+            listeners: {
+              click: "onGroupMarkFavorites",
+            },
+          },
+          {
+            text: __("Unmark from favorites"),
+            listeners: {
+              click: "onGroupUnmarkFavorites",
+            },
+          },
         ],
       },
     }],

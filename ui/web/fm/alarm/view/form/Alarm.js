@@ -109,8 +109,11 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                 {
                   xtype: "textfield",
                   fieldLabel: __("New message"),
-                  labelWidth: 75,
-                  anchor: "100%",
+                  labelStyle: "white-space: nowrap;",
+                  labelPad: 10,
+                  fieldStyle: "margin: 0 4px;",
+                  labelAlign: "right",
+                  width: "100%",
                   listeners: {
                     specialkey: {
                       fn: "onMessageKey",
@@ -247,7 +250,6 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
       handler: "onClose",
     },
     {
-      text: __("Refresh"),
       glyph: NOC.glyph.refresh,
       handler: "onRefreshForm",
     },
@@ -273,7 +275,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
     },
     {
       text: __("Show Object"),
-      glyph: NOC.glyph.eye,
+      glyph: NOC.glyph.pencil,
       handler: "onShowObject",
     },
     "-",
@@ -286,17 +288,28 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
       },
     },
     {
+      enableToggle: true,
+      glyph: NOC.glyph.star,
+      bind: {
+        text: "{favoriteText}",
+        pressed: "{isFavorite}",
+        disabled: "{isNotActive}",
+        iconCls: "{favIconCls}",
+      },
+      handler: "onAddRemoveFav",
+    },
+    {
       text: __("Watch"),
       enableToggle: true,
       bind: {
         pressed: "{isSubscribe}",
         disabled: "{isNotActive}",
       },
-      glyph: NOC.glyph.star,
+      glyph: NOC.glyph.eye,
       handler: "onWatch",
     },
     {
-      text: __("Set Root Cause"),
+      text: __("Set Root"),
       glyph: NOC.glyph.paperclip,
       handler: "onSetRoot",
       bind: {

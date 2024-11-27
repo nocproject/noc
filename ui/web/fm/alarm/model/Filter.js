@@ -65,5 +65,9 @@ Ext.define("NOC.fm.alarm.model.Filter", {
       name: "timestamp__lte",
       type: "date",
     },
+    {
+      name: "fav_status",
+      type: "boolean",
+    },
   ],
 });

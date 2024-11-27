@@ -131,16 +131,15 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
     })
   },
   onAcknowledge: function(self){
-    var me = this,
-      cmd = self.pressed ? "/acknowledge/" : "/unacknowledge/",
+    var cmd = self.pressed ? "/acknowledge/" : "/unacknowledge/",
       msg = __("Failed to set acknowledgedun/acknowledged"),
       ackUser = self.pressed ? NOC.username : null;
     // ToDo double code #acknowledge
     Ext.Ajax.request({
-      url: me.getViewModel().get("alarmUrl") + cmd,
+      url: this.getViewModel().get("alarmUrl") + cmd,
       method: "POST",
       headers: {"Content-Type": "application/json;"},
-      scope: me,
+      scope: this,
       success: function(response){
         var data = Ext.decode(response.responseText);
         if(data.status){
@@ -162,7 +161,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
   },
   onSetRoot: function(){
     Ext.MessageBox.prompt(
-      __("Set root cause"),
+      __("Set root"),
       __("Please enter root cause alarm id"),
       function(btn, text){
         if(btn === "ok"){
@@ -215,9 +214,8 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
         msg: field.getValue(),
       },
       success: function(){
-        var me = this,
-          store = me.getView().lookupReference("fm-alarm-log").getStore(),
-          status = me.getViewModel().get("selected.status");
+        var store = this.getView().lookupReference("fm-alarm-log").getStore(),
+          status = this.getViewModel().get("selected.status");
         store.add({
           timestamp: new Date(),
           from_status: status,
@@ -233,5 +231,21 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
   },
   onRowDblClickTreePanel: function(grid, record){
     this.fireViewEvent("fmAlarmSelectItem", record);
+  },
+  onAddRemoveFav: function(){
+    var currentId = this.getViewModel().get("selected.id"),
+      fav_status = this.getViewModel().get("selected.fav_status"),
+      action = fav_status ? "reset" : "set",
+      url = "/fm/alarm/favorites/item/" + currentId + "/" + action + "/";
+    Ext.Ajax.request({
+      url: url,
+      method: "POST",
+      scope: this,
+      success: function(){
+        var vm = this.getViewModel();
+        // Invert current status
+        vm.set("selected.fav_status", !fav_status);
+      },
+    });
   },
 });
