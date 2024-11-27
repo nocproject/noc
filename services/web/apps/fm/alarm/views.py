@@ -434,6 +434,9 @@ class AlarmApplication(ExtApplication):
             self.response_not_found()
         user = request.user
         d = self.instance_to_dict(alarm)
+        # Favorite status
+        d["fav_status"] = str(alarm.id) in self.get_favorite_items(user)
+        # Explanations
         d["body"] = alarm.body
         d["symptoms"] = alarm.alarm_class.symptoms
         d["probable_causes"] = alarm.alarm_class.probable_causes

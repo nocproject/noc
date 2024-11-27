@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ExtApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ from builtins import str
 from typing import Optional, List, Dict, Any  # noqa
 import os
 import re
+from typing import Any
 
 # Third-party modules
 from django.http import HttpResponse
@@ -22,6 +23,7 @@ from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
 from noc.config import config
 from noc.models import is_document
+from noc.aaa.models.user import User
 from .application import Application, view
 from .access import HasPerm, PermitLogged
 
@@ -124,15 +126,14 @@ class ExtApplication(Application):
         """
         return str(item)
 
-    def get_favorite_items(self, user):
+    def get_favorite_items(self, user: User) -> set[Any]:
         """
         Returns a set of user's favorite items
         """
         f = Favorites.objects.filter(user=user.id, app=self.app_id).first()
         if f:
             return set(f.favorites)
-        else:
-            return set()
+        return set()
 
     @staticmethod
     @cached(TTLCache(maxsize=12, ttl=900))
