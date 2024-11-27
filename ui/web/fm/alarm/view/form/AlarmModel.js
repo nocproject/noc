@@ -116,7 +116,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmModel", {
     isFavorite: {
       bind: "{selected.fav_status}",
       get: function(value){
-        return value == true;
+        return value;
       },
     },
     favoriteText: {
