@@ -1,5 +1,6 @@
 {
     "name": "NSN | hiX56xx | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b4f18be1-3649-4afa-8710-4371b62dcb18",
     "description": "invalid password for `root' on",
     "event_class__name": "Security | Authentication | Login Failed",

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%TRUNK-W-PORTREMOVED: Port gi1/0/12 removed from po1",
+            "value_re": []
+        }
     ]
 }

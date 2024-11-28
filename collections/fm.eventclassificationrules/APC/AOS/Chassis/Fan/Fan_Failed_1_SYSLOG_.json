@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: (?P<name>A base module fan) fault exists. 0x0120"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: A base module fan fault exists. 0x0120",
+            "value_re": []
+        }
     ]
 }

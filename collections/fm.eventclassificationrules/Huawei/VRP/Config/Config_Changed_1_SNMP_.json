@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Config | Config Changed #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1fdf6411-0e9a-4b08-9473-7e846d4c2dda",
     "description": "HUAWEI-DATASYNC-MIB::hwCfgChgNotify",
     "event_class__name": "Config | Config Changed",

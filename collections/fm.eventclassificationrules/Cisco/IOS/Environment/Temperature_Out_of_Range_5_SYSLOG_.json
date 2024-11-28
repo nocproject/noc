@@ -5,12 +5,10 @@
     "description": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Chassis"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Chassis"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!",
+            "value_re": []
         }
     ]
 }

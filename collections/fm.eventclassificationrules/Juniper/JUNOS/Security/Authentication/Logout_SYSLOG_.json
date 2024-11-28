@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Security | Authentication | Logout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "90b874d9-52f7-4cc8-9cf3-8b3edc732aa0",
     "description": "UI_LOGOUT_EVENT: User 'noc-sa' logout",
     "event_class__name": "Security | Authentication | Logout",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "UI_LOGOUT_EVENT: User '(?P<user>.+?)' logout"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "UI_LOGOUT_EVENT: User 'noc-sa' logout",
+            "value_re": []
         }
     ]
 }

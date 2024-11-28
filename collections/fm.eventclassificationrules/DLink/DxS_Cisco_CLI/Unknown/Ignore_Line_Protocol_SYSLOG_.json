@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Unknown | Ignore Line Protocol (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "81641805-5261-4d89-a16a-e1c3b71f4f03",
     "description": "%LINEPROTO-5-UPDOWN: Line protocol on Interface TenGigabitEthernet 1/1, changed state to up.",
     "event_class__name": "Unknown | Ignore",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%LINEPROTO-5-UPDOWN: Line protocol on Interface .+, changed state to (?:up|down)."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%LINEPROTO-5-UPDOWN: Line protocol on Interface TenGigabitEthernet 1/1, changed state to up.",
+            "value_re": []
         }
     ]
 }

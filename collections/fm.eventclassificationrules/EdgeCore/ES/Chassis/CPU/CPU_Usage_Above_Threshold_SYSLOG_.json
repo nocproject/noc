@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Chassis | CPU | CPU Usage Above Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5d626d5a-01c0-4c02-919b-89649e21fff8",
     "description": "Sep 19 14:58:42 Rybatsk-17-1 snmp CPU rising trap.",
     "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "CPU rising trap\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Sep 19 14:58:42 Rybatsk-17-1 snmp CPU rising trap.",
+            "value_re": []
         }
     ]
 }

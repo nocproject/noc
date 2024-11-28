@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:MAC_MOVE-SP-4-NOTIF|SW_MATM-4-MACFLAP_NOTIF|C4K_EBM-4-HOSTFLAPPING): Host (?P<mac>\\S+) in vlan (?P<vlan>\\d+) is (?:flapping between|moving from) port (?P<from_interface>\\S+) (?:efp_id \\d+ )?(?:and|to) port (?P<to_interface>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SW_MATM-4-MACFLAP_NOTIF: Host 0017.0e82.0850 in vlan 254 is flapping between port Gi0/24 and port Gi0/25",
+            "value_re": []
+        }
     ]
 }

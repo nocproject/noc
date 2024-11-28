@@ -8,15 +8,21 @@
     "patterns": [
         {
             "key_re": "profile",
-            "value_re": "DLink.DxS"
+            "value_re": "^DLink\\.DxS$"
         },
         {
             "key_re": "source",
-            "value_re": "syslog"
+            "value_re": "^syslog$"
         },
         {
             "key_re": "message",
             "value_re": "WARN: Unauthenticated IP-MAC address and discarded by IMPB\\(IP:<(?P<ip>\\S+)>, MAC:<(?P<mac>\\S+)>, [pP]ort<(?P<interface>\\S+)>\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Mar 30 15:04:39 10.131.110.100 WARN: Unauthenticated IP-MAC address and discarded by IMPB(IP:<192.168.1.1>, MAC:<EC-43-F6-08-5D-E9>, Port<14>)",
+            "value_re": []
         }
     ]
 }

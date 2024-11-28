@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%BGP-3-NOTIFICATION: received from neighbor .+ \\(cease\\) \\d+ bytes"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%BGP-3-NOTIFICATION: received from neighbor 10.110.0.11 6/5 (cease) 0 bytes",
+            "value_re": []
+        }
     ]
 }

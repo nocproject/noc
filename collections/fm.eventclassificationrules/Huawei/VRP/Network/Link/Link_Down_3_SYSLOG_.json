@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Link | Link Down #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "33c54ba3-a4a6-487d-83c9-b63d3eccbd3a",
     "description": "Aug 2 2012 09:32:31 kiev-okr4-sw8 %%01DRV/6/LINKDOWN(l): Port Ethernet0/0/3 is down because the link layer is down.",
     "event_class__name": "Network | Link | Link Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "DRV/\\d+/LINKDOWN.+[Pp]ort (?P<interface>\\S+) is down because the link layer is down"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 2 2012 09:32:31 kiev-okr4-sw8 %%01DRV/6/LINKDOWN(l): Port Ethernet0/0/3 is down because the link layer is down.",
+            "value_re": []
         }
     ]
 }

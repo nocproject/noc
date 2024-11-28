@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Port (?P<interface>.+) LBD loop occurred. Port blocked"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "CRIT: Port 4 LBD loop occurred. Port blocked",
+            "value_re": []
+        }
     ]
 }

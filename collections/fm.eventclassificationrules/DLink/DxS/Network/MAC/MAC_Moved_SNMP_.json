@@ -1,15 +1,14 @@
 {
     "name": "DLink | DxS | Network | MAC | MAC Moved (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a42f28c0-344f-4d12-a434-18124a610f00",
     "description": "DES3526-L2MGMT-MIB::swL2macNotification",
     "event_class__name": "Network | MAC | MAC Moved",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "interface",
-            "value": "=str(ord(iface[1]))"
-        }
-    ],
+    "vars": [{
+        "name": "interface",
+        "value": "=str(ord(iface[1]))"
+    }],
     "patterns": [
         {
             "key_re": "^source$",

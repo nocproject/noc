@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Port security violation \\([Pp]ort: (?P<interface>\\S+), MAC: (?P<mac>\\S+)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Port security violation (port: 14, MAC: 48-5B-39-47-0C-4B)",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | UPS | Battery Power Low #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a759efe9-c6d8-4cc8-b4ea-9c551258e53b",
     "description": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F",
     "event_class__name": "Environment | UPS | Battery Power Low",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F",
+            "value_re": []
         }
     ]
 }

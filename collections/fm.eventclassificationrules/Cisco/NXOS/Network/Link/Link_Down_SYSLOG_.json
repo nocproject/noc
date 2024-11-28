@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface (?P<interface>.+) is down"
         }
+    ],
+    "test_cases": [
+        {
+            "message": ": 2019 Dec 11 11:50:02 MSK: %ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet1/8 is down (Link failure)",
+            "value_re": []
+        }
     ]
 }

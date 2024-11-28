@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Config | Config Changed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c00a8463-a708-4988-b39b-a64cc652b166",
     "description": "RFC1155-SMI::enterprises.89 (RND MIB. Why? I don't know!)",
     "event_class__name": "Config | Config Changed",

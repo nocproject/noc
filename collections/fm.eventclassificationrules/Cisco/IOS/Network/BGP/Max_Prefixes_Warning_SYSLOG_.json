@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%BGP-4-MAXPFX: Number of prefixes received from (?P<peer>.+) vpn vrf (?P<vrf>\\S+) \\(afi \\d+\\) reaches (?P<recv>\\d+), max (?P<max>\\d+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%BGP-4-MAXPFX: Number of prefixes received from 192.169.10.2 vpn vrf mchs (afi 4) reaches 91, max 100",
+            "value_re": []
+        }
     ]
 }

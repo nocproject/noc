@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%CLEAR-5-COUNTERS: Clear counter on (?P<interface>all) interfaces by (?P<user>\\S+) on\\s*\\S+ \\((?P<ip>\\S+)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%CLEAR-5-COUNTERS: Clear counter on all interfaces by cisco on vty3 (1.2.3.4)",
+            "value_re": []
+        }
     ]
 }

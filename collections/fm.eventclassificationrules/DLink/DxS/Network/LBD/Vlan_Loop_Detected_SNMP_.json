@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | LBD | Vlan Loop Detected (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fd7df265-499f-4e0a-bef5-bbd3083f2381",
     "description": "LOOPBACK-DETECT-MIB::swVlanLoopOccurred",
     "event_class__name": "Network | LBD | Vlan Loop Detected",

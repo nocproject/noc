@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C",
+            "value_re": []
+        }
     ]
 }

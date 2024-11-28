@@ -24,5 +24,11 @@
             "key_re": "^message$",
             "value_re": "%LINK-5-CHANGED: Interface (?P<iface>.+?), changed state to administratively down"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+            "value_re": []
+        }
     ]
 }

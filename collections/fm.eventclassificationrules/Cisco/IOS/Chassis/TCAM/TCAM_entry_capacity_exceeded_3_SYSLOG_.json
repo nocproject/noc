@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM_UCAST-4-PREFIX: (?P<reason>.+could not be programmed into TCAM.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM_UCAST-4-PREFIX: One or more, more specific prefixes could not be programmed into TCAM and are being covered by a less specific prefix, and the packets may be software forwarded",
+            "value_re": []
+        }
     ]
 }

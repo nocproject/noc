@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : (?P<interface>\\S+): OAM discovery failed to complete in the specified time"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : TenGigE0/0/1/0: OAM discovery failed to complete in the specified time",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Attack | Land Attack (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "8e58443e-eafe-4454-937e-cfd88d68901a",
     "description": "CRIT: Land Attack is detected from (IP: 255.255.255.255 Port: 8)",
     "event_class__name": "Security | Attack | Land Attack",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "Land Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "CRIT: Land Attack is detected from (IP: 255.255.255.255 Port: 8)",
+            "value_re": []
         }
     ]
 }

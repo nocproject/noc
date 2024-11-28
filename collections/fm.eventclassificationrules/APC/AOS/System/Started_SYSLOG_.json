@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "System: (?:Coldstart. 0x0001|Warmstart. 0x0002)"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "System: Coldstart. 0x0001",
+        "value_re": []
+    }]
 }

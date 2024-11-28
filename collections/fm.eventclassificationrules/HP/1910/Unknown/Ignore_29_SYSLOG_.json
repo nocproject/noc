@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%%10NTP/5/NTP_CHANGE_STRATUM\\(l\\):\\s+System stratum changed from \\d+ to \\d+ after clock update.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Sep 6 03:53:46 2013 Batalion %%10NTP/5/NTP_CHANGE_STRATUM(l): System stratum changed from 7 to 6 after clock update.",
+            "value_re": []
+        }
     ]
 }

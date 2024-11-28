@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "31906ce7-124c-48f5-a797-547be0d2887f",
     "description": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification",
     "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode",

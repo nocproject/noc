@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "CRIT(2) Port 25 VID 356 LBD loop occurred. Packet discard begun",
+            "value_re": []
+        }
     ]
 }

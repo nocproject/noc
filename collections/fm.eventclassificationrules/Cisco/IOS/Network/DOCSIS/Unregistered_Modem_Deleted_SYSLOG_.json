@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-5-UNREGSIDTIMEOUT: CMTS deleted unregistered Cable Modem (?P<mac>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7100-5-UNREGSIDTIMEOUT: CMTS deleted unregistered Cable Modem 0018.c0d8.9614",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Unknown | Syslog",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "8baad5c0-7553-4452-a359-4fc93082fa1a",
     "description": "Next to last in the chain. Catches all unclassified syslog messages",
     "event_class__name": "Unknown | Syslog",

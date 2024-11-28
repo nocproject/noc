@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "system: (?P<user>.+) logged in from (?P<ip>\\S+) over Telnet$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "system: operator logged in from 10.111.0.14 over Telnet",
+            "value_re": []
+        }
     ]
 }

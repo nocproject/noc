@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%LDP-5-NBRCHG: LDP Neighbor (?P<neighbor>\\S+):\\d+.+is UP( \\((?P<reason>.+)\\))?$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%LDP-5-NBRCHG: LDP Neighbor 172.16.0.1:0 is UP",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Unauthenticated IP-MAC address and discarded by ip mac port binding \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: 172.16.1.49, MAC: 00-E0-52-85-91-56, Port: 12)",
+            "value_re": []
+        }
     ]
 }

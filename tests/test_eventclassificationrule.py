@@ -106,7 +106,7 @@ def iter_test_rules():
 
     connect()
 
-    for e_rule in EventClassificationRule.objects.filter(test_cases__exists=True):
+    for e_rule in EventClassificationRule.objects.filter(test_cases__exists=True).order_by("name"):
         yield e_rule
 
 

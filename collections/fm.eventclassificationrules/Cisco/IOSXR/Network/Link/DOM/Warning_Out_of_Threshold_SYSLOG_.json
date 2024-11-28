@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM-SFP-3-(?P<threshold>HIGH|LOW)_(?P<sensor>LASER_BIAS|RX_POWER|TEMP|TX_POWER|VOLTAGE)_WARNING : Set\\|envmon_lc\\[\\d+\\]\\|SFP\\(0x\\d+\\)\\|(?P<interface>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-SFP-3-HIGH_VOLTAGE_WARNING : Set|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
+            "value_re": []
+        }
     ]
 }

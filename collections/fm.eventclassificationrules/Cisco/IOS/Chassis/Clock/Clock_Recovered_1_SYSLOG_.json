@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-2-REDUNDANTCLOCK_OK: (?P<name>Redundant clock) recovered$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-REDUNDANTCLOCK_OK: Redundant clock recovered",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Ubiquiti | AirOS | Unknown | Ignore uplink-monitor(SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a8ca008d-c6cb-4eba-8551-68e44f5fdc46",
     "description": "Jan 2 10:08:41 syslog: uplink-monitor.update(): prev observation is eth[eth0], seq 7564",
     "event_class__name": "Unknown | Ignore",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": ".* syslog: uplink-monitor\\..*"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jan 2 10:08:41 syslog: uplink-monitor.update(): prev observation is eth[eth0], seq 7564",
+            "value_re": []
         }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | DC Voltage Out of Range #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1e3162f5-c03d-4a45-98f0-e857e6a210bf",
     "description": "Voltage 1 3300 mv has exceeded recommended operating limits.",
     "event_class__name": "Environment | DC Voltage Out of Range",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "(?P<name>Voltage \\d+ \\d+ mv) has exceeded recommended operating limits."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Voltage 1 3300 mv has exceeded recommended operating limits.",
+            "value_re": []
         }
     ]
 }

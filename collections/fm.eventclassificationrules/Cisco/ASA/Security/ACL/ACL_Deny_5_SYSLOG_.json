@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-2-106006: Deny inbound (?P<proto>\\S+) from (?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_ip>\\S+)/(?P<dst_port>\\d+) on interface (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 03 2016 12:17:09: %ASA-2-106006: Deny inbound UDP from 10.18.1.73/137 to 10.80.18.117/137 on interface inside",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ZyNOS | Chassis | PSU | Internal Voltage Out of Range (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "8dffabbd-d22d-4145-86a9-44b7c7d3f6b4",
     "description": "Nov 25 13:39:44 sw-169-mich7 system: 1.8VIN voltage value 1.984 exceeds its limit voltage value",
     "event_class__name": "Chassis | PSU | Internal Voltage Out of Range",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "VIN voltage value \\S+ exceeds its limit voltage value"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Nov 25 13:39:44 sw-169-mich7 system: 1.8VIN voltage value 1.984 exceeds its limit voltage value",
+            "value_re": []
         }
     ]
 }

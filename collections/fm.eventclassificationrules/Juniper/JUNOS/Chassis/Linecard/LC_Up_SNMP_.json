@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Linecard | LC Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ec3be0a8-71fe-4da8-a6a4-9f595bde9dd9",
     "description": "JUNIPER-MIB::jnxFruOnline",
     "event_class__name": "Chassis | Linecard | LC Up",

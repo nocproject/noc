@@ -1,5 +1,6 @@
 {
     "name": "HP | 1905 | Security | Authentication | Logout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "50be49d3-0f6c-439c-93c4-1b503570456c",
     "description": "Dec 27 09:49:48 2012 Office [HTTP]/5/logout (192.168.11.50)",
     "event_class__name": "Security | Authentication | Logout",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "\\[HTTP\\]/5/logout \\((?P<ip>\\S+)\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Dec 27 09:49:48 2012 Office [HTTP]/5/logout (192.168.11.50)",
+            "value_re": []
         }
     ]
 }

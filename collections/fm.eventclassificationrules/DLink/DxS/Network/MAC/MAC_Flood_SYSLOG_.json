@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "The flooding MAC is detected \\(VID: (?P<vlan>\\d+), MAC: (?P<mac>\\S+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: The flooding MAC is detected (VID: 23, MAC: 00-1E-8C-A4-A6-96)",
+            "value_re": []
+        }
     ]
 }

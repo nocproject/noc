@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: (?P<name>A logic power supply) fault exists. 0x0169"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: A logic power supply fault exists. 0x0169",
+            "value_re": []
+        }
     ]
 }

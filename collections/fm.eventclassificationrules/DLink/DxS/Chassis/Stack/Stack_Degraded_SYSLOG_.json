@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot removal"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO(6) Unit 4,MAC:00-1c-f0-1f-3c-80 Hot removal",
+            "value_re": []
+        }
     ]
 }

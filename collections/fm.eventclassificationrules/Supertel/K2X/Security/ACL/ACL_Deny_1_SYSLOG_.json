@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%MNGINF-W-ACL: Management ACL drop packet received on interface (?P<dst_interface>(\\S+ \\d+|\\S+)) from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) protocol \\d+ service (?P<proto>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%MNGINF-W-ACL: Management ACL drop packet received on interface Vlan 1 from 192.168.25.8 to 192.168.1.1 protocol 6 service Telnet",
+            "value_re": []
+        }
     ]
 }

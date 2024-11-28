@@ -1,5 +1,6 @@
 {
     "name": "Force10 | FTOS | Chassis | Linecard | LC Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f59a8c52-1bbb-4577-bfb6-fc24e47f5bdd",
     "description": "F10-CHASSIS-MIB::chAlarmObjects, LINECARDUP",
     "event_class__name": "Chassis | Linecard | LC Up",

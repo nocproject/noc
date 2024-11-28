@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PKT_INFRA-LINK-3-UPDOWN\\s*: .*Interface (?P<interface>.+), changed state to Down$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PKT_INFRA-LINK-3-UPDOWN : Interface TenGigE0/2/1/0.60, changed state to Down",
+            "value_re": []
+        }
     ]
 }

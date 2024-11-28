@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%EC-(STBY-)?5-BUNDLE: Interface (?P<interface>\\S+) joined port-channel (?P<lag_interface>\\S+)\\.?$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%EC-5-BUNDLE: Interface Gi1/0/1 joined port-channel Po1.",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-6-(?:HOLDOVER|FREERUN): (?P<name>Cable clock) in (?:Holdover|Freerun) mode$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-6-HOLDOVER: Cable clock in Holdover mode",
+            "value_re": []
+        }
     ]
 }

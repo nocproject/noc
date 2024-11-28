@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) permitted (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SEC-6-IPACCESSLOGP: list aclIN permitted tcp 211.114.211.230(36995) -> 211.12.61.191(22), 8 packets",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "source",
             "value_re": "^syslog$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "10/15/2019 12:47:03.23 <Info:vlan.msgs.portLinkStateUp> Port 11 link UP at speed 100 Mbps and full-duplex",
+            "value_re": []
+        }
     ]
 }

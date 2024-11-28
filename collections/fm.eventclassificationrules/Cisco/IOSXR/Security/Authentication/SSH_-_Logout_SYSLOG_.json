@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "%SECURITY-SSHD-6-INFO_GENERAL : Client closes socket connection"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SECURITY-SSHD-6-INFO_GENERAL : Client closes socket connection",
+            "value_re": []
+        }
     ]
 }

@@ -24,5 +24,11 @@
             "key_re": "^message$",
             "value_re": "%PKT_INFRA-LINK-5-CHANGED : Interface (?P<iface>.+), changed state to Administratively Down"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PKT_INFRA-LINK-5-CHANGED : Interface TenGigE0/0/1/1, changed state to Administratively Down",
+            "value_re": []
+        }
     ]
 }

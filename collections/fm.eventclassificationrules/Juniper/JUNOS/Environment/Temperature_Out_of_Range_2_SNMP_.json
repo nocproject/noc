@@ -1,15 +1,14 @@
 {
     "name": "Juniper | JUNOS | Environment | Temperature Out of Range #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f46cf79b-13cc-4e4e-ad55-b2edcfdbdd3e",
     "description": "Juniper-System-MIB::juniSystemTempStatusChange",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Chassis"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Chassis"
+    }],
     "patterns": [
         {
             "key_re": "^source$",

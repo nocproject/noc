@@ -1,5 +1,6 @@
 {
     "name": "Qtech | QSW2800 | Security | Authentication | Logout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "37345a48-432a-435c-ac38-183a63272d4b",
     "description": "003378: sw-dom-5 %Nov 27 15:07:49 2012 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User admin logout from 192.168.220.252:41808.",
     "event_class__name": "Security | Authentication | Logout",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "User (?P<user>.+) logout from (?P<ip>\\S+):\\d+\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "003378: sw-dom-5 %Nov 27 15:07:49 2012 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User admin logout from 192.168.220.252:41808.",
+            "value_re": []
         }
     ]
 }

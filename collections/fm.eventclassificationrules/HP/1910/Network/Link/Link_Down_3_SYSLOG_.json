@@ -2,7 +2,7 @@
     "name": "HP | 1910 | Network | Link | Link Down #3 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "da3cbc59-8ff0-40a8-aab6-d506ff7ff025",
-    "description": "Feb 12 10:36:37 2013 Teh %%10IFNET/5/LINEPROTO_UPDOWN(l): Line protocol on the interface Vlan-interface200 is UP.",
+    "description": "Feb 12 10:36:37 2013 Teh %%10IFNET/5/LINEPROTO_UPDOWN(l): Line protocol on the interface Vlan-interface200 is DOWN.",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
     "patterns": [
@@ -17,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%10IFNET/5/LINEPROTO_UPDOWN\\(l\\):\\s+Line protocol on the interface (?P<interface>\\S+) is DOWN\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Feb 12 10:36:37 2013 Teh %%10IFNET/5/LINEPROTO_UPDOWN(l): Line protocol on the interface Vlan-interface200 is DOWN.",
+            "value_re": []
         }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "system: (?P<user>.+) logged out from serial port$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "system: operator logged out from serial port",
+            "value_re": []
+        }
     ]
 }

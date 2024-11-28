@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SPA-DFC\\d-4-TEMP_WARNING: (?P<name>.+) temperature too high. \\((?P<measure>\\S+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SPA-DFC4-4-TEMP_WARNING: 7600-ES20-2X10G[4/0] temperature too high. (65C)",
+            "value_re": []
+        }
     ]
 }

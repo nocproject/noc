@@ -18,5 +18,11 @@
             "key_re": "source",
             "value_re": "^syslog$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Oct 16 15:11:55 USER: admin logged in through telnet (10.10.1.250)",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Network | Port Security | Port Security Violation #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "73bb21aa-8053-4a91-87a2-c9ad032aa975",
     "description": "ES3528MO-MIB::swPortSecurityTrap",
     "event_class__name": "Network | Port Security | Port Security Violation",

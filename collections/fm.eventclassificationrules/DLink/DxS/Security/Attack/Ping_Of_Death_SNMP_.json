@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Attack | Ping Of Death (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "79033983-f274-4fa5-8243-570624115861",
     "description": "DOS-PREV-MIB::swDoSAttackDetected",
     "event_class__name": "Security | Attack | Ping Of Death",

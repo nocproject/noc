@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%OS-DUMPER-4-CRASH_INFO : Crashed pid = (?P<pid>\\d+) \\((?P<name>\\S+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%OS-DUMPER-4-CRASH_INFO : Crashed pid = 471175 (pkg/bin/l2fib_mgr)",
+            "value_re": []
+        }
     ]
 }

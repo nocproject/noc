@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the (?:startup|private) configuration to the standby Router."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the startup configuration to the standby Router.",
+            "value_re": []
+        }
     ]
 }

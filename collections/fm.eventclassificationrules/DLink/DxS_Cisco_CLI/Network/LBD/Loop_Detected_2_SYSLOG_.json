@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Detected #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d077b8ad-a3d1-485b-9a02-9242f149d098",
     "description": "%LLDP-4-ERRDETECT: Port GigabitEthernet 0/13 detected loop, please check the network.",
     "event_class__name": "Network | LBD | Loop Detected",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%LLDP-4-ERRDETECT: Port (?P<interface>.+) detected loop, please check the network"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%LLDP-4-ERRDETECT: Port GigabitEthernet 0/13 detected loop, please check the network.",
+            "value_re": []
         }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Environment | UPS | Input Power Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "519a7450-dbd5-4537-b66b-a69e6cf49866",
     "description": "XPPC-MIB::ppc",
     "event_class__name": "Environment | UPS | Input Power Failed",

@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Link | Link Down (SYSLOG) #5",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b80821e7-46e1-4d70-9a4e-62d6ca1b63df",
     "description": "IFNET/1/IF_PVCDOWN:OID 1.3.6.1.6.3.1.1.5.3 Interface 56 turned into DOWN state.(AdminStatus 1,OperStatus 2,InterfaceName GigabitEthernet1/1/8)",
     "event_class__name": "Network | Link | Link Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "Interface \\d+ turned into DOWN state\\.\\(AdminStatus 1,OperStatus 2,InterfaceName (?P<interface>\\S+)\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "IFNET/1/IF_PVCDOWN:OID 1.3.6.1.6.3.1.1.5.3 Interface 56 turned into DOWN state.(AdminStatus 1,OperStatus 2,InterfaceName GigabitEthernet1/1/8)",
+            "value_re": []
         }
     ]
 }

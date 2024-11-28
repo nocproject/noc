@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Logout through (?:Web|Telnet|SSH)\\s*\\(User(name)?: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:,\\s*MAC: \\S+)?\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Logout through Telnet (Username: noc, IP: 172.16.7.56)",
+            "value_re": []
+        }
     ]
 }

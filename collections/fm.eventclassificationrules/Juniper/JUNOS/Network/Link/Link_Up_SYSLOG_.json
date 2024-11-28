@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6c7b7b8e-1d29-405d-a93e-15d34c729000",
     "description": "Aug  3 13:43:35 mib2d[1144]: SNMP_TRAP_LINK_UP: ifIndex 579, ifAdminStatus up(1), ifOperStatus up(1), ifName ge-2/0/11.0",
     "event_class__name": "Network | Link | Link Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "SNMP_TRAP_LINK_UP:.+ifName (?P<interface>\\S+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug  3 13:43:35 mib2d[1144]: SNMP_TRAP_LINK_UP: ifIndex 579, ifAdminStatus up(1), ifOperStatus up(1), ifName ge-2/0/11.0",
+            "value_re": []
         }
     ]
 }

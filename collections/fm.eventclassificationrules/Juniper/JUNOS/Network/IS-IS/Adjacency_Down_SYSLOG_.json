@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | IS-IS | Adjacency Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1a27834e-c014-4f2a-b987-ec128ea74a94",
     "description": "Jul 21 08:02:19 rpd[968]: RPD_ISIS_ADJDOWN: IS-IS lost L2 adjacency to r1 on em1.0, reason: Aged Out",
     "event_class__name": "Network | IS-IS | Adjacency Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "RPD_ISIS_ADJDOWN: IS-IS lost (?P<level>\\S+) adjacency to (?P<neighbor>.+?) on (?P<interface>.+?), reason: (?P<reason>.+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 21 08:02:19 rpd[968]: RPD_ISIS_ADJDOWN: IS-IS lost L2 adjacency to r1 on em1.0, reason: Aged Out",
+            "value_re": []
         }
     ]
 }

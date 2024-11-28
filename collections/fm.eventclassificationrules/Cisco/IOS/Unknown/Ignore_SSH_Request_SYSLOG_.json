@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SSH-5-SSH2_SESSION: SSH2 Session request from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) using crypto cipher '\\S+', hmac '\\S+' Succeeded$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SSH-5-SSH2_SESSION: SSH2 Session request from 172.16.0.22 (tty = 1) using crypto cipher 'aes256-cbc', hmac 'hmac-sha1' Succeeded",
+            "value_re": []
+        }
     ]
 }

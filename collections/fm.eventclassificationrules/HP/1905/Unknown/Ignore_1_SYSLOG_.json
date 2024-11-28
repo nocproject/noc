@@ -1,5 +1,6 @@
 {
     "name": "HP | 1905 | Unknown | Ignore #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5a3aae4a-c246-4a25-a8bf-f46afca3923c",
     "description": "Mar 19 17:28:35 2013 Podval [LLDP]/5/REMCHG RemInserts : 11,RemDeletes : 2,RemDrops : 0,RemAgeouts : 5",
     "event_class__name": "Unknown | Ignore",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "\\[LLDP\\]/5/REMCHG RemInserts : \\d+,RemDeletes : \\d+,RemDrops : \\d+,RemAgeouts : \\d+$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Mar 19 17:28:35 2013 Podval [LLDP]/5/REMCHG RemInserts : 11,RemDeletes : 2,RemDrops : 0,RemAgeouts : 5",
+            "value_re": []
         }
     ]
 }

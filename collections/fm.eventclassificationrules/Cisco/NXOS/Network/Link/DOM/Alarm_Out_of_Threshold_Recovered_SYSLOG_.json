@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "IF_SFP_ALARM: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Alarm cleared$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "2020 Oct 22 19:04:12 MSK: %ETHPORT-3-IF_SFP_ALARM: Interface Ethernet1/1, High Rx Power Alarm cleared",
+            "value_re": []
+        }
     ]
 }

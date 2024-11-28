@@ -5,12 +5,10 @@
     "description": "%C7600_ENV-SP-4-FANCOUNTFAILED: Required number of fan trays is not present",
     "event_class__name": "Chassis | Fan | Fan Removed",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Chassis Fan"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Chassis Fan"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%C7600_ENV-SP-4-FANCOUNTFAILED: Required number of fan trays is not present"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C7600_ENV-SP-4-FANCOUNTFAILED: Required number of fan trays is not present",
+            "value_re": []
         }
     ]
 }

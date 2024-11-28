@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%TDP-5-INFO:.+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%TDP-5-INFO: Default-IP-Routing-Table: TDP ID removed",
+            "value_re": []
+        }
     ]
 }

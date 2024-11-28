@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%POWER_SUPPLIES-5-PWR_OK: (?P<name>Power supply \\d+) is functioning"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%POWER_SUPPLIES-5-PWR_OK: Power supply 2 is functioning",
+            "value_re": []
+        }
     ]
 }

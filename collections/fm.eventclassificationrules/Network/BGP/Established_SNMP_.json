@@ -1,5 +1,6 @@
 {
     "name": "Network | BGP | Established (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "befab725-16e1-411e-9362-d701ae27368c",
     "description": "BGP4-MIB::bgpEstablished",
     "event_class__name": "Network | BGP | Established",

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | Link | DOM | Warning: Out of Threshold Recovered #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e08192bf-8008-4c83-ae4f-679d4fa0acae",
     "description": "fpc0 sfp-0/0/6 link 6 SFP receive power low  warning cleared",
     "event_class__name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "(?P<interface>(?:sfp-\\d+/\\d+/\\d+|MIC\\(\\d+/\\d+\\)) link \\d+) SFP (?P<sensor>.+) (?P<threshold>low|high)\\s+warning cleared"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "fpc0 sfp-0/0/6 link 6 SFP receive power low  warning cleared",
+            "value_re": []
         }
     ]
 }

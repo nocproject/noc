@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PM-4-ERR_RECOVER: Attempting to recover from link-flap err-disable state on (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PM-4-ERR_RECOVER: Attempting to recover from link-flap err-disable state on Te1/6",
+            "value_re": []
+        }
     ]
 }

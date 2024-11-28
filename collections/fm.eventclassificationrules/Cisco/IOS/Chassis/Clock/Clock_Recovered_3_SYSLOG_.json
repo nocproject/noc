@@ -16,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%UBR\\+00-6-REFLOCK: (?P<name>Cable clock) locked to .+ reference$"
+            "value_re": "%UBR7200-6-REFLOCK: (?P<name>Cable clock) locked to .+ reference$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-6-REFLOCK: Cable clock locked to [chars] reference",
+            "value_re": []
         }
     ]
 }

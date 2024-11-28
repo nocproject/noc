@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%L2-ELO-6-INTF_SESSION_DOWN : (?P<interface>\\S+): OAM session has gone down"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-ELO-6-INTF_SESSION_DOWN : TenGigE0/0/1/0: OAM session has gone down",
+            "value_re": []
+        }
     ]
 }

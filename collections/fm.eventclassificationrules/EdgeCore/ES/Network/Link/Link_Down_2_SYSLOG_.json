@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Network | Link | Link Down #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f60fdc69-e4f9-4de3-b079-d4f67e26ab6a",
     "description": "Aug 31 13:34:23 test snmp VLAN 1 link-down notification.",
     "event_class__name": "Network | Link | Link Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "snmp (?P<interface>VLAN\\s+\\S+) link-down notification\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 31 13:34:23 test snmp VLAN 1 link-down notification.",
+            "value_re": []
         }
     ]
 }

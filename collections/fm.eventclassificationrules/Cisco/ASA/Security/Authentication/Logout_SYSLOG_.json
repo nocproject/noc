@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-6-315011: SSH session from (?P<ip>\\S+) on interface management for user \\\"(?P<user>.*)\\\" disconnected by SSH server, reason: .+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ASA-6-315011: SSH session from 10.250.1.18 on interface management for user \"\" disconnected by SSH server, reason: \"TCP connection closed\" (0x03)",
+            "value_re": []
+        }
     ]
 }

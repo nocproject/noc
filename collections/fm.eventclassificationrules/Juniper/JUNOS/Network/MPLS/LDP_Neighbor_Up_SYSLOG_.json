@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "RPD_LDP_SESSIONUP: LDP session (?P<neighbor>\\S+) is (?P<state>\\w+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 27 13:08:26 pmo-cl2 rpd[873]: RPD_LDP_SESSIONUP: LDP session 10.100.127.40 is up",
+            "value_re": []
+        }
     ]
 }

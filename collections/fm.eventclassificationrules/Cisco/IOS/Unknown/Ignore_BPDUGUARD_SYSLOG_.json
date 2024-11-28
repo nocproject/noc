@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SPANTREE(-SP)?-2-BLOCK_BPDUGUARD: Received BPDU on port \\S+ with BPDU Guard enabled. Disabling port."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SPANTREE-SP-2-BLOCK_BPDUGUARD: Received BPDU on port GigabitEthernet4/1 with BPDU Guard enabled. Disabling port.",
+            "value_re": []
+        }
     ]
 }

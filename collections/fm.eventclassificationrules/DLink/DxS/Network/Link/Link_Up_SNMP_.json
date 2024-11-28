@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | Link | Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ff6f76ae-22e8-44af-8b38-9b793791d26f",
     "description": "SW36XXPRIMGMT-MIB::d.+",
     "event_class__name": "Network | Link | Link Up",

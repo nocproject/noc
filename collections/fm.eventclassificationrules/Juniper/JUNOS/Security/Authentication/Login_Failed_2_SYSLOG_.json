@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Security | Authentication | Login Failed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4784720f-18b5-4407-8293-a582a4f5cbf9",
     "description": "Aug  2 13:55:03 login: 1 LOGIN FAILURE FROM 10.0.0.4",
     "event_class__name": "Security | Authentication | Login Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "LOGIN FAILURE FROM (?P<ip>\\S+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug  2 13:55:03 login: 1 LOGIN FAILURE FROM 10.0.0.4",
+            "value_re": []
         }
     ]
 }

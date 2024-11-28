@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4|EIGRP-IPv6)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>down): (?P<reason>.*)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%DUAL-5-NBRCHANGE: IP-EIGRP(0) 100: Neighbor 172.16.8.62 (FastEthernet0/0.14) is down: holding time expired",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | System | Started #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b080e402-b046-487f-a97b-ede00ed20933",
     "description": "%SYS-5-WARMSTART: System warmstart.",
     "event_class__name": "System | Started",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%SYS-5-WARMSTART: System warmstart"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-5-WARMSTART: System warmstart.",
+            "value_re": []
         }
     ]
 }

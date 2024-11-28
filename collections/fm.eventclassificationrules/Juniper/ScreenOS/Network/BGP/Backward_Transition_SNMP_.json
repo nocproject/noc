@@ -1,5 +1,6 @@
 {
     "name": "Juniper | ScreenOS | Network | BGP | Backward Transition (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1aa598b4-455e-4d45-89e4-76cd6864e004",
     "description": "NETSCREEN-BGP4-MIB::nsBgpEstablished, bgp-backwardtransition",
     "event_class__name": "Network | BGP | Backward Transition",

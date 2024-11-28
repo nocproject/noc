@@ -5,12 +5,10 @@
     "description": "%PLATFORM_ENV-1-FAN: Faulty fan detected",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Chassis Fan"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Chassis Fan"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%PLATFORM_ENV-1-FAN: Faulty fan detected"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM_ENV-1-FAN: Faulty fan detected",
+            "value_re": []
         }
     ]
 }

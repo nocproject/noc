@@ -5,12 +5,10 @@
     "description": "%HARDWARE-2-FAN_ERROR: Fan Failure.",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Chassis Fan"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Chassis Fan"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%HARDWARE-2-FAN_ERROR: Fan(.+)? Failure."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%HARDWARE-2-FAN_ERROR: Fan Failure.",
+            "value_re": []
         }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": ".*DSLAM:INFO,\\+WARM_START:System warm-starts"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Sep 25 09:19:55 ATS DSLAM:INFO,+WARM_START:System warm-starts",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Login failed through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Login failed through Console (Username: Anonymous)",
+            "value_re": []
+        }
     ]
 }

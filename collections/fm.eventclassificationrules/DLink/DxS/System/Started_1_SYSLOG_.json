@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "( Unit (?P<unit>\\d+), )?System (cold|warm) start$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "CRIT: System cold start",
+        "value_re": []
+    }]
 }

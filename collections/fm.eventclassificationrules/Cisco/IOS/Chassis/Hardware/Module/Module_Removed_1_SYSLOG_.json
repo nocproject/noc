@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%OIR-SP-6-REMCARD: Card removed from (?P<module>slot \\S+), interfaces disabled"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%OIR-SP-6-REMCARD: Card removed from slot 9, interfaces disabled",
+            "value_re": []
+        }
     ]
 }

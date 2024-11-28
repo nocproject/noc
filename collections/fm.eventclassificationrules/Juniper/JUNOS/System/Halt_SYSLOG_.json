@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | System | Halt (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bd9f1d99-4dc3-44cb-bc86-bdb7ef995ec8",
     "description": "Jul 22 14:49:39 shutdown: halt by noc:",
     "event_class__name": "System | Halt",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "shutdown: halt by (?P<user>.+?):$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 22 14:49:39 shutdown: halt by noc:",
+            "value_re": []
         }
     ]
 }

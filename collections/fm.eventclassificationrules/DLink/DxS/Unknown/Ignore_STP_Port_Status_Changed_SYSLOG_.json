@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Spanning Tree port .+ change \\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+)\\) .+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO(6) Spanning Tree port status change (Instance:0, Port:24) Learning->Forwarding",
+            "value_re": []
+        }
     ]
 }

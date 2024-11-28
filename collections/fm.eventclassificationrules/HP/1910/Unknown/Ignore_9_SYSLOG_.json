@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10SHELL/4/LOGOUT\\(t\\):   Trap \\S+<h3cLogOut>: logout from VTY$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "May  6 12:13:37 2000 3com2952 %%10SHELL/4/LOGOUT(t):   Trap 1.3.6.1.4.1.43.45.1.10.2.2.1.1.3.0.2<h3cLogOut>: logout from VTY",
+            "value_re": []
+        }
     ]
 }

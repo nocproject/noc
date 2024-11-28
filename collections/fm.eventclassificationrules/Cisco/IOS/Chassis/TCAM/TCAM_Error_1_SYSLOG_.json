@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%.+_EXCEPTION: (?P<reason>.+ TCAM exception.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%CFIB-SP-7-CFIB_EXCEPTION: FIB TCAM exception, Some entries will be software switched",
+            "value_re": []
+        }
     ]
 }

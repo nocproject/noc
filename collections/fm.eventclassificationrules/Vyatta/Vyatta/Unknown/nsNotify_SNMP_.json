@@ -1,5 +1,6 @@
 {
     "name": "Vyatta | Vyatta | Unknown | nsNotify (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7b31c4b1-1123-441b-ac0e-dbe4ed64786f",
     "description": "NET-SNMP-AGENT-MIB::nsNotifyShutdown",
     "event_class__name": "Unknown | Ignore",

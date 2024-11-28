@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Failed #8 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "57c8e719-6230-4a94-bf36-21ec024d0c1f",
     "description": "%C6KPWR-SP-2-PSFAIL: power supply 1 output failed.",
     "event_class__name": "Chassis | PSU | PSU Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%C(?:6K|7600_)PWR-SP-2-PSFAIL: (?P<name>power supply \\d+) output failed.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C6KPWR-SP-2-PSFAIL: power supply 1 output failed.",
+            "value_re": []
         }
     ]
 }

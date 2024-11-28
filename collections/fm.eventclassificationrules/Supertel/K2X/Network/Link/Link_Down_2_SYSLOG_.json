@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "^%LINK-W-Not Present:\\s+(?P<interface>\\S+)$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%LINK-W-Not Present:  ch2",
+        "value_re": []
+    }]
 }

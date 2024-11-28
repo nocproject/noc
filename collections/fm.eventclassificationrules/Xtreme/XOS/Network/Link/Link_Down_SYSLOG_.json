@@ -18,5 +18,11 @@
             "key_re": "source",
             "value_re": "^syslog$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "10/15/2019 14:11:03.82 <Info:vlan.msgs.portLinkStateDown> Port 11 link down",
+            "value_re": []
+        }
     ]
 }

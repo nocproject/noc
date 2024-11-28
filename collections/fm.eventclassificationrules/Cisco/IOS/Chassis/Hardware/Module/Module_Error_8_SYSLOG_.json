@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PM_SCP-SP-1-LCP_FW_ERR: System resetting module (?P<module>\\d+) to recover from error: (?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PM_SCP-SP-1-LCP_FW_ERR: System resetting module 13 to recover from error: Linecard received system exception",
+            "value_re": []
+        }
     ]
 }

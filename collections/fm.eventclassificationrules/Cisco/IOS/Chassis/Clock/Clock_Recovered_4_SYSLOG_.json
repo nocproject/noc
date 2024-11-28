@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-6-ACTIVE: (?P<name>Cable clock) .+ reference active$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-6-ACTIVE: Cable clock [chars] reference active",
+            "value_re": []
+        }
     ]
 }

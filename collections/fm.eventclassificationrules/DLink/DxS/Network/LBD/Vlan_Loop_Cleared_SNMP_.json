@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | LBD | Vlan Loop Cleared (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "926ad679-357b-47be-879b-906cc6f53211",
     "description": "LOOPBACK-DETECT-MIB::swVlanLoopRestart",
     "event_class__name": "Network | LBD | Vlan Loop Cleared",

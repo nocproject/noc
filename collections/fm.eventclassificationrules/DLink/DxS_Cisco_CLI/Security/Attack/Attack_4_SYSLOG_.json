@@ -1,15 +1,14 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Security | Attack | Attack #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1252c4b2-59e2-42de-afe0-b9d3a50f6703",
     "description": "%NFPP_DHCP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=404a.0378.12db,port=Gi0/16,VLAN=10> was detected.(2014-7-2 20:36:17)",
     "event_class__name": "Security | Attack | Attack",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "DHCP DoS"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "DHCP DoS"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -22,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%NFPP_DHCP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=(?P<src_mac>\\S+),port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%NFPP_DHCP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=404a.0378.12db,port=Gi0/16,VLAN=10> was detected.(2014-7-2 20:36:17)",
+            "value_re": []
         }
     ]
 }

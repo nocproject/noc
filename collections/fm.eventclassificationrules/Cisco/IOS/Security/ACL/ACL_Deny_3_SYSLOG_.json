@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SEC-6-IPACCESSLOGS: list (?P<name>\\S+) denied (?P<src_ip>\\S+) (?P<count>\\d+) packets?$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SEC-6-IPACCESSLOGS: list 50 denied 118.61.236.12 1 packet",
+            "value_re": []
+        }
     ]
 }

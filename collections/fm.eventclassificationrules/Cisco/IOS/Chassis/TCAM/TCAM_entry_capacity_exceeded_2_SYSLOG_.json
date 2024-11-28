@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%EARL_NETFLOW-SP(-STDBY)?-4-TCAM_THRLD: (?P<reason>.+ threshold exceeded(, TCAM Utilization \\[\\d+%\\])?)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%EARL_NETFLOW-SP-STDBY-4-TCAM_THRLD: Netflow TCAM threshold exceeded, TCAM Utilization [99%]",
+            "value_re": []
+        }
     ]
 }

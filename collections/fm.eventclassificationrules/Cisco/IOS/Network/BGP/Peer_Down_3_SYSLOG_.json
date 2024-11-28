@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:BGP_SESSION-5-ADJCHANGE|BGP-5-NBR_RESET): [Nn]eighbor (?P<peer>\\S+) .+Peer closed the session"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%BGP_SESSION-5-ADJCHANGE: neighbor 193.105.101.22 IPv4 Unicast topology base removed from session  Peer closed the session",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%NTP-4-PEERUNREACH: Peer (?P<server_address>\\S+) is unreachable$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%NTP-4-PEERUNREACH: Peer 192.168.100.253 is unreachable",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | BGP | Established (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6893d78d-39e5-4591-a089-dbf274da8256",
     "description": "BGP4-MIB::bgpEstablished",
     "event_class__name": "Network | BGP | Established",

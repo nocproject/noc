@@ -1,10 +1,9 @@
 {
     "name": "Unknown | Default",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "20e56812-9606-4cda-bf04-c5985572da47",
     "description": "Last rule in the chain",
     "event_class__name": "Unknown | Default",
-    "preference": 5000,
-    "patterns": [
-
-    ]
+    "preference": 10000,
+    "patterns": []
 }

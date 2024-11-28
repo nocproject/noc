@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Network | Link | Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f19f2f5f-3e8c-44de-a09b-c67ebdaca8e6",
     "description": "SNMPv2-MIB::snmpTraps",
     "event_class__name": "Network | Link | Link Up",

@@ -1,15 +1,14 @@
 {
     "name": "EdgeCore | ES | Network | LBD | Loop Cleared (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "83db0c82-329c-408f-9177-ac1889c72752",
     "description": "Sep 2 16:41:51 test snmp LBD recovers port 8.",
     "event_class__name": "Network | LBD | Loop Cleared",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "interface",
-            "value": "='Eth 1/%s' % port"
-        }
-    ],
+    "vars": [{
+        "name": "interface",
+        "value": "='Eth 1/%s' % port"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -22,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "LBD recovers port (?P<port>\\d+)\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Sep 2 16:41:51 test snmp LBD recovers port 8.",
+            "value_re": []
         }
     ]
 }

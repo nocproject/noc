@@ -1,5 +1,6 @@
 {
     "name": "MikroTik | RouterOS | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3f48caa2-1765-4532-8e50-918eb554677a",
     "description": "interface,info ether3-TRANSIT link up (speed 100M, full duplex) ",
     "event_class__name": "Network | Link | Link Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "(?P<interface>\\S+) link up \\(speed (?P<speed>\\S+), (?P<duplex>\\S+ duplex)\\)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "interface,info ether3-TRANSIT link up (speed 100M, full duplex)",
+            "value_re": []
         }
     ]
 }

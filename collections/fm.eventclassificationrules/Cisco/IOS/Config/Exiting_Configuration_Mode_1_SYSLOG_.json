@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-5-CONFIG_I: Configured from console by \\S+ \\(\\S+\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
+            "value_re": []
+        }
     ]
 }

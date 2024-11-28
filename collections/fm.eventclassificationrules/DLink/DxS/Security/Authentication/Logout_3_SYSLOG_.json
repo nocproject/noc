@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Logout through (?:Web|Telnet|SSH|Console)\\s*\\(IP: (?P<ip>\\S+)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Logout through Telnet(IP: 10.116.0.211)",
+            "value_re": []
+        }
     ]
 }

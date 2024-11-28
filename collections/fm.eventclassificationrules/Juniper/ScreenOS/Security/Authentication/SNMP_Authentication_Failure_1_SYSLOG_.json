@@ -1,5 +1,6 @@
 {
     "name": "Juniper | ScreenOS | Security | Authentication | SNMP Authentication Failure #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ab5ac959-c48a-4722-b490-0e6292e3eb80",
     "description": "fw-1-sc: NetScreen device_id=fw-1-sc  [Root]system-information-00524: SNMP request has been received from an unknown host in SNMP community PUBLIC at 10.10.65.11:36499. (2011-07-29 10:50:36)",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "system-information-00524: SNMP request has been received from an unknown host in SNMP community .+? at (?P<ip>\\S+):\\d+"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "fw-1-sc: NetScreen device_id=fw-1-sc  [Root]system-information-00524: SNMP request has been received from an unknown host in SNMP community PUBLIC at 10.10.65.11:36499. (2011-07-29 10:50:36)",
+            "value_re": []
         }
     ]
 }

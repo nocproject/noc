@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ZyNOS_EE | Network | Link | Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "94d4a839-70cf-472b-840f-2689025b1488",
     "description": "IF-MIB::linkUp",
     "event_class__name": "Network | Link | Link Up",

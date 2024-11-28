@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Detected #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "22ff61b0-fb6b-4e3d-8ce1-c2db6dee6b32",
     "description": "%RLDP-3-LINK_DETECT_ERROR: Detected loop detection error on interface TenGigabitEthernet 1/1.Set this interface errordisable.",
     "event_class__name": "Network | LBD | Loop Detected",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%RLDP-3-LINK_DETECT_ERROR: Detected loop detection error on interface (?P<interface>.+)\\.Set this interface errordisable."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%RLDP-3-LINK_DETECT_ERROR: Detected loop detection error on interface TenGigabitEthernet 1/1.Set this interface errordisable.",
+            "value_re": []
         }
     ]
 }

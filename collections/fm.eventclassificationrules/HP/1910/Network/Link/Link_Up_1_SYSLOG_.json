@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10IFNET/4/LINK UPDOWN\\(l\\):\\s+(?P<interface>.+): link status is UP$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Oct  2 19:08:00 2000 3Com Baseline Switch %%10IFNET/4/LINK UPDOWN(l):   GigabitEthernet1/0/2: link status is UP",
+            "value_re": []
+        }
     ]
 }

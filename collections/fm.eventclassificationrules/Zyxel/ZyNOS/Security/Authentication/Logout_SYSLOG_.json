@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ZyNOS | Security | Authentication | Logout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "32c8d77c-539e-49fb-8489-45515faeeae8",
     "description": "Logout successful",
     "event_class__name": "Security | Authentication | Logout",

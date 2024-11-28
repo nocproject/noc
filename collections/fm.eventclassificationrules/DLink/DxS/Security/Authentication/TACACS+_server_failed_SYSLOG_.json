@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "AAA server (?P<ip>\\S+) \\(Protocol: TACACS\\+\\) connection failed"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: AAA server 172.16.1.150 (Protocol: TACACS+) connection failed",
+            "value_re": []
+        }
     ]
 }

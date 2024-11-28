@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Fan | Fan Failed #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "18fcc1dc-d59f-45b4-b266-320d49be0236",
     "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
     "event_class__name": "Chassis | Fan | Fan Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%ENVM-2-FAN: (?P<name>Blower) has failed, shutdown in 2 minutes"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
+            "value_re": []
         }
     ]
 }

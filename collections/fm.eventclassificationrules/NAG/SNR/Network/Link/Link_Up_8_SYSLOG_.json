@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "LINEPROTO-5-UPDOWN: Line protocol on Interface (?P<interface>.+), changed state to UP"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%LINEPROTO-5-UPDOWN: Line protocol on Interface Ethernet1/0/9, changed state to UP",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Eltex | MES | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e34e5188-02dd-4a76-998e-b03b5f9e2b22",
     "description": "%COPY-N-TRAP: The copy operation was completed successfully",
     "event_class__name": "Config | Config Changed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "^%COPY-N-TRAP: The copy operation was completed successfully$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%COPY-N-TRAP: The copy operation was completed successfully",
+            "value_re": []
         }
     ]
 }

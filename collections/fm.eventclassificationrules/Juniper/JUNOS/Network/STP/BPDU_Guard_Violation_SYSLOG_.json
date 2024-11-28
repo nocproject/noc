@@ -1,22 +1,28 @@
 {
-  "name": "Juniper | JUNOS | Network | STP | BPDU Guard Violation (SYSLOG)",
-  "$collection": "fm.eventclassificationrules",
-  "uuid": "e4b12255-a00f-439a-90d2-427affbbb3b8",
-  "description": "Mar 19 14:18:40  switchname-asw01 eswd[1262]: ESWD_BPDU_BLOCK_ERROR_DISABLED: ge-0/0/47.0: bpdu-block disabled port",
-  "event_class__name": "Network | STP | BPDU Guard Violation",
-  "preference": 1000,
-  "patterns": [
-    {
-      "key_re": "^source$",
-      "value_re": "^syslog$"
-    },
-    {
-      "key_re": "^profile$",
-      "value_re": "^Juniper\\.JUNOS$"
-    },
-    {
-      "key_re": "^message$",
-      "value_re": "ESWD_BPDU_BLOCK_ERROR_DISABLED: (?P<interface>\\S+): bpdu-block disabled port$"
-    }
-  ]
+    "name": "Juniper | JUNOS | Network | STP | BPDU Guard Violation (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e4b12255-a00f-439a-90d2-427affbbb3b8",
+    "description": "Mar 19 14:18:40  switchname-asw01 eswd[1262]: ESWD_BPDU_BLOCK_ERROR_DISABLED: ge-0/0/47.0: bpdu-block disabled port",
+    "event_class__name": "Network | STP | BPDU Guard Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ESWD_BPDU_BLOCK_ERROR_DISABLED: (?P<interface>\\S+): bpdu-block disabled port$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Mar 19 14:18:40  switchname-asw01 eswd[1262]: ESWD_BPDU_BLOCK_ERROR_DISABLED: ge-0/0/47.0: bpdu-block disabled port",
+            "value_re": []
+        }
+    ]
 }

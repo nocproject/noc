@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "(?P<name>Internal|Redundant) Power failed"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "WARN: Internal Power failed",
+        "value_re": []
+    }]
 }

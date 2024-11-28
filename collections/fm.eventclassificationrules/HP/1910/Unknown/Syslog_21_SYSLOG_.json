@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10VLAN/5/WEBOPT_HYBRID_ADD_TAG_VLAN\\(l\\):\\s+\\(by \\S+ via web from host \\S+\\)\\s+Adding \\S+ port \\S+ to VLAN \\d+ as (tagged|untagged)\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Feb 12 10:35:36 2013 Teh %%10VLAN/5/WEBOPT_HYBRID_ADD_TAG_VLAN(l): (by admin via web from host 192.168.1.3)   Adding hybrid port GigabitEthernet1/0/8 to VLAN 200 as tagged.",
+            "value_re": []
+        }
     ]
 }

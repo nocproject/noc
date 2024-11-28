@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Attack | Land Attack (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "39d8bdbe-29f2-4be1-9109-b2a70021b792",
     "description": "DOS-PREV-MIB::swDoSAttackDetected",
     "event_class__name": "Security | Attack | Land Attack",

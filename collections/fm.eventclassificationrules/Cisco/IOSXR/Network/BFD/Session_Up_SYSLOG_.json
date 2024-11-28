@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%L2-BFD-6-SESSION_STATE_UP : BFD session to neighbor (?P<peer>\\S+) on interface (?P<interface>\\S+) is up$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-BFD-6-SESSION_STATE_UP : BFD session to neighbor 192.168.1.1 on interface TenGigE0/1/1/2 is up",
+            "value_re": []
+        }
     ]
 }

@@ -2,7 +2,7 @@
     "name": "Cisco | ASA | Security | Accounting | WebVPN | Disconnected #1 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "0aa1aa72-85e0-4db6-8be3-b6d654c611cc",
-    "description": "Apr 05 2016 10:02:36: %ASA-4-113019: Group = group, Username = user, IP = outside user ip, Session disconnected. Session Type: AnyConnect-Parent, Duration: 0h:24m:38s, Bytes xmt: 1111748, Bytes rcv: 50959, Reason: Connection Preempted",
+    "description": "Apr 05 2016 10:02:36: %ASA-4-113019: Group = group, Username = user, IP = 1.1.1.1, Session disconnected. Session Type: AnyConnect-Parent, Duration: 0h:24m:38s, Bytes xmt: 1111748, Bytes rcv: 50959, Reason: Connection Preempted",
     "event_class__name": "Security | Accounting | WebVPN | Disconnected",
     "preference": 1000,
     "patterns": [
@@ -17,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-4-113019: Group = (?P<group>\\S+), Username = (?P<user>\\S+), IP = (?P<ip>\\S+), Session disconnected. Session Type: (?P<type>\\S+), Duration: (?P<duration>.+\\S), Bytes xmt: (?P<bytes_xmt>\\S+), Bytes rcv: (?P<bytes_rcv>\\S+), Reason: (?P<reason>\\D+)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 05 2016 10:02:36: %ASA-4-113019: Group = group, Username = user, IP = 1.1.1.1, Session disconnected. Session Type: AnyConnect-Parent, Duration: 0h:24m:38s, Bytes xmt: 1111748, Bytes rcv: 50959, Reason: Connection Preempted",
+            "value_re": []
         }
     ]
 }

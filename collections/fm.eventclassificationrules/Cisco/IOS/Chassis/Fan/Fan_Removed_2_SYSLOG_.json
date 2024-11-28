@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "%OIR-SP-6-REMFAN: (?P<name>.+) removed"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%OIR-SP-6-REMFAN: Fan 1 removed",
+        "value_re": []
+    }]
 }

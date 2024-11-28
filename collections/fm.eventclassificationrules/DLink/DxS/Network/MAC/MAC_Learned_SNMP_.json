@@ -1,15 +1,14 @@
 {
     "name": "DLink | DxS | Network | MAC | MAC Learned (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0cf10d78-5c74-4562-94de-02f96009fb6a",
     "description": "DES3028-L2MGMT-MIB::swL2FloodMacDetectedTrap",
     "event_class__name": "Network | MAC | MAC Learned",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "interface",
-            "value": "=str(ord(iface[1]))"
-        }
-    ],
+    "vars": [{
+        "name": "interface",
+        "value": "=str(ord(iface[1]))"
+    }],
     "patterns": [
         {
             "key_re": "^source$",

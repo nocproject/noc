@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "INFO,\\+REBOOT:System reboots"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "INFO,+REBOOT:System reboots",
+        "value_re": []
+    }]
 }

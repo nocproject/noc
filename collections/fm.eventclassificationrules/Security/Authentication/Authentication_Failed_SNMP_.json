@@ -1,5 +1,6 @@
 {
     "name": "Security | Authentication | Authentication Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cc2a3ca2-bfd6-471d-9ae9-51a20a2d0bad",
     "description": "SNMPv2-MIB::authenticationFailure",
     "event_class__name": "Security | Authentication | Authentication Failed",

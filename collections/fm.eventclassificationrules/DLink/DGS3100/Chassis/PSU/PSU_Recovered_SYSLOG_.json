@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Chassis | PSU | PSU Recovered (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5c70ea94-7b17-4b8f-9f13-38151a8395b8",
     "description": "%Box-W-PS-STAT-CHNG: PS# 1 status changed - operational.",
     "event_class__name": "Chassis | PSU | PSU Recovered",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) status changed - operational.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%Box-W-PS-STAT-CHNG: PS# 1 status changed - operational.",
+            "value_re": []
         }
     ]
 }

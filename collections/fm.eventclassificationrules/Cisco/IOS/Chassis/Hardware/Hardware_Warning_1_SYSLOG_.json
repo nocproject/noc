@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%\\S+ASIC-\\S+(?:WARN|ERR_INTRPT): .+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%EARL_L3_ASIC-SP-3-INTR_WARN: EARL L3 ASIC: Non-fatal interrupt Netflow interrupt",
+            "value_re": []
+        }
     ]
 }

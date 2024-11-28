@@ -1,21 +1,28 @@
 {
-  "name": "Huawei | VRP | Security | Authentication | Login #3 (SYSLOG)",
-  "uuid": "e30df376-c54c-412b-9648-9650818a47e9",
-  "description": "LINE/5/VTYUSERLOGIN:OID 1.3.6.1.4.1.2011.5.25.207.2.2 A user login. (UserIndex=34, UserName=qqq, UserIP=172.25.127.37, UserChannel=VTY0)",
-  "event_class__name": "Security | Authentication | Login",
-  "preference": 1000,
-  "patterns": [
-    {
-      "key_re": "^profile$",
-      "value_re": "^Huawei.VRP$"
-    },
-    {
-      "key_re": "^source$",
-      "value_re": "^syslog$"
-    },
-    {
-      "key_re": "^message$",
-      "value_re": "A user login\\. \\(UserIndex=\\d+, UserName=(?P<user>\\S+), UserIP=(?P<ip>\\S+), UserChannel=VTY\\d+\\)$"
-    }
-  ]
+    "name": "Huawei | VRP | Security | Authentication | Login #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e30df376-c54c-412b-9648-9650818a47e9",
+    "description": "LINE/5/VTYUSERLOGIN:OID 1.3.6.1.4.1.2011.5.25.207.2.2 A user login. (UserIndex=34, UserName=qqq, UserIP=172.25.127.37, UserChannel=VTY0)",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei.VRP$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "A user login\\. \\(UserIndex=\\d+, UserName=(?P<user>\\S+), UserIP=(?P<ip>\\S+), UserChannel=VTY\\d+\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "LINE/5/VTYUSERLOGIN:OID 1.3.6.1.4.1.2011.5.25.207.2.2 A user login. (UserIndex=34, UserName=qqq, UserIP=172.25.127.37, UserChannel=VTY0)",
+            "value_re": []
+        }
+    ]
 }

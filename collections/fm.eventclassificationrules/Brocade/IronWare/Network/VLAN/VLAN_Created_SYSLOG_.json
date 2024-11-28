@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": ".* VLAN: Id (?P<vlan>\\d+) added from \\S+ session\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 8 12:56:07 Foudry-Core VLAN: Id 1945 added from telnet session.",
+            "value_re": []
+        }
     ]
 }

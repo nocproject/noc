@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-2-REDUNDANTCLOCK_FAIL: (?P<name>Redundant clock) failed$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-REDUNDANTCLOCK_FAIL: Redundant clock failed",
+            "value_re": []
+        }
     ]
 }

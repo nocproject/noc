@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: (?P<name>System level fan) fault exists. 0x021D"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: System level fan fault exists. 0x021D",
+            "value_re": []
+        }
     ]
 }

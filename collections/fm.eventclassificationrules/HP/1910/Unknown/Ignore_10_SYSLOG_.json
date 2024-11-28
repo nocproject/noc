@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10NTP/4/NTP_LOG\\(l\\):\\s+System leap changes from 3 to 0 after clock update\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Dec 29 01:01:45 2012 3com2952 %%10NTP/4/NTP_LOG(l):  System leap changes from 3 to 0 after clock update.",
+            "value_re": []
+        }
     ]
 }

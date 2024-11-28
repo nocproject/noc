@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PS-3-DCOUTPUTVOLTOK: (?P<name>Power System) (?:AC|DC) condition is now normal\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PS-3-DCOUTPUTVOLTOK: Power System DC condition is now normal.",
+            "value_re": []
+        }
     ]
 }

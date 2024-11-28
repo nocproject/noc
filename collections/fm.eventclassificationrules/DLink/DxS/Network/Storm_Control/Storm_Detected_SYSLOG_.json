@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "WARN: Port (?P<interface>\\S+) is currently shut down due to a packet storm$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Mar 30 14:06:06 10.137.10.100 WARN: Port 30 is currently shut down due to a packet storm",
+            "value_re": []
+        }
     ]
 }

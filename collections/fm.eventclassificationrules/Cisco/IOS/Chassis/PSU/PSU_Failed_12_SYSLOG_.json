@@ -1,15 +1,14 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Failed #12 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3a6c4bc5-8f9b-48d8-91bd-3e1e28f332a4",
     "description": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply.",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Dummy PSU"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Dummy PSU"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -22,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply.",
+            "value_re": []
         }
     ]
 }

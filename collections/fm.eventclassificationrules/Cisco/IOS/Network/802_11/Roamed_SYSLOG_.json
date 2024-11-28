@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%DOT11-6-ROAMED: Station (?P<mac>\\S+) Roamed to (?P<station>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "24462: Aug 11 11:52:16.452 UTC: %DOT11-6-ROAMED: Station 001f.5b51.ff62 Roamed to 0022.55d1.cd70",
+            "value_re": []
+        }
     ]
 }

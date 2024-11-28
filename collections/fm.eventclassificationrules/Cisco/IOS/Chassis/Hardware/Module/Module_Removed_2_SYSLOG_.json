@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%C4K_IOSINTF-5-TRANSCEIVERREMOVED: Slot=(?P<module>\\d+) Port=(?P<interface>\\d+): Transceiver has been removed"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%C4K_IOSINTF-5-TRANSCEIVERREMOVED: Slot=1 Port=3: Transceiver has been removed",
+            "value_re": []
+        }
     ]
 }

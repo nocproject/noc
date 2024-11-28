@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: Switched to battery backup power. 0x0109"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: Switched to battery backup power. 0x0109",
+            "value_re": []
+        }
     ]
 }

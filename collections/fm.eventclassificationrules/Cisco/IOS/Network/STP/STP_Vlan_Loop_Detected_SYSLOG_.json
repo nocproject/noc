@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:SPANTREE|STP)-2-LOOPGUARD_BLOCK: Loop guard blocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+)."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SPANTREE-2-LOOPGUARD_BLOCK: Loop guard blocking port GigabitEthernet0/39 on VLAN0252.",
+            "value_re": []
+        }
     ]
 }

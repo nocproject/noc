@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:Q|F)M-4-TCAM_ENTRY: (?P<reason>.+ capacity exceeded)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%QM-4-TCAM_ENTRY: Hardware TCAM entry capacity exceeded",
+            "value_re": []
+        }
     ]
 }

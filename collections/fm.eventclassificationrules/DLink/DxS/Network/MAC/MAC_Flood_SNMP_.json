@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | MAC | MAC Flood (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "972772e1-6fc1-4edb-b1d5-d15b9698584c",
     "description": "DES3028-L2MGMT-MIB::swL2FloodMacDetectedTrap",
     "event_class__name": "Network | MAC | MAC Flood",

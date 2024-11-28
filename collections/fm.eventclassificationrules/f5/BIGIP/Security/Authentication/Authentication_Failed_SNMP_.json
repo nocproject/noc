@@ -1,5 +1,6 @@
 {
     "name": "f5 | BIGIP | Security | Authentication | Authentication Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6a81f9b3-0dd9-4748-9f3f-05b56ac00986",
     "description": "F5-BIGIP-COMMON-MIB::bigipAuthFailed",
     "event_class__name": "Security | Authentication | Authentication Failed",

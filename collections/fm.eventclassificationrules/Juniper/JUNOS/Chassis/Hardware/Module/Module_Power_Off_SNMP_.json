@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Hardware | Module | Module Power Off (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5f34d7c0-cca4-4be8-9193-9d2c06cc76f4",
     "description": "JUNIPER-MIB::jnxFruPowerOff",
     "event_class__name": "Chassis | Hardware | Module | Module Offline",

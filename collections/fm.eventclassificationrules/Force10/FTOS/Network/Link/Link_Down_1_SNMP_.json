@@ -1,5 +1,6 @@
 {
     "name": "Force10 | FTOS | Network | Link | Link Down #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2779a472-5636-4228-8829-8fac6ff49a09",
     "description": "Link Down",
     "event_class__name": "Network | Link | Link Down",

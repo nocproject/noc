@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "UPS: Passed a self-test. 0x0105"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "UPS: Passed a self-test. 0x0105",
+        "value_re": []
+    }]
 }

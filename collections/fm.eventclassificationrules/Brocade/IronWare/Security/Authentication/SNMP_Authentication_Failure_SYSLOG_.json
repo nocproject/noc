@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": ".* SNMP: Auth\\. failure, intruder IP: (?P<ip>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 7 09:01:28 Foudry-Core SNMP: Auth. failure, intruder IP: 10.31.20.132",
+            "value_re": []
+        }
     ]
 }

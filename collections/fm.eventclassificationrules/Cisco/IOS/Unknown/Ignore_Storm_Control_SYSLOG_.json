@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on \\S+. The interface has been disabled."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on Gi0/24. The interface has been disabled.",
+            "value_re": []
+        }
     ]
 }

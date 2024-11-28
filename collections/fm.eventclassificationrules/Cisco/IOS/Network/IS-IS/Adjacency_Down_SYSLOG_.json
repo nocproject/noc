@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\sDown,\\s(?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (GigabitEthernet1/9) Down, hold time expired",
+            "value_re": []
+        }
     ]
 }

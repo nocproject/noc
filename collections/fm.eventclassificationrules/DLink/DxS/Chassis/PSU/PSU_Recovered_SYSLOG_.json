@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "(?P<name>Internal|Redundant) Power is (?:recovered|working)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Internal Power is recovered",
+            "value_re": []
+        }
     ]
 }
