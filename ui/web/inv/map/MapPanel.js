@@ -982,6 +982,7 @@ Ext.define("NOC.inv.map.MapPanel", {
           node.attributes.name,
           data[s].metrics_label,
           node.attributes.data.shape_width,
+          true,
         ),
       );
       node.attributes.data.metrics_label = data.metrics_label;
@@ -1685,17 +1686,19 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     return lines.join("\n");
   },
-  symbolName: function(name, metrics_label, shape_width){
-    var me = this,
-      metrics;
+  symbolName: function(name, metrics_label, shape_width, notBrake){
+    var metrics, breakText = name;
+    if(!notBrake){
+      breakText = this.breakText(name, {width: shape_width * 2});
+    }
     if(!Ext.isEmpty(metrics_label)){
       metrics = metrics_label.split("<br/>");
-      metrics = metrics.map(function(metric){
-        return me.breakText(metric, {width: shape_width * 2});
-      });
-      return name + "\n" + metrics.join("\n");
+      metrics = Ext.Array.map(metrics, function(metric){
+        return this.breakText(metric, {width: shape_width * 2});
+      }, this);
+      return breakText + "\n" + metrics.join("\n");
     } else{
-      return name;
+      return breakText;
     }
   },
 });
