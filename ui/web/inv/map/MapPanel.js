@@ -371,8 +371,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         links.push(me.createLink(link));
     });
     me.graph.addCells(nodes);
+    me.app.miniMapPanel.graph.addCells(nodes);
     me.graph.addCells(links);
+    me.app.miniMapPanel.graph.addCells(links);
     me.graph.addCells(badges);
+    me.app.miniMapPanel.graph.addCells(badges);
     // Run status polling
     if(me.statusPollingTaskId){
       me.getObjectStatus();
@@ -390,14 +393,14 @@ Ext.define("NOC.inv.map.MapPanel", {
       position: {x: 0, y: 0},
       attrs: {
         rect: {
-          stroke: "black",
+          stroke: "gray",
           "stroke-width": 1,
           vectorEffect: "non-scaling-stroke",
         },
       },
       z: -1,
     });
-    this.graph.addCell(this.viewPort);
+    me.app.miniMapPanel.graph.addCells([this.viewPort]);
     this.setViewPortSize();
     me.setPaperDimension();
     me.fireEvent("renderdone");
