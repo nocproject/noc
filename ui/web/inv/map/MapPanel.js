@@ -705,9 +705,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     this.nodeMenuObject = view.model.get("id").split(":")[1];
     this.nodeMenuObjectType = data.type;
     if("wrench" !== this.nodeMenuObjectType){
-      this.nodeMenu.items.items.map(function(item){
+      Ext.each(this.nodeMenu.items.items, function(item){
         item.setVisible(item.menuOn.indexOf(this.nodeMenuObjectType) !== -1);
-      });
+      }, this);
       this.nodeMenu.showAt(evt.clientX, evt.clientY);
     }
   },
