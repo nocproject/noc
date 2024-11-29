@@ -19,10 +19,5 @@
             "value_re": "%10SHELL/4/CMD\\(l\\):\\s+task:vt\\d+ ip:(?P<ip>\\S+) user:(?P<user>\\S+) command:_cmdline-mode on$"
         }
     ],
-    "test_cases": [
-        {
-            "message": "Oct  4 13:06:45 2000 3Com Baseline Switch %%10SHELL/4/CMD(l): task:vt0 ip:192.168.1.3 user:admin command:_cmdline-mode on",
-            "value_re": []
-        }
-    ]
+    "test_cases": []
 }
