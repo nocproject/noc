@@ -86,19 +86,25 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
   },
   //
   onTabClose: function(tab){
-    var me = this;
     // Run desktop's onCloseApp
     if(tab.menuNode){
-      me.app.onCloseApp(tab.menuNode);
+      this.app.onCloseApp(tab.menuNode);
     }
     // Run application's onCloseApp
     var app = tab.items.first();
     if(app && Ext.isFunction(app.onCloseApp)){
       app.onCloseApp();
     }
-    if(me.items.length === 1){
+    if(this.items.length === 1){
       // Except *Expand* button
-      Ext.History.setHash("");
+      var me = this.up(), // Desktop Application
+        homeTab = Ext.Array.findBy(me.workplacePanel.getRefItems(), function(tab){return tab.title === "Home"});
+      if(Ext.isEmpty(homeTab)){
+        me.launchTab("NOC.main.home.Application", "Home", {});
+      } else{
+        var tabIndex = me.workplacePanel.items.indexOf(homeTab);
+        me.workplacePanel.setActiveTab(tabIndex);
+      }
     }
   },
   //
