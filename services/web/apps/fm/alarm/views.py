@@ -348,7 +348,6 @@ class AlarmApplication(ExtApplication):
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
             "timestamp": self.to_json(o.timestamp),
-            "reference": o.reference,
             "subject": o.subject,
             "events": n_events,
             "duration": o.duration,
