@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -26,6 +27,7 @@ class Script(BaseScript):
         r"^\s+serial-number: (?P<q>\"?)(?P<serial>\S+?)(?P=q)\s*\n", re.MULTILINE
     )
     rx_boot = re.compile(r"^\s+current-firmware: (?P<q>\"?)(?P<boot>\S+?)(?P=q)\s*\n", re.MULTILINE)
+    rx_platform_snmp = re.compile(r"RouterOS\s+(?P<platform>.*)")
 
     def execute_cli(self):
         v = self.cli("/system resource print")
@@ -50,4 +52,29 @@ class Script(BaseScript):
                 r["attributes"]["Boot PROM"] = match.group("boot")
             if arch:
                 r["attributes"]["Arch"] = arch
+        return r
+
+    def execute_snmp(self):
+        try:
+            p = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0])
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
+            raise NotImplementedError()
+
+        match = self.rx_platform_snmp.search(p)
+
+        version = self.snmp.get(mib["1.3.6.1.4.1.14988.1.1.4.4.0"])
+        if not version:
+            version = self.snmp.get(mib["1.3.6.1.4.1.14988.1.1.7.4.0"])
+
+        r = {
+            "vendor": "MikroTik",
+            "platform": match.group("platform") if match else "",
+            "version": version,
+            "attributes": {},
+        }
+
+        serial = self.snmp.get(mib["1.3.6.1.4.1.14988.1.1.7.3.0"])
+        if serial:
+            r["attributes"]["Serial Number"] = serial
+
         return r
