@@ -221,9 +221,11 @@ class AlarmApplication(ExtApplication):
             q.pop("resource_group")
         if "cleared_after" in q:
             if status == "C":
-                q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(
-                    seconds=int(q["cleared_after"])
-                )
+                ca = int(q["cleared_after"])
+                if ca:
+                    q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(
+                        seconds=ca
+                    )
             q.pop("cleared_after")
         #
         if "wait_tt" in q:
@@ -249,10 +251,12 @@ class AlarmApplication(ExtApplication):
             if (
                 "timestamp__gte" not in q
                 and "timestamp__lte" not in q
+                and "clear_timestamp__gte" not in q
+                and "clear_timestamp__lte" not in q
                 and "escalation_tt__contains" not in q
                 and "managed_object" not in q
             ):
-                q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
+                q["clear_timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
         return q
 
     def advanced_filter(self, field, params):
