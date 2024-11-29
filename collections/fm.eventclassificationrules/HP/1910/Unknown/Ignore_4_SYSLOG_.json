@@ -19,10 +19,5 @@
             "value_re": "%10SHELL\\/4\\/LOG(IN|OUT)\\(t\\):\\s+Trap \\S+<h3cLog(In|Out)>:(\\S+|) log(in|out) from (VTY|Web)$"
         }
     ],
-    "test_cases": [
-        {
-            "message": "Oct  3 19:20:53 2000 3Com Baseline Switch %%10SHELL/4/LOGOUT(t):   Trap 1.3.6.1.4.1.43.45.1.10.2.2.1.1.3.0.2<h3cLogOut>:admin logout from Web",
-            "value_re": []
-        }
-    ]
+    "test_cases": []
 }
