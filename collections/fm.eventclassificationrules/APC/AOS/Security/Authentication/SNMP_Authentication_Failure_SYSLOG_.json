@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004",
+            "value_re": []
+        }
     ]
 }

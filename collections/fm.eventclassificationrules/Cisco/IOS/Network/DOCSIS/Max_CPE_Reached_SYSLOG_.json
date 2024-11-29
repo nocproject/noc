@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-5-MAXHOST: New host with IP address (?P<ip>\\S+) and MAC (?P<mac>\\S+) on SID (?P<sid>\\d+) is ignored\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-5-MAXHOST: New host with IP address 192.168.0.2 and MAC 0018.c0d8.9614 on SID 50 is ignored.",
+            "value_re": []
+        }
     ]
 }

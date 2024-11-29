@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Attack | Blat Attack (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "35bcd19a-7cbb-4f30-907a-5d096b2b6271",
     "description": "DOS-PREV-MIB::swDoSAttackDetected",
     "event_class__name": "Security | Attack | Blat Attack",

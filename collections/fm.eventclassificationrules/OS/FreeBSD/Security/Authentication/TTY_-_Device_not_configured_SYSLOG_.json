@@ -1,5 +1,6 @@
 {
     "name": "OS | FreeBSD | Security | Authentication | TTY - Device not configured (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1fff5d99-19e7-42f2-b785-156be592db7a",
     "description": "login: in prompt_echo_off(): tcgetattr(): Device not configured",
     "event_class__name": "Security | Authentication | Login Failed",
@@ -11,11 +12,17 @@
         },
         {
             "key_re": "^profile$",
-            "value_re": "^OS\\.FreeBSD$"
+            "value_re": "^OS\\.Linux$"
         },
         {
             "key_re": "^message$",
             "value_re": "login: in prompt_echo_off\\(\\): tcgetattr\\(\\): Device not configured$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "login: in prompt_echo_off(): tcgetattr(): Device not configured",
+            "value_re": []
         }
     ]
 }

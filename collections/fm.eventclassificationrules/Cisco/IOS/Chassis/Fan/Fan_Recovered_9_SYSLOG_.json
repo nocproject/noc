@@ -5,12 +5,10 @@
     "description": "%HARDWARE-5-FAN_OK: Fan works fine.",
     "event_class__name": "Chassis | Fan | Fan Recovered",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Chassis Fan"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Chassis Fan"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%HARDWARE-5-FAN_OK: Fan works fine."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%HARDWARE-5-FAN_OK: Fan works fine.",
+            "value_re": []
         }
     ]
 }

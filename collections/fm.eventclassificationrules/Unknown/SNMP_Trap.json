@@ -1,5 +1,6 @@
 {
     "name": "Unknown | SNMP Trap",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f2ab08e4-1367-400a-b5c8-aca1f7b5ecae",
     "description": "Next to last in the chain. Catches all unclassified syslog messages",
     "event_class__name": "Unknown | SNMP Trap",

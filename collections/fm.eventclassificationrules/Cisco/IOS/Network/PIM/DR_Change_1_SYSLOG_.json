@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PIM-5-DRCHG: DR change from neighbor (?P<from_dr>\\S+) to (?P<to_dr>\\S+) on interface (?P<interface>\\S+)( \\(vrf (?P<vrf>\\S+)\\))?"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PIM-5-DRCHG: DR change from neighbor 10.0.32.42 to 10.0.32.34 on interface Tunnel1 (vrf VPN_Wayside)",
+            "value_re": []
+        }
     ]
 }

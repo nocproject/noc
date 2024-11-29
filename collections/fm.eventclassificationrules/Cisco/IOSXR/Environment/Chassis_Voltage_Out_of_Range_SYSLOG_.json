@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm (?P<name>slot \\S+, sensor \\S+) measured (?P<measure>\\d+ mV) and out of operational range (?P<min>\\d+) - (?P<max>\\d+ mV)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm slot 0/RSP1/CPU0, sensor VP1P2_SERDES_PLL_DAO measured 2499 mV and out of operational range 1165 - 1235 mV",
+            "value_re": []
+        }
     ]
 }

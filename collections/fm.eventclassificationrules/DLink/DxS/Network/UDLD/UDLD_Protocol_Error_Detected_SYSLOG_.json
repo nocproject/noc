@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "[Pp]ort: (?P<interface>\\S+) is unidirectional"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Port: 10 is unidirectional",
+            "value_re": []
+        }
     ]
 }

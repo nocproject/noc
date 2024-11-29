@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type has arrived. Terminating the connection",
+            "value_re": []
+        }
     ]
 }

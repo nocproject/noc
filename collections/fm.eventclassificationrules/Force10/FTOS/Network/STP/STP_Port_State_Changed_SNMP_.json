@@ -1,5 +1,6 @@
 {
     "name": "Force10 | FTOS | Network | STP | STP Port State Changed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9c99ee88-ab77-4e1c-968d-683dec716986",
     "description": "Link Down",
     "event_class__name": "Network | STP | STP Port State Changed",

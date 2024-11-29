@@ -1,5 +1,6 @@
 {
     "name": "Linksys | SPS2xx | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b397f3c1-f186-4d2f-b797-071f401ee85d",
     "description": "%LINK-I-Up:  gi0/3",
     "event_class__name": "Network | Link | Link Up",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "^%LINK-I-Up:  ?(?P<interface>.+)$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%LINK-I-Up:  gi0/3",
+        "value_re": []
+    }]
 }

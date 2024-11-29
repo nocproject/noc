@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | Storm Control | Storm Detected (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f70024ce-ce71-4ede-af5e-e9bac43554a9",
     "description": "PKT-STORM-CTRL-MIB::swPktStormOccurred",
     "event_class__name": "Network | Storm Control | Storm Detected",

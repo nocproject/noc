@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-5-111008: User '(?P<user>\\S+)' executed the '(?P<command>.+)' command\\."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ASA-5-111008: User 'username' executed the 'enable' command.",
+            "value_re": []
+        }
     ]
 }

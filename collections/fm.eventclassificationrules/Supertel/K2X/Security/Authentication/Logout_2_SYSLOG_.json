@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%AAA-I-DISCONNECT: User CLI session for user (?P<user>\\S+) over telnet , source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED. The Telnet/SSH session may still be connected.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%AAA-I-DISCONNECT: User CLI session for user supertel over telnet , source 4.1.1.9 destination  192.168.1.1  TERMINATED. The Telnet/SSH session may still be connected.",
+            "value_re": []
+        }
     ]
 }

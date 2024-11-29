@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Broadcast storm has cleared \\(port: (?P<interface>\\S+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Broadcast storm has cleared (port: 13)",
+            "value_re": []
+        }
     ]
 }

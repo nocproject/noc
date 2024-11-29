@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Fan | Fan Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "73b930e8-3c0b-4136-8e3c-d4f504244207",
     "description": "JUNIPER-MIB::jnxFanFailure",
     "event_class__name": "Chassis | Fan | Fan Failed",

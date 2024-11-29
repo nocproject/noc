@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "System: \\S+ user '(?P<user>.+?)' logged in from (?P<ip>\\S+). \\S+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "System: Console user 'admin' logged in from 192.168.220.54. 0x0014",
+            "value_re": []
+        }
     ]
 }

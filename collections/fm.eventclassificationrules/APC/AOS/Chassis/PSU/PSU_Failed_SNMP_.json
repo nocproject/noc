@@ -5,12 +5,10 @@
     "description": "PowerNet-MIB::apc",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "AC/DC input power"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "AC/DC input power"
+    }],
     "patterns": [
         {
             "key_re": "^source$",

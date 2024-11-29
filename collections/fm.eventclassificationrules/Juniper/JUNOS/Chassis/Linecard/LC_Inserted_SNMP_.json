@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Linecard | LC Inserted (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e36b64de-126e-4c2c-ab2d-f68492c6045a",
     "description": "JUNIPER-MIB::jnxFruInsertion",
     "event_class__name": "Chassis | Linecard | LC Inserted",

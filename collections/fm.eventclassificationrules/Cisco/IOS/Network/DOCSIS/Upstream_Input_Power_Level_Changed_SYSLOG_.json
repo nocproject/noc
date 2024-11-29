@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-5-(?:USIPLCHG|USIPLFIX): Interface (?P<interface>\\S+) U(?P<upstream>\\d+), input power level (?:changed to|fixed at) (?P<power>\\d+) dBmV"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7100-5-USIPLCHG: Interface Cable1/0 U3, input power level changed to 1 dBmV",
+            "value_re": []
+        }
     ]
 }

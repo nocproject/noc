@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Detected untrusted DHCP server\\s*\\(IP: (?P<ip>\\S+), Port: (?P<interface>\\S+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Detected untrusted DHCP server(IP: 192.168.1.1, Port: 4)",
+            "value_re": []
+        }
     ]
 }

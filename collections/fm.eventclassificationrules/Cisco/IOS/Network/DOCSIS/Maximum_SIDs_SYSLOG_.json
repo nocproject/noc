@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-3-NOMORESIDS: Maximum number of SIDS have been allocated for interface (?P<interface>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-3-NOMORESIDS: Maximum number of SIDS have been allocated for interface Cable1/0",
+            "value_re": []
+        }
     ]
 }

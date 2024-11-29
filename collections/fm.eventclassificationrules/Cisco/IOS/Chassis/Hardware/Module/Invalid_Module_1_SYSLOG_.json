@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Hardware | Module | Invalid Module #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "08aa5b3b-31f4-4f1a-b9ab-46cf3ec1c2c9",
     "description": "%PM_SCP-SP-3-TRANSCEIVER_UNSUPPORTED: Unsupported transceiver in LAN port 3/1",
     "event_class__name": "Chassis | Hardware | Module | Invalid Module",
@@ -9,7 +10,6 @@
             "name": "module",
             "value": "SFP"
         },
-
         {
             "name": "reason",
             "value": "SFP is not supported"
@@ -28,5 +28,6 @@
             "key_re": "^message$",
             "value_re": "%PM_SCP-SP-3-TRANSCEIVER_UNSUPPORTED: Unsupported transceiver in LAN port (?P<interface>\\S+)"
         }
-    ]
+    ],
+    "test_cases": []
 }

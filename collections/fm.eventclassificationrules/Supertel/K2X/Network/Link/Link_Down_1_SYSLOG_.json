@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "^%LINK-W-Down:\\s+(?P<interface>(\\S+ \\d+|\\S+))$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%LINK-W-Down:  ch1",
+        "value_re": []
+    }]
 }

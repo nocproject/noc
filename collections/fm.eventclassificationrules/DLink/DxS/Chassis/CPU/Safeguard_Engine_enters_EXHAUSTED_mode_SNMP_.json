@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "230ea16c-ff3c-47a1-89d9-edb45364e44a",
     "description": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification",
     "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode",

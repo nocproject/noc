@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": ".* System: Interface (?P<interface>\\S+ \\d+/\\d+), state down$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 9 09:22:59 FI800-16mkr System: Interface ethernet 3/3, state down",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "MikroTik | RouterOS | Network | BFD | Session Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e3058f8b-794d-427f-b54c-f978308c848c",
     "description": "BFD neighbor 94.198.72.22 on lan1 changed state to UP",
     "event_class__name": "Network | BFD | Session Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "BFD neighbor (?P<peer>\\S+) on (?P<interface>.+) changed state to UP"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "BFD neighbor 94.198.72.22 on lan1 changed state to UP",
+            "value_re": []
         }
     ]
 }

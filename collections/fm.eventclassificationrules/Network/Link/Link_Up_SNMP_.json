@@ -1,5 +1,6 @@
 {
     "name": "Network | Link | Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d2d0dbbd-f206-4f4f-8153-e63212aee4ce",
     "description": "IF-MIB::linkUp",
     "event_class__name": "Network | Link | Link Up",

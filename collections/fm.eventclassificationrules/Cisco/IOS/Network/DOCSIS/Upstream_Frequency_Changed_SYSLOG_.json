@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-5-(?:USFREQCHG|USCONTEND): Interface (?P<interface>\\S+) U(?P<upstream>\\d+), (?:frequency changed to|continuous frequency hop ended at|changed to Freq) (?P<frequency>\\S+) MHz"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7100-5-USFREQCHG: Interface Cable1/0 U3, changed to Freq 26.992 MHz",
+            "value_re": []
+        }
     ]
 }

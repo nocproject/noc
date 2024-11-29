@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Hardware | Module | Module Removed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bf290390-07e6-4113-9809-f3ef88d8656c",
     "description": "JUNIPER-MIB::jnxFruRemoval",
     "event_class__name": "Chassis | Hardware | Module | Module Removed",

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Hardware | Module | Module Inserted (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5df132ab-264d-45b2-92fa-1a20b71506c5",
     "description": "JUNIPER-MIB::jnxFruInsertion",
     "event_class__name": "Chassis | Hardware | Module | Module Inserted",

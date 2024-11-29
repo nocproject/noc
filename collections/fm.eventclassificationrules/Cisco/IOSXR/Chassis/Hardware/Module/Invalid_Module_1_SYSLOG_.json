@@ -5,12 +5,10 @@
     "description": "%PLATFORM-XFP-2-DEV_XFP_PID_NOT_SUPPORTED : Set|vic_0[553140]|0x102a003|XFP Module for port 03 is not a supported Product ID (PID)",
     "event_class__name": "Chassis | Hardware | Module | Invalid Module",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "reason",
-            "value": "module is not supported"
-        }
-    ],
+    "vars": [{
+        "name": "reason",
+        "value": "module is not supported"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%PLATFORM-\\S+-2-DEV_\\S+_PID_NOT_SUPPORTED .+?(?P<module>\\S+) Module for port (?P<interface>\\S+) is not a supported Product ID \\(PID\\)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-XFP-2-DEV_XFP_PID_NOT_SUPPORTED : Set|vic_0[553140]|0x102a003|XFP Module for port 03 is not a supported Product ID (PID)",
+            "value_re": []
         }
     ]
 }

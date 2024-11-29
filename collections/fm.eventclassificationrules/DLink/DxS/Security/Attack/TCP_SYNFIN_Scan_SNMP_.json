@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Attack | TCP SYNFIN Scan (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7464623e-2f3d-4ec6-bb0c-ade65e6ca808",
     "description": "DOS-PREV-MIB::swDoSAttackDetected",
     "event_class__name": "Security | Attack | TCP SYNFIN Scan",

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "CHASSISD_SNMP_TRAP6: SNMP trap generated: Fan/Blower Removed .+ jnxContentsDescr (?P<name>.+), jnxOperatingState"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "CHASSISD_SNMP_TRAP6: SNMP trap generated: Fan/Blower Removed (jnxContentsContainerIndex 4, jnxContentsL1Index 1, jnxContentsL2Index 1, jnxContentsL3Index 1, jnxContentsDescr FAN: Fan 1 @ 0/0/0, jnxOperatingState/Temp 1)",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | IP | Address Conflict (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3c722cf4-6dec-49d1-9cf9-1d9883b2d7ad",
     "description": "AGENT-GENERAL-MIB::agentGratuitousARPTrap",
     "event_class__name": "Network | IP | Address Conflict",

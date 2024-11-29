@@ -1,5 +1,6 @@
 {
     "name": "HP | ProCurve9xxx | Network | STP | STP Port State Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c84b0874-2a75-4999-b420-847d195500a5",
     "description": "hp93_1, VLAN 34 Port 2/7 STP State -> LISTENING (MakeFwding)",
     "event_class__name": "Network | STP | STP Port State Changed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "^\\S+ VLAN\\s(?P<vlan>\\d+)\\sPort\\s(?P<interface>[\\d\\/]+)\\sSTP\\sState\\s->\\s(?P<state__enum__stp_state>\\w+)\\s\\(\\w+\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "hp93_1, VLAN 34 Port 2/7 STP State -> LISTENING (MakeFwding)",
+            "value_re": []
         }
     ]
 }

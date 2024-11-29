@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | RSVP | Neighbor Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f9a02ea4-71a3-420c-b48a-a93d03ceb79f",
     "description": "Jul 22 07:58:16 rpd[1300]: RPD_RSVP_NBRUP: RSVP neighbor 10.99.2.1 up on interface em1.0",
     "event_class__name": "Network | RSVP | Neighbor Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "RPD_RSVP_NBRUP: RSVP neighbor (?P<neighbor>\\S+) up on interface (?P<interface>.+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 22 07:58:16 rpd[1300]: RPD_RSVP_NBRUP: RSVP neighbor 10.99.2.1 up on interface em1.0",
+            "value_re": []
         }
     ]
 }

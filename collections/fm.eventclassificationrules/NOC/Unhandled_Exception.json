@@ -1,5 +1,6 @@
 {
     "name": "NOC | Unhandled Exception",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f4f136da-b1db-4cf4-aede-9361337157f1",
     "description": "Get unhandled exception from system event",
     "event_class__name": "NOC | Unhandled Exception",

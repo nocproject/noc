@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Link | Link Down (SYSLOG) #4",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1722386a-4aaf-480a-b8c9-4ec8f0442872",
     "description": "%%01PHY/4/PHY_STATUS_UP2DOWN(l)[155]:Slot=1;GigabitEthernet1/1/8 change status to down.",
     "event_class__name": "Network | Link | Link Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "Slot=\\d+;(?P<interface>\\S+) change status to down\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%%01PHY/4/PHY_STATUS_UP2DOWN(l)[155]:Slot=1;GigabitEthernet1/1/8 change status to down.",
+            "value_re": []
         }
     ]
 }

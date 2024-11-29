@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7fc3f713-0b19-45d9-ba6d-8cb3cb1966d8",
     "description": "%Stack-I-STCK-CFG-CHNG: Configuration changed: chain",
     "event_class__name": "Config | Config Changed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%Stack-I-STCK-CFG-CHNG: Configuration changed: \\S+$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%Stack-I-STCK-CFG-CHNG: Configuration changed: chain",
+            "value_re": []
         }
     ]
 }

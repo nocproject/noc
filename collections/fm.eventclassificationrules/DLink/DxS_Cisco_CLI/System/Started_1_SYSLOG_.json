@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | System | Started #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "45179605-dd29-4d9a-942c-70f80cc124e0",
     "description": "%DEVICE-5-CHANGED: Device DGS-3610-26G (1) changed state to up",
     "event_class__name": "System | Started",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%DEVICE-5-CHANGED: Device .+ changed state to up"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%DEVICE-5-CHANGED: Device DGS-3610-26G (1) changed state to up",
+            "value_re": []
         }
     ]
 }

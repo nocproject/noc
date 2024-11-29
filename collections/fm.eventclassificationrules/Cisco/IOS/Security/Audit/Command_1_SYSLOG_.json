@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PARSER-5-CFGLOG_LOGGEDCMD: User:(?P<user>.+?)\\s+logged command:(?P<command>.*)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "1079: Aug 22 17:08:11.347: %PARSER-5-CFGLOG_LOGGEDCMD: User:tech  logged command:!exec: enable",
+            "value_re": []
+        }
     ]
 }

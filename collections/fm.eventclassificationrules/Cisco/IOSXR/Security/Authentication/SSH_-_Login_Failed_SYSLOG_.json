@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SECURITY-SSHD-4-INFO_FAILURE : Failed authentication attempt by user '(?P<user>.+)' from '(?P<ip>.+)' on '(?P<line>.+)'"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SECURITY-SSHD-4-INFO_FAILURE : Failed authentication attempt by user 'root' from '1.1.1.1' on 'vty3'",
+            "value_re": []
+        }
     ]
 }

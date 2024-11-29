@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "%NTP-4-UNSYNC: NTP sync is lost"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%NTP-4-UNSYNC: NTP sync is lost",
+        "value_re": []
+    }]
 }

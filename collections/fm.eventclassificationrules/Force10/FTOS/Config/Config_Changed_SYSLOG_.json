@@ -1,5 +1,6 @@
 {
     "name": "Force10 | FTOS | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "778d7b0c-e54c-44f4-8937-d3908da46cb8",
     "description": "Aug 9 09:34:53 UTC: %RPM0-P:CP %FILEMGR-5-FILESAVED: Copied running-config to startup-config in flash by user1",
     "event_class__name": "Config | Config Changed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%FILEMGR-5-FILESAVED: Copied running-config to startup-config in .+ by (?P<user>.+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 9 09:34:53 UTC: %RPM0-P:CP %FILEMGR-5-FILESAVED: Copied running-config to startup-config in flash by user1",
+            "value_re": []
         }
     ]
 }

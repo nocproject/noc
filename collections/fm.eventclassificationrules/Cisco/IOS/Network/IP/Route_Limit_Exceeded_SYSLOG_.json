@@ -16,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - (?P<reason>\\.+)$"
+            "value_re": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - (?P<reason>.+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - 1010:6699, 0.0.0.0/0",
+            "value_re": []
         }
     ]
 }

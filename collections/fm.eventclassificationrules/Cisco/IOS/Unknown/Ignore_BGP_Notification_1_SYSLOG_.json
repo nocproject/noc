@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%BGP-3-NOTIFICATION: sent to neighbor .+ \\(hold time expired\\) \\d+ bytes"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%BGP-3-NOTIFICATION: sent to neighbor 10.110.0.81 4/0 (hold time expired) 0 bytes",
+            "value_re": []
+        }
     ]
 }

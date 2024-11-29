@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Linecard | LC Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ff372f91-b240-4849-8078-73144895d1e9",
     "description": "JUNIPER-MIB::jnxFruFailed",
     "event_class__name": "Chassis | Linecard | LC Down",

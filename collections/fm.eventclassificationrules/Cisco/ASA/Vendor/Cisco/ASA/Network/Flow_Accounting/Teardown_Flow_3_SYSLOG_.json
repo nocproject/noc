@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-6-302021: Teardown ICMP connection for faddr (?P<src_ip>\\S+)/\\d+ gaddr (?P<dst_ip>\\S+)/\\d+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 08 2011 14:13:49: %ASA-6-302021: Teardown ICMP connection for faddr 194.221.190.20/52676 gaddr 194.221.190.3/0 laddr 194.221.190.3/0",
+            "value_re": []
+        }
     ]
 }

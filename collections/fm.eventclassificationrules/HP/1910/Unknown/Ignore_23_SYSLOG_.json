@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10LLDP/2/CREREM\\(l\\): Port \\S+ \\(IfIndex \\d+\\):Created new neighbor, chassis ID: \\S+, port ID: \\S+\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Jun  1 19:03:53 2000 3com2952_1 %%10LLDP/2/CREREM(l): Port (?P<interfaces>\\S+) (IfIndex 9437215):Created new neighbor, chassis ID: 4001-c647-7358, port ID: GigabitEthernet1/0/47.",
+            "value_re": []
+        }
     ]
 }

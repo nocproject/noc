@@ -1,22 +1,28 @@
 {
-  "name": "Juniper | JUNOS | Network | Port Security | Port Security Violation (SYSLOG)",
-  "$collection": "fm.eventclassificationrules",
-  "uuid": "5beb87d9-65bb-4394-baad-eafd76662293",
-  "description": "Mar 19 16:19:41  switchname-asw01 eswd[1262]: ESWD_MAC_LIMIT_BLOCK: MAC limit (3) exceeded at ge-0/0/23.0: shutting down the interface",
-  "event_class__name": "Network | Port Security | Port Security Violation",
-  "preference": 1000,
-  "patterns": [
-    {
-      "key_re": "^source$",
-      "value_re": "^syslog$"
-    },
-    {
-      "key_re": "^profile$",
-      "value_re": "^Juniper\\.JUNOS$"
-    },
-    {
-      "key_re": "^message$",
-      "value_re": "ESWD_MAC_LIMIT_BLOCK: MAC limit \\((?P<limit>\\d+)\\) exceeded at (?P<interface>.+?): shutting down the interface$"
-    }
-  ]
+    "name": "Juniper | JUNOS | Network | Port Security | Port Security Violation (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5beb87d9-65bb-4394-baad-eafd76662293",
+    "description": "Mar 19 16:19:41  switchname-asw01 eswd[1262]: ESWD_MAC_LIMIT_BLOCK: MAC limit (3) exceeded at ge-0/0/23.0: shutting down the interface",
+    "event_class__name": "Network | Port Security | Port Security Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ESWD_MAC_LIMIT_BLOCK: MAC limit \\((?P<limit>\\d+)\\) exceeded at (?P<interface>.+?): shutting down the interface$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Mar 19 16:19:41  switchname-asw01 eswd[1262]: ESWD_MAC_LIMIT_BLOCK: MAC limit (3) exceeded at ge-0/0/23.0: shutting down the interface",
+            "value_re": []
+        }
+    ]
 }

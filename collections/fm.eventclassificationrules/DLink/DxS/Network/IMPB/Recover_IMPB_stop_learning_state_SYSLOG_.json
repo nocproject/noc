@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Port (?P<interface>\\S+) recovers from IMPB stop learning state$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Port 28 recovers from IMPB stop learning state",
+            "value_re": []
+        }
     ]
 }

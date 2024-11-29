@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ETHERNET_OAM-6-RFI: The client on interface (?P<interface>\\S+) has received a remote failure indication from its remote peer\\s*\\(failure reason = (?P<reason>.+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ETHERNET_OAM-6-RFI: The client on interface Gi0/1 has received a remote failure indication from its remote peer(failure reason = remote client down action = )",
+            "value_re": []
+        }
     ]
 }

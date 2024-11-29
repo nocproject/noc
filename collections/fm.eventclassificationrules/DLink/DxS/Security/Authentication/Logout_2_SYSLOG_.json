@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Logout through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Logout through Console (Username: noc)",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: Returned from a Low-Battery condition. 0x0110"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: Returned from a Low-Battery condition. 0x0110",
+            "value_re": []
+        }
     ]
 }

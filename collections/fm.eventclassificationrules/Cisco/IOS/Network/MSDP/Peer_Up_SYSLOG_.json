@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "%MSDP-5-PEER_UPDOWN: Session to peer (?P<peer>\\S+) going up"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%MSDP-5-PEER_UPDOWN: Session to peer 10.225.205.12 going up",
+            "value_re": []
+        }
     ]
 }

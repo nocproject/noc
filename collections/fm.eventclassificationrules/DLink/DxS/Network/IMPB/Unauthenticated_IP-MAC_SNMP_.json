@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | IMPB | Unauthenticated IP-MAC (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "88aab146-1bc2-4e08-a670-b7772e7bc84f",
     "description": "DES3526-L2MGMT-MIB::swl2NotifyIpMacBinding.0.3",
     "event_class__name": "Network | IMPB | Unauthenticated IP-MAC",

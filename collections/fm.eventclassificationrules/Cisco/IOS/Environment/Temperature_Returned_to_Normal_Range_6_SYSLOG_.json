@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-2-MOD_TEMPOK:\\s*(?P<name>Module \\d+) temperature OK"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-MOD_TEMPOK: Module 2 temperature OK",
+            "value_re": []
+        }
     ]
 }

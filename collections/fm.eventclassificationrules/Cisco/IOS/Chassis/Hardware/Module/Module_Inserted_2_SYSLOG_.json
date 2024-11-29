@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%C4K_IOSINTF-5-TRANSCEIVERINSERTED: Slot=(?P<module>\\d+) Port=(?P<interface>\\d+): Transceiver has been inserted"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%C4K_IOSINTF-5-TRANSCEIVERINSERTED: Slot=1 Port=3: Transceiver has been inserted",
+            "value_re": []
+        }
     ]
 }

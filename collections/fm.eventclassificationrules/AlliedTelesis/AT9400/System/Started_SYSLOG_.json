@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "system: System initialization complete$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "system: System initialization complete",
+            "value_re": []
+        }
     ]
 }

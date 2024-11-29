@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: On battery power in response to an input power problem. 0x0109"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: On battery power in response to an input power problem. 0x0109",
+            "value_re": []
+        }
     ]
 }

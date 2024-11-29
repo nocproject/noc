@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-6-113005: AAA user authentication Rejected : reason = (?P<reason>\\D+) : server = (?P<server>\\S+) : user = (?P<user>.*) : user IP = (?P<src_ip>.*)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 05 2016 15:05:43: %ASA-6-113005: AAA user authentication Rejected : reason = \"\" : server = \"\" : user = \"\" : user IP = \"\"",
+            "value_re": []
+        }
     ]
 }

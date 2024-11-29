@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%HARDWARE-3-ASICNUM_ERROR: Port-ASIC number (?P<interface>\\d+) is invalid."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%HARDWARE-3-ASICNUM_ERROR: Port-ASIC number 1 is invalid.",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Qtech | QSW2800 | System | Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cc1d3425-2950-4331-bc18-2146e9723f49",
     "description": "000097: dom-27_5 %Jan 01 07:01:19 2006 DEFAULT[zIMI]:System cold restart...",
     "event_class__name": "System | Started",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "System cold restart\\.+$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "000097: dom-27_5 %Jan 01 07:01:19 2006 DEFAULT[zIMI]:System cold restart...",
+            "value_re": []
         }
     ]
 }

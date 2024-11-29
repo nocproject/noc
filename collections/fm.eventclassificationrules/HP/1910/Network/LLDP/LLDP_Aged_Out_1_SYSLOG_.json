@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10LLDP/5/LLDP_NEIGHBOUR_AGE_OUT\\(l\\): Neighbor aged out on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "May  5 09:52:29 2000 2928 %%10LLDP/5/LLDP_NEIGHBOUR_AGE_OUT(l): Neighbor aged out on Port GigabitEthernet1/0/16 (IfIndex 9437199), Chassis ID is 20fd-f1ca-61f4, Port ID is Ethernet0/4.",
+            "value_re": []
+        }
     ]
 }

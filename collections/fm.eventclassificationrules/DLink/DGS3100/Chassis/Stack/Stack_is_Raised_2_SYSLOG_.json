@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Chassis | Stack | Stack is Raised #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c974fd99-106a-481d-8f27-e2fb8d93cb8c",
     "description": "%STCK SYSL-I-UNITMSG: UNIT ID 2,Msg:%INIT-I-InitCompleted: Initialization task is completed",
     "event_class__name": "Chassis | Stack | Stack is Raised",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%STCK SYSL-I-UNITMSG: UNIT ID (?P<unit>\\d+),Msg:%INIT-I-InitCompleted: Initialization task is completed"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%STCK SYSL-I-UNITMSG: UNIT ID 2,Msg:%INIT-I-InitCompleted: Initialization task is completed",
+            "value_re": []
         }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-2-PS_OK: Power supply (?P<name>\\d+) okay"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-PS_OK: Power supply 2 okay",
+            "value_re": []
+        }
     ]
 }

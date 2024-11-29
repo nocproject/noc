@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Security | Authentication | Login #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c88eb778-8032-4a59-bb33-9ff830d7fa8e",
     "description": "ES3528MO-MIB::swAuthenticationSuccess",
     "event_class__name": "Security | Authentication | Login",

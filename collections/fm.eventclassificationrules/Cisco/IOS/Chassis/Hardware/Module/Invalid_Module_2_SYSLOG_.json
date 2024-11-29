@@ -1,15 +1,14 @@
 {
     "name": "Cisco | IOS | Chassis | Hardware | Module | Invalid Module #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "560bf19e-7c8d-40ca-913a-ed79fcb03975",
     "description": "%PHY-4-SFP_NOT_SUPPORTED: The SFP in Gi0/1 is not supported",
     "event_class__name": "Chassis | Hardware | Module | Invalid Module",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "reason",
-            "value": "module is not supported"
-        }
-    ],
+    "vars": [{
+        "name": "reason",
+        "value": "module is not supported"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -22,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%PHY-4-\\S+_NOT_SUPPORTED: The (?P<module>\\S+) in (?P<interface>\\S+) is not supported"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%PHY-4-SFP_NOT_SUPPORTED: The SFP in Gi0/1 is not supported",
+            "value_re": []
         }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10LLDP/6/LLDP_DELETE_NEIGHBOUR\\(l\\): Neighbor deleted on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 23 13:48:22 2013 Teh %%10LLDP/6/LLDP_DELETE_NEIGHBOUR(l): Neighbor deleted on Port GigabitEthernet1/0/8 (IfIndex 9437191), Chassis ID is a8f9-4b85-6a40, Port ID is gi1/0/11.",
+            "value_re": []
+        }
     ]
 }

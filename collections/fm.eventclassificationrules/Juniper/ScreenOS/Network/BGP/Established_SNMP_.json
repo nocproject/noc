@@ -1,5 +1,6 @@
 {
     "name": "Juniper | ScreenOS | Network | BGP | Established (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5887db02-82c9-4305-b82c-b5f10fe88c8e",
     "description": "NETSCREEN-BGP4-MIB::nsBgpEstablished, bgp-established",
     "event_class__name": "Network | BGP | Established",

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Linecard | LC Power Off (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "45082ab8-5dc1-4e2c-b5d3-47c0467bd418",
     "description": "JUNIPER-MIB::jnxFruPowerOff",
     "event_class__name": "Chassis | Linecard | LC Power Off",

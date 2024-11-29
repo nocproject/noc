@@ -1,5 +1,6 @@
 {
     "name": "Linksys | SPS2xx | Network | Link | Link Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bd069689-afe7-46a9-9d57-f964441d8798",
     "description": "IF-MIB::linkUp interface has turned into DOWN state",
     "event_class__name": "Network | Link | Link Down",

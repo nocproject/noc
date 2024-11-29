@@ -1,5 +1,6 @@
 {
     "name": "Linksys | SPS2xx | Unknown | Ignore Logging started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ef9d2376-b9b0-42a3-8bc3-efc8ecc819bb",
     "description": "%SYSLOG-N-LOGGING: Logging started.",
     "event_class__name": "Unknown | Ignore",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "^%SYSLOG-N-LOGGING: Logging started\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYSLOG-N-LOGGING: Logging started.",
+            "value_re": []
         }
     ]
 }

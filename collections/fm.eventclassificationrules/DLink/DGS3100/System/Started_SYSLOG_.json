@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | System | Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "74d41c4d-0ce1-424e-b3c4-715e40dfc16d",
     "description": "%INIT-I-Startup: Cold Startup",
     "event_class__name": "System | Started",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "%INIT-I-Startup: Cold Startup$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%INIT-I-Startup: Cold Startup",
+        "value_re": []
+    }]
 }

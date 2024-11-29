@@ -16,7 +16,8 @@
         },
         {
             "key_re": "message",
-            "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer down:\\s+(?P<peer>\\S+) : (?P<reason>.+)"
+            "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer down:\\s*(?P<peer>\\S+) : (?P<reason>.+)"
         }
-    ]
+    ],
+    "test_cases": []
 }

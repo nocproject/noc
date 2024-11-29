@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%DOT11-6-ASSOC: Interface (?P<interface>\\S+), Station\\s+(?P<mac>\\S+) Associated"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "24353: Aug 10 16:00:40.628 UTC: %DOT11-6-ASSOC: Interface Dot11Radio0, Station   001f.515f.ff62 Associated KEY_MGMT[WPAv2]",
+            "value_re": []
+        }
     ]
 }

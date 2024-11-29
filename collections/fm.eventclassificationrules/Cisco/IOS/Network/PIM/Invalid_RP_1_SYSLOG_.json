@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PIM-1-INVALID_RP_REG: Received Register from router (?P<pim_router>\\S+) for group .+, (?P<invalid_rp>\\S+) not willing to be RP"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PIM-1-INVALID_RP_REG: Received Register from router 150.1.13.3 for group 225.1.1.1, 150.1.4.4 not willing to be RP",
+            "value_re": []
+        }
     ]
 }

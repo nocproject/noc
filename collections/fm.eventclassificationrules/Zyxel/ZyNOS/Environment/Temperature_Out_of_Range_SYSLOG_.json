@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ZyNOS | Environment | Temperature Out of Range (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e7b2a89d-9590-4315-93ad-db1ce87b763b",
     "description": "MAC temperature value 132 exceeds its limit temperature value",
     "event_class__name": "Environment | Temperature Out of Range",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "(?P<name>\\S+) temperature value (?P<measure>\\-?\\d+) exceeds its limit temperature value"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "MAC temperature value 132 exceeds its limit temperature value",
+            "value_re": []
         }
     ]
 }

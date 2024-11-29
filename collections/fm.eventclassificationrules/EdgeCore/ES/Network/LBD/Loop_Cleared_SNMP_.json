@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Network | LBD | Loop Cleared (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3c7a7fbd-3cef-423d-939c-54e2854cdfb8",
     "description": "ES3528MO-MIB::lbdRecoveryTrap",
     "event_class__name": "Network | LBD | Loop Cleared",

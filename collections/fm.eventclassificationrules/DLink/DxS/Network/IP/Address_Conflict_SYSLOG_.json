@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Conflict IP was detected with (?:this|the) device(?:!)? \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), Port \\S+, Interface: (?P<interface>\\S+?)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Conflict IP was detected with this device (IP: 172.16.0.2, MAC: 00-26-5A-8A-7E-80, Port 7, Interface: System)",
+            "value_re": []
+        }
     ]
 }

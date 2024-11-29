@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP3 | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c5ab4444-3baf-46ad-b715-5387142a0eca",
     "description": "L2INF/5/PORT LINK STATUS CHANGE: Ethernet0/1: turns into UP state",
     "event_class__name": "Network | Link | Link Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "LINK STATUS CHANGE:\\s*(?P<interface>\\S+): turns into UP state"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "L2INF/5/PORT LINK STATUS CHANGE: Ethernet0/1: turns into UP state",
+            "value_re": []
         }
     ]
 }

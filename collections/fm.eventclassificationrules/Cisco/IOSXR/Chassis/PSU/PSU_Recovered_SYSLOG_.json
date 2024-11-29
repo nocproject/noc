@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Chassis | PSU | PSU Recovered (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6305650a-d6e4-49da-a8da-6871a0069bcf",
     "description": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module 0/PM5/SP failure condition cleared",
     "event_class__name": "Chassis | PSU | PSU Recovered",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module (?P<name>\\S+) failure condition cleared"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module 0/PM5/SP failure condition cleared",
+            "value_re": []
         }
     ]
 }

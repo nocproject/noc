@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | PSU | PSU Recovered #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "932e1c43-2c9f-4054-9dc4-ba664a9dbde8",
     "description": "Juniper-System-MIB::juniSystemPowerStatusChange",
     "event_class__name": "Chassis | PSU | PSU Recovered",

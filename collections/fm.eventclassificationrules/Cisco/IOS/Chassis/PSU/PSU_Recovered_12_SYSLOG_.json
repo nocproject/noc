@@ -5,12 +5,10 @@
     "description": "%C7600_PWR-SP-4-PSREDUNDANTBOTHSUPPLY: in power-redundancy mode, system is operating on both power supplies.",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Dummy PSU"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Dummy PSU"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%C7600_PWR-SP-4-PSREDUNDANTBOTHSUPPLY: in power-redundancy mode, system is operating on both power supplies."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C7600_PWR-SP-4-PSREDUNDANTBOTHSUPPLY: in power-redundancy mode, system is operating on both power supplies.",
+            "value_re": []
         }
     ]
 }

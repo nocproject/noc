@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Fan | Fan Failed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "59574276-7c26-4050-a797-16e7b312c6bd",
     "description": "scb CM: ALARM SET: (Major) Rear left fan stopped spinning",
     "event_class__name": "Chassis | Fan | Fan Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "ALARM SET: \\(Major\\) (?P<name>.+ fan) (?:stopped spinning|failed)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "scb CM: ALARM SET: (Major) Rear left fan stopped spinning",
+            "value_re": []
         }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Security | Audit | Command (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c2aef895-27d8-4ad9-b453-1751d828ef65",
     "description": "Jul 21 01:00:22 mgd[1594]: UI_CMDLINE_READ_LINE: User 'noc', command 'show snmp statistics '",
     "event_class__name": "Security | Audit | Command",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "UI_CMDLINE_READ_LINE: User '(?P<user>.+?)', command '(?P<command>.*)'$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 21 01:00:22 mgd[1594]: UI_CMDLINE_READ_LINE: User 'noc', command 'show snmp statistics '",
+            "value_re": []
         }
     ]
 }

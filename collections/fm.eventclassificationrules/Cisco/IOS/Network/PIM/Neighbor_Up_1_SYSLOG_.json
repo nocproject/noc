@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PIM-5-NBRCHG: neighbor (?P<neighbor>\\S+) UP on interface (?P<interface>\\S+)( \\(vrf (?P<vrf>\\S+)\\))?"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PIM-5-NBRCHG: neighbor 10.10.20.21 UP on interface Vlan444 (vrf default)",
+            "value_re": []
+        }
     ]
 }

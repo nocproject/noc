@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | PSU | PSU Failed #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "87a34c5a-f59b-485b-940d-53cf4811d68e",
     "description": "Juniper-System-MIB::juniSystemPowerStatusChange",
     "event_class__name": "Chassis | PSU | PSU Failed",

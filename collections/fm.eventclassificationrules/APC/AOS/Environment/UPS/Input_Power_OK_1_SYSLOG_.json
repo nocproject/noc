@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: No longer on battery power. 0x010A"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: No longer on battery power. 0x010A",
+            "value_re": []
+        }
     ]
 }

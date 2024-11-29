@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Down"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%BGP-5-ADJCHANGE: neighbor 10.110.0.83 Down BGP Notification sent",
+            "value_re": []
+        }
     ]
 }

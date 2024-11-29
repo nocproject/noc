@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ENVMON-5-\\S+V_STATUS: (?P<name>\\S+V) supply OK"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ENVMON-5-48V_STATUS: -48V supply OK",
+            "value_re": []
+        }
     ]
 }

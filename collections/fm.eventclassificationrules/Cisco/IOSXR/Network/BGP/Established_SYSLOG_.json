@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ROUTING-BGP-5-ADJCHANGE : neighbor (?P<peer>\\S+) Up \\(VRF: (?P<vrf>.+)\\) \\(AS: (?P<as>\\d+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ROUTING-BGP-5-ADJCHANGE : neighbor 1.1.1.1 Up (VRF: default) (AS: 65531)",
+            "value_re": []
+        }
     ]
 }

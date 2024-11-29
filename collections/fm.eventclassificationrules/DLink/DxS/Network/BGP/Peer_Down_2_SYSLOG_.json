@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "\\[BGP(\\(2\\))?:\\] BGP connection is closed due to Event: <\\d+> \\(Peer:<(?P<peer>\\S+)>\\)\\."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: [BGP:] BGP connection is closed due to Event: <10> (Peer:<10.0.0.1>).",
+            "value_re": []
+        }
     ]
 }

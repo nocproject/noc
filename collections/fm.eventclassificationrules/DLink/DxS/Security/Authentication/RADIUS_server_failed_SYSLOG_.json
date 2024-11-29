@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "AAA server (?P<ip>\\S+) \\(Protocol: RADIUS\\) connection failed"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: AAA server 172.16.35.2 (Protocol: RADIUS) connection failed",
+            "value_re": []
+        }
     ]
 }

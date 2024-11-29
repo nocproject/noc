@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%CSM_SLB-6-RSERVERSTATE: Module (?P<module>\\d+) server state changed: SLB-NETMGT: .+ health probe re-activated( for)? server (?P<name>.+?) in serverfarm '(?P<farm>.+)'"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%CSM_SLB-6-RSERVERSTATE: Module 5 server state changed: SLB-NETMGT: TCP health probe re-activated server 10.20.220.10:80 in serverfarm 'WEBFARM'",
+            "value_re": []
+        }
     ]
 }

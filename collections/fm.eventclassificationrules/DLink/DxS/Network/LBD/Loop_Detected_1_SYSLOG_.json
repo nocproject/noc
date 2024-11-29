@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Configuration Testing Protocol detects a loop in port (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Configuration Testing Protocol detects a loop in port 4",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": ".* System: (?P<name>Power supply \\d+),(\\s+\\S+)+, normal$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 8 23:30:19 AkrasRoot System: Power supply 1, left side power supply, normal",
+            "value_re": []
+        }
     ]
 }

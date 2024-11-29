@@ -1,5 +1,6 @@
 {
     "name": "NOC | Unknown Event Source",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5a26d15a-8263-4e54-9f35-75143b28bbe5",
     "description": "NOC | Unknown Event Source",
     "event_class__name": "NOC | Unknown Event Source",

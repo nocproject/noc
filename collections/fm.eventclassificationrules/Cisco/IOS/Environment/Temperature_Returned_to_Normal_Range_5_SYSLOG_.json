@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-2-SYS_TEMPOK:\\s*(?P<name>Chassis) temperature OK"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-SYS_TEMPOK: Chassis temperature OK",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%Environment-A-FAN-STAT-CHNG: (?P<name>\\S+ \\d+) status changed - not operational.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%Environment-A-FAN-STAT-CHNG: FAN# 1 status changed - not operational.",
+            "value_re": []
+        }
     ]
 }

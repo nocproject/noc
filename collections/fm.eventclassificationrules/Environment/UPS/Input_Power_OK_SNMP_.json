@@ -1,5 +1,6 @@
 {
     "name": "Environment | UPS | Input Power OK (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "94000a66-e5bf-4f7c-a683-6d94cef0807e",
     "description": "XPPC-MIB::ppc",
     "event_class__name": "Environment | UPS | Input Power OK",

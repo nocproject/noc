@@ -1,5 +1,6 @@
 {
     "name": "NOC | Periodic | Probe Ok",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6b1f98ea-87e3-4846-912d-189a9b600243",
     "description": "NOC probe ok",
     "event_class__name": "NOC | Periodic | Periodic OK",

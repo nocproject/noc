@@ -18,5 +18,6 @@
             "key_re": "^message$",
             "value_re": "Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun"
         }
-    ]
+    ],
+    "test_cases": []
 }

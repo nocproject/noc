@@ -18,5 +18,6 @@
             "key_re": "^message$",
             "value_re": "Spanning Tree port .+ change \\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+)\\) .+"
         }
-    ]
+    ],
+    "test_cases": []
 }

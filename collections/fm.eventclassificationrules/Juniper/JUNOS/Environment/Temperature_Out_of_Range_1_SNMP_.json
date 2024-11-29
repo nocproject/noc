@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Environment | Temperature Out of Range #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2fba5d41-4438-44d8-971d-a027961126f0",
     "description": "JUNIPER-MIB::jnxOverTemperature",
     "event_class__name": "Environment | Temperature Out of Range",

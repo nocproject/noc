@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Hardware | Module | Module Offline (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6a33aea6-05f5-4948-99fb-55d7b7d0478b",
     "description": "JUNIPER-MIB::jnxFruOffline",
     "event_class__name": "Chassis | Hardware | Module | Module Offline",

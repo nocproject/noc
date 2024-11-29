@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "Port (?P<interface>.+) link down$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "INFO: Port 17 link down",
+        "value_re": []
+    }]
 }

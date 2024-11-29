@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "IF(?:NET|PDT)/\\d+/IF_STATE.+Interface (?P<interface>\\S+)( has)? turned into DOWN state\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%%01IFNET/4/IF_STATE(l)[1475]:Interface GigabitEthernet2/0/9 has turned into DOWN state.",
+            "value_re": []
+        }
     ]
 }

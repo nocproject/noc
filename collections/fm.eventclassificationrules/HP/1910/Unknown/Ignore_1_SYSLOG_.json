@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10IFNET/4/INTERFACE UPDOWN\\(t\\):\\s+Trap \\S+<link(Up|Down)>: Interface \\d+ is (Up|Down), ifAdminStatus is \\d+, ifOperStatus is \\d+$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Oct  4 03:06:34 2000 3Com Baseline Switch %%10IFNET/4/INTERFACE UPDOWN(t):   Trap 1.3.6.1.6.3.1.1.5.4<linkUp>: Interface 9437184 is Up, ifAdminStatus is 1, ifOperStatus is 1",
+            "value_re": []
+        }
     ]
 }

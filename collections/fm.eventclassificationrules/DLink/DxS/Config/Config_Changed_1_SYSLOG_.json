@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "(Unit \\d+, )?Configuration (and log )*saved to flash \\(Username: (?P<user>.+), IP: \\S+.+\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Configuration saved to flash (Username: admin, IP: <ip>)",
+            "value_re": []
+        }
     ]
 }

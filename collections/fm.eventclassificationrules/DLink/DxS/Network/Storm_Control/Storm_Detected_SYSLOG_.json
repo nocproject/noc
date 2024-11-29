@@ -18,5 +18,6 @@
             "key_re": "message",
             "value_re": "WARN: Port (?P<interface>\\S+) is currently shut down due to a packet storm$"
         }
-    ]
+    ],
+    "test_cases": []
 }

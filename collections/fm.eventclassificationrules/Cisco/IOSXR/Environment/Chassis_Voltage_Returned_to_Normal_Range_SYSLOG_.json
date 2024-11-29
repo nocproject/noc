@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM_CLEAR : Voltage sensor alarm cleared (?P<name>slot \\S+, sensor \\S+) measured (?P<measure>\\d+ mV) and returned to operational range"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM_CLEAR : Voltage sensor alarm cleared slot 0/RSP1/CPU0, sensor VP1P2_SERDES_PLL_DAO measured 1200 mV and returned to operational range",
+            "value_re": []
+        }
     ]
 }

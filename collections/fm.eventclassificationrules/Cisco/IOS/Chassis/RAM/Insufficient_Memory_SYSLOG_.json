@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:SYS-(?:SP-)?2-MALLOCFAIL|MCAST-SP-STDBY-6-GC_LIMIT_EXCEEDED|EARL_NETFLOW-SP-4-TCAM_THRLD|SYS-2-CHUNKEXPANDFAIL|SYS-4-FREEMEMLOW): (?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-MALLOCFAIL: Memory allocation of 65536 bytes failed from 0x4183958C, alignment 0",
+            "value_re": []
+        }
     ]
 }

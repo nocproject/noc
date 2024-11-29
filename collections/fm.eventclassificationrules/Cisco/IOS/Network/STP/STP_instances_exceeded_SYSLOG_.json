@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SPANTREE_VLAN_SW-2-MAX_INSTANCE: Platform limit of (?P<limit>\\d+) STP instances exceeded"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SPANTREE_VLAN_SW-2-MAX_INSTANCE: Platform limit of 128 STP instances exceeded. No instance created for VLAN192 (port Gi0/1).",
+            "value_re": []
+        }
     ]
 }

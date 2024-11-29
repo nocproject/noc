@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SLB-6-REAL: Real (?P<real>\\S+) \\((?P<farm>.+)\\) has changed state to (?P<state>MAXCONNS|FAILED)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SLB-6-REAL: Real 10.117.0.9 (VPNFARM) has changed state to MAXCONNS",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | UPS | Battery Power Low #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f54e168f-6f5f-46c7-a8c4-c12e5fa11007",
     "description": "UPS: The battery power is too low to support the load; if power fails, the UPS will be shut down immediately. 0x0107",
     "event_class__name": "Environment | UPS | Battery Power Low",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "UPS: The battery power is too low to support the load; if power fails, the UPS will be shut down immediately. 0x0107"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: The battery power is too low to support the load; if power fails, the UPS will be shut down immediately. 0x0107",
+            "value_re": []
         }
     ]
 }

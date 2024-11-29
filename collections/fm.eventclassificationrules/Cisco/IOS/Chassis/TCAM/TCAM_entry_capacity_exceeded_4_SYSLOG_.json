@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%MLSCEF-.+-4-FIB_EXCEPTION_THRESHOLD: (?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%MLSCEF-DFC8-4-FIB_EXCEPTION_THRESHOLD: Hardware CEF entry usage is at 95% capacity for IPv4 unicast protocol.",
+            "value_re": []
+        }
     ]
 }

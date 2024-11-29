@@ -5,12 +5,10 @@
     "description": "%MISTRAL-SP-3-ERROR: Error condition detected: TM_NPP_PARITY_ERROR",
     "event_class__name": "Chassis | RAM | RAM Failed",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "bank",
-            "value": "Mistral ASIC"
-        }
-    ],
+    "vars": [{
+        "name": "bank",
+        "value": "Mistral ASIC"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%MISTRAL-SP-3-ERROR:"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%MISTRAL-SP-3-ERROR: Error condition detected: TM_NPP_PARITY_ERROR",
+            "value_re": []
         }
     ]
 }

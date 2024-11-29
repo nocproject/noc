@@ -5,12 +5,10 @@
     "description": "%UBR7200-4-HWFAULT: Hardware Fault ",
     "event_class__name": "Chassis | Clock | Clock Failed",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Cable Clock"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Cable Clock"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-4-HWFAULT: Hardware Fault$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-4-HWFAULT: Hardware Fault",
+            "value_re": []
         }
     ]
 }

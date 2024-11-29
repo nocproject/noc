@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Login failed through (?:Web|Telnet|SSH)\\s*\\(User(name)?: (?P<user>.+?), IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Login failed through Telnet (Username: Anonymous, IP: 10.116.0.2, MAC: 00-05-74-97-49-00)",
+            "value_re": []
+        }
     ]
 }

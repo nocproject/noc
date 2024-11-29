@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%TRANSCEIVER(?:-DFC\\d+)?-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%TRANSCEIVER-DFC2-6-REMOVED: Transceiver module removed from TenGigabitEthernet2/0/0",
+            "value_re": []
+        }
     ]
 }

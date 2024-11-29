@@ -18,5 +18,6 @@
             "key_re": "^message$",
             "value_re": "%10SHELL/4/CMD\\(l\\):\\s+task:vt\\d+ ip:(?P<ip>\\S+) user:(?P<user>\\S+) command:_cmdline-mode on$"
         }
-    ]
+    ],
+    "test_cases": []
 }

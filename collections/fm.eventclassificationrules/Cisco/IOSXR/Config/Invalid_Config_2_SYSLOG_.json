@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface .+ is incompatible with the .+ operational state"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is incompatible with the bundle operational state; link is not using LACP but bundle is running mLACP",
+            "value_re": []
+        }
     ]
 }

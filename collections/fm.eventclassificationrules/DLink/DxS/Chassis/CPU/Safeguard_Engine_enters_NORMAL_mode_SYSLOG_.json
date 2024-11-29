@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "( Unit (?P<unit>\\d+), )?Safeguard Engine enters NORMAL mode$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Safeguard Engine enters NORMAL mode",
+            "value_re": []
+        }
     ]
 }

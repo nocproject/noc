@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Network | IP | Address Conflict (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ae00582d-c6c6-4826-aeb0-9b1701336e35",
     "description": "%ARP-4-DUPADDR: Duplicate address 192.168.186.1 on interface VLAN 500 port GigabitEthernet 0/22, sourced by 0015.173f.ca9f.",
     "event_class__name": "Network | IP | Address Conflict",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%ARP-4-DUPADDR: Duplicate address (?P<ip>\\S+) on interface (?P<interface>.+) port .+, sourced by (?P<mac>\\S+)\\."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%ARP-4-DUPADDR: Duplicate address 192.168.186.1 on interface VLAN 500 port GigabitEthernet 0/22, sourced by 0015.173f.ca9f.",
+            "value_re": []
         }
     ]
 }

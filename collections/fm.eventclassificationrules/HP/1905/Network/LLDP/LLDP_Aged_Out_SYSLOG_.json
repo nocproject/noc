@@ -1,5 +1,6 @@
 {
     "name": "HP | 1905 | Network | LLDP | LLDP Aged Out (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7c0da510-c71c-454c-b718-5e1d9c66ceb6",
     "description": "Mar 19 15:44:40 2013 Podval [LLDP]/5/AGEOUTREM Port Ethernet0/4 (IfIndex 3):Neighbor Aged Out,Chassis ID: 20fd-f16d-6dba; Port ID: GigabitEthernet1/0/16.",
     "event_class__name": "Network | LLDP | LLDP Aged Out",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "\\[LLDP\\]/5/AGEOUTREM Port (?P<interface>\\S+) \\(IfIndex \\d+\\):Neighbor Aged Out,Chassis ID: \\S+; Port ID: \\S+\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Mar 19 15:44:40 2013 Podval [LLDP]/5/AGEOUTREM Port Ethernet0/4 (IfIndex 3):Neighbor Aged Out,Chassis ID: 20fd-f16d-6dba; Port ID: GigabitEthernet1/0/16.",
+            "value_re": []
         }
     ]
 }

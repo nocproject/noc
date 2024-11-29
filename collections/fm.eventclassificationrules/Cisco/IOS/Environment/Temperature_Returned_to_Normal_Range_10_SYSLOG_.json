@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%C6KENV-SP-4-(?:MINOR|MAJOR)TEMPALARMRECOVER: (?P<name>.+) temperature crossed threshold #1\\(=(?P<threshold>\\d+)C\\). It has returned to normal operating temperature range."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%C6KENV-SP-4-MINORTEMPALARMRECOVER: RP 1/0 inlet temperature crossed threshold #1(=50C). It has returned to normal operating temperature range.",
+            "value_re": []
+        }
     ]
 }

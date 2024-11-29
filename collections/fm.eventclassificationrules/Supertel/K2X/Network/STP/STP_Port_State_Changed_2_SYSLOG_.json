@@ -18,5 +18,11 @@
             "key_re": "^source$",
             "value_re": "^syslog$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%STP-W-PORTSTATUS: ch3 of instance 1: STP status Forwarding",
+            "value_re": []
+        }
     ]
 }

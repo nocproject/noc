@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Enable (?P<to_priv>Admin) failed through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>.+?)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Enable Admin failed through Telnet from 192.168.133.100 authenticated by AAA local_enable method (Username: admin)",
+            "value_re": []
+        }
     ]
 }

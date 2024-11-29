@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10CFGMAN/5/CFGMAN_CFGCHANGED\\(l\\): -EventIndex=\\d+-CommandSource=\\d+-ConfigSource=\\d+-ConfigDestination=\\d+; Configuration is changed\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Feb 11 15:02:43 2013 Teh %%10CFGMAN/5/CFGMAN_CFGCHANGED(l): -EventIndex=1-CommandSource=1-ConfigSource=2-ConfigDestination=4; Configuration is changed.",
+            "value_re": []
+        }
     ]
 }

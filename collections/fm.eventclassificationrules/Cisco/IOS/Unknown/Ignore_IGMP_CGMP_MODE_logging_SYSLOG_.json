@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%MCAST-SP(?:-STDBY)?-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan \\d+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%MCAST-SP-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan 2120",
+            "value_re": []
+        }
     ]
 }

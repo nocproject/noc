@@ -1,34 +1,34 @@
 {
-  "name": "Huawei | VRP | Security | Authentication | Logout #1 (SNMP)",
-  "$collection": "fm.eventclassificationrules",
-  "uuid": "e16dde07-c860-4398-84e1-666e698364a1",
-  "description": "HUAWEI-MIB::hwDatacomm.207.2.4",
-  "event_class__name": "Security | Authentication | Logout",
-  "preference": 1000,
-  "patterns": [
-    {
-      "key_re": "^source$",
-      "value_re": "^SNMP Trap$"
-    },
-    {
-      "key_re": "^profile$",
-      "value_re": "^Huawei\\.VRP$"
-    },
-    {
-      "key_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.1\\.2\\.1\\.1\\.3\\.\\d+$",
-      "value_re": "^(?P<user>\\S+)$"
-    },
-    {
-      "key_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.1\\.2\\.1\\.1\\.2\\.\\d+$",
-      "value_re": "^(?P<ip>\\S+)$"
-    },
-    {
-      "key_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.1\\.2\\.1\\.1\\.4\\.\\d+$",
-      "value_re": "^\\S+$"
-    },
-    {
-      "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-      "value_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.2\\.4$"
-    }
-  ]
+    "name": "Huawei | VRP | Security | Authentication | Logout #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e16dde07-c860-4398-84e1-666e698364a1",
+    "description": "HUAWEI-MIB::hwDatacomm.207.2.4",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.1\\.2\\.1\\.1\\.3\\.\\d+$",
+            "value_re": "^(?P<user>\\S+)$"
+        },
+        {
+            "key_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.1\\.2\\.1\\.1\\.2\\.\\d+$",
+            "value_re": "^(?P<ip>\\S+)$"
+        },
+        {
+            "key_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.1\\.2\\.1\\.1\\.4\\.\\d+$",
+            "value_re": "^\\S+$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-MIB::hwDatacomm\\.207\\.2\\.4$"
+        }
+    ]
 }

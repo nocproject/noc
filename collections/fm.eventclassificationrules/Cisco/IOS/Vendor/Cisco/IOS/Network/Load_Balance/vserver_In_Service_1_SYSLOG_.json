@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Module (?P<module>\\d+) info: SLB-NETMGT: vserver (?P<name>.+?) inservice$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%CSM_SLB-6-INFO: Module 1 info: SLB-NETMGT: vserver VS1 inservice",
+            "value_re": []
+        }
     ]
 }

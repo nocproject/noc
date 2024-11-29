@@ -1,5 +1,6 @@
 {
     "name": "NOC | SA | Leave Activator Pool ",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b1e3f3a7-1ca2-4a27-be29-79b26189cd61",
     "event_class__name": "NOC | SA | Leave Activator Pool",
     "preference": 1000,

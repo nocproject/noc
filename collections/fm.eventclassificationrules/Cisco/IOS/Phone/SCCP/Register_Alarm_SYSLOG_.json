@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%IPPHONE-6-REG_ALARM: (?:(?P<socket>\\d+): )?Name=(?P<sn>\\S+) Load=\\s*(?P<image>\\S+) Last=(?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 16 02:56:00.191: %IPPHONE-6-REG_ALARM: 12: Name=SEPC89C1DD551D8 Load=9.0.2 Last=CM-reset-TCP",
+            "value_re": []
+        }
     ]
 }

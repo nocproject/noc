@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10MSTP/6/MSTP_(DETECTED|NOTIFIED)_TC\\(l\\): Instance \\S+ port (?P<interface>\\S+) (detected|was notified of) a topology change\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Feb 12 10:35:37 2013 Teh %%10MSTP/6/MSTP_DETECTED_TC(l): Instance 0's port GigabitEthernet1/0/8 detected a topology change.",
+            "value_re": []
+        }
     ]
 }

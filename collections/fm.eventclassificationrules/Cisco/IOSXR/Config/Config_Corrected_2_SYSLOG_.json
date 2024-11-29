@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface .+ is no longer incompatible with the .+ operational state"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is no longer incompatible with the bundle operational state",
+            "value_re": []
+        }
     ]
 }

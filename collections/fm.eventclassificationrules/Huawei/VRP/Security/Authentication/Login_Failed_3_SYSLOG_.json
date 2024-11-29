@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Security | Authentication | Login Failed #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1e79fea5-0615-45e8-adf0-9da009e7ffc5",
     "description": "%%01SSH/4/SSH_FAIL(l)[47]:Failed to login through SSH. (IP=172.25.127.55, UserName=qqq, Times=3, FailedReason=User authentication failed)",
     "event_class__name": "Security | Authentication | Login Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "Failed to login through SSH\\. \\(IP=(?P<ip>\\S+), UserName=(?P<user>\\S+), Times=\\d+, FailedReason=User authentication failed\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%%01SSH/4/SSH_FAIL(l)[47]:Failed to login through SSH. (IP=172.25.127.55, UserName=qqq, Times=3, FailedReason=User authentication failed)",
+            "value_re": []
         }
     ]
 }

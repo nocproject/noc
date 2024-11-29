@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%CSM_SLB-6-RSERVERSTATE: Module (?P<module>\\d+) server state changed: server (?P<name>.+?) in serverfarm '(?P<farm>.+)' has reached configured .+ health retries"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%CSM_SLB-6-RSERVERSTATE: Module 4 server state changed: server x.x.x.x:443 in serverfarm 'WEB_SEAL2' has reached configured inband health retries",
+            "value_re": []
+        }
     ]
 }

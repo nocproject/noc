@@ -16,7 +16,8 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%10SHELL/4/LOG(IN|OUT)\\(t\\):\\s+Trap \\S+<h3cLog(In|Out)>:(\\S+|) log(in|out) from (VTY|Web)$"
+            "value_re": "%10SHELL\\/4\\/LOG(IN|OUT)\\(t\\):\\s+Trap \\S+<h3cLog(In|Out)>:(\\S+|) log(in|out) from (VTY|Web)$"
         }
-    ]
+    ],
+    "test_cases": []
 }

@@ -1,5 +1,6 @@
 {
     "name": "NSN | hiX56xx | Network | Link | Link Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "579b9d36-ed95-4454-af1e-5895d1c1a84a",
     "description": "SNMPv2-SMI::enterprises.231.7.1.2.2.1.1.5.7.2",
     "event_class__name": "Network | Link | Link Down",

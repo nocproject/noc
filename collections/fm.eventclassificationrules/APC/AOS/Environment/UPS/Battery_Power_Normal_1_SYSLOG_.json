@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | UPS | Battery Power Normal #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "92de24bd-811f-4955-a25e-9c0ffae65447",
     "description": "UPS: A discharged battery condition no longer exists. 0x0108",
     "event_class__name": "Environment | UPS | Battery Power Normal",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "UPS: A discharged battery condition no longer exists. 0x0108"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: A discharged battery condition no longer exists. 0x0108",
+            "value_re": []
         }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | STP | STP Port State Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c9563172-74f5-4982-ba75-8b7f6f1f17a3",
     "description": "NOTICE: Spanning Tree port status change (Instance:0, Port:14) Discarding->Learning",
     "event_class__name": "Network | STP | STP Port State Changed",
@@ -17,5 +18,6 @@
             "key_re": "^message$",
             "value_re": "Spanning Tree port status change \\(Instance:\\d+, Port:(?P<interface>\\d+)\\) \\S+->(?P<state__enum__stp_state>\\S+)$"
         }
-    ]
+    ],
+    "test_cases": []
 }

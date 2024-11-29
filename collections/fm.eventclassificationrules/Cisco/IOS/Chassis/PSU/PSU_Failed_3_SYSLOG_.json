@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Failed #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fe20e201-d646-431f-b3fb-1b4780617051",
     "description": "%SYS-2-PS_FAIL: Power supply 2 failed",
     "event_class__name": "Chassis | PSU | PSU Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%SYS-2-PS_(?:NFAN)?FAIL: Power supply (?P<name>\\d+)(?: and power supply fan)? failed"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-PS_FAIL: Power supply 2 failed",
+            "value_re": []
         }
     ]
 }

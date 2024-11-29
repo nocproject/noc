@@ -1,5 +1,6 @@
 {
     "name": "Eltex | MES | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5918cdbf-9739-4ab5-ba35-0b48c12c7473",
     "description": "%LINK-I-Up:  gi0/3",
     "event_class__name": "Network | Link | Link Up",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "^%LINK-I-Up:  ?(?P<interface>.+)$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%LINK-I-Up:  gi0/3",
+        "value_re": []
+    }]
 }

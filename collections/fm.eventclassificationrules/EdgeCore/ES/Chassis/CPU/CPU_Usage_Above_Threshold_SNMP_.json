@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Chassis | CPU | CPU Usage Above Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bbee539b-0355-4922-8236-03ea26c7499f",
     "description": "ES3528MO-MIB::swCpuUtiRisingNotification",
     "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",

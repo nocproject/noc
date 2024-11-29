@@ -5,12 +5,10 @@
     "description": "%OS-SYSMGR-4-PROC_RESTART_NAME : User cisco (vty1) requested a restart of process msdp at 0/RSP0/CPU0",
     "event_class__name": "Security | Audit | Command",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "command",
-            "value": "process restart msdp"
-        }
-    ],
+    "vars": [{
+        "name": "command",
+        "value": "process restart msdp"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%OS-SYSMGR-4-PROC_RESTART_NAME : User (?P<user>.+) \\(vty\\d+\\) requested a restart of process msdp at .+"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%OS-SYSMGR-4-PROC_RESTART_NAME : User cisco (vty1) requested a restart of process msdp at 0/RSP0/CPU0",
+            "value_re": []
         }
     ]
 }

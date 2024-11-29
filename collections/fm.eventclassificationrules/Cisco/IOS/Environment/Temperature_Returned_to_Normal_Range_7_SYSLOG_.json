@@ -5,12 +5,10 @@
     "description": "%SYS-0-TEMP_CRITOK: Temp critical okay",
     "event_class__name": "Environment | Temperature Returned to Normal Range",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "redundant supervisor engine"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "redundant supervisor engine"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%SYS-0-TEMP_CRIT(?:OK|RECOVER): Temp (?P<threshold>critical) (?:okay|recovered)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-0-TEMP_CRITOK: Temp critical okay",
+            "value_re": []
         }
     ]
 }

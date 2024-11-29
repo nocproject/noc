@@ -1,5 +1,6 @@
 {
     "name": "NOC | Periodic | Periodic OK",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4abf6f8c-7ec6-4272-9ff1-16c793b993a7",
     "description": "Periodic task has been completed successfully",
     "event_class__name": "NOC | Periodic | Periodic OK",

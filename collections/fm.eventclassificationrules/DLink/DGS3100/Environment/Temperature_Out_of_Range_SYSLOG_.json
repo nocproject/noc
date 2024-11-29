@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Environment | Temperature Out of Range (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0d693309-70a2-4ab3-aaeb-61088b70e4ca",
     "description": "%Environment-A-TEMP-RISING-ALARM: Overheat temperature (sensor 1)",
     "event_class__name": "Environment | Temperature Out of Range",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%Environment-A-TEMP-RISING-ALARM: Overheat temperature \\((?P<name>sensor \\d+)\\)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%Environment-A-TEMP-RISING-ALARM: Overheat temperature (sensor 1)",
+            "value_re": []
         }
     ]
 }

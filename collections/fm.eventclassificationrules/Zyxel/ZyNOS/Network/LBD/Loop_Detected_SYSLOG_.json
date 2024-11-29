@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ZyNOS | Network | LBD | Loop Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "330edbe0-b70d-431a-bd35-cecc016670ce",
     "description": "Sep  2 13:58:11 switch-8_2(1) system: Port 5 loopguard",
     "event_class__name": "Network | LBD | Loop Detected",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "system: Port (?P<interface>\\S+) loopguard"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Sep  2 13:58:11 switch-8_2(1) system: Port 5 loopguard",
+            "value_re": []
         }
     ]
 }

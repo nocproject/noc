@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "HARDWARE-\\d+-THERMAL_(?:WARNING|CRITICAL).+[Tt]emperature has reached (?:warning|critical) threshold"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%HARDWARE-2-THERMAL_WARNING: Temperature has reached warning threshold",
+            "value_re": []
+        }
     ]
 }

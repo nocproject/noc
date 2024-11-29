@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host (?P<ip>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host 69.175.126.170",
+            "value_re": []
+        }
     ]
 }

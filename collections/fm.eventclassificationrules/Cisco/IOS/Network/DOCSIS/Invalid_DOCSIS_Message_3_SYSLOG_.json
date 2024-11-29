@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "First fragment is lost or discarded.  Discard fragment.  SID = (?P<sid>\\d+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "First fragment is lost or discarded.  Discard fragment.  SID = 50",
+            "value_re": []
+        }
     ]
 }

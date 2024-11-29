@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from \\((?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+\\) failed"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from (tftp://255.255.255.255/network-confg) failed",
+            "value_re": []
+        }
     ]
 }

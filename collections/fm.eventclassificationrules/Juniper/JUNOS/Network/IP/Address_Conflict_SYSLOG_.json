@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "KERN_ARP_DUPLICATE_ADDR: duplicate IP address (?P<ip>\\S+)! sent from address: (?P<mac>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "KERN_ARP_DUPLICATE_ADDR: duplicate IP address 10.60.9.1! sent from address: 02:2a:5d:10:e6:93 (error count = 14)",
+            "value_re": []
+        }
     ]
 }

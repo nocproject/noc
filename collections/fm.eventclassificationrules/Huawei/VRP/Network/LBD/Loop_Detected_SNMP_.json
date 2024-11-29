@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | LBD | Loop Detected (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "910a19cd-b343-42ae-accd-72c22facb471",
     "description": "HUAWEI-L2IF-MIB::hwLoopDetectStatusAlarm",
     "event_class__name": "Network | LBD | Loop Detected",

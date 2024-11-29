@@ -1,5 +1,6 @@
 {
     "name": "Qtech | QSW | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bafada81-5526-4874-b9e3-1cb289aa1fa3",
     "description": "0000000158: Jan 1 14:52:20: torgovaja_4: %DEVICE-3-LINKUPDOWN: e0/1 LinkDown.",
     "event_class__name": "Network | Link | Link Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%DEVICE-3-LINKUPDOWN:\\s+(?P<interface>.+)\\s+LinkDown.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "0000000158: Jan 1 14:52:20: torgovaja_4: %DEVICE-3-LINKUPDOWN: e0/1 LinkDown.",
+            "value_re": []
         }
     ]
 }

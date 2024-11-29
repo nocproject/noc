@@ -1,5 +1,6 @@
 {
     "name": "OS | FreeBSD | Unknown | Cron Message #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ef07b05c-019a-475f-9fa0-a5b8a55efac5",
     "description": "/usr/sbin/cron[94493]: (root) CMD (newsyslog)",
     "event_class__name": "Unknown | Ignore",
@@ -11,11 +12,17 @@
         },
         {
             "key_re": "^profile$",
-            "value_re": "^OS\\.FreeBSD$"
+            "value_re": "^OS\\.Linux$"
         },
         {
             "key_re": "^message$",
             "value_re": "/usr/sbin/cron\\[\\d+\\]: \\(root\\) CMD \\(newsyslog\\)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "/usr/sbin/cron[94493]: (root) CMD (newsyslog)",
+            "value_re": []
         }
     ]
 }

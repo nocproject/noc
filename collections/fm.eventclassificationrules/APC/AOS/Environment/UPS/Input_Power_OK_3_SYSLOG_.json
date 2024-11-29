@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210",
+            "value_re": []
+        }
     ]
 }

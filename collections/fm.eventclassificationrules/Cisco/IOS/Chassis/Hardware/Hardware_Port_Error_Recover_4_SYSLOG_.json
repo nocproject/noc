@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on Gi0/1",
+            "value_re": []
+        }
     ]
 }

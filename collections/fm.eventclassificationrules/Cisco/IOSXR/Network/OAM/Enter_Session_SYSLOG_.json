@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%L2-ELO-6-INTF_SESSION_UP : (?P<interface>\\S+): OAM session has come up"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-ELO-6-INTF_SESSION_UP : TenGigE0/0/1/0: OAM session has come up",
+            "value_re": []
+        }
     ]
 }

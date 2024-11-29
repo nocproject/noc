@@ -16,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "UPS: (?P<name>A logic power supply) fault no longer exists. 0x16A"
+            "value_re": "UPS: (?P<name>A logic power supply) fault no longer exists. 0x0?16A"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: A logic power supply fault no longer exists. 0x016A",
+            "value_re": []
         }
     ]
 }

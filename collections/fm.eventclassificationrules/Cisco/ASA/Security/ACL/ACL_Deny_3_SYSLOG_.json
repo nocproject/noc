@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-3-710003: (?P<proto>\\S+) access denied by ACL from (?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 10 2011 11:32:56: %PIX-3-710003: TCP access denied by ACL from 41.232.61.21/3343 to outside:81.200.192.1/23",
+            "value_re": []
+        }
     ]
 }

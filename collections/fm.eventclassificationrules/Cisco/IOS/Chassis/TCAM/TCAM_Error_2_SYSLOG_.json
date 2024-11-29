@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%HARDWARE-1-TCAM_ERROR: (?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%HARDWARE-1-TCAM_ERROR: Found error in HFTM TCAM Space and not able to recover the error",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Successful Enable (?P<to_priv>Admin) through (?:Web|Telnet|SSH|Console) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>.+?)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Successful Enable Admin through Telnet from 192.168.133.100 authenticated by AAA local_enable method (Username: admin)",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^source$",
             "value_re": "^syslog$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "ELRP.Report: [CLI:vlan3333:1] LOOP DETECTED : 136 transmited, 1 received, ingress slot:port (11) egress slot:port (10)\n(?P<interface>\\S+)",
+            "value_re": []
+        }
     ]
 }

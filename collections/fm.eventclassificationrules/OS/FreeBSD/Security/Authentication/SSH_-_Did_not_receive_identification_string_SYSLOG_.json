@@ -1,5 +1,6 @@
 {
     "name": "OS | FreeBSD | Security | Authentication | SSH - Did not receive identification string (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e8c640c2-5779-4136-a1dc-a5fd7f7fdaa6",
     "description": "sshd[77952]: Did not receive identification string from 10.111.0.33",
     "event_class__name": "Security | Authentication | Login Failed",
@@ -11,11 +12,17 @@
         },
         {
             "key_re": "^profile$",
-            "value_re": "^OS\\.FreeBSD$"
+            "value_re": "^OS\\.Linux$"
         },
         {
             "key_re": "^message$",
             "value_re": "sshd\\[\\d+\\]: Did not receive identification string from (?P<ip>\\S+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "sshd[77952]: Did not receive identification string from 10.111.0.33",
+            "value_re": []
         }
     ]
 }

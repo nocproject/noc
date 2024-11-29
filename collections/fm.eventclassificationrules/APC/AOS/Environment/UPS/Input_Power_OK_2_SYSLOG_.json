@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: No longer compensating for a low input voltage. 0x010C"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: No longer compensating for a low input voltage. 0x010C",
+            "value_re": []
+        }
     ]
 }

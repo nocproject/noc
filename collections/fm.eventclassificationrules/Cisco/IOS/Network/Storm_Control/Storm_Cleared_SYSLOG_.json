@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PM(-SP)?-4-ERR_RECOVER: Attempting to recover from storm-control err-disable state on (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PM-4-ERR_RECOVER: Attempting to recover from storm-control err-disable state on Gi0/24",
+            "value_re": []
+        }
     ]
 }

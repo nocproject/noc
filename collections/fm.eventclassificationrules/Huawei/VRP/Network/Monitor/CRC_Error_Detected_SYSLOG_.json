@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Monitor | CRC Error Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "528e4ccf-1c5c-4843-8030-a930ed4db3bd",
     "description": "Apr 16 15:14:39 10.64.117.106 Apr 16 2015 12:14:39 asw-010-vol IFNET/1/CRCERRORRISING:OID 1.3.6.1.4.1.2011.5.25.41.4.1 The CRC error is rising. (hwIfMonitorIndex=10, hwIfMonitorCrcErrorStatistics=0 6, hwIfMonitorCrcErrorThreshold=3, hwIfMonitorCrcErrorInterval=10)",
     "event_class__name": "Network | Monitor | CRC Error Detected",
@@ -7,7 +8,7 @@
     "patterns": [
         {
             "key_re": "^profile$",
-            "value_re": "^Huawei.VRP$"
+            "value_re": "^Huawei\\.VRP$"
         },
         {
             "key_re": "^source$",
@@ -15,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "IFNET/1/CRCERRORRISING:OID 1.3.6.1.4.1.2011.5.25.41.4.1 The CRC error is rising. (hwIfMonitorIndex=(?P<interface__ifindex>\\d+), hwIfMonitorCrcErrorStatistics=\\d+ \\d+, hwIfMonitorCrcErrorThreshold=\\d+, hwIfMonitorCrcErrorInterval=\\d+)$"
+            "value_re": "IFNET\\/1\\/CRCERRORRISING:OID 1.3.6.1.4.1.2011.5.25.41.4.1 The CRC error is rising. \\(hwIfMonitorIndex=(?P<interface__ifindex>\\d+), hwIfMonitorCrcErrorStatistics=\\d+ \\d+, hwIfMonitorCrcErrorThreshold=\\d+, hwIfMonitorCrcErrorInterval=\\d+\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 16 15:14:39 10.64.117.106 Apr 16 2015 12:14:39 asw-010-vol IFNET/1/CRCERRORRISING:OID 1.3.6.1.4.1.2011.5.25.41.4.1 The CRC error is rising. (hwIfMonitorIndex=10, hwIfMonitorCrcErrorStatistics=0 6, hwIfMonitorCrcErrorThreshold=3, hwIfMonitorCrcErrorInterval=10)",
+            "value_re": []
         }
     ]
 }
