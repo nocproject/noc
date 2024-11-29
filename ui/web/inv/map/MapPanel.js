@@ -417,7 +417,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       tokens.pop();
       dataName = tokens.join("#");
     }
-    var name = this.symbolName(dataName, data.metrics_label, data.shape_width);
+    var name = this.symbolName(dataName, data.metrics_label, data.shape_width, true);
     if(!me.usedImages[data.shape]){
       var img = me.shapeRegistry.getImage(data.shape);
       V(me.paper.svg).defs().append(V(img));
@@ -982,7 +982,7 @@ Ext.define("NOC.inv.map.MapPanel", {
           node.attributes.name,
           data[s].metrics_label,
           node.attributes.data.shape_width,
-          true,
+          false,
         ),
       );
       node.attributes.data.metrics_label = data.metrics_label;
@@ -1536,34 +1536,21 @@ Ext.define("NOC.inv.map.MapPanel", {
       }
     }
   },
-
+  //
   changeLabelText: function(showIPAddress){
-    var me = this;
-    if(showIPAddress){
-      Ext.each(this.graph.getElements(), function(e){
-        e.attr(
-          "text/text",
-          me.symbolName(
-            e.get("address"),
-            e.get("data").metrics_label,
-            e.get("data").shape_width,
-          ),
-        );
-      });
-    } else{
-      Ext.each(this.graph.getElements(), function(e){
-        e.attr(
-          "text/text",
-          me.symbolName(
-            e.get("name"),
-            e.get("data").metrics_label,
-            e.get("data").shape_width,
-          ),
-        );
-      });
-    }
+    Ext.each(this.graph.getElements(), function(e){
+      e.attr(
+        "text/text",
+        this.symbolName(
+          showIPAddress ? e.get("address") : e.get("name"),
+          e.get("data").metrics_label,
+          e.get("data").shape_width,
+          false,
+        ),
+      );
+    }, this);
   },
-
+  //
   breakText: function(text, size, styles, opt){
     opt = opt || {};
     var width = size.width;
@@ -1686,9 +1673,10 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     return lines.join("\n");
   },
-  symbolName: function(name, metrics_label, shape_width, notBrake){
+  //
+  symbolName: function(name, metrics_label, shape_width, makeBrake){
     var metrics, breakText = name;
-    if(!notBrake){
+    if(makeBrake){
       breakText = this.breakText(name, {width: shape_width * 2});
     }
     if(!Ext.isEmpty(metrics_label)){
