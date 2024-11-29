@@ -388,19 +388,20 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     me.hasStp = data.caps.indexOf("Network | STP") !== -1;
     me.app.viewStpButton.setDisabled(!me.hasStp);
-    // me.setPaperDimension();
-    this.viewPort = new joint.shapes.standard.Rectangle({
-      position: {x: 0, y: 0},
-      attrs: {
-        rect: {
-          stroke: "gray",
-          "stroke-width": 1,
-          vectorEffect: "non-scaling-stroke",
+    if(Ext.isEmpty(this.viewPort)){
+      this.viewPort = new joint.shapes.standard.Rectangle({
+        position: {x: 0, y: 0},
+        attrs: {
+          rect: {
+            stroke: "gray",
+            "stroke-width": 1,
+            vectorEffect: "non-scaling-stroke",
+          },
         },
-      },
-      z: -1,
-    });
-    me.app.miniMapPanel.graph.addCells([this.viewPort]);
+        z: -1,
+      });
+      me.app.miniMapPanel.graph.addCells([this.viewPort]);
+    }
     this.setViewPortSize();
     me.setPaperDimension();
     me.fireEvent("renderdone");
