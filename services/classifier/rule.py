@@ -219,7 +219,7 @@ class Rule(object):
                     if r[1] in ("ifindex",):
                         # call fixup with managed object
                         c += [
-                            'if managed_object:'
+                            "if managed_object:"
                             '   e_vars["%s"] = self.fixup_%s(managed_object, smart_text(fm_unescape(e_vars["%s"])))'
                             % (r[0], r[1], name)
                         ]
