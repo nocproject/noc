@@ -30,7 +30,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     this.lookButton = Ext.create("Ext.button.Button", {
       glyph: NOC.glyph.pencil,
       scope: this,
-      tooltip: __("Edit"),
+      tooltip: __("Object settings"),
       handler: this.onLook,
       disabled: true,
     });
