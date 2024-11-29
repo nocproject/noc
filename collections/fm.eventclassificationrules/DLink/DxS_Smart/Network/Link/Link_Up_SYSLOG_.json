@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Smart | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bde9f3d3-ad6b-40d5-b348-2134e058e205",
     "description": "Port 26 link up, 1Gbps FULL duplex info",
     "event_class__name": "Network | Link | Link Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Port 26 link up, 1Gbps FULL duplex info",
+            "value_re": []
         }
     ]
 }

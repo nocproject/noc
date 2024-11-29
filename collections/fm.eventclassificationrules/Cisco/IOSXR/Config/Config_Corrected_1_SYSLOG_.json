@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Misconfiguration cleared"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Misconfiguration cleared, re-enabling Node 195.98.32.93 in IG 1.",
+            "value_re": []
+        }
     ]
 }

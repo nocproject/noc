@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Link | Full-Duplex (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "45088293-d691-42ce-9ec5-fb39aba8d5e8",
     "description": "HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthFullDuplexClear",
     "event_class__name": "Network | Link | Full-Duplex",

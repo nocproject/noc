@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: (?P<name>A power module) fault no longer exists. 0x0202"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: A power module fault no longer exists. 0x0202",
+            "value_re": []
+        }
     ]
 }

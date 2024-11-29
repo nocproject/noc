@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | BGP | Backward Transition (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "30d62b68-0785-4326-86dc-2394aac8b204",
     "description": "BGP4-MIB::bgpEstablished",
     "event_class__name": "Network | BGP | Backward Transition",

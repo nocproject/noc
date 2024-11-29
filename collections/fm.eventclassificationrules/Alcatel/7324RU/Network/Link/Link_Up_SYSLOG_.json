@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "DSLAM-(?P<interface>\\d+):MINOR,-LINE_DOWN:The line is down$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "DSLAM-10:MINOR,-LINE_DOWN:The line is down",
+            "value_re": []
+        }
     ]
 }

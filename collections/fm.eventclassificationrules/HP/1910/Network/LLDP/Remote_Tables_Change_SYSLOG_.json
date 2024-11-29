@@ -2,7 +2,7 @@
     "name": "HP | 1910 | Network | LLDP | Remote Tables Change (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "2329c6eb-5ee1-4c1b-94c4-eff32b964718",
-    "description": "Apr 16 15:36:25 2013 2928 %%10LLDP/1/REMCHG(t): lldpRemTablesChangeRemInserts : \\d+,RemDeletes : \\d+,RemDrops : \\d+,RemAgeouts : \\d+",
+    "description": "Apr 16 15:36:25 2013 2928 %%10LLDP/1/REMCHG(t): lldpRemTablesChangeRemInserts : 1,RemDeletes : 1,RemDrops : 1,RemAgeouts : 0",
     "event_class__name": "Network | LLDP | Remote Tables Change",
     "preference": 1000,
     "patterns": [
@@ -16,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%10LLDP/\\d+/REMCHG\\(t\\): lldpRemTablesChangeRemInserts : (?P<table_inserts>\\d+),RemDeletes : (?P<table_deletes>\\d+),RemDrops : (?P<table_drops>\\d+),RemAgeouts : (?P<table_ageouts>\\d+)$"
+            "value_re": "%10LLDP\\/\\d+\\/REMCHG\\(t\\): lldpRemTablesChangeRemInserts : (?P<table_inserts>\\d+),RemDeletes : (?P<table_deletes>\\d+),RemDrops : (?P<table_drops>\\d+),RemAgeouts : (?P<table_ageouts>\\d+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 16 15:36:25 2013 2928 %%10LLDP/1/REMCHG(t): lldpRemTablesChangeRemInserts : 1,RemDeletes : 1,RemDrops : 1,RemAgeouts : 0",
+            "value_re": []
         }
     ]
 }

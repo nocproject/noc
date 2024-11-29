@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the slave loopback mode"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has exited the slave loopback mode.",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%IP-ARP-6-INFO_DUPADDR : Duplicate IP address (?P<ip>\\S+) on (?P<interface>\\S+), sourced by (?P<mac>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%IP-ARP-6-INFO_DUPADDR : Duplicate IP address 192.168.1.128 on BVI5036, sourced by 0019.993d.b1fa",
+            "value_re": []
+        }
     ]
 }

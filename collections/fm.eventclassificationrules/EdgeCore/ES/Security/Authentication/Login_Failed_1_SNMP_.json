@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Security | Authentication | Login Failed #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a20b49bd-57db-4208-bfbf-51af23846f04",
     "description": "ES3528MO-MIB::swAuthenticationFailure",
     "event_class__name": "Security | Authentication | Login Failed",

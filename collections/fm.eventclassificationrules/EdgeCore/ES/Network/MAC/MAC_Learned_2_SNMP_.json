@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Network | MAC | MAC Learned #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d99d84c7-f63d-4b67-83a9-815cb4bb5525",
     "description": "ES3528MO-MIB::es3528moTrapsPrefix.115",
     "event_class__name": "Network | MAC | MAC Learned",

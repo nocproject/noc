@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10WEB/4/WEBOPT_LOGIN_FAIL\\(l\\):\\s+(?P<user>\\S+) failed to log in from (?P<ip>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Oct  5 15:21:16 2000 3Com Baseline Switch %%10WEB/4/WEBOPT_LOGIN_FAIL(l): srthsrth failed to log in from 192.168.1.3",
+            "value_re": []
+        }
     ]
 }

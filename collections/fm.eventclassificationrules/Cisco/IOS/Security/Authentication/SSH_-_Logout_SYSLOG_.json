@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SSH-5-SSH2_CLOSE: SSH2 Session from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) for user '(?P<user>.*)' using crypto cipher '\\S+', hmac '\\S+' closed$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SSH-5-SSH2_CLOSE: SSH2 Session from 172.16.0.22 (tty = 1) for user 'admin' using crypto cipher 'aes256-cbc', hmac 'hmac-sha1' closed",
+            "value_re": []
+        }
     ]
 }

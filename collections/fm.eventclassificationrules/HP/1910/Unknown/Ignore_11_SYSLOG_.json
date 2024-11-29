@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10NTP/4/NTP_LOG\\(l\\):\\s+System stratum changes from \\d+ to \\d+ after clock update\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Dec 29 01:01:45 2012 3com2952 %%10NTP/4/NTP_LOG(l):  System stratum changes from 16 to 5 after clock update.",
+            "value_re": []
+        }
     ]
 }

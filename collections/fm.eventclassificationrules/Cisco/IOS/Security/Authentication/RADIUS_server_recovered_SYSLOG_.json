@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%RADIUS-4-RADIUS_ALIVE: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is being marked alive\\."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%RADIUS-4-RADIUS_ALIVE: RADIUS server 192.168.167.124:1812,1813 is being marked alive.",
+            "value_re": []
+        }
     ]
 }

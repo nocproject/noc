@@ -1,5 +1,6 @@
 {
     "name": "Eltex | MES | Chassis | Hardware | Module | Module Present (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "894025d0-ca4e-408d-bdb0-f81f49b93101",
     "description": "%Fiber-I-SFP-PRESENT-CHNG: gi0/12 SFP status is present.",
     "event_class__name": "Chassis | Hardware | Module | Module Present",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%Fiber-I-SFP-PRESENT-CHNG: (?P<interface>\\S+) (?P<module>SFP) status is present."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%Fiber-I-SFP-PRESENT-CHNG: gi0/12 SFP status is present.",
+            "value_re": []
         }
     ]
 }

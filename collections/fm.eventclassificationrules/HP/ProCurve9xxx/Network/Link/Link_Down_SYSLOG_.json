@@ -1,5 +1,6 @@
 {
     "name": "HP | ProCurve9xxx | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3f779862-874c-426b-a113-73b0d523e394",
     "description": "hp93_1, Interface ethernet 2/6, state down",
     "event_class__name": "Network | Link | Link Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "^\\S+ Interface (?P<interface>[^,]+), state down$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "hp93_1, Interface ethernet 2/6, state down",
+            "value_re": []
         }
     ]
 }

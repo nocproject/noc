@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Unknown | Ignore UI_COMMIT_PROGRESS (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e7bcb317-ee56-470a-9f81-8c01db5bfe73",
     "description": "UI_COMMIT_PROGRESS",
     "event_class__name": "Unknown | Ignore",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "UI_COMMIT_PROGRESS"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "UI_COMMIT_PROGRESS",
+        "value_re": []
+    }]
 }

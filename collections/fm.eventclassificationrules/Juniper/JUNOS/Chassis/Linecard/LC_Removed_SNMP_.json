@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Linecard | LC Removed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "8dd86c69-5989-487e-8e86-502decf4df66",
     "description": "JUNIPER-MIB::jnxFruRemoval",
     "event_class__name": "Chassis | Linecard | LC Removed",

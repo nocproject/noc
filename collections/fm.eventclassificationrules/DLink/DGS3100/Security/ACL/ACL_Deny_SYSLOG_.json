@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Security | ACL | ACL Deny (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f7110318-9f20-421e-8e5e-a878a9872e78",
     "description": "%MNGINF-W-ACL: Management ACL drop packet received on interface Vlan 3 from 172.16.35.2 to 172.16.15.9 protocol 1 service Icmp",
     "event_class__name": "Security | ACL | ACL Deny",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%MNGINF-W-ACL: (?P<name>Management) ACL drop packet received on interface (?P<src_interface>.+) from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) protocol (?P<proto>\\d+) service \\S+"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%MNGINF-W-ACL: Management ACL drop packet received on interface Vlan 3 from 172.16.35.2 to 172.16.15.9 protocol 1 service Icmp",
+            "value_re": []
         }
     ]
 }

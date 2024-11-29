@@ -1,5 +1,6 @@
 {
     "name": "NOC | PM | Out of Thresholds",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e6fe6914-45dd-45af-870c-cd67dd31793b",
     "event_class__name": "PM | Out of Thresholds",
     "preference": 1000,

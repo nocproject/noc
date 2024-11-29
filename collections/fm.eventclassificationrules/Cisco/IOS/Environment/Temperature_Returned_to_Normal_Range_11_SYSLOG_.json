@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit.",
+            "value_re": []
+        }
     ]
 }

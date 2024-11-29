@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Linecard | LC Error (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0a1b354e-b9cf-4569-9291-5b92aa40e2ff",
     "description": "JUNIPER-MIB::jnxFruCheck",
     "event_class__name": "Chassis | Linecard | LC Error",

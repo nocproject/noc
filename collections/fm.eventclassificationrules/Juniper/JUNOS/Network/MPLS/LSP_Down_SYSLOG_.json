@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | MPLS | LSP Down  (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c2a35a10-cc4e-4ce5-ac20-a2a1f9f6db3d",
     "description": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_LSP_DOWN: MPLS LSP r1-r2 down on primary()",
     "event_class__name": "Network | MPLS | LSP Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "RPD_MPLS_LSP_DOWN: MPLS LSP (?P<name>.+?) down on"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_LSP_DOWN: MPLS LSP r1-r2 down on primary()",
+            "value_re": []
         }
     ]
 }

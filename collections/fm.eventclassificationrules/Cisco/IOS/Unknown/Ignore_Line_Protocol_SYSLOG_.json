@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "%LINEPROTO-.*5-UPDOWN"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%LINEPROTO-5-UPDOWN",
+        "value_re": []
+    }]
 }

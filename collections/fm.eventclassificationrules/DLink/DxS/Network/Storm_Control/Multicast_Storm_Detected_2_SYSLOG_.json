@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Multicast storm is occurring \\(port: (?P<interface>\\S+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Multicast storm is occurring (port: 13)",
+            "value_re": []
+        }
     ]
 }

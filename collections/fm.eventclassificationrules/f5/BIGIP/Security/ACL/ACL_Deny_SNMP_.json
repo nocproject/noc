@@ -1,5 +1,6 @@
 {
     "name": "f5 | BIGIP | Security | ACL | ACL Deny (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "01fee1ba-72c6-46be-a942-cddd6029a87f",
     "description": "F5-BIGIP-COMMON-MIB::bigipPacketRejected",
     "event_class__name": "Security | ACL | ACL Deny",

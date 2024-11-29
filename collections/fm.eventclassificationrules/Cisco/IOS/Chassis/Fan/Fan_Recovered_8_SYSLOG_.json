@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%C6KENV-SP-4-PSFANOK: the (?P<name>fan in power supply \\d+) is OK"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%C6KENV-SP-4-PSFANOK: the fan in power supply 1 is OK",
+            "value_re": []
+        }
     ]
 }

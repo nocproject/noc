@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\sUp,.+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (TenGigabitEthernet8/2) Up, new adjacency",
+            "value_re": []
+        }
     ]
 }

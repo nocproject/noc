@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-6-CLOCKUPDATE: System clock has been updated from .+ to .+, configured from NTP by (?P<server_address>\\S+).$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-6-CLOCKUPDATE: System clock has been updated from 07:16:14 MSK Mon Oct 31 2011 to 07:16:16 MSK Mon Oct 31 2011, configured from NTP by 192.168.100.253",
+            "value_re": []
+        }
     ]
 }

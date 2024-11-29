@@ -1,5 +1,6 @@
 {
     "name": "Ubiquiti | AirOS | Unknown | Ignore mca-client (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "655b81f9-b364-4c40-b8cb-1753c4b7bda5",
     "description": "Jan 12 03:07:00 syslog: mca-client.service(): Sending request to '/tmp/.mcad'",
     "event_class__name": "Unknown | Ignore",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": ".* syslog: mca-client\\..*"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jan 12 03:07:00 syslog: mca-client.service(): Sending request to '/tmp/.mcad'",
+            "value_re": []
         }
     ]
 }

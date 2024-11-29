@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Network | Link | Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "dcbcbff8-09d7-4546-94ac-673dedbca87f",
     "description": "IF-MIB::linkUp",
     "event_class__name": "Network | Link | Link Up",

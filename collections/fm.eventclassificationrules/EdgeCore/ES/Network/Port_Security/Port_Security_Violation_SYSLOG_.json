@@ -1,15 +1,14 @@
 {
     "name": "EdgeCore | ES | Network | Port Security | Port Security Violation (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2fb0d877-ffa3-429c-82d6-ea955a4652e7",
     "description": "Sep 19 16:56:41 Rybatsk-17-1 snmp Unit 1 port 13 have intrusion MAC 001517-8FBD5B.",
     "event_class__name": "Network | Port Security | Port Security Violation",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "interface",
-            "value": "='Eth %s/%s' % (unit, port)"
-        }
-    ],
+    "vars": [{
+        "name": "interface",
+        "value": "='Eth %s/%s' % (unit, port)"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -22,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "Unit (?P<unit>\\S+) port\\s+(?P<port>\\d+) have intrusion MAC (?P<mac>\\S+)\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Sep 19 16:56:41 Rybatsk-17-1 snmp Unit 1 port 13 have intrusion MAC 001517-8FBD5B.",
+            "value_re": []
         }
     ]
 }

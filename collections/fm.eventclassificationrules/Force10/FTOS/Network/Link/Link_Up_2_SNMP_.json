@@ -1,5 +1,6 @@
 {
     "name": "Force10 | FTOS | Network | Link | Link Up #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "790b94f3-46cf-4b2f-83e3-0d2befd48e73",
     "description": "IF-MIB::linkUp",
     "event_class__name": "Network | Link | Link Up",

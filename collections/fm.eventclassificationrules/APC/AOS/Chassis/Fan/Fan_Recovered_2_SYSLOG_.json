@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: (?P<name>An electronics unit fan) fault no longer exists. 0x013C"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: An electronics unit fan fault no longer exists. 0x013C",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5e569326-adb7-49fa-bc78-3b4ed3bd6663",
     "description": "CISCO-ENVMON-MIB::ciscoEnvMonSuppStatusChangeNotif",
     "event_class__name": "Chassis | PSU | PSU Failed",

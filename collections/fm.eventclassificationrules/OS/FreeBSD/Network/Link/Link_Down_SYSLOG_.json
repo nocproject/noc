@@ -1,5 +1,6 @@
 {
     "name": "OS | FreeBSD | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "27f965d7-e172-4f2c-8305-21ed25b13719",
     "description": "kernel: re0: link state changed to DOWN",
     "event_class__name": "Network | Link | Link Down",
@@ -11,11 +12,17 @@
         },
         {
             "key_re": "^profile$",
-            "value_re": "^OS\\.FreeBSD$"
+            "value_re": "^OS\\.Linux$"
         },
         {
             "key_re": "^message$",
             "value_re": "kernel: (?P<interface>\\S+): link state changed to DOWN$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "kernel: re0: link state changed to DOWN",
+            "value_re": []
         }
     ]
 }

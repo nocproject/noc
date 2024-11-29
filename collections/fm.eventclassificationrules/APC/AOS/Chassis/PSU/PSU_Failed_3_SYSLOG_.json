@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: (?P<name>A power supply unit \\(PSU\\)) fault exists. 0x0A07"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: A power supply unit (PSU) fault exists. 0x0A07",
+            "value_re": []
+        }
     ]
 }

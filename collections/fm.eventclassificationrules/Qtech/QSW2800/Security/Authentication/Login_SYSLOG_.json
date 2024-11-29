@@ -1,5 +1,6 @@
 {
     "name": "Qtech | QSW2800 | Security | Authentication | Login (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7abbb5e5-5950-47f8-8f2b-1763f74f1460",
     "description": "003375: sw-dom-5 %Nov 27 15:00:45 2012 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User admin login successfully from 192.168.220.252:41784.",
     "event_class__name": "Security | Authentication | Login",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "User (?P<user>.+) login successfully from (?P<ip>\\S+):\\d+\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "003375: sw-dom-5 %Nov 27 15:00:45 2012 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User admin login successfully from 192.168.220.252:41784.",
+            "value_re": []
         }
     ]
 }

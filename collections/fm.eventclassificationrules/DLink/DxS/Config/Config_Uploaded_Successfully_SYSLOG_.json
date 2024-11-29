@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Configuration successfully uploaded \\(Username: (?P<user>.+), IP: (?P<ip>\\S+)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Configuration successfully uploaded (Username: admin, IP: 172.16.0.1)",
+            "value_re": []
+        }
     ]
 }

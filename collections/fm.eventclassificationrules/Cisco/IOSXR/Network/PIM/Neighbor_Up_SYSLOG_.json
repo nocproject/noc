@@ -18,5 +18,11 @@
             "key_re": "message",
             "value_re": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) UP on (?P<interface>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor 1.1.1.1 UP on BV2",
+            "value_re": []
+        }
     ]
 }

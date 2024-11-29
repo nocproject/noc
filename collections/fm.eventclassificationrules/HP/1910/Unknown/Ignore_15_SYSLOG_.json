@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10MSTP/6/MSTP_FORWARDING\\(l\\): Instance \\S+ port \\S+ has been set to forwarding state\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Feb 11 12:39:20 2013 Teh %%10MSTP/6/MSTP_FORWARDING(l): Instance 0's port GigabitEthernet1/0/7 has been set to forwarding state.",
+            "value_re": []
+        }
     ]
 }

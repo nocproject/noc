@@ -1,5 +1,6 @@
 {
     "name": "Linksys | SPS2xx | Security | Authentication | Logout #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6261d9f3-a4d8-4b31-9cbf-86bf8b264591",
     "description": "%AAA-I-DISCONNECT: http connection for user admin, source 10.8.4.19 destination 10.8.2.13 TERMINATED",
     "event_class__name": "Security | Authentication | Logout",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "^%AAA-I-DISCONNECT: http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ TERMINATED$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%AAA-I-DISCONNECT: http connection for user admin, source 10.8.4.19 destination 10.8.2.13 TERMINATED",
+            "value_re": []
         }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10SC/\\d+/SC_AAA_(LAUNCH|SUCCESS)\\(l\\): -AAAType=(AUTHEN|ACCOUNT|AUTHOR)-AAAScheme= local-Service=login-UserName=\\S+@system; AAA (launched|is successful)\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "May  9 05:45:12 2000 3com2952 %%10SC/6/SC_AAA_LAUNCH(l): -AAAType=AUTHEN-AAAScheme= local-Service=login-UserName=admin@system; AAA launched.",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%IOSXE_PEM-6-PEMOK: The (?P<name>PEM in slot \\S+) is functioning properly"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%IOSXE_PEM-6-PEMOK: The PEM in slot 1 is functioning properly",
+            "value_re": []
+        }
     ]
 }

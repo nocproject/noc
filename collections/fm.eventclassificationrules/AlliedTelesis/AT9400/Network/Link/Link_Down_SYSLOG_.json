@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "pcfg: Link DOWN on port (?P<interface>\\d+)"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "pcfg: Link DOWN on port 20",
+        "value_re": []
+    }]
 }

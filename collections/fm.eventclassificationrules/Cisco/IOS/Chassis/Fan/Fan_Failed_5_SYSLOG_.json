@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Fan | Fan Failed #5 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c5e76189-3732-42b5-803f-bc56e39abf69",
     "description": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
     "event_class__name": "Chassis | Fan | Fan Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
+            "value_re": []
         }
     ]
 }

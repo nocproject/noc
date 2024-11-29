@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor",
+            "value_re": []
+        }
     ]
 }

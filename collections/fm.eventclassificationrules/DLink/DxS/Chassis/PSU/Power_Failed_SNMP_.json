@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Chassis | PSU | Power Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3f00b4a5-6208-4128-b7e1-7f5a536421ea",
     "description": "DOT3-OAM-MIB::dot3OamNonThresholdEvent",
     "event_class__name": "Chassis | PSU | Power Failed",

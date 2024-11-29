@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%STP-I-EDGEPORT: Attention: port \\S+ from which the bpdu was received is configured as Fast Port$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%STP-I-EDGEPORT: Attention: port ch3 from which the bpdu was received is configured as Fast Port",
+            "value_re": []
+        }
     ]
 }

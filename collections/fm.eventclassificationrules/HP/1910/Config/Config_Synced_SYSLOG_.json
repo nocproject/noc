@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY\\(l\\): Configuration is saved successfully\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Feb 11 15:02:43 2013 Teh %%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY(l): Configuration is saved successfully.",
+            "value_re": []
+        }
     ]
 }

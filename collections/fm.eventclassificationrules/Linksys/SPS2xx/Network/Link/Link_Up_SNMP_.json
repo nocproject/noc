@@ -1,5 +1,6 @@
 {
     "name": "Linksys | SPS2xx | Network | Link | Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "955060e3-52e4-4f89-9071-e76baa88f207",
     "description": "IF-MIB::linkUp interface has turned into UP state",
     "event_class__name": "Network | Link | Link Up",

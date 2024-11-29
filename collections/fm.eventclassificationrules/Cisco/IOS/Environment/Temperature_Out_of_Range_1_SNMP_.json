@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "97b707ca-4b39-4b65-bf1e-da5e08234c9b",
     "description": "CISCO-ENVMON-MIB::ciscoEnvMonTemperatureNotification",
     "event_class__name": "Environment | Temperature Out of Range",

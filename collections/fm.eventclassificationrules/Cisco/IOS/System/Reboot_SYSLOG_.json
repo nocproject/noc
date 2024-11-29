@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-5-(?:SCHEDULED_)?RELOAD: Reload requested.+ by (?P<user>\\S+) on vty\\d+ (\\S+). Reload Reason: Reload Command."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-5-SCHEDULED_RELOAD: Reload requested for 14:55:12 UTC Wed Dec 28 2011 at 09:55:12 UTC Wed Dec 28 2011 by wad on vty0 (192.168.13.56). Reload Reason: Reload Command.",
+            "value_re": []
+        }
     ]
 }

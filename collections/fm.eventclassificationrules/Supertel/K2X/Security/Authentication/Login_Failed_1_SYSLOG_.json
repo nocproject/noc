@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%AAA-W-REJECT: New telnet connection for user (?P<user>\\S+), source (?P<ip>\\S+) destination \\S+  REJECTED$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%AAA-W-REJECT: New telnet connection for user unKnown, source 192.168.25.8 destination 192.168.1.1  REJECTED",
+            "value_re": []
+        }
     ]
 }

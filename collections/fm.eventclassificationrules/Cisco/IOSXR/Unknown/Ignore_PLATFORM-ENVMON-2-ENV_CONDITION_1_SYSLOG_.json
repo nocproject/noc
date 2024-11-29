@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM-ENVMON-2-ENV_CONDITION : An environmental condition on .+ (?:exists|is cleared)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-ENVMON-2-ENV_CONDITION : An environmental condition on slot 19 exists",
+            "value_re": []
+        }
     ]
 }

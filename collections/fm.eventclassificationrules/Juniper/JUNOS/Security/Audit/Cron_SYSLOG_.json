@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Security | Audit | Cron (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cfe929ba-cd01-495a-8b17-a7fde6a95d17",
     "description": "/usr/sbin/cron[1845]: (root) CMD (adjkerntz -a)",
     "event_class__name": "Security | Audit | Cron",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "/usr/sbin/cron\\[\\d+\\]: \\((?P<user>.+)\\) CMD \\((?P<command>.+)\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "/usr/sbin/cron[1845]: (root) CMD (adjkerntz -a)",
+            "value_re": []
         }
     ]
 }

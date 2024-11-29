@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Unknown | Ignore UI_CHILD_START (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5dd53c17-6179-4a3d-ba3f-0d0582aad1cf",
     "description": "UI_CHILD_START",
     "event_class__name": "Unknown | Ignore",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "UI_CHILD_START"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "UI_CHILD_START",
+        "value_re": []
+    }]
 }

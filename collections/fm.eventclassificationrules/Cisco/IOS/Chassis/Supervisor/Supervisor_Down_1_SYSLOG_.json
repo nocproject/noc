@@ -5,12 +5,10 @@
     "description": "%C4K_REDUNDANCY-3-SIMPLEX_MODE: The peer Supervisor has been lost",
     "event_class__name": "Chassis | Supervisor | Supervisor Down",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Supervisor"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Supervisor"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%(?:C4K_)?REDUNDANCY-3-SIMPLEX_MODE: The peer Supervisor has been lost"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C4K_REDUNDANCY-3-SIMPLEX_MODE: The peer Supervisor has been lost",
+            "value_re": []
         }
     ]
 }

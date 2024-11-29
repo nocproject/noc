@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Security | Authentication | Authentication Failed #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b471ff8f-8cab-4676-b741-8c62b67706fe",
     "description": "Sep 19 13:36:03 Karavaev-28 snmp Authentication failure notification.",
     "event_class__name": "Security | Authentication | Authentication Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "snmp Authentication failure notification.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Sep 19 13:36:03 Karavaev-28 snmp Authentication failure notification.",
+            "value_re": []
         }
     ]
 }

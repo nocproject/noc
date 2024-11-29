@@ -5,12 +5,10 @@
     "description": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
     "event_class__name": "Chassis | Fan | Fan Inserted",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Chassis Fan"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Chassis Fan"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -23,6 +21,12 @@
         {
             "key_re": "^message$",
             "value_re": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
+            "value_re": []
         }
     ]
 }

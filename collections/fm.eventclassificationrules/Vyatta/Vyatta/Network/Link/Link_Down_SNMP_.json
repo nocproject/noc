@@ -1,5 +1,6 @@
 {
     "name": "Vyatta | Vyatta | Network | Link | Link Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2a5dd50a-b503-4260-933e-687bdc0d52c3",
     "description": "IF-MIB::linkDown",
     "event_class__name": "Network | Link | Link Down",

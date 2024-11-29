@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10CFGMAN/5/CFGMAN_EXIT\\(l\\): Exit from configuration mode\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Feb 11 16:25:10 2013 Teh %%10CFGMAN/5/CFGMAN_EXIT(l): Exit from configuration mode.",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "40ee9143-5717-4ae1-9975-09deb92cc7bb",
     "description": "Nov  8 22:14:23 pmo-dsw01 mgd[21775]: UI_COMMIT_COMPLETED: commit complete",
     "event_class__name": "Config | Config Changed",
@@ -17,6 +18,11 @@
             "key_re": "^message$",
             "value_re": "UI_COMMIT_COMPLETED.+commit complete\\s?$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Nov  8 22:14:23 pmo-dsw01 mgd[21775]: UI_COMMIT_COMPLETED: commit complete",
+            "value_re": []
+        }
     ]
 }
-

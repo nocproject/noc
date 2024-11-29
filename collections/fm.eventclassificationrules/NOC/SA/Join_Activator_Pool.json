@@ -1,5 +1,6 @@
 {
     "name": "NOC | SA | Join Activator Pool ",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e077e236-d7ea-4489-8a41-40ffa358f7eb",
     "event_class__name": "NOC | SA | Join Activator Pool",
     "preference": 1000,

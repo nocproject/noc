@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-2-SUP_TEMPOK:\\s*(?P<name>Supervisor in slot \\d+) \\S+ temperature OK"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-2-SUP_TEMPOK: Supervisor in slot 5 EARL temperature OK",
+            "value_re": []
+        }
     ]
 }

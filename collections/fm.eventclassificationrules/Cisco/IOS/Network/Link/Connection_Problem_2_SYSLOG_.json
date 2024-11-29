@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | Connection Problem #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c9c79a0b-096d-4b1c-99d8-132fa5f536a1",
     "description": "%C7600_ES_LINK-DFC3-3-INTR_THROTTLE: Interface TenGigabitEthernet3/2 PHY interrupt is throttled. Total throttle count 1.",
     "event_class__name": "Network | Link | Connection Problem",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%.+-INTR_THROTTLE: Interface (?P<interface>\\S+) PHY interrupt is throttled"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C7600_ES_LINK-DFC3-3-INTR_THROTTLE: Interface TenGigabitEthernet3/2 PHY interrupt is throttled. Total throttle count 1.",
+            "value_re": []
         }
     ]
 }

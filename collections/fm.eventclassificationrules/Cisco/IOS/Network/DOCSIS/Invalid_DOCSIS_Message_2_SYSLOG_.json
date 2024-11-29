@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | DOCSIS | Invalid DOCSIS Message #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f5c95464-2ea4-484f-87b0-719e7a8efae3",
     "description": "%UBR7200-5-NOTIMPLMENTEDMNCSMSG: Not implemented DOCSIS MESSAGE received from a Cable Modem for interface Cable1/0",
     "event_class__name": "Network | DOCSIS | Invalid DOCSIS Message",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-5-NOTIMPLMENTEDMNCSMSG: Not implemented DOCSIS MESSAGE received from a Cable Modem for interface (?P<interface>.+)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-5-NOTIMPLMENTEDMNCSMSG: Not implemented DOCSIS MESSAGE received from a Cable Modem for interface Cable1/0",
+            "value_re": []
         }
     ]
 }

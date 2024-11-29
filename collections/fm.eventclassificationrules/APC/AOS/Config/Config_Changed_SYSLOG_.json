@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "System: SNMP configuration change. 0x0003"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "System: SNMP configuration change. 0x0003",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "NOC | Periodic | Periodic Failed | PM Failed",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "727ed27f-c44d-4c22-a431-7f7fab05601f",
     "description": "PM Failed",
     "event_class__name": "NOC | Periodic | Periodic Failed",

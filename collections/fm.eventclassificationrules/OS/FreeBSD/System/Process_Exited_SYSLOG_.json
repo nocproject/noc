@@ -1,5 +1,6 @@
 {
     "name": "OS | FreeBSD | System | Process Exited (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "54709408-29d3-440c-b269-a1eaa78d3e9e",
     "description": "kernel: pid 15259 (gtk-gnash), uid 1001: exited on signal 6 (core dumped)",
     "event_class__name": "System | Process Exited",
@@ -11,11 +12,17 @@
         },
         {
             "key_re": "^profile$",
-            "value_re": "^OS\\.FreeBSD$"
+            "value_re": "^OS\\.Linux$"
         },
         {
             "key_re": "^message$",
             "value_re": "kernel: pid (?P<pid>\\d+) \\((?P<name>\\S+)\\), uid \\d+: exited on signal \\d+( \\(core dumped\\))?$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "kernel: pid 15259 (gtk-gnash), uid 1001: exited on signal 6 (core dumped)",
+            "value_re": []
         }
     ]
 }

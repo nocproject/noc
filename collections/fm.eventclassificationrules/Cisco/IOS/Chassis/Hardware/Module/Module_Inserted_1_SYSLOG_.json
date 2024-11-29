@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%OIR-SP-6-INSCARD: Card inserted in (?P<module>slot \\S+), interfaces are now online"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%OIR-SP-6-INSCARD: Card inserted in slot 3, interfaces are now online",
+            "value_re": []
+        }
     ]
 }

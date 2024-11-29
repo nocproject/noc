@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Config | Config Changed #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "361328a6-c4bd-4e41-8f46-6458887724b3",
     "description": "AGENT-GENERAL-MIB::agentCfgOperCompleteTrap",
     "event_class__name": "Config | Config Changed",

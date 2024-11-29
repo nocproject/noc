@@ -1,7 +1,8 @@
 {
     "name": "MikroTik | RouterOS | Security | Authentication | Logout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4b379ed6-bee7-4b56-9d87-64693d85fd84",
-    "description": "account user mitya logged in from 193.34.20.2 via ssh",
+    "description": "account user mitya logged out from 193.34.20.2 via ssh",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
     "patterns": [
@@ -15,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "account user (?P<user>.+?) logged out from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)$"
+            "value_re": "account user (?P<user>.+) logged out from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "account user mitya logged out from 193.34.20.2 via ssh",
+            "value_re": []
         }
     ]
 }

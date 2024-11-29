@@ -1,5 +1,6 @@
 {
     "name": "Network | Link | Link Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c9ef59cb-dfa6-492d-b4b5-088cf5685329",
     "description": "IF-MIB::linkDown",
     "event_class__name": "Network | Link | Link Down",

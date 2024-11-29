@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | Port Security | Port Security Violation (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c45b7f51-f6c1-45eb-911a-6ba7d621ddf6",
     "description": "DGS3612-L2MGMT-MIB::swL2PortSecurityViolationTrap",
     "event_class__name": "Network | Port Security | Port Security Violation",

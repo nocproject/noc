@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "\\[BGP(\\(3\\))?:\\] BGP connection is closed due to error \\(.+ Peer:<(?P<peer>\\S+)>\\)\\."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN(4) [BGP(3):] BGP connection is closed due to error (Code:<2> Subcode:<7> Field:<Open Opt: Strict, Err-Data present> Peer:<192.168.1.1>).",
+            "value_re": []
+        }
     ]
 }

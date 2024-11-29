@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ETHERNET_OAM-5-LINK_MONITOR: (?P<error>.+) errors detected over the last .+ on interface (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ETHERNET_OAM-5-LINK_MONITOR: 121507 rx CRC errors detected over the last 180 seconds on interface Fa0/24",
+            "value_re": []
+        }
     ]
 }

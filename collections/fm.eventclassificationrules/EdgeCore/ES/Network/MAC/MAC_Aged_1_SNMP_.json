@@ -1,5 +1,6 @@
 {
     "name": "EdgeCore | ES | Network | MAC | MAC Aged #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "daca4eb3-4d7e-4fc0-8f43-a95e36a4a67e",
     "description": "ES3528MO-MIB::macNotificationTrap",
     "event_class__name": "Network | MAC | MAC Aged",

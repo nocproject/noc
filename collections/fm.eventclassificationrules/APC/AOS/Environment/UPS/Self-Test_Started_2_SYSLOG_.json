@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: Self-Test started by automatic timer. 0x0137"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: Self-Test started by automatic timer. 0x0137",
+            "value_re": []
+        }
     ]
 }

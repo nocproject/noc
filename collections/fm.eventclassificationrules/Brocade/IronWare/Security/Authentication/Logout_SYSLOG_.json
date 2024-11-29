@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": ".* Security: (?:SSH|telnet) logout by (?P<user>\\S+) from src IP (?P<ip>\\S+),.*"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 7 07:11:00 nechaeva-4 Security: SSH logout by USER from src IP 10.200.201.137, src MAC 000c.db44.e900",
+            "value_re": []
+        }
     ]
 }

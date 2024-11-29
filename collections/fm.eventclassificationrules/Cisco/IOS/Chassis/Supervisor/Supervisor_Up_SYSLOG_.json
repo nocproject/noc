@@ -5,12 +5,10 @@
     "description": "%C4K_REDUNDANCY-6-DUPLEX_MODE: The peer Supervisor has beendetected",
     "event_class__name": "Chassis | Supervisor | Supervisor Up",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "name",
-            "value": "Supervisor"
-        }
-    ],
+    "vars": [{
+        "name": "name",
+        "value": "Supervisor"
+    }],
     "patterns": [
         {
             "key_re": "^source$",
@@ -22,7 +20,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%(?:C4K_)?REDUNDANCY-6-DUPLEX_MODE: The peer Supervisor has beendetected-6-DUPLEX_MODE: The peer Supervisor has been\\s*detected"
+            "value_re": "%(?:C4K_)?REDUNDANCY-6-DUPLEX_MODE: The peer Supervisor has beendetected"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%C4K_REDUNDANCY-6-DUPLEX_MODE: The peer Supervisor has beendetected",
+            "value_re": []
         }
     ]
 }

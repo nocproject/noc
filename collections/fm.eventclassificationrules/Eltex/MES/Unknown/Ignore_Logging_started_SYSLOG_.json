@@ -1,5 +1,6 @@
 {
     "name": "Eltex | MES | Unknown | Ignore Logging started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "25983f52-6d81-4c49-9e8f-307590362916",
     "description": "%SYSLOG-N-LOGGING: Logging started.",
     "event_class__name": "Unknown | Ignore",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "^%SYSLOG-N-LOGGING: Logging started\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYSLOG-N-LOGGING: Logging started.",
+            "value_re": []
         }
     ]
 }

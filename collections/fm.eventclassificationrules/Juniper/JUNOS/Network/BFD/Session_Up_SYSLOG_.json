@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | BFD | Session Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ccbe7609-bb93-412b-8eda-8d4f8983b0f0",
     "description": "Jul 25 00:19:47 bfdd[1278]: BFDD_TRAP_SHOP_STATE_UP: local discriminator: 1, new state: up, interface: em1.0, peer addr: 10.99.2.1",
     "event_class__name": "Network | BFD | Session Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "BFDD_TRAP_SHOP_STATE_UP: local discriminator: \\d+, new state: up, interface: (?P<interface>\\S+), peer addr: (?P<peer>\\S+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 25 00:19:47 bfdd[1278]: BFDD_TRAP_SHOP_STATE_UP: local discriminator: 1, new state: up, interface: em1.0, peer addr: 10.99.2.1",
+            "value_re": []
         }
     ]
 }

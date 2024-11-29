@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Chassis | Fan | Fan Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ca9fddd8-1ba6-4da9-bfc7-8898b950e985",
     "description": "WARN: Unit 1, Back Fan failed",
     "event_class__name": "Chassis | Fan | Fan Failed",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) failed$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "WARN: Unit 1, Back Fan failed",
+        "value_re": []
+    }]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Force10 | FTOS | Chassis | CPU | CPU Usage Above Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "07b7abe8-0437-4ccd-a889-6097b32f5372",
     "description": "F10-CHASSIS-MIB::chAlarmExdCpuThreshold",
     "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",

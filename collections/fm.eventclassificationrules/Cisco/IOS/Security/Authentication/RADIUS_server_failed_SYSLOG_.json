@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%RADIUS-4-RADIUS_DEAD: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is not responding\\."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%RADIUS-4-RADIUS_DEAD: RADIUS server 10.50.245.20:1812,1813 is not responding.",
+            "value_re": []
+        }
     ]
 }

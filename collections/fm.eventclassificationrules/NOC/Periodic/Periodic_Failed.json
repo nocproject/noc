@@ -1,5 +1,6 @@
 {
     "name": "NOC | Periodic | Periodic Failed",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "50546a84-f3ef-4ce1-b1fd-7596dc19a978",
     "description": "Periodic task has been failed",
     "event_class__name": "NOC | Periodic | Periodic Failed",

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config",
+            "value_re": []
+        }
     ]
 }

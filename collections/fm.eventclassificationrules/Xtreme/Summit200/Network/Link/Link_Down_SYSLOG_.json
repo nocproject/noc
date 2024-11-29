@@ -18,5 +18,11 @@
             "key_re": "source",
             "value_re": "^syslog$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Oct 17 05:24:41 SYST: Port 1 link down",
+            "value_re": []
+        }
     ]
 }

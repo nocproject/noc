@@ -1,5 +1,6 @@
 {
     "name": "f5 | BIGIP | Network | IP | Port Exhaustion (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cc9f736d-08d6-4ed6-b89e-279c6fb937cc",
     "description": "F5-BIGIP-COMMON-MIB::bigipInetPortExhaustion",
     "event_class__name": "Network | IP | Port Exhaustion",

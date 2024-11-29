@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Smart | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9a2f2eea-bc40-42ae-84c1-9e11a62827e8",
     "description": "Port 26 link down",
     "event_class__name": "Network | Link | Link Down",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "Port (?P<interface>.+) link down"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "Port 26 link down",
+        "value_re": []
+    }]
 }

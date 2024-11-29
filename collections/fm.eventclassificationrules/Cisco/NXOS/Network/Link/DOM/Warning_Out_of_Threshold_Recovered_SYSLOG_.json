@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "IF_SFP_WARNING: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Warning cleared$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "2020 Oct 22 20:09:11 MSK: %ETHPORT-4-IF_SFP_WARNING: Interface Ethernet1/1, High Rx Power Warning cleared",
+            "value_re": []
+        }
     ]
 }

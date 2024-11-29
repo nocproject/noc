@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SEC-6-IPACCESSLOG[NRD]P: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+) \\(\\d+/\\d+\\), (?P<count>\\S+) packet"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SEC-6-IPACCESSLOGDP: list IGMP_ONLY denied icmp 10.10.192.10 -> 10.10.16.1 (0/0), 3 packets",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SYS-5-CONFIG_E: Enter configuration mode from"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "SYSLOG: May 15 20:09:35 arista1 Cli: %SYS-5-CONFIG_E: Enter configuration mode from console by user on vty3 (10.1.4.14)",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Cleared #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a1e4e126-ce4b-4b45-aab6-3471220b66f5",
     "description": "%RLDP-3-LINK_DETECT_RECOVER: Interface TenGigabitEthernet 1/1 recovered from loop error.",
     "event_class__name": "Network | LBD | Loop Cleared",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%RLDP-3-LINK_DETECT_RECOVER: Interface (?P<interface>.+) recovered from loop error."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%RLDP-3-LINK_DETECT_RECOVER: Interface TenGigabitEthernet 1/1 recovered from loop error.",
+            "value_re": []
         }
     ]
 }

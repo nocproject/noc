@@ -1,5 +1,6 @@
 {
     "name": "NOC | Managed Object | Ping Failed",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "203ac1f6-4485-4153-8645-013e209f1286",
     "description": "Ping Failed",
     "event_class__name": "NOC | Managed Object | Ping Failed",

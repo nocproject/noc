@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ETHERNET_OAM-6-EXIT_SESSION: The client on interface (?P<interface>\\S+) has left the OAM session"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ETHERNET_OAM-6-EXIT_SESSION: The client on interface Gi0/1 has left the OAM session.",
+            "value_re": []
+        }
     ]
 }

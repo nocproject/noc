@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS3100 | Chassis | Fan | Fan Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0823440f-a0bc-4553-8755-42b0bfcb96cd",
     "description": "%Box-A-FAN-STAT-CHNG: FAN# 1 status is - not operational.",
     "event_class__name": "Chassis | Fan | Fan Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%(?:Environment|Box)-A-FAN-STAT-CHNG: (?P<name>FAN# \\d) status (?:is|changed) - not operational.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%Box-A-FAN-STAT-CHNG: FAN# 1 status is - not operational.",
+            "value_re": []
         }
     ]
 }

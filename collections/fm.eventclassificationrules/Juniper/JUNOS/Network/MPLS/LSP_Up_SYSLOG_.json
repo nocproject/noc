@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | MPLS | LSP Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "61b9a861-fa89-4135-8744-58cfe1463213",
     "description": "Jul 25 00:30:02 rpd[1261]: RPD_MPLS_LSP_UP: MPLS LSP r1-r2 up on primary() Route  10.99.2.2 lsp bandwidth 100000000 bps",
     "event_class__name": "Network | MPLS | LSP Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "RPD_MPLS_LSP_UP: MPLS LSP (?P<name>.+) up on .+ Route.+lsp bandwidth (?P<bandwidth>\\d+) bps$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 25 00:30:02 rpd[1261]: RPD_MPLS_LSP_UP: MPLS LSP r1-r2 up on primary() Route  10.99.2.2 lsp bandwidth 100000000 bps",
+            "value_re": []
         }
     ]
 }

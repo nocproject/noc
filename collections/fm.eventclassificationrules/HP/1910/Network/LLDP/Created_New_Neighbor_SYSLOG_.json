@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10LLDP/6/LLDP_CREATE_NEIGHBOUR\\(l\\): New neighbor created on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Mar 19 09:28:30 2013 3com2952 %%10LLDP/6/LLDP_CREATE_NEIGHBOUR(l): New neighbor created on Port GigabitEthernet1/0/1 (IfIndex 9437184), Chassis ID is 20fd-f1ca-61f4, Port ID is Ethernet0/21.",
+            "value_re": []
+        }
     ]
 }

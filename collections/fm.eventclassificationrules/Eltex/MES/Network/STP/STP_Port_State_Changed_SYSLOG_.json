@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%STP-W-PORTSTATUS: (?P<interface>\\S+): STP status (?P<state__enum__stp_state>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%STP-W-PORTSTATUS: gi1/0/1: STP status Forwarding",
+            "value_re": []
+        }
     ]
 }

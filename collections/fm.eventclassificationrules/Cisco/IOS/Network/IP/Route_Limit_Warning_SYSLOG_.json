@@ -16,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - (?P<reason>\\.+)$"
+            "value_re": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - (?P<reason>.+)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - 1010:6699",
+            "value_re": []
         }
     ]
 }

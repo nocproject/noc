@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%DNSSERVER-3-BADQUERY: Bad DNS query from (?P<ip>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%DNSSERVER-3-BADQUERY: Bad DNS query from 7.2.1.2",
+            "value_re": []
+        }
     ]
 }

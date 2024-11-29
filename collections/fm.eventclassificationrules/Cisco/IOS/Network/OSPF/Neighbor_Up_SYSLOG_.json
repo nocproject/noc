@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%OSPF-5-ADJCHG: Process \\d+, Nbr (?P<neighbor>\\S+)\\s*on (?P<interface>.+) from (?P<from_state>LOADING) to (?P<to_state>FULL), Loading Done$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%OSPF-5-ADJCHG: Process 1, Nbr 10.10.20.30 on Vlan444 from LOADING to FULL, Loading Done",
+            "value_re": []
+        }
     ]
 }

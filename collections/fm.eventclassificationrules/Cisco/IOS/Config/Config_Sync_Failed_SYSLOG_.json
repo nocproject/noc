@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PFINIT-SP-1-CONFIG_SYNC_FAIL(?:_RETRY)?: Sync'ing the (?P<config>startup|private) configuration to the standby Router FAILED.*"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PFINIT-SP-1-CONFIG_SYNC_FAIL: Sync'ing the startup configuration to the standby Router FAILED",
+            "value_re": []
+        }
     ]
 }

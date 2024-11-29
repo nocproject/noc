@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%OIR-SP-6-INSFAN: (?P<name>.+) inserted"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%OIR-SP-6-INSFAN: Fan 1 inserted",
+            "value_re": []
+        }
     ]
 }

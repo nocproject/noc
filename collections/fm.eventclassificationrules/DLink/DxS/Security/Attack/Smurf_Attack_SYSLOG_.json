@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Attack | Smurf Attack (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ffc21f4f-fb27-49fc-8b54-4c611db3107b",
     "description": "CRIT: Smurf Attack is detected from (IP: 172.16.1.235 Port: 14)",
     "event_class__name": "Security | Attack | Smurf Attack",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "Smurf Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "CRIT: Smurf Attack is detected from (IP: 172.16.1.235 Port: 14)",
+            "value_re": []
         }
     ]
 }

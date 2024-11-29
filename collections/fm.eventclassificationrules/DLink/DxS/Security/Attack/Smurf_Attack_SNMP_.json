@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Attack | Smurf Attack (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "00c6220f-6c38-4c26-8e16-ea475c463f9d",
     "description": "DOS-PREV-MIB::swDoSAttackDetected",
     "event_class__name": "Security | Attack | Smurf Attack",

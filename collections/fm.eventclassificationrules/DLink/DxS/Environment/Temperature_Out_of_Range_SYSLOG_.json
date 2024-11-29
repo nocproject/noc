@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "( Unit \\d+ )?(?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) enter alarm state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Temperatrue Sensor:2 enter alarm state.(current temperatrue:0)",
+            "value_re": []
+        }
     ]
 }

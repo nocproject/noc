@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-5-502103: User priv level changed: Uname: (?P<user>\\S+) From: (?P<from_priv>\\d+) To: (?P<to_priv>\\d+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ASA-5-502103: User priv level changed: Uname: enable_15 From: 1 To: 15",
+            "value_re": []
+        }
     ]
 }

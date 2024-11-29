@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Security | Authentication | Login Failed #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "81fe8a24-6de8-4e47-932e-e94871ad64ba",
     "description": "Failed password for andy from 213.42.62.191 port 56871 ssh2",
     "event_class__name": "Security | Authentication | Login Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "Failed password for (?P<user>.+?) from (?P<ip>\\S+) port"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Failed password for andy from 213.42.62.191 port 56871 ssh2",
+            "value_re": []
         }
     ]
 }

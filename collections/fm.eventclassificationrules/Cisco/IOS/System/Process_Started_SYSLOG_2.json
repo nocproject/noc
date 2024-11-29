@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%SSH-5-ENABLED: (?P<name>SSH 2\\.0) has been enabled$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SSH-5-ENABLED: SSH 2.0 has been enabled",
+            "value_re": []
+        }
     ]
 }

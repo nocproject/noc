@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | OSPF | Neighbor Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "55069cee-08c9-4766-a7e9-7b72fc841550",
     "description": "Jul 21 15:51:04 rpd[968]: RPD_OSPF_NBRUP: OSPF neighbor 10.99.2.1 (realm ospf-v2 em1.0 area 0.0.0.0) state changed from Init to ExStart due to 2WayRcvd (event reason: neighbor detected this router)",
     "event_class__name": "Network | OSPF | Neighbor Up",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "RPD_OSPF_NBRUP: OSPF neighbor (?P<neighbor>\\S+) \\(realm \\S+ (?P<interface>\\S+) area (?P<area>\\S+)\\) state changed from (?P<from_state>\\S+) to (?P<to_state>\\S+) due to .+ \\(event reason: (?P<reason>.+)\\)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 21 15:51:04 rpd[968]: RPD_OSPF_NBRUP: OSPF neighbor 10.99.2.1 (realm ospf-v2 em1.0 area 0.0.0.0) state changed from Init to ExStart due to 2WayRcvd (event reason: neighbor detected this router)",
+            "value_re": []
         }
     ]
 }

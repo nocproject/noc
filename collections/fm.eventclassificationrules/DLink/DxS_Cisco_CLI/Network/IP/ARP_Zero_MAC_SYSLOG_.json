@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Network | IP | ARP Zero MAC (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "47e48472-0259-427e-bc49-b4417e3dc461",
     "description": "*Jul 24 11:35:23: %ARP-4-ZERO_ADDR: Zero MAC address for 10.200.235.195 in ARP cache.",
     "event_class__name": "Network | IP | ARP Zero MAC",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "ARP-4-ZERO_ADDR: Zero MAC address for (?P<ip>\\S+) in ARP cache\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "*Jul 24 11:35:23: %ARP-4-ZERO_ADDR: Zero MAC address for 10.200.235.195 in ARP cache.",
+            "value_re": []
         }
     ]
 }

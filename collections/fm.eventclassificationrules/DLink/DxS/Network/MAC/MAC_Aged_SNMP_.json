@@ -1,15 +1,14 @@
 {
     "name": "DLink | DxS | Network | MAC | MAC Aged (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a0070971-27d8-45e9-a4d3-3b2bf2ace58e",
     "description": "DES3028-L2MGMT-MIB::swL2FloodMacDetectedTrap",
     "event_class__name": "Network | MAC | MAC Aged",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "interface",
-            "value": "=str(ord(iface[1]))"
-        }
-    ],
+    "vars": [{
+        "name": "interface",
+        "value": "=str(ord(iface[1]))"
+    }],
     "patterns": [
         {
             "key_re": "^source$",

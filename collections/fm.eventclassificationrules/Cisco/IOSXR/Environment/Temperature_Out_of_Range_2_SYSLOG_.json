@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : (?P<name>Chassis) ambient temperature (?P<measure>\\S+C) at or above rising \\S+ threshold (?P<threshold>\\S+C)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : Chassis ambient temperature 56.0C at or above rising T3 threshold 56.0C",
+            "value_re": []
+        }
     ]
 }

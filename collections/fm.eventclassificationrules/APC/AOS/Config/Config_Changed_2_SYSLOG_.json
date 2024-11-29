@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "System: Configuration change. System administrator password. 0x0033"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "System: Configuration change. System administrator password. 0x0033",
+            "value_re": []
+        }
     ]
 }

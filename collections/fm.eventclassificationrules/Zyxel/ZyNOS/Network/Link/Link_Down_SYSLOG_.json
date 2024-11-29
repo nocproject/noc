@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ZyNOS | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "57a8394a-0f9a-4fa2-b1d7-3c1ff191e18f",
     "description": "Link Down",
     "event_class__name": "Network | Link | Link Down",

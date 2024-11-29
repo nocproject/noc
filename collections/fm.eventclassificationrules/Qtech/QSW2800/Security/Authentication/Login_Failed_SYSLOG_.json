@@ -1,5 +1,6 @@
 {
     "name": "Qtech | QSW2800 | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "8c74101d-0b6b-473a-9e13-f21c6eb3aba1",
     "description": "001272: dom-5 %Jan 24 15:21:39 2014 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User login failed from 192.168.220.252:39591.",
     "event_class__name": "Security | Authentication | Login Failed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "User (?P<user>\\w+)?,?\\s?login failed from (?P<ip>[\\d\\.]+)(?::\\d+)?\\.$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "001272: dom-5 %Jan 24 15:21:39 2014 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User login failed from 192.168.220.252:39591.",
+            "value_re": []
         }
     ]
 }

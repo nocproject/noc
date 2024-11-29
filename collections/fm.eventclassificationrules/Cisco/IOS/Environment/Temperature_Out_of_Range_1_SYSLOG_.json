@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a46b5c16-5f80-4670-838a-664455b8d363",
     "description": "%SYS-0-MOD_TEMPMAJORFAIL: Module 2 major temperature threshold exceeded",
     "event_class__name": "Environment | Temperature Out of Range",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%SYS-0-MOD_TEMP(?:MINOR|MAJOR)FAIL:\\s*(?P<name>Module \\d+) (?P<threshold>minor|major) temperature threshold exceeded"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-0-MOD_TEMPMAJORFAIL: Module 2 major temperature threshold exceeded",
+            "value_re": []
         }
     ]
 }

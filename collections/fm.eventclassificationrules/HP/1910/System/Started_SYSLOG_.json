@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10IC/6/SYS_RESTART: System restarted -- HP Platform Software\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 26 12:00:03 2000 Teh %%10IC/6/SYS_RESTART: System restarted -- HP Platform Software.",
+            "value_re": []
+        }
     ]
 }

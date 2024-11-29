@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: The internal UPS temperature exceeds the critical threshold. 0x0152"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: The internal UPS temperature exceeds the critical threshold. 0x0152",
+            "value_re": []
+        }
     ]
 }

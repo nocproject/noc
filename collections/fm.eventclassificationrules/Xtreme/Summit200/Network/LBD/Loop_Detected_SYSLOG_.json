@@ -18,5 +18,11 @@
             "key_re": "^source$",
             "value_re": "^syslog$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Oct 17 05:24:50 SYST: Loop detected on port 1. Disabling port.",
+            "value_re": []
+        }
     ]
 }

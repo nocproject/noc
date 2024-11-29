@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "( Unit \\d+ )?(?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) recovers to normal state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Temperatrue Sensor:2 recovers to normal state.(current temperatrue:37)",
+            "value_re": []
+        }
     ]
 }

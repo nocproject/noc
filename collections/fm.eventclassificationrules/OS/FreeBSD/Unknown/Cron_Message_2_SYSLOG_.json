@@ -1,5 +1,6 @@
 {
     "name": "OS | FreeBSD | Unknown | Cron Message #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "90a681d7-5d19-4ac1-8feb-c7fc97c0920f",
     "description": "/usr/sbin/cron[94924]: (root) CMD (/usr/libexec/atrun)",
     "event_class__name": "Unknown | Ignore",
@@ -11,11 +12,17 @@
         },
         {
             "key_re": "^profile$",
-            "value_re": "^OS\\.FreeBSD$"
+            "value_re": "^OS\\.Linux$"
         },
         {
             "key_re": "^message$",
             "value_re": "/usr/sbin/cron\\[\\d+\\]: \\(root\\) CMD \\(/usr/libexec/atrun\\)"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "/usr/sbin/cron[94924]: (root) CMD (/usr/libexec/atrun)",
+            "value_re": []
         }
     ]
 }

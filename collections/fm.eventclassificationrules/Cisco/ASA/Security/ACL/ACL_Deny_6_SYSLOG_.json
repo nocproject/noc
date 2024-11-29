@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-2-106001: Inbound (?P<proto>\\S+) connection denied from (?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_ip>\\S+)/(?P<dst_port>\\d+) flags (?P<flags>\\D+) on interface (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr 05 2016 15:00:36: %ASA-2-106001: Inbound TCP connection denied from 10.10.20.1/80 to 10.80.25.54/59326 flags ACK on interface inside",
+            "value_re": []
+        }
     ]
 }

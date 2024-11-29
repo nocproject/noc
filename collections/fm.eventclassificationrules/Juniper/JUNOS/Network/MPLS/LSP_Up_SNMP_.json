@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | MPLS | LSP Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "996657cf-5346-4c87-81f7-f590ef7410cb",
     "description": "JUNIPER-LDP-MIB::jnxLdpLspUp",
     "event_class__name": "Network | MPLS | LSP Up",

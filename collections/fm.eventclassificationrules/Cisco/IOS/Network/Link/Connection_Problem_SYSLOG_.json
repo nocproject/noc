@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%.+-NOCARR: (?P<interface>\\S+) cable/connector problem?"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%DEC21140-5-NOCARR: FastEthernet0/1 cable/connector problem?",
+            "value_re": []
+        }
     ]
 }

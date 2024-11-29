@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Dynamic IMPB entry is conflicting with static IMPB\\s*\\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN: Dynamic IMPB entry is conflicting with static IMPB(IP: 172.16.0.8, MAC: 00-22-B0-DE-5E-0D, Port: 4)",
+            "value_re": []
+        }
     ]
 }

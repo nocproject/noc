@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c4603b01-5c18-4dfd-a445-368c11d656e0",
     "description": "%SYS-0-SYS_TEMPMAJORFAIL: Chassis major temperature threshold exceeded",
     "event_class__name": "Environment | Temperature Out of Range",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "%SYS-0-SYS_TEMP(?:MINOR|MAJOR)FAIL:\\s*(?P<name>Chassis) (?P<threshold>major|minor) temperature threshold exceeded"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-0-SYS_TEMPMAJORFAIL: Chassis major temperature threshold exceeded",
+            "value_re": []
         }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex (?P<interface>\\S+)\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex gi1/0/25.",
+            "value_re": []
+        }
     ]
 }

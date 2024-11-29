@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: (?P<name>A base module fan) fault no longer exists. 0x013A"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: A base module fan fault no longer exists. 0x013A",
+            "value_re": []
+        }
     ]
 }

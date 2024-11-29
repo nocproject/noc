@@ -1,5 +1,6 @@
 {
     "name": "Linksys | SPS2xx | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bb5c53c0-a2b0-4619-941a-ae8b3e6fb7d1",
     "description": "%LINK-W-Down:  gi0/3",
     "event_class__name": "Network | Link | Link Down",
@@ -17,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "^%LINK-W-Down:  ?(?P<interface>.+)$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%LINK-W-Down:  gi0/3",
+        "value_re": []
+    }]
 }

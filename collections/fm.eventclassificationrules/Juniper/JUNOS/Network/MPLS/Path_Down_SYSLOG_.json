@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | MPLS | Path Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cad15570-7a06-444d-ac2c-95d74b5a14b9",
     "description": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_PATH_DOWN: MPLS path  down on LSP r1-r2",
     "event_class__name": "Network | MPLS | Path Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "RPD_MPLS_PATH_DOWN: MPLS path  down on LSP (?P<name>.+?)$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_PATH_DOWN: MPLS path  down on LSP r1-r2",
+            "value_re": []
         }
     ]
 }

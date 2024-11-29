@@ -24,5 +24,11 @@
             "key_re": "^message$",
             "value_re": "%L2-L2FIB-5-SECURITY_MAC_SECURE_VIOLATION_AC : MAC secure in AC (?P<iface1>\\S+\\d)_(?P<iface2>\\d+)_(?P<iface3>\\d+)_(?P<iface4>\\d+)\\.(?P<vlan>\\d+) detected violated packet - source MAC: (?P<mac>\\S+), destination MAC: \\S+; action: \\S+"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%L2-L2FIB-5-SECURITY_MAC_SECURE_VIOLATION_AC : MAC secure in AC GigabitEthernet0_1_0_19.29 detected violated packet - source MAC: 0025.5cdf.4060, destination MAC: 0100.5e00.0009; action: none",
+            "value_re": []
+        }
     ]
 }

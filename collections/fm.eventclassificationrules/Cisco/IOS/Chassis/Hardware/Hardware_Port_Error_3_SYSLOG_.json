@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "LATECOLL: (?P<interface>.+), [Ll]ate collision"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ILACC-5-LATECOLL: Unit 0, late collision error",
+            "value_re": []
+        }
     ]
 }

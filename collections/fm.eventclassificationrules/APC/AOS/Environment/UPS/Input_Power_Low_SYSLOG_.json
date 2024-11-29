@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: Compensating for a low input voltage. 0x010B"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: Compensating for a low input voltage. 0x010B",
+            "value_re": []
+        }
     ]
 }

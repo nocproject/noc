@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex (?P<interfaces>\\S+)\\.$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex gi1/0/11.",
+            "value_re": []
+        }
     ]
 }

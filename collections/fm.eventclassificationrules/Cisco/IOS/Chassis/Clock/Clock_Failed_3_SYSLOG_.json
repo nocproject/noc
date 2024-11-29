@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-6-LOS: (?P<name>Cable clock) .+ reference Loss of Signal$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-6-LOS: Cable clock [chars] reference Loss of Signal",
+            "value_re": []
+        }
     ]
 }

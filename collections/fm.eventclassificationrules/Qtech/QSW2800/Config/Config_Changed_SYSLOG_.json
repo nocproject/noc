@@ -1,5 +1,6 @@
 {
     "name": "Qtech | QSW2800 | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ccd83d2f-4990-435e-87ed-5e987a1cf9da",
     "description": "002272: dom-5 %Sep 02 11:32:16 2013 MODULE_CONFIG_SNMP[zIMI]:Write configuration successfully!",
     "event_class__name": "Config | Config Changed",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "MODULE_CONFIG_SNMP\\[zIMI\\]:Write configuration successfully!"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "002272: dom-5 %Sep 02 11:32:16 2013 MODULE_CONFIG_SNMP[zIMI]:Write configuration successfully!",
+            "value_re": []
         }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PM_SCP(-SP)?-2-LCP_FW_ERR_INFORM: Module (?P<module>\\d+) is experiencing the following error: (?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PM_SCP-SP-2-LCP_FW_ERR_INFORM: Module 4 is experiencing the following error: Bus Asic #0 transient Pb error",
+            "value_re": []
+        }
     ]
 }

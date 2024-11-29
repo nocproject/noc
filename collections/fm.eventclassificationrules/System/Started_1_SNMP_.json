@@ -1,5 +1,6 @@
 {
     "name": "System | Started #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0d591533-5971-4068-bea2-7167b9c0d1bb",
     "description": "SNMPv2-MIB::coldStart",
     "event_class__name": "System | Started",

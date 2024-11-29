@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "BPDU Loop Back on Port (?P<interface>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "WARN(4) BPDU Loop Back on Port 24",
+            "value_re": []
+        }
     ]
 }

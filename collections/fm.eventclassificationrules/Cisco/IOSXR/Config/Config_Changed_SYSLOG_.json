@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%MGBL-CONFIG-6-DB_COMMIT : Configuration committed by user '(?P<user>.+)'. Use 'show configuration commit changes (?P<changeset>\\d+)' to view the changes."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "RP/0/RSP0/CPU0:Oct 19 20:29:37.103 : config[65891]: %MGBL-CONFIG-6-DB_COMMIT : Configuration committed by user 'cisco'. Use 'show configuration commit changes 1000000783' to view the changes.",
+            "value_re": []
+        }
     ]
 }

@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%LDP-5-NBRCHG: TDP Neighbor (?P<neighbor>\\S+):.* is DOWN( \\((?P<reason>.+)\\))?"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10:0 is DOWN (TCP connection closed by peer)",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | NTP | NTP Server Unreachable (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f3cf9679-77da-43ee-90e9-174d69249296",
     "description": "Aug 21 19:21:33 xntpd[1406]: NTP Server Unreachable",
     "event_class__name": "Network | NTP | NTP Server Unreachable",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "xntpd\\[\\d+\\]: NTP Server Unreachable$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 21 19:21:33 xntpd[1406]: NTP Server Unreachable",
+            "value_re": []
         }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "MikroTik | RouterOS | System | Reboot (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "79311f14-7420-44c7-83da-c28fbc62446c",
     "description": "router rebooted without proper shutdown, probably power outage",
     "event_class__name": "System | Reboot",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "router rebooted without proper shutdown"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "router rebooted without proper shutdown, probably power outage",
+            "value_re": []
         }
     ]
 }

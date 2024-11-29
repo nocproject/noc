@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "^%INIT-I-Startup: Warm Startup$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "%INIT-I-Startup: Warm Startup",
+        "value_re": []
+    }]
 }

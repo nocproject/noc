@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Link | Link Up #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c472bd77-5ed6-4443-8265-7752f841b937",
     "description": "%%01IFNET/4/UPDOWN(l): The state of interface Ethernet0/0/16 was changed to UP.",
     "event_class__name": "Network | Link | Link Up",
@@ -15,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "The state of interface (?P<interface>\\S+) was changed UP\\."
+            "value_re": "The state of interface (?P<interface>\\S+) was changed to UP\\."
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%%01IFNET/4/UPDOWN(l): The state of interface Ethernet0/0/16 was changed to UP.",
+            "value_re": []
         }
     ]
 }

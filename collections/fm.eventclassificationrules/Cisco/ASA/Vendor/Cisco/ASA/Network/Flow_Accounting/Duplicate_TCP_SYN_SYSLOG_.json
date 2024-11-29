@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%(?:ASA|PIX)-4-419002: Duplicate TCP SYN from (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) with different initial sequence number$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Aug 09 2011 03:49:09: %PIX-4-419002: Duplicate TCP SYN from inside:192.168.11.103/53182 to inside:10.15.106.49/3283 with different initial sequence number",
+            "value_re": []
+        }
     ]
 }

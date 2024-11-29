@@ -1,5 +1,6 @@
 {
     "name": "Force10 | FTOS | Security | Authentication | SNMP Authentication Failure (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cb068492-f8cf-4332-a2e4-1d80b71e1517",
     "description": "Security | Authentication | SNMP Authentication Failure",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",

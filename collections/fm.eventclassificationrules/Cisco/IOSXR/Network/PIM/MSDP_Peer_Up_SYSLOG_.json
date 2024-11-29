@@ -18,5 +18,6 @@
             "key_re": "message",
             "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:\\s+(?P<peer>\\S+)"
         }
-    ]
+    ],
+    "test_cases": []
 }

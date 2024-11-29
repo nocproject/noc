@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM-ENVMON-2-TEMP_CLEAR : Hotpoint temp sensor\\((?P<name>.+)\\) temperature has returned to a (?P<threshold>normal) level at (?P<measure>\\d+)\\(C\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-ENVMON-2-TEMP_CLEAR : Hotpoint temp sensor(slot 19) temperature has returned to a normal level at 65(C)",
+            "value_re": []
+        }
     ]
 }

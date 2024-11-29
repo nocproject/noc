@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PLATFORM-ENVMON-2-TEMP : Hotpoint temp sensor\\((?P<name>.+)\\) temperature has reached (?P<threshold>\\S+) level at (?P<measure>\\d+)\\(C\\)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PLATFORM-ENVMON-2-TEMP : Hotpoint temp sensor(slot 19) temperature has reached MINOR level at 66(C)",
+            "value_re": []
+        }
     ]
 }

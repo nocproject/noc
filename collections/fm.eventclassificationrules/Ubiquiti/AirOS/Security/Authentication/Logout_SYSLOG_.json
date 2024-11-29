@@ -1,5 +1,6 @@
 {
     "name": "Ubiquiti | AirOS | Security | Authentication | Logout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9a29e865-a001-40f1-a751-52ef7688e320",
     "description": "Jan 12 03:19:28 dropbear[13418]: exit after auth (Admin): Exited normally",
     "event_class__name": "Security | Authentication | Logout",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": ".* dropbear\\[\\d+\\]: exit after auth \\((?P<user>\\w+)\\): Exited normally$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jan 12 03:19:28 dropbear[13418]: exit after auth (Admin): Exited normally",
+            "value_re": []
         }
     ]
 }

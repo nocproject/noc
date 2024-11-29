@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Linecard | LC Offline (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "34671416-bf64-49c2-bdb0-688349964390",
     "description": "JUNIPER-MIB::jnxFruOffline",
     "event_class__name": "Chassis | Linecard | LC Offline",

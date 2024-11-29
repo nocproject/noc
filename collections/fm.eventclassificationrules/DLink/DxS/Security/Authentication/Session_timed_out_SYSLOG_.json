@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "(?:Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: Web session timed out (Username: grant, IP: 172.16.0.4)",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Network | LLDP | Notifications (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "81dc486a-d681-49b9-be9b-4d9f580e3ca2",
     "description": "LLDP-MIB::lldpNotifications",
     "event_class__name": "Network | LLDP | Remote Tables Change",

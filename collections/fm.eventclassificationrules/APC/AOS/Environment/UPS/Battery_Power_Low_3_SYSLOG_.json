@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "UPS: Battery power is low and will soon be exhausted. 0x010F"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "UPS: Battery power is low and will soon be exhausted. 0x010F",
+            "value_re": []
+        }
     ]
 }

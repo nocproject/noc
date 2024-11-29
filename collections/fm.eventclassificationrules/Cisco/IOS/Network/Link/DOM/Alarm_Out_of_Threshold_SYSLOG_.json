@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%.+-THRESHOLD_VIOLATION: (?P<interface>\\S+): (?P<sensor>.+) (?P<threshold>high|low) alarm; Operating value: (?P<ovalue>.+), Threshold value: (?P<tvalue>.+)\\."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%SFF8472-5-THRESHOLD_VIOLATION: Te1/29: Rx power low alarm; Operating value: -40.0 dBm, Threshold value: -18.4 dBm.",
+            "value_re": []
+        }
     ]
 }

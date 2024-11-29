@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | System | Reboot (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a9a68938-a022-4f41-8994-5afa0ca78954",
     "description": "Jul 22 14:15:56 shutdown: reboot by noc:",
     "event_class__name": "System | Reboot",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "shutdown: reboot by (?P<user>.+?):"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "Jul 22 14:15:56 shutdown: reboot by noc:",
+            "value_re": []
         }
     ]
 }

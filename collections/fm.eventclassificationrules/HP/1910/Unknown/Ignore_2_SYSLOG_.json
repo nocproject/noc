@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%10MSTP/2/PFWD\\(l\\):\\s+Instance 0's .+ has been set to forwarding state!$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Oct  2 19:08:00 2000 3Com Baseline Switch %%10MSTP/2/PFWD(l): Instance 0's GigabitEthernet1/0/2 has been set to forwarding state!",
+            "value_re": []
+        }
     ]
 }

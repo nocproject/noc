@@ -1,5 +1,6 @@
 {
     "name": "MikroTik | RouterOS | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e1f4ce1f-4490-4054-a05a-3f960dc954a2",
     "description": "interface,info ether3-TRANSIT link down",
     "event_class__name": "Network | Link | Link Down",
@@ -16,6 +17,12 @@
         {
             "key_re": "^message$",
             "value_re": "(?P<interface>\\S+) link down$"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "interface,info ether3-TRANSIT link down",
+            "value_re": []
         }
     ]
 }

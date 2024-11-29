@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "SNMP request received from (?P<ip>\\S+) with invalid community string"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO: SNMP request received from 172.16.2.2 with invalid community string!",
+            "value_re": []
+        }
     ]
 }

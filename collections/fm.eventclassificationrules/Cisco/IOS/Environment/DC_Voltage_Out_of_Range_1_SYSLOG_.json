@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%UBR\\d+00-0-VOLTHIGH\\s*: .+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown voltage (?P<max>\\S+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%UBR7200-0-VOLTHIGH : [chars] measured at [chars] is too high: shutdown voltage [chars]",
+            "value_re": []
+        }
     ]
 }

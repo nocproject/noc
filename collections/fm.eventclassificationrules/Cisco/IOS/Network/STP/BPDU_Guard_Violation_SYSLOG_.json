@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%PM(-SP)?-4-ERR_DISABLE: bpduguard error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%PM-SP-4-ERR_DISABLE: bpduguard error detected on Gi4/1, putting Gi4/1 in err-disable state",
+            "value_re": []
+        }
     ]
 }

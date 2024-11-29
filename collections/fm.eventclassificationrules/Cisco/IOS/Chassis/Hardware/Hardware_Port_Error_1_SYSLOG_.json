@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "HARDWARE-3-PORTNUM_ERROR: port number (?P<interface>\\d+) is invalid."
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%HARDWARE-3-PORTNUM_ERROR: port number 1 is invalid.",
+            "value_re": []
+        }
     ]
 }

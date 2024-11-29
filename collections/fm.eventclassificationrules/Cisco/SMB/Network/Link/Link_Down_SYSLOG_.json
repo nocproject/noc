@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%LINK-W-Down:\\s+(?P<interface>\\S+)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "Apr  5 13:30:09 192.168.32.16 %LINK-W-Down:  gi37",
+            "value_re": []
+        }
     ]
 }

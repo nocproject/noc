@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "%ROUTING-ISIS-5-ADJCHANGE : Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\s\\((?P<level>\\S+)\\) Down,\\s(?P<reason>.+)"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "%ROUTING-ISIS-5-ADJCHANGE : Adjacency to bb (TenGigE0/0/1/0) (L2) Down, Interface state down",
+            "value_re": []
+        }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "NOC | PM | Returned to Normal Range",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7db85eb7-613e-4dd9-bf7d-7b2247af49bb",
     "event_class__name": "PM | Returned to Normal Range",
     "preference": 999,

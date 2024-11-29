@@ -18,5 +18,9 @@
             "key_re": "^message$",
             "value_re": "( Unit (?P<unit>\\d+), )?System started up$"
         }
-    ]
+    ],
+    "test_cases": [{
+        "message": "CRIT: System started up",
+        "value_re": []
+    }]
 }

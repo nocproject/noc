@@ -18,5 +18,11 @@
             "key_re": "^message$",
             "value_re": "Configuration (and log )*saved to flash \\(Username: (?P<user>.+)\\)$"
         }
+    ],
+    "test_cases": [
+        {
+            "message": "INFO(6) Configuration and log saved to flash (Username: fenomen_krog)",
+            "value_re": []
+        }
     ]
 }

@@ -1,7 +1,8 @@
 {
     "name": "DLink | DxS_Cisco_CLI | Unknown | Ignore Console Events (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3f271a56-cb14-41a3-86e5-5e476c7f2814",
-    "description": "%SYS-5-CONFIG_I: Configured from console ",
+    "description": "%SYS-5-CONFIG_I: Configured from console",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
     "patterns": [
@@ -15,7 +16,13 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%SYS-5-CONFIG_I: Configured from console "
+            "value_re": "%SYS-5-CONFIG_I: Configured from console"
+        }
+    ],
+    "test_cases": [
+        {
+            "message": "%SYS-5-CONFIG_I: Configured from console",
+            "value_re": []
         }
     ]
 }
