@@ -44,9 +44,7 @@ def teardown_module(module=None):
 
 @pytest.fixture(scope="module", params=helper.get_fixture_params(), ids=helper.fixture_id)
 def event_class_rule(request):
-    ec = helper.get_object(request.param)
-    if ec.test_cases:
-        yield ec
+    yield helper.get_object(request.param)
 
 
 def iter_json_loader(urls):
