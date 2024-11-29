@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Rule
+# Classifier Rule on Partial
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -7,269 +7,45 @@
 
 # Python modules
 import re
-import logging
-import types
+from functools import partial
+from dataclasses import dataclass
+from typing import List, Optional, Dict, Callable, Any, Tuple
+from types import CodeType
 
 # NOC modules
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
+from noc.core.fm.enum import EventSource
 from noc.services.classifier.exception import InvalidPatternException
-from noc.core.escape import fm_unescape
-from noc.core.comp import smart_text
 
+rx_escape = re.compile(r"\\(.)")
+rx_exact = re.compile(r"^\^?[a-zA-Z0-9%: \-_]+\$?$")
+rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
 
-class Rule(object):
-    """
-    In-memory rule representation
-    """
+@dataclass(slots=True)
+class VarTransformRule:
+    name: str
+    var: Optional[str] = None
+    f_type: Optional[str] = None
+    default: Optional[str] = None
+    function: Optional[CodeType] = None
+    enums: Optional[Dict[str, str]] = None
+    args: Optional[List[Any]] = None
 
-    rx_escape = re.compile(r"\\(.)")
-    rx_exact = re.compile(r"^\^[a-zA-Z0-9%: \-_]+\$$")
-    rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
+    def transform(self, v: Dict[str, Any], managed_object=None):
+        if self.f_type == "ifindex" and managed_object:
+            v[self.name] = self.resolve_interface(managed_object, self.var)
+        elif self.f_type == "enum":
+            v[self.name] = self.enums[self.args[0]][v.pop(self.var).lower()]
+        elif self.f_type and self.var in v:
+            v[self.name] = getattr(self, self.f_type)(v.pop(self.var))
+        if self.function:
+            v[self.name] = eval(self.function, {}, v)
+        elif self.name not in v and self.default:
+            v[self.name] = self.default
 
-    def __init__(self, classifier, rule, clone_rule=None):
-        self.classifier = classifier
-        self.rule = rule
-        self.preference = rule.preference
-        self.name = rule.name
-        if clone_rule:
-            self.name += "(Clone %s)" % clone_rule.name
-            if classifier.dump_clone:
-                # Dump cloned rule
-                logging.debug("Rule '%s' cloned by rule '%s'" % (rule.name, clone_rule.name))
-                p0 = [(x.key_re, x.value_re) for x in rule.patterns]
-                p1 = [
-                    (y.key_re, y.value_re) for y in [clone_rule.rewrite(x) for x in rule.patterns]
-                ]
-                logging.debug("%s -> %s" % (p0, p1))
-        self.event_class = rule.event_class
-        self.event_class_name = self.event_class.name
-        self.is_unknown = self.event_class_name.startswith("Unknown | ")
-        self.is_unknown_syslog = self.event_class_name.startswith("Unknown | Syslog")
-        self.datasources = {}  # name -> DS
-        self.vars = {}  # name -> value
-        self.chain = None
-        # Parse vars
-        for v in rule.vars:
-            value = v["value"]
-            if value.startswith("="):
-                value = compile(value[1:], "<string>", "eval")
-            self.vars[v["name"]] = value
-        # Parse patterns
-        c1 = []
-        c2 = {}
-        c3 = []
-        c4 = []
-        self.rxp = {}
-        self.fixups = set()
-        self.profile = r"^.*$"
-        for x in rule.patterns:
-            if clone_rule:
-                # Rewrite, when necessary
-                x = clone_rule.rewrite(x)
-            x_key = None
-            rx_key = None
-            x_value = None
-            rx_value = None
-            # Store profile
-            if x.key_re in ("profile", "^profile$"):
-                self.profile = x.value_re
-                continue
-            elif x.key_re in ("source", "^source$"):
-                if x.value_re == "^syslog$":
-                    self.chain = "syslog"
-                elif x.value_re == "^SNMP Trap$":
-                    self.chain = "snmp_trap"
-                else:
-                    self.chain = "other"
-                continue
-            # Process key pattern
-            if self.is_exact(x.key_re):
-                x_key = self.unescape(x.key_re[1:-1])
-            else:
-                try:
-                    rx_key = re.compile(self.unhex_re(x.key_re), re.MULTILINE | re.DOTALL)
-                except Exception as why:
-                    raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
-            # Process value pattern
-            if self.is_exact(x.value_re):
-                x_value = self.unescape(x.value_re[1:-1])
-            else:
-                try:
-                    rx_value = re.compile(self.unhex_re(x.value_re), re.MULTILINE | re.DOTALL)
-                except Exception as why:
-                    raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
-            # Save patterns
-            if x_key:
-                if x_value:
-                    c1 += ["vars.get('%s') == '%s'" % (x_key, x_value)]
-                else:
-                    if not (self.chain == "syslog" and x_key == "message"):
-                        c1 += ["'%s' in vars" % x_key]
-                    c2[x_key] = self.get_rx(rx_value)
-            else:
-                if x_value:
-                    c3 += [(self.get_rx(rx_key), x_value)]
-                else:
-                    c4 += [(self.get_rx(rx_key), self.get_rx(rx_value))]
-        self.to_drop = self.event_class.action == "D"
-        self.compile(c1, c2, c3, c4)
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return "<Rule '%s'>" % self.name
-
-    def get_rx(self, rx):
-        n = len(self.rxp)
-        self.rxp[n] = rx.pattern
-        setattr(self, "rx_%d" % n, rx)
-        for match in rx_named_group.finditer(rx.pattern):
-            name = match.group(1)
-            if "__" in name:
-                self.fixups.add(name)
-        return n
-
-    def unescape(self, pattern):
-        return self.rx_escape.sub(lambda m: m.group(1), pattern)
-
-    def unhex_re(self, pattern):
-        return self.rx_hex.sub(lambda m: chr(int(m.group(1), 16)), pattern)
-
-    def is_exact(self, pattern):
-        return self.rx_exact.match(self.rx_escape.sub("", pattern)) is not None
-
-    def compile(self, c1, c2, c3, c4):
-        """
-        Compile native python rule-matching function
-        and install it as .match() instance method
-        """
-
-        def pyq(s):
-            return s.replace("\\", "\\\\").replace('"', '\\"')
-
-        e_vars_used = c2 or c3 or c4
-        c = []
-        if c1:
-            cc = " and ".join(["(%s)" % x for x in c1])
-            c += ["if not (%s):" % cc]
-            c += ["    return None"]
-        if e_vars_used:
-            c += ["e_vars = {}"]
-        if c2:
-            for k in c2:
-                c += ["# %s" % self.rxp[c2[k]]]
-                c += ["match = self.rx_%s.search(vars['%s'])" % (c2[k], k)]
-                c += ["if not match:"]
-                c += ["    return None"]
-                c += ["e_vars.update(match.groupdict())"]
-        if c3:
-            for rx, v in c3:
-                c += ["found = False"]
-                c += ["for k in vars:"]
-                c += ["    # %s" % self.rxp[rx]]
-                c += ["    match = self.rx_%s.search(k)" % rx]
-                c += ["    if match:"]
-                c += ["        if vars[k] == '%s':" % v]
-                c += ["            e_vars.update(match.groupdict())"]
-                c += ["            found = True"]
-                c += ["            break"]
-                c += ["        else:"]
-                c += ["            return None"]
-                c += ["if not found:"]
-                c += ["    return None"]
-        if c4:
-            for rxk, rxv in c4:
-                c += ["found = False"]
-                c += ["for k in vars:"]
-                c += ["    # %s" % self.rxp[rxk]]
-                c += ["    match_k = self.rx_%s.search(k)" % rxk]
-                c += ["    if match_k:"]
-                c += ["        # %s" % self.rxp[rxv]]
-                c += ["        match_v = self.rx_%s.search(vars[k])" % rxv]
-                c += ["        if match_v:"]
-                c += ["            e_vars.update(match_k.groupdict())"]
-                c += ["            e_vars.update(match_v.groupdict())"]
-                c += ["            found = True"]
-                c += ["            break"]
-                c += ["        else:"]
-                c += ["            return None"]
-                c += ["if not found:"]
-                c += ["    return None"]
-        # Vars binding
-        if self.vars:
-            has_expressions = any(v for v in self.vars.values() if not isinstance(v, str))
-            if has_expressions:
-                # Calculate vars context
-                c += ["var_context = {'event': event}"]
-                c += ["var_context.update(e_vars)"]
-            for k, v in self.vars.items():
-                if isinstance(v, str):
-                    c += ['e_vars["%s"] = "%s"' % (k, pyq(v))]
-                else:
-                    c += ['e_vars["%s"] = eval(self.vars["%s"], {}, var_context)' % (k, k)]
-        if e_vars_used:
-            # c += ["return self.fixup(e_vars)"]
-            for name in self.fixups:
-                r = name.split("__")
-                if len(r) == 2:
-                    if r[1] in ("ifindex",):
-                        # call fixup with managed object
-                        c += [
-                            "if managed_object:"
-                            '   e_vars["%s"] = self.fixup_%s(managed_object, smart_text(fm_unescape(e_vars["%s"])))'
-                            % (r[0], r[1], name)
-                        ]
-                    else:
-                        c += [
-                            'e_vars["%s"] = self.fixup_%s(smart_text(fm_unescape(e_vars["%s"])))'
-                            % (r[0], r[1], name)
-                        ]
-                else:
-                    c += [
-                        'args = [%s, smart_text(fm_unescape(e_vars["%s"]))]'
-                        % (", ".join(['"%s"' % x for x in r[2:]]), name)
-                    ]
-                    c += ['e_vars["%s"] = self.fixup_%s(*args)' % (r[0], r[1])]
-                c += ['del e_vars["%s"]' % name]
-            c += ["return e_vars"]
-        else:
-            c += ["return {}"]
-        c = ["    " + x for x in c]
-
-        cc = ["# %s" % self.name]
-        cc += ["def match(self, event, vars, managed_object=None):"]
-        cc += c
-        cc += ["rule.match = types.MethodType(match, rule)"]
-        self.code = "\n".join(cc)
-        try:
-            code = compile(self.code, "<string>", "exec")
-            exec(
-                code,
-                {
-                    "rule": self,
-                    "types": types,
-                    "logging": logging,
-                    "fm_unescape": fm_unescape,
-                    "smart_text": smart_text,
-                },
-            )
-        except SyntaxError:
-            logging.error(
-                f"!!!!!!!!!! The rule '{self.name}' is wrong. You should check format this rule."
-            )
-
-    def clone(self, rules):
-        """
-        Factory returning clone rules
-        """
-        # pylint: disable=unnecessary-pass
-        pass
-
-    def fixup_int_to_ip(self, v):
+    @staticmethod
+    def int_to_ip(v: str) -> str:
         v = int(v)
         return "%d.%d.%d.%d" % (
             v & 0xFF000000 >> 24,
@@ -278,7 +54,8 @@ class Rule(object):
             v & 0x000000FF,
         )
 
-    def fixup_bin_to_ip(self, v):
+    @staticmethod
+    def bin_to_ip(v: str):
         """
         Fix 4-octet binary ip to dotted representation
         """
@@ -286,32 +63,29 @@ class Rule(object):
             return v
         return "%d.%d.%d.%d" % (ord(v[0]), ord(v[1]), ord(v[2]), ord(v[3]))
 
-    def fixup_bin_to_mac(self, v):
+    @staticmethod
+    def bin_to_mac(v):
         """
         Fix 6-octet binary to standard MAC address representation
         """
         if len(v) != 6:
             return v
-        return ":".join(["%02X" % ord(x) for x in v])
+        return ":".join("%02X" % ord(x) for x in v)
 
-    def fixup_oid_to_str(self, v):
-        """
-        Fix N.c1. .. .cN into "c1..cN" string
-        """
+    @staticmethod
+    def oid_to_str(v: str):
+        """Fix N.c1. .. .cN into "c1..cN" string"""
         x = [int(c) for c in v.split(".")]
         return "".join([chr(c) for c in x[1 : x[0] + 1]])
 
-    def fixup_enum(self, name, v):
-        """
-        Resolve v via enumeration name
-        @todo: not used?
-        """
-        return self.classifier.enumerations[name][v.lower()]
-
-    def fixup_ifindex(self, managed_object, v):
+    @staticmethod
+    def resolve_interface(managed_object, v):
         """
         Resolve ifindex to interface name
         """
+        from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
+
         ifindex = int(v)
         # Try to resolve interface
         i = Interface.objects.filter(managed_object=managed_object.id, ifindex=ifindex).first()
@@ -322,3 +96,220 @@ class Rule(object):
         if si:
             return si.name
         return v
+
+
+@dataclass(frozen=True, slots=True)
+class Rule:
+    name: str
+    event_class: Any
+    event_class_name: str
+    source: EventSource
+    profile: Optional[str] = None
+    preference: int = 100
+    message_rx: Optional[re.Pattern] = None
+    vars: Optional[Dict[str, str]] = None
+    vars_transform: Optional[Tuple[VarTransformRule, ...]] = None
+    matcher: Optional[List[Callable]] = None
+    is_unknown: bool = False
+    is_unknown_syslog: bool = False
+    to_drop: bool = False
+
+    @classmethod
+    def from_rule(cls, rule, enumerations) -> "Rule":
+        """Create from EventClassificationRule"""
+        matcher, message_rx = [], None
+        profile, source = r"^.*$", EventSource.OTHER
+        patterns, transform = [], {}
+        for x in rule.patterns:
+            key_s, value_s = x.key_re.strip("^$"), x.value_re.strip("^$")
+            # Store profile
+            if key_s == "profile":
+                profile = value_s.replace("\\", "")
+            elif key_s == "source" and value_s == "SNMP Trap":
+                source = EventSource.SNMP_TRAP
+            elif key_s == "source" and value_s == "syslog":
+                source = EventSource.SYSLOG
+            elif key_s == "source":
+                continue
+            elif key_s == "message":
+                message_rx = re.compile(value_s)
+            else:
+                # Process key pattern
+                m, rxs = cls.get_matcher(x.key_re, x.value_re)
+                matcher.append(m)
+                if rxs:
+                    patterns += rxs
+        # Transform
+        for pattern in patterns:
+            for match in rx_named_group.finditer(pattern):
+                name = match.group(1)
+                if "__" not in name:
+                    continue
+                v, fixup, *args = name.split("__")
+                # if fixup == "enum":
+                #     # transform[name] = (v, partial(to_enum, enumerations, *args))
+                #     transform[v] = VarTransformRule(
+                #         name=v, var=name, fixup=partial(to_enum, enumerations, *args)
+                #     )
+                if hasattr(VarTransformRule, fixup):
+                    transform[v] = VarTransformRule(name=v, var=name, f_type=fixup, args=args, enums=enumerations if fixup == "enum" else None)
+                else:
+                    print(f"Unknown fixup: {fixup}")
+        # Parse vars
+        for v in rule.vars:
+            value, name = v["value"], v["name"]
+            if value.startswith("=") and name not in transform:
+                transform[name] = VarTransformRule(
+                    name=v["name"], function=compile(value[1:], "<string>", "eval")
+                )
+            elif value.startswith("=") and name in transform:
+                transform[name].function = compile(value[1:], "<string>", "eval")
+            elif name in transform:
+                transform[name].default = value
+            else:
+                transform[name] = VarTransformRule(name=name, default=value)
+        return Rule(
+            name=rule.name,
+            event_class=rule.event_class,
+            event_class_name=rule.event_class.name,
+            source=source,
+            profile=profile,
+            preference=rule.preference,
+            message_rx=message_rx,
+            matcher=matcher,
+            vars_transform=tuple(transform.values()),
+            # vars=rule_vars,
+            to_drop=rule.event_class.action == "D",
+        )
+
+    def match(self, message, vars, managed_object=None) -> Optional[Dict[str, str]]:
+        # if self.source != e.type.source:
+        #    return None
+        # if self.profile and self.profile != e.type.profile:
+        #    return None
+        e_vars = {}
+        if self.message_rx and message:
+            match = self.message_rx.search(message)
+            if not match:
+                return None
+            e_vars.update(match.groupdict())
+        for m in self.matcher or []:
+            try:
+                if not m(vars, e_vars):
+                    return None
+            except KeyError:
+                return None
+        # Resolve e_vars
+        for t in self.vars_transform:
+            t.transform(e_vars, managed_object=managed_object)
+        return e_vars
+
+    @classmethod
+    def get_matcher(cls, key_re: str, value_re: str) -> Tuple[Callable, List[str]]:
+        x_key, rx_key = None, None
+        x_value, rx_value = None, None
+        rxs = []
+        # Process key pattern
+        if cls.is_exact(key_re):
+            x_key = cls.unescape(key_re.strip("^$"))
+        else:
+            try:
+                rx_key = re.compile(cls.unhex_re(key_re), re.MULTILINE | re.DOTALL)
+                rxs.append(key_re)
+            except Exception as e:
+                raise InvalidPatternException("Error in '%s': %s" % (key_re, e))
+        # Process value pattern
+        if cls.is_exact(value_re):
+            x_value = cls.unescape(value_re.strip("^$"))
+        else:
+            try:
+                rx_value = re.compile(cls.unhex_re(value_re), re.MULTILINE | re.DOTALL)
+                rxs.append(value_re)
+            except Exception as e:
+                raise InvalidPatternException("Error in '%s': %s" % (value_re, e))
+        # Save patterns
+        if x_key and x_value:
+            return partial(match_eq, x_value, x_key), rxs
+        elif x_key:
+            return partial(match_regex, rx_value, x_key), rxs
+        elif x_value:
+            return partial(match_k_regex, x_value, rx_key), rxs
+        else:
+            return partial(match_k_v_regex, rx_value, rx_key), rxs
+
+    @staticmethod
+    def unescape(pattern: str) -> str:
+        return rx_escape.sub(lambda m: m.group(1), pattern)
+
+    @staticmethod
+    def unhex_re(pattern: str) -> str:
+        return rx_hex.sub(lambda m: chr(int(m.group(1), 16)), pattern)
+
+    @staticmethod
+    def is_exact(pattern: str) -> bool:
+        return rx_exact.match(rx_escape.sub("", pattern)) is not None
+
+    @classmethod
+    def parse_groups(cls, pattern: str):
+        r = {}
+        for match in rx_named_group.finditer(pattern):
+            name = match.group(1)
+            if "__" not in name:
+                continue
+            v, fixup, *args = name.split("__")
+            if hasattr(cls, f"fixup_{fixup}"):
+                r[name] = (v, getattr(cls, f"fixup_{fixup}"))
+            else:
+                print(f"Unknown fixup: {fixup}")
+        return r
+
+    def resolve_vars(self, e_vars):
+        # Fixup
+        # vars transform
+        for k in self.vars_transform:
+            if k in e_vars:
+                e_vars[self.vars_transform[k][0]] = self.vars_transform[k][1](e_vars.pop(k))
+        if self.vars:
+            e_vars.update(self.vars)
+
+
+def match_eq(cv: str, field: str, ctx: Dict[str, Any], storage: Dict[str, str]) -> bool:
+    return ctx[field] == cv
+
+
+def match_regex(rx: re.Pattern, field: str, ctx: Dict[str, Any], storage: Dict[str, str]) -> bool:
+    match = rx.search(ctx[field])
+    if match:
+        storage.update(match.groupdict())
+        return True
+    return False
+
+
+def match_k_regex(cv: str, field: re.Pattern, ctx: Dict[str, Any], storage: Dict[str, str]) -> bool:
+    # To the end match chain, pop ctx
+    for k in ctx:
+        k_s = field.search(k)
+        if k_s and ctx[k] == cv:
+            storage.update(k_s.groupdict())
+            return True
+    return False
+
+
+def match_k_v_regex(
+    rx: re.Pattern, field: re.Pattern, ctx: Dict[str, Any], storage: Dict[str, str]
+) -> bool:
+    # To the end match chain, pop ctx
+    for k in ctx:
+        k_s = field.search(k)
+        if not k_s:
+            continue
+        v_s = rx.search(ctx[k])
+        if v_s:
+            storage.update(k_s.groupdict())
+            storage.update(v_s.groupdict())
+            return True
+    return False
+
+
+def to_enum(enum: Dict[str, Dict[str, str]], key, value):
+    return enum[key][value.lower()]
