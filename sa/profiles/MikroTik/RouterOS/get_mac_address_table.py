@@ -1,20 +1,21 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-from noc.core.script.base import BaseScript
+# NOC Modules
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
     name = "MikroTik.RouterOS.get_mac_address_table"
     interface = IGetMACAddressTable
+    always_prefer = "S"
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "/interface ethernet switch host print detail without-paging where dynamic"
         out = []
         if mac is not None:
