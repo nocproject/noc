@@ -23,14 +23,24 @@ from noc.sa.models.profile import Profile
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.config import config
+from .utils import CollectionTestHelper
 
-
+helper = CollectionTestHelper(EventClassificationRule)
 COLLECTION_NAME = "test.events"
 DEFAULT_EVENT_CLASS = "Unknown | Default"
 DEFAULT_PROFILE = "Generic.Host"
 MO_ADDRESS = "127.0.0.1"
 MO_NAME = "test"
 MO_ID = 1
+
+
+def teardown_module(module=None):
+    """
+    Reset all helper caches when leaving module
+    :param module:
+    :return:
+    """
+    helper.teardown()
 
 
 def iter_json_loader(urls):
