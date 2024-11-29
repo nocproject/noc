@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import operator
 import datetime
 
 # Third-party modules
@@ -41,6 +40,13 @@ def teardown_module(module=None):
     :return:
     """
     helper.teardown()
+
+
+@pytest.fixture(scope="module", params=helper.get_fixture_params(), ids=helper.fixture_id)
+def event_class_rule(request):
+    ec = helper.get_object(request.param)
+    if ec.test_cases:
+        yield ec
 
 
 def iter_json_loader(urls):
@@ -111,29 +117,19 @@ def test_event(ruleset, event):
     assert e_vars == expected_vars, "Mismatched vars"
 
 
-def iter_test_rules():
-    from noc.core.mongo.connection import connect
-
-    connect()
-
-    for e_rule in EventClassificationRule.objects.filter(test_cases__exists=True).order_by("name"):
-        yield e_rule
-
-
-@pytest.fixture(
-    scope="module",
-    params=list(iter_test_rules()),
-    ids=operator.attrgetter("name"),
-)
-def rule_case(request):
-    return request.param
+# @pytest.fixture(
+#     scope="module",
+#     params=list(iter_test_rules()),
+#     ids=operator.attrgetter("name"),
+# )
+# def rule_case(request):
+#     return request.param
 
 
-def test_rules_collection_cases(ruleset, rule_case):
-    for e, v in rule_case.iter_cases():
+def test_rules_collection_cases(ruleset, event_class_rule):
+    for e, v in event_class_rule.iter_cases():
         rule, e_vars = ruleset.find_rule(e, v)
         assert rule is not None, "Cannot find matching rule"
-        assert rule.event_class == rule_case.event_class, "Mismatched event class %s vs %s" % (
-            rule.event_class.name,
-            rule_case.event_class.name,
-        )
+        assert (
+            rule.event_class == event_class_rule.event_class
+        ), f"Mismatched event class {rule.event_class.name} vs {event_class_rule.event_class.name}"
