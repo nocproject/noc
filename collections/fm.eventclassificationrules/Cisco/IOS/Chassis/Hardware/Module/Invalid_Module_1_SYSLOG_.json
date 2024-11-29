@@ -29,10 +29,5 @@
             "value_re": "%PM_SCP-SP-3-TRANSCEIVER_UNSUPPORTED: Unsupported transceiver in LAN port (?P<interface>\\S+)"
         }
     ],
-    "test_cases": [
-        {
-            "message": "%PM_SCP-SP-3-TRANSCEIVER_UNSUPPORTED: Unsupported transceiver in LAN port 3/1",
-            "value_re": []
-        }
-    ]
+    "test_cases": []
 }

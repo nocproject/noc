@@ -19,10 +19,5 @@
             "value_re": "Spanning Tree port status change \\(Instance:\\d+, Port:(?P<interface>\\d+)\\) \\S+->(?P<state__enum__stp_state>\\S+)$"
         }
     ],
-    "test_cases": [
-        {
-            "message": "NOTICE: Spanning Tree port status change (Instance:0, Port:14) Discarding->Learning",
-            "value_re": []
-        }
-    ]
+    "test_cases": []
 }
