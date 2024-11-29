@@ -388,7 +388,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     me.hasStp = data.caps.indexOf("Network | STP") !== -1;
     me.app.viewStpButton.setDisabled(!me.hasStp);
-    me.setPaperDimension();
+    // me.setPaperDimension();
     this.viewPort = new joint.shapes.standard.Rectangle({
       position: {x: 0, y: 0},
       attrs: {
@@ -1515,24 +1515,26 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setPaperDimension: function(zoom){
-    var paddingX = 15,
-      paddingY = 15,
-      w = this.getWidth(),
-      h = this.getHeight();
+    var w, h,
+      paddingX = 15,
+      paddingY = 15;
 
     if(this.paper){
       this.paper.fitToContent();
       var contentBB = this.paper.getContentBBox();
       if(contentBB && contentBB.width && contentBB.height){
         if(this.normalize_position){
-          w = Ext.Array.max([contentBB.width, this.getWidth()]);
-          h = Ext.Array.max([contentBB.height, this.getHeight()]);
+          w = contentBB.width;
+          h = contentBB.height;
           this.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
         } else{
-          w = this.bg_width * (zoom || 1);
-          h = this.bg_height * (zoom || 1);
+          w = (this.bg_width || contentBB.width) * (zoom || 1);
+          h = (this.bg_height || contentBB.height) * (zoom || 1);
         }
-        this.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
+        this.paper.setDimensions(
+          Math.max(w, this.getWidth()) + paddingX * 2,
+          Math.max(h, this.getHeight()) + paddingY * 2,
+        );
       }
     }
   },
