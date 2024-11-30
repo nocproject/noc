@@ -152,7 +152,13 @@ class Rule:
                 #         name=v, var=name, fixup=partial(to_enum, enumerations, *args)
                 #     )
                 if hasattr(VarTransformRule, fixup):
-                    transform[v] = VarTransformRule(name=v, var=name, f_type=fixup, args=args, enums=enumerations if fixup == "enum" else None)
+                    transform[v] = VarTransformRule(
+                        name=v,
+                        var=name,
+                        f_type=fixup,
+                        args=args,
+                        enums=enumerations if fixup == "enum" else None,
+                    )
                 else:
                     print(f"Unknown fixup: {fixup}")
         # Parse vars
