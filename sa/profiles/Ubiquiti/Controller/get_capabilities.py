@@ -13,7 +13,7 @@ from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 
 
 class Script(BaseScript):
-    name = "Ubiquiti.Controller..get_capabilities"
+    name = "Ubiquiti.Controller.get_capabilities"
 
     def execute_platform_cli(self, caps):
         v = self.http.post(
