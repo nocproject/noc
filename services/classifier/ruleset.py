@@ -71,7 +71,7 @@ class RuleSet(object):
         # Initialize rules
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
-                rule = Rule(self, r)
+                rule = Rule.from_rule(r, self.enumerations)
             except InvalidPatternException as e:
                 logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, e)
                 continue
@@ -80,7 +80,7 @@ class RuleSet(object):
             for cr in cloning_rules:
                 if cr.match(rule):
                     try:
-                        rs += [Rule(self, r, cr)]
+                        rs += [Rule.from_rule(r, self.enumerations)]
                         cn += 1
                     except InvalidPatternException as e:
                         logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, e)
@@ -95,13 +95,13 @@ class RuleSet(object):
                     rx_profiles[rule.profile] = rule_profiles
                 # Apply rules to appropriative chains
                 for p in rule_profiles:
-                    rules[p, rule.chain] += [rule]
+                    rules[p, rule.source.value] += [rule]
                 n += 1
         if cn:
             logger.info("%d rules are cloned", cn)
-        self.default_rule = Rule(
-            self,
+        self.default_rule = Rule.from_rule(
             EventClassificationRule.objects.filter(name=config.classifier.default_rule).first(),
+            self.enumerations,
         )
         # Apply lookup solution
         self.rules = {k: self.lookup_cls(rules[k]) for k in rules}
@@ -112,7 +112,7 @@ class RuleSet(object):
     def load_enumerations(self):
         logger.info("Loading enumerations")
         n = 0
-        self.enumerations = {}
+        # self.enumerations = {}
         for e in Enumeration.objects.all():
             r = {}
             for k, v in e.values.items():
@@ -141,22 +141,15 @@ class RuleSet(object):
         """
         # Get chain
         if event.type.source == EventSource.SYSLOG:
-            chain = "syslog"
             if not event.message:
                 return None, None
-            vars["message"] = event.message
-        elif event.type.source == EventSource.SNMP_TRAP:
-            chain = "snmp_trap"
-        else:
-            chain = "other"
-            vars["message"] = event.message
         # Find rules lookup
-        lookup = self.rules.get((event.type.profile, chain))
+        lookup = self.rules.get((event.type.profile, event.type.source.value))
         if lookup:
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
                 metrics["rules_checked"] += 1
-                v = r.match(event, vars, mo)
+                v = r.match(event.message, vars, mo)
                 if v is not None:
                     logger.debug(
                         "[%s] Matching class for event %s found: %s (Rule: %s)",
