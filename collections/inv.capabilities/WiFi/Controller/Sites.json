@@ -1,0 +1,8 @@
+{
+    "name": "WiFi | Controller | Sites",
+    "$collection": "inv.capabilities",
+    "uuid": "7f1f5c68-5018-4f31-8baf-2c60a39cd7e1",
+    "description": "Wifi Controller sites count",
+    "type": "int",
+    "card_template": null
+}

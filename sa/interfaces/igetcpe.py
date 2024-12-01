@@ -35,6 +35,7 @@ class IGetCPE(BaseInterface):
         * ont - PON ONT
         * docsis - DOCSIS cable modem
         * other - all other typesu8
+    * site - WiFi based shard
     * interface - controller's physical interface leading to CPE
     * vendor - CPE vendor
     * model - CPE model
@@ -58,6 +59,7 @@ class IGetCPE(BaseInterface):
                 default="active",
             ),
             "type": StringParameter(choices=["ap", "dsl", "ont", "docsis", "other"]),
+            "site": StringParameter(required=False),
             "interface": InterfaceNameParameter(required=False),
             "vendor": StringParameter(required=False),
             "model": StringParameter(required=False),
