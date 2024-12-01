@@ -152,7 +152,7 @@ class InterfacePathCard(BaseCard):
 
     @staticmethod
     def humanize_metric(value: str) -> str:
-        if not value:
+        if not value or value == "\\N":
             return "-"
         cv = float(value)
         for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
