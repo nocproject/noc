@@ -150,6 +150,9 @@ class Script(BaseScript):
             if neigh["remote_chassis_id"].startswith(b"\x00\x00\x00"):
                 continue
                 # b'\x00\x00\x00
+            if port_num not in local_ports:
+                self.logger.warning("[%s] Local ports not in map. Skipping", port_num)
+                continue
             # cleaning
             if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
                 neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
@@ -172,7 +175,14 @@ class Script(BaseScript):
             if neigh["remote_chassis_id_subtype"] == 7 and isinstance(
                 neigh["remote_chassis_id"], bytes
             ):
-                neigh["remote_chassis_id"] = neigh["remote_chassis_id"].decode()
+                try:
+                    neigh["remote_chassis_id"] = neigh["remote_chassis_id"].decode()
+                except UnicodeDecodeError:
+                    self.logger.warning(
+                        "[%s] Not Decode remote_chassis_id for neighbors. Skipping ",
+                        local_ports[port_num]["local_interface"],
+                    )
+                    continue
             if port_num in neigh_mgmt_addresses:
                 neigh["remote_mgmt_address"] = neigh_mgmt_addresses[port_num].address
             r += [
