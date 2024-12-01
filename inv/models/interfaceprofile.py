@@ -344,6 +344,10 @@ class InterfaceProfile(Document):
     def iter_lazy_labels(cls, interface_profile: "InterfaceProfile"):
         yield f"noc::interface_profile::{interface_profile.name}::="
 
+    @property
+    def allow_subinterface_metrics(self):
+        return self.subinterface_apply_policy != "D" and self.metrics
+
     def allow_collected_metric(
         self,
         admin_status: Optional[bool],

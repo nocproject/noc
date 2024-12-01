@@ -135,7 +135,9 @@ class CPE(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return self.label or str(self.controller)
+        if self.label:
+            return f"{self.label} ({self.state.name})"
+        return f"{self.id}:{self.controllers} ({self.state.name})"
 
     def __repr__(self):
         return str(self.controller)
@@ -566,7 +568,7 @@ class CPE(Document):
             level=10,
             attrs={
                 "address": self.address,
-                "mo": self.controller.managed_object,
+                "mo": self.controller.managed_object if self.controller else None,
                 "caps": self.get_caps(),
             },
         )
