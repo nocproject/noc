@@ -3009,9 +3009,6 @@ class ManagedObject(NOCModel):
             self.static_service_groups = [str(g.id) for g in static_service_groups]
         if state:
             self.state = state
-        if mappings:
-            for ris, rid in mappings.items():
-                self.set_mapping(ris, rid)
         for field, value in data.items():
             if hasattr(self, field) and getattr(self, field) != value:
                 setattr(self, field, value)
@@ -3301,7 +3298,7 @@ class InteractionHub(object):
     def __init__(self, obj):
         self.logger = logging.getLogger(__name__)
         self.__supported_interactions: Set[Interaction] = self.load_supported_interactions()
-        self.__state: State = obj.state or obj.workflow.get_default_state()
+        self.__state: State = obj.state or obj.object_profile.workflow.get_default_state()
 
     @staticmethod
     def load_supported_interactions():
