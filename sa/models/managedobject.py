@@ -3196,7 +3196,7 @@ class InteractionHub(object):
     def __init__(self, obj):
         self.logger = logging.getLogger(__name__)
         self.__supported_interactions: Set[Interaction] = self.load_supported_interactions()
-        self.__state: State = obj.state or obj.workflow.get_default_state()
+        self.__state: State = obj.state or obj.object_profile.workflow.get_default_state()
 
     @staticmethod
     def load_supported_interactions():
