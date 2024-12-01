@@ -8,6 +8,7 @@
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.core.validators import is_ipv4, is_int
+from noc.core.purgatorium import register, NEIGHBOR_SOURCE
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -40,6 +41,10 @@ class LLDPCheck(TopologyDiscoveryCheck):
             if len(n["neighbors"]) == 1:
                 nn = n["neighbors"][0]
                 yield n["local_interface"], nn, nn
+            elif len(n["neighbors"]) > 1:
+                # To, Cloud (allow lldp, multiple), Physical only (get_interface_type)
+                nn = n["neighbors"][0]
+                yield n["local_interface"], nn, nn
 
     def get_neighbor(self, neighbor_id):
         """
@@ -47,27 +52,32 @@ class LLDPCheck(TopologyDiscoveryCheck):
         """
         chassis_subtype = neighbor_id["remote_chassis_id_subtype"]
         chassis_id = neighbor_id["remote_chassis_id"]
+        address = neighbor_id.get("remote_mgmt_address")
         if chassis_subtype == LLDP_CHASSIS_SUBTYPE_MAC:
             if MACBlacklist.is_banned_mac(chassis_id, is_duplicated=True):
                 self.logger.info(
                     "Banned MAC %s found. Trying to negotiate via hostname", chassis_id
                 )
                 if "remote_system_name" in neighbor_id:
-                    return self.get_neighbor_by_hostname(neighbor_id["remote_system_name"])
+                    n = self.get_neighbor_by_hostname(neighbor_id["remote_system_name"])
                 else:
                     self.logger.info("No remote hostname for %s. Giving up.", neighbor_id)
-                    return None
+                    n = None
             else:
-                return self.get_neighbor_by_mac(chassis_id)
+                n = self.get_neighbor_by_mac(chassis_id)
         elif chassis_subtype == LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS:
-            return self.get_neighbor_by_ip(chassis_id)
+            n = self.get_neighbor_by_ip(chassis_id)
+            address = address or chassis_id
         elif chassis_subtype == LLDP_CHASSIS_SUBTYPE_LOCAL:
-            return self.get_neighbor_by_local(chassis_id)
+            n = self.get_neighbor_by_local(chassis_id)
         else:
             self.logger.debug(
                 "Cannot find neighbor '%s'. Unsupported subtype %s", chassis_id, chassis_subtype
             )
-            return None
+            n = None
+        if not n and address:
+            self.register_object_unknown_neighbors(address, neighbor_id)
+        return n
 
     def get_neighbor_by_local(self, local):
         """
@@ -215,3 +225,16 @@ class LLDPCheck(TopologyDiscoveryCheck):
             return iface
         # Use algorithms from get_remote_port_by_local as last resort.
         return self.get_interface_by_local(port, object)
+
+    def register_object_unknown_neighbors(self, address, remote_object):
+        if not address or address == "0.0.0.0" or not remote_object.get("remote_system_name"):
+            return
+        self.logger.debug("Register Unknown Neighbor: %s", address)
+        register(
+            address,
+            self.object.pool.bi_id,
+            NEIGHBOR_SOURCE,
+            chassis_id=remote_object.get("remote_chassis_id"),
+            hostname=remote_object["remote_system_name"],
+            description=remote_object.get("remote_system_description"),
+        )
