@@ -39,6 +39,7 @@ CP_NEW = config.path.cp_new
 CP_SET_UID = None
 
 SERVICE_NAME = os.path.relpath(sys.argv[0] or sys.executable)
+sentry_sdk = None
 
 if config.features.sentry:
 
@@ -66,7 +67,6 @@ if config.features.sentry:
         logger.warning(
             "sentry-sdk module is not installed. Sending exception to Sentry will be disabled"
         )
-        sentry_sdk = None
 
 
 def get_lines_from_file(filename, lineno, context_lines, loader=None, module_name=None):
