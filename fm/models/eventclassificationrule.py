@@ -101,7 +101,7 @@ class EventClassificationTestCase(EmbeddedDocument):
     def json_data(self):
         return {
             "message": self.message,
-            "value_re": self.raw_vars,
+            "raw_vars": self.raw_vars,
         }
 
 
@@ -127,7 +127,7 @@ class EventClassificationRule(Document):
         EventClassificationPattern
     )
     datasources = EmbeddedDocumentListField(DataSource)
-    vars: List[EventClassificationPattern] = EmbeddedDocumentListField(EventClassificationRuleVar)
+    vars: List[EventClassificationRuleVar] = EmbeddedDocumentListField(EventClassificationRuleVar)
     test_cases: List[EventClassificationTestCase] = EmbeddedDocumentListField(
         EventClassificationTestCase
     )

@@ -14,6 +14,7 @@ import pytest
 # NOC modules
 from noc.core.mib import mib
 from noc.core.snmp.render import render_mac
+from noc.fm.models.mib import MIB
 
 
 @pytest.mark.parametrize(
@@ -164,3 +165,24 @@ def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected):
     mib = clean_mib
     mib.load_mib(mib_name)
     assert mib.render(oid, value, display_hints) == expected
+
+
+@pytest.mark.parametrize(
+    "oids,expected",
+    [
+        (
+            {
+                "1.3.6.1.2.1.1.3.0": "249778441",
+                "1.3.6.1.4.1.9.9.215.1.1.8.1.2": "=02=05$=C2=AE 7F`=C3=9B=00=04",
+                "1.3.6.1.6.3.1.1.4.3.0": "1.3.6.1.4.1.9.9.215.2",
+            },
+            {
+                "DISMAN-EVENT-MIB::sysUpTimeInstance": "249778441",
+                "CISCO-MAC-NOTIFICATION-MIB::cmnHistMacChangedMsg": "\x02\x05$® 7F`Û\x00\x04",
+                "SNMPv2-MIB::snmpTrapEnterprise.0": "CISCO-MAC-NOTIFICATION-MIB::cmnMIBNotificationPrefix",
+            },
+        )
+    ],
+)
+def test_fm_mib(oids, expected):
+    assert MIB.resolve_vars(oids) == expected

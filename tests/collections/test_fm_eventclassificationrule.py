@@ -130,4 +130,4 @@ def test_rules_collection_cases(ruleset, event_class_rule):
         assert rule is not None, "Cannot find matching rule"
         assert (
             rule.event_class == event_class_rule.event_class
-        ), f"Mismatched event class {rule.event_class.name} vs {event_class_rule.event_class.name}"
+        ), f"Mismatched event class '{rule.event_class.name}' vs '{event_class_rule.event_class.name}'"
