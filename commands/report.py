@@ -82,7 +82,7 @@ class Command(BaseCommand):
             out_doc = report_engine.run_report(r_params=rp)
         except ValueError as e:
             self.print(f"Error when execute report: {e}")
-            self.die(e)
+            self.die(str(e))
         self.print(out_doc.get_content())
 
     def handle_list(self, **kwargs):

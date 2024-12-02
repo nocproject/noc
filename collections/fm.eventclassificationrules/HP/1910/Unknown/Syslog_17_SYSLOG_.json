@@ -4,7 +4,7 @@
     "uuid": "e105f72b-42c8-499a-a164-5f0ed73a23f9",
     "description": "Feb 11 14:38:26 2013 Teh %%10SHELL/4/LOGIN(t):   Trap 1.3.6.1.4.1.25506.2.2.1.1.3.0.1:admin login from Web",
     "event_class__name": "Unknown | Syslog",
-    "preference": 1000,
+    "preference": 2000,
     "patterns": [
         {
             "key_re": "^source$",

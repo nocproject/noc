@@ -16,7 +16,8 @@ from noc.inv.models.interface import InterfaceProfile
 
 class InterfaceDetailDS(BaseDataSource):
     name = "interfacedetailds"
-    row_index = "managed_object_id"
+
+    row_index = ("managed_object_id", "interface_name")
 
     fields = [
         FieldInfo(name="managed_object_id", type=FieldType.UINT),
@@ -30,6 +31,7 @@ class InterfaceDetailDS(BaseDataSource):
         FieldInfo(name="in_speed_h"),
         FieldInfo(name="admin_status", type=FieldType.BOOL),
         FieldInfo(name="oper_status", type=FieldType.BOOL),
+        FieldInfo(name="oper_status_change", type=FieldType.DATETIME),
         FieldInfo(name="full_duplex", type=FieldType.BOOL),
         FieldInfo(name="is_uni", type=FieldType.BOOL),
     ]
@@ -76,5 +78,6 @@ class InterfaceDetailDS(BaseDataSource):
             yield row_num, "in_speed_h", cls.humanize_speed(speed)
             yield row_num, "admin_status", row.get("admin_status") or False
             yield row_num, "oper_status", row.get("oper_status") or False
+            yield row_num, "oper_status_change", row.get("oper_status_change") or False
             yield row_num, "full_duplex", row.get("full_duplex") or False
             yield row_num, "is_uni", ip.is_uni
