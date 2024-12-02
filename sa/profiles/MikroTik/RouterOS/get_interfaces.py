@@ -468,7 +468,7 @@ class Script(BaseScript):
         1: "physical",
         6: "physical",  # ethernetCsmacd
         18: "physical",  # E1 - ds1
-        23: "physical",  # ppp
+        23: "tunnel",  # ppp
         24: "loopback",  # softwareLoopback
         117: "physical",  # gigabitEthernet
         131: "tunnel",  # tunnel
