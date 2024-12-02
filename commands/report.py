@@ -83,7 +83,9 @@ class Command(BaseCommand):
         except ValueError as e:
             self.print(f"Error when execute report: {e}")
             self.die(e)
-        self.print(out_doc.get_content())
+        with open("/tmp/report1.xlsx", "wb") as f:
+            f.write(out_doc.get_content())
+        # self.print(out_doc.get_content())
 
     def handle_list(self, **kwargs):
         for r in Report.objects.filter().order_by("name"):
