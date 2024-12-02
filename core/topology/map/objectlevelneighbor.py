@@ -46,26 +46,29 @@ class ObjectLevelNeighborTopology(TopologyBase):
         Load all managed objects from Object Group
         """
         # Group objects
-        object_mos: list[int] = self.mo.links[:]
+        object_mos: set[int] = set(self.mo.links[:])
         if not object_mos:
             # Only current node
             self.add_node(self.mo.get_topology_node(), {"role": "segment"})
             return
         level = self.mo.object_profile.level
-        while object_mos:
-            for links, n_level in ManagedObject.objects.filter(id__in=object_mos).values_list(
+        wave = object_mos.copy()
+        while wave:
+            new_wave: set[int] = set()
+            for links, n_level in ManagedObject.objects.filter(id__in=list(wave)).values_list(
                 "links", "object_profile__level"
             ):
-                object_mos += links
-                if n_level > level:
-                    level = n_level
+                new_wave |= set(links)
+                level = max(level, n_level)
+            wave = new_wave - object_mos
+            object_mos |= new_wave
             if level > self.mo.object_profile.level:
                 break
         # Cut too large neighborhood
         if len(object_mos) > MAX_NEIGHBORS:
-            object_mos = [self.mo.id] + self.mo.links[:]
+            object_mos = {self.mo.id} + set(self.mo.links[:])
         # Get all links, belonging to segment
-        links: list[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
+        links: list[Link] = list(Link.objects.filter(linked_objects__in=list(object_mos)))
         # All linked interfaces from map
         all_ifaces: list["ObjectId"] = list(
             itertools.chain.from_iterable(link.interface_ids for link in links)
@@ -90,17 +93,16 @@ class ObjectLevelNeighborTopology(TopologyBase):
             set(
                 i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i
             )
-            | set(object_mos)
+            | object_mos
         )
         mos: dict[int, ManagedObject] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
-        o_mos = set(object_mos)
         for mo in mos.values():
             if mo.state.is_wiping:
                 continue
             n = mo.get_topology_node()
-            if mo.id not in o_mos:
+            if mo.id not in object_mos:
                 n.portal = Portal(generator=self.name, id=str(mo.id))
             self.add_node(n, {"role": "segment"})
         # Process all links
