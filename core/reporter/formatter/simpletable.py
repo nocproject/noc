@@ -30,6 +30,8 @@ class SimpleTableFormatter(DataFormatter):
         * Delimiter set for bands on common level
     """
 
+    MAX_SHEET_NAME = 30
+
     def render_document(self):
         """
         Format for Root Band data as table
@@ -63,7 +65,9 @@ class SimpleTableFormatter(DataFormatter):
         elif self.output_type == OutputType.XLSX:
             book = Workbook(self.output_stream)
             cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
-            worksheet = book.add_worksheet(self.report_template.output_name_pattern)
+            worksheet = book.add_worksheet(
+                self.report_template.output_name_pattern[: self.MAX_SHEET_NAME]
+            )
             for cn, col in enumerate(out_columns):
                 worksheet.write(0, cn, HEADER_ROW.get(col, col), cf1)
             for cn, col in enumerate(out_columns):

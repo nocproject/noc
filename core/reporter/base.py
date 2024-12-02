@@ -16,6 +16,7 @@ from typing import Dict, Any, Optional, List, Tuple
 import orjson
 import polars as pl
 from jinja2 import Template as Jinja2Template
+from jinja2.exceptions import TemplateError
 
 # NOC modules
 from noc.main.reportsources.loader import loader as r_source_loader
@@ -188,7 +189,7 @@ class ReportEngine(object):
     def parse_fields(
         self, band: ReportBand, template: Template, fields: Optional[List[str]] = None
     ) -> Dict[str, List[str]]:
-        """"""
+        """Parse requested fields for apply to datasource query"""
         logger.info("[%s] Request datasource fields for band", band.name)
         if not template.bands_format and not fields:
             return {}
@@ -197,7 +198,7 @@ class ReportEngine(object):
         else:
             fields = set()
             for name, bf in template.bands_format.items():
-                if not bf.columns or name != HEADER_BAND:
+                if not bf.columns or name == HEADER_BAND:
                     continue
                 fields |= set(c.name for c in bf.columns)
         r = defaultdict(list)
@@ -298,7 +299,7 @@ class ReportEngine(object):
                     # joined_field = key_field
             if num and query.name in joined_field:
                 jf = set(joined_field[query.name]).intersection(joined_field[r[-1].name])
-                r[-1].data = r[-1].data.join(data, on=list(jf))
+                r[-1].data = r[-1].data.join(data, on=list(jf), how="left")
             else:
                 r.append(
                     DataSet(
@@ -352,8 +353,13 @@ class ReportEngine(object):
         output_name = template.get_document_name()
         out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
+        ctx["now"] = datetime.datetime.now().replace(microsecond=0)
         extension = out_type.value
         if out_type == OutputType.CSV_ZIP:
             extension = OutputType.CSV.value
-        template.get_document_name()
-        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{extension}"
+        try:
+            fn = Jinja2Template(output_name).render(ctx) or "report"
+        except TemplateError as e:
+            self.logger.error("Error when build filename: %s", str(e))
+            fn = "report"
+        return f"{fn}.{extension}"
