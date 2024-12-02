@@ -51,7 +51,15 @@ class BaseDataSource(object):
 
     name: str
     fields: List[FieldInfo]
-    row_index = "id"
+    row_index: Union[str, Tuple[str, ...]] = "id"
+
+    @classmethod
+    def join_fields(cls) -> List[str]:
+        if not cls.row_index:
+            return []
+        if cls.row_index and isinstance(cls.row_index, str):
+            return [cls.row_index]
+        return list(cls.row_index)
 
     @classmethod
     def iter_ds_fields(cls):

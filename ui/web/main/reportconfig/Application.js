@@ -298,7 +298,8 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                 // ["pdf", __("PDF")],
                                                 // ["table", __("Table")],
                                                 ["ssv", __("SSV")],
-                                                ["html", __("HTML")]
+                                                ["html", __("HTML")],
+                                                ["xlsx", __("XLSX")]
                                             ]
                                         },
                                         {

@@ -6,10 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from urllib.parse import quote
 from typing import Optional, Set
 from collections import defaultdict
 
 # Third-party modules
+from pydantic import ValidationError
 from django.http import HttpResponse, HttpResponseBadRequest
 
 # NOC modules
@@ -223,16 +225,19 @@ class ReportConfigApplication(ExtDocApplication):
         report_engine = ReportEngine(
             report_execution_history=config.web.enable_report_history,
         )
-        rp = RunParams(
-            report=report.get_config(pref_lang),
-            output_type=OutputType(q.get("output_type")),
-            params=q,
-        )
+        try:
+            rp = RunParams(
+                report=report.get_config(pref_lang),
+                output_type=OutputType(q.get("output_type")),
+                params=q,
+            )
+        except ValidationError as e:
+            return HttpResponseBadRequest(e)
         try:
             out_doc = report_engine.run_report(r_params=rp)
         except ValueError as e:
             return HttpResponseBadRequest(e)
         content = out_doc.get_content()
         response = HttpResponse(content, content_type=out_doc.content_type)
-        response["Content-Disposition"] = f'attachment; filename="{out_doc.document_name}"'
+        response["Content-Disposition"] = f'attachment; filename="{quote(out_doc.document_name)}"'
         return response

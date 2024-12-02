@@ -16,6 +16,7 @@ from typing import Dict, Any, Optional, List, Tuple
 import orjson
 import polars as pl
 from jinja2 import Template as Jinja2Template
+from jinja2.exceptions import TemplateError
 
 # NOC modules
 from noc.main.reportsources.loader import loader as r_source_loader
@@ -31,6 +32,7 @@ from .types import (
     ReportQuery,
     OutputDocument,
     ROOT_BAND,
+    HEADER_BAND,
 )
 from .report import Band, DataSet
 
@@ -48,6 +50,7 @@ class ReportEngine(object):
         self.logger = logger
         self.report_execution_history = report_execution_history
         self.report_print_error = report_print_error
+        self.suppress_error_log = True
 
     def run_report(self, r_params: RunParams, user: Optional[Any] = None):
         """
@@ -73,7 +76,7 @@ class ReportEngine(object):
         except Exception as e:
             error = str(e)
             if self.report_print_error:
-                error_report(logger=self.logger, suppress_log=True)
+                error_report(logger=self.logger, suppress_log=self.suppress_error_log)
         if self.report_execution_history:
             self.register_execute(
                 report,
@@ -186,7 +189,7 @@ class ReportEngine(object):
     def parse_fields(
         self, band: ReportBand, template: Template, fields: Optional[List[str]] = None
     ) -> Dict[str, List[str]]:
-        """"""
+        """Parse requested fields for apply to datasource query"""
         logger.info("[%s] Request datasource fields for band", band.name)
         if not template.bands_format and not fields:
             return {}
@@ -195,7 +198,7 @@ class ReportEngine(object):
         else:
             fields = set()
             for name, bf in template.bands_format.items():
-                if not bf.columns or name == "header":
+                if not bf.columns or name == HEADER_BAND:
                     continue
                 fields |= set(c.name for c in bf.columns)
         r = defaultdict(list)
@@ -236,7 +239,12 @@ class ReportEngine(object):
                 band = Band.from_report(b)
             f_map = self.parse_fields(b, template, params.pop("fields", None))
             for num, d in enumerate(self.get_dataset(b.queries, params, f_map)):
-                self.logger.debug("[%s] Add dataset: %s", b.name, d)
+                self.logger.debug(
+                    "[%s] Add dataset, Columns [%s]: %s",
+                    b.name,
+                    d.data.columns if d.data is not None else [],
+                    d,
+                )
                 band.add_dataset(d, name=b.name if not num else None)
             if band.name == ROOT_BAND:
                 continue
@@ -265,10 +273,10 @@ class ReportEngine(object):
             queries: Configuration dataset
             ctx: Report params
         """
-        r = []
+        r: List[DataSet] = []
         if not queries:
             return []
-        joined_field = None
+        joined_field = {}
         for num, query in enumerate(queries):
             data, ds_f = None, []
             q_ctx = ctx.copy()
@@ -287,9 +295,11 @@ class ReportEngine(object):
                 logger.info("[%s] Query DataSource with fields: %s", query.datasource, ds_f)
                 data, key_field = cls.query_datasource(query, q_ctx, fields=ds_f)
                 if key_field:
-                    joined_field = key_field
-            if num and joined_field:
-                r[-1].data = r[-1].data.join(data, on=joined_field, how="left")
+                    joined_field[query.name] = key_field
+                    # joined_field = key_field
+            if num and query.name in joined_field:
+                jf = set(joined_field[query.name]).intersection(joined_field[r[-1].name])
+                r[-1].data = r[-1].data.join(data, on=list(jf), how="left")
             else:
                 r.append(
                     DataSet(
@@ -309,7 +319,7 @@ class ReportEngine(object):
         ctx: Dict[str, Any],
         joined_field: Optional[str] = None,
         fields: Optional[List[str]] = None,
-    ) -> Tuple[Optional[pl.DataFrame], str]:
+    ) -> Tuple[Optional[pl.DataFrame], List[str]]:
         """
         Resolve Datasource for Query
         Attrs:
@@ -325,14 +335,14 @@ class ReportEngine(object):
         if joined_field and not ds.has_field(joined_field):
             # Joined is not supported
             logger.warning("[%s] Joined field '%s' not available", ds.name, joined_field)
-            return None, ""
+            return None, []
         elif joined_field and fields:
             fields += [joined_field]
             # Check not row_index
         elif not joined_field and fields:
-            fields += [ds.row_index]
+            fields += ds.join_fields()
         row = ds.query_sync(fields=fields, **ctx)
-        return row, ds.row_index
+        return row, ds.join_fields()
 
     def resolve_output_filename(self, run_params: RunParams, root_band: Band) -> str:
         """
@@ -343,7 +353,13 @@ class ReportEngine(object):
         output_name = template.get_document_name()
         out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
+        ctx["now"] = datetime.datetime.now().replace(microsecond=0)
         extension = out_type.value
         if out_type == OutputType.CSV_ZIP:
             extension = OutputType.CSV.value
-        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{extension}"
+        try:
+            fn = Jinja2Template(output_name).render(ctx) or "report"
+        except TemplateError as e:
+            self.logger.error("Error when build filename: %s", str(e))
+            fn = "report"
+        return f"{fn}.{extension}"

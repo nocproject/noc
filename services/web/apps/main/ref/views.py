@@ -229,7 +229,7 @@ class RefAppplication(ExtApplication):
         r = []
         for name in ds_loader:
             ds = ds_loader[name]
-            if not ds:
+            if not ds or not getattr(ds, "name", None):
                 continue
             r += [{"id": name, "label": ds.name}]
         return r  # list(sorted(r))

@@ -121,7 +121,7 @@ class ColumnFormat(BaseModel):
     title: Optional[str] = None
     align: ColumnAlign = ColumnAlign(1)
     format_type: Optional[str] = None
-    total: str = None  # Calculate summary stat
+    total: Optional[str] = None  # Calculate summary stat
     total_label: str = "Total"
 
 
@@ -156,10 +156,10 @@ class Template(BaseModel):
 
 class Parameter(BaseModel):
     name: str  # User friendly name
-    alias: str  # for system use
     type: str  # Param Class ?
     # "integer", "string", "date", "model", "choice", "bool", "fields_selector"
     required: bool = False
+    alias: Optional[str] = None  # for system use
     default_value: Optional[str] = None
     model_id: Optional[str] = None
 

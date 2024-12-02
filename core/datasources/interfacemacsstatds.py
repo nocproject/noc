@@ -31,10 +31,13 @@ DEFAULT_INTERVAL = 86400
 class InterfaceMACsStatDS(BaseDataSource):
     name = "interfacemacsstatds"
 
+    row_index = ("managed_object_id", "interface_name")
+
     fields = [
-        FieldInfo(name="managed_object_id", type=FieldType.UINT64),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
         FieldInfo(name="interface_name"),
         FieldInfo(name="mac_count", type=FieldType.UINT),
+        FieldInfo(name="macs", type=FieldType.LIST_STRING),
     ]
 
     @classmethod
