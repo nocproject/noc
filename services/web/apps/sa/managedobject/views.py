@@ -37,7 +37,6 @@ from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
 from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
 from noc.services.web.base.modelinline import ModelInline
 from noc.services.web.base.repoinline import RepoInline
 from noc.project.models.project import Project
@@ -60,7 +59,7 @@ from noc.core.validators import is_objectid
 from noc.core.debug import error_report
 from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
-from noc.core.pm.utils import MetricProxy
+from noc.core.pm.utils import get_interface_metrics
 from noc.pm.models.scale import Scale
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
@@ -295,9 +294,6 @@ class ManagedObjectApplication(ExtModelApplication):
                     "reason": d.reason or "",
                 }
             )
-        for m in data["mappings"]:
-            rs = RemoteSystem.get_by_id(m["remote_system"])
-            m["remote_system__label"] = rs.name
         return data
 
     def instance_to_dict_list(self, o: "ManagedObject", fields=None):
@@ -705,19 +701,13 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Permission denied")
         metrics = {}
         if o.object_profile.enable_metrics:
-            metric_proxy = MetricProxy(managedob_object=[o.bi_id])
-            metric_proxy.interface(
-                queries=["load_in", "load_out", "rx", "tx", "temp", "bias"],
-                group_by=["managed_object", "interface"],
-            )
-
-            # r, _ = get_interface_metrics(managed_objects=[o.bi_id], metrics=self.x_map)
-            # for iface in r[o.bi_id]:
-            #     ctx = {m: "--" for m in self.x_map}
-            #     ctx.update(r[o.bi_id][iface])
-            #     ctx["load_in"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_in"]))
-            #     ctx["load_out"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_out"]))
-            #     metrics[iface] = self.iface_metric_template.render(**ctx)
+            r, _ = get_interface_metrics(managed_objects=[o.bi_id], metrics=self.x_map)
+            for iface in r[o.bi_id]:
+                ctx = {m: "--" for m in self.x_map}
+                ctx.update(r[o.bi_id][iface])
+                ctx["load_in"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_in"]))
+                ctx["load_out"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_out"]))
+                metrics[iface] = self.iface_metric_template.render(**ctx)
         # Physical interfaces
         # @todo: proper ordering
         style_cache = {}  # profile_id -> css_style
