@@ -132,7 +132,7 @@ class Rule:
             elif key_s == "source":
                 continue
             elif key_s == "message":
-                message_rx = re.compile(value_s)
+                message_rx = re.compile(x.value_re)
             else:
                 # Process key pattern
                 m, rxs = cls.get_matcher(x.key_re, x.value_re)
