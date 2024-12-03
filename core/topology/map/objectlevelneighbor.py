@@ -66,7 +66,7 @@ class ObjectLevelNeighborTopology(TopologyBase):
                 break
         # Cut too large neighborhood
         if len(object_mos) > MAX_NEIGHBORS:
-            object_mos = {self.mo.id} | set(self.mo.links[:])
+            object_mos = {self.mo.id}  # | set(self.mo.links[:])
         # Get all links, belonging to segment
         links: list[Link] = list(Link.objects.filter(linked_objects__in=list(object_mos)))
         # All linked interfaces from map
