@@ -371,10 +371,17 @@ Ext.define("NOC.inv.map.MapPanel", {
         links.push(me.createLink(link));
     });
     me.graph.addCells(nodes);
-    me.app.miniMapPanel.graph.addCells(nodes);
     me.graph.addCells(links);
-    me.app.miniMapPanel.graph.addCells(links);
     me.graph.addCells(badges);
+    // Mini map
+    // me.app.miniMapPanel.graph.clear();
+    if(!Ext.isEmpty(this.viewPort)){
+      this.viewPort.remove();
+      this.viewPort = null;
+    }
+    me.app.miniMapPanel.graph.resetCells([]);
+    me.app.miniMapPanel.graph.addCells(nodes);
+    me.app.miniMapPanel.graph.addCells(links);
     me.app.miniMapPanel.graph.addCells(badges);
     // Run status polling
     if(me.statusPollingTaskId){
