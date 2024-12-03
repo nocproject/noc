@@ -33,9 +33,11 @@ def register(event: Event, managed_object: ManagedObject) -> None:
     """
     Register MAC from event.
     """
+    if not event.vars:
+        return
     vlan = int(event.vars.get("vlan", "0"))
-    interface: str | None = Event.vars.get("interface")
-    mac: str | None = Event.vars.get("mac")
+    interface: str | None = event.vars.get("interface")
+    mac: str | None = event.vars.get("mac")
     if not interface or not mac:
         return
     # Resolve interface
