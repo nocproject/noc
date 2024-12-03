@@ -33,7 +33,7 @@ def register(event: Event, managed_object: ManagedObject) -> None:
     """
     Register MAC from event.
     """
-    vlan = int(Event.vars.get("vlan", "0"))
+    vlan = int(event.vars.get("vlan", "0"))
     interface: str | None = Event.vars.get("interface")
     mac: str | None = Event.vars.get("mac")
     if not interface or not mac:
@@ -46,13 +46,14 @@ def register(event: Event, managed_object: ManagedObject) -> None:
     if not if_profile:
         return
     # Spool data
+    ts = event.timestamp
     svc = get_service()
     svc.register_metrics(
         "mac",
         [
             {
-                "date": strftime("%Y-%m-%d", event.ts),
-                "ts": strftime("%Y-%m-%d %H:%M:%S", event.ts),
+                "date": ts.strftime("%Y-%m-%d"),
+                "ts": ts.strftime("%Y-%m-%d %H:%M:%S"),
                 "managed_object": managed_object.bi_id,
                 "mac": int(MAC(mac)),
                 "interface": interface,
@@ -100,7 +101,7 @@ class IfProfileMap(object):
         coll = InterfaceProfile._get_collection()
         r = {}
         for doc in coll.find({}, {"_id": 1, "bi_id": 1, "is_uni": 1}):
-            r[doc["id"]] = IfProfile.from_json(doc)
+            r[doc["_id"]] = IfProfile.from_json(doc)
         self.last_update = ts
         self.map = r
 
