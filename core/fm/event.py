@@ -127,7 +127,7 @@ class Event(BaseModel):
     vars: Optional[Dict[str, Any]] = None  # Event variables
 
     @property
-    def timestamp(self):
+    def timestamp(self) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(self.ts)
 
     @staticmethod
