@@ -1254,7 +1254,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "id": str(o.id),
                 "label": _("Topology Neighbors"),
                 "is_default": False,
-                "args": ["objectlevelneighbor", str(o.id)],
+                "args": ["objectlevelneighbor", str(o.id), o.id],
             }
         ]
         if o.segment:
