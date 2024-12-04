@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="NONE,NOARCHIVE" />
+  <meta name="copyright" content="2007-2024, getnoc.com" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <!-- l10n -->
+  <link rel="gettext" href="/ui/web/translations/en.json" lang="en" />
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-noc/resources/theme-noc-all.css" />
+  <link rel="stylesheet" type="text/css"
+    href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/web/css/extjs.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/web/css/theme-patch-noc.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/web/css/ux.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="/main/style/css/" />
+  <link rel="stylesheet" type="text/css" href="/ui/pkg/codemirror/lib/codemirror.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/pkg/codemirror/addon/dialog/dialog.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/web/css/codemirror.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/pkg/joint/joint.min.css" />
+  <!-- JS -->
+  <script type="text/javascript" src="/ui/web/js/jsloader.js"></script>
+  <script type="text/javascript" src="/ui/pkg/extjs/ext-all-debug.js"></script>
+  <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-noc/theme-noc.js"></script>
+  <script type="text/javascript" src="/ui/pkg/extjs/packages/charts/classic/charts.js"></script>
+  <!-- Include the translations -->
+  <script type="text/javascript" src="/ui/web/locale/en/ext-locale-en.js"></script>
+  <script type="text/javascript" src="/ui/pkg/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/lib/codemirror.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/addon/dialog/dialog.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/addon/search/search.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/addon/search/searchcursor.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/addon/selection/active-line.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/addon/mode/loadmode.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/addon/edit/matchbrackets.js"></script>
+  <script type="text/javascript" src="/ui/common/diff_match_patch.js"></script>
+  <script type="text/javascript" src="/ui/pkg/codemirror/addon/merge/merge.js"></script>
+  <script type="text/javascript" src="/ui/pkg/filesaver/filesaver.min.js"></script>
+  <script type="text/javascript" src="/ui/pkg/visibility/visibility.min.js"></script>
+  <script type="text/javascript" src="/ui/pkg/moment/moment.min.js"></script>
+  <script type="text/javascript" src="/ui/pkg/moment-timezone/moment-timezone-with-data-1970-2030.min.js"></script>
+  <!-- NOC modules -->
+  <script type="text/javascript" src="/ui/web/js/boot.js"></script>
+  <script type="text/javascript" src="/ui/common/gettext.js"></script>
+  <script type="text/javascript" src="/ui/web/js/colors.js"></script>
+  <script type="text/javascript" src="/ui/web/js/glyph.js"></script>
+  <script type="text/javascript" src="/ui/web/js/util.js"></script>
+  <script type="text/javascript" src="/ui/web/js/override.js"></script>
+  <script type="text/javascript" src="/dist/app-bundle.js"></script>
+  <!-- <script type="text/javascript" src="/ui/web/main/desktop/app.js"></script> -->
+</head>
+
+<body>
+  <div id="noc-loading-mask"></div>
+  <div id="noc-loading">Loading NOC. Please wait ...</div>
+  <form id="history-form" class="x-hide-display">
+    <input type="hidden" id="x-history-field" />
+    <iframe id="x-history-frame" style="display: none"></iframe>
+  </form>
+</body>
+
+</html>

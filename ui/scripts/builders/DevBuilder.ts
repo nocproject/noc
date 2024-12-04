@@ -9,9 +9,9 @@ export class DevBuilder extends BaseBuilder{
       await this.createContext();
       await this.watch();
 
-      const {host, port} = await this.serve();
+      // const {host, port} = await this.serve();
       console.log("watching...");
-      console.log(`serve on http://${host}:${port}`);
+      // console.log(`serve on http://${host}:${port}`);
     } catch(error){
       console.error("Development server start failed:", error);
       await this.stop();

@@ -6,6 +6,7 @@
     "dev": "node --experimental-strip-types build.ts dev",
     "prod": "node --experimental-strip-types build.ts prod",
     "vendor": "node --experimental-strip-types build.ts vendor",
+    "start": "browser-sync start --proxy 'localhost:8080' --files 'dist/*.*'",
     "test": "jest",
     "lint": "eslint scripts --fix"
   },
@@ -23,6 +24,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.8.6",
     "astring": "^1.9.0",
+    "browser-sync": "^3.0.3",
     "esbuild": "0.24.0",
     "eslint": "^9.13.0",
     "espree": "^10.3.0",
