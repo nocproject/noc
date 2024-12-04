@@ -266,6 +266,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
     me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
     me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
+    me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
     me.fireEvent("mapready");
   },
   // Load segment data
