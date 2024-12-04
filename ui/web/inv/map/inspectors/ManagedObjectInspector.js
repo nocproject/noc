@@ -136,6 +136,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     this.cardButton.setDisabled(false);
     this.dashboardButton.setDisabled(false);
     this.consoleButton.setDisabled(false);
+    this.viewMapButton.setDisabled(false);
 
     this.currentObjectId = data.id;
     this.consoleUrl = data.console_url;
