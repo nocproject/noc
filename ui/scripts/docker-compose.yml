@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  nginx:
+    image: nginx
+    container_name: dev_container
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../../ui:/usr/share/nginx/html/ui
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ../dist:/usr/share/nginx/html/dist
+    extra_hosts:
+      - "sovadev:192.168.130.132"    

@@ -82,7 +82,7 @@ switch(mode){
   case "dev":
     builder = new DevBuilder({
       ...commonOptions,
-      buildDir: "web",
+      // buildDir: "web",
     });
     break;
   case "prod":
