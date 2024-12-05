@@ -239,7 +239,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     this.graph = new joint.dia.Graph();
     this.graph.on("change", Ext.bind(this.onChange, this));
     this.paper = new joint.dia.Paper({
-      el: this.el.dom,
+      el: this.body.dom,
       model: this.graph,
       height: "100%",
       width: "100%",
