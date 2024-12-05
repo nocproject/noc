@@ -15,6 +15,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   readOnly: false,
   pollingInterval: 180000,
   updatedPollingTaskId: null,
+  mapPadding: 10,
   svgFilters: {
     // Asbestos, #7f8c8d
     osUnknown: [127, 140, 141],
@@ -118,14 +119,14 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.overlayMode = me.LO_NONE;
     me.interfaceMetrics = [];
 
-    Ext.apply(me, {
-      items: [
-        {
-          xtype: "component",
-          layout: "fit",
-        },
-      ],
-    });
+    // Ext.apply(me, {
+    //   items: [
+    //     {
+    //       xtype: "component",
+    //       layout: "fit",
+    //     },
+    //   ],
+    // });
     //
     me.nodeMenu = Ext.create("Ext.menu.Menu", {
       items: [
@@ -235,39 +236,40 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   // Initialize JointJS Map
   initMap: function(){
-    var me = this,
-      dom = me.items.first().el.dom;
-    me.graph = new joint.dia.Graph();
-    me.graph.on("change", Ext.bind(me.onChange, me));
-    me.paper = new joint.dia.Paper({
-      el: dom,
-      model: me.graph,
+    this.graph = new joint.dia.Graph();
+    this.graph.on("change", Ext.bind(this.onChange, this));
+    this.paper = new joint.dia.Paper({
+      el: this.el.dom,
+      model: this.graph,
+      height: "100%",
+      width: "100%",
       preventContextMenu: false,
       async: false,
       guard: function(evt){
         return evt.type === "mousedown" && evt.buttons === 2;
       },
-      interactive: Ext.bind(me.onInteractive, me),
+      interactive: Ext.bind(this.onInteractive, this),
     });
+    this.el.dom.style.overflow = "auto";
     // Apply SVG filters
-    Ext.Object.each(me.svgFilters, function(fn){
-      var ft = me.getFilter(fn, me.svgFilters[fn]),
+    Ext.Object.each(this.svgFilters, function(fn){
+      var ft = this.getFilter(fn, this.svgFilters[fn]),
         fd = V(ft);
-      V(me.paper.svg).defs().append(fd);
-    });
-    Ext.each(me.svgDefaultFilters, function(f){
-      V(me.paper.svg).defs().append(V(f));
-    });
+      V(this.paper.svg).defs().append(fd);
+    }, this);
+    Ext.each(this.svgDefaultFilters, function(f){
+      V(this.paper.svg).defs().append(V(f));
+    }, this);
     // Subscribe to events
-    me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
-    me.paper.on("cell:pointerdblclick", Ext.bind(me.onCellDoubleClick, me));
-    me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight, me));
-    me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight, me));
-    me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
-    me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
-    me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
-    me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
-    me.fireEvent("mapready");
+    this.paper.on("cell:pointerdown", Ext.bind(this.onCellSelected, this));
+    this.paper.on("cell:pointerdblclick", Ext.bind(this.onCellDoubleClick, this));
+    this.paper.on("cell:highlight", Ext.bind(this.onCellHighlight, this));
+    this.paper.on("cell:unhighlight", Ext.bind(this.onCellUnhighlight, this));
+    this.paper.on("cell:contextmenu", Ext.bind(this.onContextMenu, this));
+    this.paper.on("link:mouseenter", Ext.bind(this.onLinkOver, this));
+    this.paper.on("link:mouseleave", Ext.bind(this.onLinkOut, this));
+    this.paper.on("blank:pointerdown", Ext.bind(this.onBlankSelected, this));
+    this.fireEvent("mapready");
   },
   // Load segment data
   loadSegment: function(generator, segmentId, forceSpring){
@@ -1241,9 +1243,11 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setZoom: function(zoom){
-    this.paper.scale(zoom, zoom);
-    this.setViewPortSize();
-    this.setPaperDimension(zoom);
+    this.paper.svg.setAttribute("width", `${zoom * 100}%`)
+    this.paper.svg.setAttribute("height", `${zoom * 100}%`)
+    // this.paper.scale(zoom, zoom);
+    // this.setViewPortSize();
+    // this.setPaperDimension(zoom);
   },
 
   onNodeMenuViewMap: function(){
@@ -1524,28 +1528,40 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setPaperDimension: function(zoom){
-    var w, h,
-      paddingX = 15,
-      paddingY = 15;
+    var svg = this.paper.svg,
+      {x, y, width, height} = svg.getBBox();
+      // clientRect = svg.getBoundingClientRect();
 
-    if(this.paper){
-      this.paper.fitToContent();
-      var contentBB = this.paper.getContentBBox();
-      if(contentBB && contentBB.width && contentBB.height){
-        if(this.normalize_position){
-          w = contentBB.width;
-          h = contentBB.height;
-          this.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
-        } else{
-          w = (this.bg_width || contentBB.width) * (zoom || 1);
-          h = (this.bg_height || contentBB.height) * (zoom || 1);
-        }
-        this.paper.setDimensions(
-          Math.max(w, this.getWidth()) + paddingX * 2,
-          Math.max(h, this.getHeight()) + paddingY * 2,
-        );
-      }
-    }
+    if(width === 0 || height === 0) return;
+    // svg.setAttribute("width", clientRect.width);
+    // svg.setAttribute("height", clientRect.height);
+    // svg.setAttribute("viewBox", `${x - this.mapPadding} ${y - this.mapPadding} ${width + this.mapPadding * 2} ${height + this.mapPadding * 2}`);
+    svg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
+    svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+    // this.paper.fitToContent({padding: this.mapPadding, top: 0, left: 0, allowNewOrigin: "any"});
+    // console.log("setPaperDimension");
+    // var w, h,
+    //   paddingX = 15,
+    //   paddingY = 15;
+
+    // if(this.paper){
+    //   this.paper.fitToContent();
+    //   var contentBB = this.paper.getContentBBox();
+    //   if(contentBB && contentBB.width && contentBB.height){
+    //     if(this.normalize_position){
+    //       w = contentBB.width;
+    //       h = contentBB.height;
+    //       this.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
+    //     } else{
+    //       w = (this.bg_width || contentBB.width) * (zoom || 1);
+    //       h = (this.bg_height || contentBB.height) * (zoom || 1);
+    //     }
+    //     this.paper.setDimensions(
+    //       Math.max(w, this.getWidth()) + paddingX * 2,
+    //       Math.max(h, this.getHeight()) + paddingY * 2,
+    //     );
+    //   }
+    // }
   },
   //
   changeLabelText: function(showIPAddress){
