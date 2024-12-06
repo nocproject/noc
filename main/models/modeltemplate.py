@@ -115,6 +115,7 @@ class Param(EmbeddedDocument):
     param = StringField(required=False)
     set_capability: Optional[Capability] = PlainReferenceField(Capability, required=False)
     preferred_template_value = BooleanField(default=False)  # Template value override user
+    override_existing = BooleanField(default=False)  # Template value
 
     def __str__(self):
         return self.name
@@ -273,7 +274,7 @@ class ModelTemplate(Document):
             item: Param data
             dry_run: Run without create instance (only validate param)
         """
-        env = self.get_env(item)
+        env = self.get_env(item, is_new=True)
         if dry_run:
             return
         if not hasattr(self.model_instance, "from_template"):
@@ -293,7 +294,7 @@ class ModelTemplate(Document):
             o.save()
         return changed
 
-    def get_env(self, item: ResourceItem) -> Dict[str, Any]:
+    def get_env(self, item: ResourceItem, is_new: bool = False) -> Dict[str, Any]:
         """
         Build environment from Resource Item:
         * data
@@ -303,6 +304,7 @@ class ModelTemplate(Document):
 
         Args:
             item: Resource Item
+            is_new: Flag for create instance
         """
         r: Dict[str, Any] = {}
         caps: Dict[str, Any] = {}
@@ -325,6 +327,9 @@ class ModelTemplate(Document):
                 continue
             elif p.name not in data and p.required:
                 raise ValueError("Parameter %s is required" % p.name)
+            elif not is_new and not p.override_existing:
+                data.pop(p.name, None)
+                continue
             elif p.preferred_template_value and p.default_expression and p.name in data:
                 r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
                 # May be used in next expression ?
