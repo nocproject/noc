@@ -27,7 +27,7 @@ class MatcherRule(object):
             # match(ctx, []) always True, Priority in metrics matcher config matcher
             if (
                 matcher is None
-                or (match(ctx, self.matchers.get(matcher, [])) and matcher in self.matchers)
+                or (match(ctx, self.matchers.get(matcher, {})) and matcher in self.matchers)
                 or getattr(script, matcher, None)
             ):
                 yield from rule.iter_oids(script, metric)
