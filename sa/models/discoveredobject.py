@@ -410,34 +410,41 @@ class DiscoveredObject(Document):
         """
         Getting Context for Synchronise object template
         """
-        r = ResourceItem(
-            id=str(self.managed_object_id),
-            labels=self.effective_labels,
-            data=[
-                ResourceDataItem(name="name", value=self.hostname),
-                ResourceDataItem(name="description", value=self.description or ""),
-                ResourceDataItem(name="hostname", value=self.hostname),
-                ResourceDataItem(name="address", value=self.address),
-                ResourceDataItem(name="pool", value=str(self.pool.id)),
-            ],
-        )
-        mappings = {}
+        data, mappings = [], {}
         s_groups = set()
         for d in self.data:
+            s = self.rule.get_sync_settings(d.source, d.remote_system)
+            if s is None:
+                continue
+            if d.remote_system and d.remote_system not in mappings:
+                mappings[d.remote_system] = d.remote_id
+            if s.sync_policy == "M":
+                continue
+            if d.service_groups:
+                s_groups.update(set(d.service_groups))
             for k, v in d.data.items():
-                if k == "remote_id":
+                if k in {"remote_id", "name", "description", "hostname", "address", "pool"}:
                     continue
-                r.data.append(
+                data.append(
                     ResourceDataItem(
                         name=k,
                         value=v,
                         remote_system=str(d.remote_system.id) if d.remote_system else None,
                     )
                 )
-            if d.remote_system and d.remote_system not in mappings:
-                mappings[d.remote_system] = d.remote_id
-            if d.service_groups:
-                s_groups.update(set(d.service_groups))
+        if data:
+            data = [
+                ResourceDataItem(name="name", value=self.hostname),
+                ResourceDataItem(name="description", value=self.description or ""),
+                ResourceDataItem(name="hostname", value=self.hostname),
+                ResourceDataItem(name="address", value=self.address),
+                ResourceDataItem(name="pool", value=str(self.pool.id)),
+            ] + data
+        r = ResourceItem(
+            id=str(self.managed_object_id),
+            labels=self.effective_labels,
+            data=data,
+        )
         if mappings:
             r.mappings = mappings
         if s_groups:
@@ -452,7 +459,9 @@ class DiscoveredObject(Document):
         self, pool: Optional[Pool] = None, addresses: Optional[List[str]] = None
     ):
         """Query for request Managed Object"""
-        q = d_Q(name__iexact=self.hostname)
+        q = d_Q()
+        if self.hostname:
+            q |= d_Q(name__iexact=self.hostname)
         if pool:
             q |= d_Q(address=self.address, pool=pool)
         if addresses and pool:
@@ -556,10 +565,11 @@ class DiscoveredObject(Document):
         # Create Managed Object instance
         pool = self.get_pool()
         duplicates = self.check_duplicate()
+        mo = None
         # Check Removed Managed Object ?
-        mo = ManagedObject.objects.filter(
-            self.get_managed_object_query(pool, addresses=[di.address for di in duplicates]),
-        ).first()
+        q = self.get_managed_object_query(pool, addresses=[di.address for di in duplicates])
+        if q:
+            mo = ManagedObject.objects.filter(q).first()
         if not mo:
             mo = DiscoveryID.find_object(ipv4_address=self.address, hostname=self.hostname)
         if mo:
@@ -734,10 +744,10 @@ class DiscoveredObject(Document):
             mo.address = self.address
             changed |= True
         ctx = self.get_ctx()
-        if self.rule.default_template:
+        if ctx.data and self.rule.default_template:
             logger.info("[%s] Update existing ManagedObject from data", mo.name)
             changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
-        changed |= mo.update_object_mappings(ctx.mappings)
+        changed |= mo.update_object_mappings(ctx.mappings or {})
         if changed:
             mo.save()
 

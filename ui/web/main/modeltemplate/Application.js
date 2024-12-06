@@ -168,6 +168,13 @@ Ext.define("NOC.main.modeltemplate.Application", {
               width: 50,
             },
             {
+              text: __("Overr. Existing"),
+              dataIndex: "override_existing",
+              editor: "checkbox",
+              renderer: NOC.render.Bool,
+              width: 50,
+            },
+            {
               text: __("Param"),
               dataIndex: "param",
               width: 200,

@@ -129,13 +129,18 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     @view(url=r"^template_lookup/$", method=["GET"], access="read", api=True)
     def api_sync_template_lookup(self, request):
-        r = []
+        r = [{
+            "id": str(1),
+            "label": _("From Rule"),
+            "is_default": True,
+            "args": {"action": "sync_records", "template": None},
+        }]
         for num, tmpl in enumerate(ModelTemplate.objects.filter(type="host")):
             r.append(
                 {
                     "id": str(tmpl.id),
                     "label": _(tmpl.name),
-                    "is_default": not num,
+                    "is_default": False,
                     "args": {"action": "sync_records", "template": str(tmpl.id)},
                 }
             )

@@ -30,8 +30,8 @@ from mongoengine.fields import (
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
 from noc.core.ip import IPv4, IP
-from noc.core.model.decorator import on_delete_check
-from noc.core.purgatorium import SOURCES
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.purgatorium import SOURCES, ETL_SOURCE
 from noc.core.prettyjson import to_json
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
@@ -185,10 +185,19 @@ class MatchItem(EmbeddedDocument):
 
 
 class SourceItem(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     source = StringField(choices=list(SOURCES), required=True)
     remote_system: Optional[RemoteSystem] = PlainReferenceField(RemoteSystem, required=False)
     update_last_seen = BooleanField(default=False)
+    sync_policy = StringField(choices=[("A", "All"), ("M", "Mappings Only")], default="A")
+    deny_create = BooleanField(default=False)
     is_required = BooleanField(default=False)  # Check if source required for match
+
+    def __str__(self):
+        if self.remote_system:
+            return f"{self.source}#{self.remote_system.name}: ULS: {self.update_last_seen};P: {self.sync_policy};R:{self.is_required}"
+        return f"{self.source}: ULS: {self.update_last_seen};P: {self.sync_policy};R:{self.is_required}"
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -196,6 +205,7 @@ class SourceItem(EmbeddedDocument):
 
 
 @change
+@on_save
 @on_delete_check(check=[("sa.DiscoveredObject", "rule")])
 class ObjectDiscoveryRule(Document):
     meta = {
@@ -266,6 +276,13 @@ class ObjectDiscoveryRule(Document):
         """Return required sources for rule"""
         return frozenset(s.source for s in self.sources if s.is_required)
 
+    @property
+    def required_systems(self) -> FrozenSet[str]:
+        """Return required RemoteSystems for rule"""
+        return frozenset(
+            str(s.remote_system.id) for s in self.sources if s.is_required and s.remote_system
+        )
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
     def get_rules_by_source(cls, sources: Optional[FrozenSet[str]] = None):
@@ -332,11 +349,16 @@ class ObjectDiscoveryRule(Document):
             address: IP Address for record
             pool: IP Address Pool
             checks: Check Result Status
-            data: Effective data dict
+            data: Effective data dict: DataItem
             sources: List sources for record
 
         """
-        for rule in ObjectDiscoveryRule.get_rules_by_source(frozenset(sources)):
+        ss = frozenset(sources)
+        for rule in ObjectDiscoveryRule.get_rules_by_source(ss):
+            if ETL_SOURCE in ss and rule.required_systems - {
+                str(d.remote_system.id) for d in data if d.remote_system
+            }:
+                continue
             r_data, r_labels = cls.get_effective_data(
                 [s.source for s in rule.sources] or sources, data
             )
@@ -349,8 +371,12 @@ class ObjectDiscoveryRule(Document):
         """
         from noc.sa.models.discoveredobject import DiscoveredObject
 
-        # Set record on rule is_dirty
-        DiscoveredObject.objects.filter().update(is_dirty=True)
+        changed_fields = frozenset(getattr(self, "_changed_fields", None) or [])
+        if not changed_fields or changed_fields.intersection(
+            ["sources", "default_action", "sync_approved"]
+        ):
+            # Set record on rule is_dirty
+            DiscoveredObject.objects.filter(rule=self.id).update(is_dirty=True)
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -480,3 +506,23 @@ class ObjectDiscoveryRule(Document):
             if c.is_match(labels, data, checks) and c.action:
                 action = c.action
         return action or self.default_action
+
+    def get_sync_settings(
+        self,
+        source,
+        remote_system: Optional[RemoteSystem] = None,
+    ) -> Optional[SourceItem]:
+        """Get synced Setting for source"""
+        r = None
+        for s in self.sources:
+            if s.source != source:
+                continue
+            elif not remote_system and source != "etl":
+                r = s
+                break
+            elif s.remote_system == remote_system:
+                r = s
+                break
+            elif not s.remote_system:
+                r = s
+        return r
