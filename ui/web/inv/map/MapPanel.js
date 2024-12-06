@@ -266,8 +266,13 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   //
   handleViewPortScroll: function(evt){
-    if(this.app && this.app.miniMapPanel){
-      this.app.miniMapPanel.scrollViewPort(evt);
+    var {scrollLeft, scrollTop} = evt.target,
+      {sx, sy} = this.paper.scale(),
+      moveX = Math.trunc(scrollLeft / sx),
+      moveY = Math.trunc(scrollTop / sy);
+
+    if(this.viewPort){
+      this.viewPort.position(moveX, moveY);
     }
   },
   // Initialize JointJS Map

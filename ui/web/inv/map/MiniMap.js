@@ -45,9 +45,4 @@ Ext.define("NOC.inv.map.MiniMap", {
   scaleContentToFit: function(){
     this.miniPaper.scaleContentToFit();
   },
-  // Viewport
-  scrollViewPort: function(evt){
-    var {scrollLeft, scrollTop} = evt.target;
-    console.log("scrolling", scrollLeft, scrollTop);
-  },
 });
