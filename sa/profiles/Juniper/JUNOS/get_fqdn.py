@@ -22,7 +22,6 @@ class Script(BaseScript):
     )
 
     def execute_cli(self):
-        fqdn = []
         v = self.cli("show configuration system | match -name", cached=True)
         match = self.rx_config.search(v)
         if match:
