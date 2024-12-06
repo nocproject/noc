@@ -114,7 +114,6 @@ class DiagnosticCheck(DiscoveryCheck):
     ):
         changed = {}
         object_credentials = self.object.credentials
-        self.logger.info("Apply Credentials: %s/%s", credentials, object_credentials)
         for protocol, cred in credentials:
             if (
                 isinstance(cred, (SNMPCredential, SNMPv3Credential))
