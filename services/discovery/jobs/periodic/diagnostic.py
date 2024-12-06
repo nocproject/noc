@@ -114,6 +114,7 @@ class DiagnosticCheck(DiscoveryCheck):
     ):
         changed = {}
         object_credentials = self.object.credentials
+        self.logger.info("Apply Credentials: %s/%s", credentials, object_credentials)
         for protocol, cred in credentials:
             if (
                 isinstance(cred, (SNMPCredential, SNMPv3Credential))
@@ -123,6 +124,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 changed["snmp_security_level"] = cred.security_level
             elif isinstance(cred, CLICredential) and self.object.scheme != protocol.value:
                 changed["scheme"] = protocol.value
+                self.logger.info("Update Scheme: %s -> %s", self.object.scheme, protocol.value)
             for f in object_credentials.__dataclass_fields__:
                 if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
                     continue
