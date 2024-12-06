@@ -520,7 +520,9 @@ class Config(BaseConfig):
         mib_path = StringParameter(default="/var/lib/noc/mibs/")
         cdn_url = StringParameter()
         mac_vendor_url = StringParameter(default="https://standards-oui.ieee.org/oui/oui.txt")
-        mac_vendor_medium_url = StringParameter(default="https://standards-oui.ieee.org/oui28/mam.txt")
+        mac_vendor_medium_url = StringParameter(
+            default="https://standards-oui.ieee.org/oui28/mam.txt"
+        )
 
     class pg(ConfigSection):
         addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
