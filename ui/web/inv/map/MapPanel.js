@@ -225,6 +225,50 @@ Ext.define("NOC.inv.map.MapPanel", {
       me,
       me.initMap,
     );
+    this.boundScrollHandler = Ext.bind(this.moveViewPort, this);
+    this.body.dom.addEventListener("scroll", this.boundScrollHandler);
+  },
+  destroy: function(){
+    var dom = this.body.dom;
+    if(this.boundScrollHandler){
+      dom.removeEventListener("scroll", this.boundScrollHandler);
+    }
+    if(this.rafId){
+      cancelAnimationFrame(this.rafId);
+    }
+    this.callParent();
+  },
+  // ViewPort
+  inThrottle: false,
+  rafId: null,
+  createViewPort: function(){
+    return new joint.shapes.standard.Rectangle({
+      position: {x: 0, y: 0},
+      size: {width: 100, height: 100},
+      attrs: {
+        rect: {
+          stroke: "gray",
+          "stroke-width": 1,
+          vectorEffect: "non-scaling-stroke",
+        },
+      },
+      z: -1,
+    });
+  },
+  moveViewPort: function(evt){
+    if(!this.inThrottle){
+      this.inThrottle = true;
+      this.rafId = requestAnimationFrame(() => {
+        this.handleViewPortScroll(evt);
+        this.inThrottle = false;
+      });
+    }
+  },
+  //
+  handleViewPortScroll: function(evt){
+    if(this.app && this.app.miniMapPanel){
+      this.app.miniMapPanel.scrollViewPort(evt);
+    }
   },
   // Initialize JointJS Map
   initMap: function(){
@@ -371,6 +415,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.graph.addCells(nodes);
     me.graph.addCells(links);
     me.graph.addCells(badges);
+    me.viewPort = me.createViewPort();
+    me.graph.addCell(me.viewPort);
+    me.paper.findViewByModel(me.viewPort).$el.hide();
     // Run status polling
     if(me.statusPollingTaskId){
       me.getObjectStatus();
