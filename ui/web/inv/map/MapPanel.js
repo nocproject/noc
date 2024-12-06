@@ -255,6 +255,14 @@ Ext.define("NOC.inv.map.MapPanel", {
       z: -1,
     });
   },
+  setViewPortSize: function(){
+    var {width, height} = this.body.el.dom.getBoundingClientRect(),
+      {sx, sy} = this.paper.scale();
+    if(this.viewPort){
+      this.viewPort.size(width / sx, height / sy);
+    }
+  },
+  //
   moveViewPort: function(evt){
     if(!this.inThrottle){
       this.inThrottle = true;
@@ -268,11 +276,13 @@ Ext.define("NOC.inv.map.MapPanel", {
   handleViewPortScroll: function(evt){
     var {scrollLeft, scrollTop} = evt.target,
       {sx, sy} = this.paper.scale(),
+      // {x, y} = this.paper.clientToLocalPoint({x: scrollLeft, y: scrollTop}),
       moveX = Math.trunc(scrollLeft / sx),
       moveY = Math.trunc(scrollTop / sy);
 
     if(this.viewPort){
       this.viewPort.position(moveX, moveY);
+      // this.viewPort.position(x, y);
     }
   },
   // Initialize JointJS Map
@@ -422,7 +432,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.graph.addCells(badges);
     me.viewPort = me.createViewPort();
     me.graph.addCell(me.viewPort);
-    me.paper.findViewByModel(me.viewPort).$el.hide();
+    // me.paper.findViewByModel(me.viewPort).$el.hide();
     // Run status polling
     if(me.statusPollingTaskId){
       me.getObjectStatus();
@@ -1547,6 +1557,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         }
         me.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
       }
+      me.setViewPortSize();
     }
   },
 
