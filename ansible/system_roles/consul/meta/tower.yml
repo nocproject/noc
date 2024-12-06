@@ -37,7 +37,7 @@ forms:
     setup_resolv:
       label: "Put consul DNS prefix in resolv search section"
       type: bool
-      default: False  # yamllint disable-line rule:truthy      
+      default: False  # yamllint disable-line rule:truthy
 
 
 services:

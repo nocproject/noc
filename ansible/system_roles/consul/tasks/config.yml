@@ -59,7 +59,7 @@
     line: "search service.{{ consul_datacenter }}.{{ consul_domain }}"
     dest: /etc/resolv.conf
     regexp: "^search.+"
-  when: 
+  when:
     - "'prod' in noc_env_type"
     - consul_setup_resolv is defined and consul_setup_resolv
   tags:
