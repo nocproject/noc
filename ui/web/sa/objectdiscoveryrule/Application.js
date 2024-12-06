@@ -171,7 +171,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                             dataIndex: "remote_system",
                             width: 200,
                             editor: {
-                                xtype: "main.remote_system.LookupField"
+                                xtype: "main.remotesystem.LookupField"
                             },
                             renderer: NOC.render.Lookup("remote_system")
                         },
@@ -188,6 +188,18 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                             editor: "checkbox",
                             renderer: NOC.render.Bool,
                             width: 50
+                        },
+                        {
+                            text: __("Sync Policy"),
+                            dataIndex: "sync_policy",
+                            width: 150,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["A", _("All")],
+                                    ["M", _("Mappings Only")]
+                                ]
+                            }
                         }
                     ]
                 },
