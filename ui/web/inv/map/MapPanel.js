@@ -432,7 +432,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.graph.addCells(badges);
     me.viewPort = me.createViewPort();
     me.graph.addCell(me.viewPort);
-    // me.paper.findViewByModel(me.viewPort).$el.hide();
+    me.paper.findViewByModel(me.viewPort).$el.hide();
     // Run status polling
     if(me.statusPollingTaskId){
       me.getObjectStatus();
