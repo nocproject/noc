@@ -40,6 +40,7 @@ all:
           consul_power: bootstrap
           consul_replication_token: null
           consul_template_use_dedup: 'False'
+          consul_setup_resolv: 'False'
           correlator_loglevel: info
           correlator_max_threads: 10
           correlator_power: 1
