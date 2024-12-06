@@ -34,6 +34,10 @@ forms:
       label: "Don't try to download packages, assume that they installed by hands"
       type: bool
       default: False  # yamllint disable-line rule:truthy
+    setup_resolv:
+      label: "Put consul DNS prefix in resolv search section"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy      
 
 
 services:
