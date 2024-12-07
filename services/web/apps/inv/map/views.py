@@ -136,7 +136,7 @@ class MapApplication(ExtApplication):
             if mo:
                 segment = mo.segment
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
-        s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
+        s = {1: "telnet", 2: "ssh", 3: "http", 4: "https", 5: "beef"}[object.scheme]
         r = {
             "id": object.id,
             "name": object.name,

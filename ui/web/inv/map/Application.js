@@ -425,7 +425,7 @@ Ext.define("NOC.inv.map.Application", {
     this.saveButton.setDisabled(true);
     this.setStateMapButtons(!this.editButton.pressed);
     this.editButton.setPressed(false);
-    // me.inspectSegment();
+    this.inspectSegment();
     this.viewMapButton.setPressed(true);
     this.viewStpButton.setPressed(false);
     this.zoomCombo.setValue(1.0);
@@ -466,6 +466,7 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   inspectSegment: function(){
+    if(this.generator !== "segment") return;
     this.inspectorPanel.getLayout().setActiveItem(
       this.segmentInspector,
     );

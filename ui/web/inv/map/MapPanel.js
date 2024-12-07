@@ -122,6 +122,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       items: [
         {
           xtype: "component",
+          autoScroll: true,
           layout: "fit",
         },
       ],
@@ -213,15 +214,16 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   afterRender: function(){
-    this.callParent();
+    var me = this;
+    me.callParent();
     new_load_scripts(
       [
         "/ui/pkg/lodash/lodash.min.js",
         "/ui/pkg/backbone/backbone.min.js",
         "/ui/pkg/joint/joint.min.js",
       ],
-      this,
-      this.initMap,
+      me,
+      me.initMap,
     );
     this.boundScrollHandler = Ext.bind(this.moveViewPort, this);
     this.body.dom.addEventListener("scroll", this.boundScrollHandler);
@@ -231,7 +233,57 @@ Ext.define("NOC.inv.map.MapPanel", {
     if(this.boundScrollHandler){
       dom.removeEventListener("scroll", this.boundScrollHandler);
     }
+    if(this.rafId){
+      cancelAnimationFrame(this.rafId);
+    }
     this.callParent();
+  },
+  // ViewPort
+  inThrottle: false,
+  rafId: null,
+  createViewPort: function(){
+    return new joint.shapes.standard.Rectangle({
+      position: {x: 0, y: 0},
+      size: {width: 100, height: 100},
+      attrs: {
+        rect: {
+          stroke: "gray",
+          "stroke-width": 1,
+          vectorEffect: "non-scaling-stroke",
+        },
+      },
+      z: -1,
+    });
+  },
+  setViewPortSize: function(){
+    var {width, height} = this.body.el.dom.getBoundingClientRect(),
+      {sx, sy} = this.paper.scale();
+    if(this.viewPort){
+      this.viewPort.size(width / sx, height / sy);
+    }
+  },
+  //
+  moveViewPort: function(evt){
+    if(!this.inThrottle){
+      this.inThrottle = true;
+      this.rafId = requestAnimationFrame(() => {
+        this.handleViewPortScroll(evt);
+        this.inThrottle = false;
+      });
+    }
+  },
+  //
+  handleViewPortScroll: function(evt){
+    var {scrollLeft, scrollTop} = evt.target,
+      {sx, sy} = this.paper.scale(),
+      // {x, y} = this.paper.clientToLocalPoint({x: scrollLeft, y: scrollTop}),
+      moveX = Math.trunc(scrollLeft / sx),
+      moveY = Math.trunc(scrollTop / sy);
+
+    if(this.viewPort){
+      this.viewPort.position(moveX, moveY);
+      // this.viewPort.position(x, y);
+    }
   },
   // Initialize JointJS Map
   initMap: function(){
@@ -261,9 +313,11 @@ Ext.define("NOC.inv.map.MapPanel", {
     // Subscribe to events
     me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
     me.paper.on("cell:pointerdblclick", Ext.bind(me.onCellDoubleClick, me));
+    me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
     me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight, me));
     me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight, me));
     me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
+    me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
     me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
     me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
     me.fireEvent("mapready");
@@ -290,10 +344,12 @@ Ext.define("NOC.inv.map.MapPanel", {
         } else{
           me.renderMap(data);
         }
-        me.unmask();
       },
       failure: function(){
         NOC.error(__("Failed to get data"));
+      },
+      callback: function(){
+        me.unmask();
       },
     });
   },
@@ -310,7 +366,8 @@ Ext.define("NOC.inv.map.MapPanel", {
           badges.push(data.badges);
         }
       };
-    if(Object.prototype.hasOwnProperty.call(data, "normalize_position") &&
+    if(
+      data.hasOwnProperty("normalize_position") &&
       data.normalize_position === false
     ){
       me.normalize_position = data.normalize_position;
@@ -373,16 +430,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.graph.addCells(nodes);
     me.graph.addCells(links);
     me.graph.addCells(badges);
-    // Mini map
-    // me.app.miniMapPanel.graph.clear();
-    if(!Ext.isEmpty(this.viewPort)){
-      this.viewPort.remove();
-      this.viewPort = null;
-    }
-    me.app.miniMapPanel.graph.resetCells([]);
-    me.app.miniMapPanel.graph.addCells(nodes);
-    me.app.miniMapPanel.graph.addCells(links);
-    me.app.miniMapPanel.graph.addCells(badges);
+    me.viewPort = me.createViewPort();
+    me.graph.addCell(me.viewPort);
+    me.paper.findViewByModel(me.viewPort).$el.hide();
     // Run status polling
     if(me.statusPollingTaskId){
       me.getObjectStatus();
@@ -395,21 +445,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     me.hasStp = data.caps.indexOf("Network | STP") !== -1;
     me.app.viewStpButton.setDisabled(!me.hasStp);
-    if(Ext.isEmpty(this.viewPort)){
-      this.viewPort = new joint.shapes.standard.Rectangle({
-        position: {x: 0, y: 0},
-        attrs: {
-          rect: {
-            stroke: "gray",
-            "stroke-width": 1,
-            vectorEffect: "non-scaling-stroke",
-          },
-        },
-        z: -1,
-      });
-      me.app.miniMapPanel.graph.addCells([this.viewPort]);
-    }
-    this.setViewPortSize();
     me.setPaperDimension();
     me.fireEvent("renderdone");
   },
@@ -484,34 +519,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     return {node: node, badges: badges};
   },
   //
-  moveViewPort: function(evt){
-    var scrollLeft = evt.target.scrollLeft,
-      scrollTop = evt.target.scrollTop;
-
-    if(this.viewPort){
-      var {sx, sy} = this.paper.scale(),
-        moveX = Math.trunc(scrollLeft / sx),
-        moveY = Math.trunc(scrollTop / sy);
-      this.viewPort.position(moveX, moveY);
-    }
-  },
-  //
-  setViewPortSize: function(){
-    if(Ext.isEmpty(this.viewPort)) return;
-    var {sx, sy} = this.paper.scale(),
-      width = Math.trunc(this.body.dom.clientWidth / sx),
-      height = Math.trunc(this.body.dom.clientHeight / sy);
-    this.viewPort.set("size", {
-      width: width,
-      height: height, 
-    });
-  },
-  //
   createLink: function(data){
     var me = this,
       cfg,
       src,
       dst,
+      connector,
       getConnectionStyle = function(bw){
         for(var i = 0; i < me.bwStyle.length; i++){
           var s = me.bwStyle[i];
@@ -609,7 +622,8 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   //
   onCellSelected: function(view){
-    var data = view.model.get("data");
+    var me = this,
+      data = view.model.get("data");
     this.unhighlight();
     if(Ext.isEmpty(data)){
       this.onBlankSelected();
@@ -618,43 +632,44 @@ Ext.define("NOC.inv.map.MapPanel", {
     switch(data.type){
       case "managedobject":
         view.highlight();
-        this.currentHighlight = view;
-        this.app.inspectManagedObject(data.id);
+        me.currentHighlight = view;
+        me.app.inspectManagedObject(data.id);
         break;
       case "link":
-        this.app.inspectLink(data.id);
+        me.app.inspectLink(data.id);
         break;
       case "cloud":
         view.highlight();
-        this.currentHighlight = view;
-        this.app.inspectCloud(data.id);
+        me.currentHighlight = view;
+        me.app.inspectCloud(data.id);
         break;
       case "objectgroup":
         view.highlight();
-        this.currentHighlight = view;
-        this.app.inspectObjectGroup(data.node_id);
+        me.currentHighlight = view;
+        me.app.inspectObjectGroup(data.node_id);
         break;
       case "objectsegment":
         view.highlight();
-        this.currentHighlight = view;
-        this.app.inspectObjectSegment(data.node_id);
+        me.currentHighlight = view;
+        me.app.inspectObjectSegment(data.node_id);
         break;
       case "cpe":
         view.highlight();
-        this.currentHighlight = view;
-        this.app.inspectCPE(data.node_id);
+        me.currentHighlight = view;
+        me.app.inspectCPE(data.node_id);
         break;
       case "other":
         view.highlight();
-        this.currentHighlight = view;
-        this.app.inspectObjectPortal(data.portal);
+        me.currentHighlight = view;
+        me.app.inspectObjectPortal(data.portal);
         break;
     }
   },
 
   onSegmentContextMenu: function(evt){
+    var me = this;
     evt.preventDefault();
-    this.segmentMenu.showAt(evt.clientX, evt.clientY);
+    me.segmentMenu.showAt(evt.clientX, evt.clientY);
   },
 
   onLinkOver: function(link, evt){
@@ -813,7 +828,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       method: "POST",
       jsonData: r,
       scope: me,
-      success: function(){
+      success: function(response){
         NOC.info(__("Map has been saved"));
         me.isDirty = false;
         me.app.saveButton.setDisabled(true);
@@ -1118,8 +1133,7 @@ Ext.define("NOC.inv.map.MapPanel", {
           }
         },
         hasMetric = function(port, metric){
-          return Object.prototype.hasOwnProperty.call(data, port)
-            && Object.prototype.hasOwnProperty.call(data[port], metric);
+          return data.hasOwnProperty(port) && data[port].hasOwnProperty(metric);
         },
         getStatus = function(port, status){
           if(data[port] && data[port][status] !== undefined){
@@ -1240,11 +1254,11 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setZoom: function(zoom){
-    this.paper.scale(zoom, zoom);
-    this.setViewPortSize();
-    this.setPaperDimension(zoom);
+    var me = this;
+    me.paper.scale(zoom, zoom);
+    me.setPaperDimension(zoom);
   },
-
+  
   onNodeMenuViewMap: function(){
     NOC.launch("inv.map", "history", {
       args: ["objectlevelneighbor", this.nodeMenuObject, this.nodeMenuObject ],
@@ -1404,7 +1418,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     // Get STP nodes
     Ext.Object.each(me.objectNodes, function(k, v){
       if(
-        Object.prototype.hasOwnProperty.call(v.attributes.data, "caps") &&
+        v.attributes.data.hasOwnProperty("caps") &&
         v.attributes.data.caps.indexOf(me.CAP_STP) !== -1
       ){
         stpNodes.push(k);
@@ -1515,38 +1529,38 @@ Ext.define("NOC.inv.map.MapPanel", {
     link.label(0, {position: 0.5});
   },
 
-  onResize: function(){
-    if("paper" in this){
-      this.setViewPortSize();
-      this.setPaperDimension();
+  onResize: function(width, height){
+    var me = this;
+    if("paper" in me){
+      me.setPaperDimension();
     }
   },
 
   setPaperDimension: function(zoom){
-    var w, h,
+    var me = this,
       paddingX = 15,
-      paddingY = 15;
+      paddingY = 15,
+      w = me.getWidth(),
+      h = me.getHeight();
 
-    if(this.paper){
-      this.paper.fitToContent();
-      var contentBB = this.paper.getContentBBox();
+    if(me.paper){
+      me.paper.fitToContent();
+      var contentBB = me.paper.getContentBBox();
       if(contentBB && contentBB.width && contentBB.height){
-        if(this.normalize_position){
-          w = contentBB.width;
-          h = contentBB.height;
-          this.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
+        if(me.normalize_position){
+          w = Ext.Array.max([contentBB.width, me.getWidth()]);
+          h = Ext.Array.max([contentBB.height, me.getHeight()]);
+          me.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
         } else{
-          w = (this.bg_width || contentBB.width) * (zoom || 1);
-          h = (this.bg_height || contentBB.height) * (zoom || 1);
+          w = me.bg_width * (zoom || 1);
+          h = me.bg_height * (zoom || 1);
         }
-        this.paper.setDimensions(
-          Math.max(w, this.getWidth()) + paddingX * 2,
-          Math.max(h, this.getHeight()) + paddingY * 2,
-        );
+        me.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
       }
+      me.setViewPortSize();
     }
   },
-  //
+
   changeLabelText: function(showIPAddress){
     Ext.each(this.graph.getElements(), function(e){
       e.attr(
