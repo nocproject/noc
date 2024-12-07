@@ -269,9 +269,12 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
       handler: "onShowCard",
     },
     {
+      itemId: "showMapBtn",
+      xtype: "splitbutton",
       text: __("Show Map"),
       glyph: NOC.glyph.globe,
-      handler: "onShowMap",
+      menu: [ // Dynamically add items, in showMapHandler from Controller
+      ],
     },
     {
       text: __("Show Object"),
