@@ -29,15 +29,29 @@ Ext.define("NOC.inv.map.MiniMap", {
           moveY = y - offsetY > 0 ? y - offsetY : 0;
         mapPanel.scrollTo(moveX * sx, moveY * sy);
       };
+      // scrollMap = function(){
+      //   var [x, y] = Object.values(arguments).slice(-2),
+      //     {width, height} = mapPanel.viewPort.size(),
+      //     {sx, sy} = mapPanel.paper.scale(),
+      //     scaledX = x * sx,
+      //     scaledY = y * sy,
+      //     centerX = scaledX - (width / 2),
+      //     centerY = scaledY - (height / 2),
+      //     maxX = mapPanel.paper.getArea().width * sx - width,
+      //     maxY = mapPanel.paper.getArea().height * sy - height;
+      
+    //   centerX = Math.max(0, Math.min(centerX, maxX));
+    //   centerY = Math.max(0, Math.min(centerY, maxY));
+
+    //   mapPanel.scrollTo(centerX, centerY);
+    // };
     this.paperEl = this.items.first().el.dom;
     this.paper = mapPanel.paper;
-
-    this.graph = new joint.dia.Graph();
     this.miniPaper = new joint.dia.Paper({
       el: this.paperEl,
       height: h,
       width: w,
-      model: this.graph,
+      model: mapPanel.graph,
       gridSize: 1,
       interactive: false,
     });

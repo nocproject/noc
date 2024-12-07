@@ -377,6 +377,36 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     this.getView().down("[reference=fm-alarm-form-tab-panel]").setActiveTab(0);
     this.getAlarmDetail(id);
   },
+  showMapHandler: function(id){
+    Ext.Ajax.request({
+      url: "/sa/managedobject/" + id + "/map_lookup/",
+      method: "GET",
+      scope: this,
+      success: function(response){
+        var showMapBtn = this.getView().down("[itemId=showMapBtn]"),
+          data = Ext.decode(response.responseText);
+
+        showMapBtn.setHandler(function(){
+          showMapBtn.showMenu();
+        }, this);
+        showMapBtn.getMenu().removeAll();
+        Ext.Array.each(data, function(el){
+          var item = {
+            text: el.label,
+            handler: function(){
+              NOC.launch("inv.map", "history", {
+                args: el.args,
+              })
+            },
+          };
+          showMapBtn.getMenu().add(item);
+        }, this);
+      },
+      failure: function(){
+        NOC.error(__("Show Map Button : Failed to get data"));
+      },
+    });
+  },
   getAlarmDetail: function(alarmId){
     Ext.Ajax.request({
       url: "/fm/alarm/" + alarmId + "/",
@@ -384,6 +414,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
       scope: this,
       success: function(response){
         this.getViewModel().set("selected", Ext.decode(response.responseText));
+        this.showMapHandler(Ext.decode(response.responseText).managed_object);
       },
       failure: function(){
         NOC.error(__("Failed to get alarm"));
