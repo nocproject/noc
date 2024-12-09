@@ -289,7 +289,7 @@ class MESNormalizer(BaseNormalizer):
         # Some buggy switches allow to save a garbage like '10.2.'
         try:
             yield self.make_ntp_server_address(name=tokens[2], address=tokens[2])
-        except ValidationError as e:
+        except ValidationError:
             pass
 
     @match("ip", "name-server", IP_ADDRESS)
