@@ -28,6 +28,7 @@ class Object(object):
     access_preference = "S"
     address = "10.10.10.10"
     profile = None
+    auth_profile = None
     bi_id = 1_000_0000
 
     @property
