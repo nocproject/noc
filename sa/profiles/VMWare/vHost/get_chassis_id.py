@@ -25,4 +25,4 @@ class Script(VIMScript):
         return r
 
     def execute(self, **kwargs):
-        return self.execute_controller(hid=self.controller.local_id)
+        return self.execute_controller(hid=self.controller.global_id)

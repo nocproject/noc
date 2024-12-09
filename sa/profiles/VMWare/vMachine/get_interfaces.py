@@ -35,15 +35,16 @@ class Script(VIMScript):
                 )
             else:
                 networks[n.config.key]["untagged_vlan"] = vlan.vlanId
+        self.logger.info("Processed VM: %s", vm.name)
         for d in vm.config.hardware.device:
-            if self.vim.has_internet_adapter(d):
+            if self.vim.has_internet_adapter(d) and getattr(d.backing, "port", None):
                 name = f"vmnic-{d.key}"
                 interfaces[name] = {
                     "name": name,
                     "admin_status": True,
                     "oper_status": True,
                     "mac": d.macAddress,
-                    "type": "virtual",
+                    "type": "physical",
                     "enabled_afi": [],
                     "subinterfaces": [],
                 }
@@ -68,4 +69,4 @@ class Script(VIMScript):
         return [{"forwarding_instance": "default", "interfaces": list(interfaces.values())}]
 
     def execute(self, **kwargs):
-        return self.execute_controller(hid=self.controller.local_id)
+        return self.execute_controller(hid=self.controller.global_id)

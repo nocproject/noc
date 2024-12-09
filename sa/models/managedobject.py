@@ -146,7 +146,7 @@ from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 51
-CREDENTIAL_CACHE_VERSION = 8
+CREDENTIAL_CACHE_VERSION = 9
 
 
 @dataclass(frozen=True)
@@ -3021,6 +3021,7 @@ class ManagedObject(NOCModel):
             return None
         return {
             "local_id": caps["Controller | LocalId"],
+            "global_id": caps["Controller | GlobalId"],
             "address": self.controller.address,
             "port": self.controller.port,
             "user": self.controller.credentials.user,

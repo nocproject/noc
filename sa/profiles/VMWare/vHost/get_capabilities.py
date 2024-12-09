@@ -16,5 +16,5 @@ class Script(VIMScript):
         """
         Check box has lldp enabled
         """
-        h = self.vim.get_host_by_id(self.controller.local_id)
+        h = self.vim.get_host_by_id(self.controller.global_id)
         return bool(h.capabilities.supportsNetworkHints)
