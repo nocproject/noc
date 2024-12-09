@@ -203,7 +203,7 @@ class DiagnosticHandler:
 
     def get_result(
         self, checks: List[CheckResult]
-    ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any]]:
+    ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any], List[CheckStatus]]:
         """Getting Diagnostic result"""
 
 
@@ -261,17 +261,17 @@ class DiagnosticItem(BaseModel):
 
     def get_check_status(
         self, checks: List[CheckResult]
-    ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any]]:
+    ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any], List[CheckStatus]]:
         """
         Calculate check status, ANY or ALL policy apply
         """
         if self.config.diagnostic_handler:
             h = self.get_handler()
             return h.get_result(checks)
-        self.checks = [CheckStatus.from_result(c) for c in checks]
         state = None
         data = {}
-        for c in self.checks:
+        for c in checks:
+            c = CheckStatus.from_result(c)
             if c.skipped:
                 continue
             if not c.status and self.config.state_policy == "ALL":
@@ -282,7 +282,19 @@ class DiagnosticItem(BaseModel):
                 break
         if self.config.state_policy == "ANY" and checks and state is None:
             state = False
-        return state, None, data
+        return state, None, data, []
+
+    def update_checks(self, checks: List[CheckStatus]) -> bool:
+        """Update object checks"""
+        status = {c.name: c.status for c in self.checks or []}
+        changed = False
+        for c in checks:
+            if c.name not in status or c.status != status[c.name]:
+                changed = True
+                break
+        if changed:
+            self.checks = checks
+        return changed
 
 
 class DiagnosticHub(object):
@@ -435,6 +447,9 @@ class DiagnosticHub(object):
             "address": self.__object.address,
             "groups": self.__object.effective_service_groups,
         }
+        if self.__object.auth_profile:
+            ctx["suggests_cli"] = self.__object.auth_profile.enable_suggest
+            ctx["suggests_snmp"] = self.__object.auth_profile.enable_suggest
         if di.config.include_credentials and self.__object.credentials:
             ctx["cred"] = self.__object.credentials.get_snmp_credential()
         for ci in di.config.diagnostic_ctx or []:
@@ -531,7 +546,7 @@ class DiagnosticHub(object):
                     ]
         # Calculate State and Update diagnostic
         for d, crs in affected_diagnostics.items():
-            c_state, c_reason, c_data = self[d].get_check_status(crs)
+            c_state, c_reason, c_data, c_checks = self[d].get_check_status(crs)
             if c_state is None:
                 # Partial, more checks needed
                 continue
@@ -542,6 +557,9 @@ class DiagnosticHub(object):
                 changed_ts=now,
                 data=c_data,
             )
+            changed = self[d].update_checks(c_checks)
+            if changed:
+                self.sync_diagnostics()
         if metrics and not self.dry_run:
             self.register_diagnostic_metrics(metrics)
 
