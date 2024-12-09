@@ -20,6 +20,7 @@ from noc.core.etl.models.managedobject import ManagedObject, CapsItem
 from noc.core.etl.models.resourcegroup import ResourceGroup
 from noc.core.etl.models.object import Object, ObjectData
 from noc.core.etl.models.link import Link
+from noc.core.validators import is_ipv4
 
 
 class VCenterRemoteSystem(BaseRemoteSystem):
@@ -161,6 +162,12 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
         super().__init__(system)
         self.links = []
 
+    def parse_address(self, guest: vim.vm.GuestInfo) -> str:
+        addresses = []
+        for n in guest.net:
+            addresses += [a for a in n.ipAddress if is_ipv4(a) and not a.startswith("10.0.0.")]
+        return addresses[0]
+
     def iter_data(self, checkpoint=None, **kwargs) -> Iterable[ManagedObject]:
         host_map = {}
         content = self.connection.content
@@ -186,10 +193,13 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 continue
             name, *domains = h.summary.config.name.split(".", 1)
             host_map[h._moId] = h.summary.hardware.uuid
+            addrs = [vv.spec.ip.ipAddress for vv in h.config.network.vnic]
+            if len(addrs) > 1:
+                self.logger.debug("[%s] Multiple Addresses on Host: %s", name, addrs)
             yield ManagedObject(
                 id=h.summary.hardware.uuid,
                 name=name,
-                address=h.config.network.vnic[0].spec.ip.ipAddress,
+                address=addrs[0],
                 # description=description,
                 profile="VMWare.vHost",
                 administrative_domain=ETLMapping(value="default", scope="adm_domain"),
@@ -198,7 +208,10 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
-                capabilities=[CapsItem(name="Controller | LocalId", value=h._moId)],
+                capabilities=[
+                    CapsItem(name="Controller | LocalId", value=h._moId),
+                    CapsItem(name="Controller | GlobalId", value=h.summary.hardware.uuid),
+                ],
                 # static_service_groups=[str(r_type.value)],
             )
         host_view.Destroy()
@@ -212,7 +225,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 self.logger.warning("[%s] VM without config", vm._moId)
                 continue
             if vm.guest and vm.guest.ipAddress:
-                address = vm.guest.ipAddress
+                address = self.parse_address(vm.guest)
             else:
                 op = ETLMapping(value="host.vm.disabled", scope="objectprofile")
             name = vm.config.name
@@ -230,7 +243,10 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
-                capabilities=[CapsItem(name="Controller | LocalId", value=vm._moId)],
+                capabilities=[
+                    CapsItem(name="Controller | LocalId", value=vm._moId),
+                    CapsItem(name="Controller | GlobalId", value=vm.config.uuid),
+                ],
             )
             names.add(name)
             for d in vm.config.hardware.device:
