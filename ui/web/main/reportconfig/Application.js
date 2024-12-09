@@ -397,7 +397,8 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                     ["choice", __("Choice (radio)")],
                                                     ["combo-choice", __("Choice (combo)")],
                                                     ["fields_selector", __("Fields Selector")],
-                                                    ["model", __("Model Lookup")]
+                                                    ["model", __("Model Lookup")],
+                                                    ["model_multi", __("Model Multi Choice")]
                                                 ]
                                             },
                                             renderer: NOC.render.Choices({
@@ -408,7 +409,8 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                 "choice": __("Choice"),
                                                 "combo-choice": __("Choice (combo)"),
                                                 "fields_selector": __("Fields Selector"),
-                                                "model": __("Model Lookup")
+                                                "model": __("Model Lookup"),
+                                                "model_multi": __("Model Multi Choice")
                                             })
                                         },
                                         {
