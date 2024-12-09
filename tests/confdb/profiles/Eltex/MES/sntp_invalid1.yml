@@ -1,0 +1,7 @@
+config: |
+  !
+  hostname host-name
+  sntp server 10.2.
+  !
+result:
+  - ['system', 'hostname', 'host-name', {'replace': True}]
