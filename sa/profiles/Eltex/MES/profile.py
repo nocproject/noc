@@ -137,6 +137,10 @@ class Profile(BaseProfile):
         "et": "physical",  # Ethernet
         "fa": "physical",  # FastEthernet
         "gi": "physical",  # GigabitEthernet
+        "te": "physical",  # TenGigabitEthernet
+        "tw": "physical",  # TwentyFiveGigaEthernet
+        "fo": "physical",  # FortyGigabitEthernet
+        "hu": "physical",  # HundredGigabitEthernet
         "gr": "physical",  # Group-Async
         "lo": "loopback",  # Loopback
         "oo": "management",  # oob
@@ -147,8 +151,6 @@ class Profile(BaseProfile):
         "sr": "physical",  # Spatial Reuse Protocol
         "se": "physical",  # Serial
         "st": "management",  # Stack-port
-        "te": "physical",  # TenGigabitEthernet
-        "fo": "physical",  # FortyGigabitEthernet
         "tu": "tunnel",  # Tunnel
         "vl": "SVI",  # VLAN, found on C3500XL
         "xt": "SVI",  # Extended Tag ATM
