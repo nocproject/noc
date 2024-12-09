@@ -52,6 +52,8 @@ from noc.sa.interfaces.base import (
     StringListParameter,
     ObjectIdParameter,
     BooleanParameter,
+    ListOfParameter,
+    ObjectIdParameter,
 )
 from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -758,6 +760,30 @@ class AlarmApplication(ExtApplication):
             # Send clear signal to the correlator
             alarm.register_clear(f"Cleared by user: {request.user.username}", user=request.user)
         return True
+
+    @view(
+        url=r"^clear/",
+        method=["POST"],
+        api=True,
+        access="clear",
+        validate={
+            "msg": UnicodeParameter(default=""),
+            "alarms": ListOfParameter(ObjectIdParameter),
+        },
+    )
+    def api_group_clear(self, request, msg: str, alarms: list[str]):
+        success = 0
+        failed = 0
+        for alarm_id in alarms:
+            alarm = get_alarm(alarm_id)
+            if not alarm.alarm_class.user_clearable or alarm.status != "A":
+                failed += 1
+                continue
+            alarm.register_clear(msg, user=request.user)
+            success += 1
+        if success:
+            return {"status": True}
+        return {"status": False, "message": _("Failed to clear alarms")}
 
     @view(
         url=r"^(?P<id>[a-z0-9]{24})/set_root/",
