@@ -40,10 +40,11 @@ class SimpleTableFormatter(DataFormatter):
         # Column title map
         HEADER_ROW = {}
         sort_index = []
-        for col in header_format.columns:
-            *_, col_name = col.name.rsplit(".", 1)
-            HEADER_ROW[col_name] = col.title
-            sort_index.append(col_name)
+        if header_format:
+            for col in header_format.columns:
+                *_, col_name = col.name.rsplit(".", 1)
+                HEADER_ROW[col_name] = col.title
+                sort_index.append(col_name)
         if not self.root_band.has_rows:
             return
         data = self.root_band.get_rows()[0]
@@ -63,21 +64,19 @@ class SimpleTableFormatter(DataFormatter):
             )
             self.output_stream.write(r.encode("utf8"))
         elif self.output_type == OutputType.XLSX:
-            book = Workbook(self.output_stream)
-            cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+            book = Workbook(self.output_stream, options={"remove_timezone": True})
             worksheet = book.add_worksheet(
                 self.report_template.output_name_pattern[: self.MAX_SHEET_NAME]
             )
+            data.select(out_columns).write_excel(
+                workbook=book,
+                worksheet=worksheet.name,
+                autofit=True,
+                position="A1",
+            )
+            cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             for cn, col in enumerate(out_columns):
                 worksheet.write(0, cn, HEADER_ROW.get(col, col), cf1)
-            for cn, col in enumerate(out_columns):
-                worksheet.write_column(1, cn, data[col], cf1)
-            (max_row, max_col) = data.shape
-            worksheet.autofilter(0, 0, max_row, len(out_columns))
-            worksheet.freeze_panes(1, 0)
-            for i, width in enumerate(self.get_col_widths(data, out_columns)):
-                worksheet.set_column(i, i, width)
-            #
             book.close()
 
     @staticmethod
