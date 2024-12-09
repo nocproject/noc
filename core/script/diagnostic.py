@@ -12,7 +12,7 @@ from typing import List, Iterable, Optional, Tuple, Dict, Any
 # NOC modules
 from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
 from noc.core.checkers.base import Check, CheckResult
-from noc.core.wf.diagnostic import DiagnosticConfig
+from noc.core.wf.diagnostic import DiagnosticConfig, CheckStatus
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.sa.models.profile import GENERIC_PROFILE
 
@@ -31,12 +31,15 @@ class SNMPSuggestsDiagnostic:
         address: str,
         labels: Optional[List[str]] = None,
         groups: Optional[List[str]] = None,
+        suggests_snmp: bool = True,
         **kwargs,
     ) -> Iterable[Tuple[Check, ...]]:
         r = []
         labels = set(labels or [])
         if self.config.checks:
             r += self.config.checks
+        if not suggests_snmp:
+            return
         for s in CredentialCheckRule.get_suggest_rules():
             if not s.is_match(labels):
                 continue
@@ -54,7 +57,9 @@ class SNMPSuggestsDiagnostic:
 
     def get_result(
         self, checks: List[CheckResult]
-    ) -> Optional[Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]]]]:
+    ) -> Optional[
+        Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]], List[CheckStatus]]
+    ]:
         """Getting Diagnostic result: State and reason"""
         error = ""
         for c in checks:
@@ -63,8 +68,8 @@ class SNMPSuggestsDiagnostic:
             elif c.error and c.error.message:
                 error = c.error.message
             if c.status:
-                return True, None, {}
-        return False, error, None
+                return True, None, {}, []
+        return False, error, None, []
 
 
 class CLISuggestsDiagnostic:
@@ -82,6 +87,7 @@ class CLISuggestsDiagnostic:
         labels: Optional[List[str]] = None,
         groups: Optional[List[str]] = None,
         profile: Optional[str] = None,
+        suggests_cli: bool = True,
         **kwargs,
     ) -> Iterable[Tuple[Check, ...]]:
         r = []
@@ -99,6 +105,8 @@ class CLISuggestsDiagnostic:
                     credential=c.credential,
                 )
             )
+            if not suggests_cli:
+                continue
             for s in CredentialCheckRule.get_suggest_rules():
                 if not s.is_match(labels):
                     continue
@@ -117,14 +125,23 @@ class CLISuggestsDiagnostic:
 
     def get_result(
         self, checks: List[CheckResult]
-    ) -> Optional[Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]]]]:
+    ) -> Optional[
+        Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]], List[CheckStatus]]
+    ]:
         """Getting Diagnostic result: State and reason"""
         error = ""
+        r = {}
+        status = False
         for c in checks:
             if c.skipped:
                 continue
             elif c.error and c.error.message:
                 error = c.error.message
-            if c.status:
-                return True, None, {}
-        return False, error, None
+            if c.key not in r:
+                r[c.key] = CheckStatus.from_result(c)
+            if c.status and not status:
+                status = True
+                # return True, None, {}, []
+        if status:
+            return True, None, {}, list(r.values())
+        return False, error, None, list(r.values())

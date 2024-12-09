@@ -15,7 +15,7 @@ from noc.core.mib import mib
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.core.wf.diagnostic import HTTP_DIAG, HTTPS_DIAG
 from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
-from noc.core.wf.diagnostic import DiagnosticConfig
+from noc.core.wf.diagnostic import DiagnosticConfig, CheckStatus
 from noc.core.checkers.base import Check, CheckResult
 
 
@@ -91,7 +91,9 @@ class ProfileDiagnostic:
 
     def get_result(
         self, checks: List[CheckResult]
-    ) -> Optional[Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]]]]:
+    ) -> Optional[
+        Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]], List[CheckStatus]]
+    ]:
         """Getting Diagnostic result: State and reason"""
         self.parse_checks(checks)
         snmp_result, http_result = "", ""
@@ -112,7 +114,7 @@ class ProfileDiagnostic:
                 self.logger.info("Matched profile: %s (%s)", rule.profile, rule.name)
                 # @todo: process MAYBE rule
                 self.profile = rule.profile
-                return True, None, {"profile": rule.profile}
+                return True, None, {"profile": rule.profile}, []
         if snmp_result or http_result:
             error = f"Not find profile for OID: {snmp_result} or HTTP string: {http_result}"
         elif not snmp_result:
@@ -122,7 +124,7 @@ class ProfileDiagnostic:
         self.logger.info("Cannot detect profile: %s", error)
         self.reason = error
         # Data
-        return False, self.reason, None
+        return False, self.reason, None, []
 
     def load_rules(self) -> Dict[Tuple[str, str, int], List[SuggestProfile]]:
         """
