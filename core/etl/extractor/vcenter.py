@@ -165,7 +165,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
     def parse_address(self, guest: vim.vm.GuestInfo) -> str:
         addresses = []
         for n in guest.net:
-            addresses += [a for a in n.ipAddress if is_ipv4(a) and not a.startswith("10.0.0.")]
+            addresses += [a for a in n.ipAddress if is_ipv4(a)]
         return addresses[0]
 
     def iter_data(self, checkpoint=None, **kwargs) -> Iterable[ManagedObject]:
