@@ -80,6 +80,15 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
               click: "onGroupUnmarkFavorites",
             },
           },
+          {
+            text: __("Clear alarms"),
+            bind: {
+              disabled: "{activeFilterIsClosed}",
+            },
+            listeners: {
+              click: "onClearAlarms",
+            },
+          },
         ],
       },
     }],

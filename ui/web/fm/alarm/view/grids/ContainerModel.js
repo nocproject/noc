@@ -54,5 +54,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
     isActiveAlarmsSelected: function(get){
       return get("total.activeAlarmsSelected") == null;
     },
+    activeFilterIsClosed: function(get){
+      return get("activeFilter.status") === "C";
+    },
   },
 });
