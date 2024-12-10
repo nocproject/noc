@@ -768,7 +768,7 @@ class AlarmApplication(ExtApplication):
         access="clear",
         validate={
             "msg": UnicodeParameter(default=""),
-            "alarms": ListOfParameter(ObjectIdParameter),
+            "alarms": ListOfParameter(ObjectIdParameter()),
         },
     )
     def api_group_clear(self, request, msg: str, alarms: list[str]):
