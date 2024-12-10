@@ -8,6 +8,9 @@ console.debug("Defining NOC.fm.alarm.view.grids.ContainerController");
 Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   extend: "Ext.app.ViewController",
   alias: "controller.fm.alarm.container",
+  requires: [
+    "NOC.fm.alarm.view.form.ClearAlarms",
+  ],
   initViewModel: function(){
     var profiles = Ext.create("NOC.fm.alarm.store.Profile", {autoLoad: false});
     profiles.load({
@@ -284,6 +287,16 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         NOC.error(__("Failed to " + action + " favorites"));
       },
     });
-
   },
+  onClearAlarms: function(){
+    Ext.create("NOC.fm.alarm.view.form.ClearAlarms", {
+      parentController: this.getView().up("[itemId=fm-alarm]").getController(),
+      alarms: this.lookupReference("fm-alarm-active").getSelection().map(function(alarm){
+        return {
+          id: alarm.id,
+          managed_object: alarm.get("managed_object"),
+          managed_object__label: alarm.get("managed_object__label"),
+        }
+      }),
+    }).show(); },
 });
