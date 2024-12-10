@@ -23,6 +23,7 @@ class ControllerConfig(object):
 
     local_id: str
     address: str
+    global_id: Optional[int] = None
     port: Optional[int] = None
     user: Optional[str] = None
     password: Optional[str] = None

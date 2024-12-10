@@ -82,37 +82,38 @@ class VIM(object):
 
     def get_host_by_id(self, hid: str) -> vim.HostSystem:
         """Getting vCenter host by id, example: 'host-5260'"""
-        host_view = self.content.viewManager.CreateContainerView(
-            self.content.rootFolder,
-            [vim.HostSystem],
-            True,
-        )
+        search_index = self.content.searchIndex
         try:
-            hosts = [h for h in host_view.view if h._moId == hid]
+            h = search_index.FindByUuid(None, hid, False)
         except vim.fault.NotAuthenticated:
             raise VIMError("Not Authenticated")
-        host_view.Destroy()
-        if hosts:
-            return hosts[0]
-        else:
-            raise VIMError("Host %s Not found" % hid)
+        if not h:
+            raise VIMError("Virtual Machine with Id '%s' Not found" % hid)
+        return h
 
     def get_vm_by_id(self, vid: str) -> Optional[vim.VirtualMachine]:
         """Getting vMachine by id, example: 'vm-1030'"""
+        search_index = self.content.searchIndex
+        vm = search_index.FindByUuid(None, vid, True)
+        if not vm:
+            raise VIMError("Virtual Machine with Id '%s' Not found" % vid)
+        return vm
+
+    def get_vm_by_name(self, name: str) -> Optional[vim.VirtualMachine]:
         vm_view = self.content.viewManager.CreateContainerView(
             self.content.rootFolder,
             [vim.VirtualMachine],
             True,
         )
         try:
-            vms = [h for h in vm_view.view if h._moId == vid]
+            vms = [h for h in vm_view.view if h.name == name]
         except vim.fault.NotAuthenticated:
             raise VIMError("Not Authenticated")
         vm_view.Destroy()
         if vms:
             return vms[0]
         else:
-            raise VIMError("Host %s Not found" % vid)
+            raise VIMError("Host %s Not found" % name)
 
     @staticmethod
     def has_internet_adapter(item) -> bool:

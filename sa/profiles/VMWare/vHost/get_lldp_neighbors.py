@@ -18,7 +18,8 @@ class Script(VIMScript):
         h = self.vim.get_host_by_id(hid)
         hns = h.configManager.networkSystem
         result = []
-        if not h.capabilities.supportsNetworkHints:
+        if not hasattr(h, "capabilities") or not h.capabilities.supportsNetworkHints:
+            # If Host disconnected capabilities not available
             return result
         for q in hns.capabilities.supportsNetworkHints.QueryNetworkHint():
             if q.lldpInfo is None:
@@ -31,4 +32,4 @@ class Script(VIMScript):
         return result
 
     def execute(self, **kwargs):
-        return self.execute_controller(hid=self.controller.local_id)
+        return self.execute_controller(hid=self.controller.global_id)

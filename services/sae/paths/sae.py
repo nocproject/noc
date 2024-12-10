@@ -331,6 +331,7 @@ class SAEAPI(JSONRPCAPI):
             controller = ManagedObject.get_by_id(controller)
             controller = {
                 "local_id": capabilities["Controller | LocalId"],
+                "global_id": capabilities.get("Controller | GlobalId"),
                 "address": controller.address,
                 "port": controller.port,
                 "user": controller.credentials.user,

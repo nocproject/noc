@@ -85,6 +85,9 @@ class Script(VIMScript):
             if fi.hostLag:
                 continue
             for s in fi.spec.backing.pnicSpec:
+                if s.uplinkPortKey not in uplinks:
+                    self.logger.info("[%s] Unknown uplinks: %s", fi.dvsUuid, s.uplinkPortKey)
+                    continue
                 fis_nic[s.pnicDevice]["uplink_key"] = s.uplinkPortKey
                 fis_nic[s.pnicDevice]["uplink_portgroup_key"] = s.uplinkPortgroupKey
                 interfaces[s.pnicDevice]["subinterfaces"] += [
@@ -133,8 +136,9 @@ class Script(VIMScript):
                     }
                 ]
         for vm in h.vm:
+            self.logger.info("Processed VM: %s", vm.name)
             for d in vm.config.hardware.device:
-                if self.vim.has_internet_adapter(d) and d.backing.port:
+                if self.vim.has_internet_adapter(d) and getattr(d.backing, "port", None):
                     name = f"vmnic-{d.backing.port.portKey}"
                     interfaces[name] = {
                         "name": name,
@@ -172,4 +176,4 @@ class Script(VIMScript):
         return list(fis.values())
 
     def execute(self, **kwargs):
-        return self.execute_controller(hid=self.controller.local_id)
+        return self.execute_controller(hid=self.controller.global_id)
