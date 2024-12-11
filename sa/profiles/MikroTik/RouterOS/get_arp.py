@@ -13,6 +13,7 @@ from noc.sa.interfaces.igetarp import IGetARP
 class Script(BaseScript):
     name = "MikroTik.RouterOS.get_arp"
     interface = IGetARP
+    always_prefer = "S"
 
     def execute_cli(self):
         arp = []

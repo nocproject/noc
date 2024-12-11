@@ -55,6 +55,56 @@ class Profile(BaseProfile):
         # Remove duplicates prompt. Do not remove this.
         script.cli("")
 
+    def get_interface_names(self, name):
+        r = [name]
+        if "/" in name:
+            # Mkt/lacp1/sfp-sfpplus2
+            r = [name.split("/")[-1]]
+        return r
+
+    def clean_lldp_neighbor(self, obj, neighbor):
+        if "remote_port" in neighbor and neighbor["remote_port"].startswith("VLAN"):
+            names = self.get_interface_names(neighbor["remote_port"])
+            if names:
+                neighbor["remote_port"] = names[0]
+        return neighbor
+
+    INTERFACE_TYPES = {
+        "ethe": "physical",
+        "wlan": "physical",
+        "sfp-": "physical",
+        "qsfp": "physical",
+        "lo": "loopback",
+        "_mgm": "management",
+        "brid": "SVI",
+        "vlan": "SVI",
+        "ppp-": "tunnel",
+        "pppo": "tunnel",
+        "l2tp": "tunnel",
+        "pptp": "tunnel",
+        "ovpn": "tunnel",
+        "sstp": "tunnel",
+        "wg": "tunnel",
+        "gre-": "tunnel",
+        "ipip": "tunnel",
+        "eoip": "tunnel",
+        "bond": "aggregated",
+    }
+
+    @classmethod
+    def get_interface_type(cls, name: str) -> str:
+        """
+        >>> Profile().get_interface_type("sfp-sfpplus1,VLANS")
+        'physical'
+        >>> Profile().get_interface_type("ether2,VLANS")
+        'physical'
+        >>> Profile().get_interface_type("ether3")
+        'physical'
+        >>> Profile().get_interface_type("vlan13")
+        'SVI'
+        """
+        return cls.INTERFACE_TYPES.get(name[:4], "other")
+
     def cli_detail(self, script, cmd, cached=False):
         """
         Parse RouterOS .... print detail output
