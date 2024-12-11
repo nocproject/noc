@@ -106,22 +106,6 @@ Ext.define("NOC.fm.alarm.view.form.ClearAlarms", {
                 });
               },
             });
-
-              // NOC.run(
-              //   "NOC.inv.map.Maintenance",
-              //   __("Add To Maintenance"),
-              //   {
-              //     args: [
-              //       {mode: "Object"},
-              //       Ext.Array.map(alarms, function(alarm){
-              //         return {
-              //           object: alarm.managed_object,
-              //           object__label: alarm.managed_object__label,
-              //         }
-              //       }),
-              //     ],
-              //   },
-              // );
             }
           } else{
             NOC.error(data.message || __("Failed to clear alarms"));
@@ -129,9 +113,9 @@ Ext.define("NOC.fm.alarm.view.form.ClearAlarms", {
         },
         failure: function(){
           NOC.error(__("Backend: failed to clear alarms"));
+          form.unmask();
         },
         callback: function(){
-          form.unmask();
         },
       });
     },
