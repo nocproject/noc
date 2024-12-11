@@ -22,4 +22,4 @@ class Script(BaseScript):
         :param speed:
         :return:
         """
-        return data["oper_status"] and speed == self.HIGH_SPEED
+        return data.get("oper_status") and speed == self.HIGH_SPEED

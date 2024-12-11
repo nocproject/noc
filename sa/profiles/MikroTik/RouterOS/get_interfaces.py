@@ -7,11 +7,13 @@
 
 # Python modules
 import time
+from typing import Optional
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.validators import is_int
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -82,6 +84,7 @@ class Script(BaseScript):
         n_ifindex = {}  # number -> ifIndex
         for n, f, r in self.cli_detail("/interface print oid without-paging"):
             n_ifindex[n] = int(r["name"].rsplit(".", 1)[-1])
+        v_ifindex = {}
         time.sleep(1)
         # Fill interfaces
         a = self.cli_detail("/interface print detail without-paging")
@@ -127,6 +130,12 @@ class Script(BaseScript):
                     if r["type"].startswith("gre-"):
                         self.get_tunnel("GRE", "R", "IPv4", ifaces)
                     ifaces[r["name"]]["subinterfaces"] += [self.si]
+            elif r["type"] == "vlan" and n in n_ifindex:
+                # 6XXXX
+                v_ifindex[r["name"]] = n_ifindex[n]
+            elif r["type"] == "vlan" and "id" in r:
+                # 7XXX
+                v_ifindex[r["name"]] = r["id"]
         time.sleep(1)
         # Attach `vlan` subinterfaces to parent
         for n, f, r in self.cli_detail("/interface vlan print detail without-paging"):
@@ -143,6 +152,8 @@ class Script(BaseScript):
                 }
                 if self.get_mtu(r) is not None:
                     self.si["mtu"] = self.get_mtu(r)
+                if r["name"] in v_ifindex:
+                    self.si["snmp_ifindex"] = v_ifindex[r["name"]]
                 i["subinterfaces"] += [self.si]
         # process internal `switch` ports and vlans
         vlan_tags = {}
@@ -452,3 +463,26 @@ class Script(BaseScript):
             pass
 
         return [{"interfaces": list(ifaces.values())}]
+
+    INTERFACE_TYPES = {
+        1: "physical",
+        6: "physical",  # ethernetCsmacd
+        18: "physical",  # E1 - ds1
+        23: "tunnel",  # ppp
+        24: "loopback",  # softwareLoopback
+        117: "physical",  # gigabitEthernet
+        131: "tunnel",  # tunnel
+        135: "SVI",  # l2vlan
+        161: "aggregated",  # ieee8023adLag
+        53: "SVI",  # propVirtual
+        54: "physical",  # propMultiplexor
+    }
+
+    def clean_iftype(self, ifname: str, ifindex: Optional[int] = None) -> str:
+        """SNMP Type detect"""
+        if not getattr(self, "_iftype_map", None):
+            self._iftype_map = {
+                int(oid.split(".")[-1]): iftype
+                for oid, iftype in self.snmp.getnext(mib["IF-MIB::ifType"])
+            }
+        return self.INTERFACE_TYPES.get(self._iftype_map[ifindex], "other")

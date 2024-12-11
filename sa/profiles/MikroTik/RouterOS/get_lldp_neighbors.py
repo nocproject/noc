@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-from noc.core.script.base import BaseScript
+# NOC Modules
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC,
@@ -26,30 +26,46 @@ class Script(BaseScript):
     name = "MikroTik.RouterOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    def execute(self):
+    def get_local_iface(self):
+        r = {}
+        ports = super().get_local_iface()
+        for port, li in ports.items():
+            iftype = self.profile.get_interface_type(li["local_interface"])
+            if iftype == "SVI":
+                continue
+            r[port] = li
+        return r
+
+    def execute_cli(self):
         res = []
         interfaces = []
         for n, f, r in self.cli_detail('/interface print detail without-paging where type="ether"'):
             interfaces += [r["name"]]
+        self.logger.debug("Collected interfaces: %s", interfaces)
         for n, f, r in self.cli_detail("/ip neighbor print detail without-paging"):
-            if "system-caps" not in r or r["system-caps"] == "":
+            # For LACP based link
+            local_iface, *ifaces = r["interface"].split(",")
+            if local_iface not in interfaces:
+                self.logger.debug("[%s] Local iface not in interface table.", local_iface)
                 continue
-            if r["interface"] not in interfaces:
+            if "discovered-by" in r and "lldp" not in r["discovered-by"]:
+                self.logger.debug("[%s] Not LLDP discovered neighbor", local_iface)
                 continue
-            if r.get("address4"):
-                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
-                chassis_id = r["address4"]
-            elif r.get("mac-address"):
+            if r.get("mac-address"):
                 chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
                 chassis_id = r["mac-address"]
+            elif r.get("address4"):
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
+                chassis_id = r["address4"]
             else:
-                raise self.NotSupportedError()
+                self.logger.debug("[%s] Unknown identity", local_iface)
+                continue
             if r.get("interface-name"):
                 port_subtype = LLDP_PORT_SUBTYPE_NAME
                 port = r["interface-name"]
                 port = port.strip(" \x00")
             else:
-                raise self.NotSupportedError()
+                continue
             caps = lldp_caps_to_bits(
                 r["system-caps"].strip().split(","),
                 {
@@ -64,7 +80,7 @@ class Script(BaseScript):
                 },
             )
             interface = {
-                "local_interface": r["interface"],
+                "local_interface": local_iface,
                 "neighbors": [
                     {
                         "remote_chassis_id_subtype": chassis_id_subtype,
@@ -75,6 +91,8 @@ class Script(BaseScript):
                     }
                 ],
             }
+            if r.get("address4"):
+                interface["neighbors"][0]["remote_mgmt_address"] = r["address4"]
             if "system-description" in r:
                 interface["neighbors"][0]["remote_system_description"] = r[
                     "system-description"

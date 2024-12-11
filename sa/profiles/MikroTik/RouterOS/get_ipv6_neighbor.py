@@ -30,12 +30,23 @@ class Script(BaseScript):
             return []
         nb = []
         for n, f, r in v:
-            nb += [
-                {
-                    "ip": r["address"],
-                    "mac": r["mac-address"],
-                    "interface": r["interface"],
-                    "state": self.s_map[r["status"]],
-                }
-            ]
+            if not r["status"] or r["status"] == "failed":
+                continue
+            if "mac-address" in r and r["mac-address"]:
+                nb += [
+                    {
+                        "ip": r["address"],
+                        "mac": r["mac-address"],
+                        "interface": r["interface"],
+                        "state": self.s_map[r["status"]],
+                    }
+                ]
+            else:
+                nb += [
+                    {
+                        "ip": r["address"],
+                        "interface": r["interface"],
+                        "state": self.s_map[r["status"]],
+                    }
+                ]
         return nb
