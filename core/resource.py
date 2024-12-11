@@ -43,7 +43,7 @@ def from_resource(resource: str) -> Tuple[Union[Model, Document], Optional[str]]
     # Dereference item
     item = model.get_by_id(parts[1])
     if not item:
-        msg = f"Cannot dererence `{parts[2]}`"
+        msg = f"Cannot dereference `{parts[1]}`"
         raise KeyError(msg)
     if len(parts) == 2:
         # Reference to item
