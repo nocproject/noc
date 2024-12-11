@@ -76,21 +76,52 @@ Ext.define("NOC.fm.alarm.view.form.ClearAlarms", {
             win.parentController.reloadActiveGrid();
             NOC.info(__("Alarms cleared successfully"));
             if(values.maintenance){
-              NOC.run(
-                "NOC.inv.map.Maintenance",
-                __("Add To Maintenance"),
-                {
-                  args: [
-                    {mode: "Object"},
-                    Ext.Array.map(alarms, function(alarm){
-                      return {
-                        object: alarm.managed_object,
-                        object__label: alarm.managed_object__label,
-                      }
-                    }),
-                  ],
-                },
-              );
+              var objects = Ext.Array.map(alarms, function(alarm){
+                  return {
+                    object: alarm.managed_object,
+                    object__label: alarm.managed_object__label,
+                  }
+                }),
+                args = {
+                  direct_objects: objects,
+                  subject: __("created from alarm list at ") + Ext.Date.format(new Date(), "d.m.Y H:i P"),
+                  contacts: NOC.email ? NOC.email : NOC.username,
+                  start_date: Ext.Date.format(new Date(), "d.m.Y"),
+                  start_time: Ext.Date.format(new Date(), "H:i"),
+                  stop_time: "12:00",
+                  suppress_alarms: true,
+                };
+              Ext.create("NOC.maintenance.maintenancetype.LookupField")
+            .getStore()
+            .load({
+              params: {__query: "РНР"},
+              callback: function(records){
+                if(records.length > 0){
+                  Ext.apply(args, {
+                    type: records[0].id,
+                  })
+                }
+                NOC.launch("maintenance.maintenance", "new", {
+                  args: args,
+                });
+              },
+            });
+
+              // NOC.run(
+              //   "NOC.inv.map.Maintenance",
+              //   __("Add To Maintenance"),
+              //   {
+              //     args: [
+              //       {mode: "Object"},
+              //       Ext.Array.map(alarms, function(alarm){
+              //         return {
+              //           object: alarm.managed_object,
+              //           object__label: alarm.managed_object__label,
+              //         }
+              //       }),
+              //     ],
+              //   },
+              // );
             }
           } else{
             NOC.error(data.message || __("Failed to clear alarms"));
