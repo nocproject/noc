@@ -4,6 +4,6 @@
     msg: "Liftbridge service works only with Nats service. Please install at least one"
   when:
     - has_svc_correlator is defined
-    - "'svc-nats' not in groups"
+    - "'svc-nats' not in groups and 'svc-liftbridge' in groups"
   tags:
     - checks
