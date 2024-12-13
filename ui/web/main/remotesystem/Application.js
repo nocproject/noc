@@ -343,6 +343,13 @@ Ext.define("NOC.main.remotesystem.Application", {
                     ]
                 },
                 {
+                    name: "object_url_template",
+                    xtype: "textfield",
+                    fieldLabel: __("Object URL Template"),
+                    allowBlank: true,
+                    uiStyle: "extra"
+                },
+                {
                     name: "environment",
                     xtype: "gridfield",
                     fieldLabel: __("Environment"),
