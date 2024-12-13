@@ -57,7 +57,7 @@ SELECT
     IPv4NumToString(ip) as address,
     pool,
     groupArray(source) as sources,
-    groupArray((source, remote_system, 
+    groupArray((source, remote_system,
         map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)),
          data, labels, service_groups, clients_groups, is_delete)) as all_data,
     groupUniqArrayArray(checks) as all_checks,
