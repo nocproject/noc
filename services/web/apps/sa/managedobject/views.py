@@ -37,6 +37,7 @@ from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.services.web.base.modelinline import ModelInline
 from noc.services.web.base.repoinline import RepoInline
 from noc.project.models.project import Project
@@ -292,6 +293,19 @@ class ManagedObjectApplication(ExtModelApplication):
                         if not c.skipped
                     ],
                     "reason": d.reason or "",
+                }
+            )
+        for m in data["mappings"]:
+            rs = RemoteSystem.get_by_id(m["remote_system"])
+            m["remote_system__label"] = rs.name
+            m["is_master"] = False
+        if o.remote_system:
+            data["mappings"].append(
+                {
+                    "remote_system": str(o.remote_system.id),
+                    "remote_system__label": o.remote_system.name,
+                    "remote_id": o.remote_id,
+                    "is_master": False,
                 }
             )
         return data
