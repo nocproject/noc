@@ -59,7 +59,7 @@ def start_maintenance(maintenance_id):
         e_ctx_items.append(ECtxItem(id=mo.id, tt_id=mo.tt_system_id))
     logger.info("[%s] Creating TT", maintenance_id)
     with TTSystemCtx(
-        tt_system=tt_system,
+        tt_system=tt_system.get_system(),
         queue=m.escalate_managed_object.tt_queue if m.escalate_managed_object.tt_queue else 1,
         reason="0",
         login="correlator",
