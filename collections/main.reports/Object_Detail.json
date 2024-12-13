@@ -184,6 +184,16 @@
                     "name": "project",
                     "title": "Project",
                     "format_type": "string"
+                },
+                {
+                    "name": "recv_syslog",
+                    "title": "Syslog received",
+                    "format_type": "string"
+                },
+                {
+                    "name": "recv_snmptrap",
+                    "title": "SNMP Trap received",
+                    "format_type": "string"
                 }
             ],
             "title_template": ""
