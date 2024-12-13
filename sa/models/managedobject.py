@@ -20,7 +20,6 @@ from typing import Tuple, Iterable, List, Any, Dict, Set, Optional, Union
 
 # Third-party modules
 import cachetools
-import orjson
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.query_utils import Q
 from django.core.validators import MinValueValidator
@@ -54,7 +53,6 @@ from noc.core.wf.diagnostic import (
     DIAGNOCSTIC_LABEL_SCOPE,
     SA_DIAG,
     ALARM_DIAG,
-    FIRST_AVAIL,
 )
 from noc.core.wf.interaction import Interaction
 from noc.core.mx import (
@@ -3009,7 +3007,6 @@ class ManagedObject(NOCModel):
             self.update_caps(capabilities, source="template")
         if static_service_groups:
             self.static_service_groups = [str(g.id) for g in static_service_groups]
-            changed = True
         if state:
             self.state = state
         for field, value in data.items():
@@ -3026,6 +3023,7 @@ class ManagedObject(NOCModel):
             return None
         return {
             "local_id": caps["Controller | LocalId"],
+            "global_id": caps["Controller | GlobalId"],
             "address": self.controller.address,
             "port": self.controller.port,
             "user": self.controller.credentials.user,
@@ -3137,22 +3135,16 @@ class ManagedObjectStatus(NOCModel):
                 # WHERE managed_object_id = ANY(%s::INT[])
                 # """,
                 """
-                SELECT id, os.status, os.last, mo.pool, diagnostics
+                SELECT id, os.status, os.last, mo.pool
                 FROM sa_managedobject AS mo
                 LEFT JOIN sa_objectstatus AS os ON mo.id = os.managed_object_id
                 WHERE id = ANY(%s::INT[])
                 """,
                 [[x[0] for x in statuses]],
             )
-            for o, status, last, pool, diagnostics in cursor:
+            for o, status, last, pool in cursor:
                 pool = Pool.get_by_id(pool)
                 cs[o] = {"status": status, "last": last, "pool": pool.name}
-                diagnostics = orjson.loads(diagnostics)
-                if (
-                    FIRST_AVAIL in diagnostics
-                    and diagnostics[FIRST_AVAIL]["state"] == DiagnosticState.unknown.value
-                ):
-                    cs[o]["d_avail_state"] = None
         # Processed new statuses
         suspended_jobs = defaultdict(list)  # Pool - ids
         for oid, status, ts in statuses:
@@ -3172,12 +3164,6 @@ class ManagedObjectStatus(NOCModel):
                 # Oops, out-of-order update
                 # Restore correct state
                 pass
-            if status and "d_avail_state" in cs[oid]:
-                # fire event
-                mo = ManagedObject.get_by_id(o)
-                print(f"{mo.name} Fire avail")
-                mo.fire_event("avail")
-                mo.diagnostic.set_state(FIRST_AVAIL, DiagnosticState.enabled)
         if not bulk:
             return
         # Save statuses to db
