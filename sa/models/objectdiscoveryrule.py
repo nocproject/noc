@@ -24,6 +24,7 @@ from mongoengine.fields import (
     IntField,
     UUIDField,
     ListField,
+    ObjectIdField,
 )
 
 # NOC modules
@@ -139,6 +140,7 @@ class MatchItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     match_labels = ListField(StringField())
+    match_groups = ListField(ObjectIdField())
     match_checks = EmbeddedDocumentListField(MatchCheck)
     match_data = EmbeddedDocumentListField(MatchData)
     # Action
@@ -159,8 +161,11 @@ class MatchItem(EmbeddedDocument):
         labels: List[str],
         data: Dict[str, Any],
         checks: Dict[Tuple[str, int], Any],
+        groups: List[str],
     ) -> bool:
         if self.match_labels and set(self.match_labels) - set(labels):
+            return False
+        if self.match_groups and set(self.match_groups) - set(groups):
             return False
         if self.match_data and not data:
             return False
@@ -191,6 +196,9 @@ class SourceItem(EmbeddedDocument):
     remote_system: Optional[RemoteSystem] = PlainReferenceField(RemoteSystem, required=False)
     update_last_seen = BooleanField(default=False)
     sync_policy = StringField(choices=[("A", "All"), ("M", "Mappings Only")], default="A")
+    remove_policy = StringField(
+        choices=[("D", "Disable"), ("U", "Unmanaged"), ("R", "Remove")], default="D"
+    )
     deny_create = BooleanField(default=False)
     is_required = BooleanField(default=False)  # Check if source required for match
 
@@ -252,6 +260,7 @@ class ObjectDiscoveryRule(Document):
             # ("remove", "Remove"),  # Set Rule and Send Ignored Signal
             ("ignore", "Ignore"),  # Ignore Record
             ("skip", "Skip"),  # SkipRule, if Rule Needed for Discovery Settings
+            ("log", "Log"),  # Log that rule match
         ],
         default="new",
     )
@@ -303,7 +312,7 @@ class ObjectDiscoveryRule(Document):
     @classmethod
     def get_effective_data(
         cls, sources: List[str], data: List[Any]
-    ) -> Tuple[Dict[str, str], Set[str]]:
+    ) -> Tuple[Dict[str, str], Set[str], Set[str]]:
         """
         Merge data by Source Priority
         Args:
@@ -311,7 +320,7 @@ class ObjectDiscoveryRule(Document):
             data: Effective data on source
         """
         r = {}
-        labels = set()
+        labels, groups = set(), set()
         for di in sorted(
             filterfalse(lambda d: d.source not in sources, data),
             key=lambda x: sources.index(x.source),
@@ -322,7 +331,9 @@ class ObjectDiscoveryRule(Document):
                 r[key] = value
             if di.labels:
                 labels |= set(di.labels)
-        return r, labels
+            if di.service_groups:
+                groups |= set(di.service_groups)
+        return r, labels, groups
 
     def merge_sources(self, sources: List[str]) -> List[str]:
         """Merge based source and Rules source ->"""
@@ -359,10 +370,10 @@ class ObjectDiscoveryRule(Document):
                 str(d.remote_system.id) for d in data if d.remote_system
             }:
                 continue
-            r_data, r_labels = cls.get_effective_data(
+            r_data, r_labels, r_groups = cls.get_effective_data(
                 [s.source for s in rule.sources] or sources, data
             )
-            if rule.is_match(address, pool, checks, r_labels, r_data):
+            if rule.is_match(address, pool, checks, r_labels, r_data, r_groups):
                 return rule
 
     def on_save(self):
@@ -437,6 +448,7 @@ class ObjectDiscoveryRule(Document):
         checks: List[Any],
         labels: List[str],
         data: Dict[str, Any],
+        groups: List[str],
     ) -> bool:
         """
         Check discovered record for match rule
@@ -447,6 +459,7 @@ class ObjectDiscoveryRule(Document):
             checks: List Result of Protocol Checks
             labels: Labels list
             data: Effective data
+            groups: record groups
         """
         address = IP.prefix(address)
         if self.network_ranges:
@@ -455,7 +468,7 @@ class ObjectDiscoveryRule(Document):
         if not self.conditions:
             return True
         checks = self.parse_check(checks)
-        return any(c.is_match(labels, data, checks) for c in self.conditions)
+        return any(c.is_match(labels, data, checks, groups) for c in self.conditions)
 
     @cachetools.cachedmethod(operator.attrgetter("_prefix_cache"), lock=lambda _: id_lock)
     def get_prefixes(self, pool: Optional[Pool] = None) -> List["IPv4"]:
@@ -492,6 +505,7 @@ class ObjectDiscoveryRule(Document):
         checks: List[Any],
         labels: Optional[List[str]] = None,
         data: Optional[Dict[str, Any]] = None,
+        groups: Optional[List[str]] = None,
     ) -> str:
         """
         Return Discovered object action
@@ -499,11 +513,12 @@ class ObjectDiscoveryRule(Document):
             checks: Discovered object checks result
             labels: Labels list
             data: Collected effective data
+            groups: Groups
         """
         checks = self.parse_check(checks)
         action = None
         for c in self.conditions:
-            if c.is_match(labels, data, checks) and c.action:
+            if c.is_match(labels, data, checks, groups or set()) and c.action:
                 action = c.action
         return action or self.default_action
 
