@@ -26,4 +26,5 @@ services:
   kafka:
     level: system
     category: external
+    before: migrate
     port: 9292
