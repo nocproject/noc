@@ -91,7 +91,7 @@
 - block:
     - name: load configuration to consul
       consul_kv:
-        key: {{ item.key }}
+        key: "{{ item.key }}"
         value: "{{ item.value}}"
       with_items:
         - key: noc.msgstream.client_class
