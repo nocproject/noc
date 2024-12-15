@@ -435,6 +435,13 @@ class Config(BaseConfig):
         register_last_login = BooleanParameter(default=True)
         jwt_cookie_name = StringParameter(default="noc_jwt")
         jwt_algorithm = StringParameter(default="HS256", choices=["HS256", "HS384", "HS512"])
+        min_password_len = IntParameter(default=0)
+        min_password_uppercase = IntParameter(default=0)
+        min_password_lowercase = IntParameter(default=0)
+        min_password_numbers = IntParameter(default=0)
+        min_password_specials = IntParameter(default=0)
+        password_ttl = SecondsParameter(default="0")
+        password_history = IntParameter(default=0)
 
     class mailsender(ConfigSection):
         smtp_server = StringParameter()
