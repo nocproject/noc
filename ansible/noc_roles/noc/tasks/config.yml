@@ -86,19 +86,3 @@
     - "'consul://' not in config_order"
   tags:
     - config
-
-# Set consul kv for kafka
-- block:
-    - name: load configuration to consul
-      consul_kv:
-        key: "{{ item.key }}"
-        value: "{{ item.value}}"
-      with_items:
-        - key: noc.msgstream.client_class
-          value: "noc.core.msgstream.redpanda.RedPandaClient"
-        - key: noc.redpanda.addresses
-          value: "kafka"
-  when:
-    - "'consul://' in config_order"
-  tags:
-    - config
