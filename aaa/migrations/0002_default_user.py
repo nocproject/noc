@@ -1,15 +1,14 @@
 # ----------------------------------------------------------------------
 # Create default user
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from django.contrib.auth.hashers import make_password
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
+from noc.core.password.hasher import make_password
 from noc.config import config
 
 

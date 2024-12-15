@@ -65,7 +65,10 @@ class Command(BaseCommand):
             raise CommandError("No permissions set")
         # Create user
         u = User(username=options["username"], email=options["email"], is_active=True)
-        u.set_password(passwd)
+        try:
+            u.set_password(passwd, save=False)
+        except ValueError as e:
+            self.die(f"Cannot set password: {e.args[0]}")
         u.save()
         for p in permissions:
             try:

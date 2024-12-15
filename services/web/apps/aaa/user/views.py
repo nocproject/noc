@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # User Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ class UserApplication(ExtModelApplication):
                 if self.site.is_json(request.META.get("CONTENT_TYPE"))
                 else self.deserialize_form(request)
             )
-            user.set_password(attrs["password"])
+            user.set_password(attrs["password"], save=False)
             user.save()
         return response
 
@@ -157,8 +157,10 @@ class UserApplication(ExtModelApplication):
         if not request.user.is_superuser:
             return self.response_forbidden("Permission denied")
         user = self.get_object_or_404(self.model, pk=object_id)
-        user.set_password(password)
-        user.save()
+        try:
+            user.set_password(password)
+        except ValueError as e:
+            return self.response({"result": str(e.args[0]), "status": False}, self.BAD_REQUEST)
         return self.response({"result": "Password changed", "status": True}, self.OK)
 
     def can_delete(self, user, obj=None):
