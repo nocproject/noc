@@ -65,24 +65,24 @@
 # Generating local etc/settings.yml file
 - block:
 
-  - name: Ensure settings.yml is exists
-    file:
-      path: "{{ noc_root }}/etc/settings.yml"
-      state: touch
-      owner: root
+    - name: Ensure settings.yml is exists
+      file:
+        path: "{{ noc_root }}/etc/settings.yml"
+        state: touch
+        owner: root
 
-  - name: Edit settings.yml for kafka's configuration
-    yedit:
-      src: "{{ noc_root }}/etc/settings.yml"
-      state: present
-      edits:
-        - key: noc.msgstream.client_class
-          value: "noc.core.msgstream.redpanda.RedPandaClient"
-        - key: noc.redpanda.addresses
-          value: "kafka"
-    when:
-      - "'svc-kafka-exec' in groups"
+    - name: Edit settings.yml for kafka's configuration
+      yedit:
+        src: "{{ noc_root }}/etc/settings.yml"
+        state: present
+        edits:
+          - key: noc.msgstream.client_class
+            value: "noc.core.msgstream.redpanda.RedPandaClient"
+          - key: noc.redpanda.addresses
+            value: "kafka"
+
   when:
     - "'consul://' not in config_order"
+    - "'svc-kafka-exec' in groups"
   tags:
     - config

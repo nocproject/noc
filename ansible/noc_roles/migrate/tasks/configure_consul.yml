@@ -2,7 +2,7 @@
 # have to be in migrate role because it's run once by default. and not in free strategy
 
 - name: call consul to setup worker
-  run_once: "True"
+  run_once: true
   include_role:
     name: consul
     tasks_from: service_config_update
@@ -15,7 +15,7 @@
     - worker
 
 - name: call consul to setup metrics
-  run_once: "True"
+  run_once: true
   include_role:
     name: consul
     tasks_from: service_config_update
@@ -28,7 +28,7 @@
     - metrics
 
 - name: call consul to setup discovery
-  run_once: "True"
+  run_once: true
   include_role:
     name: consul
     tasks_from: service_config_update
@@ -42,7 +42,7 @@
     - discovery
 
 - name: call consul to setup ping
-  run_once: "True"
+  run_once: true
   include_role:
     name: consul
     tasks_from: service_config_update
@@ -56,7 +56,7 @@
     - ping
 
 - name: call consul to setup classifier
-  run_once: "True"
+  run_once: true
   include_role:
     name: consul
     tasks_from: service_config_update
@@ -70,7 +70,7 @@
     - classifier
 
 - name: call consul to setup correlator
-  run_once: "True"
+  run_once: true
   include_role:
     name: consul
     tasks_from: service_config_update
@@ -84,7 +84,7 @@
     - correlator
 
 - name: call consul to setup kafkasender
-  run_once: "True"
+  run_once: true
   include_role:
     name: consul
     tasks_from: service_config_update
