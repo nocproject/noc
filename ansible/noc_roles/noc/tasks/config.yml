@@ -63,25 +63,42 @@
   no_log: "{{ tower_show_secrets }}"
 
 # Generating local etc/settings.yml file
-#- block:
-#
-#  - name: Ensure settings.yml is exists
-#    file:
-#      path: "{{ noc_root }}/etc/settings.yml"
-#      state: touch
-#      owner: root
-#
-#  - name: Edit settings.yml for redpanda's configuration
-#    yedit:
-#      src: "{{ noc_root }}/etc/settings.yml"
-#      state: present
-#      edits:
-#        - key: noc.msgstream.client_class
-#          value: "noc.core.msgstream.redpanda.RedPandaClient"
-#    when:
-#      - "'svc-redpanda-exec' in groups"
-#
-#  when:
-#    - "'consul://' not in config_order"
-#  tags:
-#    - config
+- block:
+
+  - name: Ensure settings.yml is exists
+    file:
+      path: "{{ noc_root }}/etc/settings.yml"
+      state: touch
+      owner: root
+
+  - name: Edit settings.yml for kafka's configuration
+    yedit:
+      src: "{{ noc_root }}/etc/settings.yml"
+      state: present
+      edits:
+        - key: noc.msgstream.client_class
+          value: "noc.core.msgstream.redpanda.RedPandaClient"
+        - key: noc.redpanda.addresses
+          value: "kafka"
+    when:
+      - "'svc-kafka-exec' in groups"
+  when:
+    - "'consul://' not in config_order"
+  tags:
+    - config
+
+# Set consul kv for kafka
+- block:
+    - name: load configuration to consul
+      consul_kv:
+        key: {{ item.key }}
+        value: "{{ item.value}}"
+      with_items:
+        - key: noc.msgstream.client_class
+          value: "noc.core.msgstream.redpanda.RedPandaClient"
+        - key: noc.redpanda.addresses
+          value: "kafka"
+  when:
+    - "'consul://' in config_order"
+  tags:
+    - config
