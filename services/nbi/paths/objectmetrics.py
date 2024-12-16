@@ -221,7 +221,7 @@ class ObjectMetricsAPI(NBIAPI):
                         (
                             (p[0].replace(" ", "T"), mt.clean_value(p[1]))
                             for p in points
-                            if p[1] != '\\N'
+                            if p[1] != "\\N"
                         ),
                         key=operator.itemgetter(0),
                     )
