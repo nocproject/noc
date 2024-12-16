@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # CustomField model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -204,17 +204,17 @@ class CustomField(NOCModel):
         if self.is_table:
             self.execute("DROP INDEX %s" % self.index_name)
 
-    def rename(self, old_name):
+    def rename(self, old):
         logger.info(
             "Renaming custom field %s.%s to %s.%s",
-            old_name.table,
-            old_name.name,
+            old.table,
+            old.name,
             self.table,
             self.name,
         )
         if self.is_table:
             self.execute(
-                'ALTER TABLE %s RENAME "%s" TO "%s"' % (self.table, old_name, self.db_column)
+                'ALTER TABLE %s RENAME "%s" TO "%s"' % (self.table, old.name, self.db_column)
             )
 
     def save(self, *args, **kwargs):
@@ -226,7 +226,7 @@ class CustomField(NOCModel):
             old_active = old.is_active
             old_indexed = old.is_indexed
             if old.name != self.name:
-                self.rename(old.db_column)
+                self.rename(old)
         else:
             old_active = False
             old_indexed = False
