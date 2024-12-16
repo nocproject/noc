@@ -3,31 +3,31 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 
-console.debug('Defining NOC.sa.managedobject.form.FormController');
-Ext.define('NOC.sa.managedobject.form.FormController', {
-  extend: 'Ext.app.ViewController',
+console.debug("Defining NOC.sa.managedobject.form.FormController");
+Ext.define("NOC.sa.managedobject.form.FormController", {
+  extend: "Ext.app.ViewController",
   requires: [
     "Ext.ux.grid.column.GlyphAction",
     "NOC.sa.managedobject.Model",
     "NOC.sa.managedobject.Proxy",
   ],
-  alias: 'controller.managedobject.form',
-  url: '/sa/managedobject/',
+  alias: "controller.managedobject.form",
+  url: "/sa/managedobject/",
 
   init: function(app){
-    var view = this.getView().up('[itemId=sa-managedobject]'),
-      consoleBtn = app.down('[itemId=consoleBtn]'),
-      deleteBtn = app.down('[itemId=deleteBtn]'),
-      cmdBtn = app.down('[itemId=cmdBtn]'),
-      scriptsBtn = app.down('[itemId=scriptsBtn]'),
-      configBtn = app.down('[itemId=configBtn]'),
-      confDBBtn = app.down('[itemId=confDBBtn]'),
-      saveBtn = app.down('[itemId=saveBtn]'),
-      resetBtn = app.down('[itemId=resetBtn]'),
-      cloneBtn = app.down('[itemId=cloneBtn]'),
-      alarmsBtn = app.down('[itemId=alarmsBtn]'),
-      createBtn = app.down('[itemId=createBtn]'),
-      stateField = app.down('[xtype=statefield]');
+    var view = this.getView().up("[itemId=sa-managedobject]"),
+      consoleBtn = app.down("[itemId=consoleBtn]"),
+      deleteBtn = app.down("[itemId=deleteBtn]"),
+      cmdBtn = app.down("[itemId=cmdBtn]"),
+      scriptsBtn = app.down("[itemId=scriptsBtn]"),
+      configBtn = app.down("[itemId=configBtn]"),
+      confDBBtn = app.down("[itemId=confDBBtn]"),
+      saveBtn = app.down("[itemId=saveBtn]"),
+      resetBtn = app.down("[itemId=resetBtn]"),
+      cloneBtn = app.down("[itemId=cloneBtn]"),
+      alarmsBtn = app.down("[itemId=alarmsBtn]"),
+      createBtn = app.down("[itemId=createBtn]"),
+      stateField = app.down("[xtype=statefield]");
 
     // saveBtn.formBind = view.hasPermission("update");
     consoleBtn.setDisabled(!view.hasPermission("console"));
@@ -46,18 +46,18 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
     stateField.labelWidth = this.getView().stateLabelWidth;
   },
   toMain: function(){
-    this.gotoItem('managedobject-select');
+    this.gotoItem("managedobject-select");
   },
   onSaveRecord: function(){
     var me = this.getView();
-    if(!this.getView().down('[itemId=managedobject-form-panel]').form.isValid()){
+    if(!this.getView().down("[itemId=managedobject-form-panel]").form.isValid()){
       NOC.error(__("Error in data"));
       return;
     }
     var v = me.getFormData();
     // normalize custom fields
-    Ext.each(me.up('[itemId=sa-managedobject]').noc.cust_form_fields, function(field){
-      if(field.xtype === 'datefield' && !Ext.isEmpty(v[field.name])){
+    Ext.each(me.up("[itemId=sa-managedobject]").noc.cust_form_fields, function(field){
+      if(field.xtype === "datefield" && !Ext.isEmpty(v[field.name])){
         v[field.name] = Ext.Date.format(v[field.name], field.altFormats);
       }
     })
@@ -72,7 +72,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
   onSaveRecords: function(){
     var me = this,
       values = {},
-      formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
+      formPanel = this.getView().down("[itemId=managedobject-form-panel]"),
       form = formPanel.getForm(),
       groupEditFields = Ext.Array.filter(form.getFields().items, function(field){return field.groupEdit}),
       valuesTxt = "";
@@ -128,13 +128,13 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
   },
   onCloneRecord: function(){
     var view = this.getView(),
-      parentController = view.up('[itemId=sa-managedobject]').getController(),
-      formPanel = this.getView().down('[itemId=managedobject-form-panel]');
+      parentController = view.up("[itemId=sa-managedobject]").getController(),
+      formPanel = this.getView().down("[itemId=managedobject-form-panel]");
     parentController.setFormTitle(__("Clone") + " {0}", {id: "CLONE"});
     parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
     formPanel.getForm().setValues({bi_id: null});
     formPanel.recordId = undefined;
-    Ext.Array.each(view.query('[itemId$=-inline]'), function(grid){return grid.getStore().cloneData()});
+    Ext.Array.each(view.query("[itemId$=-inline]"), function(grid){return grid.getStore().cloneData()});
   },
   onDeleteRecord: function(){
     var me = this;
@@ -151,17 +151,17 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
     });
   },
   onResetRecord: function(){
-    this.getView().up('[itemId=sa-managedobject]').getController().clearForm(this.getView().form);
-    this.getView().up('[itemId=sa-managedobject]').getController().resetInlineStore(this.getView());
+    this.getView().up("[itemId=sa-managedobject]").getController().clearForm(this.getView().form);
+    this.getView().up("[itemId=sa-managedobject]").getController().resetInlineStore(this.getView());
   },
   onConfig: function(){
-    this.itemPreview('sa-config');
+    this.itemPreview("sa-config");
   },
   onConfDB: function(){
-    this.itemPreview('sa-confdb');
+    this.itemPreview("sa-confdb");
   },
   onCard: function(){
-    var formPanel = this.getView().down('[itemId=managedobject-form-panel]');
+    var formPanel = this.getView().down("[itemId=managedobject-form-panel]");
     if(formPanel.recordId){
       window.open(
         "/api/card/view/managedobject/" + formPanel.recordId + "/",
@@ -169,7 +169,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
     }
   },
   onDashboard: function(){
-    var formPanel = this.getView().down('[itemId=managedobject-form-panel]');
+    var formPanel = this.getView().down("[itemId=managedobject-form-panel]");
     if(formPanel.recordId){
       window.open(
         "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + formPanel.recordId,
@@ -177,33 +177,33 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
     }
   },
   onConsole: function(){
-    this.itemPreview('sa-console');
+    this.itemPreview("sa-console");
   },
   onScripts: function(){
-    this.itemPreview('sa-script');
+    this.itemPreview("sa-script");
   },
   onInterfaces: function(){
-    this.itemPreview('sa-interface_count');
+    this.itemPreview("sa-interface_count");
   },
   onSensors: function(){
-    this.itemPreview('sa-sensors');
+    this.itemPreview("sa-sensors");
   },
   onCPE: function(){},
   onLinks: function(){
-    this.itemPreview('sa-link_count');
+    this.itemPreview("sa-link_count");
   },
   onDiscovery: function(){
-    this.itemPreview('sa-discovery');
+    this.itemPreview("sa-discovery");
   },
   onAlarm: function(){
-    this.itemPreview('sa-alarms');
+    this.itemPreview("sa-alarms");
   },
   onMaintenance: function(){},
   onInventory: function(){
-    this.itemPreview('sa-inventory');
+    this.itemPreview("sa-inventory");
   },
   onInteractions: function(){
-    this.itemPreview('sa-interactions');
+    this.itemPreview("sa-interactions");
   },
   onValidationSettings: function(){},
   onCaps: function(){},
@@ -211,8 +211,8 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
   newRecord: function(defaults){
     var defaultValues = {},
       view = this.getView(),
-      formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
-      parentController = view.up('[itemId=sa-managedobject]').getController(),
+      formPanel = this.getView().down("[itemId=managedobject-form-panel]"),
+      parentController = view.up("[itemId=sa-managedobject]").getController(),
       fieldsWithDefaultValue = Ext.Array.filter(Ext.create("NOC.sa.managedobject.Model").fields,
                                                 function(field){return !Ext.isEmpty(field.defaultValue)});
 
@@ -223,17 +223,17 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
     parentController.resetInlineStore(formPanel, defaults);
     parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
     formPanel.recordId = undefined;
-    this.getView().up('[itemId=sa-managedobject]').getController().clearForm(formPanel.getForm());
+    this.getView().up("[itemId=sa-managedobject]").getController().clearForm(formPanel.getForm());
     formPanel.getForm().setValues(defaultValues);
   },
   saveRecord: function(data){
     var me = this, record,
       view = this.getView(),
-      formPanel = view.down('[itemId=managedobject-form-panel]'),
-      cust_field_model = view.up('[itemId=sa-managedobject]').noc.cust_model_fields || [];
+      formPanel = view.down("[itemId=managedobject-form-panel]"),
+      cust_field_model = view.up("[itemId=sa-managedobject]").noc.cust_model_fields || [];
 
     NOC.sa.managedobject.Model.addFields(cust_field_model.map(function(field){
-      if(field.type === 'date'){field.type = "string"}
+      if(field.type === "date"){field.type = "string"}
       return field;
     }));
     record = NOC.sa.managedobject.Model.create(data);
@@ -253,13 +253,14 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
 
     this.getView().mask(__("Saving ..."));
     this.getView().saveInlines(record.id,
-                               Ext.Array.map(this.getView().query('[itemId$=-inline]'), function(grid){return grid.getStore()}));
+                               Ext.Array.map(this.getView().query("[itemId$=-inline]"), function(grid){return grid.getStore()}));
     Ext.Object.each(data, function(key, value){if(!Ext.isEmpty(value)) record.set(key, value)});
     record.save({
       success: function(record, operation){
         me.getView().unmask();
         me.getView().setHistoryHash();
         me.reloadSelectionGrids();
+        me.dirtyReset(formPanel.getForm());
         me.toMain();
         NOC.msg.complete(__("Saved"));
       },
@@ -281,8 +282,16 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
       },
     });
   },
+  // reset dirty flag
+  dirtyReset: function(form){
+    Ext.each(form.getFields().items, function(field){
+      if(Ext.isFunction(field.resetOriginalValue)){
+        field.resetOriginalValue();
+      }
+    });
+  },
   deleteRecord: function(){
-    var formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
+    var formPanel = this.getView().down("[itemId=managedobject-form-panel]"),
       record = Ext.create("NOC.sa.managedobject.Model");
 
     record.self.setProxy({type: "managedobject"});
@@ -293,8 +302,8 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         method: "DELETE",
         scope: this,
         success: function(response){
-          var basketStore = this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectedGrid1]').getStore();
-          basketStore.remove(this.getView().down('[itemId=managedobject-form-panel]').currentRecord)
+          var basketStore = this.getView().up("[itemId=sa-managedobject]").down("[reference=saManagedobjectSelectedGrid1]").getStore();
+          basketStore.remove(this.getView().down("[itemId=managedobject-form-panel]").currentRecord)
           this.reloadSelectionGrids();
           this.toMain();
           this.getView().unmask();
@@ -313,40 +322,40 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
     }
   },
   reloadSelectionGrids: function(){
-    var parentController = this.getView().up('[itemId=sa-managedobject]').getController();
+    var parentController = this.getView().up("[itemId=sa-managedobject]").getController();
     parentController.reloadSelectionGrids();
   },
   gotoItem: function(itemName){
-    var mainView = this.getView().up('[itemId=sa-managedobject]');
+    var mainView = this.getView().up("[itemId=sa-managedobject]");
     mainView.setActiveItem(itemName);
     mainView.setHistoryHash();
   },
   itemPreview: function(itemName){
     var mainView = this.getView(),
-      backItem = mainView.down('[itemId=managedobject-form-panel]'),
+      backItem = mainView.down("[itemId=managedobject-form-panel]"),
       activeItem = mainView.setActiveItem(itemName);
     if(activeItem !== false){
-      activeItem.app = mainView.up('[itemId=sa-managedobject]');
+      activeItem.app = mainView.up("[itemId=sa-managedobject]");
       activeItem.preview(backItem.currentRecord, backItem);
     }
   },
   addTooltip: function(element){
     if(element.tooltip){
-      Ext.create('Ext.tip.ToolTip', {
+      Ext.create("Ext.tip.ToolTip", {
         target: element.getEl(),
         html: element.tooltip,
       });
     }
   },
   onChangeSNMP_SecurityLevel: function(field, value){
-    this.getView().down('[name=snmp_ro]').setReadOnly(!["Community"].includes(value));
-    this.getView().down('[name=snmp_rw]').setReadOnly(!["Community"].includes(value));
-    this.getView().down('[name=snmp_username]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
-    this.getView().down('[name=snmp_ctx_name]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
-    this.getView().down('[itemId=snmp_auth_proto]').setHidden(["Community", "noAuthNoPriv"].includes(value));
-    this.getView().down('[name=snmp_auth_key]').setHidden(["Community", "noAuthNoPriv"].includes(value));
-    this.getView().down('[itemId=snmp_priv_proto]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
-    this.getView().down('[name=snmp_priv_key]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+    this.getView().down("[name=snmp_ro]").setReadOnly(!["Community"].includes(value));
+    this.getView().down("[name=snmp_rw]").setReadOnly(!["Community"].includes(value));
+    this.getView().down("[name=snmp_username]").setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+    this.getView().down("[name=snmp_ctx_name]").setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+    this.getView().down("[itemId=snmp_auth_proto]").setHidden(["Community", "noAuthNoPriv"].includes(value));
+    this.getView().down("[name=snmp_auth_key]").setHidden(["Community", "noAuthNoPriv"].includes(value));
+    this.getView().down("[itemId=snmp_priv_proto]").setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+    this.getView().down("[name=snmp_priv_key]").setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
   },
   // Workaround labelField
   onChange: Ext.emptyFn,

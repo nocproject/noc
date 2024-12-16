@@ -60,8 +60,8 @@ Ext.define("NOC.core.ModelApplication", {
   //
   navTooltipTemplate: new Ext.XTemplate(
     '<tpl if="data.name">',
-    '{data.name} - ',
-    '</tpl>{title}',
+    "{data.name} - ",
+    "</tpl>{title}",
   ),
 
   initComponent: function(){
@@ -350,10 +350,10 @@ Ext.define("NOC.core.ModelApplication", {
           handler: function(grid, rowIndex){
             var me = this,
               record = me.store.getAt(rowIndex);
-            var url = '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.openDashboard.type + '&id=' + record.get('managed_object');
+            var url = "/ui/grafana/dashboard/script/noc.js?dashboard=" + me.openDashboard.type + "&id=" + record.get("managed_object");
 
-            if('ipsla' === me.openDashboard.type){
-              url += '&var-probe=' + record.get('bi_id')
+            if("ipsla" === me.openDashboard.type){
+              url += "&var-probe=" + record.get("bi_id")
             }
             window.open(url);
           },
@@ -679,7 +679,7 @@ Ext.define("NOC.core.ModelApplication", {
       itemId: "form",
       layout: "fit",
       items: {
-        xtype: 'form',
+        xtype: "form",
         layout: me.formLayout,
         border: true,
         padding: 4,
@@ -806,6 +806,7 @@ Ext.define("NOC.core.ModelApplication", {
             return !(Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal);
           }));
         me.unmask();
+        me.dirtyReset(me.form);
         me.showGrid();
         NOC.msg.complete(__("Saved"));
       },
@@ -913,7 +914,7 @@ Ext.define("NOC.core.ModelApplication", {
       }
       // hack to get instance of .TreeCombo class
       field = me.fields.filter(function(e){
-        return v === e.name && Ext.String.endsWith(e.xtype, '.TreeCombo')
+        return v === e.name && Ext.String.endsWith(e.xtype, ".TreeCombo")
       });
       if(field.length === 1){
         field[0].restoreById(data[v]);
@@ -938,6 +939,7 @@ Ext.define("NOC.core.ModelApplication", {
     me.form.reset();
     me.form.setValues(r);
     me.loadInlines();
+    me.dirtyReset(me.form);
     // Activate delete button
     me.deleteButton.setDisabled(!me.hasPermission("delete"));
     me.saveButton.setDisabled(!me.hasPermission("update"));
@@ -1020,7 +1022,7 @@ Ext.define("NOC.core.ModelApplication", {
   saveFilterToUrl: function(filter){
     var params = Ext.Object.toQueryString(filter, true)
       , currentHash = Ext.History.getHash()
-      , index = currentHash.indexOf('?')
+      , index = currentHash.indexOf("?")
       , app;
     if(index === -1){
       app = currentHash;
@@ -1028,7 +1030,7 @@ Ext.define("NOC.core.ModelApplication", {
       app = currentHash.substr(0, index);
     }
     if(params){
-      Ext.History.add(app + '?' + params);
+      Ext.History.add(app + "?" + params);
     } else{
       Ext.History.add(app);
     }
@@ -1057,7 +1059,7 @@ Ext.define("NOC.core.ModelApplication", {
       values = {};
     for(f = 0; f < fLen; f++){
       // hack to get instance of .TreeCombo class
-      if(Ext.String.endsWith(fields[f].xtype, '.TreeCombo')){
+      if(Ext.String.endsWith(fields[f].xtype, ".TreeCombo")){
         field = me.fields[f];
       } else{
         field = fields[f];
@@ -1112,10 +1114,19 @@ Ext.define("NOC.core.ModelApplication", {
     });
     me.saveRecord(v);
   },
+  // reset dirty flag
+  dirtyReset: function(form){
+    Ext.each(form.getFields().items, function(field){
+      if(Ext.isFunction(field.resetOriginalValue)){
+        field.resetOriginalValue();
+      }
+    });
+  },
   // Reset button pressed
   onReset: function(){
     var me = this;
     me.form.reset();
+    me.dirtyReset(me.form);
   },
   // Delete button pressed
   onDelete: function(){
@@ -1322,13 +1333,13 @@ Ext.define("NOC.core.ModelApplication", {
       return;
     }
     if(Ext.isFunction(item.run) || Ext.isFunction(me[item.run])){
-      if(typeof item.run === 'string'){
+      if(typeof item.run === "string"){
         item.run = me[item.run];
       }
       item.run(
         me.grid.getSelectionModel().getSelection()
                     .map(function(o){
-                      return {object: o.get(me.idField), object__label: o.get('name')}
+                      return {object: o.get(me.idField), object__label: o.get("name")}
                     }));
       return;
     }
@@ -1813,21 +1824,21 @@ Ext.define("NOC.core.ModelApplication", {
     var me = this, newValue = field.getValue() || "";
     if(Object.prototype.hasOwnProperty.call(me.store.defaultValues, field.name)){
       var defaultValue = me.store.defaultValues[field.name] || "";
-      if(field.getTrigger('clear').hidden && newValue !== defaultValue){
-        field.getTrigger('clear').show();
+      if(field.getTrigger("clear").hidden && newValue !== defaultValue){
+        field.getTrigger("clear").show();
         field.updateLayout();
       }
 
       if(newValue === defaultValue){
-        field.getTrigger('clear').hide();
+        field.getTrigger("clear").hide();
         field.updateLayout();
       }
     } else{
       if(newValue){
-        field.getTrigger('clear').show();
+        field.getTrigger("clear").show();
         field.updateLayout();
       } else{
-        field.getTrigger('clear').hide();
+        field.getTrigger("clear").hide();
         field.updateLayout();
       }
     }
@@ -1892,7 +1903,7 @@ Ext.define("NOC.core.ModelApplication", {
   },
   //
   clearTriggerToolTip: function(){
-    var triggerEl = this.getTrigger('clear').el;
+    var triggerEl = this.getTrigger("clear").el;
     triggerEl.dom.setAttribute("data-qtip", __("to default value"));
   },
   //
@@ -1911,15 +1922,15 @@ Ext.define("NOC.core.ModelApplication", {
       return;
     }
 
-    index = currentHash.indexOf('?');
+    index = currentHash.indexOf("?");
     if(index !== -1){
       queryString = currentHash.substr(index + 1);
       filterStr = Ext.Object.fromQueryString(queryString, true);
       Ext.each(me.filterSetters, function(set){
         set(filterStr);
       });
-      if('__query' in filterStr){
-        me.searchField.setValue(filterStr['__query'])
+      if("__query" in filterStr){
+        me.searchField.setValue(filterStr["__query"])
       }
       me.currentQuery = filterStr;
       me.store.setFilterParams(me.currentQuery);
@@ -1953,7 +1964,7 @@ Ext.define("NOC.core.ModelApplication", {
   //
   addTooltip: function(element){
     if(element.tooltip){
-      Ext.create('Ext.tip.ToolTip', {
+      Ext.create("Ext.tip.ToolTip", {
         target: element.getEl(),
         html: element.tooltip,
       });

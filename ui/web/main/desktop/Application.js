@@ -168,7 +168,7 @@ Ext.define("NOC.main.desktop.Application", {
     }
     //
     // skip saved hash
-    var index = app.indexOf('?')
+    var index = app.indexOf("?")
       , _app = index === -1 ? app : app.substr(0, index)
       , url = "/" + _app.replace(".", "/") + "/launch_info/";
     Ext.Ajax.request({
@@ -411,17 +411,22 @@ Ext.define("NOC.main.desktop.Application", {
   },
   //
   onUnload: function(e){
-    var msg = "You're trying to close NOC application. Unsaved changes may be lost.";
     if(NOC.restartReason){
       return;
     }
-    if(e){
-      e.returnValue = msg;
-    }
-    if(window.event){
-      window.event.returnValue = msg;
-    }
-    return msg;
+    if(this.hasUnsavedChanges()){
+      // modern browsers no longer support custom messages in the unload dialog for security reasons 
+      e.preventDefault();
+      e.returnValue = "";
+    }    
+  },
+  //
+  hasUnsavedChanges: function(){
+    var forms = Ext.ComponentQuery.query("form"),
+      isDirty = forms.some(function(form){
+        return form.isDirty();
+      });
+    return isDirty;
   },
   //
   restartApplication: function(reason){
