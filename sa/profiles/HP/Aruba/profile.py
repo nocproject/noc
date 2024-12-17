@@ -29,6 +29,9 @@ class Profile(BaseProfile):
     ]
     rogue_chars = [re.compile(rb"\r +\r"), b"\r"]
     command_exit = "exit"
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {"line_comment": "!"}
+    config_normalizer = "ArubaOSNormalizer"
     # -- MORE --, next page: Space, next line: Enter, quit: q
     # rogue_chars = [
     #     # re.compile(rb"\r\s+\r"),
