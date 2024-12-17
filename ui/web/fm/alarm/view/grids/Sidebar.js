@@ -425,4 +425,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
   onBeforePickerShow: function(picker){
     picker.setPosition(picker.getRefOwner().getPosition());
   },
+  isDirty: function(){
+    return false;
+  },
 });
