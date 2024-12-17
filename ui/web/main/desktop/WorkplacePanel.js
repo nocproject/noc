@@ -98,7 +98,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     if(this.items.length === 1){
       // Except *Expand* button
       var me = this.up(), // Desktop Application
-        homeTab = Ext.Array.findBy(me.workplacePanel.getRefItems(), function(tab){return tab.title === "Home"});
+        homeTab = Ext.Array.findBy(me.workplacePanel.getRefItems(), function(tab){ return tab.items.first().appId === "main.home" });
       if(Ext.isEmpty(homeTab)){
         me.launchTab("NOC.main.home.Application", "Home", {});
       } else{
