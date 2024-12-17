@@ -56,65 +56,104 @@ class ManagedObjectLoader(BaseLoader):
         self.clean_map["fm_pool"] = lambda x: Pool.get_by_name(x) if x else None
         self.clean_map["profile"] = Profile.get_by_name
         self.clean_map["static_service_groups"] = lambda x: [
-            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x or [])
+            str(x.id)
+            for x in ResourceGroup.objects.filter(
+                remote_id__in=x or [],
+                remote_system=self.system.remote_system,
+            )
         ]
         self.clean_map["static_client_groups"] = lambda x: [
-            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x or [])
+            str(x.id)
+            for x in ResourceGroup.objects.filter(
+                remote_id__in=x or [],
+                remote_system=self.system.remote_system,
+            )
         ]
         self.available_caps = {x.name for x in Capability.objects.filter()}
+        self.c_register = 0
 
-    def load(self):
+    def on_add_register(self, item: ManagedObject) -> None:
+        """
+        Create new record
+        """
+        self.register_record(item)
+        self.c_add += 1
+
+    def on_change_register(self, o: ManagedObject, n: ManagedObject):
+        """
+        Create change record
+        """
+        self.register_record(n)
+        self.c_change += 1
+
+    def purge_register(self):
+        """
+        Delete record
+        """
+        for r_id, msg in reversed(self.pending_deletes):
+            self.logger.info("Deactivating: %s", msg)
+            self.c_delete += 1
+            pool = Pool.get_by_name(msg.pool)
+            register(
+                address=msg.address,
+                hostname=msg.name,
+                description=msg.description,
+                pool=pool.bi_id,
+                source="etl",
+                labels=msg.labels or [],
+                remote_system=self.system.remote_system.bi_id,
+                remote_id=r_id,
+                is_delete=True,
+            )
+
+    def register_record(self, item: ManagedObject):
+        vv = self.clean(item)
+        data = {}
+        name, pool = vv.pop("name"), vv.pop("pool")
+        description, labels = vv.pop("description", None), vv.pop("labels", None)
+        remote_system, remote_id = vv.pop("remote_system"), vv.pop("remote_id")
+        del vv["id"]
+        service_groups = vv.pop("static_service_groups", None)
+        client_groups = vv.pop("static_client_groups", None)
+        for k, v in vv.items():
+            if not v or k == "pool":
+                continue
+            # elif isinstance(v, list):
+            #     v = ";".join(v)
+            elif isinstance(v, enum.Enum):
+                continue
+            elif isinstance(v, (Document, Model)):
+                v = v.id
+            data[k] = str(v)
+        address = data.pop("address")
+        register(
+            address=address,
+            pool=pool.bi_id,
+            source="etl",
+            description=description,
+            hostname=name,
+            remote_system=remote_system.bi_id,
+            remote_id=remote_id,
+            # checks=item.checks,
+            labels=labels or [],
+            service_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in service_groups or []],
+            client_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in client_groups or []],
+            **data,
+        )
+        self.c_register += 1
+
+    def load(self, return_wo_changes: bool = False):
         """
         Import new data
         """
         if not self.system.remote_system.managed_object_as_discovered:
             return super().load()
-        self.logger.info("Importing")
-        ns = self.get_new_state()
-        if not ns:
-            self.logger.info("No new state, skipping")
-            self.load_mappings()
-            return
-        else:
-            self.load_mappings()
-        new_state = self.iter_jsonl(ns)
-        num = 1
-        for num, item in enumerate(new_state):
-            data = {}
-            vv = self.clean(item)
-            name, pool = vv.pop("name"), vv.pop("pool")
-            description, labels = vv.pop("description", None), vv.pop("labels", None)
-            remote_system, remote_id = vv.pop("remote_system"), vv.pop("remote_id")
-            del vv["id"]
-            service_groups = vv.pop("static_service_groups", None)
-            client_groups = vv.pop("static_client_groups", None)
-            for k, v in vv.items():
-                if not v or k == "pool":
-                    continue
-                # elif isinstance(v, list):
-                #     v = ";".join(v)
-                elif isinstance(v, enum.Enum):
-                    continue
-                elif isinstance(v, (Document, Model)):
-                    v = v.id
-                data[k] = str(v)
-            address = data.pop("address")
-            register(
-                address=address,
-                pool=pool.bi_id,
-                source="etl",
-                description=description,
-                hostname=name,
-                remote_system=remote_system.bi_id,
-                remote_id=remote_id,
-                # checks=item.checks,
-                labels=labels or [],
-                service_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in service_groups or []],
-                client_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in client_groups or []],
-                **data,
-            )
-            self.c_add += 1
-        self.logger.info("Send discovered object: %s", num)
+        self.on_add = self.on_add_register
+        self.on_change = self.on_change_register
+        self.purge = self.purge_register
+        r = super().load(return_wo_changes=self.system.remote_system.managed_object_as_discovered)
+        self.logger.info("Register discovered: %d", self.c_register)
+        return r
 
     def purge(self):
         """

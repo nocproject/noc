@@ -286,7 +286,11 @@ class BaseLoader(object):
             yield dm.model_validate_json(line.replace("\\r", ""))
 
     def diff(
-        self, old: Iterable[BaseModel], new: Iterable[BaseModel], include_fields: Set = None
+        self,
+        old: Iterable[BaseModel],
+        new: Iterable[BaseModel],
+        include_fields: Set = None,
+        return_wo_changes: bool = False,
     ) -> Iterable[Tuple[Optional[BaseModel], Optional[BaseModel]]]:
         """
         Compare old and new CSV files and yield pair of matches
@@ -313,6 +317,8 @@ class BaseLoader(object):
                         include=include_fields, exclude={self.checkpoint_field}
                     ):
                         yield o, n
+                    elif return_wo_changes:
+                        yield o, n
                     n = next(new, None)
                     o = next(old, None)
                 elif n.id < o.id:
@@ -324,7 +330,7 @@ class BaseLoader(object):
                     yield o, None
                     o = next(old, None)
 
-    def load(self):
+    def load(self, return_wo_changes: bool = False):
         """
         Import new data
         """
@@ -338,7 +344,7 @@ class BaseLoader(object):
         new_state = self.iter_jsonl(ns)
         deferred_add = []
         deferred_change = []
-        for o, n in self.diff(current_state, new_state):
+        for o, n in self.diff(current_state, new_state, return_wo_changes=return_wo_changes):
             if o is None and n:
                 try:
                     self.on_add(n)
