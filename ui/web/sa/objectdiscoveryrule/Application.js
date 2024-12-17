@@ -11,6 +11,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
     requires: [
         "NOC.sa.objectdiscoveryrule.Model",
         "NOC.core.label.LabelField",
+        "NOC.core.tagfield.Tagfield",
         "NOC.wf.workflow.LookupField",
         "NOC.main.pool.LookupField",
         "NOC.main.notificationgroup.LookupField",
@@ -200,6 +201,19 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                     ["M", _("Mappings Only")]
                                 ]
                             }
+                        },
+                        {
+                            text: __("Remove Policy"),
+                            dataIndex: "remove_policy",
+                            width: 150,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["D", _("Disable")],
+                                    ["U", _("Unmanaged")],
+                                    ["R", _("Remove")]
+                                ]
+                            }
                         }
                     ]
                 },
@@ -337,6 +351,15 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                             query: {
                                 "allow_matched": true
                             }
+                        },
+                        {
+                            xtype: "core.tagfield",
+                            lazyLoadTree: true,
+                            url: "/inv/resourcegroup/lookup/",
+                            fieldLabel: __("Object Groups"),
+                            name: "match_groups",
+                            allowBlank: true,
+                            uiStyle: "extra"
                         },
                         {
                             name: "match_checks",

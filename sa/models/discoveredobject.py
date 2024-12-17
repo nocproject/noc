@@ -57,13 +57,16 @@ SELECT
     IPv4NumToString(ip) as address,
     pool,
     groupArray(source) as sources,
-    groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels, service_groups, clients_groups)) as all_data,
+    groupArray((source, remote_system,
+        map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)),
+         data, labels, service_groups, clients_groups, is_delete)) as all_data,
     groupUniqArrayArray(checks) as all_checks,
     groupUniqArrayArray(labels) as all_labels,
     groupUniqArray(router_id) as router_ids,
     max(last_ts) as last_ts
 FROM (
     SELECT ip, pool, remote_system, source,
+     argMax(is_delete, ts) as is_delete,
      argMax(hostname, ts) as hostname, argMax(description, ts) as description,
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
      argMax(data, ts) as data, argMax(labels, ts) as labels,
@@ -105,6 +108,8 @@ class PurgatoriumData(object):
     service_groups: Optional[List[ObjectId]] = None
     client_groups: Optional[List[ObjectId]] = None
     data: Optional[Dict[str, str]] = None
+    event: Optional[str] = None  # Workflow Event
+    is_delete: bool = False  # Delete Flag
 
     def __str__(self):
         if self.remote_system:
@@ -146,6 +151,8 @@ class DataItem(EmbeddedDocument):
     service_groups: List[ObjectId] = ListField(ObjectIdField())
     client_groups: List[ObjectId] = ListField(ObjectIdField())
     data = DictField()
+    event: str = StringField(required=False)
+    is_delete: bool = BooleanField(default=False)  # Delete Flag
 
     def __str__(self):
         if self.remote_system:
@@ -250,6 +257,7 @@ class DiscoveredObject(Document):
     # Comments ?
 
     PROFILE_LINK = "rule"
+    IGNORED_SYNC_DATA = {"remote_id", "name", "description", "hostname", "address", "pool", "state"}
 
     def __str__(self):
         return f"{self.address}({self.pool})"
@@ -406,24 +414,32 @@ class DiscoveredObject(Document):
             sources or self.sources,
         )
 
-    def get_ctx(self) -> ResourceItem:
+    def get_ctx(self, is_new: bool = False) -> ResourceItem:
         """
         Getting Context for Synchronise object template
+        Attrs:
+            is_new: Flag create
         """
-        data, mappings = [], {}
+        data, mappings, event = [], {}, None
         s_groups = set()
         for d in self.data:
             s = self.rule.get_sync_settings(d.source, d.remote_system)
             if s is None:
                 continue
+            if d.is_delete and s.remove_policy == "D":
+                continue
+            elif d.is_delete:
+                event = {"U": "unmanaged", "R": "remove"}[s.remove_policy]
+            elif d.event:
+                event = d.event
             if d.remote_system and d.remote_system not in mappings:
                 mappings[d.remote_system] = d.remote_id
-            if s.sync_policy == "M":
-                continue
             if d.service_groups:
                 s_groups.update(set(d.service_groups))
+            if s.sync_policy == "M" and not is_new:
+                continue
             for k, v in d.data.items():
-                if k in {"remote_id", "name", "description", "hostname", "address", "pool"}:
+                if k in self.IGNORED_SYNC_DATA:
                     continue
                 data.append(
                     ResourceDataItem(
@@ -444,6 +460,7 @@ class DiscoveredObject(Document):
             id=str(self.managed_object_id),
             labels=self.effective_labels,
             data=data,
+            event=event,
         )
         if mappings:
             r.mappings = mappings
@@ -533,7 +550,7 @@ class DiscoveredObject(Document):
             self.fire_event("approve")
         else:
             self.fire_event("seen")
-        if (self.rule.sync_approved and self.is_approved) or force:
+        if self.is_approved or force:
             self.sync_object(dry_run=dry_run, template=template)
         if dry_run:
             return
@@ -554,6 +571,7 @@ class DiscoveredObject(Document):
         if self.origin:
             logger.info("Duplicate Record. Skipping")
             return
+        force = bool(template)
         template = template or self.rule.default_template
         if not template:
             logger.warning("[%s] Unknown Template for sync: %s", self, template)
@@ -575,7 +593,7 @@ class DiscoveredObject(Document):
         if mo:
             duplicates = self.check_duplicate(managed_object=mo)
         elif not mo and template:
-            mo = template.render(self.get_ctx())
+            mo = template.render(self.get_ctx(is_new=force))
         else:
             raise AttributeError("Default object template is not Set")
         origin = self
@@ -609,6 +627,8 @@ class DiscoveredObject(Document):
     def is_approved(self) -> bool:
         if not self.rule:
             return False
+        if not self.managed_object_id and not self.rule.sync_approved:
+            return False
         return self.state.is_productive
 
     def set_data(
@@ -620,6 +640,8 @@ class DiscoveredObject(Document):
         client_groups: Optional[List[ObjectId]] = None,
         remote_system: Optional[str] = None,
         ts: Optional[datetime.datetime] = None,
+        event: str = False,
+        is_delete: bool = False,
     ):
         """
         Set data for source
@@ -632,6 +654,8 @@ class DiscoveredObject(Document):
             client_groups: Client groups
             remote_system: Remote System from data
             ts: timestamp when data updated
+            event: Workflow Event on RemoteSystem
+            is_delete: Flag if record deleted on source
         """
         if source == ETL_SOURCE and not remote_system:
             raise AttributeError("remote_system param is required for 'etl' source")
@@ -650,6 +674,8 @@ class DiscoveredObject(Document):
             d.data = data
             d.labels = labels or []
             d.last_update = last_update
+            d.is_delete = is_delete
+            d.event = event
             self.is_dirty = True
             break
         else:
@@ -663,6 +689,7 @@ class DiscoveredObject(Document):
                     client_groups=client_groups,
                     data=data,
                     last_update=last_update,
+                    is_delete=is_delete,
                 )
             ]
             self.is_dirty = True
@@ -705,6 +732,8 @@ class DiscoveredObject(Document):
                 d.client_groups,
                 remote_system=rs,
                 ts=d.ts,
+                is_delete=d.is_delete,
+                event=d.event,
             )
             processed_keys.add(d.key)
         # Clear lost data
@@ -745,9 +774,12 @@ class DiscoveredObject(Document):
             changed |= True
         ctx = self.get_ctx()
         if ctx.data and self.rule.default_template:
-            logger.info("[%s] Update existing ManagedObject from data", mo.name)
             changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
+            if changed:
+                logger.info("[%s] Update existing ManagedObject from data", mo.name)
         changed |= mo.update_object_mappings(ctx.mappings or {})
+        if ctx.event:
+            mo.fire_event(ctx.event)
         if changed:
             mo.save()
 
@@ -810,7 +842,9 @@ def sync_purgatorium():
         d_labels = defaultdict(list)
         groups = defaultdict(list)
         # hostnames, descriptions, uptimes, all_data,
-        for source, rs, d1, d2, labels, s_groups, c_groups in row["all_data"]:
+        for source, rs, d1, d2, labels, s_groups, c_groups, is_delete in row["all_data"]:
+            if is_delete:
+                logger.debug("[%s] Detect deleted flag", row["address"])
             if not int(d1["uptime"]):
                 # Filter 0 uptime
                 del d1["uptime"]
@@ -823,6 +857,7 @@ def sync_purgatorium():
                 rs = rs.name
             # Check timestamp
             data[(source, rs)].update(d1 | d2)
+            data[(source, rs)]["is_delete"] = bool(is_delete)
             d_labels[(source, rs)] = labels
             for rg in s_groups or []:
                 rg = ResourceGroup.get_by_bi_id(rg)
@@ -846,6 +881,8 @@ def sync_purgatorium():
                     labels=d_labels.get((source, rs)) or [],
                     service_groups=groups.get((source, rs, "s")) or [],
                     client_groups=groups.get((source, rs, "c")) or [],
+                    is_delete=bool(d.pop("is_delete")),
+                    event=d.pop("event", None),
                 )
                 for (source, rs), d in data.items()
             ],

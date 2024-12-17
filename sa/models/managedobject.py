@@ -3010,6 +3010,8 @@ class ManagedObject(NOCModel):
         if state:
             self.state = state
         for field, value in data.items():
+            if field == "description" and value:
+                value = value[:240]
             if hasattr(self, field) and getattr(self, field) != value:
                 setattr(self, field, value)
                 changed = True
