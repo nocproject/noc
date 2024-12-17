@@ -9,6 +9,7 @@
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 from noc.core.text import ranges_to_list
 from noc.core.confdb.syntax.patterns import IP_ADDRESS, INTEGER
+from noc.core.validators import ValidationError
 
 
 class MESNormalizer(BaseNormalizer):
@@ -285,7 +286,11 @@ class MESNormalizer(BaseNormalizer):
     @match("sntp", "server", ANY, ANY, ANY)
     @match("sntp", "server", ANY, ANY, ANY, ANY)
     def normalize_ntp_server(self, tokens):
-        yield self.make_ntp_server_address(name=tokens[2], address=tokens[2])
+        # Some buggy switches allow to save a garbage like '10.2.'
+        try:
+            yield self.make_ntp_server_address(name=tokens[2], address=tokens[2])
+        except ValidationError:
+            pass
 
     @match("ip", "name-server", IP_ADDRESS)
     def normalize_dns_name_server(self, tokens):
