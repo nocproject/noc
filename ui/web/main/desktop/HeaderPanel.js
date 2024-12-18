@@ -23,10 +23,6 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
   pollingInterval: 3600000,
   localStoreName: "header-last-update",
   border: false,
-  bodyStyle: {
-    "background-color": NOC.settings.branding_background_color + " !important",
-    "color": NOC.settings.branding_color,
-  },
   collapsible: true,
   animCollapse: true,
   collapseMode: "mini",
@@ -37,6 +33,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
   //
   initComponent: function(){
     var me = this;
+    me.setBodyStyle({
+      "background-color": NOC.settings.branding_background_color + " !important",
+      "color": NOC.settings.branding_color,
+    });
     // Last update menu
     me.lastUpdateButton = Ext.create("Ext.button.Button", {
       hidden: true,
