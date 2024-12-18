@@ -13,11 +13,6 @@ BGP_SYNTAX = DEF(
     "bgp",
     [
         DEF(
-            "peer-groups",
-            [DEF(ANY, required=True, name="name", gen="make_bgp_peer_group")],
-            multi=True,
-        ),
-        DEF(
             "networks",
             [DEF(ANY, name="prefix", gen="make_bgp_network")],
             multi=True,
