@@ -128,9 +128,9 @@ Ext.define("NOC.main.desktop.LoginView", {
       var param = Ext.urlDecode(location.search);
       if("uri" in param){
         if(location.hash){ // web app
-          document.location = "/" + location.hash;
+          location = "/" + location.hash;
         } else{ // cards
-          document.location = param.uri;
+          location = param.uri;
         }
       }
     } else{

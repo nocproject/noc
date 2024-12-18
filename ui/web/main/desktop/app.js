@@ -31,10 +31,12 @@ Ext.application({
         }
         if(Ext.isEmpty(location.hash) && Ext.isEmpty(location.search)){
           location.search = "uri=/";
-        } if(location.search.indexOf("uri=") === -1 && location.hash){
-          var hash = location.hash;
-          location.hash = "";
-          location.search = "uri=/" + hash;
+        } else if(location.search.indexOf("uri=") === -1 && location.hash){
+          var hash = location.hash,
+            newUrl = location.protocol + "//" + 
+                        location.host + 
+              "?uri=" + location.pathname + hash;
+          history.replaceState({}, document.title, newUrl);
         }
         this.openLogin();
       },
