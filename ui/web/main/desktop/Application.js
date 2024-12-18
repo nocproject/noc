@@ -78,12 +78,11 @@ Ext.define("NOC.main.desktop.Application", {
   },
   //
   afterRender: function(){
-    var me = this;
-    me.callParent();
+    this.callParent();
     console.log("NOC application ready");
-    me.hideSplashScreen();
-    me.checkLogged();
-    me.launchAppsFromHistory();
+    this.checkLogged();
+    this.launchAppsFromHistory();
+    this.fireEvent("applicationReady");
   },
   // Launch applications from URL
   launchAppsFromHistory: function(){
@@ -339,8 +338,8 @@ Ext.define("NOC.main.desktop.Application", {
     var result = [],
       children = function(leaf){
         if(Object.prototype.hasOwnProperty.call(leaf, "launch_info")
-            && Object.prototype.hasOwnProperty.call(leaf.launch_info, "params")
-            && Object.prototype.hasOwnProperty.call(leaf.launch_info.params, "app_id")){
+          && Object.prototype.hasOwnProperty.call(leaf.launch_info, "params")
+          && Object.prototype.hasOwnProperty.call(leaf.launch_info.params, "app_id")){
           result.push(
             new NOC.core.ObservableModel({
               key: leaf.launch_info.params.app_id,
@@ -418,7 +417,7 @@ Ext.define("NOC.main.desktop.Application", {
       // modern browsers no longer support custom messages in the unload dialog for security reasons 
       e.preventDefault();
       e.returnValue = "";
-    }    
+    }
   },
   //
   hasUnsavedChanges: function(){
@@ -437,36 +436,21 @@ Ext.define("NOC.main.desktop.Application", {
   requestFullscreen: function(){
     var element = document.body,
       method = element.requestFullScreen
-                || element.webkitRequestFullScreen
-                || element.mozRequestFullScreen
-                || element.msRequestFullScreen;
+        || element.webkitRequestFullScreen
+        || element.mozRequestFullScreen
+        || element.msRequestFullScreen;
     if(method){
       method(element);
     }
   },
   exitFullscreen: function(){
     var method = document.exitFullScreen
-                || document.webkitExitFullScreen
-                || document.mozCancelFullScreen
-                || document.msExitFullScreen;
+      || document.webkitExitFullScreen
+      || document.mozCancelFullScreen
+      || document.msExitFullScreen;
     if(method){
       method();
     }
-  },
-  //
-  hideSplashScreen: function(){
-    var mask = Ext.get("noc-loading-mask"),
-      parent = Ext.get("noc-loading");
-    mask.fadeOut({
-      callback: function(){
-        mask.destroy();
-      },
-    });
-    parent.fadeOut({
-      callback: function(){
-        parent.destroy();
-      },
-    });
   },
   //
   toggleNav: function(){
