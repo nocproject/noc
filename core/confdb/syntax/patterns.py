@@ -160,6 +160,7 @@ class IPv6_PREFIX(ANY):
 
 
 # Matches any token value
+AS_NUM = ANY
 VR_NAME = ANY
 FI_NAME = ANY
 IF_NAME = ANY
