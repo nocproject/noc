@@ -6,6 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import binascii
+from typing import List, Dict, Tuple
 from collections import namedtuple, defaultdict
 
 # NOC modules
@@ -123,7 +125,10 @@ class AddressCheck(DiscoveryCheck):
                 a.save()
 
     @staticmethod
-    def apply_addresses(addresses, discovered_addresses):
+    def apply_addresses(
+        addresses: Dict[Tuple[str, IP], DiscoveredAddress],
+        discovered_addresses: List[DiscoveredAddress],
+    ) -> Dict[Tuple[str, IP], DiscoveredAddress]:
         """
         Apply list of discovered addresses to addresses dict
         :param addresses: dict of (vpn_id, address) => DiscoveredAddress
@@ -148,7 +153,7 @@ class AddressCheck(DiscoveryCheck):
             return False
         return self.is_enabled_for_object(self.object)
 
-    def get_interface_addresses(self):
+    def get_interface_addresses(self) -> List[DiscoveredAddress]:
         """
         Get addresses from interface discovery artifact
         :return:
@@ -185,7 +190,7 @@ class AddressCheck(DiscoveryCheck):
             for a in addresses
         ]
 
-    def get_management_addresses(self):
+    def get_management_addresses(self) -> List[DiscoveredAddress]:
         """
         Get addresses from ManagedObject management
         :return:
@@ -212,7 +217,7 @@ class AddressCheck(DiscoveryCheck):
             ]
         return addresses
 
-    def get_dhcp_addresses(self):
+    def get_dhcp_addresses(self) -> List["DiscoveredAddress"]:
         """
         Return addresses from DHCP leases
         :return:
@@ -262,11 +267,8 @@ class AddressCheck(DiscoveryCheck):
         ]
         return r
 
-    def get_neighbor_addresses(self):
-        """
-        Return addresses from ARP/IPv6 ND
-        :return:
-        """
+    def get_neighbor_addresses(self) -> List[DiscoveredAddress]:
+        """Return addresses from ARP/IPv6 ND"""
 
         def get_vpn_id(vpn_id):
             if vpn_id:
@@ -303,7 +305,7 @@ class AddressCheck(DiscoveryCheck):
         return r
 
     @staticmethod
-    def is_preferred(old_method, new_method):
+    def is_preferred(old_method: str, new_method: str) -> bool:
         """
         Check which method is preferable
 
@@ -314,7 +316,7 @@ class AddressCheck(DiscoveryCheck):
         """
         return PREF_VALUE[old_method] <= PREF_VALUE[new_method]
 
-    def create_address(self, address):
+    def create_address(self, address: DiscoveredAddress):
         """
         Create new address
         :param address: DiscoveredAddress instance
@@ -359,7 +361,7 @@ class AddressCheck(DiscoveryCheck):
         self.fire_seen(a)
         metrics["address_created"] += 1
 
-    def apply_address_changes(self, address, discovered_address):
+    def apply_address_changes(self, address: Address, discovered_address: DiscoveredAddress):
         """
         Apply address changes and send signals
         :param address: Address instance
@@ -401,8 +403,8 @@ class AddressCheck(DiscoveryCheck):
                     ]
                     address.subinterface = discovered_address.subinterface
             if discovered_address.mac and address.mac != discovered_address.mac:
-                address.mac = discovered_address.mac
                 changes += ["mac: %s -> %s" % (address.mac, discovered_address.mac)]
+                address.mac = discovered_address.mac
             if changes:
                 self.logger.info(
                     "Changing %s (%s): %s",
@@ -421,7 +423,7 @@ class AddressCheck(DiscoveryCheck):
             metrics["address_update_denied"] += 1
         self.fire_seen(address)
 
-    def has_address_permission(self, vrf, address):
+    def has_address_permission(self, vrf: VRF, address: DiscoveredAddress) -> bool:
         """
         Check discovery has permission to manipulate address
         :param vrf: VRF instance
@@ -433,7 +435,7 @@ class AddressCheck(DiscoveryCheck):
             return parent.effective_address_discovery == "E"
         return False
 
-    def get_address_name(self, address):
+    def get_address_name(self, address: DiscoveredAddress):
         """
         Render address name
         :param address: DiscoveredAddress instance
@@ -446,7 +448,7 @@ class AddressCheck(DiscoveryCheck):
             return self.strip(name)
         return address.address
 
-    def get_address_fqdn(self, address):
+    def get_address_fqdn(self, address: DiscoveredAddress):
         """
         Render address name
         :param address: DiscoveredAddress instance
@@ -472,12 +474,12 @@ class AddressCheck(DiscoveryCheck):
         return {"address": address, "get_handler": get_handler, "object": self.object}
 
     @staticmethod
-    def is_enabled_for_object(object):
+    def is_enabled_for_object(o) -> bool:
         return (
-            object.object_profile.enable_box_discovery_address_interface
-            or object.object_profile.enable_box_discovery_address_management
-            or object.object_profile.enable_box_discovery_address_dhcp
-            or object.object_profile.enable_box_discovery_address_neighbor
+            o.object_profile.enable_box_discovery_address_interface
+            or o.object_profile.enable_box_discovery_address_management
+            or o.object_profile.enable_box_discovery_address_dhcp
+            or o.object_profile.enable_box_discovery_address_neighbor
         )
 
     def ensure_afi(self, vrf, address):
@@ -500,7 +502,7 @@ class AddressCheck(DiscoveryCheck):
                 vrf.afi_ipv4 = True
                 vrf.save()
 
-    def is_ignored_address(self, address):
+    def is_ignored_address(self, address: DiscoveredAddress):
         """
         Check address should be ignored
         :param address: DiscoveredAddress instance

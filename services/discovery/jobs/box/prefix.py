@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Prefix check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,12 +9,13 @@
 from collections import namedtuple, defaultdict
 
 # Third-party modules
-from typing import Dict, Tuple, List, DefaultDict
+from typing import Dict, Tuple, List, DefaultDict, Optional
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
+from noc.vc.models.vlan import VLAN
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ip import IP
@@ -122,17 +123,23 @@ class PrefixCheck(DiscoveryCheck):
             return False
         return self.is_enabled_for_object(self.object)
 
-    def get_interface_prefixes(self):
+    def get_interface_prefixes(self) -> List["DiscoveredPrefix"]:
         """
         Get prefixes from interface discovery artifact
         :return:
         """
 
-        def get_vlan(data):
+        def get_vlan(data) -> Optional["VLAN"]:
             vlans = data.get("vlan_ids")
-            if vlans and len(vlans) == 1:
-                return vlans[0]
-            return None
+            if not vlans or len(vlans) > 1:
+                return None
+            elif not self.object.l2_domain:
+                # Vlan Only for L2 Domain set
+                return None
+            return VLAN.objects.filter(
+                l2_domain=self.object.l2_domain,
+                vlan=int(vlans[0]),
+            ).first()
 
         def get_vpn_id(vpn_id):
             if vpn_id:
@@ -177,7 +184,7 @@ class PrefixCheck(DiscoveryCheck):
         """
         return PREF_VALUE[old_method] <= PREF_VALUE[new_method]
 
-    def create_prefix(self, prefix):
+    def create_prefix(self, prefix: DiscoveredPrefix):
         """
         Create new prefix
         :param prefix: DiscoveredPrefix instance
@@ -202,6 +209,7 @@ class PrefixCheck(DiscoveryCheck):
             name=self.get_prefix_name(prefix),
             profile=prefix.profile,
             asn=prefix.asn,
+            vlan=prefix.vlan,
             description=prefix.description,
             source=prefix.source,
         )
@@ -217,7 +225,7 @@ class PrefixCheck(DiscoveryCheck):
         self.fire_seen(p)
         metrics["prefix_created"] += 1
 
-    def apply_prefix_changes(self, prefix, discovered_prefix):
+    def apply_prefix_changes(self, prefix: Prefix, discovered_prefix: DiscoveredPrefix):
         """
         Apply prefix changes and send signals
         :param prefix: Prefix instance
@@ -245,7 +253,16 @@ class PrefixCheck(DiscoveryCheck):
                         discovered_prefix.asn.asn if discovered_prefix.asn else None,
                     )
                 ]
-                prefix.asn = prefix.asn
+                prefix.asn = discovered_prefix.asn
+            if discovered_prefix.vlan and prefix.vlan != discovered_prefix.vlan:
+                changes += [
+                    "vlan: %s -> %s"
+                    % (
+                        str(prefix.vlan) if prefix.vlan else None,
+                        str(discovered_prefix.vlan) if discovered_prefix.vlan else None,
+                    )
+                ]
+                prefix.vlan = discovered_prefix.vlan
             if changes:
                 self.logger.info(
                     "Changing %s (%s): %s",
