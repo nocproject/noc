@@ -1,12 +1,11 @@
 # ----------------------------------------------------------------------
 # Address check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import binascii
 from typing import List, Dict, Tuple
 from collections import namedtuple, defaultdict
 
