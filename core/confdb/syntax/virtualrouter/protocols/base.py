@@ -20,6 +20,7 @@ from .snmp.base import SNMP_SYNTAX
 from .ssh.base import SSH_SYNTAX
 from .telnet.base import TELNET_SYNTAX
 from .vrrp.base import VRRP_SYNTAX
+from .bgp.base import BGP_SYNTAX
 
 VR_PROTOCOLS_SYNTAX = DEF(
     "protocols",
@@ -37,5 +38,6 @@ VR_PROTOCOLS_SYNTAX = DEF(
         IGMP_SNOOPING_SYNTAX,
         MPLS_SYNTAX,
         VRRP_SYNTAX,
+        BGP_SYNTAX,
     ],
 )
