@@ -32,6 +32,8 @@ PINHOLE_PATHS = {
     "/api/login/token",
     "/api/zeroconf/config",
     "/api/metricscollector/send",
+    "/main/style/css/",
+    "/main/desktop/",
 }
 
 

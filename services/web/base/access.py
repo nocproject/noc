@@ -99,6 +99,8 @@ class Permit(Permission):
     Always permit
     """
 
+    permit = True
+
     def check(self, app, user, obj=None):
         return True
 

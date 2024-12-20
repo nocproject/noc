@@ -10,11 +10,11 @@
   <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}" />
   <!-- CSS -->
   <link rel="stylesheet" type="text/css"
-    href="/ui/pkg/extjs/classic/theme-{{ setup.theme }}/resources/theme-{{ setup.theme }}-all.css" />
+    href="/ui/pkg/extjs/classic/theme-{{ theme }}/resources/theme-{{ theme }}-all.css" />
   <link rel="stylesheet" type="text/css"
     href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
   <link rel="stylesheet" type="text/css" href="/ui/web/css/extjs.css" />
-  <link rel="stylesheet" type="text/css" href="/ui/web/css/theme-patch-{{ setup.theme }}.css" />
+  <link rel="stylesheet" type="text/css" href="/ui/web/css/theme-patch-{{ theme }}.css" />
   <link rel="stylesheet" type="text/css" href="/ui/web/css/ux.css" />
   <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />
   <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
@@ -26,8 +26,7 @@
   <!-- JS -->
   <script type="text/javascript" src="/ui/web/js/jsloader.js"></script>
   <script type="text/javascript" src="/ui/pkg/extjs/ext-all.js"></script>
-  <script type="text/javascript"
-    src="/ui/pkg/extjs/classic/theme-{{ setup.theme }}/theme-{{ setup.theme }}.js"></script>
+  <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-{{ theme }}/theme-{{ theme }}.js"></script>
   <script type="text/javascript" src="/ui/pkg/extjs/packages/charts/classic/charts.js"></script>
   <!-- Include the translations -->
   <script type="text/javascript" src="/ui/web/locale/{{ language }}/ext-locale-{{ language }}.js"></script>
@@ -57,7 +56,7 @@
 
 <body>
   <div id="noc-loading-mask"></div>
-  <div id="noc-loading">Loading {{ setup.brand }}. Please wait ...</div>
+  <div id="noc-loading">Loading {{ brand }}. Please wait ...</div>
   <form id="history-form" class="x-hide-display">
     <input type="hidden" id="x-history-field" />
     <iframe id="x-history-frame" style="display: none"></iframe>
