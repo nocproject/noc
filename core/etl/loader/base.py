@@ -251,7 +251,7 @@ class BaseLoader(object):
 
     def get_current_state(self) -> TextIOWrapper:
         """
-        Returns file object of current state or None
+        Returns file object of current state
         """
         self.load_mappings()
         if not os.path.isdir(self.archive_dir):
