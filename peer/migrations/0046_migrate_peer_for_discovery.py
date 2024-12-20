@@ -18,7 +18,7 @@ class Migration(BaseMigration):
 
     def migrate(self):
         # Remote Constraint
-        non_required_columns = ["peering_point", "local_ip"]
+        non_required_columns = ["peering_point_id", "local_ip"]
         for column in non_required_columns:
             self.db.execute(f"ALTER TABLE peer_peer ALTER {column} DROP NOT NULL")
         self.db.execute("ALTER TABLE peer_peer ALTER import_filter SET DEFAULT 'any'")
