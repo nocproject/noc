@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // peer.peer application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.peer.peer.Application");
@@ -9,6 +9,7 @@ console.debug("Defining NOC.peer.peer.Application");
 Ext.define("NOC.peer.peer.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.StateField",
         "NOC.core.RepoPreview",
         "NOC.core.label.LabelField",
         "NOC.peer.peer.Model",
@@ -49,13 +50,10 @@ Ext.define("NOC.peer.peer.Application", {
             dataIndex: "remote_asn"
         },
         {
-            text: __("Status"),
-            width: 70,
-            dataIndex: "status",
-            renderer: function(a) {
-                return {P: "Planned", A: "Active",
-                        S: "Shutdown"}[a];
-            }
+            text: __("State"),
+            dataIndex: "state",
+            width: 150,
+            renderer: NOC.render.Lookup("state")
         },
         {
             text: __("Import Filter"),
@@ -151,15 +149,10 @@ Ext.define("NOC.peer.peer.Application", {
                     vtype: "ASN"
                 },
                 {
-                    name: "status",
-                    xtype: "combobox",
-                    fieldLabel: __("Status"),
-                    allowBlank: false,
-                    store: [
-                        ["P", "Planned"],
-                        ["A", "Active"],
-                        ["S", "Shutdown"]
-                    ]
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: true
                 }
                 
             ]
