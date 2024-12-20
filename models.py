@@ -310,7 +310,7 @@ _MODELS = {
     "peer.Maintainer": "noc.peer.models.maintainer.Maintainer",
     "peer.Organisation": "noc.peer.models.organisation.Organisation",
     "peer.Peer": "noc.peer.models.peer.Peer",
-    "peer.PeerGroup": "noc.peer.models.peergroup.PeerGroup",
+    "peer.PeerProfile": "noc.peer.models.peerprofile.PeerProfile",
     "peer.PeeringPoint": "noc.peer.models.peeringpoint.PeeringPoint",
     "peer.Person": "noc.peer.models.person.Person",
     "peer.PrefixListCache": "noc.peer.models.prefixlistcache.PrefixListCache",
