@@ -79,28 +79,6 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None, api=
     return decorate
 
 
-class FormErrorsContext(object):
-    """
-    Catch ValueError exception and populate form's _errors fields
-    """
-
-    def __init__(self, form):
-        self.form = form
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type == ValueError:
-            for ve in exc_val:
-                for k in ve:
-                    v = ve[k]
-                    if not isinstance(v, list):
-                        v = [v]
-                    self.form._errors[k] = self.form.error_class(v)
-            return True
-
-
 class ApplicationBase(type):
     """
     Application metaclass. Registers application class to site
@@ -617,15 +595,6 @@ class Application(object, metaclass=ApplicationBase):
                 if x:
                     v[n] = x
         return o
-
-    def form_errors(self, form):
-        """
-        with self.form_errors(form):
-            object.save()
-        :param form:
-        :return:
-        """
-        return FormErrorsContext(form)
 
     def to_json(self, v):
         """
