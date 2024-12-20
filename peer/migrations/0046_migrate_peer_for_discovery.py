@@ -22,8 +22,8 @@ class Migration(BaseMigration):
         non_required_columns = ["peering_point", "local_ip"]
         for column in non_required_columns:
             self.db.execute(f"ALTER TABLE peer_peer ALTER {column} DROP NOT NULL")
-        self.db.execute(f"ALTER TABLE peer_peer ALTER import_filter SET DEFAULT 'any'")
-        self.db.execute(f"ALTER TABLE peer_peer ALTER export_filter SET DEFAULT 'any'")
+        self.db.execute("ALTER TABLE peer_peer ALTER import_filter SET DEFAULT 'any'")
+        self.db.execute("ALTER TABLE peer_peer ALTER export_filter SET DEFAULT 'any'")
         ManagedObject = self.db.mock_model(model_name="ManagedObject", db_table="sa_managedobject")
         self.db.add_column(
             "peer_peer",
