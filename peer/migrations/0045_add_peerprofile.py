@@ -79,3 +79,11 @@ class Migration(BaseMigration):
                 " VALUES(%s,%s,%s,%s,%s,%s::jsonb)",
                 [id, n, d, self.WF_DEFAULT, m_pref, orjson.dumps(data).decode()],
             )
+        PeerProfile = self.db.mock_model(model_name="PeerProfile", db_table="peer_peerprofile")
+        self.db.add_column(
+            "peer_peer",
+            "profile",
+            models.ForeignKey(PeerProfile, null=True, on_delete=models.CASCADE),
+        )
+        self.db.execute("UPDATE peer_peer SET profile_id=peer_group_id")
+        self.db.execute("UPDATE peer_peer SET profile_id=1 WHERE profile_id is NULL")
