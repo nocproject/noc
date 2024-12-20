@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import datetime
 from django.db import models
 
 # NOC module
@@ -49,7 +48,6 @@ class Migration(BaseMigration):
             )
         # Create index
         self.db.create_index("peer_peer", ["state"])
-        now = datetime.datetime.now()
         for status, wf in [
             ("P", "67650a398db9f670c21e14d6"),
             ("A", "67650ae68db9f670c21e14d8"),

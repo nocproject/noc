@@ -7,7 +7,6 @@
 
 # Python modules
 import re
-import datetime
 from typing import Optional
 
 # Third-party modules

@@ -13,8 +13,8 @@ from typing import Optional, Dict, List, Any
 
 # Third-party modules
 import cachetools
-from django.db.models import CharField, IntegerField, BooleanField
-from pydantic import BaseModel, RootModel, field_validator
+from django.db.models import CharField, IntegerField
+from pydantic import BaseModel, RootModel
 
 # NOC modules
 from noc.core.model.base import NOCModel
