@@ -1,0 +1,17 @@
+{
+    "workflow__name": "BGP Peer Default",
+    "name": "Active",
+    "uuid": "e276c879-b001-435d-97b2-31f0181dad31",
+    "$collection": "wf.states",
+    "description": "BGP Peer on Active working state",
+    "is_default": true,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 150,
+    "y": 230,
+    "disable_all_interaction": false
+}

@@ -1,0 +1,7 @@
+{
+    "name": "BGP Peer Default",
+    "uuid": null,
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Workflow for BGP Peer admin status"
+}

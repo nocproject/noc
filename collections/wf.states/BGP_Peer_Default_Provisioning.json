@@ -1,0 +1,17 @@
+{
+    "workflow__name": "BGP Peer Default",
+    "name": "Provisioning",
+    "uuid": "f79d3d7a-97e1-4aab-bcf7-5c9fe3df0e56",
+    "$collection": "wf.states",
+    "description": "The BGP State is saved to the configuration.",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 250,
+    "y": 140,
+    "disable_all_interaction": false
+}
