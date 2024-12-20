@@ -77,6 +77,7 @@ class InteractionSetting(EmbeddedDocument):
         ("ip.Address", "state"),
         ("ip.Prefix", "state"),
         ("ip.VRF", "state"),
+        ("peer.Peer", "state"),
         ("phone.PhoneNumber", "state"),
         ("phone.PhoneRange", "state"),
         ("pm.Agent", "state"),
