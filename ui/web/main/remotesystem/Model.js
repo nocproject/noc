@@ -20,6 +20,11 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "string"
         },
         {
+            name: "bi_id",
+            type: "string",
+            persist: false
+        },
+        {
             name: "name",
             type: "string"
         },
@@ -152,6 +157,28 @@ Ext.define("NOC.main.remotesystem.Model", {
         {
             name: "enable_street",
             type: "boolean"
+        },
+        {
+            name: "sync_policy",
+            type: "string",
+            defaultValue: "M"
+        },
+        {
+            name: "run_sync_at",
+            type: "string"
+        },
+        {
+            name: "sync_interval",
+            type: "integer"
+        },
+        {
+            name: "sync_notification",
+            type: "string",
+            defaultValue: "F"
+        },
+        {
+            name: "event_sync_interval",
+            type: "integer"
         }
     ]
 });
