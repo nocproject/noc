@@ -59,7 +59,21 @@ class Migration(BaseMigration):
         )
         self.db.delete_column("peer_peer", "status")
         # Oper Columns
-        self.db.add_column("peer_peer", "oper_status", models.IntegerField())
+        self.db.add_column(
+            "peer_peer",
+            "oper_status",
+            models.IntegerField(
+                choices=[
+                    (1, "idle"),
+                    (2, "connect"),
+                    (3, "active"),
+                    (4, "opensent"),
+                    (5, "openconfirm"),
+                    (6, "established"),
+                ],
+                null=True,
+            ),
+        )
         self.db.add_column(
             "peer_peer", "oper_status_change", models.DateTimeField(null=True, blank=True)
         )

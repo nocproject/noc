@@ -17,6 +17,8 @@ from noc.core.model.fields import DocumentReferenceField
 class Migration(BaseMigration):
     WF_DEFAULT = "5a1d078e1bb627000151a17d"
 
+    depends_on = [("wf", "0014_add_peer_default_workflow")]
+
     def migrate(self):
         # Model 'PeerGroup'
         self.db.create_table(
@@ -87,3 +89,4 @@ class Migration(BaseMigration):
         )
         self.db.execute("UPDATE peer_peer SET profile_id=peer_group_id")
         self.db.execute("UPDATE peer_peer SET profile_id=1 WHERE profile_id is NULL")
+        self.db.delete_column("peer_peer", "peer_group_id")

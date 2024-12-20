@@ -78,7 +78,17 @@ class Peer(NOCModel):
     last_seen = DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
     first_discovered = DateTimeField("First Discovered", null=True, blank=True)
-    oper_status = IntegerField(choices=[])
+    oper_status = IntegerField(
+        choices=[
+            (1, "idle"),
+            (2, "connect"),
+            (3, "active"),
+            (4, "opensent"),
+            (5, "openconfirm"),
+            (6, "established"),
+        ],
+        null=True,
+    )
     oper_status_change = DateTimeField("Oper Status Last Changed", null=True, blank=True)
     # RPSL Settings
     peering_point: Optional["PeeringPoint"] = ForeignKey(
