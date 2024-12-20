@@ -66,7 +66,7 @@ class Command(BaseCommand):
         # extract command
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument(
-            "--quiet", action="store_true", default=True, help="Remote system name"
+            "--quiet", action="store_true", default=False, help="Remote system name"
         )
         extract_parser.add_argument(
             "--incremental", action="store_true", default=False, help="Incremental extracting"
@@ -123,7 +123,7 @@ class Command(BaseCommand):
         remote_system = RemoteSystem.get_by_name(options["system"])
         if not remote_system:
             self.die("Invalid remote system: %s" % options["system"])
-        n_errors = remote_system.check(self.stdout)
+        n_errors, _ = remote_system.check(out=self.stdout)
         return 1 if n_errors else 0
 
     def handle_diff(self, summary=False, *args, **options):
@@ -216,8 +216,8 @@ class Command(BaseCommand):
                     "Changed:",
                     o.id,
                     o.name,
-                    o.dict(include=include_fields),
-                    n.dict(include=include_fields),
+                    o.model_dump(include=include_fields),
+                    n.model_dump(include=include_fields),
                 )
 
     def handle_clean(self, files=None, ttl=None, dry_run=True, *args, **options):

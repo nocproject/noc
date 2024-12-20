@@ -48,6 +48,13 @@ Ext.define("NOC.main.remotesystem.Application", {
                     uiStyle: "extra"
                 },
                 {
+                    name: "bi_id",
+                    xtype: "displayfield",
+                    fieldLabel: __("BI ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
                     name: "handler",
                     xtype: "textfield",
                     fieldLabel: __("Handler"),
@@ -212,6 +219,126 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "enable_fmevent",
                             xtype: "checkbox",
                             boxLabel: __("Enable FM Event")
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "vbox",
+                    title: __("Sync Settings"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "sync_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Sync Policy"),
+                            allowBlank: false,
+                            labelWidth: 200,
+                            queryMode: "local",
+                            displayField: "label",
+                            valueField: "id",
+                            defaultValue: "M",
+                            store: {
+                                fields: ["id", "label"],
+                                data: [
+                                    {id: "M", label: "Manual"},
+                                    {id: "P", label: "Period"},
+                                    {id: "C", label: "Cron"}
+                                ]
+                            },
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "sync_interval",
+                            xtype: "numberfield",
+                            fieldLabel: __("Sync Interval, sec"),
+                            labelWidth: 200,
+                            uiStyle: "small",
+                            minValue: 0,
+                            listeners: {
+                                scope: me,
+                                change: function(_item, newValue, oldValue, eOpts) {
+                                    me.form.findField("sync_interval").setValue(newValue);
+                                }
+                            }
+                        },
+                        {
+                            name: "run_sync_at",
+                            xtype: "datefield",
+                            startDay: 1,
+                            fieldLabel: __("Run Sync At"),
+                            allowBlank: true,
+                            format: "d-M-Y Н:i",
+                            submitFormat: "Y-m-d\\TH:i:s"
+                        },
+                        {
+                            name: "event_sync_interval",
+                            xtype: "numberfield",
+                            fieldLabel: __("Event Sync Interval, sec"),
+                            labelWidth: 200,
+                            allowBlank: false,
+                            uiStyle: "small",
+                            minValue: 0,
+                            listeners: {
+                                scope: me,
+                                change: function(_item, newValue, oldValue, eOpts) {
+                                    me.form.findField("event_sync_interval").setValue(newValue);
+                                }
+                            }
+                        },
+                        {
+                            name: "sync_notification",
+                            xtype: "combobox",
+                            fieldLabel: __("Sync Notification Policy"),
+                            labelWidth: 200,
+                            queryMode: "local",
+                            displayField: "label",
+                            valueField: "id",
+                            defaultValue: "F",
+                            store: {
+                                fields: ["id", "label"],
+                                data: [
+                                    {id: "D", label: "Disable"},
+                                    {id: "F", label: "Failed Only"},
+                                    {id: "A", label: "All"}
+                                ]
+                            },
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Synd Data"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "last_extract",
+                            xtype: "displayfield",
+                            fieldLabel: __("Last Extract"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "last_load",
+                            xtype: "displayfield",
+                            fieldLabel: __("Last Load"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "last_extract_event",
+                            xtype: "displayfield",
+                            fieldLabel: __("Last Extract Event"),
+                            allowBlank: true,
+                            uiStyle: "medium"
                         }
                     ]
                 },

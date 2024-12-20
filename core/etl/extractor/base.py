@@ -70,6 +70,7 @@ class BaseExtractor(object):
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
         self.fatal_problems: List[Problem] = []
         self.quality_problems: List[Problem] = []
+        self.extracted = 0
         # Checkpoint
         self._force_checkpoint: Optional[str] = None
 
@@ -321,6 +322,7 @@ class BaseExtractor(object):
             n += 1
             if n % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", n)
+        self.extracted = n
         dt = perf_counter() - t0
         speed = n / dt
         self.logger.info("%d records extracted in %.2fs (%d records/s)", n, dt, speed)
@@ -338,7 +340,7 @@ class BaseExtractor(object):
             for n, item in enumerate(sorted(data, key=operator.attrgetter("id"))):
                 if n:
                     f.write("\n")
-                f.write(item.json(exclude_defaults=True, exclude_unset=True))
+                f.write(item.model_dump_json(exclude_defaults=True, exclude_unset=True))
         # Report fatal problems
         if self.fatal_problems or self.quality_problems:
             self.logger.warning(
