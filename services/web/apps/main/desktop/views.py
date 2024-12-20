@@ -58,6 +58,8 @@ class DesktopApplication(ExtApplication):
         """
         Get language for request
         """
+        if not request.user:
+            return config.language
         return request.user.preferred_language or config.language
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
@@ -65,50 +67,12 @@ class DesktopApplication(ExtApplication):
         """
         Render application root template
         """
-        cp = CPClient()
-        ext_apps = [a for a in self.site.apps if isinstance(self.site.apps[a], ExtApplication)]
-        apps = [a.split(".") for a in sorted(ext_apps)]
-        # Prepare settings
-        favicon_url = config.customization.favicon_url
-        if favicon_url.endswith(".png"):
-            favicon_mime = "image/png"
-        elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
-            favicon_mime = "image/jpeg"
-        else:
-            favicon_mime = None
-        if request.user.is_authenticated():
-            enable_search = Permission.has_perm(request.user, "main:search:launch")
-        else:
-            enable_search = False
-        setup = {
-            "system_uuid": cp.system_uuid,
-            "installation_name": config.installation_name,
-            "theme": config.web.theme,
-            "logo_url": config.customization.logo_url,
-            "logo_width": config.customization.logo_width,
-            "logo_height": config.customization.logo_height,
-            "brand": version.brand,
-            "branding_color": config.customization.branding_color,
-            "branding_background_color": config.customization.branding_background_color,
-            "favicon_url": favicon_url,
-            "favicon_mime": favicon_mime,
-            "debug_js": False,
-            "collections_allow_sharing": config.collections.allow_sharing,
-            "enable_gis_base_osm": config.gis.enable_osm,
-            "enable_gis_base_google_sat": config.gis.enable_google_sat,
-            "enable_gis_base_google_roadmap": config.gis.enable_google_roadmap,
-            "trace_extjs_events": False,
-            "preview_theme": config.customization.preview_theme,
-            "enable_search": enable_search,
-            "help_base_url": config.help.base_url,
-            "help_branch": config.help.branch,
-            "help_language": config.help.language,
-            "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
-            "timezone": str(config.timezone),
-            "has_geocoder": bool(config.geocoding.ui_geocoder),
-        }
         return self.render(
-            request, "desktop.html", language=self.get_language(request), apps=apps, setup=setup
+            request,
+            "desktop.html",
+            language=self.get_language(request),
+            theme=config.web.theme,
+            brand=version.brand,
         )
 
     @view(method=["GET"], url="^settings/$", access=True, api=True)

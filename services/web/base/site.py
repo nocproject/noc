@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Site implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,8 +30,7 @@ from dataclasses import dataclass
 # NOC modules
 from noc.config import config
 from noc.core.debug import error_report
-from noc.core.comp import smart_bytes
-from noc.core.comp import smart_text
+from noc.core.comp import smart_bytes, smart_text
 from noc.core.jsonutils import orjson_defaults
 
 logger = logging.getLogger(__name__)
@@ -173,7 +172,9 @@ class Site(object):
             except KeyError:
                 logger.info("No handler for '%s' method", request.method)
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
-            if not request.user or not v.access.check(app, request.user):
+            if not getattr(v.access, "permit", False) and (
+                not request.user or not v.access.check(app, request.user)
+            ):
                 return HttpResponseForbidden()
             to_log_api_call = self.log_api_calls and hasattr(v, "api") and v.api
             app_logger = v.__self__.logger

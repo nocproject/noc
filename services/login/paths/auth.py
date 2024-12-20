@@ -33,6 +33,7 @@ PINHOLE_PATHS = {
     "/api/zeroconf/config",
     "/api/metricscollector/send",
     "/main/style/css/",
+    "/main/desktop/",
 }
 
 
