@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Expanded Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.main.models.customfield import CustomField
 from noc.core.validators import check_ipv6_prefix, check_ipv4_prefix, ValidationError
 from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
+from noc.vc.models.vlan import VLAN
 
 
 class ReportForm(forms.Form):
@@ -47,8 +48,9 @@ class ExpandedReport(SimpleReport):
 
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_row(p, level=0):
+            vlan = VLAN.get_by_id(p.vlan.id) if p.vlan else None
             s = "--" * level
-            r = [s + p.prefix, p.state.name, smart_text(p.vc) if p.vc else ""]
+            r = [s + p.prefix, p.state.name, smart_text(vlan) if vlan else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
@@ -63,7 +65,7 @@ class ExpandedReport(SimpleReport):
 
         cf = CustomField.table_fields("ip_prefix")
         # Prepare columns
-        columns = ["Prefix", "State", "VC"]
+        columns = ["Prefix", "State", "VLAN"]
         for f in cf:
             columns += [f.label]
         columns += ["Description", TableColumn(_("Tags"), format="tags")]
