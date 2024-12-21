@@ -41,7 +41,7 @@ class Script(BaseScript):
             pid_iface_map[int(oid.split(".")[-1])] = v
         for i in self.scripts.get_interface_properties(enable_ifindex=True):
             if i["ifindex"] not in pid_iface_map:
-                self.logger.warning("Not PID iface mapping: %s", i["interface"])
+                self.logger.warning("[%s] Not PID iface mapping: %s", i["interface"], r)
                 continue
             r[i["ifindex"]] = i["interface"]
         return r
