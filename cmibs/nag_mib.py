@@ -2363,11 +2363,17 @@ DISPLAY_HINTS = {
     "1.3.6.1.4.1.40418.7.100.17.3.1.2": ("OctetString", "2x:"),  # NAG-MIB::sntpServer6Address
     "1.3.6.1.4.1.40418.7.100.21.2.2": ("OctetString", "2x:"),  # NAG-MIB::dcscm6dcAclSourceIp
     "1.3.6.1.4.1.40418.7.100.21.2.4": ("OctetString", "2x:"),  # NAG-MIB::dcscm6dcAclDestinationIp
-    "1.3.6.1.4.1.40418.7.100.21.4.1.1": ("OctetString", "2x:"),  # NAG-MIB::dcscm6SipbindingSipAddress
+    "1.3.6.1.4.1.40418.7.100.21.4.1.1": (
+        "OctetString",
+        "2x:",
+    ),  # NAG-MIB::dcscm6SipbindingSipAddress
     "1.3.6.1.4.1.40418.7.100.21.7.2": ("OctetString", "2x:"),  # NAG-MIB::dcscm6scAclSourceIp
     "1.3.6.1.4.1.40418.7.100.21.7.4": ("OctetString", "2x:"),  # NAG-MIB::dcscm6scAclDestinationIp
     "1.3.6.1.4.1.40418.7.100.21.9.1.1": ("OctetString", "2x:"),  # NAG-MIB::dcscm6pcSourceIp
     "1.3.6.1.4.1.40418.7.100.21.9.1.3": ("OctetString", "2x:"),  # NAG-MIB::dcscm6pcDestinationIp
     "1.3.6.1.4.1.40418.7.100.25.1.2.3": ("Unsigned32", "d"),  # NAG-MIB::ntpEntStatusStratum
-    "1.3.6.1.4.1.40418.7.100.25.1.2.10": ("OctetString", "4d:4d:4d.4d"),  # NAG-MIB::ntpEntStatusDateTime
+    "1.3.6.1.4.1.40418.7.100.25.1.2.10": (
+        "OctetString",
+        "4d:4d:4d.4d",
+    ),  # NAG-MIB::ntpEntStatusDateTime
 }

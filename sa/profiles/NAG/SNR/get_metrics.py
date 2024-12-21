@@ -117,6 +117,12 @@ class Script(GetMetricsScript):
         if value:
             self.set_metric(id=("Environment | Temperature", None), value=int(value), units="C")
 
+    @metrics(["CPU | Usage"], volatile=False, access="S")
+    def get_cpu_metrics(self, metrics):
+        cpu = self.snmp.get(mib["NAG-MIB::switchCpuUsage", 0])
+        if cpu is not None:
+            self.set_metric(id=("CPU | Usage", None), value=round(float(cpu)), units="%")
+
     @metrics(["Memory | Total", "Memory | Usage"], volatile=False, access="S")  # SNMP version
     def get_memory_metrics(self, metrics):
         value_total = self.snmp.get(mib["NAG-MIB::switchMemorySize", 0])  # bytes
