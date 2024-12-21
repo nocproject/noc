@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.core.mib import mib
 
 
 class Script(GetMetricsScript):
@@ -106,24 +107,20 @@ class Script(GetMetricsScript):
 
     @metrics(["Object | MAC | TotalUsed"], volatile=False, access="S")  # SNMP version
     def get_mac_totalused(self, metrics):
-        mac_total_used = 0
-        for mac in self.snmp.getnext("1.3.6.1.2.1.17.4.3.1.1"):
-            if mac:
-                self.logger.info(f"MAC IS {mac}")
-                mac_total_used += 1
-        if mac_total_used:
-            self.set_metric(id=("Object | MAC | TotalUsed", None), value=mac_total_used)
+        macs = [mac for mac in self.snmp.getnext(mib["BRIDGE-MIB::dot1dTpFdbAddress"]) if mac]
+        if macs:
+            self.set_metric(id=("Object | MAC | TotalUsed", None), value=len(macs))
 
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
     def get_temperature(self, metrics):
-        value = self.snmp.get("1.3.6.1.4.1.40418.7.100.1.11.9.0")
+        value = self.snmp.get(mib["NAG-MIB::switchTemperature", 0])
         if value:
             self.set_metric(id=("Environment | Temperature", None), value=int(value), units="C")
 
     @metrics(["Memory | Total", "Memory | Usage"], volatile=False, access="S")  # SNMP version
     def get_memory_metrics(self, metrics):
-        value_total = self.snmp.get("1.3.6.1.4.1.40418.7.100.1.11.6.0")  # bytes
-        value_usage = self.snmp.get("1.3.6.1.4.1.40418.7.100.1.11.7.0")  # bytes
+        value_total = self.snmp.get(mib["NAG-MIB::switchMemorySize", 0])  # bytes
+        value_usage = self.snmp.get(mib["NAG-MIB::switchMemoryBusy", 0])  # bytes
         for metric in metrics:
             if "Memory | Total" in str(metric):
                 if value_total:

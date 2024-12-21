@@ -17,7 +17,7 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "NAG.SNR.get_chassis_id"
     interface = IGetChassisID
-    cache = True
+    always_prefer = "S"
 
     rx_mac = re.compile(r"^\s+\S+\s+mac\s+(\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
     rx_mac2 = re.compile(r"^MAC address\s+: (?P<mac>\S+)", re.MULTILINE)
