@@ -32,7 +32,7 @@ Ext.application({
         var hash = location.hash,
           newUrl = location.protocol + "//" + 
                       location.host + 
-            "?uri=" + location.pathname + hash;
+            "?uri=/" + hash;
 
         history.replaceState({}, document.title, newUrl);
         this.openLogin();
