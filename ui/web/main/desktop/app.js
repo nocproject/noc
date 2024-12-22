@@ -24,20 +24,17 @@ Ext.application({
       method: "GET",
       scope: this,
       success: function(response){
-        var isLogged = Ext.decode(response.responseText);
-        if(isLogged){
+        if(Ext.decode(response.responseText)){
           this.openApplication();
           return;
         }
-        if(Ext.isEmpty(location.hash) && Ext.isEmpty(location.search)){
-          location.search = "uri=/";
-        } else if(location.search.indexOf("uri=") === -1 && location.hash){
-          var hash = location.hash,
-            newUrl = location.protocol + "//" + 
-                        location.host + 
-              "?uri=" + location.pathname + hash;
-          history.replaceState({}, document.title, newUrl);
-        }
+
+        var hash = location.hash,
+          newUrl = location.protocol + "//" + 
+                      location.host + 
+            "?uri=" + location.pathname + hash;
+
+        history.replaceState({}, document.title, newUrl);
         this.openLogin();
       },
       failure: function(response){
