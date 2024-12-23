@@ -1,12 +1,13 @@
 # ---------------------------------------------------------------------
 # peer.peer application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.decorators.state import state_handler
 from noc.peer.models.peer import Peer
 from noc.core.validators import is_prefix
 from noc.core.ip import IP
@@ -15,6 +16,7 @@ from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.core.translation import ugettext as _
 
 
+@state_handler
 class PeerApplication(ExtModelApplication):
     """
     Peers application
@@ -74,7 +76,7 @@ class PeerApplication(ExtModelApplication):
             raise ValueError("All neighboring addresses must have same address family")
         return data
 
-    def set_peer_status(self, request, queryset, status, message):
+    def set_peer_status(self, request, queryset, event, message):
         """
         Change peer status
         :param request:
@@ -85,13 +87,11 @@ class PeerApplication(ExtModelApplication):
         """
         count = 0
         for p in queryset:
-            p.status = status
-            p.save()
+            p.fire_event(event)
             count += 1
         if count == 1:
-            return "1 peer marked as %s" % message
-        else:
-            return "%d peers marked as %s" % (count, message)
+            return f"1 peer marked as {message}"
+        return f"{count} peers marked as {message}"
 
     @view(
         url="^actions/planned/$",
@@ -101,7 +101,7 @@ class PeerApplication(ExtModelApplication):
         validate={"ids": ListOfParameter(element=ModelParameter(Peer))},
     )
     def api_action_planned(self, request, ids):
-        return self.set_peer_status(request, ids, "P", "planned")
+        return self.set_peer_status(request, ids, "planned", "planned")
 
     api_action_planned.short_description = "Mark as planned"
 
@@ -113,7 +113,7 @@ class PeerApplication(ExtModelApplication):
         validate={"ids": ListOfParameter(element=ModelParameter(Peer))},
     )
     def api_action_active(self, request, ids):
-        return self.set_peer_status(request, ids, "A", "active")
+        return self.set_peer_status(request, ids, "up", "active")
 
     api_action_active.short_description = "Mark as active"
 
@@ -125,6 +125,6 @@ class PeerApplication(ExtModelApplication):
         validate={"ids": ListOfParameter(element=ModelParameter(Peer))},
     )
     def api_action_shutdown(self, request, ids):
-        return self.set_peer_status(request, ids, "S", "shutdown")
+        return self.set_peer_status(request, ids, "down", "shutdown")
 
     api_action_shutdown.short_description = "Mark as shutdown"

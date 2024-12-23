@@ -1,0 +1,10 @@
+{
+    "workflow__name": "BGP Peer Default",
+    "from_state__uuid": "6c5a3699-084d-4354-9b1c-ea119b6c8022",
+    "to_state__uuid": "f79d3d7a-97e1-4aab-bcf7-5c9fe3df0e56",
+    "uuid": "b537eaae-225e-48d1-8b9f-53099c871894",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Deploy",
+    "enable_manual": true
+}

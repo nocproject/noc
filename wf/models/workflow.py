@@ -54,6 +54,7 @@ _wiping_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("phone.PhoneNumberProfile", "workflow"),
         ("phone.PhoneRangeProfile", "workflow"),
         ("pm.AgentProfile", "workflow"),
+        ("peer.PeerProfile", "workflow"),
         ("sa.ServiceProfile", "workflow"),
         ("sa.ManagedObjectProfile", "workflow"),
         ("sa.ObjectDiscoveryRule", "workflow"),

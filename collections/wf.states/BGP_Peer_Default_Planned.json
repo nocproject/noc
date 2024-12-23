@@ -1,0 +1,17 @@
+{
+    "workflow__name": "BGP Peer Default",
+    "name": "Planned",
+    "uuid": "6c5a3699-084d-4354-9b1c-ea119b6c8022",
+    "$collection": "wf.states",
+    "description": "The BGP Peer is scheduled to be configured",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 460,
+    "y": 230,
+    "disable_all_interaction": false
+}

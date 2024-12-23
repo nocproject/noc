@@ -1,0 +1,11 @@
+{
+    "workflow__name": "BGP Peer Default",
+    "from_state__uuid": "e276c879-b001-435d-97b2-31f0181dad31",
+    "to_state__uuid": "e005a9ba-820a-47d2-9f1a-31301311c20e",
+    "uuid": "1ccdddbb-0534-4da8-9fb0-a91b3cd9e3a0",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "down",
+    "label": "Down",
+    "enable_manual": true
+}
