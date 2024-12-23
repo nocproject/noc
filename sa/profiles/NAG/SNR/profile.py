@@ -53,6 +53,7 @@ class Profile(BaseProfile):
 
     INTERFACE_TYPES = {
         "Ethe": "physical",  # Ethernet
+        "Giga": "physical",  # GigaEthernet0
         "Vlan": "SVI",  # Vlan
         "syst": "SVI",  # system
         "Port": "aggregated",  # Port-Channel

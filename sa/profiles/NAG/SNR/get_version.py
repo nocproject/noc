@@ -81,7 +81,7 @@ class Script(BaseScript):
                     "Serial Number": vv["serial"],
                 },
             }
-        except self.snmp.TimeOutError:
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
             self.logger.info("ENTITY-MIB not supported. Try next")
         match = self.rx_platform_ioss_v2.search(v)
         if match:
