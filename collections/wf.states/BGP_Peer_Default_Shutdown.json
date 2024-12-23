@@ -1,0 +1,16 @@
+{
+    "workflow__name": "BGP Peer Default",
+    "name": "Shutdown",
+    "uuid": "e005a9ba-820a-47d2-9f1a-31301311c20e",
+    "$collection": "wf.states",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 3600,
+    "update_expired": false,
+    "x": 30,
+    "y": 180,
+    "disable_all_interaction": true
+}

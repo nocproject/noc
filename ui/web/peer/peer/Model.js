@@ -72,9 +72,8 @@ Ext.define("NOC.peer.peer.Model", {
             type: "string"
         },
         {
-            name: "status",
-            type: "string",
-            defaultValue: "A"
+            name: "state",
+            type: "string"
         },
         {
             name: "import_filter",

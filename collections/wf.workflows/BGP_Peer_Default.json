@@ -1,0 +1,8 @@
+{
+    "name": "BGP Peer Default",
+    "uuid": "dd960b97-80ac-47c0-940f-1992547b3559",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Workflow for BGP Peer admin status",
+    "allowed_models": ["peer.Peer"]
+}
