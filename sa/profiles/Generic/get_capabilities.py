@@ -364,9 +364,10 @@ class Script(BaseScript):
             return engine_id.hex()
         return None
 
+    @false_on_snmp_error
     def get_snmp_table_idx(self, oid) -> List[int]:
         r = []
-        for oid, value in self.snmp.getnext(mib["HOST-RESOURCES-MIB::hrProcessorFrwID"]):
+        for oid, value in self.snmp.getnext():
             _, idx = oid.rsplit(".", 1)
             r.append(str(idx))
         return r
