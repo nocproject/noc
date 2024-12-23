@@ -30,9 +30,6 @@ class RouterOSTokenizer(LineTokenizer):
             if ni == -1:
                 yield self.data[i:]
                 break
-            elif self.data[i:ni].endswith("\\"):
-                print("LINE BREAKER")
-                pass
             yield self.data[i:ni]
             i = ni + leol
 
