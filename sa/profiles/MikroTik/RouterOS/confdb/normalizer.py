@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, deferable
-from noc.core.confdb.syntax.patterns import INTEGER, IPv4_PREFIX, IPv4_ADDRESS, AS_NUM, REST
+from noc.core.confdb.syntax.patterns import INTEGER, IPv4_PREFIX, IPv4_ADDRESS, AS_NUM
 from noc.core.validators import is_ipv4_prefix, is_ipv4
 
 
