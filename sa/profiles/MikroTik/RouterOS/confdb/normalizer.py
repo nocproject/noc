@@ -176,7 +176,7 @@ class RouterOSNormalizer(BaseNormalizer):
             as_num=deferable("as_num"),
         )
         yield self.defer(
-            f"bgp.template.default.local_as",
+            "bgp.template.default.local_as",
             self.make_bgp_neighbor_local_as,
             neighbor=tokens[5],
             as_num=deferable("as_num"),
@@ -218,7 +218,7 @@ class RouterOSNormalizer(BaseNormalizer):
             admin_status=deferable("admin_status"),
         )
         yield self.defer(
-            f"bgp.template.default.router_id",
+            "bgp.template.default.router_id",
             self.make_bgp_neighbor_router_id,
             neighbor=tokens[5],
             router_id=deferable("router_id"),
