@@ -29,6 +29,7 @@ from mongoengine.fields import (
     DynamicField,
     EnumField,
 )
+from mongoengine.queryset.visitor import Q as m_q
 import cachetools
 
 # NOC modules
@@ -40,6 +41,7 @@ from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import defer
 from noc.core.hash import hash_int
+from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -71,31 +73,28 @@ condition_map = {
 }
 
 
-class InstanceResourceRule(EmbeddedDocument):
+class InstancePolicySettings(EmbeddedDocument):
     """
     Rules for Resource to Instance map.
     Attributes:
-        resource_type: System resource code
-        capability: Used capability value for resource request
-        send_seen: Send seen signal when resource find
-        resource_filter:
-            * By Instance Address
-            * By Capability values
-            * By All
-        update_status: Set Instance Status when resource status chaned
-        allow_manual: Allow changed manual map
+        type:
+            * AS Service - on local instance
+            * AS Client - create binding instance
+        only_one_object: Instance only one object (if more - replace)
+        allow_manual: Allow manual binding instance
+        send_approve: Send Resource Approve if bind to Instance   # Reserved ?
+        allow_resources: Resource Codes Allowed to bind
     """
 
-    resource_type = StringField(choices=[("si", "SubInterface"), ("if", "Interface")])
-    capability = ReferenceField(Capability)
-    # resource_field = StringField(required=False)
-    resource_filter = StringField(
-        choices=[("A", "By All"), ("C", "By Capability"), ("I", "By Instance")]
+    provide = StringField(choices=[("C", "AS Client"), ("S", "AS Service")], default="S")
+    allow_manual: bool = BooleanField(default=False)
+    only_one_object = BooleanField(default=True)  # Allow bind multiple resources
+    allow_resources: List[str] = ListField(
+        StringField(choices=[("si", "SubInterface"), ("if", "Interface")])
     )
-    send_seen = BooleanField(default=True)
-    update_status = BooleanField(default=False)
-    # allow_manual = BooleanField(default=True)
-    # allow_create = - create instance when resource founded
+    send_approve: bool = BooleanField(default=False)
+    # Update resource Status from service
+    # update_status = BooleanField(default=False)
 
 
 class CalculatedStatusRule(EmbeddedDocument):
@@ -214,6 +213,8 @@ class AlarmStatusRule(EmbeddedDocument):
             return False
         if self.alarm_class_template:
             return bool(re.match(self.alarm_class_template, alarm.alarm_class.name))
+        if self.include_labels and set(self.include_labels) - set(alarm.effective_labels):
+            return False
         return True
 
 
@@ -301,11 +302,19 @@ class ServiceProfile(Document):
     )
     alarm_status_rules: List["AlarmStatusRule"] = EmbeddedDocumentListField(AlarmStatusRule)
     # Instance Resources
-    instance_resource_rules: List[InstanceResourceRule] = EmbeddedDocumentListField(
-        InstanceResourceRule
+    instance_policy = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("N", "Resource Binding"),
+            ("O", "Allow Register"),
+        ],
+        default="N",
+    )
+    instance_policy_settings: "InstancePolicySettings" = EmbeddedDocumentField(
+        InstancePolicySettings
     )
     # Capabilities
-    caps = ListField(EmbeddedDocumentField(CapsSettings))
+    caps = EmbeddedDocumentListField(CapsSettings)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -357,6 +366,13 @@ class ServiceProfile(Document):
                 return status
         return Status.UNKNOWN
 
+    def get_resource_policy(self, type: str = "service"):
+        """
+        Return resource binding policy
+        Attrs:
+            type: service, client
+        """
+
     def calculate_alarm_status(self, aa) -> Status:
         """
         Calculate Alarm status by rule
@@ -373,8 +389,28 @@ class ServiceProfile(Document):
             return self.get_status_by_severity(aa.severity)
         return Status.UNKNOWN
 
-    @classmethod
-    def get_alarm_service_filter(cls): ...
+    def get_alarm_service_filter(self):
+        r = m_q()
+        for rule in self.alarm_status_rules:
+            q = m_q()
+            if rule.alarm_class_template:
+                ac = list(
+                    AlarmClass.objects.filter(name=re.compile(rule.alarm_class_template)).scalar(
+                        "id"
+                    )
+                )
+                if not ac:
+                    continue
+                q &= m_q(alarm_class__in=ac)
+            if rule.include_labels:
+                q &= m_q(effective_labels__in=rule.include_labels)
+            if rule.min_severity:
+                q &= m_q(severity__gte=rule.min_severity)
+            if rule.max_severity:
+                q &= m_q(severity__lte=rule.max_severity)
+            if q:
+                r |= q
+        return r
 
 
 def refresh_interface_profiles(sp_id, ip_id):

@@ -114,6 +114,15 @@ Ext.define("NOC.sa.serviceprofile.Model", {
         {
             name: "alarm_status_rules",
             type: "auto"
+        },
+        {
+            name: "instance_policy",
+            type: "string",
+            defaultValue: "N"
+        },
+        {
+            name: "instance_policy_settings",
+            type: "auto"
         }
     ]
 });

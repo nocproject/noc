@@ -65,10 +65,6 @@ class Instance(EmbeddedDocument):
     name_template = StringField()
     pool: "Pool" = PlainReferenceField(Pool, required=False)
     port_range = StringField()
-    address_range = StringField()
-    # allow_create - create instance on discovery
-    # Prefix Profile
-    # weight ?
 
 
 class ServiceStatusDependency(EmbeddedDocument):
@@ -437,7 +433,7 @@ class Service(Document):
 
         # Run Service Status Refresh
         # Set Outage
-        if len(self.service_path) != 1:
+        if len(self.service_path) != 1 and self.profile.status_transfer_policy != "D":
             # Only Root service
             return
         self.register_alarm(os)
@@ -521,8 +517,8 @@ class Service(Document):
                 statuses[aa] = status
         if not statuses:
             return Status.UP
-        logger.debug("[%s] Alarm statuses: %s", self.id, statuses)
-        r = []
+        logger.info("[%s] Alarm statuses: %s", self.id, statuses)
+        r = [(s, 1) for s in statuses.values()]
         # Calculate Service Instance Status
         for si in ServiceInstance.objects.filter(service=self.id):
             si_statuses = [s for aa, s in statuses.items() if si.is_match_alarm(aa)]
@@ -546,6 +542,7 @@ class Service(Document):
 
     def calculate_status(self, statuses: List[Tuple[Status, int]]) -> Status:
         """Calculate status by Policy"""
+        logger.info("Calculate Statuses: %s", statuses)
         if not statuses:
             return Status.UNKNOWN
         f = self.get_calculate_status_function()
@@ -576,19 +573,48 @@ class Service(Document):
     @classmethod
     def get_services_by_alarm(cls, alarm) -> List[str]:
         """Return service Ids for requested alarm"""
-        profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
-        if not profiles:
-            return []
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
+        # profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
+        rule_profiles, instance_profiles = [], set()
+        for p in ServiceProfile.objects.filter(alarm_affected_policy__ne="D"):
+            if p.alarm_affected_policy == "A":
+                instance_profiles.add(p.id)
+                continue
+            for rule in p.alarm_status_rules:
+                if rule.is_match(alarm):
+                    rule_profiles.append(p)
+                    # Return True + Service Filter (by vars)
+                    break
+        if not q and not instance_profiles and not rule_profiles:
+            return []
+        if rule_profiles:
+            q |= m_q(profile__in=rule_profiles)
+        # instances = False
+        # for p in ServiceProfile.objects.filter(alarm_affected_policy__ne="D"):
+        #     if p.alarm_affected_policy == "F":
+        #         r = p.get_alarm_service_filter()
+        #         if r:
+        #             q |= r
+        #     else:
+        #         instances = True
+        # if not q and not instances:
+        #     return []
         # Check dependency
         if alarm.managed_object.effective_service_groups:
             q |= m_q(
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
         #
-        services = list(ServiceInstance.get_services_by_alarm(alarm))
+        if instance_profiles:
+            services = [
+                svc
+                for svc in ServiceInstance.get_services_by_alarm(alarm)
+                if svc.profile.id in instance_profiles
+            ]
+        else:
+            services = []
         if q:
             services += list(Service.objects.filter(q))
         return list(set(s.id for s in services))
