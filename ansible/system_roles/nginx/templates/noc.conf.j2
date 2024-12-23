@@ -82,7 +82,7 @@ server {
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
     location @error401 {
-        return 302 /ui/login/index.html?uri=$request_uri;
+        return 302 /index.html?uri=$request_uri;
     }
 
     location /ng_stats {
@@ -297,8 +297,20 @@ server {
     }
 {% endif %}
 
+    location = /index.html {
+        proxy_pass http://noc-web;
+        proxy_set_header Remote-User $user;
+        proxy_set_header Remote-Groups $groups;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Authorization "";
+    }
+
     location / {
-        rewrite ^/$ /main/desktop/;
+        rewrite ^/$ /index.html;
         proxy_pass http://noc-web;
         auth_request /api/auth/auth/;
 

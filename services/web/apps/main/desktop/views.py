@@ -62,7 +62,7 @@ class DesktopApplication(ExtApplication):
             return config.language
         return request.user.preferred_language or config.language
 
-    @view(method=["GET"], url="^$", url_name="desktop", access=True)
+    @view(method=["GET"], url="/index.html", url_name="desktop", access=True)
     def view_desktop(self, request):
         """
         Render application root template
