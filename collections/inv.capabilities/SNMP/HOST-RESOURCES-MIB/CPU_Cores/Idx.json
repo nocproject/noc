@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | HOST-RESOURCES-MIB | CPU Cores | Idx",
+    "$collection": "inv.capabilities",
+    "uuid": "40d0cc3e-9b3f-4e15-9fda-4fa7e81fa9ff",
+    "description": "HOST-RESOURCES-MIB CPU Cores indexes",
+    "type": "str",
+    "card_template": null
+}

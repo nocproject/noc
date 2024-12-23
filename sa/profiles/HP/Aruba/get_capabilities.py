@@ -18,6 +18,10 @@ class Script(BaseScript):
     rx_lldp = re.compile(r"LLDP Enabled\s+:\s*Yes")
     rx_stp = re.compile(r"Spanning tree status\s+:\s*Enabled")
 
+    GET_SNMP_TABLE_IDX = {
+        "SNMP | HOST-RESOURCES-MIB | CPU Cores | Idx": mib["HOST-RESOURCES-MIB::hrProcessorFrwID"]
+    }
+
     @false_on_cli_error
     def has_lldp_cli(self):
         """
