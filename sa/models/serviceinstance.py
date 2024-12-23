@@ -7,7 +7,9 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Iterable
+import logging
+from dataclasses import dataclass
+from typing import Optional, List, Iterable, Any
 
 # Third-party modules
 from pymongo import UpdateOne
@@ -33,7 +35,20 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.main.models.pool import Pool
 
+DISCOVERY_SOURCE = "discovery"
 SOURCES = {"discovery", "etl", "manual"}
+CLIENT_INSTANCE_NAME = "client"
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class InstanceSettings:
+    allow_resources: List[str]
+    provide: str = "S"
+    allow_manual: bool = False
+    only_one_object: bool = False
+    send_approve: bool = False
 
 
 class AddressItem(EmbeddedDocument):
@@ -70,6 +85,7 @@ class ServiceInstance(Document):
             "managed_object",
             "addresses.address",
             "resources",
+            "remote_id",
             {"fields": ["service", "managed_object", "remote_id", "port"], "unique": True},
             ("addresses.address_bin", "port"),
         ],
@@ -218,13 +234,30 @@ class ServiceInstance(Document):
         """Set instance ManagedObject instance"""
         if self.managed_object and self.managed_object.id == o.id:
             return
+        oo = self.managed_object
         self.managed_object = o
         if bulk is not None:
             bulk += [UpdateOne({"_id": self.id}, {"$set": {"managed_object": o.id}})]
         else:
             ServiceInstance.objects.filter(id=self.id).update(managed_object=o)
+            # Update Summary
+            ServiceSummary.refresh_object(oo)
+            ServiceSummary.refresh_object(o)
 
-    def add_resource(self, o, bulk=None):
+    def reset_object(self, bulk=None):
+        """"""
+        if not self.managed_object:
+            return
+        oo = self.managed_object
+        self.managed_object = None
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$unset": {"managed_object": 1}})]
+        else:
+            ServiceInstance.objects.filter(id=self.id).update(managed_object=None)
+            # Update Summary
+            ServiceSummary.refresh_object(oo)
+
+    def add_resource(self, o):
         """Add Resource to ServiceInstance"""
         if not hasattr(o, "as_resource"):
             raise AttributeError("Model %s not Supported Resource Method" % get_model_id(o))
@@ -232,39 +265,87 @@ class ServiceInstance(Document):
         if rid in self.resources:
             return
         self.resources.append(rid)
-        if bulk is not None:
-            bulk += [UpdateOne({"_id": self.id}, {"$addToSet": {"resources": rid}})]
-        else:
-            ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+        ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
         if self.managed_object:
             ServiceSummary.refresh_object(self.managed_object)
 
-    def clean_resource(self, code: str, bulk=None):
-        """Clean resource by Key"""
+    def clean_resource(self, code: str):
+        """
+        Clean resource by Key
+        Attrs:
+            code: Resource code
+        """
         if not self.resources:
             return
         resources = [c for c in self.resources if not c.startswith(code)]
         if len(self.resources) == len(resources):
             return
         self.resources = resources
-        if bulk is not None:
-            bulk += [UpdateOne({"_id": self.id}, {"$set": resources})]
-        else:
-            ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+        ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
         if self.managed_object:
             ServiceSummary.refresh_object(self.managed_object)
 
+    def update_resources(self, res: List[Any], source: str, bulk=None):
+        """
+        Update resources for service instance
+        Attrs:
+            res: Resource list
+            source: Source code
+            bulk: Bulk update list
+        """
+        resources = []
+        ss = self.get_instance_settings()
+        for o in res:
+            if not hasattr(o, "as_resource"):
+                raise AttributeError("Model %s not Supported Resource Method" % get_model_id(o))
+            if hasattr(o, "state") and ss.send_approve:
+                o.fire_event("approved")
+            rid = o.as_resource()
+            c, _ = rid.split(":", 1)
+            if c not in ss.allow_resources:
+                logger.info("Resource not allowed in service instance profile")
+                continue
+            resources.append(rid)
+            logger.info("Binding service %s to interface %s", self.service, o.name)
+        self.resources = resources
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$set": {"resources": self.resources}})]
+        else:
+            ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+            if self.managed_object:
+                ServiceSummary.refresh_object(self.managed_object)
+
     @classmethod
     def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
-        q = Q(managed_object=managed_object.id)
+        """Iterate over Object Instances"""
+        q = Q()
+        rds = {}
         if managed_object.remote_system and managed_object.remote_id:
-            q |= Q(remote_id=managed_object.remote_id)
+            rds[managed_object.remote_id] = str(managed_object.remote_system)
+        for m in managed_object.mappings or []:
+            rds[m["remote_id"]] = m["remote_system"]
+        if rds:
+            q |= Q(remote_id__in=list(rds))
         if managed_object.address:
             q |= Q(addresses__address=managed_object.address)
         for si in ServiceInstance.objects.filter(q):
+            if rds and si.remote_id and str(si.service.remote_system.id) != rds.get(si.remote_id):
+                continue
             yield si
 
     @classmethod
     def get_object_resources(cls, o):
         """Return all resources used by object"""
         return {}
+
+    def get_instance_settings(self) -> InstanceSettings:
+        """Instance Settings"""
+        ss = self.service.profile.instance_policy_settings
+        if ss:
+            return InstanceSettings(
+                allow_resources=ss.allow_resources,
+                provide=ss.provide,
+                only_one_object=ss.only_one_object,
+                send_approve=ss.send_approve,
+            )
+        return InstanceSettings(allow_resources=[], provide="S")
