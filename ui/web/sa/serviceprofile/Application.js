@@ -462,6 +462,22 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     })
                                 },
                                 {
+                                    text: __("Allow Resources"),
+                                    dataIndex: "allow_resources",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "tagfield",
+                                        store: [
+                                            ["if", "Interface"],
+                                            ["si", "Subinterface"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "if": "Interface",
+                                        "si": "Subinterface"
+                                    })
+                                },
+                                {
                                     text: __("Allow Manual"),
                                     dataIndex: "allow_manual",
                                     width: 100,
