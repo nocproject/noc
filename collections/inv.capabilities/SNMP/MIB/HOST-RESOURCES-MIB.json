@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | MIB | HOST-RESOURCES-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "5c959989-a17a-4364-b234-16ae1fe8fea4",
+    "description": "SNMP HOST-RESOURCES-MIB support.",
+    "type": "bool",
+    "card_template": null
+}
