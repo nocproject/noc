@@ -7,6 +7,8 @@
 
 # Python modules
 import functools
+import itertools
+from typing import List
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -54,7 +56,18 @@ class Script(BaseScript):
     # Dict of capability -> oid to check against snmp GETNEXT
     CHECK_SNMP_GETNEXT = {}
     #
+    CHECK_SNMP_GET_GENERIC = {
+        "SNMP | MIB | HOST-RESOURCES-MIB": mib["HOST-RESOURCES-MIB::hrSystemDate", 0],
+        "SNMP | MIB | NTPv4-MIB": mib["NTPv4-MIB::ntpEntStatusActiveRefSourceId", 0],
+    }
+    CHECK_SNMP_GETNEXT_GENERIC = {
+        "SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"],
+    }
+    #
+    GET_SNMP_TABLE_IDX = {}
+    #
     SNMP_CAPS = {SNMP_v1: "SNMP | v1", SNMP_v2c: "SNMP | v2c", SNMP_v3: "SNMP | v3"}
+    # MIB Support
 
     def check_snmp_get(self, oid, version=None):
         """
@@ -351,16 +364,12 @@ class Script(BaseScript):
             return engine_id.hex()
         return None
 
-    @false_on_snmp_error
-    def has_ntpv4(self):
-        """
-        True if NTPv4-MIB supported
-        :return:
-        """
-        if self.has_snmp():
-            self.snmp.get(mib["NTPv4-MIB::ntpEntStatusActiveRefSourceId", 0])
-            return True
-        return False
+    def get_snmp_table_idx(self, oid) -> List[int]:
+        r = []
+        for oid, value in self.snmp.getnext(mib["HOST-RESOURCES-MIB::hrProcessorFrwID"]):
+            _, idx = oid.rsplit(".", 1)
+            r.append(str(idx))
+        return r
 
     def execute_platform_cli(self, caps):
         """
@@ -440,12 +449,21 @@ class Script(BaseScript):
                     caps["SNMP | IF-MIB"] = True
                     if self.has_snmp_ifmib_hc(version=snmp_version):
                         caps["SNMP | IF-MIB | HC"] = True
-                for cap, oid in self.CHECK_SNMP_GET.items():
+                for cap, oid in itertools.chain(
+                    self.CHECK_SNMP_GET.items(), self.CHECK_SNMP_GET_GENERIC.items()
+                ):
                     if self.check_snmp_get(oid, version=snmp_version):
                         caps[cap] = True
-                for cap, oid in self.CHECK_SNMP_GETNEXT.items():
+                for cap, oid in itertools.chain(
+                    self.CHECK_SNMP_GETNEXT.items(),
+                    self.CHECK_SNMP_GETNEXT_GENERIC.items(),
+                ):
                     if self.check_snmp_getnext(oid, version=snmp_version):
                         caps[cap] = True
+                for cap, oid in self.GET_SNMP_TABLE_IDX.items():
+                    idx = self.get_snmp_table_idx(oid)
+                    if idx:
+                        caps[cap] = " | ".join(str(x) for x in idx)
                 x = self.get_enterprise_id(version=snmp_version)
                 if x:
                     caps["SNMP | OID | sysObjectID"] = x
@@ -496,8 +514,6 @@ class Script(BaseScript):
             caps["Network | BFD"] = True
         if self.is_requested("rep") and self.has_rep():
             caps["Network | REP"] = True
-        if self.has_ntpv4():
-            caps["SNMP | MIB | NTPv4-MIB"] = True
         self.call_method(
             cli_handler="execute_platform_cli",
             snmp_handler="execute_platform_snmp",
