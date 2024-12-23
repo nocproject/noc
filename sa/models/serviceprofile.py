@@ -366,13 +366,6 @@ class ServiceProfile(Document):
                 return status
         return Status.UNKNOWN
 
-    def get_resource_policy(self, type: str = "service"):
-        """
-        Return resource binding policy
-        Attrs:
-            type: service, client
-        """
-
     def calculate_alarm_status(self, aa) -> Status:
         """
         Calculate Alarm status by rule
@@ -389,28 +382,7 @@ class ServiceProfile(Document):
             return self.get_status_by_severity(aa.severity)
         return Status.UNKNOWN
 
-    def get_alarm_service_filter(self):
-        r = m_q()
-        for rule in self.alarm_status_rules:
-            q = m_q()
-            if rule.alarm_class_template:
-                ac = list(
-                    AlarmClass.objects.filter(name=re.compile(rule.alarm_class_template)).scalar(
-                        "id"
-                    )
-                )
-                if not ac:
-                    continue
-                q &= m_q(alarm_class__in=ac)
-            if rule.include_labels:
-                q &= m_q(effective_labels__in=rule.include_labels)
-            if rule.min_severity:
-                q &= m_q(severity__gte=rule.min_severity)
-            if rule.max_severity:
-                q &= m_q(severity__lte=rule.max_severity)
-            if q:
-                r |= q
-        return r
+    def get_alarm_service_filter(self): ...
 
 
 def refresh_interface_profiles(sp_id, ip_id):
