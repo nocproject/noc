@@ -17,11 +17,22 @@ T = TypeVar("T")
 
 
 class RemoteReference(BaseModel):
+    """For reference field to Remote System Value"""
+
     id: str
     remote_system: Optional[str]
 
 
+class MappingItem(BaseModel):
+    """Additional RemoteSystem bindings"""
+
+    remote_system: str
+    remote_id: str
+
+
 class ETLMapping(BaseModel):
+    """For reference field to Database Value"""
+
     value: str
     scope: str
     remote_id: Optional[str] = None

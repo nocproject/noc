@@ -8,6 +8,7 @@
 # NOC modules
 from .base import BaseLoader
 from noc.inv.models.networksegment import NetworkSegment as NetworkSegmentModel
+from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.sa.models.managedobject import ManagedObject
 from ..models.networksegment import NetworkSegment
 
@@ -20,6 +21,7 @@ class NetworkSegmentLoader(BaseLoader):
     name = "networksegment"
     model = NetworkSegmentModel
     data_model = NetworkSegment
+    model_mappings = {"profile": NetworkSegmentProfile}
 
     def purge(self):
         """

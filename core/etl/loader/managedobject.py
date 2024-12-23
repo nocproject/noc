@@ -169,18 +169,10 @@ class ManagedObjectLoader(BaseLoader):
                     obj.set_state(ws)
                 obj.container = None
                 obj.save()
-                # Register deleted objects
-                if self.system.remote_system.enable_discoveredobject:
-                    register(
-                        address=obj.address,
-                        pool=obj.pool.bi_id,
-                        source="etl",
-                        remote_system=self.system.remote_system.bi_id,
-                        remote_id=obj.id,
-                        is_delete=True,
-                    )
             except self.model.DoesNotExist:
                 pass  # Already deleted
+            except KeyError:
+                pass
         self.pending_deletes = []
 
     def post_save(self, o: ManagedObjectModel, fields: Dict[str, Any]):

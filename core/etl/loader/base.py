@@ -25,6 +25,7 @@ from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.debug import error_report
 from noc.core.etl.compression import compressor
+from noc.core.etl.models.typing import MappingItem
 from noc.models import get_model_id, LABEL_MODELS
 from ..models.base import BaseModel
 
@@ -424,7 +425,12 @@ class BaseLoader(object):
             self.logger.debug("Object not found")
             return None
 
-    def create_object(self, v, state: Optional[str] = None):
+    def create_object(
+        self,
+        v,
+        state: Optional[str] = None,
+        mappings: Optional[Dict[Any, str]] = None,
+    ):
         """
         Create object with attributes. Override to save complex
         data structures
@@ -439,6 +445,8 @@ class BaseLoader(object):
             o.state = self.clean_wf_state(o.object_profile.workflow, state)
         else:
             o.state = self.clean_wf_state(o.profile.workflow, state)
+        if mappings is not None:
+            o.update_object_mappings(mappings, source="e")
         try:
             o.save()
         except self.integrity_exception as e:
@@ -469,6 +477,7 @@ class BaseLoader(object):
         inc_changes: Dict[str, Dict[str, List]] = None,
         state: Optional[str] = None,
         state_changed: Optional[datetime.datetime] = None,
+        mappings: Optional[Dict[Any, str]] = None,
     ):
         """
         Change object with attributes
@@ -491,6 +500,8 @@ class BaseLoader(object):
             setattr(o, k, nv)
         if self.workflow_state_sync and state:
             self.change_workflow(o, state, state_changed)
+        if mappings is not None:
+            o.update_object_mappings(mappings, source="e")
         try:
             o.save()
         except self.integrity_exception as e:
@@ -537,6 +548,7 @@ class BaseLoader(object):
         if self.post_save_fields:
             for fn in self.post_save_fields:
                 psf[fn] = v.pop(fn)
+        mappings = v.pop("mappings", None)
         o = self.find_object(v)
         if o:
             self.c_change += 1
@@ -553,10 +565,11 @@ class BaseLoader(object):
                 vv,
                 state=getattr(item, "state", None),
                 state_changed=getattr(item, "state_changed", None),
+                mappings=mappings,
             )
         else:
             self.c_add += 1
-            o = self.create_object(v, state=getattr(item, "state", None))
+            o = self.create_object(v, state=getattr(item, "state", None), mappings=mappings)
             if self.workflow_event_model:
                 o.fire_event(self.workflow_add_event)
         if o and psf:
@@ -575,8 +588,14 @@ class BaseLoader(object):
         ov = self.clean(o)
         # Post save update fields (example capabilities)
         psf: Dict[str, Any] = {}
+        mappings = None
         for fn in self.data_model.model_fields:
             if fn == "id" or fn in self.workflow_fields:
+                continue
+            elif fn == "mappings":
+                mappings = nv.pop("mappings")
+                if not mappings and o.mappings:
+                    mappings = {}
                 continue
             if self.post_save_fields and fn in self.post_save_fields:
                 psf[fn] = nv.pop(fn)
@@ -598,6 +617,7 @@ class BaseLoader(object):
             inc_changes=incremental_changes,
             state=getattr(n, "state", None),
             state_changed=getattr(n, "state_changed", None),
+            mappings=mappings,
         )
         if o and psf:
             self.post_save(o, psf)
@@ -679,7 +699,7 @@ class BaseLoader(object):
                 d.write(s.read())
             os.unlink(self.new_state_path)
         self.logger.info("Saving mappings to %s", self.mappings_path)
-        mdata = "\n".join("%s,%s" % (k, self.mappings[k]) for k in sorted(self.mappings))
+        mdata = "\n".join(f"{k},{self.mappings[k]}" for k in sorted(self.mappings))
         safe_rewrite(self.mappings_path, mdata)
 
     def post_save(self, o, fields: Dict[str, Any]):
@@ -699,6 +719,21 @@ class BaseLoader(object):
         # Fill integration fields
         r["remote_system"] = self.system.remote_system
         r["remote_id"] = self.clean_str(item.id)
+        # Fill mapping
+        if "mappings" in r and r["mappings"]:
+            r["mappings"] = self.clean_object_mappings(item.mappings)
+        return r
+
+    @classmethod
+    def clean_object_mappings(cls, value: List[MappingItem]) -> Optional[Dict[Any, str]]:
+        from noc.main.models.remotesystem import RemoteSystem
+
+        r = {}
+        for m in value:
+            rs = RemoteSystem.get_by_name(m.remote_system)
+            if not rs:
+                continue
+            r[rs] = m.remote_id
         return r
 
     @classmethod
