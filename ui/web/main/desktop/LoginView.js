@@ -19,6 +19,8 @@ Ext.define("NOC.main.desktop.LoginView", {
   defaultFocus: "user",
   defaultButton: "okButton",
   referenceHolder: true,
+  width: 500,
+  height: 310,
   viewModel: "default",
   items: {
     xtype: "form",
@@ -45,7 +47,6 @@ Ext.define("NOC.main.desktop.LoginView", {
         hideLabel: true,
       },
       {
-        xtype: "textfield",
         itemId: "user",
         name: "user",
         bind: "{user}",
@@ -53,7 +54,6 @@ Ext.define("NOC.main.desktop.LoginView", {
         blankText: __("User name cannot be empty"),
       },
       {
-        xtype: "textfield",
         itemId: "password",
         name: "password",
         bind: "{password}",
@@ -62,21 +62,32 @@ Ext.define("NOC.main.desktop.LoginView", {
         inputType: "password",
       },
     ],
-    buttons: [{
-      reference: "okButton",
-      formBind: true,
-      handler: "onLoginClick",
-      text: __("Login"),
-      listeners: {
-        beforerender: function(){
-          Ext.apply(this.autoEl, {type: "submit"});
+    buttons: [
+      {
+        reference: "okButton",
+        formBind: true,
+        handler: "onLoginClick",
+        text: __("Login"),
+        glyph: "xf090@FontAwesome",
+        listeners: {
+          beforerender: function(){
+            Ext.apply(this.autoEl, {type: "submit"});
+          },
         },
       },
-    }],
+      {
+        itemId: "resetBtn",
+        text: __("Reset"),
+        glyph: "xf00d@FontAwesome",
+        handler: function(){
+          this.up("form").reset();
+        },
+      },
+    ],
   },
   initComponent: function(){
     var param = Ext.urlDecode(location.search);
-    if("msg" in param){
+    if("msg" in param){ // show message when timeout
       this.items.items[0].value = param.msg + "<br/>" + this.items.items[0].value;
     }
     this.callParent();
@@ -88,39 +99,23 @@ Ext.define("NOC.main.desktop.LoginView", {
         password: data.password,
       });
     if(params !== undefined){
+      this.lookup("loginForm").setDisabled(true);
       Ext.Ajax.request({
         url: "/api/login/login",
         params: params,
         method: "POST",
+        scope: this,
         success: Ext.Function.pass(this.onLoginSuccess, this.onLoginFailure),
         failure: this.onLoginFailure,
+        callback: function(){
+          this.lookup("loginForm").setDisabled(false);
+        },
         defaultPostHeader: "application/json",
       });
     }
   },
   onLoginFailure: function(){
-    Ext.toast({
-      html: '<div style="text-align: center;">' + __("Failed to log in") + "</div>",
-      align: "t",
-      paddingY: 0,
-      width: "80%",
-      minHeight: 5,
-      border: false,
-      listeners: {
-        focusenter: function(){
-          this.close();
-        },
-      },
-      bodyStyle: {
-        color: "white",
-        background: "red",
-        "font-weight": "bold",
-      },
-      style: {
-        background: "red",
-        "border-width": "0px",
-      },
-    });
+    NOC.error(__("Failed to log in"));
   },
   onLoginSuccess: function(failureFunc, response){
     var result = Ext.decode(response.responseText);
