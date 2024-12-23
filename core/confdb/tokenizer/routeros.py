@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+from typing import Iterator, Tuple
 
 # NOC modules
 from noc.core.validators import is_int
@@ -16,6 +17,24 @@ from .line import LineTokenizer
 class RouterOSTokenizer(LineTokenizer):
     name = "routeros"
     rx_param = re.compile(r'([^= ]+="[^"]+"|[^= ]+=\S+|\S+)')
+    rx_line_delimiter = re.compile(r"\\\n\s+")
+
+    def iter_lines(self) -> Iterator[Tuple[str]]:
+        # self.data = self.data.replace("\\\n", "")
+        self.data = self.rx_line_delimiter.sub("", self.data)
+        dl = len(self.data)
+        i = 0
+        leol = len(self.eol)
+        while i < dl:
+            ni = self.data.find(self.eol, i)
+            if ni == -1:
+                yield self.data[i:]
+                break
+            elif self.data[i:ni].endswith("\\"):
+                print("LINE BREAKER")
+                pass
+            yield self.data[i:ni]
+            i = ni + leol
 
     def iter_context(self, context, tokens):
         if tokens:
