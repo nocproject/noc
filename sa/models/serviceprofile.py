@@ -29,7 +29,6 @@ from mongoengine.fields import (
     DynamicField,
     EnumField,
 )
-from mongoengine.queryset.visitor import Q as m_q
 import cachetools
 
 # NOC modules
@@ -41,7 +40,6 @@ from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import defer
 from noc.core.hash import hash_int
-from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
