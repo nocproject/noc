@@ -194,3 +194,8 @@ class MAC(str):
         :return: True if MAC is multicast
         """
         return bool(int(self.split(":", 1)[0], 16) & 0x1)
+
+    @property
+    def is_private(self) -> bool:
+        """Check if MAC address on Private Range: F0:3F:03:00:00:00 - F0:3F:03:FF:FF:FF"""
+        return self.startswith("F0:3F:03")
