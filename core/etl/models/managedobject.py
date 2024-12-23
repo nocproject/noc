@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectModel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from pydantic import ConfigDict
 
 # NOC modules
 from .base import BaseModel, _BaseModel
-from .typing import Reference
+from .typing import Reference, MappingItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .object import Object
@@ -84,6 +84,7 @@ class ManagedObject(BaseModel):
     project: Optional[Reference["Project"]] = None
     capabilities: Optional[List[CapsItem]] = None
     checkpoint: Optional[str] = None
+    mappings: Optional[List[MappingItem]] = None
 
     @field_validator("address")
     @classmethod

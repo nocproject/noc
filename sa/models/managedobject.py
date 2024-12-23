@@ -205,8 +205,11 @@ CapsItems = RootModel[List[ModelCapsItem]]
 
 
 class MappingItem(BaseModel):
+    """source priority: m - manual, e - etl, o - other"""
+
     remote_system: str
     remote_id: str
+    sources: str = "o"
 
 
 MappingItems = RootModel[List[MappingItem]]
@@ -2920,26 +2923,63 @@ class ManagedObject(NOCModel):
                 return m["remote_id"]
         return None
 
-    def update_object_mappings(self, mappings: Dict[RemoteSystem, str]) -> bool:
-        """Update managed Object mappings"""
-        new_mapps = []
+    def update_object_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
+        """
+        Update managed Object mappings
+        Source Priority, for mappings on different sources
+        Attrs:
+            mappings: Map remote_system -> remote_id
+            source: Source Code
+              * m - manual
+              * e - elt
+              * o - other
+        """
+        priority = "oem"
+        new_mappings = []
         changed = False
         seen = set()
         for m in self.mappings:
             rs = RemoteSystem.get_by_id(m["remote_system"])
-            if rs not in mappings:
-                continue
-            elif mappings[rs] != m["remote_id"]:
+            sources = set(m.get("sources", "o"))
+            max_p = max(priority.index(x) for x in source)
+            if rs not in mappings and source in sources:
+                # Remove Source
+                sources.remove(source)
+            elif rs not in mappings:
+                # Set on different source
+                pass
+            elif mappings[rs] != m["remote_id"] and priority.index(source) >= max_p:
                 # Change ID
+                logger.info(
+                    "[%s] Mapping over priority and will be replace: %s -> %s",
+                    rs,
+                    m["remote_id"],
+                    mappings[rs],
+                )
+                # replace, skip
                 m["remote_id"] = mappings[rs]
+                sources.add(source)
                 changed |= True
-            new_mapps.append(m)
+            elif mappings[rs] != m["remote_id"]:
+                pass
+            elif source not in sources:
+                changed |= True
+                sources.add(source)
+            if not sources:
+                changed |= True
+                continue
+            elif "sources" not in m or sources != set(m["sources"]):
+                m["sources"] = "".join(sorted(sources))
+                changed |= True
+            new_mappings.append(m)
             seen.add(rs)
         for rs in set(mappings) - seen:
-            new_mapps.append({"remote_system": str(rs.id), "remote_id": mappings[rs]})
+            new_mappings.append(
+                {"remote_system": str(rs.id), "remote_id": mappings[rs], "sources": source}
+            )
             changed |= True
         if changed:
-            self.mappings = new_mapps
+            self.mappings = new_mappings
         return changed
 
     @classmethod
