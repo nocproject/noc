@@ -22,13 +22,13 @@ from noc.services.web.base.extapplication import ExtApplication, view
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.mib import MIB
-from noc.fm.models.utils import get_alarm, get_severity
+from noc.fm.models.utils import get_severity
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.service.loader import get_service
-from noc.core.fm.event import Event, EVENT_QUERY as EVENT_QUERY_1
+from noc.core.fm.event import Event
 from noc.core.escape import json_escape
 from noc.core.comp import smart_text
 from noc.core.clickhouse.connect import connection
@@ -306,7 +306,7 @@ class EventApplication(ExtApplication):
         validate={"msg": UnicodeParameter()},
     )
     def api_post(self, request, id, msg):
-        event = Event.get_event_by_id(id)
+        event = Event.get_by_id(id)
         if not event:
             self.response_not_found()
         managed_object = ManagedObject.get_by_id(int(event.target.id))
@@ -331,7 +331,7 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True, access="launch")
     def api_json(self, request, id):
-        event = Event.get_event_by_id(id)
+        event = Event.get_by_id(id)
         if not event:
             self.response_not_found()
         # Get event class
@@ -355,7 +355,7 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="launch")
     def api_reclassify(self, request, id):
-        event = Event.get_event_by_id(id)
+        event = Event.get_by_id(id)
         if not event:
             self.response_not_found()
         if event.target.id:
@@ -397,28 +397,19 @@ class EventApplication(ExtApplication):
         """
         Returns dict with event's fields and values
         """
-        cursor = connection()
-        res = orjson.loads(cursor.execute(EVENT_QUERY_1, args=[id, id], return_raw=True))
-        if not res or not res["data"]:
-            return HttpResponse("", status=self.NOT_FOUND)
-        res = res["data"][0]
-        event = Event.from_json(res)
-        if not event.target.id and res["managed_object_bi_id"]:
-            # Unknown object
-            mo = ManagedObject.get_by_bi_id(res["managed_object_bi_id"])
-        elif event.target.id:
-            mo = ManagedObject.get_by_id(int())
-        else:
-            mo = None
+        event = Event.get_by_id(id)
+        if not event:
+            return self.response_not_found()
 
+        mo = ManagedObject.get_by_id(int(event.target.id))
         event_class = EventClass.get_by_name(event.type.event_class)
         ctx = {"event": event}
         ctx.update(event.vars)
         d = {
             "id": str(event.id),
             "status": "A",
-            "managed_object": mo.id if mo else event.target.id,
-            "managed_object__label": mo.name if mo else event.target.name,
+            "managed_object": event.target.id,
+            "managed_object__label": event.target.name,
             "administrative_domain": mo.administrative_domain_id if mo else None,
             "administrative_domain__label": mo.administrative_domain.name if mo else "",
             "event_class": str(event_class.id) if event_class else None,
@@ -432,7 +423,7 @@ class EventApplication(ExtApplication):
             "alarms": [],
             "log": None,
             # Vars
-            "raw_vars": sorted(res["raw_vars"].items()),
+            "raw_vars": sorted([(x.name, x.value) for x in event.data]),
             "vars": [],
             "resolved_vars": [],
             #
@@ -479,26 +470,4 @@ class EventApplication(ExtApplication):
                 "segment_id": str(mo.segment.id),
                 "tags": mo.labels,
             }
-        # Alarms
-        for a_id in res["alarms"]:
-            a = get_alarm(a_id)
-            if not a:
-                continue
-            if a.opening_event == event.id:
-                role = "O"
-            elif a.closing_event == event.id:
-                role = "C"
-            else:
-                role = ""
-            d["alarms"] += [
-                {
-                    "id": str(a.id),
-                    "status": a.status,
-                    "alarm_class": str(a.alarm_class.id),
-                    "alarm_class__label": a.alarm_class.name,
-                    "subject": a.subject,
-                    "role": role,
-                    "timestamp": self.to_json(a.timestamp),
-                }
-            ]
         return self.response(d, status=self.OK)
