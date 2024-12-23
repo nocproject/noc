@@ -50,7 +50,7 @@ class NRIServiceCheck(DiscoveryCheck):
 
     def handler(self):
         self.logger.info("NRI Service Mapper")
-        processed_instances = set()
+        processed_instances = {}
         resources: DefaultDict[ServiceInstance, List[Any]] = defaultdict(list)
         # Managed Object Binding
         for si in ServiceInstance.iter_object_instances(self.object):
@@ -61,7 +61,7 @@ class NRIServiceCheck(DiscoveryCheck):
                 self.logger.info("Bind object to Service Instance: %s", si)
                 si.set_object(self.object)
             si.seen(DISCOVERY_SOURCE)
-            processed_instances.add(si.id)
+            processed_instances[si.id] = si
         # New Instances
         global_iface_map_instances = self.get_remote_resource_svcs()
         for svc, iface in global_iface_map_instances.items():
@@ -71,7 +71,7 @@ class NRIServiceCheck(DiscoveryCheck):
                 name=CLIENT_INSTANCE_NAME,
                 managed_object=self.object,
             )
-            processed_instances.add(si.id)
+            processed_instances[si.id] = si
             resources[si].append(iface)
         # unseen
         for si in ServiceInstance.objects.filter(
@@ -110,8 +110,8 @@ class NRIServiceCheck(DiscoveryCheck):
         # Refresh resources
         for si, rs in resources.items():
             si.update_resources(rs, source=DISCOVERY_SOURCE, bulk=bulk)
-        for si in processed_instances - {x.id for x in resources}:
-            si.update_resources({}, source=DISCOVERY_SOURCE, bulk=bulk)
+        for si in set(processed_instances) - {x.id for x in resources}:
+            processed_instances[si].update_resources([], source=DISCOVERY_SOURCE, bulk=bulk)
         if bulk:
             si_col = ServiceInstance._get_collection()
             self.logger.info("Sending %d updates", len(bulk))
