@@ -130,6 +130,7 @@ class EscalationServiceItem(BaseModel):
         tt_id: ID on Escalation System
         oper_status ?
     """
+
     id: str
     tt_id: str
 
