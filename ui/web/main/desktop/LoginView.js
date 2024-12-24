@@ -29,7 +29,7 @@ Ext.define("NOC.main.desktop.LoginView", {
     border: false,
     bodyStyle: {
       background: "#e0e0e0",
-      padding: "10px",
+      padding: "20px",
     },
     autoEl: {
       tag: "form",
@@ -39,6 +39,11 @@ Ext.define("NOC.main.desktop.LoginView", {
       allowBlank: false,
       enableKeyEvents: true,
       xtype: "textfield",
+    },
+    layout: {
+      type: "vbox",
+      align: "stretch",
+      pack: "center",
     },
     items: [
       {
