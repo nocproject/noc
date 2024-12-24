@@ -19,7 +19,6 @@ from noc.main.models.label import Label
 from noc.main.models.timepattern import TimePattern
 from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.service import Service
 
 
 class Target(
@@ -308,7 +307,6 @@ class CfgTrapDataStream(DataStream):
                 "trap_source": target.enable_snmptrap_source("m"),
                 "ping_check": target.is_enable_ping,
             }
-        svc_address = cls.get_services_address(mo_id)
         if target.enable_syslog_source("l") or target.enable_snmptrap_source("l"):
             for addr, ifname, source in cls._iter_addresses(mo_id):
                 if addr in addresses:
@@ -320,7 +318,7 @@ class CfgTrapDataStream(DataStream):
                     "interface": ifname,
                     "syslog_source": target.enable_syslog_source(source),
                     "trap_source": target.enable_snmptrap_source(source),
-                    "ping_check": addr in svc_address,
+                    "ping_check": False,
                 }
         if target.enable_syslog_source("s") and target.syslog_source_ip not in addresses:
             addresses[target.syslog_source_ip] = {
@@ -339,15 +337,6 @@ class CfgTrapDataStream(DataStream):
                 "syslog_source": False,
                 "trap_source": True,
                 "ping_check": False,
-            }
-        for addr in (svc_address - addresses.keys()):
-            addresses[addr] = {
-                "address": addr,
-                "is_fatal": False,
-                "interface": None,
-                "syslog_source": False,
-                "trap_source": False,
-                "ping_check": True,
             }
         if not addresses:
             raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
@@ -382,17 +371,6 @@ class CfgTrapDataStream(DataStream):
                 yield str(ip.address), if_name, "l" if if_type == "loopback" else "a"
 
     @classmethod
-    def get_services_address(cls, mo_id):
-        r = set()
-
-        for svc in Service.objects.filter(managed_object=mo_id):
-            c = svc.get_caps()
-            if not c.get("Channel | Address"):
-                continue
-            r.add(c["Channel | Address"])
-        return r
-
-    @classmethod
     def get_meta(cls, data):
         r = {
             "collectors": [c for c in ["ping", "syslog", "trap"] if data.get(c)],
@@ -407,4 +385,3 @@ class CfgTrapDataStream(DataStream):
     @classmethod
     def filter_collector(cls, name: str):
         return {f"{cls.F_META}.collectors": {"$elemMatch": {"$elemMatch": {"$in": [name]}}}}
-
