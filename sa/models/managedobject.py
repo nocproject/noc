@@ -53,6 +53,8 @@ from noc.core.wf.diagnostic import (
     DIAGNOCSTIC_LABEL_SCOPE,
     SA_DIAG,
     ALARM_DIAG,
+    FIRST_AVAIL,
+    DEFER_CHANGE_STATE,
 )
 from noc.core.wf.interaction import Interaction
 from noc.core.mx import (
@@ -107,7 +109,7 @@ from noc.core.model.decorator import (
 from noc.inv.models.object import Object
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
-from noc.core.defer import call_later
+from noc.core.defer import call_later, defer
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext, ScriptCaller
@@ -3048,6 +3050,7 @@ class ManagedObject(NOCModel):
             self.update_caps(capabilities, source="template")
         if static_service_groups:
             self.static_service_groups = [str(g.id) for g in static_service_groups]
+            changed = True
         if state:
             self.state = state
         for field, value in data.items():
@@ -3169,23 +3172,19 @@ class ManagedObjectStatus(NOCModel):
         cs = {}
         with pg_connection.cursor() as cursor:
             cursor.execute(
-                # """
-                # SELECT managed_object_id, status, last, mo.pool
-                # FROM sa_objectstatus
-                # LEFT JOIN sa_managedobject AS mo ON sa_objectstatus.managed_object_id = mo.id
-                # WHERE managed_object_id = ANY(%s::INT[])
-                # """,
                 """
-                SELECT id, os.status, os.last, mo.pool
+                SELECT id, os.status, os.last, mo.pool, diagnostics -> 'FIRST_AVAIL' -> 'state' as fa_state
                 FROM sa_managedobject AS mo
                 LEFT JOIN sa_objectstatus AS os ON mo.id = os.managed_object_id
                 WHERE id = ANY(%s::INT[])
                 """,
                 [[x[0] for x in statuses]],
             )
-            for o, status, last, pool in cursor:
+            for o, status, last, pool, d_state in cursor:
                 pool = Pool.get_by_id(pool)
                 cs[o] = {"status": status, "last": last, "pool": pool.name}
+                if d_state and DiagnosticState(d_state) == DiagnosticState.unknown:
+                    cs[o]["d_avail_state"] = None
         # Processed new statuses
         suspended_jobs = defaultdict(list)  # Pool - ids
         for oid, status, ts in statuses:
@@ -3205,6 +3204,15 @@ class ManagedObjectStatus(NOCModel):
                 # Oops, out-of-order update
                 # Restore correct state
                 pass
+            if status and "d_avail_state" in cs[oid]:
+                # fire event
+                defer(
+                    DEFER_CHANGE_STATE,
+                    diagnostic=FIRST_AVAIL,
+                    state=DiagnosticState.enabled.value,
+                    oid=oid,
+                    key=oid,
+                )
         if not bulk:
             return
         # Save statuses to db
