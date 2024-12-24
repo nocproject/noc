@@ -29,9 +29,6 @@ HIDDEN_FIELDS = {"password", "new_password", "old_password", "retype_password"}
 # Build JWK for sign/verify
 jwt_key = jwk.construct(config.secret_key, algorithm=config.login.jwt_algorithm).to_dict()
 
-# TTL for expired passwords
-EXPIRED_TTL = 3_600
-
 
 def iter_methods():
     for m in config.login.methods.split(","):
@@ -142,7 +139,7 @@ def get_exp_from_jwt(token: str, audience: Optional[str] = None) -> datetime:
         raise ValueError(str(e))
 
 
-def set_jwt_cookie(response: Response, user: str) -> None:
+def set_jwt_cookie(response: Response, user: str, /, expire: int | None = None) -> None:
     """
     Generate JWT token and append as cookie to response.
 
@@ -150,21 +147,11 @@ def set_jwt_cookie(response: Response, user: str) -> None:
         response: Response instance.
         user: User name.
     """
-    # Get user's password ttl
-    u = User.get_by_username(user)
-    if not u:
-        return  # Should not be happened
-    if u.change_at:
-        now = datetime.datetime.now()
-        ttl = max(
-            min(int((u.change_at - now).total_seconds()), config.login.session_ttl), EXPIRED_TTL
-        )
-    else:
-        ttl = config.login.session_ttl
+    expire = expire or config.login.session_ttl
     response.set_cookie(
         key=config.login.jwt_cookie_name,
-        value=get_jwt_token(user, audience="auth", expire=ttl),
-        expires=ttl,
+        value=get_jwt_token(user, audience="auth", expire=expire),
+        expires=expire,
     )
 
 
