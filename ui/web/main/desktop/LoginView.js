@@ -22,6 +22,9 @@ Ext.define("NOC.main.desktop.LoginView", {
   width: 500,
   height: 310,
   viewModel: "default",
+  requires: [
+    "NOC.main.desktop.ChangePassword",
+  ],
   items: {
     xtype: "form",
     reference: "loginForm",
@@ -112,11 +115,15 @@ Ext.define("NOC.main.desktop.LoginView", {
         scope: this,
         success: Ext.Function.pass(this.onLoginSuccess, this.onLoginFailure),
         failure: this.onLoginFailure,
-        callback: function(){
-          this.lookup("loginForm").setDisabled(false);
-        },
+        callback: "windowClose", 
         defaultPostHeader: "application/json",
       });
+    }
+  },
+  windowClose: function(){
+    var form = this.lookupReference("loginForm");
+    if(!Ext.isEmpty(form)){
+      form.setDisabled(false);
     }
   },
   onLoginFailure: function(){
@@ -125,16 +132,29 @@ Ext.define("NOC.main.desktop.LoginView", {
   onLoginSuccess: function(failureFunc, response){
     var result = Ext.decode(response.responseText);
     if(result.status === true){
-      var param = Ext.urlDecode(location.search);
-      if("uri" in param){
-        if(location.hash){ // web app
-          location = "/" + location.hash;
-        } else{ // cards
-          location = param.uri;
-        }
+      if("must_change" in result && result.must_change === true){
+        this.close();
+        Ext.create("NOC.main.desktop.ChangePassword", {
+          listeners: {
+            scope: this,
+            close: this.applicationOpen, 
+          },
+        });
+      } else{
+        this.applicationOpen();
       }
     } else{
       failureFunc();
+    }
+  },
+  applicationOpen: function(){
+    var param = Ext.urlDecode(location.search);
+    if("uri" in param){
+      if(location.hash){ // web app
+        location = "/" + location.hash;
+      } else{ // cards
+        location = param.uri;
+      }
     }
   },
 });
