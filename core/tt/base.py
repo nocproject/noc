@@ -18,12 +18,14 @@ from .types import (
     TTInfo,
     TTCommentRequest,
     EscalationItem,
+    EscalationServiceItem,
     EscalationStatus,
     EscalationResult,
     TTChange,
     TTAction,
 )
 from .error import TTError, TemporaryTTError
+from noc.core.debug import error_report
 
 
 class BaseTTSystem(object):
@@ -197,6 +199,8 @@ class TTSystemCtx(object):
         login=None,
         actions=None,
         items=None,
+        services=None,
+        suppress_tt_trace: bool = True,
     ):
         self.tt_system: BaseTTSystem = tt_system
         self.id: Optional[str] = id
@@ -205,9 +209,11 @@ class TTSystemCtx(object):
         self.reason: Optional[str] = reason
         self.login: Optional[str] = login
         self.items: List[EscalationItem] = items or []
+        self.services: List[EscalationServiceItem] = services or []
         self.actions: List[TTActionContext] = actions or []
         self.error_code: Optional[str] = None
         self.error_text: Optional[str] = ""
+        self.suppress_tt_trace: bool = suppress_tt_trace
 
     def get_result(self) -> EscalationResult:
         if self.error_code:
@@ -253,6 +259,7 @@ class TTSystemCtx(object):
             EscalationContext(
                 id=self.id,
                 queue=self.queue,
+                services=self.services,
                 reason=self.reason,
                 login=self.login,
                 timestamp=self.timestamp,
@@ -325,6 +332,8 @@ class TTSystemCtx(object):
             self.set_error("skip", str(exc_val))
         elif exc_type:
             self.set_error("fail", str(exc_val))
+            if not self.suppress_tt_trace:
+                error_report()
         return True
 
     def set_error(self, code: Optional[str] = None, text: Optional[str] = None) -> None:

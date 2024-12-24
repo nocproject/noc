@@ -122,6 +122,18 @@ class EscalationMember(enum.Enum):
     HANDLER = "handler"
 
 
+class EscalationServiceItem(BaseModel):
+    """
+    Service Object Item
+    Attributes:
+        id: Service Id
+        tt_id: ID on Escalation System
+        oper_status ?
+    """
+    id: str
+    tt_id: str
+
+
 class EscalationItem(BaseModel):
     """
     Managed object item.
@@ -180,6 +192,7 @@ class EscalationContext(BaseModel):
 
     subject: str
     items: List[EscalationItem]
+    services: Optional[List[EscalationServiceItem]] = None
     id: Optional[str] = None
     body: Optional[str] = None
     timestamp: Optional[datetime] = None
@@ -195,6 +208,11 @@ class EscalationContext(BaseModel):
         Escalation leader.
         """
         return self.items[0]
+
+    @property
+    def service(self) -> Optional[EscalationServiceItem]:
+        if self.services:
+            return self.services[0]
 
 
 class DeescalationContext(BaseModel):
@@ -238,11 +256,11 @@ class TTCommentInfo(BaseModel):
     Trouble Ticket comment.
     """
 
-    ts: Optional[datetime]
-    login: Optional[str]
-    subject: Optional[str]
     body: str
-    reply_to: Optional[str]
+    ts: Optional[datetime] = None
+    login: Optional[str] = None
+    subject: Optional[str] = None
+    reply_to: Optional[str] = None
 
 
 class TTInfo(BaseModel):
@@ -268,8 +286,8 @@ class TTInfo(BaseModel):
 
 class TTCommentRequest(BaseModel):
     id: str
-    ts: Optional[datetime]
-    login: Optional[str]
-    subject: Optional[str]
     body: str
-    reply_to: Optional[str]
+    ts: Optional[datetime] = None
+    login: Optional[str] = None
+    subject: Optional[str] = None
+    reply_to: Optional[str] = None
