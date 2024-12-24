@@ -242,7 +242,8 @@ class ServiceInstance(Document):
             ServiceInstance.objects.filter(id=self.id).update(managed_object=o)
             # Update Summary
             ServiceSummary.refresh_object(oo)
-            ServiceSummary.refresh_object(o)
+            if self.managed_object:
+                ServiceSummary.refresh_object(self.managed_object)
 
     def reset_object(self, bulk=None):
         """"""
