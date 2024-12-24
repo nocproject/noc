@@ -1,0 +1,14 @@
+config: |
+  /routing bgp connection
+  add as=65500 disabled=yes hold-time=3s keepalive-time=1s local.address=10.1.1.1 .role=ebgp name=Leader output.filter-chain=bgp_out .redistribute=static,ospf,bgp remote.address=10.1.1.2/32 .as=65505 router-id=10.0.0.1 \
+   routing-table=main
+result:
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "peer-group", "default", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "local-as", "65500", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "description", "Leader", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "export-filter", "bgp_out", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "type", "external", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "local-address", !IP 10.1.1.1/32, {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "remote-as", "65505", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "default", "protocols", "bgp", "neighbors", !IP 10.1.1.2/32, "router-id", !IP 10.0.0.1/32, {"replace": True}]
