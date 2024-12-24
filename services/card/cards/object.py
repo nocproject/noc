@@ -186,10 +186,10 @@ class ObjectCard(BaseCard):
             if mo:
                 mtable += [[mo, iface, ts, load_in, load_out]]
                 metric_map[mo]["interface"][iface] = {
-                    "load_in": int(load_in),
-                    "load_out": int(load_out),
-                    "errors_in": int(errors_in),
-                    "errors_out": int(errors_out),
+                    "load_in": int(load_in) if load_in != "\\N" else 0,
+                    "load_out": int(load_out) if load_out != "\\N" else 0,
+                    "errors_in": int(errors_in) if errors_in != "\\N" else 0,
+                    "errors_out": int(errors_out) if errors_out != "\\N" else 0,
                 }
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
 
