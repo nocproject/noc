@@ -27,7 +27,7 @@ class Profile(BaseProfile):
     )
     pattern_operation_error = rb"error: abnormal communication termination with|permission denied\."
     send_on_syntax_error = b"\n"
-    command_disable_pager = "set cli screen-length 0"
+    command_disable_pager = ["set cli screen-length 0", "set cli screen-width 0"]
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
     command_exit = "exit"

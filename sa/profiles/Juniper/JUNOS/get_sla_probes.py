@@ -45,9 +45,22 @@ class Script(BaseScript):
     @classmethod
     def parse_json_out(cls, v):
         r = []
-        v = v.strip()
+        v = "\n".join(v.strip().split("\n"))
+
+        # Cut first line with "show XXX..."
+        if v.startswith("show"):
+            v = "\n".join(v.split("\n")[1:])
+
         if not v:
             return r
+
+        # Cut line "{master:0}" or "{master}"
+        if v.split("\n")[-1].startswith("{master"):
+            v = "\n".join(v.split("\n")[:-1])
+
+        if not v:
+            return r
+
         v = orjson.loads(v)
         if "probe" in v["configuration"]["services"]["rpm"]:
             for p in v["configuration"]["services"]["rpm"]["probe"]:
@@ -73,6 +86,7 @@ class Script(BaseScript):
             self.logger.info("Error while decoding JSON |%s|", e)
             return r
         except self.CLISyntaxError:
+            r = []
             v = self.cli("show services rpm probe-results")
             for match in self.rx_res.finditer(v):
                 r += [
