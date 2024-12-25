@@ -243,7 +243,7 @@ class Escalation(Document):
     def service(self) -> Optional[Service]:
         if not self.affected_services:
             return None
-        return Service.objects.filter(id=self.affected_services[0]).first()
+        return Service.get_by_id(self.affected_services[0])
 
     def get_next(
         self, sequence_num: Optional[int] = None, repeat: Optional[int] = None
@@ -326,7 +326,10 @@ class Escalation(Document):
             [i.managed_object for i in self.items],
             key=operator.attrgetter("name"),
         )
-        affected_services = []
+        if self.affected_services:
+            affected_services = list(Service.objects.filter(id__in=self.affected_services))
+        else:
+            affected_services = []
         segment = self.managed_object.segment
         if segment.is_redundant:
             uplinks = self.managed_object.uplinks
