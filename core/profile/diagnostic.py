@@ -107,6 +107,10 @@ class ProfileDiagnostic:
             if r_key in self.result_cache:
                 self.logger.debug("Using cached value")
                 result = self.result_cache[r_key]
+                if method == "snmp_v2c_get":
+                    snmp_result = result
+                else:
+                    http_result = result
             else:
                 continue
             rule = self.find_profile((method, param, pref), result)
@@ -115,11 +119,12 @@ class ProfileDiagnostic:
                 # @todo: process MAYBE rule
                 self.profile = rule.profile
                 return True, None, {"profile": rule.profile}, []
-        if snmp_result or http_result:
+        print("XXXX", checks, self.unsupported_method)
+        if "snmp_v2c_get" not in self.unsupported_method and "https_get" not in self.unsupported_method:
             error = f"Not find profile for OID: {snmp_result} or HTTP string: {http_result}"
-        elif not snmp_result:
+        elif "snmp_v2c_get" in self.unsupported_method:
             error = "Cannot fetch snmp data, check device for SNMP access"
-        elif not http_result:
+        elif "http_get" not in self.unsupported_method and "https_get" not in self.unsupported_method:
             error = "Cannot fetch HTTP data, check device for HTTP access"
         self.logger.info("Cannot detect profile: %s", error)
         self.reason = error
