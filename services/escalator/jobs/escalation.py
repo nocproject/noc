@@ -306,10 +306,10 @@ class EscalationJob(SequenceJob):
                 r = self.close_tt(tt, item.document_id)
             elif item.member == EscalationMember.NOTIFICATION_GROUP:
                 ng = NotificationGroup.get_by_id(int(item.key))
-                item = self.object.get_item_by_key(str(ng.id))
-                if item and item.close_template:
-                    subject = item.template.render_subject(**ctx)
-                    body = item.template.render_body(**ctx)
+                cfg_item = self.object.get_item_by_key(str(ng.id))
+                if cfg_item and cfg_item.close_template:
+                    subject = cfg_item.close_template.render_subject(**ctx)
+                    body = cfg_item.close_template.render_body(**ctx)
                 else:
                     subject = item.template.render_subject(**ctx)
                     body = None
