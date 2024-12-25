@@ -263,6 +263,8 @@ class CfgTrapDataStream(DataStream):
             report_ping_rtt,
             report_ping_attempts,
         ) = mo[0]
+        if not state:
+            raise KeyError("Not set default state")
         # Process event policy
         state = State.get_by_id(state)
         # Check if object capable to receive syslog events
