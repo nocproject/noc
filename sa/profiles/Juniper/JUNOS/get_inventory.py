@@ -7,12 +7,14 @@
 
 # Python modules
 import re
+import orjson
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.core.validators import is_int
 from noc.core.mib import mib
+from noc.core.snmp.error import SNMPError
 
 
 class Script(BaseScript):
@@ -114,23 +116,42 @@ class Script(BaseScript):
                     yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
     def parse_chassis_environment(self, response):
-        for line in response.splitlines():
-            line = line.strip()
-            if not line:
+        response = "\n".join(response.split("\n")[1:])
+        data = {}
+        try:
+            data = orjson.loads(response)
+        except orjson.JSONDecodeError as e:
+            self.logger.info("Error while parsing chassis environment %s", e)
+            return
+
+        env_info = data.get("environment-information")
+        if not env_info:
+            self.logger.info("environment-information is empty")
+
+        env_items = env_info[0].get("environment-item")
+        if not env_items:
+            self.logger.info("environment-item is empty")
+
+        for item in env_items:
+            item_name = item["name"][0]["data"]
+            item_status = item["status"][0]["data"]
+
+            if item.get("class"):
+                item_class = item["class"][0]["data"]
+            else:
                 continue
 
-            match = self.env_part.search(line)
-
-            if match:
-                yield match.groups()
+            yield item_class, item_name, item_status
 
     def get_sensors_cli(self):
         res = {}
-        chassis_environment_response = self.cli("show chassis environment", cached=True)
+        chassis_environment_response = self.cli("show chassis environment | display json", cached=True)
 
         p_chassis_environment = self.parse_chassis_environment(chassis_environment_response)
 
+#        insert_type = None
         for env_type, env_name, env_status in p_chassis_environment:
+            self.logger.info("|%s|%s|%s|", env_type, env_name, env_status)
             if env_type:
                 insert_type = env_type.strip()
             chassis_id = env_name.split(" ")[1]
@@ -164,7 +185,7 @@ class Script(BaseScript):
         self.virtual_chassis = None
         v = self.cli("show chassis hardware", cached=True)
         objects = []
-        sensors = self.get_sensors()
+        sensors = self.get_sensors_cli()
         chassis_sn = set()
         p_hardware = self.parse_hardware(v)
 
@@ -409,7 +430,12 @@ class Script(BaseScript):
 
         vendor_ch, part_no_ch = self.snmp.get(mib["JUNIPER-MIB::jnxBoxDescr", 0]).split()[:2]
         serial_ch = self.snmp.get(mib["JUNIPER-MIB::jnxBoxSerialNo", 0])
-        revision_ch = self.snmp.get(mib["JUNIPER-MIB::jnxBoxRevision"])
+
+        revision_ch = ""
+        try:
+            revision_ch = self.snmp.get(mib["JUNIPER-MIB::jnxBoxRevision"])
+        except SNMPError as e:
+            self.logger.info("Error while retrieve revision: |%s|", e)
 
         chassis_obj = {
             "type": "CHASSIS",

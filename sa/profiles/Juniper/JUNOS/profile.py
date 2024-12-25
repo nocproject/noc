@@ -24,7 +24,7 @@ class Profile(BaseProfile):
     pattern_more = [(rb"^---\(more.*?\)---", b" "), (rb"\? \[yes,no\] .*?", b"y\n")]
     pattern_syntax_error = rb"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
     pattern_operation_error = rb"error: abnormal communication termination with"
-    command_disable_pager = "set cli screen-length 0"
+    command_disable_pager = ["set cli screen-length 0", "set cli screen-width 0"]
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
     command_exit = "exit"
