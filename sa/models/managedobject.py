@@ -3173,7 +3173,7 @@ class ManagedObjectStatus(NOCModel):
         with pg_connection.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT id, os.status, os.last, mo.pool, diagnostics -> 'FIRST_AVAIL' -> 'state' as fa_state
+                SELECT id, os.status, os.last, mo.pool, diagnostics -> 'FIRST_AVAIL' ->> 'state' as fa_state
                 FROM sa_managedobject AS mo
                 LEFT JOIN sa_objectstatus AS os ON mo.id = os.managed_object_id
                 WHERE id = ANY(%s::INT[])
