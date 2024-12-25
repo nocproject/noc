@@ -119,7 +119,6 @@ class ProfileDiagnostic:
                 # @todo: process MAYBE rule
                 self.profile = rule.profile
                 return True, None, {"profile": rule.profile}, []
-        print("XXXX", checks, self.unsupported_method)
         if "snmp_v2c_get" not in self.unsupported_method and "https_get" not in self.unsupported_method:
             error = f"Not find profile for OID: {snmp_result} or HTTP string: {http_result}"
         elif "snmp_v2c_get" in self.unsupported_method:
