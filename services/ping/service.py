@@ -145,21 +145,46 @@ class PingService(FastAPIService):
     async def delete_probe(self, id, address: Optional[str] = None):
         if id not in self.probes:
             return
+        probes = []
         for ps in self.probes[id]:
-            if address and ps.address != address:
+            if not address or ps.address != address:
+                probes.append(ps)
                 continue
             ip = ps.address
             self.logger.info("Delete probe: %s", ip)
             ps.task.stop()
             ps.task = None
-            del self.probes[id]
             metrics["ping_probe_delete"] += 1
             if ps.status is not None and not ps.status:
                 metrics["down_objects"] -= 1
             metrics["ping_objects"] = len(self.probes)
-            self.clear_alarm(ps)
+            if ps.is_fatal:
+                self.set_status(ps, True)
+            else:
+                self.clear_alarm(ps, reason="Address deleted from checks")
+        if not probes:
+            self.logger.info("Delete object: %s", id)
+            del self.probes[id]
+        else:
+            self.probes[id] = tuple(probes)
 
-    def clear_alarm(self, ps, ts=None):
+    def set_status(self, ps: ProbeSetting, s: bool, ts=None):
+        """Send status message to correlator service"""
+        ts = ts or datetime.datetime.now().replace(microsecond=0).isoformat()
+        # Set object status
+        self.publish(
+            orjson.dumps(
+                {
+                    "$op": "set_status",
+                    "statuses": [{"timestamp": ts, "managed_object": ps.id, "status": s}],
+                }
+            ),
+            stream=ps.stream,
+            partition=ps.partition,
+        )
+
+    def clear_alarm(self, ps: ProbeSetting, ts=None, reason: Optional[str] = None):
+        """Send Clear Alarm message to Correlator"""
         ts = ts or datetime.datetime.now().replace(microsecond=0).isoformat()
         # Clear alarm
         self.publish(
@@ -168,6 +193,7 @@ class PingService(FastAPIService):
                     "$op": "clear",
                     "reference": f"a:{ps.id}:{ps.address}",
                     "timestamp": ts,
+                    "message": reason,
                 }
             ),
             stream=ps.stream,
@@ -310,18 +336,7 @@ class PingService(FastAPIService):
             ts = datetime.datetime.fromtimestamp(t0).isoformat()
             if ps.is_fatal:
                 # Set status
-                self.publish(
-                    orjson.dumps(
-                        {
-                            "$op": "set_status",
-                            "statuses": [
-                                {"timestamp": ts, "managed_object": ps.id, "status": bool(s)}
-                            ],
-                        }
-                    ),
-                    stream=ps.stream,
-                    partition=ps.partition,
-                )
+                self.set_status(ps, bool(s), ts=ts)
             elif not s:
                 # Raise Alarm
                 self.publish(
@@ -342,17 +357,7 @@ class PingService(FastAPIService):
                 )
             else:
                 # Clear alarm
-                self.publish(
-                    orjson.dumps(
-                        {
-                            "$op": "clear",
-                            "reference": f"a:{ps.id}:{address}",
-                            "timestamp": ts,
-                        }
-                    ),
-                    stream=ps.stream,
-                    partition=ps.partition,
-                )
+                self.clear_alarm(ps, ts, reason="Address is UP")
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
         # Send RTT and attempts metrics
