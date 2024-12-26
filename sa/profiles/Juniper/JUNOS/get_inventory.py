@@ -7,7 +7,6 @@
 
 # Python modules
 import re
-import orjson
 
 # NOC modules
 from noc.core.script.base import BaseScript
