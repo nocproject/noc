@@ -17,7 +17,7 @@ from noc.core.profile.loader import loader
     [
         (
             """
-show configuration services rpm | display json 
+show configuration services rpm | display json
 
 {master:0}
 """,
@@ -38,40 +38,40 @@ show configuration services rpm | display json
         ),
         (
             """
-show chassis environment | display json 
+show chassis environment | display json
 {
     "environment-information" : [
     {
-        "attributes" : {"xmlns" : "http://xml.juniper.net/junos/21.4R0/junos-chassis"}, 
+        "attributes" : {"xmlns" : "http://xml.juniper.net/junos/21.4R0/junos-chassis"},
         "environment-item" : [
         {
             "name" : [
             {
                 "data" : "FPC 0 Power Supply 0"
             }
-            ], 
+            ],
             "class" : [
             {
                 "data" : "Power"
             }
-            ], 
+            ],
             "status" : [
             {
                 "data" : "OK"
             }
             ]
-        }, 
+        },
         {
             "name" : [
             {
                 "data" : "FPC 0 Power Supply 1"
             }
-            ], 
+            ],
             "class" : [
             {
                 "data" : "Power"
             }
-            ], 
+            ],
             "status" : [
             {
                 "data" : "OK"
