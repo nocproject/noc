@@ -91,7 +91,7 @@ Ext.define("NOC.main.desktop.ChangePassword", {
         url: "/api/login/change_credentials",
         method: "POST",
         jsonData: {
-          user: NOC.username,
+          user: this.username,
           old_password: form.getForm().findField("oldPass").getValue(),
           new_password: form.getForm().findField("newPass").getValue(),
         },
