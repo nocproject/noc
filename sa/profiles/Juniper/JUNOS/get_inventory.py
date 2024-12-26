@@ -116,13 +116,7 @@ class Script(BaseScript):
                     yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
     def parse_chassis_environment(self, response):
-        response = "\n".join(response.split("\n")[1:])
-        data = {}
-        try:
-            data = orjson.loads(response)
-        except orjson.JSONDecodeError as e:
-            self.logger.info("Error while parsing chassis environment %s", e)
-            return
+        data = self.profile.clear_json(response)
 
         env_info = data.get("environment-information")
         if not env_info:
@@ -149,9 +143,7 @@ class Script(BaseScript):
 
         p_chassis_environment = self.parse_chassis_environment(chassis_environment_response)
 
-#        insert_type = None
         for env_type, env_name, env_status in p_chassis_environment:
-            self.logger.info("|%s|%s|%s|", env_type, env_name, env_status)
             if env_type:
                 insert_type = env_type.strip()
             chassis_id = env_name.split(" ")[1]
