@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+import orjson
 from typing import Optional
 
 # NOC modules
@@ -171,6 +172,36 @@ class Profile(BaseProfile):
             f'help apropos "{cmd}" | match "^show {cmd}" ', cached=True, ignore_errors=True
         )
         return ("show " + cmd in c) and ("error: nothing matches" not in c)
+
+    def clear_json(self, v) -> dict:
+        """
+        Clear Juniper "display json" output
+        :param v: Juniper display json
+        :return: dict with converted data or empty if error or data is not present
+        """
+        res = {}
+        v = "\n".join(v.strip().split("\n"))
+
+        # Cut first line with "show XXX..."
+        if v.startswith("show"):
+            v = "\n".join(v.split("\n")[1:])
+
+        if not v:
+            return res
+
+        # Cut line "{master:0}" or "{master}"
+        if v.split("\n")[-1].startswith("{master"):
+            v = "\n".join(v.split("\n")[:-1])
+
+        if not v:
+            return res
+
+        try:
+            res = orjson.loads(v)
+        except orjson.JSONDecodeError as e:
+            self.logger.info("Error occured while parsing JSON: |%s|", e)
+
+        return res
 
     @classmethod
     def get_interface_type(cls, name):

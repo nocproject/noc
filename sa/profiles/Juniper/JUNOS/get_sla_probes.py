@@ -42,26 +42,11 @@ class Script(BaseScript):
         "http-metadata-get": "http-get",
     }
 
-    @classmethod
-    def parse_json_out(cls, v):
+    def parse_json_out(self, v):
         r = []
-        v = "\n".join(v.strip().split("\n"))
-
-        # Cut first line with "show XXX..."
-        if v.startswith("show"):
-            v = "\n".join(v.split("\n")[1:])
-
+        v = self.profile.clear_json(v)
         if not v:
             return r
-
-        # Cut line "{master:0}" or "{master}"
-        if v.split("\n")[-1].startswith("{master"):
-            v = "\n".join(v.split("\n")[:-1])
-
-        if not v:
-            return r
-
-        v = orjson.loads(v)
         if "probe" in v["configuration"]["services"]["rpm"]:
             for p in v["configuration"]["services"]["rpm"]["probe"]:
                 for t in p["test"]:
@@ -69,7 +54,7 @@ class Script(BaseScript):
                         {
                             "group": p["name"],
                             "name": t["name"],
-                            "type": cls.TEST_TYPES[t["probe-type"]],
+                            "type": self.TEST_TYPES[t["probe-type"]],
                             "target": t["target"]["address"],
                         }
                     ]
@@ -82,9 +67,6 @@ class Script(BaseScript):
         try:
             v = self.cli("show configuration services rpm | display json")
             r = self.parse_json_out(v)
-        except orjson.JSONDecodeError as e:
-            self.logger.info("Error while decoding JSON |%s|", e)
-            return r
         except self.CLISyntaxError:
             r = []
             v = self.cli("show services rpm probe-results")
