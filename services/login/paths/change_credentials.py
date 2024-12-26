@@ -10,6 +10,7 @@ from fastapi import APIRouter
 
 # NOC modules
 from ..auth import change_credentials as _change_credentials
+from ..backends.base import BaseAuthBackend
 from ..models.changecredentials import ChangeCredentialsRequest
 from ..models.status import StatusResponse
 
@@ -25,6 +26,8 @@ async def change_credentials(req: ChangeCredentialsRequest):
         "old_password": req.old_password,
         "new_password": req.new_password,
     }
-    if _change_credentials(creds):
-        return StatusResponse(status=True)
-    return StatusResponse(status=False, message="Failed to change credentials")
+    try:
+        if _change_credentials(creds):
+            return StatusResponse(status=True)
+    except BaseAuthBackend.LoginError as e:
+        return StatusResponse(status=False, message=str(e))
