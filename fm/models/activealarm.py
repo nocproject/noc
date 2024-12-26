@@ -574,7 +574,7 @@ class ActiveAlarm(Document):
         r = {
             "service": SummaryItem.items_to_dict(self.total_services),
             "subscriber": SummaryItem.items_to_dict(self.total_subscribers),
-            "objects": {self.managed_object.object_profile.id: 1},
+            "object": {self.managed_object.object_profile.id: 1},
         }
         if self.is_link_alarm and self.components.interface:
             r["interface"] = {self.components.interface.profile.id: 1}
@@ -604,7 +604,6 @@ class ActiveAlarm(Document):
             policy = "AB"
         elif not policy:
             policy = self.severity_policy
-
         if severity:
             severity = severity.severity
         elif self.base_severity:
@@ -630,7 +629,7 @@ class ActiveAlarm(Document):
                     return sev.severity
         return severity
 
-    def update_summary(self):
+    def update_summary(self, force: bool = False):
         """
         Recalculate all summaries for given alarm.
         Performs recursive descent
@@ -666,6 +665,7 @@ class ActiveAlarm(Document):
             svc_list != self.total_services
             or sub_list != self.total_subscribers
             or obj_list != self.total_objects
+            or force
         ):
             self.total_objects = obj_list
             self.total_services = svc_list
@@ -674,7 +674,7 @@ class ActiveAlarm(Document):
                 {
                     "service": services,
                     "subscriber": subscribers,
-                    "objects": objects,
+                    "object": objects,
                     "interface": interface,
                 },
             )
