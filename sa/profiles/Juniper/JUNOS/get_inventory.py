@@ -139,7 +139,9 @@ class Script(BaseScript):
 
     def get_sensors_cli(self):
         res = {}
-        chassis_environment_response = self.cli("show chassis environment | display json", cached=True)
+        chassis_environment_response = self.cli(
+            "show chassis environment | display json", cached=True
+        )
 
         p_chassis_environment = self.parse_chassis_environment(chassis_environment_response)
 
