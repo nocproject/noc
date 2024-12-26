@@ -10,7 +10,8 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
   extend: "Ext.app.ViewController",
   alias: "controller.fm.alarm.sidebar",
   pollingTaskId: undefined,
-  pollingInterval: 12000,
+  pollingInterval: 120000,
+  //
   init: function(view){
     this.observer = new IntersectionObserver(function(entries){
       view.isIntersecting = entries[0].isIntersecting;
@@ -18,6 +19,13 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
       threshold: 1.0,
     });
     this.callParent();
+    this.subscribeToEvents();
+  },
+  //
+  destroy: function(){
+    this.unsubscribeFromEvents();
+    this.stopPolling();
+    this.setContainerDisabled(false);
   },
   //
   onResetFilter: function(){
@@ -61,11 +69,10 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
   pollingTask: function(){
     var app = this.getView().up("[itemId=fm-alarm]"),
       gridsContainer = this.getView().up("[itemId=fm-alarm-list]"),
-      isVisible = !document.hidden,
-      isFocused = document.hasFocus(),
-      isIntersecting = this.getView().isIntersecting;
+      isVisible = !document.hidden, // check is user has switched to another tab browser
+      isFocused = document.hasFocus(), // check is user has minimized browser window
+      isIntersecting = this.getView().isIntersecting; // switch to other application tab
     
-    console.log("Polling Task ...", isVisible, isIntersecting, isFocused);
     // lib visibilityJS
     if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
       this.setContainerDisabled(false);
@@ -88,17 +95,19 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
       }
     } else{
       this.setContainerDisabled(true);
-      console.log("disabled");
     }
   },
+  //
   setContainerDisabled: function(value){
     var app = this.getView().up("[itemId=fm-alarm]"),
       vm = app.getViewModel();
     vm.set("containerDisabled", value);
   },
+  //
   isRecentActive: function(){
     return this.getViewModel().get("recentFilter.cleared_after") > 0
   },
+  //
   isNotLocked: function(container){
     var viewTable = container.down("[reference=fm-alarm-active]").getView(),
       buttonPressed = this.getViewModel().get("autoReload"),
@@ -128,7 +137,35 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
     }
     this.lastCheckTS = ts;
   },
+  //
   onResetStatuses: function(){
     this.fireViewEvent("fmAlarmSidebarResetSelection");
+  },
+  //
+  subscribeToEvents: function(){
+    window.addEventListener("focus", this.handleWindowFocus.bind(this));
+    window.addEventListener("blur", this.handleWindowBlur.bind(this));
+  },
+  //
+  unsubscribeFromEvents: function(){
+    window.removeEventListener("focus", this.handleWindowFocus.bind(this));
+    window.removeEventListener("blur", this.handleWindowBlur.bind(this));
+  },
+  //
+  disableHandler: function(state){
+    var isVisible = !document.hidden, // check is user has switched to another tab browser
+      isIntersecting = this.getView().isIntersecting; // switch to other application tab
+    if(this.pollingTaskId && isIntersecting && isVisible){
+      this.setContainerDisabled(state);
+      this.pollingTask();
+    }
+  },
+  //
+  handleWindowFocus: function(){
+    this.disableHandler(false);
+  },
+  //
+  handleWindowBlur: function(){
+    this.disableHandler(true);
   },
 });
