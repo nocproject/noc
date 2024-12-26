@@ -8,9 +8,6 @@
 # Python modules
 import re
 
-# Third-party modules
-import orjson
-
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
