@@ -145,9 +145,7 @@ class Script(BaseScript):
 
         p_chassis_environment = self.parse_chassis_environment(chassis_environment_response)
 
-#        insert_type = None
         for env_type, env_name, env_status in p_chassis_environment:
-            self.logger.info("|%s|%s|%s|", env_type, env_name, env_status)
             if env_type:
                 insert_type = env_type.strip()
             chassis_id = env_name.split(" ")[1]
