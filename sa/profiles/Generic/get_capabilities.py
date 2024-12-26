@@ -367,7 +367,7 @@ class Script(BaseScript):
     @false_on_snmp_error
     def get_snmp_table_idx(self, oid) -> List[int]:
         r = []
-        for oid, value in self.snmp.getnext():
+        for oid, value in self.snmp.getnext(oid):
             _, idx = oid.rsplit(".", 1)
             r.append(str(idx))
         return r
