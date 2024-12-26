@@ -711,6 +711,12 @@ class Escalation(Document):
                 r.append(f"{tt.name}:{i.document_id}")
         return ";".join(r)
 
+    def get_item_by_key(self, key: str) -> Optional[EscalationItem]:
+        for ii in self.profile.escalations:
+            if ii.get_key() == key:
+                return ii
+        return
+
     def check_end(self) -> bool:
         """
         Check Escalation End Condition:
