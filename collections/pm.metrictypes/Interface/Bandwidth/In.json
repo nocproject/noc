@@ -1,0 +1,13 @@
+{
+    "name": "Interface | Bandwidth | In | Ratio",
+    "$collection": "pm.metrictypes",
+    "uuid": "d4c544d6-d794-4f89-aaae-755bdf494a5e",
+    "scope__name": "Interface",
+    "field_name": "bandwidth_in_perc",
+    "field_type": "UInt8",
+    "description": "Bandwidth in Percent (from interface speed)",
+    "units__code": "%",
+    "scale__code": "1",
+    "compose_expression": "load_in/(speed or 1) * 100",
+    "compose_inputs": ["Interface | Load | In", "Interface | Speed"]
+}
