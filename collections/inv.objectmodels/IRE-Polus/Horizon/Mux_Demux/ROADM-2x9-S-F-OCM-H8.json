@@ -6,7 +6,7 @@
     "description": "ROADM-2x9-С-F-OCM-H8 – перестраиваемый оптический мультиплексор ввода/вывода",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
-    "plugins": ["pconf"],
+    "plugins": ["pconf", "opm"],
     "connections": [
         {
             "name": "in",

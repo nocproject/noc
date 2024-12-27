@@ -180,7 +180,7 @@ class PConfPlugin(InvPlugin):
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
-            "f_api_plugin_{self.name}_data",
+            f"api_plugin_{self.name}_data",
             self.api_data,
             url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/data/$",
             method=["GET"],
@@ -311,7 +311,7 @@ class PConfPlugin(InvPlugin):
             if not s:
                 continue
             if s == slot:
-                slot_cfg = item
+                return s["PM"]
                 break
         else:
             return ParsedData.empty()
