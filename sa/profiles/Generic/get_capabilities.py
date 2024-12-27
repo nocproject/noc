@@ -59,6 +59,8 @@ class Script(BaseScript):
     CHECK_SNMP_GET_GENERIC = {
         "SNMP | MIB | HOST-RESOURCES-MIB": mib["HOST-RESOURCES-MIB::hrSystemDate", 0],
         "SNMP | MIB | NTPv4-MIB": mib["NTPv4-MIB::ntpEntStatusActiveRefSourceId", 0],
+        "SNMP | MIB | Q-BRIDGE-MIB": mib["Q-BRIDGE-MIB::dot1qNumVlans", 1],
+        "SNMP | MIB | IEEE8021-Q-BRIDGE-MIB": mib["IEEE8021-Q-BRIDGE-MIB::ieee8021QBridgeNumVlans", 1],
     }
     CHECK_SNMP_GETNEXT_GENERIC = {
         "SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"],
