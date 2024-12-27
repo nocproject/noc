@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | MIB | Q-BRIDGE-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "2c4d6ac4-87d2-44e5-a44b-c1cc43e86765",
+    "description": "SNMP Q-BRIDGE-MIB support.",
+    "type": "bool",
+    "card_template": null
+}
