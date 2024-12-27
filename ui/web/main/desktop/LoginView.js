@@ -130,12 +130,13 @@ Ext.define("NOC.main.desktop.LoginView", {
     NOC.error(__("Failed to log in"));
   },
   onLoginSuccess: function(failureFunc, response){
-    var result = Ext.decode(response.responseText);
+    var result = Ext.decode(response.responseText),
+      username = this.getViewModel().get("user");
     if(result.status === true){
       if("must_change" in result && result.must_change === true){
         this.close();
         Ext.create("NOC.main.desktop.ChangePassword", {
-          username: this.getViewModel().get("user"), 
+          username: username, 
           listeners: {
             scope: this,
             close: this.applicationOpen, 
