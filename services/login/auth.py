@@ -1,13 +1,13 @@
 # ---------------------------------------------------------------------
 # Authentication handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional, Any
 import datetime
 
 # Third-party modules
@@ -19,6 +19,7 @@ from noc.config import config
 from noc.aaa.models.user import User
 from noc.core.perf import metrics
 from noc.core.comp import smart_text
+from noc.core.error import NOCError, ERR_AUTH_CRED_CHANGE
 from .backends.loader import loader
 
 logger = logging.getLogger(__name__)
@@ -30,12 +31,16 @@ HIDDEN_FIELDS = {"password", "new_password", "old_password", "retype_password"}
 jwt_key = jwk.construct(config.secret_key, algorithm=config.login.jwt_algorithm).to_dict()
 
 
+class ChangeCredentialsError(NOCError):
+    default_code = ERR_AUTH_CRED_CHANGE
+
+
 def iter_methods():
     for m in config.login.methods.split(","):
         yield m.strip()
 
 
-def authenticate(credentials: Dict[str, Any]) -> Optional[str]:
+def authenticate(credentials: dict[str, Any]) -> str | None:
     """
     Authenticate user. Returns username when user is authenticated
     """
@@ -155,9 +160,15 @@ def set_jwt_cookie(response: Response, user: str, /, expire: int | None = None) 
     )
 
 
-def change_credentials(credentials: Dict[str, Any]):
+def change_credentials(credentials: dict[str, Any]) -> None:
     """
-    Change credentials. Return true when credentials changed
+    Change credentials.
+
+    Args:
+        credentials: dict of credentials, method-dependent.
+
+    Raises:
+        ChangeCredentialsError: When unable to change credentials.
     """
     c = credentials.copy()
     for f in HIDDEN_FIELDS:
@@ -173,9 +184,9 @@ def change_credentials(credentials: Dict[str, Any]):
         try:
             backend.change_credentials(**credentials)
             logger.info("Changed user credentials: %s", c)
-            return True
+            return
         except NotImplementedError:
             continue
         except backend.LoginError as e:
             logger.error("Failed to change credentials for %s: %s", c, e)
-    return False
+            raise ChangeCredentialsError(e.args[0]) from e

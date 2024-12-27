@@ -164,13 +164,20 @@ class User(NOCModel):
         """
         # Check password policy
         # Raises ValueError
+        if config.login.password_history:
+            history = self.password_history or []
+            # Add current password to check
+            history.append(self.password)
+        else:
+            history = None
         check_password_policy(
+            password,
             min_password_len=config.login.min_password_len or None,
             min_password_uppercase=config.login.min_password_uppercase or None,
             min_password_lowercase=config.login.min_password_lowercase or None,
             min_password_numbers=config.login.min_password_numbers or None,
             min_password_specials=config.login.min_password_specials or None,
-            history=self.password_history or None if config.login.password_history else None,
+            history=history or None,
         )
         # Update history
         if (
