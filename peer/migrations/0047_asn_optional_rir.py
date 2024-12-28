@@ -10,9 +10,10 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     def migrate(self):
         for col in ["organisation_id", "rir_id", "description"]:
             self.db.execute(f"ALTER TABLE peer_as ALTER {col} DROP NOT NULL")
         # Set Exists AS Profile set default
-        self.mongo_db["asprofiles"].update_many({}, {"gen_rpsl": True, "validation_policy": "S"})
+        self.mongo_db["asprofiles"].update_many(
+            {}, {"$set": {"gen_rpsl": True, "validation_policy": "S"}}
+        )
