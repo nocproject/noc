@@ -26,6 +26,7 @@ class IGetBGPPeerStatus(BaseInterface):
         * established(6)
     * table_version -
     """
+
     peers = DictListParameter(
         attrs={"peer": IPParameter(required=True), "ifindex": IntParameter()},
         required=False,
