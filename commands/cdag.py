@@ -143,7 +143,12 @@ class Command(BaseCommand):
         r = cursor.execute(query, return_raw=True, args=q_args)
         for row in r.splitlines():
             row = orjson.loads(row)
+            skip = False
             for k in row:
+                if row[k] is None:
+                    # Metrics not collected
+                    skip = True
+                    break
                 if k == "labels":
                     continue
                 elif k == "ts":
@@ -151,6 +156,8 @@ class Command(BaseCommand):
                     row[k] = int(v.timestamp() * NS)
                     continue
                 row[k] = float(row[k])
+            if skip:
+                continue
             yield row
 
     def iter_metrics(
@@ -176,7 +183,6 @@ class Command(BaseCommand):
         svc = get_service()
         cdag = self.from_config_paths(config)
         probes = {n.node_id: n for n in cdag.nodes.values() if n.name == "probe"}
-        print("SSSSSSSSS", list(probes.values())[0].static_inputs)
         # self.die("1")
         senders = {n for n in cdag.nodes.values() if n.name == "metrics"}
         dump = [n for n in cdag.nodes.values() if n.name == "dump"]
@@ -189,7 +195,7 @@ class Command(BaseCommand):
             key_fields |= set(kf for kf in s.iter_unbound_inputs() if kf not in ("ts", "labels"))
         if f_output:
             f_output = open(f_output, "wb")
-        for data in self.iter_metrics(f_input, metrics=list(probes)):
+        for num, data in enumerate(self.iter_metrics(f_input, metrics=list(probes))):
             tx = cdag.begin()
             units = data.get("_units") or {}
             ts = data["ts"]
