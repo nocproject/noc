@@ -22,6 +22,7 @@ from .config import ConfigCheck
 from .configvalidation import ConfigValidationCheck
 from .asset import AssetCheck
 from .vlan import VLANCheck
+from .bgppeer import BGPPeerCheck
 from .cdp import CDPCheck
 from .huawei_ndp import HuaweiNDPCheck
 from .oam import OAMCheck
@@ -117,6 +118,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             CPECheck(self).run()
         if VPNCheck.is_enabled_for_object(self.object):
             VPNCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_bgppeer:
+            BGPPeerCheck(self).run()
         if PrefixCheck.is_enabled_for_object(self.object):
             PrefixCheck(self).run()
         if AddressCheck.is_enabled_for_object(self.object):
@@ -182,5 +185,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             or mop.enable_box_discovery_address_confdb
             or mop.enable_box_discovery_prefix_confdb
         ):
+            return True
+        if mop.enable_box_discovery_bgppeer:
             return True
         return False

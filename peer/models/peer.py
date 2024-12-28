@@ -98,7 +98,7 @@ class Peer(NOCModel):
     local_asn = ForeignKey(AS, verbose_name="Local AS", on_delete=CASCADE)
     local_ip = INETField("Local IP", null=True, blank=True)
     local_backup_ip = INETField("Local Backup IP", null=True, blank=True)
-    remote_asn = IntegerField("Remote AS")
+    remote_asn = IntegerField("Remote AS", null=True, blank=True)
     remote_ip = INETField("Remote IP")
     remote_backup_ip = INETField("Remote Backup IP", null=True, blank=True)
     import_filter = CharField("Import filter", max_length=64, default="any")
