@@ -31,7 +31,6 @@ from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
-from noc.sa.models.managedobject import ManagedObject
 from .asn import AS
 from .peerprofile import PeerProfile
 from .peeringpoint import PeeringPoint
@@ -61,7 +60,7 @@ class Peer(NOCModel):
         on_delete=CASCADE,
     )
     managed_object = ForeignKey(
-        ManagedObject,
+        "sa.ManagedObject",
         verbose_name="Managed Object",
         null=True,
         blank=True,
@@ -255,7 +254,7 @@ class Peer(NOCModel):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_peer")
 
-    def get_partner_object(self) -> Optional[ManagedObject]:
+    def get_partner_object(self):
         """Search ManagedObject by Remote asn"""
         from noc.sa.models.managedobject import ManagedObject
         from noc.inv.models.subinterface import SubInterface
