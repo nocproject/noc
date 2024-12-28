@@ -124,6 +124,7 @@ class ProbeNode(BaseCDAGNode):
         if ts <= self.state.lt:
             # Timer stepback, reset state and exit
             self.set_state(None, None)
+            logger.debug("[%s] Timer StepBack. Reset State and exit", self.node_id)
             return None
         if flag != self.state.flag:
             # Flag is not equal, values is not compared
@@ -142,6 +143,7 @@ class ProbeNode(BaseCDAGNode):
             if delta is None:
                 # Malformed data, skip
                 self.set_state(None, None)
+                logger.debug("[%s] Malformed data, skip", self.node_id)
                 return None
             kwargs["delta"] = delta
             if fn.has_x and self.config.is_delta:
