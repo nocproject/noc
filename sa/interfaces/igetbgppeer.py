@@ -26,7 +26,7 @@ class IGetBGPPeer(BaseInterface):
             "router_id": RDParameter(required=False),
             "peers": DictListParameter(
                 attrs={
-                    "type": StringParameter(choices=["internal", "external"], required=True),
+                    "type": StringParameter(choices=["internal", "external"], default="internal"),
                     "local_as": ASNParameter(),
                     "remote_address": IPParameter(),
                     "remote_as": ASNParameter(required=False),

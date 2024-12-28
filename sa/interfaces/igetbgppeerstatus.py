@@ -17,7 +17,7 @@ class IGetBGPPeerStatus(BaseInterface):
     * admin_state - The desired state of the BGP connection:
         * start - True
         * stop - False
-    * oper_state - BGP peer connection state. one of:
+    * status - BGP peer connection state. one of:
         * idle(1)
         * connect(2)
         * active(3)
@@ -28,7 +28,7 @@ class IGetBGPPeerStatus(BaseInterface):
     """
 
     peers = DictListParameter(
-        attrs={"peer": IPParameter(required=True), "ifindex": IntParameter()},
+        attrs={"peer": IPParameter(required=True)},
         required=False,
     )
     returns = DictListParameter(
