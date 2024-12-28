@@ -41,7 +41,7 @@ class ComposeProbeNode(ProbeNode):
     config_cls = ComposeProbeNodeConfig
     categories = [Category.UTIL]
 
-    __slots__ = "expression",
+    __slots__ = ("expression",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
