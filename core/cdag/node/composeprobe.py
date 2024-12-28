@@ -8,7 +8,7 @@
 # Python modules
 import inspect
 import logging
-from typing import Optional, Callable
+from typing import Optional, Callable, FrozenSet
 from time import time_ns
 
 # Third-party modules
@@ -16,6 +16,7 @@ from pydantic import BaseModel
 
 # NOC modules
 from .probe import ProbeNode, ValueType, Category
+from .base import IN_REQUIRED, IN_INVALID, IN_OPTIONAL
 from noc.core.expr import get_fn
 
 
@@ -24,6 +25,7 @@ class ComposeProbeNodeConfig(BaseModel):
     expression: str
     is_delta: bool = False
     scale: str = "1"
+    compose_inputs: FrozenSet[str] = None
 
 
 logger = logging.getLogger(__name__)
@@ -39,11 +41,11 @@ class ComposeProbeNode(ProbeNode):
     config_cls = ComposeProbeNodeConfig
     categories = [Category.UTIL]
 
+    __slots__ = "expression",
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.expression: Callable = get_fn(self.config.expression)
-        self.static_inputs |= set(inspect.signature(self.expression).parameters)
-        self.req_inputs_count = len(self.static_inputs)
 
     def get_value(self, **kwargs) -> Optional[ValueType]:
         try:
@@ -51,4 +53,14 @@ class ComposeProbeNode(ProbeNode):
         except Exception as e:
             logger.warning("[%s] Error when calculate value: %s", self.node_id, str(e))
             x = 0
+        # print("CP", self.name, x, self.node_id, self.config.compose_inputs)
         return super().get_value(x, ts=time_ns(), unit="1")
+
+    def get_input_type(self, name: str) -> int:
+        if name in self.config.compose_inputs:
+            return IN_REQUIRED
+        return super().get_input_type(name)
+
+    @property
+    def req_config_inputs_count(self) -> int:
+        return len(self.config.compose_inputs)

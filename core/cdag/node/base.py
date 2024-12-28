@@ -562,3 +562,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         self.description = None
         self.bound_inputs = None  # Only for charting purposes
+
+    @property
+    def req_config_inputs_count(self) -> int:
+        """Node Config defined inputs count"""
+        return 0
