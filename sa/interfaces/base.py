@@ -1034,5 +1034,19 @@ class ColorParameter(Parameter):
         self.raise_error(value)
 
 
+class ASNParameter(IntParameter):
+    """Check Value is ASN Number"""
+
+    def __init__(self, required=True, default=None):
+        super().__init__(required=required, default=default, min_value=1, max_value=4_294_967_295)
+
+    def clean(self, value):
+        if isinstance(value, str) and "." in value:
+            # 4-bytes asdot notation
+            m, asn = value.split(".")
+            value = int(m) * 65536 + int(asn)
+        return super().clean(value)
+
+
 # Patterns
 OBJECT_ID = "[0-9a-f]{24}"

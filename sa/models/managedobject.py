@@ -145,7 +145,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 51
+MANAGEDOBJECT_CACHE_VERSION = 52
 CREDENTIAL_CACHE_VERSION = 9
 
 
