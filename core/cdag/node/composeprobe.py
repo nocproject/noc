@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import inspect
 import logging
 from typing import Optional, Callable, FrozenSet
 from time import time_ns
@@ -16,7 +15,7 @@ from pydantic import BaseModel
 
 # NOC modules
 from .probe import ProbeNode, ValueType, Category
-from .base import IN_REQUIRED, IN_INVALID, IN_OPTIONAL
+from .base import IN_REQUIRED
 from noc.core.expr import get_fn
 
 
