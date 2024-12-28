@@ -102,6 +102,9 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
             peer.local_ip = discovered_peer.local_address
         if peer.description != discovered_peer.description:
             changes += [f"description: {peer.description} -> {discovered_peer.description}"]
+        if peer.managed_object != self.object:
+            peer.managed_object = self.object
+            changes += [f"managed_object: {peer.managed_object} -> {self.object}"]
         if changes:
             self.logger.info(
                 "Changing %s (AS%s): %s",
@@ -129,6 +132,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
             export_filter=peer.export_filter_name or "default",
             description=peer.description,
             first_discovered=now,
+            managed_object=self.object,
         )
         self.logger.info(
             "Creating BGP Peer %s (AS%s): remote_as=%s profile=%s",

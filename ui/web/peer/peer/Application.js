@@ -15,6 +15,7 @@ Ext.define("NOC.peer.peer.Application", {
         "NOC.peer.peer.Model",
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",
+        "NOC.sa.managedobject.LookupField",
         "NOC.project.project.LookupField",
         "NOC.peer.as.LookupField"
     ],
@@ -345,6 +346,24 @@ Ext.define("NOC.peer.peer.Application", {
 
     ],
     filters: [
+        {
+            title: __("By Profile"),
+            name: "profile",
+            ftype: "lookup",
+            lookup: "peer.peerprofile"
+        },
+        {
+            title: __("By State"),
+            name: "state",
+            ftype: "lookup",
+            lookup: "wf.state"
+        },
+        {
+            title: __("By Object"),
+            name: "managed_object",
+            ftype: "lookup",
+            lookup: "sa.managedobject"
+        }
     ],
     actions: [
         {
