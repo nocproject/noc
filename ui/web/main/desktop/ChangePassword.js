@@ -85,8 +85,10 @@ Ext.define("NOC.main.desktop.ChangePassword", {
     ],
   },
   onChangeClick: function(field){
-    var form = field.up("form").getForm();
+    var panel = field.up("form"),
+      form = panel.getForm();
     if(form.isValid()){
+      panel.setDisabled(true);
       Ext.Ajax.request({
         url: "/api/login/change_credentials",
         method: "POST",
@@ -106,6 +108,9 @@ Ext.define("NOC.main.desktop.ChangePassword", {
         },
         failure: function(){
           NOC.error(__("Error changing password"));
+        },
+        callback: function(){
+          panel.setDisabled(false);
         },
       });
     }
