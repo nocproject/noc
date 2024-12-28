@@ -147,7 +147,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
 
     def ensure_asn(self, asn: int) -> AS:
         """Find AS Number on database and Create if not exists"""
-        a = AS.get_by_asn(asn)
+        a = AS.objects.filter(asn=asn).first()
         if a:
             return a
         self.logger.info("[AS%s] Not found AS. Creating...", asn)
