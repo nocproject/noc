@@ -37,14 +37,6 @@ class Profile(BaseProfile):
             return None
         return cls.INTERFACE_TYPES.get(name[:2])
 
-    def get_enterprise_id(self, script):
-        ent_oid = 41752
-        check_oid = script.snmp.getnext(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.4", only_first=True)
-        if not check_oid:
-            script.logger.info("Bad devices, use %s as Ent OID", 451752)
-            ent_oid = 451752
-        return ent_oid
-
     class shell(object):
         """Switch context manager to use with "with" statement"""
 

@@ -37,7 +37,7 @@ class Script(BaseScript):
     def execute_snmp(self):
         interfaces = {}
         ss = {}
-        ent_oid = self.profile.get_enterprise_id(self)
+        ent_oid = self.capabilities.get("SNMP | OID | EnterpriseID", "41752")
         for soid, sname in self.snmp.getnext(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.4"):
             sifindex = int(soid.split(".")[-1])
             ieee_mode = self.snmp.get(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.2.{sifindex}")
