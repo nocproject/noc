@@ -2187,13 +2187,25 @@ class ManagedObject(NOCModel):
         normalizer = n_cls(self, self.iter_config_tokens(config), **n_config)
         yield from normalizer
 
-    def get_confdb(self, config=None, cleanup=True):
+    def get_confdb(
+        self,
+        config=None,
+        cleanup=True,
+        errors_policy: Optional[str] = None,
+    ) -> Optional[Engine]:
         """
         Returns ready ConfDB engine instance
 
-        :param config: Configuration data
-        :param cleanup: Remove temporary nodes if True
-        :return: confdb.Engine instance
+        Attrs:
+            config: Configuration data
+            cleanup: Remove temporary nodes if True
+            errors_policy:
+                * strict - raise Syntax Error
+                * ignore - ignore bad node
+                * replace - insert <ERROR> value
+                * stop - stop processed and return None
+        Return:
+            confdb.Engine instance
         """
         profile = self.profile.get_profile()
         e = Engine()
