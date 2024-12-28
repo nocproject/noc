@@ -105,7 +105,6 @@ class ProfileDiagnostic:
             error = "Cannot fetch HTTP data, check device for HTTP access"
         else:
             error = None
-        snmp_result, http_result = "", ""
         for method, param, pref in sorted(self.rules, key=lambda x: x[2]):
             if method == "snmp_v2c_get":
                 r_key = (method, self.clean_snmp_param(param))
