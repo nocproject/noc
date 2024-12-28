@@ -84,16 +84,16 @@ Ext.define("NOC.main.desktop.ChangePassword", {
       },
     ],
   },
-  onChangeClick: function(){
-    var form = this.lookupReference("changePasswordForm");
+  onChangeClick: function(field){
+    var form = field.up("form").getForm();
     if(form.isValid()){
       Ext.Ajax.request({
         url: "/api/login/change_credentials",
         method: "POST",
         jsonData: {
           user: this.username,
-          old_password: form.getForm().findField("oldPass").getValue(),
-          new_password: form.getForm().findField("newPass").getValue(),
+          old_password: form.findField("oldPass").getValue(),
+          new_password: form.findField("newPass").getValue(),
         },
         success: function(response){
           var data = Ext.decode(response.responseText);
