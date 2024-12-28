@@ -71,7 +71,7 @@ class ProfileDiagnostic:
             )
         if self.profile or not self.urls:
             return
-        yield (
+        yield tuple(
             Check(name=self.method_check_map[m], address=address, args={"url": url})
             for (m, url) in self.urls
         )
@@ -87,6 +87,7 @@ class ProfileDiagnostic:
                 self.unsupported_method.add(method)
                 continue
             for d in c.data:
+                self.logger.info("[%s] Getting %s, Result: %s", method, d.name, d.value)
                 self.result_cache[(method, d.name)] = d.value
 
     def get_result(
@@ -96,6 +97,14 @@ class ProfileDiagnostic:
     ]:
         """Getting Diagnostic result: State and reason"""
         self.parse_checks(checks)
+        if not self.result_cache:
+            error = "Cannot fetch any data for detect Profile. Check Device Access"
+        elif "snmp_v2c_get" in self.unsupported_method:
+            error = "Cannot fetch snmp data, check device for SNMP access"
+        elif "http_get" in self.unsupported_method:
+            error = "Cannot fetch HTTP data, check device for HTTP access"
+        else:
+            error = None
         snmp_result, http_result = "", ""
         for method, param, pref in sorted(self.rules, key=lambda x: x[2]):
             if method == "snmp_v2c_get":
@@ -107,10 +116,6 @@ class ProfileDiagnostic:
             if r_key in self.result_cache:
                 self.logger.debug("Using cached value")
                 result = self.result_cache[r_key]
-                if method == "snmp_v2c_get":
-                    snmp_result = result
-                else:
-                    http_result = result
             else:
                 continue
             rule = self.find_profile((method, param, pref), result)
@@ -119,12 +124,8 @@ class ProfileDiagnostic:
                 # @todo: process MAYBE rule
                 self.profile = rule.profile
                 return True, None, {"profile": rule.profile}, []
-        if "snmp_v2c_get" not in self.unsupported_method and "https_get" not in self.unsupported_method:
-            error = f"Not find profile for OID: {snmp_result} or HTTP string: {http_result}"
-        elif "snmp_v2c_get" in self.unsupported_method:
-            error = "Cannot fetch snmp data, check device for SNMP access"
-        elif "http_get" not in self.unsupported_method and "https_get" not in self.unsupported_method:
-            error = "Cannot fetch HTTP data, check device for HTTP access"
+            else:
+                error = f"Not find profile for OID or HTTP string: {result}"
         self.logger.info("Cannot detect profile: %s", error)
         self.reason = error
         # Data
