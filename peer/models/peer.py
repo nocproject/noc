@@ -18,6 +18,7 @@ from django.db.models import (
     TextField,
     CASCADE,
     SET_NULL,
+    BigIntegerField,
 )
 from django.contrib.postgres.fields import ArrayField
 
@@ -50,7 +51,12 @@ class Peer(NOCModel):
         db_table = "peer_peer"
         app_label = "peer"
 
-    profile: PeerProfile = ForeignKey(PeerProfile, verbose_name="Peer Profile", on_delete=CASCADE)
+    profile: PeerProfile = ForeignKey(
+        PeerProfile,
+        verbose_name="Peer Profile",
+        on_delete=CASCADE,
+        default=PeerProfile.get_default_profile,
+    )
     project = ForeignKey(
         Project,
         verbose_name="Project",
@@ -97,7 +103,7 @@ class Peer(NOCModel):
     local_asn = ForeignKey(AS, verbose_name="Local AS", on_delete=CASCADE)
     local_ip = INETField("Local IP", null=True, blank=True)
     local_backup_ip = INETField("Local Backup IP", null=True, blank=True)
-    remote_asn = IntegerField("Remote AS", null=True, blank=True)
+    remote_asn = BigIntegerField("Remote AS", null=True, blank=True)
     remote_ip = INETField("Remote IP")
     remote_backup_ip = INETField("Remote Backup IP", null=True, blank=True)
     import_filter = CharField("Import filter", max_length=64, default="any")
@@ -132,6 +138,10 @@ class Peer(NOCModel):
         if self.peering_point:
             return f" {self.remote_asn} ({self.remote_ip}@{self.peering_point.hostname})"
         return f" {self.remote_asn} ({self.remote_ip})"
+
+    @property
+    def name(self) -> str:
+        return str(self)
 
     def save(self, *args, **kwargs):
         if self.import_filter_name is not None and not self.import_filter_name.strip():

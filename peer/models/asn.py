@@ -113,7 +113,7 @@ class AS(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_asn_cache"), lock=lambda _: id_lock)
     def get_by_asn(cls, asn):
-        return AS.objects.filter(asn=asn).filter()
+        return AS.objects.filter(asn=asn).first()
 
     def clean(self):
         if self.profile.validation_policy == "S" and not (self.organisation and self.rir):

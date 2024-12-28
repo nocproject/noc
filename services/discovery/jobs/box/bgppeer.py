@@ -9,7 +9,8 @@
 import datetime
 
 # Third-party modules
-from pydantic import BaseModel, Field
+from collections import defaultdict
+from pydantic import BaseModel
 from typing import Dict, List, Tuple, Any, Optional
 
 # NOC modules
@@ -22,9 +23,9 @@ from noc.peer.models.peer import Peer
 
 
 class DiscoveredPeer(BaseModel):
-    remote_as: int
-    remote_address: Any = Field(alias="peer")
-    local_as: Optional[int] = None
+    remote_address: Any
+    local_as: int
+    remote_as: Optional[int] = None
     router_id: Optional[Any] = None
     local_address: Optional[Any] = None
     protocol: str = "bgp"
@@ -62,17 +63,18 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
     def get_bgp_peer(self) -> Dict[Tuple[AS, IP], DiscoveredPeer]:
         """Return BGP Peer. Local AS, RemoteIP"""
         r = {}
-        peers = self.get_data() or []
-        for p in peers:
-            p = DiscoveredPeer.model_validate(p)
-            local_as = self.ensure_asn(p.local_as)
-            if not local_as:
-                self.logger.warning("[AS%s] Not found AS. Skipping...", p.local_as)
-                continue
-            elif not local_as.profile.enable_discovery_peer:
-                self.logger.info("[AS%s] Disabled Peer discovery for AS.", p.local_as)
-                continue
-            r[(local_as, p.remote_address)] = p
+        data = self.get_data() or []
+        for d in data:
+            for p in d["peers"]:
+                p = DiscoveredPeer.model_validate(p)
+                local_as = self.ensure_asn(p.local_as)
+                if not local_as:
+                    self.logger.warning("[AS%s] Not found AS. Skipping...", p.local_as)
+                    continue
+                elif not local_as.profile.enable_discovery_peer:
+                    self.logger.info("[AS%s] Disabled Peer discovery for AS.", p.local_as)
+                    continue
+                r[(local_as, p.remote_address)] = p
         return r
 
     def sync_peers(self, peers: Dict[Tuple[AS, IP], DiscoveredPeer]):
@@ -83,11 +85,11 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
         """
         # VRF Processed
         for las, remote_ip in peers:
-            p = Peer.objects.filter(local_asn=las, remote_ip=remote_ip.address)
+            p = Peer.objects.filter(local_asn=las, remote_ip=remote_ip).first()
             if p:
                 self.apply_bgp_peer_changes(p, peers[las, remote_ip])
             else:
-                self.create_bgp_peer(las, p)
+                self.create_bgp_peer(las, peers[las, remote_ip])
 
     def apply_bgp_peer_changes(self, peer: Peer, discovered_peer: DiscoveredPeer):
         """Apply BGP Peer changes and send signals"""
@@ -122,7 +124,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
             local_asn=local_as,
             local_ip=peer.local_address,
             remote_asn=peer.remote_as,
-            remote_ip=peer.remote_address.address,
+            remote_ip=peer.remote_address,
             import_filter=peer.import_filter_name or "default",
             export_filter=peer.export_filter_name or "default",
             description=peer.description,
@@ -179,9 +181,16 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
 
     def get_data_from_confdb(self) -> List[Dict[str, Any]]:
         """Getting peer from database"""
-        r = []
+        r = defaultdict(list)
         for peer in self.confdb.query(self.BGP_PEER_QUERY):
-            if peer["type"] == "internal" and not peer.get("remote_as"):
-                self.logger.info("[%s] Internal Peer without AS", peer["peer"])
+            if peer.get("type", "internal") == "internal" and not peer.get("peer"):
+                self.logger.info("[%s] Internal Peer without AS", peer["remote_address"])
                 continue
-        return IGetBGPPeer().clean(r)
+            if "local_address" in peer:
+                peer["local_address"] = peer["local_address"].address
+            peer["remote_address"] = peer["peer"].address
+            del peer["peer"]
+            vr = peer.pop("vr", "default")
+            peer.pop("router_id", None)
+            r[vr].append(peer)
+        return IGetBGPPeer().clean_result([{"virtual_router": k, "peers": v} for k, v in r.items()])
