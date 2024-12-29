@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ComposeProbeNode
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -52,8 +52,11 @@ class ComposeProbeNode(ProbeNode):
         except Exception as e:
             logger.warning("[%s] Error when calculate value: %s", self.node_id, str(e))
             x = 0
-        # print("CP", self.name, x, self.node_id, self.config.compose_inputs)
         return super().get_value(x, ts=time_ns(), unit="1")
+
+    @property
+    def is_const(self) -> bool:
+        return False
 
     def get_input_type(self, name: str) -> int:
         if name in self.config.compose_inputs:
