@@ -279,8 +279,8 @@ class Collection(object):
                 try:
                     v = [self.lookup(edoc, "name", x) for x in d[k]]
                 except ValueError as e:
-                    v = []
                     self.partial_errors[d["uuid"]] = str(e)
+                    raise ValueError("Invalid lookup field: %s" % k)
             # Dereference binary field
             if isinstance(field, BinaryField):
                 v = b85decode(v)
