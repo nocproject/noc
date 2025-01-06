@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from urllib.parse import urlparse
 from typing import List, Iterable
 
 # NOC modules
@@ -27,6 +28,15 @@ class HTTPChecker(Checker):
     CONNECT_TIMEOUT = 2
     REQUEST_TIMEOUT = 3
 
+    @staticmethod
+    def parse_url(url, address, check) -> str:
+        url = urlparse(url)
+        if not url.scheme:
+            url = url._replace(scheme="http" if check == HTTP_CHECK else "https")
+        if not url.netloc:
+            url = url._replace(netloc=address)
+        return url.geturl()
+
     async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
         client = ASyncHttpClient(
             max_redirects=None,
@@ -35,7 +45,9 @@ class HTTPChecker(Checker):
             timeout=self.REQUEST_TIMEOUT,
         )
         for c in checks:
-            code, headers, data = await client.get(c.args["url"])
+            # url = urlparse()
+            url = self.parse_url(c.args["url"], c.address, c.name)
+            code, headers, data = await client.get(url)
             # Process response
             if code == 200:
                 error = None
@@ -48,6 +60,7 @@ class HTTPChecker(Checker):
                 )
             yield CheckResult(
                 check=HTTP_CHECK,
+                address=c.address,
                 port=c.port,
                 args=c.args,
                 status=not bool(error),
@@ -62,7 +75,8 @@ class HTTPChecker(Checker):
             timeout=self.REQUEST_TIMEOUT,
         )
         for c in checks:
-            code, headers, data = client.get(c.args["url"])
+            url = self.parse_url(c.args["url"], c.address, c.name)
+            code, headers, data = client.get(url)
             # Process response
             if code == 200:
                 error = None
@@ -75,6 +89,7 @@ class HTTPChecker(Checker):
                 )
             yield CheckResult(
                 check=HTTP_CHECK,
+                address=c.address,
                 port=c.port,
                 args=c.args,
                 status=not bool(error),
