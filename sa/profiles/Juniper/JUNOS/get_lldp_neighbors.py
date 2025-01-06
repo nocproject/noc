@@ -36,7 +36,13 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_caps = re.compile(
-        r"System capabilities\s*\n" r"\s*Supported\s*:\s(?P<capability>.+)\n", re.MULTILINE
+        r"System capabilities\s*\n\s*Supported\s*:\s(?P<capability>.+)\n", re.MULTILINE
+    )
+    rx_mgmt = re.compile(
+        r"Management address\s*\n"
+        r"\s+Address Type\s+:\s*IPv4\(\d+\)\n"
+        r"\s+Address\s+:\s*(?P<address>\S+)\n",
+        re.MULTILINE,
     )
     CHASSIS_TYPE = {"Mac address": 4, "Network address": 5, "Locally assigned": 7}
     PORT_TYPE = {
@@ -114,6 +120,9 @@ class Script(BaseScript):
                 n["remote_port_subtype"] = 1
             if match.group("name"):
                 n["remote_system_name"] = match.group("name")
+            match = self.rx_mgmt.search(v)
+            if match:
+                n["remote_mgmt_address"] = match.group("address")
             # Get capability
             cap = 0
             match = self.rx_caps.search(v)
