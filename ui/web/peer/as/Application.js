@@ -70,7 +70,7 @@ Ext.define("NOC.peer.as.Application", {
             name: "rir",
             xtype: "peer.rir.LookupField",
             fieldLabel: __("RIR"),
-            allowBlank: false
+            allowBlank: true
         },
         {
             name: "project",
@@ -82,7 +82,7 @@ Ext.define("NOC.peer.as.Application", {
             name: "organisation",
             xtype: "peer.organisation.LookupField",
             fieldLabel: __("Organisation"),
-            allowBlank: false
+            allowBlank: true
         },
         {
             name: "administrative_contacts",

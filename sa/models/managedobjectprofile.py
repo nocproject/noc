@@ -63,6 +63,7 @@ from noc.sa.interfaces.base import (
 )
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
+from noc.peer.models.peer import PeerProfile
 from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
 from noc.core.change.decorator import change
@@ -297,6 +298,8 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_prefix_neighbor = models.BooleanField(default=False)
     # Prefix discovery (ConfDB)
     enable_box_discovery_prefix_confdb = models.BooleanField(default=False)
+    # BGP Peer discovery (ConfDB)
+    enable_box_discovery_bgppeer = models.BooleanField(default=False)
     # L2 topology using BFD
     enable_box_discovery_bfd = models.BooleanField(default=False)
     # L2 topology using CDP
@@ -383,6 +386,9 @@ class ManagedObjectProfile(NOCModel):
     )
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
+    # Enable BGP Status
+    enable_periodic_discovery_peerstatus = models.BooleanField(default=False)
+    periodic_discovery_peerstatus_interval = models.IntegerField(default=0)
     #
     clear_links_on_platform_change = models.BooleanField(default=False)
     clear_links_on_serial_change = models.BooleanField(default=False)
@@ -538,6 +544,10 @@ class ManagedObjectProfile(NOCModel):
     address_profile_dhcp = DocumentReferenceField(AddressProfile, null=True, blank=True)
     address_profile_neighbor = DocumentReferenceField(AddressProfile, null=True, blank=True)
     address_profile_confdb = DocumentReferenceField(AddressProfile, null=True, blank=True)
+    # BGP Peer discovery profiles
+    bgppeer_profile: Optional[PeerProfile] = models.ForeignKey(
+        PeerProfile, verbose_name=_("PeerProfile"), blank=True, null=True, on_delete=models.CASCADE
+    )
     # Config policy
     config_policy = models.CharField(
         _("Config Policy"),
@@ -624,6 +634,17 @@ class ManagedObjectProfile(NOCModel):
             ("c", "ConfDB"),
         ],
         default="s",
+    )
+    bgpeer_discovery_policy = models.CharField(
+        _("BGP Peer Discovery Policy"),
+        max_length=1,
+        choices=[
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB"),
+        ],
+        default="c",
     )
     # Behaviour on new platform detection in version check
     new_platform_creation_policy = models.CharField(

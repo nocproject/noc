@@ -13,6 +13,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.capsprofile.LookupField",
+        "NOC.peer.peerprofile.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
@@ -47,6 +48,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryConfig: false,
             enableBoxDiscoveryCaps: false,
             enableBoxDiscoveryInterface: false,
+            enableBoxDiscoveryBGPPeer: false,
             enableBoxDiscoveryVLAN: false,
             enableBoxDiscoveryVPNInterface: false,
             enableBoxDiscoveryVPNMPLS: false,
@@ -1186,6 +1188,39 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE"),
                                             colspan: 3
+                                        },
+                                        {
+                                            name: "enable_box_discovery_bgppeer",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("BGP Peer"),
+                                            reference: "enableBoxDiscoveryBGPPeer"
+                                        },
+                                        {
+                                            name: "bgpeer_discovery_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Policy"),
+                                            store: [
+                                                ["c", __("ConfDB")]
+                                            ],
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryBGPPeer.checked}"
+                                            },
+                                            uiStyle: "medium"
+                                        },
+                                        {
+                                            name: "bgppeer_profile",
+                                            xtype: "peer.peerprofile.LookupField",
+                                            tooltip: __("Set which Peer Profile will be set when Created. <br/>" +
+                                                'Peer -> Setup -> Peer Profiles'),
+                                            fieldLabel: __("BGP Peer Profile"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryBGPPeer.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
                                         }
                                     ]
                                 },
@@ -2074,6 +2109,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             uiStyle: "small",
                                             minValue: 0
                                         },
+                                        {
+                                            name: "enable_periodic_discovery_peerstatus",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Peer Status"),
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_peerstatus_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval, sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
+                                        }
                                     ]
                                 },
                                 {
