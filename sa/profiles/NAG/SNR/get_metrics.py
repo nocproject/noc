@@ -107,9 +107,9 @@ class Script(GetMetricsScript):
 
     @metrics(["Object | MAC | TotalUsed"], volatile=False, access="S")  # SNMP version
     def get_mac_totalused(self, metrics):
-        macs = [mac for mac in self.snmp.getnext(mib["BRIDGE-MIB::dot1dTpFdbAddress"]) if mac]
+        macs = sum(1 for mac in self.snmp.getnext(mib["BRIDGE-MIB::dot1dTpFdbAddress"]) if mac)
         if macs:
-            self.set_metric(id=("Object | MAC | TotalUsed", None), value=len(macs))
+            self.set_metric(id=("Object | MAC | TotalUsed", None), value=macs)
 
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
     def get_temperature(self, metrics):
