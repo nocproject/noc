@@ -48,6 +48,7 @@ from noc.sa.interfaces.base import (
     ColorParameter,
     ObjectIdParameter,
     InterfaceTypeError,
+    ASNParameter,
 )
 
 
@@ -605,3 +606,14 @@ def test_object_id_parameter(raw, config, expected):
 def test_object_id_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
         assert ObjectIdParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [("3450", {}, 3450), ("1.1", {}, 65537)])
+def test_asn_parameter(raw, config, expected):
+    assert ASNParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [("0", {})])
+def test_asn_parameter_error(raw, config):
+    with pytest.raises(ValueError):
+        assert ASNParameter(**config).clean(raw)

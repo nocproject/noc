@@ -33,6 +33,14 @@ Ext.define("NOC.peer.peerprofile.Model", {
             type: "int"
         },
         {
+            name: "status_discovery",
+            type: "string"
+        },
+        {
+            name: "status_change_notification",
+            type: "string"
+        },
+        {
             name: "data",
             type: "auto"
         }

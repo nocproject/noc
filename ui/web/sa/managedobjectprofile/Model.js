@@ -215,6 +215,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_bgppeer",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_box_discovery_vpn_interface",
             type: "boolean",
             defaultValue: false
@@ -486,6 +491,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "enable_periodic_discovery_peerstatus",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "periodic_discovery_peerstatus_interval",
+            type: "integer",
+            defaultValue: 0
+        },
+        {
             name: "periodic_discovery_fatal_alarm_weight",
             type: "int"
         },
@@ -519,6 +534,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "caps_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "bgppeer_profile",
+            type: "string"
+        },
+        {
+            name: "bgppeer_profile__label",
             type: "string",
             persist: false
         },
@@ -757,6 +781,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "vlan_discovery_policy",
             type: "string",
             defaultValue: "s"
+        },
+        {
+            name: "bgpeer_discovery_policy",
+            type: "string",
+            defaultValue: "c"
         },
         {
             name: "config_mirror_storage",
