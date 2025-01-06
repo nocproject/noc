@@ -49,6 +49,7 @@ from noc.core.wf.diagnostic import (
     SNMPTRAP_DIAG,
     SYSLOG_DIAG,
     DIAGNOCSTIC_LABEL_SCOPE,
+    FIRST_AVAIL,
     DiagnosticState,
     DiagnosticConfig,
     DiagnosticHub,
@@ -1110,6 +1111,16 @@ class ManagedObjectProfile(NOCModel):
             dependent=["SNMP", "CLI", "HTTP"],
             show_in_display=False,
             alarm_class="NOC | Managed Object | Access Degraded",
+        )
+        yield DiagnosticConfig(
+            # Reset if change IP/Policy change
+            FIRST_AVAIL,
+            show_in_display=False,
+            display_description="On if ICMP available received",
+            blocked=not self.enable_ping,
+            run_policy="D",
+            workflow_event="avail",
+            reason="Disable Ping check" if not self.enable_ping else None,
         )
         if not o or Interaction.Event in o.interactions:
             fm_policy = o.get_event_processing_policy() if o else self.event_processing_policy

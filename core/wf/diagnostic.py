@@ -48,8 +48,11 @@ HTTP_DIAG = "HTTP"
 HTTPS_DIAG = "HTTPS"
 SYSLOG_DIAG = "SYSLOG"
 SNMPTRAP_DIAG = "SNMPTRAP"
+FIRST_AVAIL = "FIRST_AVAIL"
 #
 DIAGNOCSTIC_LABEL_SCOPE = "diag"
+#
+DEFER_CHANGE_STATE = "noc.core.wf.diagnostic.change_state"
 
 
 def json_default(obj):
@@ -116,6 +119,7 @@ class DiagnosticConfig(object):
         run_order: S - Before all discovery, E - After all discovery
         discovery_box: Run on Discovery Box
         discovery_periodic: Run on Periodic Discovery
+        workflow_event: Send fire event when set
         show_in_display: Show diagnostic on UI
         display_description: Description for show User
         display_order: Order on displayed list
@@ -139,6 +143,8 @@ class DiagnosticConfig(object):
     run_order: str = "S"
     discovery_box: bool = False
     discovery_periodic: bool = False
+    #
+    workflow_event: Optional[str] = None
     #
     save_history: bool = False
     # Display Config
@@ -622,6 +628,8 @@ class DiagnosticHub(object):
                     reason=d_new.reason,
                     ts=d_new.changed,
                 )
+                if d_new.config.workflow_event:
+                    self.__object.fire_event(d_new.config.workflow_event)
             self.__object.diagnostics[d_name] = d_new.model_dump()
             updated += [d_new]
         removed = set(self.__object.diagnostics) - set(self.__diagnostics)
@@ -930,3 +938,18 @@ def diagnostic(cls):
 
     cls.diagnostic = property(diagnostic)
     return cls
+
+
+def change_state(diagnostic: str, state: str, oid: str, model_id: str = "sa.ManagedObject"):
+    """
+    Defer change state
+    Attrs:
+        diagno
+    """
+    from noc.models import get_model
+
+    model = get_model(model_id)
+    o = model.get_by_id(oid)
+    if not hasattr(model, "diagnostic"):
+        return
+    o.diagnostic.set_state(diagnostic, DiagnosticState(state))
