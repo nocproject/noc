@@ -27,7 +27,7 @@ from django.contrib.postgres.fields import ArrayField
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import INETField, DocumentReferenceField
-from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID, MX_PROFILE_ID
+from noc.core.mx import send_message, MessageType, MX_PROFILE_ID
 from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.wf.decorator import workflow

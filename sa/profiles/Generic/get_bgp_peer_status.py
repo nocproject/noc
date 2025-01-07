@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Dict, Optional
-
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbgppeerstatus import IGetBGPPeerStatus

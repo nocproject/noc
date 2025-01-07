@@ -58,7 +58,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
 
     def handler(self):
         peers = self.get_bgp_peer()
-        n = self.sync_peers(peers)
+        self.sync_peers(peers)
         self.update_caps({"DB | BGP Peers": len(peers)}, source="bgppeer")
 
     def get_bgp_peer(self) -> Dict[Tuple[AS, IP], DiscoveredPeer]:
