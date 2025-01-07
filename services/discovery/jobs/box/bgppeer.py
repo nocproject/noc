@@ -86,7 +86,9 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
         """
         # VRF Processed
         for las, remote_ip in peers:
-            self.logger.debug("[%s|%s] Processed peer data: %s", las, remote_ip, peers[las, remote_ip])
+            self.logger.debug(
+                "[%s|%s] Processed peer data: %s", las, remote_ip, peers[las, remote_ip]
+            )
             p = Peer.objects.filter(local_asn=las, remote_ip=remote_ip).first()
             if p:
                 self.apply_bgp_peer_changes(p, peers[las, remote_ip])
