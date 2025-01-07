@@ -7,7 +7,7 @@
 
 # Python modules
 import operator
-from threading import Lock
+from threading import Lock, RLock
 from functools import partial
 from typing import Optional, Dict, List, Any
 
@@ -24,6 +24,7 @@ from noc.wf.models.workflow import Workflow
 from noc.core.change.decorator import change
 
 id_lock = Lock()
+ips_lock = RLock()
 
 
 class ModelDataItem(BaseModel):
@@ -85,7 +86,7 @@ class PeerProfile(NOCModel):
         choices=[
             ("d", "Disabled"),
             ("c", "Changed Message"),
-            ("f", "All Message"),
+            ("a", "All Message"),
         ],
         default="d",
         max_length=1,
@@ -93,6 +94,7 @@ class PeerProfile(NOCModel):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _status_discovery_cache = cachetools.TTLCache(maxsize=10, ttl=120)
 
     DEFAULT_PROFILE_NAME = "default"
     DEFAULT_WORKFLOW_NAME = "BGP Peer Default"
@@ -110,12 +112,23 @@ class PeerProfile(NOCModel):
     def get_default_profile(cls) -> "PeerProfile":
         pp = PeerProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
         if not pp:
-            sp = PeerProfile(
-                name=cls.DEFAULT_PROFILE_NAME,
-                workflow=Workflow.objects.filter(name=cls.DEFAULT_WORKFLOW_NAME).first(),
-            )
+            sp = PeerProfile(name=cls.DEFAULT_PROFILE_NAME)
             sp.save()
         return pp
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_status_discovery_cache"), lock=lambda _: ips_lock
+    )
+    def get_with_status_discovery(cls):
+        """Get list of peer profile ids with status_discovery = True"""
+        return list(
+            PeerProfile.objects.filter().exclude(status_discovery="d").values_list("id", flat=True)
+        )
+
+    @property
+    def is_enabled_notification(self) -> bool:
+        return self.status_change_notification != "d"
 
     def get_effective_data(self) -> Dict[str, Any]:
         r = {}
