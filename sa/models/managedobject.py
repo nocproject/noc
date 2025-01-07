@@ -344,7 +344,7 @@ class ManagedObjectManager(Manager):
         ("maintenance.Maintenance", "direct_objects__object"),
         ("sa.DiscoveredObject", "managed_object_id"),
         ("sa.ServiceInstance", "managed_object"),
-        ("peer.Peer", "managed_object_id"),
+        ("peer.Peer", "managed_object"),
     ],
 )
 class ManagedObject(NOCModel):
