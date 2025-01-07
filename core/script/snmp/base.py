@@ -16,7 +16,7 @@ from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 
 
 # NOC modules
-from noc.core.snmp.error import SNMPError, BAD_VALUE
+from noc.core.snmp.error import SNMPError, BAD_VALUE, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ioloop.udp import UDPSocket
@@ -145,7 +145,7 @@ class SNMP(object):
             try:
                 await self.socket.refresh()
             except TimeoutError:
-                raise SNMPError(code=-1)
+                raise self.SNMPError(code=TIMED_OUT)
         return self.socket
 
     @property
@@ -183,8 +183,12 @@ class SNMP(object):
                 self.snmp_version = SNMP_v3
             elif self.script.has_snmp_v1():
                 self.snmp_version = SNMP_v1
-            else:
+            elif "snmp_username" in self.script.credentials:
+                self.snmp_version = SNMP_v3
+            elif "snmp_ro" in self.script.credentials:
                 self.snmp_version = SNMP_v2c
+            else:
+                raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         return self.snmp_version
 
     def _get_display_hints(self):
