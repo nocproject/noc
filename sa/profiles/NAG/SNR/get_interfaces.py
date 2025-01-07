@@ -11,7 +11,7 @@ from typing import Set, Dict, Any
 from collections import defaultdict
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 
@@ -20,6 +20,8 @@ class Script(BaseScript):
     name = "NAG.SNR.get_interfaces"
     cache = True
     interface = IGetInterfaces
+    MAX_REPETITIONS = 10
+    MAX_TIMEOUT = 10
 
     rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
     rx_lldp = re.compile(r"LLDP enabled port : (?P<local_if>\S*.+)$", re.MULTILINE)
