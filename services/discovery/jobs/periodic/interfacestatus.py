@@ -133,11 +133,14 @@ class InterfaceStatusCheck(DiscoveryCheck):
             astatus = i.get("admin_status")
             if iface.oper_status != ostatus and ostatus is not None:
                 self.logger.info("[%s] set oper_status to %s", i["interface"], ostatus)
-                if iface.profile.status_discovery in {"c", "rc", "ca"}:
+                if (
+                    iface.profile.status_discovery in {"c", "rc", "ca"}
+                    and iface.oper_status is not None
+                ):
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 iface.set_oper_status(ostatus)
             if old_adm_status != astatus and astatus is not None:
-                if iface.profile.status_discovery in {"ca", "rc"}:
+                if iface.profile.status_discovery in {"ca", "rc"} and old_adm_status is not None:
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 if astatus is False:
                     # If admin_down send expired signal
