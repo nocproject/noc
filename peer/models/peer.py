@@ -8,6 +8,7 @@
 # Python modules
 import re
 import datetime
+import logging
 from typing import Optional
 
 # Third-party modules
@@ -25,17 +26,21 @@ from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.project.models.project import Project
-from noc.main.models.label import Label
 from noc.core.model.fields import INETField, DocumentReferenceField
-from noc.config import config
+from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID, MX_PROFILE_ID
 from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.wf.decorator import workflow
+from noc.core.bgp import BGPState
+from noc.project.models.project import Project
+from noc.main.models.label import Label
 from noc.wf.models.state import State
+from noc.config import config
 from .asn import AS
 from .peerprofile import PeerProfile
 from .peeringpoint import PeeringPoint
+
+logger = logging.getLogger(__name__)
 
 
 @Label.model
@@ -101,7 +106,7 @@ class Peer(NOCModel):
         PeeringPoint, verbose_name="Peering Point", on_delete=CASCADE, null=True, blank=True
     )
     #
-    local_asn = ForeignKey(AS, verbose_name="Local AS", on_delete=CASCADE)
+    local_asn: "AS" = ForeignKey(AS, verbose_name="Local AS", on_delete=CASCADE)
     local_ip = INETField("Local IP", null=True, blank=True)
     local_backup_ip = INETField("Local Backup IP", null=True, blank=True)
     remote_asn = BigIntegerField("Remote AS", null=True, blank=True)
@@ -277,35 +282,57 @@ class Peer(NOCModel):
         if si:
             return si.managed_object
 
-    def set_oper_status(self, status: int):
-        """Set current oper status"""
-        if self.oper_status == status:
+    def set_oper_status(self, status: BGPState, timestamp: Optional[datetime.datetime] = None):
+        """
+        Set Operational Status for Service
+        Args:
+            status: New status
+            timestamp: Time when status changed
+        """
+        # Check state on is_productive
+        # if not self.state.is_productive:
+        #    return
+        current = BGPState(self.oper_status) if self.oper_status else BGPState.IDLE
+        if current == status:
+            logger.debug("[%s] Status is same. Skipping", self.id)
             return
         now = datetime.datetime.now().replace(microsecond=0)
-        if self.oper_status != status and (
-            not self.oper_status_change or self.oper_status_change < now
-        ):
-            Peer.ojects.filter(id=self.id).update(oper_status=status, oper_status_change=now)
-            # if self.profile.is_enabled_notification:
-            #     logger.debug("Sending status change notification")
-            #     headers = self.managed_object.get_mx_message_headers(self.effective_labels)
-            #     if self.profile.default_notification_group:
-            #         headers[MX_NOTIFICATION_GROUP_ID] = str(
-            #             self.profile.default_notification_group.id
-            #         ).encode()
-            #     headers[MX_PROFILE_ID] = str(self.profile.id).encode()
-            #     send_message(
-            #         data={
-            #             "name": self.name,
-            #             "description": self.description,
-            #             "is_uni": self.profile.is_uni,
-            #             "profile": {"id": str(self.profile.id), "name": self.profile.name},
-            #             "status": status,
-            #             "full_duplex": self.full_duplex,
-            #             "in_speed": self.in_speed,
-            #             "bandwidth": self.bandwidth,
-            #             "managed_object": self.managed_object.get_message_context(),
-            #         },
-            #         message_type=MessageType.INTERFACE_STATUS_CHANGE,
-            #         headers=headers,
-            #     )
+        logger.info(
+            "[%s] Change Peer status: %s -> %s",
+            self.id,
+            current,
+            status,
+        )
+        timestamp = timestamp or now
+        if self.oper_status_change and self.oper_status_change > timestamp:
+            return
+        Peer.objects.filter(id=self.id).update(
+            oper_status=status.value, oper_status_change=timestamp
+        )
+        if self.profile.is_enabled_notification:
+            logger.debug("Sending status change notification")
+            headers = {}
+            data = {}
+            if self.managed_object:
+                headers |= self.managed_object.get_mx_message_headers(self.effective_labels)
+                data["managed_object"] = self.managed_object.get_message_context()
+            # if self.profile.default_notification_group:
+            #     headers[MX_NOTIFICATION_GROUP_ID] = str(
+            #         self.profile.default_notification_group.id
+            #     ).encode()
+            headers[MX_PROFILE_ID] = str(self.profile.id).encode()
+            send_message(
+                data={
+                    "name": self.name,
+                    "description": self.description,
+                    "local_as": self.local_asn.get_message_context(),
+                    "local_ip": self.local_ip,
+                    "remote_asn": self.remote_asn,
+                    "remote_ip": self.remote_ip,
+                    "profile": {"id": str(self.profile.id), "name": self.profile.name},
+                    "status": status,
+                    "from_status": current,
+                },
+                message_type=MessageType.PEER_STATUS_CHANGE,
+                headers=headers,
+            )

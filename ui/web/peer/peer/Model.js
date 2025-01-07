@@ -108,6 +108,16 @@ Ext.define("NOC.peer.peer.Model", {
             type: "int"
         },
         {
+            name: "oper_status",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "oper_status_change",
+            type: "string",
+            persist: false
+        },
+        {
             name: "communities",  
             type: "string"
         },

@@ -56,7 +56,7 @@ class PeerStatusCheck(DiscoveryCheck):
             astatus = p.get("admin_status")
             if peer.oper_status != ostatus.value:
                 self.logger.info("[%s] set status to %s (when: %s)", nei, ostatus, state_changed)
-                # peer.set_oper_status(ostatus.value, timestamp=state_changed)
+                peer.set_oper_status(ostatus, timestamp=state_changed)
             if astatus is False:
                 # If admin_down send expired signal
                 peer.fire_event("down")
