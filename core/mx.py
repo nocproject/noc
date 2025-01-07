@@ -68,6 +68,7 @@ class MessageType(enum.Enum):
     SYSLOG = "syslog"
     EVENT = "event"
     INTERFACE_STATUS_CHANGE = "interface_status_change"
+    PEER_STATUS_CHANGE = "peer_status_change"
     CONFIG_CHANGED = "config_changed"
     OBJECT_NEW = "object_new"
     OBJECT_DELETED = "object_deleted"

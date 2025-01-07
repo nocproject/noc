@@ -15,7 +15,7 @@ from noc.core.model.fields import DocumentReferenceField
 
 
 class Migration(BaseMigration):
-    WF_DEFAULT = "5a1d078e1bb627000151a17d"
+    WF_DEFAULT = "676509728db9f670c21e14d4"
 
     depends_on = [("wf", "0014_add_peer_default_workflow")]
 

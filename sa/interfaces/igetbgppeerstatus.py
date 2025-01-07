@@ -7,7 +7,15 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import DictListParameter, StringParameter, IntParameter, BooleanParameter, IPParameter
+from noc.core.bgp import BGPState
+from .base import (
+    DictListParameter,
+    StringParameter,
+    IntParameter,
+    BooleanParameter,
+    IPParameter,
+    IntEnumParameter,
+)
 
 
 class IGetBGPPeerStatus(BaseInterface):
@@ -25,6 +33,7 @@ class IGetBGPPeerStatus(BaseInterface):
         * openconfirm(5)
         * established(6)
     * table_version -
+    * status_duration - time (in seconds) from status is set
     """
 
     peers = DictListParameter(
@@ -35,19 +44,9 @@ class IGetBGPPeerStatus(BaseInterface):
         attrs={
             "neighbor": IPParameter(required=True),
             "admin_status": BooleanParameter(default=True),
-            "status": StringParameter(
-                choices=[
-                    "active",
-                    "connect",
-                    "established",
-                    "estabsync",
-                    "idle",
-                    "openconfirm",
-                    "opensent",
-                ],
-                required=True,
-            ),
+            "status": IntEnumParameter(enum=BGPState, required=True),
             "table_version": IntParameter(required=False),
+            "status_duration": IntParameter(required=False),
             "last_error": StringParameter(required=False),
         }
     )

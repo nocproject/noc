@@ -14,8 +14,7 @@ Ext.define("NOC.peer.peer.Application", {
         "NOC.core.label.LabelField",
         "NOC.peer.peer.Model",
         "NOC.peer.peeringpoint.LookupField",
-        "NOC.peer.peergroup.LookupField",
-        "NOC.sa.managedobject.LookupField",
+        "NOC.peer.peerprofile.LookupField",
         "NOC.project.project.LookupField",
         "NOC.peer.as.LookupField"
     ],
@@ -23,16 +22,75 @@ Ext.define("NOC.peer.peer.Application", {
     search: true,
     columns: [
         {
+          text: __("S"),
+          dataIndex: "oper_status",
+          sortable: false,
+          width: 30,
+          renderer: function(value, metaData, record){
+            var color;
+
+            metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
+                            "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background: grey;\"></div></td><td>" + __("IDLE") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: " + NOC.colors.emerald + ";\"></div></td><td>" + __("ESTABLISHED") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: " + NOC.colors.amethyst + ";\"></div></td><td>" + __("OPENCONFIRM") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: orange;\"></div></td><td>" + __("OPENSENT") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: " + NOC.colors.pumpkin + ";\"></div></td><td>" + __("CONNECT") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: turquoise;\"></div></td><td>" + __("ACTIVE") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: linear-gradient(to right, green 50%, brown 50%);\"></div></td><td>" + __("In maintenance") + "</td></tr>" +
+                "</table>'";
+            switch(value){
+              case "1":
+                color = "grey";
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, grey 50%, brown 50%)";
+                }
+                break;
+              case "2":
+                color = NOC.colors.pumpkin;
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, pumpkin 50%, brown 50%)";
+                }
+                break;
+              case "3":
+                color = "turquoise";
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, turquoise 50%, brown 50%)";
+                }
+                break;
+              case "4":
+                color = "orange";
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, orange 50%, brown 50%)";
+                }
+                break;
+              case "5":
+                color = NOC.colors.amethyst;
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, amethyst 50%, brown 50%)";
+                }
+                break;
+              case "6":
+                color = NOC.colors.emerald;
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, emerald 50%, brown 50%)";
+                }
+                break;
+            }
+
+            return "<div class='noc-object-oper-state' style='background: " + color + "'></div>";
+          },
+        },
+        {
             text: __("Peering Point"),
             flex: 1,
             dataIndex: "peering_point",
             renderer: NOC.render.Lookup("peering_point")
         },
         {
-            text: __("Peer Group"),
+            text: __("Peer Profile"),
             flex: 1,
-            dataIndex: "peer_group",
-            renderer: NOC.render.Lookup("peer_group")
+            dataIndex: "profile",
+            renderer: NOC.render.Lookup("profile")
         },
         {
             text: __("Project"),
@@ -85,12 +143,12 @@ Ext.define("NOC.peer.peer.Application", {
             text: __("Description"),
             flex: 1,
             dataIndex: "description"
-        }, 
+        },
         {
             text: __("Import Communities"),
             flex: 1,
             dataIndex: "communities"
-        }, 
+        },
         {
             text: __("Labels"),
             flex: 1,
@@ -116,14 +174,14 @@ Ext.define("NOC.peer.peer.Application", {
                     xtype: "peer.peeringpoint.LookupField",
                     fieldLabel: __("Peering Point"),
                     width: 400,
-                    allowBlank: true
+                    allowBlank: false
                 },
                 {
-                    name: "peer_group",
-                    xtype: "peer.peergroup.LookupField",
-                    fieldLabel: __("Peer Group"),
+                    name: "profile",
+                    xtype: "peer.peerprofile.LookupField",
+                    fieldLabel: __("Peer Profile"),
                     width: 400,
-                    allowBlank: true
+                    allowBlank: false
                 },
                 {
                     name: "project",
@@ -146,7 +204,7 @@ Ext.define("NOC.peer.peer.Application", {
                     hideTrigger: true,
                     keyNavEnabled: false,
                     mouseWheelEnabled: false,
-                    allowBlank: true,
+                    allowBlank: false,
                     vtype: "ASN"
                 },
                 {
@@ -155,7 +213,7 @@ Ext.define("NOC.peer.peer.Application", {
                     fieldLabel: __("State"),
                     allowBlank: true
                 }
-                
+
             ]
         },
         {
@@ -173,7 +231,7 @@ Ext.define("NOC.peer.peer.Application", {
                 {
                     name: "local_ip",
                     xtype: "textfield",
-                    allowBlank: true,
+                    allowBlank: false,
                     fieldLabel: __("Local IP")
                 },
                 {
@@ -300,16 +358,16 @@ Ext.define("NOC.peer.peer.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "import_med",   
+                    name: "import_med",
                     xtype: "numberfield",
                     fieldLabel: __("Import MED"),
-                    allowBlank: true   
+                    allowBlank: true
                 },
                 {
-                    name: "export_med",   
+                    name: "export_med",
                     xtype: "numberfield",
                     fieldLabel: __("Export MED"),
-                    allowBlank: true   
+                    allowBlank: true
                 }
             ]
         },

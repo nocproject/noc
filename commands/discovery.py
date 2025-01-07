@@ -76,6 +76,7 @@ class Command(BaseCommand):
             "mac",
             "cpestatus",
             "alarms",
+            "peerstatus",
             "diagnostic",
         ],
         "interval": ["metrics"],

@@ -19,6 +19,7 @@ from .interfacestatus import InterfaceStatusCheck
 from .mac import MACCheck
 from .alarms import AlarmsCheck
 from .cpestatus import CPEStatusCheck
+from .peerstatus import PeerStatusCheck
 from .diagnostic import DiagnosticCheck
 from .metrics import MetricsCheck
 from noc.config import config
@@ -84,14 +85,23 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             )
         ):
             InterfaceStatusCheck(self).run()
-        if self.object.object_profile.enable_metrics:
-            MetricsCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_cpestatus and self.is_run_interval(
             self.get_discovery_interval("cpestatus"),
             runs,
             name="cpestatus",
         ):
             CPEStatusCheck(self).run()
+        if (
+            self.object.object_profile.enable_periodic_discovery_peerstatus
+            and self.is_run_interval(
+                self.get_discovery_interval("peerstatus"),
+                runs,
+                name="peerstatus",
+            )
+        ):
+            PeerStatusCheck(self).run()
+        if self.object.object_profile.enable_metrics:
+            MetricsCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_alarms and self.is_run_interval(
             self.get_discovery_interval("alarms"),
             runs,

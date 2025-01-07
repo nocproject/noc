@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional
+from typing import Optional, Dict, Any
 import operator
 
 # Third-party modules
@@ -271,3 +271,12 @@ class AS(NOCModel):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_asn")
+
+    def get_message_context(self) -> Dict[str, Any]:
+        r = {
+            "id": str(self.id),
+            "asn": self.asn,
+            "description": self.description,
+            "profile": {"id": str(self.profile.id), "name": self.profile.name},
+        }
+        return r

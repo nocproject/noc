@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | MIB | BGP4-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "2d554c13-ee4f-4243-9f60-fccd03787e7c",
+    "description": "SNMP BGP4-MIB support.",
+    "type": "bool",
+    "card_template": null
+}
