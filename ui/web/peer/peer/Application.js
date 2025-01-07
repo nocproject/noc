@@ -22,6 +22,65 @@ Ext.define("NOC.peer.peer.Application", {
     search: true,
     columns: [
         {
+          text: __("S"),
+          dataIndex: "oper_status",
+          sortable: false,
+          width: 30,
+          renderer: function(value, metaData, record){
+            var color;
+
+            metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
+                            "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background: grey;\"></div></td><td>" + __("IDLE") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: " + NOC.colors.emerald + ";\"></div></td><td>" + __("ESTABLISHED") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: " + NOC.colors.amethyst + ";\"></div></td><td>" + __("OPENCONFIRM") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: orange;\"></div></td><td>" + __("OPENSENT") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: " + NOC.colors.pumpkin + ";\"></div></td><td>" + __("CONNECT") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: turquoise;\"></div></td><td>" + __("ACTIVE") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: linear-gradient(to right, green 50%, brown 50%);\"></div></td><td>" + __("In maintenance") + "</td></tr>" +
+                "</table>'";
+            switch(value){
+              case "1":
+                color = "grey";
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, grey 50%, brown 50%)";
+                }
+                break;
+              case "2":
+                color = NOC.colors.pumpkin;
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, pumpkin 50%, brown 50%)";
+                }
+                break;
+              case "3":
+                color = "turquoise";
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, turquoise 50%, brown 50%)";
+                }
+                break;
+              case "4":
+                color = "orange";
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, orange 50%, brown 50%)";
+                }
+                break;
+              case "5":
+                color = NOC.colors.amethyst;
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, amethyst 50%, brown 50%)";
+                }
+                break;
+              case "6":
+                color = NOC.colors.emerald;
+                if(record.get("in_maintenance")){
+                  color = "linear-gradient(to right, emerald 50%, brown 50%)";
+                }
+                break;
+            }
+
+            return "<div class='noc-object-oper-state' style='background: " + color + "'></div>";
+          },
+        },
+        {
             text: __("Peering Point"),
             flex: 1,
             dataIndex: "peering_point",

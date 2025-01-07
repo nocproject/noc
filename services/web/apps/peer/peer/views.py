@@ -35,6 +35,13 @@ class PeerApplication(ExtModelApplication):
     ]
     rpsl = RepoInline("rpsl")
 
+    def instance_to_dict(self, o, fields=None):
+        data = super().instance_to_dict(o, fields=fields)
+        # Expand resource groups fields
+        if isinstance(o, Peer):
+            data["in_maintenance"] = False
+        return data
+
     def clean(self, data):
         data = super().clean(data)
         # Check address fields

@@ -118,6 +118,11 @@ Ext.define("NOC.peer.peer.Model", {
             persist: false
         },
         {
+            name: "in_maintenance",
+            type: "bool",
+            persist: false
+        },
+        {
             name: "communities",  
             type: "string"
         },

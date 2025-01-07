@@ -292,7 +292,7 @@ class Peer(NOCModel):
         # Check state on is_productive
         # if not self.state.is_productive:
         #    return
-        current = BGPState(self.oper_status) if self.oper_status else BGPState.IDLE
+        current = BGPState(self.oper_status) if self.oper_status else None
         if current == status:
             logger.debug("[%s] Status is same. Skipping", self.id)
             return
