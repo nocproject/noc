@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,6 +41,11 @@ class Script(BaseScript):
     )
     rx_ver_snmp2 = re.compile(r"^(?P<vendor>FoxGate) (?P<platform>\S+)$", re.MULTILINE)
 
+    # For Version 2XXX
+    rx_platform_ioss_v2 = re.compile(r"\s+(?P<platform>SNR-\S+)\s+")
+    rx_ver_snmp_ioss_v2 = re.compile(r"Version (?P<version>\S+)\s+Build(?P<build>\d+)")
+    rx_serial_snmp_ioss_v2 = re.compile(r"Serial num:(?P<serial>\S+)\s*,\s*ID num:\d+")
+
     def execute_snmp(self):
         v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         match = self.rx_ver_snmp.search(v)
@@ -55,28 +60,49 @@ class Script(BaseScript):
                     "Serial Number": match.group("serial"),
                 },
             }
-        else:
-            match = self.rx_ver_snmp.search(v)
-            if match:
-                # Device do not support .1.3.6.1.2.1.47.x SNMP table
-                return {
-                    "vendor": "FoxGate",
-                    "platform": match.group("platform"),
-                    "version": "unknown",  # I do not know right OID
+        try:
+            vendor = self.snmp.get(mib["ENTITY-MIB::entPhysicalMfgName", 1])
+            platform = v.split(" ")[0]
+            vv = self.snmp.get(
+                {
+                    "version": mib["ENTITY-MIB::entPhysicalFirmwareRev", 1],
+                    "bootprom": mib["ENTITY-MIB::entPhysicalSoftwareRev", 1],
+                    "hardware": mib["ENTITY-MIB::entPhysicalHardwareRev", 1],
+                    "serial": mib["ENTITY-MIB::entPhysicalSerialNum", 1],
                 }
-        vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1", cached=True)
-        platform = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
-        platform = platform.split(" ")[0]
-        version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.1", cached=True)
-        bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
-        hardware = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.1", cached=True)
-        serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1", cached=True)
-        return {
-            "vendor": vendor,
-            "platform": platform,
-            "version": version,
-            "attributes": {"Boot PROM": bootprom, "HW version": hardware, "Serial Number": serial},
-        }
+            )
+            return {
+                "vendor": vendor,
+                "platform": platform,
+                "version": vv["version"],
+                "attributes": {
+                    "Boot PROM": vv["bootprom"],
+                    "HW version": vv["hardware"],
+                    "Serial Number": vv["serial"],
+                },
+            }
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
+            self.logger.info("ENTITY-MIB not supported. Try next")
+        match = self.rx_platform_ioss_v2.search(v)
+        if match:
+            platform = match.group("platform")
+            match = self.rx_ver_snmp_ioss_v2.search(v)
+            match_serial = self.rx_serial_snmp_ioss_v2.search(v)
+            return {
+                "vendor": "NAG",
+                "platform": platform,
+                "version": f"{match.group('version')}({match.group('build')})",
+                "attributes": {"Serial Number": match_serial.group("serial")},
+            }
+        raise self.NotSupportedError("Unknown platform")
+        # match = self.rx_ver_snmp.search(v)
+        # if match:
+        #     # Device do not support .1.3.6.1.2.1.47.x SNMP table
+        #     return {
+        #         "vendor": "FoxGate",
+        #         "platform": match.group("platform"),
+        #         "version": "unknown",  # I do not know right OID
+        #     }
 
     def execute_cli(self):
         v = self.cli("show version", cached=True)
@@ -84,6 +110,8 @@ class Script(BaseScript):
         if not match:
             match = self.rx_ver_snmp.search(v)
         vendor = "NAG"
+        if not match:
+            raise NotImplementedError("Not matched CLI")
         if match.group("vendor"):
             vendor = "FoxGate"
         return {
