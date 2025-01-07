@@ -9,5 +9,5 @@
     "units__code": "%",
     "scale__code": "1",
     "compose_expression": "load_out/(speed or 1) * 100",
-    "compose_inputs": ["Interface | Load | Out", "Interface | Speed2"]
+    "compose_inputs": ["Interface | Load | Out", "Interface | Speed"]
 }
