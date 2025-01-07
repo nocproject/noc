@@ -47,7 +47,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
       Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer) or
       Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer, "description", description) or
       Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer, "type", type) or
-      Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer, "admin-status", disabled) or
+      Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer, "admin-status", admin_status) or
       Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer, "remote-as", remote_as) or
       Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer, "local-as", local_as) or
       Match("virtual-router", vr, "forwarding-instance", instance, "protocols", "bgp", "neighbors", peer, "local-address", local_address) or
@@ -58,7 +58,8 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
 
     def handler(self):
         peers = self.get_bgp_peer()
-        self.sync_peers(peers)
+        n = self.sync_peers(peers)
+        self.update_caps({"DB | BGP Peers": len(peers)}, source="bgppeer")
 
     def get_bgp_peer(self) -> Dict[Tuple[AS, IP], DiscoveredPeer]:
         """Return BGP Peer. Local AS, RemoteIP"""
@@ -85,6 +86,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
         """
         # VRF Processed
         for las, remote_ip in peers:
+            self.logger.debug("[%s|%s] Processed peer data: %s", las, remote_ip, peers[las, remote_ip])
             p = Peer.objects.filter(local_asn=las, remote_ip=remote_ip).first()
             if p:
                 self.apply_bgp_peer_changes(p, peers[las, remote_ip])
@@ -115,9 +117,9 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
             peer.save()
             metrics["prefix_updated"] += 1
         if discovered_peer.admin_status:
-            peer.fire_event("down")
-        else:
             peer.fire_event("up")
+        else:
+            peer.fire_event("down")
         peer.fire_event("seen")
 
     def create_bgp_peer(self, local_as: AS, peer: DiscoveredPeer):

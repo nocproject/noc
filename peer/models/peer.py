@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+import datetime
 from typing import Optional
 
 # Third-party modules
@@ -275,3 +276,36 @@ class Peer(NOCModel):
         si = SubInterface.objects.filter(ipv4_addresses=re.compile(str(self.remote_ip)))
         if si:
             return si.managed_object
+
+    def set_oper_status(self, status: int):
+        """Set current oper status"""
+        if self.oper_status == status:
+            return
+        now = datetime.datetime.now().replace(microsecond=0)
+        if self.oper_status != status and (
+            not self.oper_status_change or self.oper_status_change < now
+        ):
+            Peer.ojects.filter(id=self.id).update(oper_status=status, oper_status_change=now)
+            # if self.profile.is_enabled_notification:
+            #     logger.debug("Sending status change notification")
+            #     headers = self.managed_object.get_mx_message_headers(self.effective_labels)
+            #     if self.profile.default_notification_group:
+            #         headers[MX_NOTIFICATION_GROUP_ID] = str(
+            #             self.profile.default_notification_group.id
+            #         ).encode()
+            #     headers[MX_PROFILE_ID] = str(self.profile.id).encode()
+            #     send_message(
+            #         data={
+            #             "name": self.name,
+            #             "description": self.description,
+            #             "is_uni": self.profile.is_uni,
+            #             "profile": {"id": str(self.profile.id), "name": self.profile.name},
+            #             "status": status,
+            #             "full_duplex": self.full_duplex,
+            #             "in_speed": self.in_speed,
+            #             "bandwidth": self.bandwidth,
+            #             "managed_object": self.managed_object.get_message_context(),
+            #         },
+            #         message_type=MessageType.INTERFACE_STATUS_CHANGE,
+            #         headers=headers,
+            #     )

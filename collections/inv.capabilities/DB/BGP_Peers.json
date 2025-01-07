@@ -1,0 +1,8 @@
+{
+    "name": "DB | BGP Peers",
+    "$collection": "inv.capabilities",
+    "uuid": "2ba91ebe-20b6-49c4-bdcb-7e08a0c179c6",
+    "description": "Number of discovered BGP Peers",
+    "type": "int",
+    "card_template": null
+}

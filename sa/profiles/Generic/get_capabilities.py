@@ -63,9 +63,11 @@ class Script(BaseScript):
         "SNMP | MIB | IEEE8021-Q-BRIDGE-MIB": mib[
             "IEEE8021-Q-BRIDGE-MIB::ieee8021QBridgeNumVlans", 1
         ],
+        "SNMP | MIB | BGP4-MIB": mib["BGP4-MIB::bgpLocalAs", 0],
     }
     CHECK_SNMP_GETNEXT_GENERIC = {
         "SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"],
+        "Network | BGP": mib["BGP4-MIB::bgpPeerIdentifier"],
     }
     #
     GET_SNMP_TABLE_IDX = {}
