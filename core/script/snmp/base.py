@@ -185,7 +185,7 @@ class SNMP(object):
                 self.snmp_version = SNMP_v1
             elif "snmp_username" in self.script.credentials:
                 self.snmp_version = SNMP_v3
-            elif "snmp_ro" not in self.script.credentials:
+            elif "snmp_ro" in self.script.credentials:
                 self.snmp_version = SNMP_v2c
             else:
                 raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
