@@ -727,6 +727,20 @@ class VLANStackParameter(ListOfParameter):
         return value
 
 
+class IntEnumParameter(IntParameter):
+    """Check Parameter on Enum class"""
+
+    def __init__(self, enum, required=True, default=None):
+        self.enum = enum
+        super().__init__(required=required, default=default)
+
+    def clean(self, value):
+        if isinstance(value, self.enum):
+            return value
+        value = super().clean(value)
+        return self.enum(value)
+
+
 class VLANIDListParameter(ListOfParameter):
     """
     Check value is a list of arbitrary vlans

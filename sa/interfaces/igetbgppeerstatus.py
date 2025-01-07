@@ -8,7 +8,14 @@
 # NOC modules
 from noc.core.interface.base import BaseInterface
 from noc.core.bgp import BGPState
-from .base import DictListParameter, StringParameter, IntParameter, BooleanParameter, IPParameter, IntEnumParameter
+from .base import (
+    DictListParameter,
+    StringParameter,
+    IntParameter,
+    BooleanParameter,
+    IPParameter,
+    IntEnumParameter,
+)
 
 
 class IGetBGPPeerStatus(BaseInterface):

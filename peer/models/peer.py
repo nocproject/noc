@@ -309,7 +309,7 @@ class Peer(NOCModel):
         Peer.objects.filter(id=self.id).update(
             oper_status=status.value, oper_status_change=timestamp
         )
-        if self.profile.is_enabled_notification:
+        if self.profile.is_enabled_notification and self.oper_status is not None:
             logger.debug("Sending status change notification")
             headers = {}
             data = {}
