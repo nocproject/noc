@@ -1,13 +1,13 @@
 # ----------------------------------------------------------------------
 # Juniper.JunOS config normalizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
-from noc.core.confdb.syntax.patterns import IP_ADDRESS
+from noc.core.confdb.syntax.patterns import IP_ADDRESS, AS_NUM
 
 
 class JunOSNormalizer(BaseNormalizer):
@@ -198,3 +198,152 @@ class JunOSNormalizer(BaseNormalizer):
     @match("system", "syslog", "host", IP_ADDRESS, "source-address", IP_ADDRESS)
     def normalize_protocols_syslog_server_source(self, tokens):
         yield self.make_protocols_syslog_server_source(ip=tokens[3], source_ip=tokens[5])
+
+    @match("routing-instances", ANY, "protocols", "bgp", "group", ANY, "neighbor", IP_ADDRESS)
+    def normalize_bgp_peer_neighbor(self, tokens):
+        yield self.make_bgp_neighbor(instance=tokens[1], neighbor=tokens[7])
+        yield self.make_bgp_neighbor_peer_group(
+            instance=tokens[1], neighbor=tokens[7], group=tokens[5]
+        )
+        yield self.make_bgp_neighbor_description(
+            instance=tokens[1], neighbor=tokens[7], description=tokens[5]
+        )
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}.export_filter",
+            self.make_bgp_neighbor_export_filter,
+            instance=tokens[1],
+            neighbor=tokens[7],
+            name=deferable("name"),
+        )
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}.import_filter",
+            self.make_bgp_neighbor_import_filter,
+            instance=tokens[1],
+            neighbor=tokens[7],
+            name=deferable("name"),
+        )
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}",
+            self.make_bgp_neighbor_type,
+            instance=tokens[1],
+            neighbor=tokens[7],
+            type=deferable("role"),
+        )
+        yield self.defer(
+            "bgp.routing_options.as",
+            self.make_bgp_neighbor_local_as,
+            instance=tokens[1],
+            neighbor=tokens[7],
+            as_num=deferable("as_num"),
+        )
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}",
+            self.make_bgp_neighbor_local_address,
+            instance=tokens[1],
+            neighbor=tokens[7],
+            address=deferable("local_address"),
+        )
+
+    @match(
+        "routing-instances",
+        ANY,
+        "protocols",
+        "bgp",
+        "group",
+        ANY,
+        "neighbor",
+        IP_ADDRESS,
+        "peer-as",
+        AS_NUM,
+    )
+    def normalize_bgp_peer_as(self, tokens):
+        yield self.make_bgp_neighbor_remote_as(
+            instance=tokens[1], neighbor=tokens[7], as_num=tokens[9].split(".")[0]
+        )
+
+    @match(
+        "routing-instances",
+        ANY,
+        "protocols",
+        "bgp",
+        "group",
+        ANY,
+        "neighbor",
+        IP_ADDRESS,
+        "shutdown",
+    )
+    def normalize_bgp_peer_admin_status(self, tokens):
+        yield self.make_bgp_neighbor_admin_status(
+            instance=tokens[1], neighbor=tokens[7], admin_status=False
+        )
+
+    @match(
+        "routing-instances",
+        ANY,
+        "protocols",
+        "bgp",
+        "group",
+        ANY,
+        "type",
+        ANY,
+    )
+    def normalize_bgp_peer_type(self, tokens):
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}",
+            role=tokens[7],
+        )
+
+    @match(
+        "routing-instances",
+        ANY,
+        "protocols",
+        "bgp",
+        "group",
+        ANY,
+        "local-address",
+        ANY,
+    )
+    def normalize_bgp_peer_local_address(self, tokens):
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}",
+            local_address=tokens[7],
+        )
+
+    @match(
+        "routing-instances",
+        ANY,
+        "protocols",
+        "bgp",
+        "group",
+        ANY,
+        "export",
+        ANY,
+    )
+    def normalize_bgp_peer_out_filter(self, tokens):
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}.export_filter",
+            name=tokens[7],
+        )
+
+    @match(
+        "routing-instances",
+        ANY,
+        "protocols",
+        "bgp",
+        "group",
+        ANY,
+        "import",
+        ANY,
+    )
+    def normalize_bgp_peer_in_filter(self, tokens):
+        yield self.defer(
+            f"bgp.connection.{tokens[5]}.import_filter",
+            name=tokens[7],
+        )
+
+    @match("routing-options", "autonomous-system", ANY, "asdot-notation")
+    def normalize_router_instances_as(self, tokens):
+        yield self.defer(
+            "bgp.routing_options.as",
+            as_num=tokens[2],
+        )
