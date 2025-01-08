@@ -72,6 +72,7 @@ class Command(BaseCommand):
         ],
         "periodic": [
             "uptime",
+            "metrics",
             "interfacestatus",
             "mac",
             "cpestatus",
@@ -79,7 +80,6 @@ class Command(BaseCommand):
             "peerstatus",
             "diagnostic",
         ],
-        "interval": ["metrics"],
         "segment": ["mac"],
     }
 

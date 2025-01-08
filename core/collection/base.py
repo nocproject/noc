@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Collection utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     BinaryField,
     EmbeddedDocumentListField,
+    ReferenceField,
 )
 from mongoengine.errors import NotUniqueError
 from mongoengine.document import Document
@@ -273,6 +274,13 @@ class Collection(object):
                 except ValueError as e:
                     v = None
                     self.partial_errors[d["uuid"]] = str(e)
+            elif isinstance(field, ListField) and isinstance(field.field, ReferenceField):
+                edoc = field.field.document_type
+                try:
+                    v = [self.lookup(edoc, "name", x) for x in d[k]]
+                except ValueError as e:
+                    self.partial_errors[d["uuid"]] = str(e)
+                    raise ValueError("Invalid lookup field: %s" % k)
             # Dereference binary field
             if isinstance(field, BinaryField):
                 v = b85decode(v)
