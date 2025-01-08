@@ -230,7 +230,7 @@ class JunOSNormalizer(BaseNormalizer):
             type=deferable("role"),
         )
         yield self.defer(
-            f"bgp.routing_options.as",
+            "bgp.routing_options.as",
             self.make_bgp_neighbor_local_as,
             instance=tokens[1],
             neighbor=tokens[7],
@@ -344,6 +344,6 @@ class JunOSNormalizer(BaseNormalizer):
     @match("routing-options", "autonomous-system", ANY, "asdot-notation")
     def normalize_router_instances_as(self, tokens):
         yield self.defer(
-            f"bgp.routing_options.as",
+            "bgp.routing_options.as",
             as_num=tokens[2],
         )
