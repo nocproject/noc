@@ -151,6 +151,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             defaultValue: "M"
         },
         {
+            name: "object_url_template",
+            type: "string"
+        },
+        {
             name: "enable_fmevent",
             type: "boolean"
         },

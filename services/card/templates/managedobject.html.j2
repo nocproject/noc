@@ -60,6 +60,13 @@
 <div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger', 'unmanaged': 'default'}[current_state] }}">
     <div class="panel-heading">
         <a target="_blank" href="/#sa.managedobject/{{ id  }}">{{ object | managed_object_title }}</a>
+        {% for m in mappings %}
+            {% if m.url %}
+                <a target="_blank" href="{{ m.url }}"> ({{ m.remote_system.name }}:{{ m.remote_id }}) </a>
+            {% else %}
+                <a> ({{ m.remote_system.name }}:{{ m.remote_id }}) </a>
+            {% endif %}
+        {% endfor %}
         <span style="float: right">
             {% if current_state == "down" %}Down{% else %}<i class="fa fa-check"></i>Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start | timestamp }}){% endif %}
         </span>

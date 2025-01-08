@@ -170,6 +170,7 @@ class RemoteSystem(Document):
     last_successful_load = DateTimeField()
     last_extract_event = DateTimeField()
     load_error = StringField()
+    object_url_template = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
 
