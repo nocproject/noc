@@ -1,14 +1,13 @@
 # ----------------------------------------------------------------------
 # ComposeProbeNode
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import inspect
 import logging
-from typing import Optional, Callable
+from typing import Optional, Callable, FrozenSet
 from time import time_ns
 
 # Third-party modules
@@ -16,7 +15,8 @@ from pydantic import BaseModel
 
 # NOC modules
 from .probe import ProbeNode, ValueType, Category
-from noc.core.expr import get_fn
+from .base import IN_REQUIRED
+from noc.core.expr import get_fn, get_vars
 
 
 class ComposeProbeNodeConfig(BaseModel):
@@ -24,6 +24,7 @@ class ComposeProbeNodeConfig(BaseModel):
     expression: str
     is_delta: bool = False
     scale: str = "1"
+    compose_inputs: FrozenSet[str] = None
 
 
 logger = logging.getLogger(__name__)
@@ -39,11 +40,14 @@ class ComposeProbeNode(ProbeNode):
     config_cls = ComposeProbeNodeConfig
     categories = [Category.UTIL]
 
+    __slots__ = ("expression", "compose_inputs")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.expression: Callable = get_fn(self.config.expression)
-        self.static_inputs |= set(inspect.signature(self.expression).parameters)
-        self.req_inputs_count = len(self.static_inputs)
+        self.compose_inputs: FrozenSet[str] = self.config.compose_inputs or frozenset(
+            get_vars(self.config.expression)
+        )
 
     def get_value(self, **kwargs) -> Optional[ValueType]:
         try:
@@ -52,3 +56,16 @@ class ComposeProbeNode(ProbeNode):
             logger.warning("[%s] Error when calculate value: %s", self.node_id, str(e))
             x = 0
         return super().get_value(x, ts=time_ns(), unit="1")
+
+    @property
+    def is_const(self) -> bool:
+        return False
+
+    def get_input_type(self, name: str) -> int:
+        if name in self.compose_inputs:
+            return IN_REQUIRED
+        return super().get_input_type(name)
+
+    @property
+    def req_config_inputs_count(self) -> int:
+        return len(self.compose_inputs)
