@@ -1,0 +1,29 @@
+config: |
+  routing-instances {
+      TT {
+          protocols {
+              bgp {
+                  group D-ISP {
+                      type external;
+                      hold-time 15;
+                      import IMPORT-D;
+                      export EXPORT-D;
+                      neighbor 172.21.1.12 {
+                          metric-out 150;
+                          peer-as 61555;
+                          shutdown;
+                      }
+                  }
+              }
+          }
+      }
+  }
+result:
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32]
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32, "peer-group", "D-ISP", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32, "description", "D-ISP", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32, "export-filter", "EXPORT-D", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32, "import-filter", "IMPORT-D", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32, "type", "external", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32, "remote-as", "61555", {"replace": True}]
+  - ["virtual-router", "default", "forwarding-instance", "TT", "protocols", "bgp", "neighbors", !IP 172.21.1.12/32, "admin-status", False, {"replace": True}]
