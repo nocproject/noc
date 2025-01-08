@@ -16,7 +16,7 @@ from pydantic import BaseModel
 # NOC modules
 from .probe import ProbeNode, ValueType, Category
 from .base import IN_REQUIRED
-from noc.core.expr import get_fn
+from noc.core.expr import get_fn, get_vars
 
 
 class ComposeProbeNodeConfig(BaseModel):
@@ -40,11 +40,14 @@ class ComposeProbeNode(ProbeNode):
     config_cls = ComposeProbeNodeConfig
     categories = [Category.UTIL]
 
-    __slots__ = ("expression",)
+    __slots__ = ("expression", "compose_inputs")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.expression: Callable = get_fn(self.config.expression)
+        self.compose_inputs: FrozenSet[str] = self.config.compose_inputs or frozenset(
+            get_vars(self.config.expression)
+        )
 
     def get_value(self, **kwargs) -> Optional[ValueType]:
         try:
@@ -59,10 +62,10 @@ class ComposeProbeNode(ProbeNode):
         return False
 
     def get_input_type(self, name: str) -> int:
-        if name in self.config.compose_inputs:
+        if name in self.compose_inputs:
             return IN_REQUIRED
         return super().get_input_type(name)
 
     @property
     def req_config_inputs_count(self) -> int:
-        return len(self.config.compose_inputs)
+        return len(self.compose_inputs)

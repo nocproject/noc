@@ -950,7 +950,8 @@ nav:
       - Host Discovery Network: host-discovery-network/index.md
       - Fault Management: fault-management/index.md
       - Alarm Escalation: alarm-escalation-reference/index.md
-      - Performance Management: performance-management/index.md
+      - Performance Management:
+          - Overview: performance-management/index.md
           - Compose Metric (Metric Action): performance-management/calculate-metrics.md
       - Working with Report: reference-report-configuration/index.md
       - Peering Management: peering-management/index.md

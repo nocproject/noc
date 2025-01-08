@@ -5,5 +5,9 @@
     "code": "%",
     "description": "Percent (0 - 100)",
     "label": "%",
-    "dashboard_label": "percent"
+    "dashboard_label": "percent",
+    "convert_from": [{
+        "expr": "x",
+        "unit__code": "1"
+    }]
 }
