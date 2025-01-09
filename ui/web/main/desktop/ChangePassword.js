@@ -1,3 +1,4 @@
+//---------------------------------------------------------------------
 // main.desktop.ChangePassword
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
@@ -15,6 +16,9 @@ Ext.define("NOC.main.desktop.ChangePassword", {
   layout: "fit",
   modal: true,
   defaultListenerScope: true,
+  defaultFocus: "oldPass",
+  defaultButton: "changeButton",
+  referenceHolder: true,
   width: 500,
   height: 310,
   viewModel: "default",
@@ -26,9 +30,6 @@ Ext.define("NOC.main.desktop.ChangePassword", {
     bodyStyle: {
       background: "#e0e0e0",
       padding: "20px",
-    },
-    autoEl: {
-      tag: "form",
     },
     defaults: {
       anchor: "100%",
@@ -71,16 +72,11 @@ Ext.define("NOC.main.desktop.ChangePassword", {
     ],
     buttons: [
       {
-        reference: "okButton",
+        reference: "changeButton",
         formBind: true,
         handler: "onChangeClick",
         text: __("Change"),
         glyph: "xf090@FontAwesome",
-        listeners: {
-          beforerender: function(){
-            Ext.apply(this.autoEl, {type: "submit"});
-          },
-        },
       },
     ],
   },
@@ -91,7 +87,8 @@ Ext.define("NOC.main.desktop.ChangePassword", {
       panel.setDisabled(true);
       Ext.Ajax.request({
         url: "/api/login/change_credentials",
-        method: "POST",
+        method: "PUT",
+        scope: this,
         jsonData: {
           user: this.username,
           old_password: form.findField("oldPass").getValue(),
@@ -101,7 +98,8 @@ Ext.define("NOC.main.desktop.ChangePassword", {
           var data = Ext.decode(response.responseText);
           if(data.status){
             NOC.msg.complete(__("Password changed"));
-            this.close();
+            panel.close();
+            this.applicationOpen();
           } else{
             NOC.error(__("Error changing password"));
           }
@@ -113,6 +111,16 @@ Ext.define("NOC.main.desktop.ChangePassword", {
           panel.setDisabled(false);
         },
       });
+    }
+  },
+  applicationOpen: function(){
+    var param = Ext.urlDecode(location.search);
+    if("uri" in param){
+      if(location.hash){ // web app
+        location = "/" + location.hash;
+      } else{ // cards
+        location = param.uri;
+      }
     }
   },
 });

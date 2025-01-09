@@ -34,9 +34,6 @@ Ext.define("NOC.main.desktop.LoginView", {
       background: "#e0e0e0",
       padding: "20px",
     },
-    autoEl: {
-      tag: "form",
-    },
     defaults: {
       anchor: "100%",
       allowBlank: false,
@@ -77,11 +74,6 @@ Ext.define("NOC.main.desktop.LoginView", {
         handler: "onLoginClick",
         text: __("Login"),
         glyph: "xf090@FontAwesome",
-        listeners: {
-          beforerender: function(){
-            Ext.apply(this.autoEl, {type: "submit"});
-          },
-        },
       },
       {
         itemId: "resetBtn",
