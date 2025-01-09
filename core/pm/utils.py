@@ -24,7 +24,7 @@ from noc.pm.models.scale import Scale
 from noc.pm.models.measurementunits import MeasurementUnits
 
 
-def is_nan(*v: Tuple[str]) -> bool:
+def is_nan(*v: str) -> bool:
     """
     Compare value with \\N
     :param:
