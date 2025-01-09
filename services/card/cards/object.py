@@ -21,6 +21,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.uptime import Uptime
 from noc.fm.models.outage import Outage
 from noc.core.perf import metrics
+from noc.core.pm.utils import is_nan
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.clickhouse.connect import connection
@@ -184,12 +185,14 @@ class ObjectCard(BaseCard):
         for mo_bi_id, iface, ts, load_in, load_out, errors_in, errors_out in ch.execute(post=SQL):
             mo = bi_map.get(mo_bi_id)
             if mo:
+                if is_nan(load_in, load_out, errors_in, errors_out):
+                    continue
                 mtable += [[mo, iface, ts, load_in, load_out]]
                 metric_map[mo]["interface"][iface] = {
-                    "load_in": int(load_in) if load_in != "\\N" else 0,
-                    "load_out": int(load_out) if load_out != "\\N" else 0,
-                    "errors_in": int(errors_in) if errors_in != "\\N" else 0,
-                    "errors_out": int(errors_out) if errors_out != "\\N" else 0,
+                    "load_in": int(load_in),
+                    "load_out": int(load_out),
+                    "errors_in": int(errors_in),
+                    "errors_out": int(errors_out),
                 }
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
 

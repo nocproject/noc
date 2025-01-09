@@ -24,6 +24,16 @@ from noc.pm.models.scale import Scale
 from noc.pm.models.measurementunits import MeasurementUnits
 
 
+def is_nan(*v: Tuple[str]) -> bool:
+    """
+    Compare value with \\N
+    :param:
+        v: Metric Value from CH
+    :return:
+        True if \\N, else False
+    """
+    return any(x=="\\N" for x in v)
+
 @dataclass(frozen=True)
 class Condition:
     field: str
