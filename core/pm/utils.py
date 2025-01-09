@@ -32,7 +32,8 @@ def is_nan(*v: Tuple[str]) -> bool:
     :return:
         True if \\N, else False
     """
-    return any(x=="\\N" for x in v)
+    return any(x == "\\N" for x in v)
+
 
 @dataclass(frozen=True)
 class Condition:
