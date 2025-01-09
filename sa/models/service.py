@@ -65,10 +65,6 @@ class Instance(EmbeddedDocument):
     name_template = StringField()
     pool: "Pool" = PlainReferenceField(Pool, required=False)
     port_range = StringField()
-    address_range = StringField()
-    # allow_create - create instance on discovery
-    # Prefix Profile
-    # weight ?
 
 
 class ServiceStatusDependency(EmbeddedDocument):
@@ -317,10 +313,7 @@ class Service(Document):
 
     @property
     def in_maintenance(self):
-        """
-        Check service in maintenance
-        :return:
-        """
+        """Check service in maintenance"""
         return False
 
     def __str__(self):
@@ -434,10 +427,11 @@ class Service(Document):
                 }
             ],
         )
-
         # Run Service Status Refresh
         # Set Outage
-        if len(self.service_path) != 1:
+        if self.profile.raise_status_alarm_policy == "D":
+            return
+        elif self.profile.raise_status_alarm_policy == "R" and len(self.service_path) != 1:
             # Only Root service
             return
         self.register_alarm(os)
@@ -459,8 +453,11 @@ class Service(Document):
                 "managed_object": str(mo.id if mo else 1),
                 "alarm_class": SVC_AC,
                 "labels": list(self.labels),
-                "severity": 5000,
-                # "groups": [{"reference": f"{SVC_REF_PREFIX}:{svc.id}"} for svc in Service.objects.filter(parent=self.id)],
+                "severity": {4: 5000, 3: 4000, 2: 3000}[self.oper_status.value],
+                "groups": [
+                    {"reference": f"{SVC_REF_PREFIX}:{svc.id}"}
+                    for svc in Service.objects.filter(parent=self.id)
+                ],
                 "vars": {
                     "title": self.description,
                     "type": self.profile.name,
@@ -522,7 +519,7 @@ class Service(Document):
         if not statuses:
             return Status.UP
         logger.debug("[%s] Alarm statuses: %s", self.id, statuses)
-        r = []
+        r = [(s, 1) for s in statuses.values()]
         # Calculate Service Instance Status
         for si in ServiceInstance.objects.filter(service=self.id):
             si_statuses = [s for aa, s in statuses.items() if si.is_match_alarm(aa)]
@@ -576,22 +573,40 @@ class Service(Document):
     @classmethod
     def get_services_by_alarm(cls, alarm) -> List[str]:
         """Return service Ids for requested alarm"""
-        profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
-        if not profiles:
-            return []
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
+        spr = {}
+        for p, rules in ServiceProfile.get_alarm_rules():
+            if not rules:
+                spr[p] = rules
+                continue
+            for rule in rules:
+                if rule.is_match(alarm):
+                    break
+            else:
+                continue
+            spr[p] = not rule.affected_instance
+        if not q and not spr:
+            return []
+        # Rules
+        rules = [x for x in spr if spr[x] is not None]
+        if rules:
+            q |= m_q(profile__in=rules)
+        services = set()
+        # Instances
+        for svc in ServiceInstance.get_services_by_alarm(alarm):
+            if svc.profile.id in spr and not spr[svc.profile.id]:
+                services.add(svc.id)
         # Check dependency
         if alarm.managed_object.effective_service_groups:
             q |= m_q(
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
         #
-        services = list(ServiceInstance.get_services_by_alarm(alarm))
         if q:
-            services += list(Service.objects.filter(q))
-        return list(set(s.id for s in services))
+            services |= set(Service.objects.filter(q).scalar("id"))
+        return list(services)
 
     def unbind_interface(self):
         # from noc.inv.models.interface import Interface
