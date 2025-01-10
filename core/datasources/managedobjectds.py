@@ -22,6 +22,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.profile import Profile
 from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.capability import Capability
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
@@ -38,6 +39,7 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     SNMPTRAP_DIAG,
 )
+from noc.core.mac import MAC
 
 caps_dtype_map = {
     "bool": FieldType.BOOL,
@@ -125,6 +127,16 @@ class ManagedObjectDS(BaseDataSource):
             FieldInfo(
                 name="caps",
                 description="Object Capabilities",
+                is_virtual=True,
+            ),
+            FieldInfo(
+                name="chassis_macs",
+                description="Macs",
+                internal_name="id",
+            ),
+            FieldInfo(
+                name="mappings",
+                description="Object Mappings",
                 is_virtual=True,
             ),
             # Location Fields
@@ -248,6 +260,11 @@ class ManagedObjectDS(BaseDataSource):
                 internal_name=SNMPTRAP_DIAG,
             ),
         ]
+        # Remote System
+        + [
+            FieldInfo(name=f"RS_{rs.name}", internal_name=str(rs.id))
+            for rs in RemoteSystem.objects.filter()
+        ]
         # Capabilities
         + [
             FieldInfo(
@@ -300,6 +317,14 @@ class ManagedObjectDS(BaseDataSource):
             for f_name, f_default in fields:
                 yield f_name, caps.get(cid, f_default)
 
+    @classmethod
+    async def iter_mappings(
+        cls, mappings: List[Dict[str, Any]], requested_mappings: Dict[str, str] = None
+    ) -> AsyncIterable[Tuple[str, Any]]:
+        mappings = {c["remote_system"]: c["remote_id"] for c in mappings}
+        for rid, r_name in requested_mappings.items():
+            yield r_name, mappings.get(rid, "")
+
     @staticmethod
     def get_caps_default(caps: Capability):
         """
@@ -351,9 +376,16 @@ class ManagedObjectDS(BaseDataSource):
             )
         if "segment" in filters:
             r["segment__in"] = filters["segment"].get_nested_ids()
-        if "administrative_domain" in filters:
+        if "administrative_domain" in filters and isinstance(
+            filters["administrative_domain"], list
+        ):
+            ads = set()
+            for ad_id in filters["administrative_domain"]:
+                ads |= set(AdministrativeDomain.get_nested_ids(int(ad_id)))
+            r["administrative_domain__in"] = list(ads)
+        elif "administrative_domain" in filters:
             r["administrative_domain__in"] = AdministrativeDomain.get_nested_ids(
-                filters["administrative_domain"].id
+                int(filters["administrative_domain"])
             )
         return r
 
@@ -384,7 +416,7 @@ class ManagedObjectDS(BaseDataSource):
         cls, fields: Optional[Iterable[str]] = None, *args, user=None, **kwargs
     ) -> AsyncIterable[Tuple[str, str]]:
         fields = set(fields or [])
-        q_fields, q_caps = [], defaultdict(list)
+        q_fields, q_caps, q_maps = [], defaultdict(list), {}
         adm_paths = {}
         annotations = {}
         # Getting requested fields
@@ -412,10 +444,14 @@ class ManagedObjectDS(BaseDataSource):
                     output_field=BooleanField(),
                 )
                 q_fields.append(f.name)
+            elif f.name.startswith("RS") and f.internal_name:
+                q_maps[f.internal_name] = f.name
             elif not fields or f.name in fields or f.name == "id":
                 q_fields.append(f_query_name)
         if q_caps and "caps" not in q_fields:
             q_fields.append("caps")
+        if q_maps:
+            q_fields.append("mappings")
         q_filter = cls.get_filter(kwargs)
         mos = ManagedObject.objects.filter(**q_filter)
         if user and not user.is_superuser:
@@ -424,15 +460,18 @@ class ManagedObjectDS(BaseDataSource):
         if annotations:
             mos = mos.annotate(**annotations)
         # Dictionaries
-        hostname_map, segment_map = {}, {}
+        hostname_map, segment_map, mac_map = {}, {}, {}
         # Lookup fields dictionaries
         if not fields or "hostname" in fields:
-            hostname_map = {
-                val["object"]: val["hostname"]
-                for val in DiscoveryID._get_collection()
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1})
-            }
+            for val in (
+                DiscoveryID._get_collection()
+                .with_options(
+                    read_preference=ReadPreference.SECONDARY_PREFERRED,
+                )
+                .find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1, "chassis_mac": 1})
+            ):
+                hostname_map[val["object"]] = val["hostname"]
+                mac_map[val["object"]] = ",".join(m["first_mac"] for m in val["chassis_mac"])
         if not fields or "segment" in fields:
             segment_map = {
                 str(n["_id"]): n["name"]
@@ -471,6 +510,8 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
             if hostname_map:
                 yield num, "hostname", hostname_map.get(mo["id"])
+            if mac_map:
+                yield num, "chassis_macs", mac_map.get(mo["id"])
             if segment_map:
                 yield num, "segment", segment_map.get(mo["segment"])
             if "avail_status" in mo:
@@ -520,6 +561,9 @@ class ManagedObjectDS(BaseDataSource):
                 )
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]
+            if not fields or "mappings" in fields:
+                async for c in cls.iter_mappings(mo.pop("mappings", []), requested_mappings=q_maps):
+                    yield num, c[0], c[1]
             if adm_paths and "administrative_domain__name" in mo:
                 adm_name = mo["administrative_domain__name"]
                 yield num, "adm_path_1", adm_name
