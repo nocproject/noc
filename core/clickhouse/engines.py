@@ -59,6 +59,13 @@ class AggregatingMergeTree(BaseEngine):
         self.granularity = granularity
 
     def get_create_sql(self):
+        if not self.date_field:
+            return (
+                f"AggregatingMergeTree() "
+                f'PRIMARY KEY ({",".join(self.primary_keys)}) '
+                f'ORDER BY ({",".join(self.order_by)}) '
+                f"SETTINGS index_granularity = {self.granularity} "
+            )
         return (
             f"AggregatingMergeTree() "
             f"PARTITION BY toYYYYMM({self.date_field}) "
