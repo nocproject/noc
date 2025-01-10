@@ -37,6 +37,7 @@ class Command(BaseCommand):
         normalizer_parser.add_argument("--object", type=smart_text, help="Managed Object ID")
         normalizer_parser.add_argument("--profile", help="Profile Name")
         normalizer_parser.add_argument("--config", help="Config Path")
+        normalizer_parser.add_argument("--errors-policy", help="Errors Policy")
         # query command
         query_parser = subparsers.add_parser("query")
         query_parser.add_argument("--object", type=smart_text, help="Managed Object ID")
@@ -129,7 +130,8 @@ class Command(BaseCommand):
         for token in tokenizer:
             self.print(token)
 
-    def handle_normalizer(self, object=None, profile=None, config=None, *args, **kwargs):
+    def handle_normalizer(
+            self, object=None, profile=None, config=None, errors_policy=None, *args, **kwargs):
         cfg = None
         if config:
             if not os.path.exists(config):
@@ -156,9 +158,12 @@ class Command(BaseCommand):
             mo = ManagedObject.mock_object(profile=profile)
         else:
             self.die("Eigther object or profile must be set")
-        normalizer = mo.iter_normalized_tokens(config=cfg)
-        for token in normalizer:
-            self.print(token)
+        normalizer = mo.iter_normalized_tokens(config=cfg, errors_policy=errors_policy)
+        try:
+            for token in normalizer:
+                self.print(token)
+        except StopIteration as e:
+            self.print(f"Stop processing when error: {e}")
 
     def handle_query(self, object=None, profile=None, config=None, query=None, *args, **kwargs):
         cfg = None

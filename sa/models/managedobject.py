@@ -2174,7 +2174,7 @@ class ManagedObject(NOCModel):
         tokenizer = t_cls(config, **t_config)
         yield from tokenizer
 
-    def iter_normalized_tokens(self, config=None):
+    def iter_normalized_tokens(self, config=None, errors_policy: Optional[str] = None):
         profile = self.profile.get_profile()
         n_handler, n_config = profile.get_config_normalizer(self)
         if not n_handler:
@@ -2184,7 +2184,9 @@ class ManagedObject(NOCModel):
         n_cls = get_handler(n_handler)
         if not n_cls:
             return
-        normalizer = n_cls(self, self.iter_config_tokens(config), **n_config)
+        normalizer = n_cls(
+            self, self.iter_config_tokens(config), **n_config, errors_policy=errors_policy
+        )
         yield from normalizer
 
     def get_confdb(
@@ -2220,7 +2222,10 @@ class ManagedObject(NOCModel):
         if self.get_confdb_raw_policy() == "E":
             e.insert_bulk(("raw",) + t for t in self.iter_config_tokens(config))
         # Parse and normalize config
-        e.insert_bulk(self.iter_normalized_tokens(config))
+        try:
+            e.insert_bulk(self.iter_normalized_tokens(config, errors_policy=errors_policy))
+        except StopIteration:
+            pass
         # Apply applicators
         for applicator in profile.iter_config_applicators(self, e):
             applicator.apply()
