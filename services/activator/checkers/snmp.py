@@ -162,7 +162,7 @@ class SNMPProtocolChecker(Checker):
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """ """
         processed = self.get_checks_by_address(checks)
-        self.logger.info("Processed SNMP checks: %s", processed)
+        self.logger.debug("Processed SNMP checks: %s", processed)
         # Process checks
         result = {}
         for cc in processed.values():
