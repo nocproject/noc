@@ -158,6 +158,7 @@ def test_alarm(config, values, expected, state):
                 assert "timestamp" in msg.value
                 # Check labels
                 assert msg.value["labels"] == cfg["labels"]
+        del node
 
 
 @pytest.mark.parametrize(
@@ -228,6 +229,7 @@ def test_alarm_vars(config, expected):
         else:
             assert "vars" in msg.value
             assert msg.value["vars"] == expected
+        del cdag
 
 
 @pytest.mark.parametrize(

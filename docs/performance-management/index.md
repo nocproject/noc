@@ -228,24 +228,6 @@ Thresholds are configured in *Performance Management -> Setup -> Metric Rules*. 
 
 When specifying a *transformation* (`Metric Action`), the *metric type* (`Metric Type`) is not considered, and thresholds are applied to the result of the transformation. To change the *severity of the alarm* (`severity`), use labels (`Labels`) in accordance with the rules (`Alarm Rules`).
 
-## A visual diagram of the thresholds
-
-![](threshold_settings_en.jpg)
-
-## Examples
-
-### Example 1
-
-It is necessary to raise an alarm on a device with a `Juniper.JUNOS` profile when the permissible temperature is exceeded. Close when the normal value is reached.
-
-![](metric-rules-thresholds2.png)
-
-### Example 2
-
-It is necessary to raise an alarm on the UPS about low or high voltage. Close when returning to normal value.
-
-![](metric-rules-thresholds3.png)
-
 ### Metric Action
 
 For complex manipulations with metrics, the `MetricAction` is available, which allows:
