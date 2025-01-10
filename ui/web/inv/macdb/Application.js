@@ -6,8 +6,6 @@
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.macdb.Application");
 
-// @todo: filtering macs based on managed objects
-
 Ext.define("NOC.inv.macdb.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
@@ -15,7 +13,8 @@ Ext.define("NOC.inv.macdb.Application", {
         "NOC.inv.macdb.Model",
         "NOC.main.style.LookupField",
         "NOC.main.pool.LookupField",
-        "NOC.sa.managedobjectprofile.LookupField"
+        "NOC.inv.interfaceprofile.LookupField",
+        "NOC.sa.managedobject.LookupField"
     ],
     model: "NOC.inv.macdb.Model",
     search: true,
@@ -93,6 +92,21 @@ Ext.define("NOC.inv.macdb.Application", {
 
         me.callParent();
     },
+
+    filters: [
+        {
+            title: __("By Profile"),
+            name: "interface_profile",
+            ftype: "lookup",
+            lookup: "inv.interfaceprofile"
+        },
+        {
+            title: __("By Object"),
+            name: "managed_object",
+            ftype: "lookup",
+            lookup: "sa.managedobject"
+        }
+    ],
 
     createForm: function() {
         var me = this;
