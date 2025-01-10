@@ -131,7 +131,8 @@ class Command(BaseCommand):
             self.print(token)
 
     def handle_normalizer(
-            self, object=None, profile=None, config=None, errors_policy=None, *args, **kwargs):
+        self, object=None, profile=None, config=None, errors_policy=None, *args, **kwargs
+    ):
         cfg = None
         if config:
             if not os.path.exists(config):
