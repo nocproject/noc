@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MAC Check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,8 +9,6 @@
 import time
 from functools import reduce
 from collections import defaultdict
-
-# Third-party modules
 from typing import Tuple, List, DefaultDict
 
 # NOC modules
@@ -32,53 +30,23 @@ class MACCheck(DiscoveryCheck):
 
     def handler(self):
         # Build filter policy
-        if (self.is_box and self.object.object_profile.box_discovery_mac_filter_policy == "A") or (
-            self.is_periodic
-            and self.object.object_profile.periodic_discovery_mac_filter_policy == "A"
-        ):
-            mf = self.filter_all
-        else:
-            mf = []
-            self.allowed_vlans = set()
-            # Filter by interface profile
-            if (
-                self.is_box and self.object.object_profile.box_discovery_mac_filter_policy == "I"
-            ) or (
-                self.is_periodic
-                and self.object.object_profile.periodic_discovery_mac_filter_policy == "I"
-            ):
-                mf += [self.filter_interface_profile]
-            # Filter by VC Filter (not implemented yet)
-            if self.object.object_profile.mac_collect_vlanfilter:
-                self.logger.info("VC Filters are not implemented yet")
-            # Apply VLAN filter
-            if self.allowed_vlans:
-                mf += [self.filter_vlan]
-            if not mf:
-                self.logger.info("MAC collection is not enabled by any policy")
-                return
-            mf = reduce(lambda x, y: x or y, mf)
+        allowed_vlans = set()
         # Collect macs
         now = time.localtime()
-        date = time.strftime("%Y-%m-%d", now)
-        ts = time.strftime("%Y-%m-%d %H:%M:%S", now)
         unknown_interfaces = set()
         total_macs = 0
         data = []
-        mo_bi_id = self.object.bi_id
-        seg_bi_id = self.object.segment.bi_id
-        collect_if_objects = self.object.enable_autosegmentation
         if_mac = defaultdict(set)  # interface -> [macs]
         # Collect and process MACs
         mac_direct_downlink: DefaultDict[str, List[MAC]] = defaultdict(list)
         mac_downlink_policy: Tuple[str, ...] = tuple()
-        if self.object.object_profile.enable_box_discovery_xmac:
+        if self.is_box and self.object.object_profile.enable_box_discovery_xmac:
             mac_downlink_policy = self.XMAC_POLICIES
         result = self.object.scripts.get_mac_address_table()
         for v in result:
             total_macs += 1
             if v["type"] not in self.XMAC_FILTER_TYPE or not v["interfaces"]:
-                self.logger.debug("Ignored not dynamic or static MAC: %s" % v["mac"])
+                self.logger.debug("Ignored not dynamic or static MAC: %s", v["mac"])
                 continue
             ifname = str(v["interfaces"][0])
             iface = self.get_interface_by_name(ifname)
@@ -89,22 +57,30 @@ class MACCheck(DiscoveryCheck):
             mac = MAC(v["mac"])
             if mac_downlink_policy and ifprofile.mac_discovery_policy in mac_downlink_policy:
                 mac_direct_downlink[ifname] += [mac]
-            if collect_if_objects:
+            if self.object.enable_autosegmentation:
                 if_mac[iface].add(v["mac"])
-            if not mf(iface, v["vlan_id"], v["mac"]):
-                self.logger.debug(
-                    "Filtered: Iface: %s, Vlan: %s, MAC: %s" % (iface, v["vlan_id"], v["mac"])
-                )
+            if self.object.object_profile.periodic_discovery_mac_filter_policy == "A":
+                pass
+            elif allowed_vlans and v["vlan_id"] not in allowed_vlans:
+                # Filter by VLAN
+                self.logger.debug("[%s] Skip MAC collection on vlan: %s", v["mac"], v["vlan_id"])
+                continue
+            elif (
+                self.object.object_profile.periodic_discovery_mac_filter_policy == "I"
+                and ifprofile.mac_discovery_policy == "d"
+            ):
+                # Filter by interface profile
+                self.logger.debug("[%s] Skip MAC collection on interface: %s", v["mac"], ifname)
                 continue
             data += [
                 {
-                    "date": date,
-                    "ts": ts,
-                    "managed_object": mo_bi_id,
+                    "date": time.strftime("%Y-%m-%d", now),
+                    "ts": time.strftime("%Y-%m-%d %H:%M:%S", now),
+                    "managed_object": self.object.bi_id,
                     "mac": int(mac),
                     "interface": ifname,
                     "interface_profile": ifprofile.bi_id,
-                    "segment": seg_bi_id,
+                    "segment": self.object.segment.bi_id,
                     "vlan": v.get("vlan_id", 0),
                     "is_uni": 1 if ifprofile.is_uni else 0,
                 }
@@ -116,23 +92,15 @@ class MACCheck(DiscoveryCheck):
         metrics["discovery_mac_processed_macs"] += processed_macs
         metrics["discovery_mac_ignored_macs"] += total_macs - processed_macs
         if data:
-            self.logger.info("%d MAC addresses are collected. Sending", processed_macs)
-            self.service.register_metrics("mac", data)
-            if collect_if_objects:
+            if self.is_periodic:
+                self.logger.info("%d MAC addresses are collected. Sending", processed_macs)
+                self.service.register_metrics("mac", data)
+            if self.is_box and self.object.enable_autosegmentation:
                 self.build_seen_objects(if_mac)
         else:
             self.logger.info("No MAC addresses collected")
         if mac_direct_downlink:
             self.job.set_artefact("mac_direct_downlink", mac_direct_downlink)
-
-    def filter_all(self, interface, vlan, mac):
-        return True
-
-    def filter_interface_profile(self, interface, vlan, mac):
-        return interface.get_profile().mac_discovery_policy != "d"
-
-    def filter_vlan(self, interface, vlan, mac):
-        return vlan in self.allowed_vlans
 
     def build_seen_objects(self, if_mac):
         """
