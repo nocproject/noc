@@ -33,6 +33,7 @@ class MACCheck(DiscoveryCheck):
         allowed_vlans = set()
         # Collect macs
         now = time.localtime()
+        date, ts = time.strftime("%Y-%m-%d", now), time.strftime("%Y-%m-%d %H:%M:%S", now)
         unknown_interfaces = set()
         total_macs = 0
         data = []
@@ -74,8 +75,8 @@ class MACCheck(DiscoveryCheck):
                 continue
             data += [
                 {
-                    "date": time.strftime("%Y-%m-%d", now),
-                    "ts": time.strftime("%Y-%m-%d %H:%M:%S", now),
+                    "date": date,
+                    "ts": ts,
                     "managed_object": self.object.bi_id,
                     "mac": int(mac),
                     "interface": ifname,
