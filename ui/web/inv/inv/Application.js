@@ -109,7 +109,7 @@ Ext.define("NOC.inv.inv.Application", {
       ],
       listeners: {
         afterrender: function(menu){
-          menu.getEl().on('keydown', function(e){
+          menu.getEl().on("keydown", function(e){
             if(e.getKey() === e.ESC){
               me.isMenuShow = false;
               menu.hide();
@@ -143,20 +143,20 @@ Ext.define("NOC.inv.inv.Application", {
             '  <tpl for="lines">',
             '    <div class="{parent.childCls} {parent.elbowCls}-img ',
             '    {parent.elbowCls}-<tpl if=".">line<tpl else>empty</tpl>" role = "presentation"></div>',
-            '  </tpl>',
+            "  </tpl>",
             '  <div class="{childCls} {elbowCls}-img ',
             '    {elbowCls}<tpl if= " isLast">-end</tpl><tpl if="expandable">-plus {expanderCls}</tpl>" role = "presentation" ></div >',
             '  <tpl if="checked !== null">',
             '    <input type="button" {ariaCellCheckboxAttr} class="{childCls} {checkboxCls} <tpl if= " checked" > {checkboxCls}-checked</tpl> "/>',
-            '  </tpl>',
+            "  </tpl>",
             '  <tpl if="glyphCls"><i class="{glyphCls}" style="font - size: 16px"></i>',
             '  <tpl else><div role="presentation" class="{childCls} {baseIconCls} {baseIconCls}-<tpl if="leaf">leaf<tpl else>parent</tpl> ',
             '     {iconCls}"<tpl if="icon">style="background - image: url({icon})"</tpl>></div></tpl>',
             '  <tpl if="href"><a href="{href}" role="link" target="{hrefTarget}" class="{textCls} {childCls}">{value}</a>',
             '  <tpl else><span class="{textCls} {childCls}">{value}</span></tpl>',
-            '  </div>',
+            "  </div>",
             '  <button class="cell-button" style="display: none;">...</button>',
-            '</div>',
+            "</div>",
           ],
         },
       ],
@@ -477,9 +477,7 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   onDeselect: function(rowModel, record){
-    var me = this;
-
-    me.down("#addObjectDock").show();
+    this.down("#addObjectDock").show();
     Ext.ComponentQuery.query("tooltip#schemeBalloon, tooltip#mapBalloon").forEach(function(tooltip){
       tooltip.destroy();
     });
@@ -489,8 +487,10 @@ Ext.define("NOC.inv.inv.Application", {
         node.querySelector("button").style.display = "none";
       }
     }
-    me.tabPanel.removeAll();
-    me.setHistoryHash();
+    this.tabPanel.suspendLayouts();
+    this.tabPanel.removeAll();
+    this.tabPanel.resumeLayouts();
+    this.setHistoryHash();
   },
   // Expand nav tree to object
   showObject: function(objectId, reload){

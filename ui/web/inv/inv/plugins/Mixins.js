@@ -18,9 +18,8 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
         }
         return "scheme";
       },
-      me = this,
-      currentId = me.getViewModel().get("currentId"),
-      imageContainer = me.down("#schemeContainer"),
+      currentId = this.getViewModel().get("currentId"),
+      imageContainer = this.down("#schemeContainer"),
       filenamePrefix = _getFilenamePrefix(imageContainer),
       imageDom = imageContainer.getEl(),
       image = imageDom.dom.querySelector("svg") || imageDom.dom.querySelector("object").contentDocument,

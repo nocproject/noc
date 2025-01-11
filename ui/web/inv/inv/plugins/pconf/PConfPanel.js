@@ -264,8 +264,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   ],
   //
   preview: function(data, id){
-    var me = this,
-      vm = me.getViewModel(),
+    var vm = this.getViewModel(),
       gridStore = vm.getStore("gridStore"),
       groupStore = vm.getStore("groupStore"),
       tableStore = vm.getStore("tableStore"),
