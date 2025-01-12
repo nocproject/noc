@@ -131,4 +131,33 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
       filename,
     );
   },
+  setObservable: function(view){
+    var observer = view.observer;
+    if(Ext.isEmpty(observer)){
+      observer = new IntersectionObserver(function(entries){
+        view.isIntersecting = entries[0].isIntersecting;
+      }, {
+        threshold: 0.1,
+      });
+    }
+    observer.observe(view.getEl().dom);
+    return observer;
+  },
+  checkVisibility: function(isIntersecting){
+    var isVisible = !document.hidden,
+      isFocused = document.hasFocus();
+    return isIntersecting && isVisible && isFocused;
+  },
+  reloadTask: function(callback){
+    if(this.checkVisibility(this.isIntersecting)){
+      console.log("Reload task");
+      Ext.Function.bind(callback, this)();
+    }
+  },
+  generateIcon(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
+  },
 });

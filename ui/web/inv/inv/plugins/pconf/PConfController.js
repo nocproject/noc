@@ -9,6 +9,9 @@ console.debug("Defining NOC.inv.inv.plugins.pconf.PConfController");
 Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   extend: "Ext.app.ViewController",
   alias: "controller.pconf",
+  mixins: [
+    "NOC.inv.inv.plugins.Mixins",
+  ],
 
   onDataChanged: function(store){
     var vm = this.getViewModel();
@@ -21,7 +24,8 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       vm = me.getViewModel(),
       currentId = vm.get("currentId");
     if(Ext.isEmpty(currentId)) return;
-    vm.set("icon", this.generateIcon("spinner", "grey", __("loading")));
+    var isUpdatable = this.getView().down("combo[itemId=tabType]").getValue() === 2;
+    vm.set("icon", this.generateIcon(isUpdatable, "spinner", "grey", __("loading")));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/data/",
       method: "GET",
@@ -34,10 +38,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
         var data = Ext.decode(response.responseText),
           gridStore = vm.getStore("gridStore");
         gridStore.loadData(data.conf);
-        vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
+        vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.yes, __("online")));
       },
       failure: function(){
-        vm.set("icon", this.generateIcon("circle", NOC.colors.no, __("offline")));
+        vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.no, __("offline")));
         NOC.error(__("Failed to load data"));
       },
     });
@@ -49,7 +53,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       currentId = me.getViewModel().get("currentId");
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/set/",
-      method: 'POST',
+      method: "POST",
       jsonData: data,
       success: function(response){
         var data = Ext.decode(response.responseText);
@@ -85,49 +89,50 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   //   }
   // },
   onTabTypeChange: function(combo, record){
-    var me = this.getView(),
-      getTimerInterval = function(value){
-        if(!Ext.isEmpty(value)){
-          var interval = value.get("autoreload");
+    var view = this.getView(),
+      getTimerInterval = function(record){
+        if(!Ext.isEmpty(record)){
+          var interval = record.get("autoreload");
           return interval ? interval * 1000 : undefined;
         }
         return undefined;
       },
       timerInterval = getTimerInterval(record);
-    if(Ext.isEmpty(me.getViewModel().get("currentId"))) return;
+    if(Ext.isEmpty(view.getViewModel().get("currentId"))) return;
     this.onReload();
     if(!Ext.isEmpty(timerInterval)){
-      if(Ext.isEmpty(me.observer)){
-        me.observer = new IntersectionObserver(function(entries){
-          me.isIntersecting = entries[0].isIntersecting;
+      if(Ext.isEmpty(view.observer)){
+        view.observer = new IntersectionObserver(function(entries){
+          view.isIntersecting = entries[0].isIntersecting;
         }, {
           threshold: 1.0,
         });
       }
-      me.observer.observe(me.getEl().dom);
-      me.timer = Ext.TaskManager.start({
+      view.observer.observe(view.getEl().dom);
+      view.timer = Ext.TaskManager.start({
         run: function(){
           var panel = this.getView(),
             vm = this.getViewModel(),
             isVisible = !document.hidden,
             isFocused = document.hasFocus(),
-            isIntersecting = panel.isIntersecting;
+            isIntersecting = panel.isIntersecting,
+            isUpdatable = this.getView().down("combo[itemId=tabType]").getValue() === 2;
           if(isIntersecting && isVisible && isFocused){
-            vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
+            vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.yes, __("online")));
             this.onReload();
           } else{
-            vm.set("icon", this.generateIcon("stop-circle-o", "grey", __("suspend")));
+            vm.set("icon", this.generateIcon(isUpdatable, "stop-circle-o", "grey", __("suspend")));
           }
         },
         interval: timerInterval,
         scope: this,
       });
     } else{
-      if(me.timer){
-        Ext.TaskManager.stop(me.timer);
-        me.timer = null;
+      if(view.timer){
+        Ext.TaskManager.stop(view.timer);
+        view.timer = null;
       }
-      me.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
+      view.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
     }
   },
   // onButtonsRender: function(segmented){
@@ -246,12 +251,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     if(statusFilter){
       filters.remove(statusFilter);
     }
-  },
-  generateIcon(icon, color, msg){
-    if(this.getView().down("combo[itemId=tabType]").getValue() === 2){
-      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
-    }
-    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
   onMgmtClick: function(){
     var vm = this.getViewModel(),
