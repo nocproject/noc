@@ -306,11 +306,13 @@ class PConfPlugin(InvPlugin):
             Parsed data
         """
         slot = self._get_card(obj)
+        slot_cfg: dict[str, Any]
         for item in data["RK"][0]["DV"]:
             s = item.get("slt")
             if not s:
                 continue
             if s == slot:
+                slot_cfg = item
                 break
         else:
             return ParsedData.empty()
