@@ -104,7 +104,7 @@ class ParamInfo:
 
     def clean_model(self, model, value: Union[str, Any]) -> Optional[Any]:
         """Convert value to model filter"""
-        if not isinstance(value, m):
+        if not isinstance(value, model):
             value = model.get_by_id(value)
         return value
 

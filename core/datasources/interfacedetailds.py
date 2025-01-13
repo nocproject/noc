@@ -16,7 +16,6 @@ from .base import FieldInfo, ParamInfo, FieldType, BaseDataSource
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.interface import InterfaceProfile
-from noc.core.text import list_to_ranges
 
 
 class InterfaceDetailDS(BaseDataSource):
