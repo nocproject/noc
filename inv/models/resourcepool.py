@@ -24,6 +24,7 @@ import cachetools
 from noc.core.lock.distributed import DistributedLock
 from noc.core.lock.base import get_locked_items
 from noc.core.model.decorator import on_delete_check
+from noc.core.perf import metrics
 from noc.models import get_model
 
 id_lock = threading.Lock()
@@ -251,8 +252,7 @@ class ResourcePool(Document):
                         user=user,
                     )
                 allocated.append(res)
-        allocated_count = len(allocated)
-        # allocated_count
+        metrics["allocated_count", ("resource_pool", self.name)] += len(allocated)
         # errors_count
         # Errors
         return allocated
