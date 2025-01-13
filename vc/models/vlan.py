@@ -1,15 +1,16 @@
 # ----------------------------------------------------------------------
 # VLAN
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
 import operator
-import logging
-from typing import Optional, Iterator, Set, Union
+import random
+import datetime
+from threading import Lock
+from typing import Optional, Set, Union, Iterable, List, Tuple, Any
 
 # Third-party modules
 from bson import ObjectId
@@ -21,12 +22,13 @@ from mongoengine.fields import (
     IntField,
     DateTimeField,
 )
-from mongoengine.errors import ValidationError
+from mongoengine.errors import ValidationError, NotUniqueError
 import cachetools
 
 # NOC modules
 from .vlanprofile import VLANProfile
 from .l2domain import L2Domain
+from .vlanfilter import VLANFilter
 from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.main.models.remotesystem import RemoteSystem
@@ -35,12 +37,8 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete_check
-from noc.core.perf import metrics
-from noc.inv.models.resourcepool import ResourcePool
-from noc.vc.models.vlanfilter import VLANFilter
 
 id_lock = Lock()
-logger = logging.getLogger(__name__)
 
 FREE_VLAN_STATE = "Free"
 FULL_VLAN_RANGE = set(range(1, 4096))
@@ -114,98 +112,114 @@ class VLAN(Document):
         if managed_object.l2_domain:
             return VLAN.objects.filter(l2_domain=managed_object.l2_domain, vlan=int(vlan)).first()
 
-    def clean(self):
-        super().clean()
-        if not hasattr(self, "_changed_fields") or "l2_domain" in self._changed_fields:
-            if self.vlan not in set(self.l2_domain.get_effective_vlan_id()):
-                raise ValidationError(f"VLAN {self.vlan} not in allowed {self.l2_domain} range")
-
     @classmethod
-    def iter_free(
+    def get_resource_keys(
         cls,
-        l2_domain: "L2Domain",
-        pool: "ResourcePool" = None,
-        vlan_filter: "VLANFilter" = None,
+        domain: L2Domain,
+        vlan_filter: Optional[VLANFilter] = None,
+        vlans: Optional[List[int]] = None,
+        strategy: str = "L",
+        exclude_keys: Optional[Iterable[int]] = None,
         limit: int = 1,
         **kwargs,
-    ) -> Iterator["VLAN"]:
-        """
-        Iter Free VLANs
-        1. Check Exists VLANs with Free State
-        2. Create VLAN on free state when needed
-
-        :param pool: ResourcePool
-        :param l2_domain:
-        :param vlan_filter:
-        :param limit: Resource Count
-        :param kwargs: Additional hints for allocate
-        :return:
-        """
-        from noc.wf.models.state import State
-
-        if pool and not l2_domain.get_effective_pools(pool):
-            # L2Domain not supported allocated vlan by pool
-            return
-        vlans: Set[int] = FULL_VLAN_RANGE
+    ) -> List[int]:
+        """Generate Non-used vlan keys"""
+        vlans: Set[int] = set(vlans or []) or FULL_VLAN_RANGE
         if vlan_filter:
-            vlans & set(vlan_filter.include_vlans)
-        pools = l2_domain.get_effective_pools(pool)
-        for pp in pools:
-            vlans = vlans & set(pp.vlan_filter.include_vlans)
+            vlans &= set(vlan_filter.include_vlans)
+        if vlan_filter and vlan_filter.exclude_vlans:
+            vlans -= set(vlan_filter.exclude_vlans)
+        if exclude_keys:
+            vlans -= exclude_keys
+        # logger.debug("[%s] Getting Resource Keys: %s", self, vlans)
         # Check pool in VLAN
         free_states = list(State.objects.filter(name=FREE_VLAN_STATE).values_list("id"))
-        free_vlans = VLAN.objects.filter(
-            l2_domain=l2_domain, vlan__in=list(vlans), state__in=free_states
-        ).limit(limit)
-        if pool and pool.strategy == "L":
-            free_vlans = free_vlans.order_by("-vlan")
-        elif pool and pool.strategy == "F":
-            free_vlans = free_vlans.order_by("vlan")
-        allocated_count = 0
-        # Iter Free VLANs
-        for vlan in sorted(free_vlans, reverse=pool and pool.strategy == "L"):
-            yield vlan
-            allocated_count += 1
-            vlans.remove(vlan.vlan)
-        if allocated_count >= limit:
-            return
-        # @todo check Cooldown
-        # @todo raise Overflow Resource if len(vlans) < limit - allocated_count
-        # Iter vlan
-        for vlan in vlans:
-            if allocated_count >= limit:
-                break
-            vlan = cls.allocate(l2_domain, vlan)
-            if not vlan:
-                continue
-            yield vlan
-            allocated_count += 1
+        occupied_vlans = VLAN.objects.filter(l2_domain=domain, state__nin=free_states).scalar(
+            "vlan"
+        )
+        vlans -= set(occupied_vlans)
+        if strategy == "L":
+            return sorted(vlans, reverse=True)[:limit]
+        elif strategy == "F":
+            return sorted(vlans)[:limit]
+        return random.choices(list(vlans), k=limit)
 
     @classmethod
-    def allocate(
-        cls, l2_domain: "L2Domain", vlan_id: int, name: Optional[str] = None
-    ) -> Optional["VLAN"]:
+    def iter_resources_by_key(
+        cls,
+        keys: Iterable[int],
+        domain: L2Domain,
+        allow_create: bool = False,
+    ) -> Iterable[Tuple[int, Optional["VLAN"], Optional[str]]]:
         """
-        Allocate vlan on L2Domain
-        :param l2_domain:
-        :param vlan_id:
-        :param name:
-        :return:
+        Iterate resource over requested keys
+        Args:
+            keys: List keys for ensure
+            domain: L2Domain
+            allow_create: Allow create key if not exists
         """
+        processed = set()
+        for vlan in VLAN.objects.filter(l2_domain=domain, vlan__in=keys):
+            yield vlan.vlan, vlan, None
+            processed.add(vlan.vlan)
+        # Create new record ? to resource class
+        for key in set(keys) - processed:
+            record = cls.from_template(vlan_id=key, l2_domain=domain)
+            if not allow_create:
+                yield key, record, None
+                continue
+            error = None
+            try:
+                # ? save to outside allocated ?
+                record.save()
+            except ValidationError as e:
+                record, error = None, f"Validation error when saving record: {e}"
+            except NotUniqueError as e:
+                record, error = None, f"VLAN not unique: {e}"
+            yield key, record, error
+
+    # def clean(self):
+    #     super().clean()
+    #     if not hasattr(self, "_changed_fields") or "l2_domain" in self._changed_fields:
+    #         if self.vlan not in set(self.l2_domain.get_effective_vlan_id()):
+    #             raise ValidationError(f"VLAN {self.vlan} not in allowed {self.l2_domain} range")
+
+    def reserve(
+        self,
+        allocated_till: Optional[datetime.datetime] = None,
+        user: Optional[Any] = None,
+        confirm: bool = True,
+        reservation_id: Optional[str] = None,
+    ):
+        """
+        Set record As reserve
+        Args:
+            allocated_till:
+        """
+        # self.allocated_till = allocated_till
+        # self.allocated_user = user
+        # self.tt = reservation_id
+        self.fire_event("reserve")
+        if confirm:
+            self.fire_event("approve")
+
+    @classmethod
+    def from_template(
+        cls,
+        vlan_id: int,
+        l2_domain: L2Domain,
+        name: Optional[str] = None,
+    ) -> "VLAN":
+        """Create VLAN from Template"""
         vlan = VLAN(
             vlan=vlan_id,
+            name=name or f"VLAN {vlan_id:04d}",
             l2_domain=l2_domain,
             profile=l2_domain.get_default_vlan_profile(),
             description="",
         )
         if name:
             vlan.name = name
-        try:
-            vlan.save()
-            metrics["vlan_created"] += 1
-        except Exception as e:
-            logger.warning("[%s|%s] Error when create vlan: %s", l2_domain.name, vlan_id, str(e))
-            return None
         return vlan
 
     @classmethod
