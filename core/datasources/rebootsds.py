@@ -13,7 +13,7 @@ from typing import Optional, Iterable, Tuple, AsyncIterable
 from django.db import connection
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.fm.models.reboot import Reboot
 
 
@@ -26,6 +26,11 @@ class RebootsDS(BaseDataSource):
         FieldInfo(name="reboots", type=FieldType.UINT64),
     ]
 
+    params = [
+        ParamInfo(name="start", type="datetime", required=True),
+        ParamInfo(name="end", type="datetime"),
+    ]
+
     @classmethod
     async def iter_query(
         cls,
@@ -36,6 +41,7 @@ class RebootsDS(BaseDataSource):
         **kwargs,
     ) -> AsyncIterable[Tuple[str, str]]:
         time_cond = {}
+        start, end = cls.clean_interval(start, end)
         if start:
             time_cond["$gte"] = start
         if end:

@@ -12,8 +12,7 @@ from typing import Optional, Iterable, Tuple, List, Union, AsyncIterable
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
-from noc.aaa.models.user import User
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.core.scheduler.scheduler import Scheduler
 from noc.main.models.pool import Pool
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -21,7 +20,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.useraccess import UserAccess
 
 CODE_MAP = {
     "1": "Unknown error",
@@ -43,6 +41,18 @@ class DiscoveryProblemDS(BaseDataSource):
         FieldInfo(name="last_success_discovery"),
         FieldInfo(name="discovery"),
         FieldInfo(name="error"),
+    ]
+
+    params = [
+        ParamInfo(name="pool", type="str", model="main.Pool"),
+        ParamInfo(name="resource_group", type="str", model="inv.ResourceGroup"),
+        ParamInfo(name="mo_profile", type="int", model="main.ManagedObjectProfile"),
+        ParamInfo(name="filter_no_ping", type="bool", default=False),
+        ParamInfo(name="profile_check_only", type="bool", default=False),
+        ParamInfo(name="failed_discovery_only", type="bool", default=False),
+        ParamInfo(name="filter_pending_links", type="bool", default=False),
+        ParamInfo(name="filter_none_problems", type="bool", default=False),
+        ParamInfo(name="filter_view_other", type="bool", default=False),
     ]
 
     @classmethod
@@ -97,7 +107,7 @@ class DiscoveryProblemDS(BaseDataSource):
         filter_pending_links: bool = False,
         filter_none_problems: bool = False,
         filter_view_other: bool = False,
-        user: Optional[User] = None,
+        admin_domain_ads: Optional[List[int]] = None,
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
@@ -123,8 +133,8 @@ class DiscoveryProblemDS(BaseDataSource):
             )
         else:
             mos = ManagedObject.objects.filter(pool=pool, is_managed=True)
-        if user and not user.is_superuser:
-            mos = mos.filter(administrative_domain__in=UserAccess.get_domains(user))
+        if admin_domain_ads:
+            mos = mos.filter(administrative_domain__in=admin_domain_ads)
         if mo_profile:
             mos = mos.filter(object_profile=mo_profile)
         if filter_no_ping:

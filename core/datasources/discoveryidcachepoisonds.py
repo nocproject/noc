@@ -9,7 +9,7 @@
 from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.mac import MAC
 from noc.inv.models.macblacklist import MACBlacklist
@@ -34,12 +34,20 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
         FieldInfo(name="on_blacklist", type=FieldType.BOOL),
     ]
 
+    params = [
+        ParamInfo(name="pool", type="str", model="main.Pool"),
+        ParamInfo(name="filter_dup_macs", type="bool", default=False),
+    ]
+
     @classmethod
     async def iter_query(
-        cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
+        cls,
+        fields: Optional[Iterable[str]] = None,
+        filter_dup_macs=False,
+        pool: Optional[Pool] = None,
+        *args,
+        **kwargs,
     ) -> AsyncIterable[Tuple[str, str]]:
-        filter_dup_macs = "filter_dup_macs" in kwargs
-        pool = kwargs.get("pool")
         # Find object with equal ID
         find = DiscoveryID._get_collection().aggregate(
             [
