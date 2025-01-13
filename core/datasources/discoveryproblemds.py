@@ -46,7 +46,7 @@ class DiscoveryProblemDS(BaseDataSource):
     params = [
         ParamInfo(name="pool", type="str", model="main.Pool"),
         ParamInfo(name="resource_group", type="str", model="inv.ResourceGroup"),
-        ParamInfo(name="mo_profile", type="int", model="main.ManagedObjectProfile"),
+        ParamInfo(name="mo_profile", type="int", model="sa.ManagedObjectProfile"),
         ParamInfo(name="filter_no_ping", type="bool", default=False),
         ParamInfo(name="profile_check_only", type="bool", default=False),
         ParamInfo(name="failed_discovery_only", type="bool", default=False),

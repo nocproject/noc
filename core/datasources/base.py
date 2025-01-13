@@ -146,7 +146,7 @@ class BaseDataSource(object):
             if p.name in cls.IGNORED_PARAMS:
                 continue
             if p.name in params:
-                v = p.clean_value(params[p])
+                v = p.clean_value(params[p.name])
             elif p.default:
                 v = p.default
             else:
