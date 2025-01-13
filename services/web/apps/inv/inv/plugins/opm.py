@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv opm plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.main.models.extstorage import ExtStorage
 from .base import InvPlugin
 
 HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
+OPM4_UUID = uuid.UUID("70daffc9-b161-4933-b36f-868c34ef6221")
 ROADM_2_9_UUID = uuid.UUID("230e3071-793d-4556-9e21-489b94812201")
 
 
@@ -31,7 +32,7 @@ class OPMPlugin(InvPlugin):
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
-            f"fapi_plugin_{self.name}_data",
+            f"api_plugin_{self.name}_get_data",
             self.api_data,
             url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/data/$",
             method=["GET"],
@@ -46,9 +47,11 @@ class OPMPlugin(InvPlugin):
 
     def api_data(self, request, id: str, g: str, b: str):
         obj = self.app.get_object_or_404(Object, id=id)
+        gn = g.replace(" ", "")
         if obj.model.uuid == ROADM_2_9_UUID:
-            gn = g.replace(" ", "")
             prefix = f"{gn}OCMPwr"
+        elif obj.model.uuid == OPM4_UUID:
+            prefix = f"{gn}Pwr"
         else:
             msg = "Not implemented for model {obj.model.name}"
             raise NotImplementedError(msg)
@@ -74,6 +77,8 @@ class OPMPlugin(InvPlugin):
         """
         if obj.model.uuid == ROADM_2_9_UUID:
             return ["Com In", "Com Out"]
+        elif obj.model.uuid == OPM4_UUID:
+            return ["In 1", "In 2", "In 3", "In 4"]
         return []
 
     def parse_slot(self, obj: Object, data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -89,7 +94,7 @@ class OPMPlugin(InvPlugin):
                 return item["PM"]
         return []
 
-    def fetch_data(self, obj: Object) -> dict[str, Any] | None:
+    def fetch_data(self, obj: Object) -> list[dict[str, Any]]:
         mo = self.get_managed_object(obj)
         if mo:
             # Managed
@@ -98,7 +103,7 @@ class OPMPlugin(InvPlugin):
         data = self.get_beef(obj)
         if data:
             return self.parse_slot(obj, self.get_beef(obj))
-        return None
+        return []
 
     @classmethod
     def get_managed_object(cls, obj: Object) -> ManagedObject | None:
@@ -115,17 +120,18 @@ class OPMPlugin(InvPlugin):
             return None
         return ManagedObject.get_by_id(mo_id)
 
-    def get_beef(self, obj: Object) -> None:
+    def get_beef(self, obj: Object) -> dict[str, Any]:
         box = obj.get_box()
         d = box.get_data("debug", "beef_path", scope="get_params")
         if not d:
-            return None
+            self.logger.info("beef_path is not configured")
+            return {}
         storage_name, path = d.split(":", 1)
         self.logger.info("Trying to get beef fron %s", d)
         storage = ExtStorage.get_by_name(storage_name)
         if not storage:
             self.logger.info("Storage %s is not found, skipping", storage_name)
-            return None
+            return {}
         fs = storage.open_fs()
         with fs.open(path) as fp:
             return orjson.loads(fp.read())

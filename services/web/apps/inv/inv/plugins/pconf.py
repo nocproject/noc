@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv pconf plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -165,7 +165,7 @@ class ParsedData(object):
 
     @classmethod
     def empty(cls) -> "ParsedData":
-        return ParsedData(groups={}, conf=[])
+        return ParsedData(groups=[], conf=[])
 
 
 H8_CT_UUID = uuid.UUID("4aa9afdc-7420-4dde-9727-2c3de1c3a8f4")
@@ -180,7 +180,7 @@ class PConfPlugin(InvPlugin):
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
-            f"api_plugin_{self.name}_data",
+            f"api_plugin_{self.name}_get_data",
             self.api_data,
             url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/data/$",
             method=["GET"],
@@ -311,7 +311,6 @@ class PConfPlugin(InvPlugin):
             if not s:
                 continue
             if s == slot:
-                return s["PM"]
                 break
         else:
             return ParsedData.empty()

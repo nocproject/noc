@@ -29,9 +29,9 @@ class InvPlugin(object):
 
     def init_plugin(self):
         self.add_view(
-            "api_plugin_%s_data" % self.name,
+            f"api_plugin_{self.name}_data",
             self.api_get_data,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/$" % self.name,
+            url=f"^(?P<id>[0-9a-f]{{24}})/plugin/{self.name}/$",
         )
 
     def api_get_data(self, request, id):
