@@ -325,7 +325,7 @@ class ClassifierService(FastAPIService):
                     "[%s|%s|%s] Failed to process event: Invalid event class '%s'",
                     event.id,
                     event.target.name,
-                    event.target.name,
+                    event.target.address,
                     event.type.event_class,
                 )
                 metrics[EventMetrics.CR_FAILED] += 1
@@ -336,6 +336,12 @@ class ClassifierService(FastAPIService):
             return event_class, event.vars
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
+            self.logger.debug(
+                "[%s|%s|%s] Unclassified Syslog Flood",
+                event.id,
+                event.target.name,
+                event.target.address,
+            )
             return None, None
         rule, r_vars = self.ruleset.find_rule(event, raw_vars, mo=mo)
         if rule is None:
@@ -355,8 +361,7 @@ class ClassifierService(FastAPIService):
             return None, None
         if rule.is_unknown_syslog:
             # Append to codebook
-            msg = event.raw_vars.get("message", "")
-            cb = self.get_msg_codebook(msg)
+            cb = self.get_msg_codebook(event.message)
             o_id = event.target.id
             if o_id not in self.unclassified_codebook:
                 self.unclassified_codebook[o_id] = []
@@ -378,7 +383,7 @@ class ClassifierService(FastAPIService):
         self.register_log(
             event,
             rule.event_class,
-            f"Classified as '{rule.event_class.name}' by rule '{rule.name}'",
+            f"Classified as '{rule.event_class_name}' by rule '{rule.name}'",
         )
         if rule.is_unknown:
             metrics[EventMetrics.CR_UNKNOWN] += 1
@@ -690,6 +695,8 @@ class ClassifierService(FastAPIService):
                 snmp_vars[d.name] = d.value
             else:
                 raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
+        #        if event.message:
+        #            raw_vars["message"] = event.message
         # Resolve MIB variables for SNMP Traps
         if snmp_vars:
             for k, v in MIB.resolve_vars(

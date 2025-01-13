@@ -34,7 +34,7 @@ class VarTransformRule:
 
     def transform(self, v: Dict[str, Any], managed_object=None):
         if self.f_type == "ifindex" and managed_object:
-            v[self.name] = self.resolve_interface(managed_object, self.var)
+            v[self.name] = self.resolve_interface(managed_object, v.pop(self.var))
         elif self.f_type == "enum":
             v[self.name] = self.enums[self.args[0]][v.pop(self.var).lower()]
         elif self.f_type and self.var in v:
@@ -146,12 +146,7 @@ class Rule:
                 if "__" not in name:
                     continue
                 v, fixup, *args = name.split("__")
-                # if fixup == "enum":
-                #     # transform[name] = (v, partial(to_enum, enumerations, *args))
-                #     transform[v] = VarTransformRule(
-                #         name=v, var=name, fixup=partial(to_enum, enumerations, *args)
-                #     )
-                if hasattr(VarTransformRule, fixup):
+                if hasattr(VarTransformRule, fixup) or fixup == "ifindex" or fixup == "enum":
                     transform[v] = VarTransformRule(
                         name=v,
                         var=name,
