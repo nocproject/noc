@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,9 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
+from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript, false_on_snmp_error
+from noc.core.mib import mib
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):
@@ -17,6 +19,24 @@ class Script(BaseScript):
 
     rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
     rx_stack = re.compile(r"-+member :(?P<id>\d+)-+")
+
+    @false_on_snmp_error
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled
+        """
+        r = self.snmp.get(mib["LLDP-MIB::lldpLocChassisIdSubtype", 0])
+        return is_int(r) and r >= 1
+
+    @false_on_snmp_error
+    def has_stp_snmp(self):
+        """
+        Check box has STP enabled
+        """
+        # Spanning Tree Enabled/Disabled : Enabled
+        r = self.snmp.getnext(mib["BRIDGE-MIB::dot1dStpPortEnable"], bulk=False)
+        # if value == 1:
+        return any(x[1] for x in r)
 
     def get_lldp_cli(self):
         """
