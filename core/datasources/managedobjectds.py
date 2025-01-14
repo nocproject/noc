@@ -17,7 +17,6 @@ from pymongo.read_preferences import ReadPreference
 
 # NOC modules
 from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
-from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.profile import Profile
@@ -39,7 +38,6 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     SNMPTRAP_DIAG,
 )
-from noc.core.mac import MAC
 
 caps_dtype_map = {
     "bool": FieldType.BOOL,
