@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # vc.vlan application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -220,13 +220,15 @@ class VLANApplication(ExtDocApplication):
         # @todo check user permission
         with ResourcePool.acquire([pool]):
             allocator = pool.get_allocator(l2_domain=l2_domain, vlan_id=vlan_id)
-            r: Optional[VLAN] = next(allocator, None)
+            r = allocator(
+                domain=l2_domain,
+                resource_keys=[vlan_id] if vlan_id else None,
+                user=request.user,
+            )
         if not r:
             return HttpResponse("No Free VLAN found for Allocated", status=self.NOT_FOUND)
+        r = r[0]
         if name:
             r.name = name
             r.save()
-        # @todo Set Status by label
-        r.fire_event("reserve")
-        r.fire_event("approve")
         return self.instance_to_dict(r)
