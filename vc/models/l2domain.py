@@ -1,15 +1,16 @@
 # ----------------------------------------------------------------------
 # L2Domain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
 import itertools
 import operator
-from typing import Optional, List, Dict, Union
+import logging
+from threading import Lock
+from typing import Optional, Union, Iterable, List, Dict
 
 # Third-party modules
 from bson import ObjectId
@@ -22,6 +23,7 @@ from mongoengine.fields import (
     ReferenceField,
 )
 from mongoengine.errors import ValidationError
+from mongoengine.queryset.visitor import Q
 import cachetools
 
 # NOC modules
@@ -38,6 +40,7 @@ from .vlantemplate import VLANTemplate
 from .l2domainprofile import L2DomainProfile
 
 id_lock = Lock()
+logger = logging.getLogger(__name__)
 
 FREE_VLAN_STATE = "Free"
 FULL_VLAN_RANGE = set(range(1, 4096))
@@ -71,14 +74,16 @@ class L2Domain(Document):
     }
 
     name = StringField(unique=True)
-    profile = PlainReferenceField(L2DomainProfile, default=L2DomainProfile.get_default_profile)
+    profile: "L2DomainProfile" = PlainReferenceField(
+        L2DomainProfile, default=L2DomainProfile.get_default_profile
+    )
     description = StringField()
     # L2Domain workflow
     state = PlainReferenceField(State)
-    pools = EmbeddedDocumentListField(PoolItem)
+    pools: List[PoolItem] = EmbeddedDocumentListField(PoolItem)
     #
     vlan_template = ReferenceField(VLANTemplate)
-    default_vlan_profile = ReferenceField(VLANProfile, required=False)
+    default_vlan_profile: "VLANProfile" = ReferenceField(VLANProfile, required=False)
     # Discovery settings
     vlan_discovery_policy = StringField(
         choices=[
@@ -125,6 +130,32 @@ class L2Domain(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_l2domain")
 
+    @classmethod
+    def get_by_resource_pool(cls, pool: ResourcePool) -> List["L2Domain"]:
+        """Getting L2Domains for resource pool"""
+        q = Q(pools__pool=pool)
+        profiles = list(L2DomainProfile.objects.filter(pools__pool=pool))
+        if profiles:
+            q |= Q(profile__in=profiles)
+        return list(L2Domain.objects.filter(q))
+
+    def iter_pool_settings(self) -> Iterable[PoolItem]:
+        """Iterate over pool item"""
+        processed = []
+        for p in self.pools:
+            processed.append(p.pool.id)
+            yield p
+        for p in self.profile.pools:
+            if p.pool.id in processed:
+                continue
+            yield p
+
+    def get_pool_settings(self, pool) -> Optional[PoolItem]:
+        """Getting pool setting for L2Domain"""
+        for p in self.iter_pool_settings():
+            if p.pool == pool:
+                return p
+
     def clean(self):
         pools = [pp.pool.id for pp in self.get_effective_pools()]
         if len(pools) != len(set(pools)):
@@ -159,11 +190,7 @@ class L2Domain(Document):
                 ManagedObject._reset_caches(mo_id)
 
     def get_effective_pools(self, pool: "ResourcePool" = None) -> List["PoolItem"]:
-        """
-
-        :param pool:
-        :return:
-        """
+        """"""
         return list(
             itertools.filterfalse(
                 lambda x: pool and pool.id != x.pool.id,
@@ -186,10 +213,7 @@ class L2Domain(Document):
         return VLANProfile.get_default_profile()
 
     def get_effective_vlan_template(self) -> Optional["VLANTemplate"]:
-        """
-        Return Effective VLAN Template
-        :return:
-        """
+        """Return Effective VLAN Template"""
         if self.vlan_template:
             return self.vlan_template
         return self.profile.vlan_template
@@ -213,10 +237,10 @@ class L2Domain(Document):
         """
         Build effective vlan number. Default - 1 - 4096 range
          If Set Pool - limit it by vlan_filter
-        :param vlan_filter:
-        :param pool: ResourcePool
-        :param policy_order:  Return vlans in order by policy settings
-        :return:
+         Args:
+            vlan_filter:
+            pool: ResourcePool
+            policy_order:  Return Vlans in order by policy settings
         """
         # Full VLAN range
         vlans = FULL_VLAN_RANGE
@@ -234,22 +258,13 @@ class L2Domain(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_l2_domains_mo_cache"), lock=lambda _: id_lock)
     def get_l2_domain_object_ids(cls, l2_domain: str):
-        """
-        Get list of all managed object ids belonging to
-        same L2 domain
-        :param l2_domain:
-        :return:
-        """
+        """Get list of all managed object ids belonging to same L2 domain"""
         from noc.sa.models.managedobject import ManagedObject
 
         return list(ManagedObject.objects.filter(l2_domain=l2_domain).values_list("id", flat=True))
 
     @classmethod
     def calculate_stats(cls, l2_domains: List["L2Domain"]) -> List[Dict[str, Union[str, int]]]:
-        """
-        Calculate statistics Pool usage
-        :param l2_domains:
-        :return:
-        """
+        """Calculate statistics Pool usage"""
         # l2
         return []

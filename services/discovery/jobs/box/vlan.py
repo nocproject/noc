@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Vlan check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -77,10 +77,10 @@ class VLANCheck(PolicyDiscoveryCheck):
         self.refresh_discovery_timestamps(ensured_vlans)
         # Send "seen" events
         self.send_seen_events(ensured_vlans)
-        # self.update_caps(
-        #     {"DB | VLANs": VLAN.objects},
-        #     source="vlan",
-        # )
+        self.update_caps(
+            {"DB | VLANs": VLAN.objects.filter(sources__managed_object=self.object)},
+            source="vlan",
+        )
 
     def allocate_vlans(self, l2_domain: "L2Domain", vlans: List["DiscoveryVLAN"]) -> List["VLAN"]:
         """
@@ -92,7 +92,7 @@ class VLANCheck(PolicyDiscoveryCheck):
         :param vlans:
         :return:
         """
-        pools = [p.pool for p in l2_domain.get_effective_pools()]
+        pools = [p.pool for p in l2_domain.iter_pool_settings()]
         # @todo Filter pool by allocate vland + pool filter
         vlan_include_filter: Set[int] = set(l2_domain.get_effective_vlan_id())
         # Check VLANs for create
@@ -111,7 +111,7 @@ class VLANCheck(PolicyDiscoveryCheck):
         r = []
         if not pools:
             for dvlan in create_vlans:
-                avlan = VLAN.allocate(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)
+                avlan = VLAN.from_template(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)
                 if avlan:
                     avlan.__allow_seen = dvlan.allow_seen
                     r.append(avlan)
@@ -124,7 +124,7 @@ class VLANCheck(PolicyDiscoveryCheck):
         ):
             for dvlan in create_vlans:
                 self.logger.info("[%s|%s] Create VLAN", l2_domain.name, dvlan.id)
-                avlan = VLAN.allocate(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)
+                avlan = VLAN.from_template(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)
                 if avlan:
                     avlan.__allow_seen = dvlan.allow_seen
                     r.append(avlan)
@@ -161,11 +161,7 @@ class VLANCheck(PolicyDiscoveryCheck):
         return result
 
     def get_object_vlans(self, l2_domain: "L2Domain") -> List["DiscoveryVLAN"]:
-        """
-        Get VLANs from equipment
-        :param l2_domain:
-        :return:
-        """
+        """Get VLANs from equipment"""
         if self.object.object_profile.vlan_vlandb_discovery == "D":
             self.logger.info(
                 "VLAN Database Discovery is disabled by Managed Object Profile policy. Skipping..."
@@ -193,11 +189,7 @@ class VLANCheck(PolicyDiscoveryCheck):
         ]
 
     def get_interface_vlans(self, l2_domain: "L2Domain") -> List["DiscoveryVLAN"]:
-        """
-        Get VLANs from interface discovery artifact
-        :param l2_domain:
-        :return:
-        """
+        """Get VLANs from interface discovery artifact"""
         self.logger.debug("Getting interface vlans")
         if self.object.object_profile.vlan_interface_discovery == "D":
             self.logger.info(
