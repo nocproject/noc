@@ -6,23 +6,27 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Tuple, AsyncIterable, Union
+from typing import Optional, Iterable, Tuple, AsyncIterable, Union, List
 
 # Third-party modules
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.core.mongo.connection import get_db
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.platform import Platform
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject
 
 
 class LinkDetailDS(BaseDataSource):
     name = "linkdetailds"
+
+    params = [
+        ParamInfo(name="resource_group", type="str", model="inv.ResourceGroup"),
+        ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
+    ]
 
     fields = [
         FieldInfo(name="object1_admin_domain"),
@@ -51,9 +55,9 @@ class LinkDetailDS(BaseDataSource):
     async def iter_query(
         cls,
         fields: Optional[Iterable[str]] = None,
-        administrative_domain: Optional[int] = None,
-        resource_group: Optional[str] = None,
-        segment: Optional[str] = None,
+        resource_group: Optional[ResourceGroup] = None,
+        segment: Optional[NetworkSegment] = None,
+        admin_domain_ads: Optional[List[int]] = None,
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
@@ -65,18 +69,14 @@ class LinkDetailDS(BaseDataSource):
 
         # filter by incoming parameters
         mos = ManagedObject.objects.all()
-        if administrative_domain:
-            ads = AdministrativeDomain.get_nested_ids(administrative_domain)
-            mos = mos.filter(administrative_domain__in=ads)
+        if admin_domain_ads:
+            mos = mos.filter(administrative_domain__in=admin_domain_ads)
         if resource_group:
-            resource_group = ResourceGroup.get_by_id(resource_group)
             mos = mos.filter(
                 effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
             )
         if segment:
-            segment = NetworkSegment.get_by_id(segment)
-            if segment:
-                mos = mos.filter(segment__in=segment.get_nested_ids())
+            mos = mos.filter(segment__in=segment.get_nested_ids())
         mos_id = list(mos.values_list("id", flat=True))
         # prepare data to resolve referencing fields
         mo_resolv = {
