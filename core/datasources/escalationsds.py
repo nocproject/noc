@@ -11,7 +11,7 @@ import datetime
 from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -32,6 +32,11 @@ class EscalationsDS(BaseDataSource):
         FieldInfo(name="tt"),
         FieldInfo(name="objects", type=FieldType.UINT64),
         FieldInfo(name="subscribers", type=FieldType.UINT64),
+    ]
+
+    params = [
+        ParamInfo(name="start", type="datetime", required=True),
+        ParamInfo(name="end", type="datetime"),
     ]
 
     @classmethod

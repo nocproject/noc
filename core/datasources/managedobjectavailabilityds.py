@@ -14,7 +14,7 @@ import orjson
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.core.mongo.connection import get_db
 from noc.fm.models.reboot import Reboot
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -32,6 +32,14 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
     name = "managedobjectavailabilityds"
     row_index = "managed_object_id"
 
+    params = [
+        ParamInfo(name="start", type="datetime", required=True),
+        ParamInfo(name="end", type="datetime"),
+        ParamInfo(name="skip_full_avail", type="bool", default=False),
+        ParamInfo(name="skip_zero_avail", type="bool", default=False),
+        ParamInfo(name="skip_zero_access", type="bool", default=False),
+    ]
+
     fields = [
         FieldInfo(name="managed_object_id", type=FieldType.UINT),
         FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
@@ -48,9 +56,9 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
     def get_reboots_by_object(start_date: datetime.datetime, stop_date: datetime.datetime):
         """
         Reboots count from interval
-        :param start_date:
-        :param stop_date:
-        :return:
+        Args:
+            start_date:
+            stop_date:
         """
         match = {"ts": {"$gte": start_date, "$lte": stop_date}}
         pipeline = [
@@ -140,7 +148,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
-        end = end or datetime.datetime.now().date()
+        start, end = cls.clean_interval(start, end)
         td = int((end - start).total_seconds())
         rb = cls.get_reboots_by_object(start_date=start, stop_date=end)
         outages = cls.get_outages_ch(start_date=start, stop_date=end)

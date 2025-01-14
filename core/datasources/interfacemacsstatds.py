@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Interface MACs Stat Datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from typing import Optional, Iterable, AsyncIterable, Tuple
 import orjson
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 
@@ -33,6 +33,12 @@ class InterfaceMACsStatDS(BaseDataSource):
 
     row_index = ("managed_object_id", "interface_name")
 
+    params = [
+        ParamInfo(name="start", type="datetime", required=True),
+        ParamInfo(name="end", type="datetime"),
+        ParamInfo(name="resolve_managedobject_id", type="bool", default=True),
+    ]
+
     fields = [
         FieldInfo(name="managed_object_id", type=FieldType.UINT),
         FieldInfo(name="interface_name"),
@@ -50,16 +56,8 @@ class InterfaceMACsStatDS(BaseDataSource):
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[str, str]]:
-        """
-
-        :param fields:
-        :param start:
-        :param end:
-        :param resolve_managedobject_id:
-        :param args:
-        :param kwargs:
-        :return:
-        """
+        """"""
+        start, end = cls.clean_interval(start, end)
         end = end or datetime.datetime.now()
         start = start or end - datetime.timedelta(seconds=DEFAULT_INTERVAL)
         ch = connection()
