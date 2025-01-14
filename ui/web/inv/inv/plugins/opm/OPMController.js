@@ -15,11 +15,11 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
   collapseSettings: function(){
     this.lookupReference("opmRightPanel").toggleCollapse();
   },
-  onActivate: function(){
-    console.log("OPM Panel activated");
-    // this.onReload();
-    console.log(this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
-  },
+  // onActivate: function(){
+  //   console.log("OPM Panel activated");
+  //   // this.onReload();
+  //   console.log(this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+  // },
   onComboboxSelect: function(){
     var vm = this.getViewModel(),
       group = vm.get("group"),
@@ -48,6 +48,16 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
         vm.set("icon", this.generateIcon(true, "circle", NOC.colors.no, __("offline")));
         NOC.error(__("Failed to load data"));
       },
+    });
+  },
+  startTimer: function(){
+    var view = this.getView();
+    view.observer = this.setObservable(view);
+    view.timer = Ext.TaskManager.start({
+      run: this.reloadTask,
+      interval: 3000,
+      args: [this.onReload, this.getViewModel(), "opm"],
+      scope: view,
     });
   },
 });

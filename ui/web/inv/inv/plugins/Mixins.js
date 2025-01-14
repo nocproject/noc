@@ -148,10 +148,14 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
       isFocused = document.hasFocus();
     return isIntersecting && isVisible && isFocused;
   },
-  reloadTask: function(callback){
-    if(this.checkVisibility(this.isIntersecting)){
-      console.log("Reload task");
-      Ext.Function.bind(callback, this)();
+  reloadTask: function(callback, vm, plugin){
+    var controller = this.getController();
+    console.log(`*** Reload task ${plugin}`);
+    if(controller.checkVisibility(this.isIntersecting)){
+      console.log("Task reloaded");
+      Ext.Function.bind(callback, controller)();
+    } else{
+      vm.set("icon", controller.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
     }
   },
   generateIcon(isUpdatable, icon, color, msg){

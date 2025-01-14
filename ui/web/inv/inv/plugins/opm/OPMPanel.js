@@ -13,9 +13,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
     "NOC.inv.inv.plugins.opm.OPMDiagram",
     "NOC.inv.inv.plugins.opm.OPMRightPanel",
   ],
-  mixins: [
-    "NOC.inv.inv.plugins.Mixins",
-  ],
   title: __("OPM"),
   closable: false,
   controller: "opm",
@@ -38,7 +35,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
       icon: "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>",
     },  
   },
-  timer: undefined,
   // listeners: {
   //   activate: "onActivate",
   // },
@@ -120,7 +116,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
       bandsStore = vm.getStore("bandsStore"),
       groupsStore = vm.getStore("groupsStore");
       
-    this.observer = this.setObservable(this);
     bandsStore.loadData(this.mapData(data.bands));
     groupsStore.loadData(this.mapData(data.groups));
     vm.set("isGroupsEmpty", groupsStore.getCount() === 0);
@@ -128,12 +123,14 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
     vm.set("currentId", id);
     vm.set("group", groupsStore.getCount() > 0 ? groupsStore.getAt(0).get("value") : undefined);
     vm.set("band", bandsStore.getCount() > 0 ? bandsStore.getAt(0).get("value") : undefined);
-    this.timer = Ext.TaskManager.start({
-      run: this.reloadTask,
-      interval: 3000,
-      args: [this.getController().onReload],
-      scope: this,
-    });
+    this.getController().startTimer();
+  },
+  onDestroy: function(){
+    console.log("Destroy OPM Panel");
+    if(this.timer){
+      Ext.TaskManager.stop(this.timer);
+    }
+    this.callParent();
   },
   mapData: function(array){
     if(!array){

@@ -12,7 +12,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   mixins: [
     "NOC.inv.inv.plugins.Mixins",
   ],
-
   onDataChanged: function(store){
     var vm = this.getViewModel();
     if(vm){
@@ -20,8 +19,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     }
   },
   onReload: function(){
-    var me = this,
-      vm = me.getViewModel(),
+    var vm = this.getViewModel(),
       currentId = vm.get("currentId");
     if(Ext.isEmpty(currentId)) return;
     var isUpdatable = this.getView().down("combo[itemId=tabType]").getValue() === 2;
@@ -29,7 +27,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/data/",
       method: "GET",
-      scope: me,
+      scope: this,
       params: {
         t: vm.get("tabType"),
         g: vm.get("groupParam"),
@@ -47,20 +45,20 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     });
   },
   onValueChanged: function(data){
-    var me = this,
-      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+    var maskComponent = this.getView().up("[appId=inv.inv]").maskComponent,
       messageId = maskComponent.show("saving", "pconf"),
-      currentId = me.getViewModel().get("currentId");
+      currentId = this.getViewModel().get("currentId");
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/set/",
       method: "POST",
+      scope: this,
       jsonData: data,
       success: function(response){
         var data = Ext.decode(response.responseText);
         if(data.status){
           NOC.info(__("Parameter has been set"));
-          me.getView().down("grid").findPlugin("valueedit").cancelEdit();
-          me.onReload();
+          this.getView().down("grid").findPlugin("valueedit").cancelEdit();
+          this.onReload();
         } else{
           NOC.error(data.message);
         }
@@ -90,6 +88,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   // },
   onTabTypeChange: function(combo, record){
     var view = this.getView(),
+      vm = this.getViewModel(),
       getTimerInterval = function(record){
         if(!Ext.isEmpty(record)){
           var interval = record.get("autoreload");
@@ -101,31 +100,12 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     if(Ext.isEmpty(view.getViewModel().get("currentId"))) return;
     this.onReload();
     if(!Ext.isEmpty(timerInterval)){
-      if(Ext.isEmpty(view.observer)){
-        view.observer = new IntersectionObserver(function(entries){
-          view.isIntersecting = entries[0].isIntersecting;
-        }, {
-          threshold: 1.0,
-        });
-      }
-      view.observer.observe(view.getEl().dom);
+      view.observer = this.setObservable(view);
       view.timer = Ext.TaskManager.start({
-        run: function(){
-          var panel = this.getView(),
-            vm = this.getViewModel(),
-            isVisible = !document.hidden,
-            isFocused = document.hasFocus(),
-            isIntersecting = panel.isIntersecting,
-            isUpdatable = this.getView().down("combo[itemId=tabType]").getValue() === 2;
-          if(isIntersecting && isVisible && isFocused){
-            vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.yes, __("online")));
-            this.onReload();
-          } else{
-            vm.set("icon", this.generateIcon(isUpdatable, "stop-circle-o", "grey", __("suspend")));
-          }
-        },
+        run: this.reloadTask,
         interval: timerInterval,
-        scope: this,
+        args: [this.onReload, vm, "pconf"],
+        scope: view,
       });
     } else{
       if(view.timer){

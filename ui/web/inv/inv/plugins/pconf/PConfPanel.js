@@ -288,4 +288,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       vm.set("groupParam", firstGroup);
     }
   },
+  onDestroy: function(){
+    console.log("Destroy Config Panel");
+    if(this.timer){
+      Ext.TaskManager.stop(this.timer);
+    }
+    this.callParent();
+  },
 });
