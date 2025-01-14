@@ -24,7 +24,10 @@ class Profile(BaseProfile):
         ),
         (rb"^\.\.\.\.press ENTER to next line, Q to quit, other key to next page\.\.\.\.", b" "),
     ]
-    pattern_syntax_error = rb"% (?:Unrecognized|Incomplete) command, and error detected at"
+    pattern_syntax_error = (
+        rb"% (?:Unrecognized|Incomplete) command, and error detected at"
+        rb"|Incomplete command|Too many parameters"
+    )
     username_submit = b"\r"
     password_submit = b"\r"
     command_submit = b"\r"
@@ -49,18 +52,20 @@ class Profile(BaseProfile):
             script.cli("", ignore_errors=True)
 
     INTERFACE_TYPES = {
-        "Ethe": "physical",  # Ethernet
-        "Vlan": "SVI",  # Vlan
+        "ethe": "physical",  # Ethernet
+        "giga": "physical",  # GigaEthernet0
+        "vlan": "SVI",  # Vlan
         "syst": "SVI",  # system
-        "Port": "aggregated",  # Port-Channel
-        "Vsf-": "aggregated",  # Vsf-Port
+        "port": "aggregated",  # Port-Channel
+        "vsf-": "aggregated",  # Vsf-Port
         "vpls": "unknown",  # vpls_dev
         "l2ov": "tunnel",  # l2overgre
     }
 
     @classmethod
     def get_interface_type(cls, name):
-        if name == "Ethernet0":
+        name = name.lower()
+        if name == "ethernet0":
             return "management"
         if name.startswith("e0/"):
             return "physical"
