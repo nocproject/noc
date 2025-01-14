@@ -75,7 +75,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
                 "Cannot find neighbor '%s'. Unsupported subtype %s", chassis_id, chassis_subtype
             )
             n = None
-        if not n and address:
+        if not n and address and is_ipv4(address):
             self.register_object_unknown_neighbors(address, neighbor_id)
         return n
 
@@ -227,7 +227,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         return self.get_interface_by_local(port, object)
 
     def register_object_unknown_neighbors(self, address, remote_object):
-        if not address or address == "0.0.0.0" or not remote_object.get("remote_system_name"):
+        if address == "0.0.0.0" or not remote_object.get("remote_system_name"):
             return
         self.logger.debug("Register Unknown Neighbor: %s", address)
         register(
