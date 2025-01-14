@@ -182,7 +182,7 @@ class BaseDataSource(object):
         if not ads:
             return list(user_ads)
         ads = ads & user_ads
-        return list(ads) or None
+        return list(ads)
 
     @classmethod
     def clean_interval(

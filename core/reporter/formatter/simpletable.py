@@ -66,7 +66,7 @@ class SimpleTableFormatter(DataFormatter):
         elif self.output_type == OutputType.XLSX:
             book = Workbook(self.output_stream, options={"remove_timezone": True})
             worksheet = book.add_worksheet(
-                self.report_template.output_name_pattern[: self.MAX_SHEET_NAME]
+                (self.report_template.output_name_pattern or "Sheet1")[: self.MAX_SHEET_NAME]
             )
             data.select(out_columns).write_excel(
                 workbook=book,

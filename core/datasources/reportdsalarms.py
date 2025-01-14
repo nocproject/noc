@@ -17,7 +17,7 @@ from pymongo import ReadPreference
 
 
 # NOC modules
-from .base import BaseDataSource, FieldInfo, FieldType
+from .base import BaseDataSource, FieldInfo, ParamInfo, FieldType
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -40,6 +40,21 @@ class ReportDsAlarms(BaseDataSource):
 
     SEGMENT_PATH_DEPTH = 7
     CONTAINER_PATH_DEPTH = 7
+
+    params = [
+        ParamInfo(name="start", type="datetime", required=True),
+        ParamInfo(name="end", type="datetime"),
+        ParamInfo(name="source", type="str", default="active"),
+        ParamInfo(name="objectids", type="int", allow_multi=True),
+        ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
+        ParamInfo(name="alarm_class", type="str", model="fm.AlarmClass"),
+        ParamInfo(name="resource_group", type="str", model="inv.ResourceGroup"),
+        ParamInfo(name="ex_resource_group", type="str", model="inv.ResourceGroup"),
+        ParamInfo(name="min_duration", type="int"),
+        ParamInfo(name="max_duration", type="int"),
+        ParamInfo(name="min_objects", type="int"),
+        ParamInfo(name="min_subscribers", type="int"),
+    ]
 
     fields: List[FieldInfo] = (
         [
@@ -202,41 +217,12 @@ class ReportDsAlarms(BaseDataSource):
         """
         return {r["profile"]: r["summary"] for r in items}
 
-    @staticmethod
-    def get_ads_filter(filters: Dict[str, Any]) -> Optional[List[int]]:
-        """
-        Build Administrative Domain filter
-        """
-        from noc.sa.models.useraccess import UserAccess
-        from noc.sa.models.administrativedomain import AdministrativeDomain
-
-        ads = set()
-        user = filters.pop("user", None)
-        adm_path = set(filters.pop("adm_path", []))
-        adm_domain: "AdministrativeDomain" = filters.pop("administrative_domain", None)
-        if adm_domain:
-            ads |= set(AdministrativeDomain.get_nested_ids(adm_domain.id))
-        if ads and adm_path:
-            ads = set(adm_path) & ads
-        elif not ads:
-            ads = set(adm_path)
-        if not user or (user and user.is_superuser):
-            return list(ads) or None
-        user_ads = set(UserAccess.get_domains(user))
-        if not ads:
-            return list(user_ads)
-        ads = ads & user_ads
-        if not ads:
-            raise ValueError(
-                "<html><body>Permission denied: Invalid Administrative Domain</html></body>"
-            )
-        return list(ads) or None
-
     @classmethod
     def iter_data(
         cls,
         start: datetime.datetime,
         end: Optional[datetime.datetime],
+        admin_domain_ads: Optional[List[int]] = None,
         **filters: Optional[Dict[str, Any]],
     ) -> Iterable[Dict[str, Any]]:
         if "objectids" in filters:
@@ -250,10 +236,13 @@ class ReportDsAlarms(BaseDataSource):
         alarm_collections = []
         match_duration = {}
         # Administrative domain filter
-        ads = cls.get_ads_filter(filters)
-        if ads:
-            match["adm_path"] = {"$in": list(ads)}
-            mos_filter["administrative_domain__in"] = list(ads)
+        if not admin_domain_ads and admin_domain_ads is not None:
+            raise ValueError(
+                "<html><body>Permission denied: Not have permission to selected Administrative Domain</html></body>"
+            )
+        elif admin_domain_ads:
+            match["adm_path"] = {"$in": list(admin_domain_ads)}
+            mos_filter["administrative_domain__in"] = list(admin_domain_ads)
         # Main filters
         for name, values in filters.items():
             if not isinstance(values, list):
