@@ -41,7 +41,9 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
       },
       success: function(response){
         var data = Ext.decode(response.responseText);
-        console.log("Data loaded", data);
+        if(data.status){
+          this.drawDiagram(data.power);
+        }
         vm.set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
       },
       failure: function(){
@@ -49,6 +51,11 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
         NOC.error(__("Failed to load data"));
       },
     });
+  },
+  drawDiagram: function(data){
+    var height = this.getView().lookup("opmDiagram").getHeight(),
+      width = this.getView().lookup("opmDiagram").getWidth();
+    console.log(data, height, width);
   },
   startTimer: function(){
     var view = this.getView();

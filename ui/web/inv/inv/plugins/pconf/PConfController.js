@@ -35,6 +35,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       success: function(response){
         var data = Ext.decode(response.responseText),
           gridStore = vm.getStore("gridStore");
+        if(Ext.isEmpty(gridStore)) return;
         gridStore.loadData(data.conf);
         vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.yes, __("online")));
       },
