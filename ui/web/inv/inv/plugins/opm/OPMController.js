@@ -53,21 +53,24 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
       },
     });
   },
-  drawDiagram: function(data, isReload){
+  drawDiagram: function(data, band, isReload){
     var spectrogram = this.getView().lookup("opmDiagram"),
       height = spectrogram.getHeight(),
       width = spectrogram.getWidth();
     console.log(data, height, width);
-    spectrogram.draw(data, isReload);
+    spectrogram.draw(data, band, isReload);
   },
   startTimer: function(){
-    var view = this.getView();
+    var view = this.getView(),
+      interval = 3000;
     view.observer = this.setObservable(view);
+    // setTimeout(function(){
     view.timer = Ext.TaskManager.start({
       run: this.reloadTask,
-      interval: 3000,
+      interval: interval,
       args: [this.onReload, this.getViewModel(), "opm"],
       scope: view,
     });
+    // }.bind(this), internal);
   },
 });

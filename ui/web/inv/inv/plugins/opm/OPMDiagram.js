@@ -11,15 +11,22 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   xtype: "opm.diagram",
   alias: "widget.spectrogram",
   scrollable: "x",
-
   config: {
     diagPadding: 35,
     barSpacing: 2,
     maxBarWidth: 20,
     data: [],
   },
-
+  //
   draw: function(data, band, isReload){
+    if(isReload){
+      this.updateBars(data);
+    } else{
+      this.createBars(data, band);
+    }
+  },
+  //
+  createBars: function(data, band){
     var surface = this.getSurface(),
       padding = this.getDiagPadding(),
       barSpacing = this.getBarSpacing(),
@@ -29,7 +36,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       numChannels = data.reduce((acc, channel) => acc + channel.power.length, 0),
       barWidth = Math.min(maxBarWidth, (width - (numChannels - 1) * barSpacing) / numChannels),
       x = padding;
-    console.log(isReload);
     surface.removeAll();
     data.forEach(channel => {
       var powerValues = channel.power;
@@ -45,9 +51,10 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
           degrees: -90,
         },
       });
-      powerValues.forEach(value => {
+      powerValues.forEach((value, index) => {
         var barHeight = (value + 62) * (height / 72);
         surface.add({
+          id: channel.ch + "-" + index,
           type: "rect",
           x: x,
           y: height + padding - barHeight,
@@ -58,11 +65,26 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
         x += barWidth + barSpacing;
       });
     });
-
     this.yAxis();
     surface.renderFrame();
   },
-
+  //
+  updateBars: function(data){
+    var surface = this.getSurface();
+    data.forEach(channel => {
+      var powerValues = channel.power;
+      powerValues.forEach((value, index) => {
+        var bar = surface.get(channel.ch + "-" + index);
+        if(bar){
+          bar.setAttributes({
+            height: this.transformValue(value),
+          });
+        }
+      });
+    });
+    surface.renderFrame();
+  },
+  //
   yAxis: function(){
     var yAxisValues = [10, 0, -10, -20, -30, -40, -50, -62],
       padding = this.getDiagPadding(),
@@ -95,5 +117,9 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
 
       positionY += rangeWidth;
     });
+  },
+  //
+  transformValue(value){
+    return (value + 62) * ((this.getHeight() - this.getDiagPadding() * 2) / 72);
   },
 });

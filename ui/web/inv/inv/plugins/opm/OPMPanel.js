@@ -122,6 +122,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
     vm.set("currentId", id);
     vm.set("group", groupsStore.getCount() > 0 ? groupsStore.getAt(0).get("value") : undefined);
     vm.set("band", bandsStore.getCount() > 0 ? bandsStore.getAt(0).get("value") : undefined);
+    this.getController().onReload();
     this.getController().startTimer();
   },
   onDestroy: function(){
