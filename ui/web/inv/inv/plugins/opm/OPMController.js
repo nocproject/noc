@@ -25,8 +25,9 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
       group = vm.get("group"),
       band = vm.get("band");
     console.log("Combobox selected", group, band);
+    this.onReload();
   },
-  onReload: function(){
+  onReload: function(isReload){
     var vm = this.getViewModel(),
       currentId = vm.get("currentId");
     if(Ext.isEmpty(currentId)) return;
@@ -42,7 +43,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
       success: function(response){
         var data = Ext.decode(response.responseText);
         if(data.status){
-          this.drawDiagram(data.power);
+          this.drawDiagram(data.power, isReload);
         }
         vm.set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
       },
@@ -52,10 +53,12 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
       },
     });
   },
-  drawDiagram: function(data){
-    var height = this.getView().lookup("opmDiagram").getHeight(),
-      width = this.getView().lookup("opmDiagram").getWidth();
+  drawDiagram: function(data, isReload){
+    var spectrogram = this.getView().lookup("opmDiagram"),
+      height = spectrogram.getHeight(),
+      width = spectrogram.getWidth();
     console.log(data, height, width);
+    spectrogram.draw(data, isReload);
   },
   startTimer: function(){
     var view = this.getView();

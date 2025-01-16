@@ -153,7 +153,7 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
     console.log(`*** Reload task ${plugin}`);
     if(controller.checkVisibility(this.isIntersecting)){
       console.log("Task reloaded");
-      Ext.Function.bind(callback, controller)();
+      Ext.Function.bind(callback, controller)(true);
     } else{
       vm.set("icon", controller.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
     }

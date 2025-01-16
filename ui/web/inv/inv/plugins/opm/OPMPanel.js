@@ -94,7 +94,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
       xtype: "opm.diagram",
       reference: "opmDiagram",
       region: "center",
-      border: true,
     },
     {
       xtype: "opm.rightPanel",
