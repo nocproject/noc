@@ -161,7 +161,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       el.sprite.setAttributes({
         fill: "red",
       });
-      // this.getSurface().renderFrame();
+      this.getSurface().renderFrame();
     }
   },
   //
@@ -171,7 +171,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       el.sprite.setAttributes({
         fill: "blue",
       });
-      // this.getSurface().renderFrame();
+      this.getSurface().renderFrame();
     }
   },
   //
