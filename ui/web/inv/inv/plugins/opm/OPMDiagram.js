@@ -11,11 +11,18 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   xtype: "opm.diagram",
   alias: "widget.spectrogram",
   scrollable: "x",
+  defaultListenerScope: true,
   config: {
     diagPadding: 35,
     barSpacing: 2,
     maxBarWidth: 20,
     data: [],
+  },
+  plugins: ["spriteevents"],
+  listeners: {
+    spritemouseover: "onSpriteMouseOver",
+    spritemouseout: "onSpriteMouseOut",
+    spriteclick: "onSpriteClick",
   },
   //
   draw: function(data, band, isReload){
@@ -146,5 +153,29 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   //
   transformValue(value){
     return (value + 62) * ((this.getHeight() - this.getDiagPadding() * 2) / 72);
+  },
+  //
+  onSpriteMouseOver: function(el){
+    console.log("Mouse over", el.sprite);
+    if(el.sprite.type === "rect"){
+      el.sprite.setAttributes({
+        fill: "red",
+      });
+      // this.getSurface().renderFrame();
+    }
+  },
+  //
+  onSpriteMouseOut: function(el){
+    console.log("Mouse out", el.sprite);
+    if(el.sprite.type === "rect"){
+      el.sprite.setAttributes({
+        fill: "blue",
+      });
+      // this.getSurface().renderFrame();
+    }
+  },
+  //
+  onSpriteClick: function(sprite){
+    console.log("Mouse click", sprite);
   },
 });
