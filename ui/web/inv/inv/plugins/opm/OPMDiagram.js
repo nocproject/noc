@@ -13,13 +13,13 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   scrollable: "x",
 
   config: {
-    diagPadding: 30,
+    diagPadding: 35,
     barSpacing: 2,
     maxBarWidth: 20,
     data: [],
   },
 
-  draw: function(data, isReload){
+  draw: function(data, band, isReload){
     var surface = this.getSurface(),
       padding = this.getDiagPadding(),
       barSpacing = this.getBarSpacing(),
@@ -29,7 +29,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       numChannels = data.reduce((acc, channel) => acc + channel.power.length, 0),
       barWidth = Math.min(maxBarWidth, (width - (numChannels - 1) * barSpacing) / numChannels),
       x = padding;
-    
     console.log(isReload);
     surface.removeAll();
     data.forEach(channel => {
@@ -37,8 +36,8 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       surface.add({
         type: "text",
         x: x,
-        y: height + padding * 1.2,
-        text: channel.ch.toString(),
+        y: height + padding * 1.3,
+        text: band + channel.ch.toString(),
         fill: "black",
         textAlign: "start",
         textBaseline: "top",

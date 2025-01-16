@@ -43,7 +43,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
       success: function(response){
         var data = Ext.decode(response.responseText);
         if(data.status){
-          this.drawDiagram(data.power, isReload);
+          this.drawDiagram(data.power, vm.get("band"), isReload);
         }
         vm.set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
       },
