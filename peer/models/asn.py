@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # AS model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import operator
 # Third-party modules
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 import cachetools
 
 # NOC modules
@@ -48,8 +49,10 @@ class AS(NOCModel):
     asn = models.BigIntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
-    profile = DocumentReferenceField(ASProfile, null=False, blank=False)
-    project = models.ForeignKey(
+    profile: "ASProfile" = DocumentReferenceField(
+        ASProfile, null=False, blank=False, default=ASProfile.get_default_profile
+    )
+    project: Optional["Project"] = models.ForeignKey(
         Project,
         verbose_name="Project",
         null=True,
@@ -58,9 +61,9 @@ class AS(NOCModel):
         on_delete=models.CASCADE,
     )
     # RPSL descr field
-    description = models.TextField("Description")
+    description = models.TextField("Description", null=True, blank=True)
     organisation = models.ForeignKey(
-        Organisation, verbose_name="Organisation", on_delete=models.CASCADE
+        Organisation, verbose_name="Organisation", null=True, blank=True, on_delete=models.CASCADE
     )
     administrative_contacts = models.ManyToManyField(
         Person,
@@ -86,7 +89,9 @@ class AS(NOCModel):
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
     # remarks: will be prepended automatically
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
-    rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
+    rir = models.ForeignKey(
+        RIR, null=True, blank=True, verbose_name="RIR", on_delete=models.CASCADE
+    )
     #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
@@ -103,18 +108,17 @@ class AS(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id: int) -> Optional["AS"]:
-        asn = AS.objects.filter(id=id)[:1]
-        if asn:
-            return asn[0]
-        return None
+        return AS.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_asn_cache"), lock=lambda _: id_lock)
     def get_by_asn(cls, asn):
-        asn = AS.objects.filter(asn=asn)[:1]
-        if asn:
-            return asn[0]
-        return None
+        return AS.objects.filter(asn=asn).first()
+
+    def clean(self):
+        if self.profile.validation_policy == "S" and not (self.organisation and self.rir):
+            raise ValidationError(message="On Strict Policy Organisation and RIR required")
+        super().clean()
 
     def get_rpsl(self):
         sep = "remarks: %s" % ("-" * 72)
@@ -132,7 +136,9 @@ class AS(NOCModel):
         pg = (
             {}
         )  # Peer Group -> AS -> peering_point -> [(import, export, localpref, import_med, export_med, remark)]
-        for peer in self.peer_set.filter(status="A"):
+        for peer in self.peer_set.filter():
+            if not peer.state.is_production:
+                continue
             if peer.peer_group not in pg:
                 pg[peer.peer_group] = {}
             if peer.remote_asn not in pg[peer.peer_group]:
@@ -222,7 +228,8 @@ class AS(NOCModel):
         self.rpsl.write(n_rpsl)
 
     def on_save(self):
-        self.touch_rpsl()
+        if self.profile.gen_rpsl:
+            self.touch_rpsl()
 
     @property
     def dot(self):

@@ -23,6 +23,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidde
 from django.urls import path, re_path, include, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
+from django.views.i18n import JavaScriptCatalog
 import orjson
 import cachetools
 from dataclasses import dataclass
@@ -332,6 +333,7 @@ class Site(object):
         """
         # Collect patterns
         patterns = {}  # module -> app -> pattern
+        index_view = None
         for app in self.apps.values():
             mod_chain = patterns.get(app.module)
             if not mod_chain:
@@ -344,9 +346,10 @@ class Site(object):
             # Group URLs
             app_url_map = defaultdict(list)  # url -> (URL, view)
             for view in app.iter_views():
-                if not hasattr(view, "url"):
-                    continue
                 if isinstance(view.url, str):
+                    if view.url == "/index.html":
+                        index_view = view
+                        continue
                     view_url = URL(
                         view.url,
                         name=getattr(view, "url_name", None),
@@ -381,6 +384,14 @@ class Site(object):
                 mod_includes += [path("%s/" % app, include((patterns[module][app], app)))]
             # Install module routes
             self.urlpatterns += [path("%s/" % module, include((mod_includes, module)))]
+        # Django JS Translation
+        # @todo: Remove?
+        self.urlpatterns.append(
+            path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog")
+        )
+        # /index.html
+        if index_view:
+            self.urlpatterns.append(path("index.html", index_view))
 
     def register(self, app_class):
         """

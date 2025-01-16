@@ -131,7 +131,7 @@ class StormProtection(object):
         # delete old records
         for ip in to_delete:
             del self.storm_table[ip]
-        logger.info(
+        logger.debug(
             "End of storm protection round: found %d verbose devices", verbose_devices_quantity
         )
 

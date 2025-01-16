@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // peer.asprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.peer.asprofile.Model");
@@ -17,7 +17,18 @@ Ext.define("NOC.peer.asprofile.Model", {
         },
         {
             name: "enable_discovery_prefix_whois_route",
-            type: "boolean"
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_discovery_peer",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "gen_rpsl",
+            type: "boolean",
+            defaultValue: false
         },
         {
             name: "description",
@@ -44,6 +55,20 @@ Ext.define("NOC.peer.asprofile.Model", {
             name: "prefix_profile_whois_route__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "validation_policy",
+            type: "string",
+            defaultValue: "O"
+        },
+        {
+            name: "dynamic_classification_policy",
+            type: "string",
+            defaultValue: "R"
+        },
+        {
+            name: "match_rules",
+            type: "auto"
         },
         {
             name: "row_class",

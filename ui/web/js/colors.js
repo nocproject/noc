@@ -6,8 +6,7 @@
 // Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-
-Ext.ns("NOC.colors");
+Ext.ns("NOC", "NOC.colors");
 //---------------------------------------------------------------------
 // Base colors
 //

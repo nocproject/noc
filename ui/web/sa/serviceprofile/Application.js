@@ -416,6 +416,94 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                 },
                 {
                     xtype: "fieldset",
+                    title: __("Resource Binding"),
+                    items: [
+                        {
+                            name: "instance_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Resource Map Policy"),
+                            tooltip: __("How bind resources to Service Instance <br/>" +
+                                'D - Disable Bind<br/>' +
+                                'N - By Remote System Data' +
+                                'O - By Defined Rules'),
+                            store: [
+                                ["D", __("Disable")],
+                                ["N", __("Resource Binding")],
+                                ["O", __("By Rule")]
+                            ],
+                            allowBlank: true,
+                            value: "N",
+                            uiStyle: "medium",
+                            listeners: {
+                                render: me.addTooltip
+                            }
+                        },
+                        {
+                            name: "instance_policy_settings",
+                            fieldLabel: __("Resource Bind Rules"),
+                            xtype: "gridfield",
+                            allowBlank: true,
+                            //width: 350,
+                            columns: [
+                                {
+                                    text: __("Provide"),
+                                    dataIndex: "provide",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["C", "AS Client"],
+                                            ["S", "AS Service"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "C": "AS Client",
+                                        "S": "AS Service"
+                                    })
+                                },
+                                {
+                                    text: __("Allow Resources"),
+                                    dataIndex: "allow_resources",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "tagfield",
+                                        store: [
+                                            ["if", "Interface"],
+                                            ["si", "Subinterface"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "if": "Interface",
+                                        "si": "Subinterface"
+                                    })
+                                },
+                                {
+                                    text: __("Allow Manual"),
+                                    dataIndex: "allow_manual",
+                                    width: 100,
+                                    editor: "checkbox",
+                                    renderer: NOC.render.Bool
+                                },
+                                {
+                                    text: __("Send Approve"),
+                                    dataIndex: "send_approve",
+                                    width: 100,
+                                    editor: "checkbox",
+                                    renderer: NOC.render.Bool
+                                },
+                                {
+                                    text: __("Only One Object"),
+                                    dataIndex: "only_one_object",
+                                    width: 100,
+                                    editor: "checkbox",
+                                    renderer: NOC.render.Bool
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),
                     defaults: {

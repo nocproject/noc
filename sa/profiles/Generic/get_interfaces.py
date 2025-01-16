@@ -74,12 +74,24 @@ class Script(BaseScript):
             pid_ifindex_mappings[int(oid.split(".")[-1])] = v
         return pid_ifindex_mappings
 
+    def get_port_vlan_oids(self) -> Tuple[str, str]:
+        """Return oid for collection port <-> Vlan map"""
+        if self.has_capability("SNMP | MIB | IEEE8021-Q-BRIDGE-MIB"):
+            self.logger.debug("Use IEEE8021-Q-BRIDGE-MIB for collected switchport")
+            return (
+                mib["IEEE8021-Q-BRIDGE-MIB::ieee8021QBridgePvid"],
+                mib["IEEE8021-Q-BRIDGE-MIB::ieee8021QBridgeVlanCurrentEgressPorts"],
+            )
+        return mib["Q-BRIDGE-MIB::dot1qPvid"], mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"]
+
     def get_switchport(self) -> DefaultDict[int, Dict[str, Union[int, list, None]]]:
+        # noc::interface::bridge_mode:: access/trunk/hybrid
         result = defaultdict(lambda: {"tagged_vlans": [], "untagged_vlan": None})
         pid_ifindex_mappings = self.get_bridge_ifindex_mappings()
         self.logger.debug("PID <-> ifindex mappings: %s", pid_ifindex_mappings)
+        pvid_oid, tagged_oid = self.get_port_vlan_oids()
         for oid, pvid in self.snmp.getnext(
-            mib["Q-BRIDGE-MIB::dot1qPvid"],
+            pvid_oid,
             max_repetitions=self.get_max_repetitions(),
             max_retries=self.get_getnext_retires(),
             timeout=self.get_snmp_timeout(),
@@ -100,10 +112,10 @@ class Script(BaseScript):
                 self.logger.warning("PortID %s not in ifindex mapping. Use as is", o)
             result[o]["untagged_vlan"] = pvid
         for oid, ports_mask in self.snmp.getnext(
-            mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"],
+            tagged_oid,
             max_repetitions=self.get_max_repetitions(),
             max_retries=self.get_getnext_retires(),
-            display_hints={mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"]: render_bin},
+            display_hints={tagged_oid: render_bin},
             timeout=self.get_snmp_timeout(),
         ):
             vlan_num = int(oid.split(".")[-1])

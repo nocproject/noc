@@ -96,6 +96,9 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
     {
       layout: "border",
       region: "center",
+      bind: {
+        disabled: "{containerDisabled}",
+      },
       items: [
         {
           xtype: "fm.alarm.recent",

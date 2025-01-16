@@ -110,11 +110,8 @@ class Script(BaseScript):
 
     @false_on_cli_error
     def get_rpm_probes(self):
-        i = 0
         v = self.scripts.get_sla_probes()
-        for p in v:
-            i += 1
-        return i
+        return len(v)
 
     @false_on_cli_error
     def has_cli_help(self):
@@ -124,6 +121,24 @@ class Script(BaseScript):
         """
         self.cli("help")
         return True
+
+    @false_on_snmp_error
+    def has_ppoe_snmp(self):
+        # jnxPPPoEMajorInterfaceCount
+        pppoe = self.snmp.get("1.3.6.1.4.1.2636.3.67.1.1.3.1.0")
+        return is_int(pppoe) and int(pppoe) > 0
+
+    @false_on_snmp_error
+    def has_l2tp_snmp(self):
+        # jnxL2tpStatsTotalTunnels
+        l2tp = self.snmp.get("1.3.6.1.4.1.2636.3.49.1.1.1.1.1.0")
+        return is_int(l2tp) and int(l2tp) > 0
+
+    @false_on_snmp_error
+    def has_dhcp_snmp(self):
+        #  jnxTotalAuthenticationResponses
+        dhcp = self.snmp.get("1.3.6.1.4.1.2636.3.51.1.1.1.2.0")
+        return is_int(dhcp) and int(dhcp) > 0
 
     def execute_platform_cli(self, caps):
         np = self.get_rpm_probes()
@@ -141,19 +156,12 @@ class Script(BaseScript):
                 np += 1
         if np > 0:
             caps["Juniper | RPM | Probes"] = np
-        # jnxPPPoEMajorInterfaceCount
-        pppoe = self.snmp.get("1.3.6.1.4.1.2636.3.67.1.1.3.1.0")
-        if is_int(pppoe) and int(pppoe) > 0:
+        if self.has_ppoe_snmp():
             caps["BRAS | PPPoE"] = True
-        # jnxL2tpStatsTotalTunnels
-        l2tp = self.snmp.get("1.3.6.1.4.1.2636.3.49.1.1.1.1.1.0")
-        if is_int(l2tp) and int(l2tp) > 0:
+        if self.has_l2tp_snmp():
             caps["BRAS | L2TP"] = True
-        #  jnxTotalAuthenticationResponses
-        dhcp = self.snmp.get("1.3.6.1.4.1.2636.3.51.1.1.1.2.0")
-        if is_int(dhcp) and int(dhcp) > 0:
+        if self.has_dhcp_snmp():
             caps["Network | DHCP"] = True
-
         # jnxVirtualChassisMemberRole
         role = {1: "master", 2: "backup", 3: "linecard"}
         vs = {}

@@ -40,7 +40,7 @@ DataItems = RootModel[List[ModelDataItem]]
 
 @on_init
 @change
-@on_delete_check(check=[("peer.Peer", "profile")])
+@on_delete_check(check=[("peer.Peer", "profile"), ("sa.ManagedObjectProfile", "bgppeer_profile")])
 class PeerProfile(NOCModel):
     class Meta(object):
         verbose_name = "Peer Profile"
@@ -55,7 +55,7 @@ class PeerProfile(NOCModel):
         Workflow,
         null=False,
         blank=False,
-        default=partial(Workflow.get_default_workflow, "peer.PeerProfile"),
+        default=partial(Workflow.get_default_workflow, "peer.Peer"),
     )
     max_prefixes = IntegerField("Max. Prefixes", default=100)
     data: List[Dict[str, str]] = PydanticField(
@@ -95,6 +95,7 @@ class PeerProfile(NOCModel):
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
+    DEFAULT_WORKFLOW_NAME = "BGP Peer Default"
 
     def __str__(self):
         return self.name
@@ -107,7 +108,14 @@ class PeerProfile(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
     def get_default_profile(cls) -> "PeerProfile":
-        return PeerProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+        pp = PeerProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+        if not pp:
+            sp = PeerProfile(
+                name=cls.DEFAULT_PROFILE_NAME,
+                workflow=Workflow.objects.filter(name=cls.DEFAULT_WORKFLOW_NAME).first(),
+            )
+            sp.save()
+        return pp
 
     def get_effective_data(self) -> Dict[str, Any]:
         r = {}

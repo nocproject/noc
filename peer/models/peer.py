@@ -18,6 +18,7 @@ from django.db.models import (
     TextField,
     CASCADE,
     SET_NULL,
+    BigIntegerField,
 )
 from django.contrib.postgres.fields import ArrayField
 
@@ -31,7 +32,6 @@ from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
-from noc.sa.models.managedobject import ManagedObject
 from .asn import AS
 from .peerprofile import PeerProfile
 from .peeringpoint import PeeringPoint
@@ -51,7 +51,12 @@ class Peer(NOCModel):
         db_table = "peer_peer"
         app_label = "peer"
 
-    profile: PeerProfile = ForeignKey(PeerProfile, verbose_name="Peer Profile", on_delete=CASCADE)
+    profile: PeerProfile = ForeignKey(
+        PeerProfile,
+        verbose_name="Peer Profile",
+        on_delete=CASCADE,
+        default=PeerProfile.get_default_profile,
+    )
     project = ForeignKey(
         Project,
         verbose_name="Project",
@@ -61,7 +66,7 @@ class Peer(NOCModel):
         on_delete=CASCADE,
     )
     managed_object = ForeignKey(
-        ManagedObject,
+        "sa.ManagedObject",
         verbose_name="Managed Object",
         null=True,
         blank=True,
@@ -98,7 +103,7 @@ class Peer(NOCModel):
     local_asn = ForeignKey(AS, verbose_name="Local AS", on_delete=CASCADE)
     local_ip = INETField("Local IP", null=True, blank=True)
     local_backup_ip = INETField("Local Backup IP", null=True, blank=True)
-    remote_asn = IntegerField("Remote AS")
+    remote_asn = BigIntegerField("Remote AS", null=True, blank=True)
     remote_ip = INETField("Remote IP")
     remote_backup_ip = INETField("Remote Backup IP", null=True, blank=True)
     import_filter = CharField("Import filter", max_length=64, default="any")
@@ -133,6 +138,10 @@ class Peer(NOCModel):
         if self.peering_point:
             return f" {self.remote_asn} ({self.remote_ip}@{self.peering_point.hostname})"
         return f" {self.remote_asn} ({self.remote_ip})"
+
+    @property
+    def name(self) -> str:
+        return str(self)
 
     def save(self, *args, **kwargs):
         if self.import_filter_name is not None and not self.import_filter_name.strip():
@@ -255,7 +264,7 @@ class Peer(NOCModel):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_peer")
 
-    def get_partner_object(self) -> Optional[ManagedObject]:
+    def get_partner_object(self):
         """Search ManagedObject by Remote asn"""
         from noc.sa.models.managedobject import ManagedObject
         from noc.inv.models.subinterface import SubInterface

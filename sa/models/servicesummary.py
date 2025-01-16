@@ -140,6 +140,10 @@ class ServiceSummary(Document):
             # None for unbound services
             iface = si.interface
             if not iface:
+                ri[None] = {
+                    "service": dict(svc_profiles),  # defaultdict -> dict
+                    "subscriber": subscriber_profiles,
+                }
                 continue
             if iface in ri:
                 add_dict(ri[iface.id]["service"], svc_profiles)

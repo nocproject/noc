@@ -218,6 +218,7 @@ class Interface(Document):
     def on_delete(self):
         from .macdb import MACDB
         from noc.fm.models.activealarm import ActiveAlarm
+        from noc.sa.models.serviceinstance import ServiceInstance
 
         # Remove all subinterfaces
         for si in self.subinterface_set.all():
@@ -234,6 +235,8 @@ class Interface(Document):
             managed_object=self.managed_object, vars__interface=self.name
         ):
             aa.clear_alarm("Delete Interface")
+        for si in ServiceInstance.objects.filter(resources=self.as_resource()):
+            si.clean_resource(self.as_resource())
 
     @property
     def link(self):

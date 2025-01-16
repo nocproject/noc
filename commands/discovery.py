@@ -44,6 +44,7 @@ class Command(BaseCommand):
             "asset",
             "configvalidation",
             "vlan",
+            "bgppeer",
             "nri",
             "udld",
             "oam",

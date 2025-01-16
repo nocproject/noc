@@ -289,6 +289,7 @@ class EscalationJob(SequenceJob):
         Close escalations
         """
         self.logger.info("Escalation ended and will by closed. Try to deescalate")
+        ctx = self.object.get_ctx()
         for item in self.object.escalations:
             if (
                 item.status != EscalationStatus.OK
@@ -305,7 +306,14 @@ class EscalationJob(SequenceJob):
                 r = self.close_tt(tt, item.document_id)
             elif item.member == EscalationMember.NOTIFICATION_GROUP:
                 ng = NotificationGroup.get_by_id(int(item.key))
-                r = self.notify(ng, "Alarm Closed")
+                cfg_item = self.object.get_item_by_key(str(ng.id))
+                if cfg_item and cfg_item.close_template:
+                    subject = cfg_item.close_template.render_subject(**ctx)
+                    body = cfg_item.close_template.render_body(**ctx)
+                else:
+                    subject = item.template.render_subject(**ctx)
+                    body = None
+                r = self.notify(ng, f"[ALARM CLOSED] {subject}", body=body)
             else:
                 continue
             item.deescalation_status = r.status

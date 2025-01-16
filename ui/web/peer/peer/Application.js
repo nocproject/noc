@@ -15,6 +15,7 @@ Ext.define("NOC.peer.peer.Application", {
         "NOC.peer.peer.Model",
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",
+        "NOC.sa.managedobject.LookupField",
         "NOC.project.project.LookupField",
         "NOC.peer.as.LookupField"
     ],
@@ -115,14 +116,14 @@ Ext.define("NOC.peer.peer.Application", {
                     xtype: "peer.peeringpoint.LookupField",
                     fieldLabel: __("Peering Point"),
                     width: 400,
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "peer_group",
                     xtype: "peer.peergroup.LookupField",
                     fieldLabel: __("Peer Group"),
                     width: 400,
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "project",
@@ -145,7 +146,7 @@ Ext.define("NOC.peer.peer.Application", {
                     hideTrigger: true,
                     keyNavEnabled: false,
                     mouseWheelEnabled: false,
-                    allowBlank: false,
+                    allowBlank: true,
                     vtype: "ASN"
                 },
                 {
@@ -172,7 +173,7 @@ Ext.define("NOC.peer.peer.Application", {
                 {
                     name: "local_ip",
                     xtype: "textfield",
-                    allowBlank: false,
+                    allowBlank: true,
                     fieldLabel: __("Local IP")
                 },
                 {
@@ -345,6 +346,24 @@ Ext.define("NOC.peer.peer.Application", {
 
     ],
     filters: [
+        {
+            title: __("By Profile"),
+            name: "profile",
+            ftype: "lookup",
+            lookup: "peer.peerprofile"
+        },
+        {
+            title: __("By State"),
+            name: "state",
+            ftype: "lookup",
+            lookup: "wf.state"
+        },
+        {
+            title: __("By Object"),
+            name: "managed_object",
+            ftype: "lookup",
+            lookup: "sa.managedobject"
+        }
     ],
     actions: [
         {
