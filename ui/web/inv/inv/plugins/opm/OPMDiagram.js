@@ -76,9 +76,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       powerValues.forEach((value, index) => {
         var bar = surface.get(channel.ch + "-" + index);
         if(bar){
-          bar.setAttributes({
-            height: this.transformValue(value),
-          });
+          this.animateHeight(bar, this.transformValue(value));
         }
       });
     });
@@ -117,6 +115,33 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
 
       positionY += rangeWidth;
     });
+  },
+  //
+  animateHeight: function(bar, targetHeight){
+    var startHeight = bar.attr.height;
+    var startTime = null;
+    
+    var animate = (timestamp) => {
+      if(!startTime) startTime = timestamp;
+      var progress = timestamp - startTime;
+      var fraction = progress / 300;
+      
+      if(fraction < 1){
+        var currentHeight = startHeight + (targetHeight - startHeight) * fraction;
+        bar.setAttributes({
+          height: currentHeight,
+        });
+        this.getSurface().renderFrame();
+        requestAnimationFrame(animate);
+      } else{
+        bar.setAttributes({
+          height: targetHeight,
+        });
+        this.getSurface().renderFrame();
+      }
+    };
+    
+    requestAnimationFrame(animate);
   },
   //
   transformValue(value){
