@@ -106,8 +106,8 @@ Ext.define("NOC.inv.inv.plugins.opm.Bar", {
   canvasToPageCoordinates: function(canvasX, canvasY){
     var canvas = this.getSurface().el.dom.querySelector("canvas"),
       rect = canvas.getBoundingClientRect(),
-      scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-      scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      scrollLeft = window.scrollX || document.documentElement.scrollLeft,
+      scrollTop = window.scrollY || document.documentElement.scrollTop;
             
     return [
       canvasX + rect.left + scrollLeft,
