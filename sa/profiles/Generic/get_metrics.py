@@ -509,7 +509,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 if "time_delta" in s_data[data_mt]:
                     data[mm]["time_delta"] = s_data[data_mt]["time_delta"]
                 self.script_metrics["n_metrics"] += 1
-            data[mm][field_name] = rr["value"]
+            data[mm][field_name] = float(rr["value"])
             data[mm]["_units"][field_name] = rr["units"]
         return list(data.values())
 
