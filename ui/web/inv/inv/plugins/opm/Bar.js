@@ -35,45 +35,50 @@ Ext.define("NOC.inv.inv.plugins.opm.Bar", {
       },
       updaters: {
         recalculate: function(attr){
-          this.createSprites(attr);
+          this.createSprites();
           this.rect.setAttributes({
             x: attr.x,
             y: attr.y,
             width: attr.width,
             height: attr.height,
           });
+          if(this.tooltip.isVisible()){
+            this.tooltip.setHtml(attr.name + " : " + attr.value); 
+            this.tooltip.showAt(this.canvasToPageCoordinates(attr.x, attr.y - 40));
+          }
+          this.rect.setAnimation({
+            duration: 500,
+            easing: "easeInOut",
+          });
         },
         mouseOver: function(attr){
-          this.rect.setAttributes({
-            fill: attr.mouseOver ? "red" : "blue",
-          });
+          this.rect.setAnimation({duration: 0}); 
           if(attr.mouseOver){
+            this.tooltip.setHtml(attr.name + " : " + attr.value);
             this.tooltip.showAt(this.canvasToPageCoordinates(attr.x, attr.y - 40));
             this.rect.setAttributes({
               scalingX: 2,
+              fill: "red",
             });
           } else{
             this.tooltip.hide();
+            this.rect.setAnimation(false); 
             this.rect.setAttributes({
               scalingX: 1,
+              fill: "blue",
             });
           }
-        //   this.rect.setAnimation({
-        //     duration: 200,
-        //     easing: "easeInOut",
-        //   });
         },
       },
     },
   },
-  createSprites: function(attr){
+  createSprites: function(){
     if(!this.rect){
       this.rect = this.add({
         type: "rect",
         fill: "blue",
       });
       this.tooltip = Ext.create("Ext.tip.ToolTip", {
-        html: attr.name + " : " + attr.value,
         hidden: true,
       });
     }

@@ -87,15 +87,19 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   },
   //
   updateBars: function(data){
-    var surface = this.getSurface();
+    var surface = this.getSurface(),
+      padding = this.getDiagPadding(),
+      height = this.getHeight() - padding * 2;
     data.forEach(channel => {
       var powerValues = channel.power;
       powerValues.forEach((value, index) => {
         var bar = surface.get(channel.ch + "-" + index);
         if(bar){
+          var barHeight = this.transformValue(value);
           bar.setAttributes({
+            y: height + padding - barHeight,
             value: value,
-            height: this.transformValue(value),
+            height: barHeight,
           });
         }
       });
