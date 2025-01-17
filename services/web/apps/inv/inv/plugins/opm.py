@@ -9,6 +9,8 @@
 from typing import Any
 import uuid
 from collections import defaultdict
+from dataclasses import dataclass
+from enum import Enum
 
 # Third-party modules
 import orjson
@@ -23,6 +25,27 @@ from .base import InvPlugin
 HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
 OPM4_UUID = uuid.UUID("70daffc9-b161-4933-b36f-868c34ef6221")
 ROADM_2_9_UUID = uuid.UUID("230e3071-793d-4556-9e21-489b94812201")
+
+
+class Band(Enum):
+    """Optical bands."""
+
+    C = "C"
+    H = "H"
+
+
+@dataclass
+class CardConfig(object):
+    """
+    Card configuration.
+
+    Attributes:
+        groups: List of the measurement points.
+        bands: List of the supported bands.
+    """
+
+    groups: list[str]
+    bands: list[Band]
 
 
 class OPMPlugin(InvPlugin):
@@ -43,7 +66,14 @@ class OPMPlugin(InvPlugin):
         )
 
     def get_data(self, request, o: Object):
-        return {"status": True, "groups": self.get_groups(o), "bands": ["C", "H"]}
+        cfg = self.CARD_CONFIG.get(o.model.uuid)
+        if not cfg:
+            return {"status": False, "msg": "Unsupported card"}
+        return {
+            "status": True,
+            "groups": cfg.groups,
+            "bands": [x.value for x in cfg.bands],
+        }
 
     def api_data(self, request, id: str, g: str, b: str):
         obj = self.app.get_object_or_404(Object, id=id)
@@ -70,16 +100,6 @@ class OPMPlugin(InvPlugin):
             "status": True,
             "power": [{"ch": int(ch[1:]), "power": v} for ch, v in power.items() if ch[0] == b],
         }
-
-    def get_groups(self, obj: Object) -> list[str]:
-        """
-        Get all groups
-        """
-        if obj.model.uuid == ROADM_2_9_UUID:
-            return ["Com In", "Com Out"]
-        elif obj.model.uuid == OPM4_UUID:
-            return ["In 1", "In 2", "In 3", "In 4"]
-        return []
 
     def parse_slot(self, obj: Object, data: dict[str, Any]) -> list[dict[str, Any]]:
         """Leave only slot data"""
@@ -150,3 +170,8 @@ class OPMPlugin(InvPlugin):
             # Half-sized card
             return (int(obj.parent.parent_connection) - 1) * 2 + int(obj.parent_connection)
         return (int(obj.parent_connection) - 1) * 2 + 1
+
+    CARD_CONFIG = {
+        ROADM_2_9_UUID: CardConfig(groups=["Com In", "Com Out"], bands=[Band.C, Band.H]),
+        OPM4_UUID: CardConfig(groups=["In 1", "In 2", "In 3", "In 4"], bands=[Band.C, Band.H]),
+    }
