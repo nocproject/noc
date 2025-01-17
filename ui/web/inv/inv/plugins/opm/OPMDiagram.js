@@ -8,6 +8,9 @@ console.debug("Defining NOC.inv.inv.plugins.opm.OPMDiagram");
 
 Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   extend: "Ext.draw.Container",
+  requires: [
+    "NOC.inv.inv.plugins.opm.Bar",
+  ],
   xtype: "opm.diagram",
   alias: "widget.spectrogram",
   scrollable: "x",
@@ -16,6 +19,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     diagPadding: 35,
     barSpacing: 2,
     maxBarWidth: 20,
+    minBarWidth: 5,
     data: [],
   },
   plugins: ["spriteevents"],
@@ -38,10 +42,15 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       padding = this.getDiagPadding(),
       barSpacing = this.getBarSpacing(),
       maxBarWidth = this.getMaxBarWidth(),
+      // minBarWidth = this.getMinBarWidth(),
       width = this.getWidth() - padding * 2,
       height = this.getHeight() - padding * 2,
       numChannels = data.reduce((acc, channel) => acc + channel.power.length, 0),
       barWidth = Math.min(maxBarWidth, (width - (numChannels - 1) * barSpacing) / numChannels),
+      // barWidth = Math.max(minBarWidth, 
+      // Math.min(maxBarWidth, 
+      //  (width - (numChannels - 1) * barSpacing) / numChannels)),
+      // requiredWidth = requiredWidth = barWidth * numChannels + (numChannels - 1) * barSpacing + padding * 2,
       x = padding;
     surface.removeAll();
     data.forEach(channel => {
@@ -59,15 +68,16 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
         },
       });
       powerValues.forEach((value, index) => {
-        var barHeight = (value + 62) * (height / 72);
+        var barHeight = this.transformValue(value);
         surface.add({
           id: channel.ch + "-" + index,
-          type: "rect",
+          type: "bar",
           x: x,
           y: height + padding - barHeight,
           width: barWidth,
           height: barHeight,
-          fill: "blue",
+          value: value,
+          name: band + channel.ch,
         });
         x += barWidth + barSpacing;
       });
@@ -83,7 +93,10 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       powerValues.forEach((value, index) => {
         var bar = surface.get(channel.ch + "-" + index);
         if(bar){
-          this.animateHeight(bar, this.transformValue(value));
+          bar.setAttributes({
+            value: value,
+            height: this.transformValue(value),
+          });
         }
       });
     });
@@ -124,42 +137,17 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     });
   },
   //
-  animateHeight: function(bar, targetHeight){
-    var startHeight = bar.attr.height;
-    var startTime = null;
-    
-    var animate = (timestamp) => {
-      if(!startTime) startTime = timestamp;
-      var progress = timestamp - startTime;
-      var fraction = progress / 300;
-      
-      if(fraction < 1){
-        var currentHeight = startHeight + (targetHeight - startHeight) * fraction;
-        bar.setAttributes({
-          height: currentHeight,
-        });
-        this.getSurface().renderFrame();
-        requestAnimationFrame(animate);
-      } else{
-        bar.setAttributes({
-          height: targetHeight,
-        });
-        this.getSurface().renderFrame();
-      }
-    };
-    
-    requestAnimationFrame(animate);
-  },
-  //
   transformValue(value){
     return (value + 62) * ((this.getHeight() - this.getDiagPadding() * 2) / 72);
   },
   //
-  onSpriteMouseOver: function(el){
+  onSpriteMouseOver: function(el, event){
     console.log("Mouse over", el.sprite);
-    if(el.sprite.type === "rect"){
+    if(el.sprite.type === "bar"){
       el.sprite.setAttributes({
-        fill: "red",
+        mouseOver: true,
+        pageX: event.pageX,
+        pageY: event.pageY,
       });
       this.getSurface().renderFrame();
     }
@@ -167,9 +155,9 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   //
   onSpriteMouseOut: function(el){
     console.log("Mouse out", el.sprite);
-    if(el.sprite.type === "rect"){
+    if(el.sprite.type === "bar"){
       el.sprite.setAttributes({
-        fill: "blue",
+        mouseOver: false,
       });
       this.getSurface().renderFrame();
     }
