@@ -80,6 +80,7 @@ Ext.define("NOC.inv.inv.plugins.opm.Bar", {
       });
       this.tooltip = Ext.create("Ext.tip.ToolTip", {
         hidden: true,
+        autoHide: false,
       });
     }
   },
