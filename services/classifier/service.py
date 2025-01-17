@@ -106,7 +106,7 @@ class ClassifierService(FastAPIService):
     # SNMP OID pattern
     rx_oid = re.compile(r"^(\d+\.){6,}")
 
-    interface_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+    _interface_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
 
     def __init__(self):
         super().__init__()
@@ -134,6 +134,31 @@ class ClassifierService(FastAPIService):
         self.pool_partitions: Dict[str, int] = {}
         #
         self.cable_abduct_ecls: Optional[EventClass] = None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_interface_cache"))
+    def get_interface(
+        cls, managed_object_id, name, ifindex: Optional[int] = None
+    ) -> Optional[Tuple[str, Any]]:
+        """
+        Get interface instance
+        """
+        from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
+
+        q = {"managed_object": managed_object_id}
+        if name:
+            q["name"] = name
+        elif ifindex:
+            q["ifindex"] = int(ifindex)
+        else:
+            return
+        iface = Interface.objects.filter(**q).scalar("name", "profile").first()
+        if iface:
+            return iface
+        si = SubInterface.objects.filter(**q).scalar("name", "profile").first()
+        if si:
+            return si
 
     async def on_activate(self):
         """
@@ -295,11 +320,38 @@ class ClassifierService(FastAPIService):
             headers=event.managed_object.get_mx_message_headers(),
         )
 
+    def register_log(
+        self,
+        event: Event,
+        event_class: EventClass,
+        message: str,
+        managed_object: Optional[ManagedObject] = None,
+    ):
+        """
+        Register Event log
+        Args:
+            event: Event instance
+            event_class: Event Class instance
+            message: message sting
+            managed_object: ManagedObject instance
+        """
+        data = {
+            "date": event.timestamp.date(),
+            "ts": event.timestamp.isoformat(),
+            "event_id": str(event.id or ""),
+            "op": "new",
+            "managed_object": managed_object.bi_id if managed_object else 0,
+            "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
+            "target_reference": event.target.reference,
+            "event_class": event_class.bi_id,
+            "message": message,
+        }
+        self.register_metrics("disposelog", [data])
+
     async def classify_event(
         self,
         event: Event,
         raw_vars: Dict[str, Any],
-        mo: Optional[ManagedObject] = None,
     ) -> Tuple[Optional["EventClass"], Optional[Dict[str, Any]]]:
         """
         Perform event classification.
@@ -309,11 +361,10 @@ class ClassifierService(FastAPIService):
         2. Find matching classification rule
         3. Calculate rule variables
 
-        :param event: Event to classify
-        :type event: Event
-        :param raw_vars: Resolved vars
-        :param mo: Target ManagedObject
-        :type mo: ManagedObject
+        Args:
+            event: Event to classify
+            raw_vars: Resolved vars
+            mo: Target ManagedObject
         :returns: Classification status (CR_*)
         """
         metrics[E_SRC_METRICS.get(event.type.source)] += 1
@@ -332,18 +383,12 @@ class ClassifierService(FastAPIService):
                 return None, None  # Drop malformed message
             metrics[EventMetrics.CR_PREPROCESSED] += 1
             if not event.vars:
-                return event_class, self.ruleset.eval_vars(event, event_class, raw_vars)
+                return event_class, raw_vars
             return event_class, event.vars
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
-            self.logger.debug(
-                "[%s|%s|%s] Unclassified Syslog Flood",
-                event.id,
-                event.target.name,
-                event.target.address,
-            )
             return None, None
-        rule, r_vars = self.ruleset.find_rule(event, raw_vars, mo=mo)
+        rule, r_vars = self.ruleset.find_rule(event, raw_vars)
         if rule is None:
             # Something goes wrong.
             # No default rule found. Exit immediately
@@ -351,6 +396,7 @@ class ClassifierService(FastAPIService):
             os._exit(1)
         if rule.to_drop:
             # Silently drop event if declared by action
+            event.type.severity = EventSeverity.IGNORED
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",
                 event.id,
@@ -358,10 +404,13 @@ class ClassifierService(FastAPIService):
                 event.target.address,
             )
             metrics[EventMetrics.CR_DELETED] += 1
-            return None, None
+            return rule.event_class, r_vars
+        # Apply transform
+        for t in rule.vars_transform or []:
+            t.transform(r_vars)
         if rule.is_unknown_syslog:
             # Append to codebook
-            cb = self.get_msg_codebook(event.message)
+            cb = self.get_msg_codebook(event.message or "")
             o_id = event.target.id
             if o_id not in self.unclassified_codebook:
                 self.unclassified_codebook[o_id] = []
@@ -375,10 +424,7 @@ class ClassifierService(FastAPIService):
             event.target.address,
             rule.name,
         )
-
         # event.event_class = rule.event_class
-        # Calculate rule variables
-        r_vars = self.ruleset.eval_vars(event, rule.event_class, r_vars)
         # message = f"Classified as '{rule.event_class.name}' by rule '{rule.name}'"
         self.register_log(
             event,
@@ -391,39 +437,12 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_CLASSIFIED] += 1
         return rule.event_class, r_vars
 
-    def register_log(
-        self,
-        event: Event,
-        event_class: EventClass,
-        message: str,
-        managed_object: Optional[ManagedObject] = None,
-    ):
-        """
-        Register Event log
-        :param event:
-        :param event_class:
-        :param message:
-        :return:
-        """
-        data = {
-            "date": event.timestamp.date(),
-            "ts": event.timestamp.isoformat(),
-            "event_id": str(event.id or ""),
-            "op": "new",
-            "managed_object": managed_object.bi_id if managed_object else 0,
-            "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
-            "target_reference": event.target.reference,
-            "event_class": event_class.bi_id,
-            "message": message,
-        }
-        self.register_metrics("disposelog", [data])
-
     async def dispose_event(self, event: Event, mo: ManagedObject):
         """
         Register Alarm
-        :param event:
-        :param mo:
-        :return:
+        Args:
+            event:
+            mo:
         """
         self.logger.info(
             "[%s|%s|%s] Disposing",
@@ -448,14 +467,21 @@ class ClassifierService(FastAPIService):
         )
         metrics[EventMetrics.CR_DISPOSED] += 1
 
-    def deduplicate_event(self, event: Event, event_class: EventClass) -> bool:
+    def deduplicate_event(
+        self,
+        event: Event,
+        event_class: EventClass,
+        event_vars: Dict[str, Any],
+    ) -> bool:
         """
         Deduplicate event when necessary
-        :param event:
-        :param event_class:
+        Args:
+            event: Event Instance
+            event_class: EventClass Instance
+            event_vars:
         :return: True, if event is duplication of existent one
         """
-        de_id = self.dedup_filter.find(event, event_class)
+        de_id = self.dedup_filter.find(event, event_class, event_vars)
         if not de_id:
             return False
         self.logger.info(
@@ -557,18 +583,13 @@ class ClassifierService(FastAPIService):
         return False
 
     def check_unclassified_syslog_flood(self, event: Event) -> bool:
-        """
-        Check if incoming messages is in unclassified codebook
-        :param event:
-        :return:
-        """
+        """Check if incoming messages is in unclassified codebook"""
         if event.type.source != EventSource.SYSLOG:
             return False
         pcbs = self.unclassified_codebook.get(event.target.id)
         if not pcbs:
             return False
-        msg = event.message
-        cb = self.get_msg_codebook(msg)
+        cb = self.get_msg_codebook(event.message)
         for pcb in pcbs:
             if self.is_codebook_match(cb, pcb):
                 # Signature is already seen, suppress
@@ -576,44 +597,39 @@ class ClassifierService(FastAPIService):
                 return True
         return False
 
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("interface_cache"))
-    def get_interface(cls, managed_object_id, name):
-        """
-        Get interface instance
-        """
-        from noc.inv.models.interface import Interface
-
-        return Interface.objects.filter(managed_object=managed_object_id, name=name).first()
-
     async def check_link_event(
-        self, event: Event, event_class: EventClass, managed_object: ManagedObject
+        self,
+        event: Event,
+        event_class: EventClass,
+        event_vars: Dict[str, Any],
+        managed_object: ManagedObject,
     ):
         """
         Additional link events check
-        :param event:
-        :param event_class:
-        :param managed_object:
+        Args:
+            event:
+            event_class:
+            event_vars:
+            managed_object:
         :return: True - stop processing, False - continue
         """
-        if (
-            not managed_object
-            or not event_class
-            or not event_class.link_event
-            or "interface" not in event.vars
-        ):
-            return False
-        if_name = managed_object.get_profile().convert_interface_name(event.vars["interface"])
-        iface = self.get_interface(managed_object.id, if_name)
+        if_name, ifindex = event_vars.get("interface"), event_vars.pop("interface__ifindex", None)
+        if not managed_object or not event_class:
+            return
+        elif not if_name and not ifindex:
+            return
+        iface = self.get_interface(managed_object.id, if_name, ifindex)
         if iface:
+            if_name, profile = iface
             self.logger.info(
                 "[%s|%s|%s] Found interface %s",
                 event.id,
                 managed_object.name,
                 managed_object.address,
-                iface.name,
+                if_name,
             )
-            action = iface.profile.link_events
+            action = profile.link_events
+            event_vars["interface"] = if_name
         else:
             self.logger.info(
                 "[%s|%s|%s] Interface not found:%s",
@@ -622,15 +638,18 @@ class ClassifierService(FastAPIService):
                 managed_object.address,
                 if_name,
             )
+            profile = None
             action = self.default_link_action
+        if not event_class.link_event:
+            return
         # Abduct detection
         # link_status = event.get_hint("link_status")
         # if (
         #     link_status is not None
         #     and iface
-        #     and iface.profile.enable_abduct_detection
-        #     and event.managed_object.object_profile.abduct_detection_window
-        #     and event.managed_object.object_profile.abduct_detection_threshold
+        #     and profile.enable_abduct_detection
+        #     and managed_object.object_profile.abduct_detection_window
+        #     and managed_object.object_profile.abduct_detection_threshold
         # ):
         #     ts = int(event.timestamp.timestamp())
         #     if link_status:
@@ -647,8 +666,8 @@ class ClassifierService(FastAPIService):
                     event.id,
                     managed_object.name,
                     managed_object.address,
-                    iface.profile.name,
-                    iface.name,
+                    profile.name,
+                    if_name,
                 )
             else:
                 self.logger.info(
@@ -667,8 +686,8 @@ class ClassifierService(FastAPIService):
                     event.id,
                     managed_object.name,
                     managed_object.address,
-                    iface.profile.name,
-                    iface.name,
+                    profile.name,
+                    if_name,
                 )
             else:
                 self.logger.info(
@@ -682,9 +701,9 @@ class ClassifierService(FastAPIService):
 
     def resolve_vars(self, event: Event) -> Dict[str, Any]:
         """
-        Resolve Event vars
-        :param event:
-        :return:
+        Resolve Event data list to vars
+        Args:
+            event:
         """
         # Store event variables, without snmp_raw
         # Detect profile by rule (for SNMP message)
@@ -695,8 +714,6 @@ class ClassifierService(FastAPIService):
                 snmp_vars[d.name] = d.value
             else:
                 raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
-        #        if event.message:
-        #            raw_vars["message"] = event.message
         # Resolve MIB variables for SNMP Traps
         if snmp_vars:
             for k, v in MIB.resolve_vars(
@@ -708,8 +725,9 @@ class ClassifierService(FastAPIService):
             # Append resolved vars to data
         return raw_vars
 
+    @classmethod
     def resolve_object(
-        self, target: Target, remote_system: Optional[str] = None
+        cls, target: Target, remote_system: Optional[str] = None
     ) -> Optional[ManagedObject]:
         """
         Resolve Managed Object by target
@@ -759,7 +777,7 @@ class ClassifierService(FastAPIService):
             self.update_diagnostic(mo, event)
             event.type.profile = mo.profile.name
             self.logger.info("[%s|%s|%s] Managed object found", event.id, mo.name, mo.address)
-        # Ignore event
+        # Ignore event by rules
         if self.pattern_set.find_ignore_rule(event):
             self.logger.debug(
                 "[%s|%s|%s] Ignored event %s vars %s",
@@ -774,7 +792,7 @@ class ClassifierService(FastAPIService):
         # Process event
         resolved_vars = self.resolve_vars(event)
         try:
-            event_class, event_vars = await self.classify_event(event, resolved_vars, mo)
+            event_class, resolved_vars = await self.classify_event(event, resolved_vars)
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s",
@@ -792,25 +810,26 @@ class ClassifierService(FastAPIService):
             pass
         else:
             event.type.event_class = event_class.name
-        event.vars = event_vars
+        # Deduplication
+        if self.deduplicate_event(event, event_class, resolved_vars):
+            return
+        duplicate_vars = resolved_vars.copy()
+        # Additionally check link events
+        await self.check_link_event(event, event_class, resolved_vars, mo)
+        # Calculate rule variables
+        event.vars = self.ruleset.eval_vars(event, event_class, resolved_vars)
         self.logger.info(
             "[%s|%s|%s] Event processed successfully",
             event.id,
             event.target.name,
             event.target.address,
         )
-        # Deduplication
-        if self.deduplicate_event(event, event_class):
-            return
         # Suppress repeats
         if event_class and self.suppress_repeats(event, event_class):
             return
-        # Additionally check link events
-        if await self.check_link_event(event, event_class, mo):
-            return
         self.register_event(event, event_class, resolved_vars, mo)
         # Fill deduplication filter
-        self.dedup_filter.register(event, event_class)
+        self.dedup_filter.register(event, event_class, duplicate_vars)
         if config.message.enable_event:
             await self.register_mx_message(event, event_class, resolved_vars, mo)
         if event_class:
