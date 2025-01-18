@@ -23,7 +23,6 @@ from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import INETField, MACField
 from noc.core.validators import ValidationError, check_fqdn, is_ipv4, is_ipv6
-from noc.core.perf import metrics
 from noc.main.models.textindex import full_text_search
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem

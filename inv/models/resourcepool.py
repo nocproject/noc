@@ -201,7 +201,7 @@ class ResourcePool(Document):
         allocated: List[Any] = []
         d = domains.pop()
         # Replace to hints
-        pool_settings = d.get_pool_settings(self)
+        pool_hints = d.get_pool_hints(self)
         processed = set()
         limit = len(resource_keys or []) or limit
         # ToDo Pool.threshold limit (max allocation by user)
@@ -213,11 +213,11 @@ class ResourcePool(Document):
             requested_limit = limit - len(allocated)
             keys = self.resource_model.get_resource_keys(
                 d,
-                vlan_filter=pool_settings.vlan_filter if pool_settings else None,
                 limit=requested_limit,
                 strategy=self.strategy,
                 keys=resource_keys,
                 exclude_keys=processed,
+                **pool_hints,
             )
             if not keys and not domains:
                 logger.debug("[%s|%s] Nothing keys for allocated. Stop", self.name, d.name)

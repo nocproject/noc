@@ -9,7 +9,7 @@
 from collections import defaultdict
 import operator
 from threading import Lock
-from typing import List, Optional, Iterable
+from typing import List, Optional, Iterable, Dict, Any
 
 # Third-party modules
 from django.db import models, connection
@@ -218,12 +218,9 @@ class Prefix(NOCModel):
                 continue
             yield p
 
-    def get_pool_settings(self, pool) -> Optional[PoolItem]:
+    def get_pool_hints(self, pool) -> Optional[Dict[str, Any]]:
         """Getting pool setting for L2Domain"""
-        # Get Pool Hints
-        for p in self.iter_pool_settings():
-            if p.pool == pool:
-                return p
+        return {}
 
     @property
     def has_transition(self) -> bool:
