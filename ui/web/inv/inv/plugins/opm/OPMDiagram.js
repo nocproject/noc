@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.inv.plugins.opm.OPMDiagram");
 Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   extend: "Ext.draw.Container",
   requires: [
-    "NOC.inv.inv.plugins.opm.Bar",
+    "NOC.inv.inv.plugins.opm.OPMChannelSprite",
   ],
   xtype: "opm.diagram",
   alias: "widget.spectrogram",
@@ -44,65 +44,41 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       maxBarWidth = this.getMaxBarWidth(),
       // minBarWidth = this.getMinBarWidth(),
       width = this.getWidth() - padding * 2,
-      height = this.getHeight() - padding * 2,
       numChannels = data.reduce((acc, channel) => acc + channel.power.length, 0),
       barWidth = Math.min(maxBarWidth, (width - (numChannels - 1) * barSpacing) / numChannels),
       // barWidth = Math.max(minBarWidth, 
       // Math.min(maxBarWidth, 
       //  (width - (numChannels - 1) * barSpacing) / numChannels)),
-      // requiredWidth = requiredWidth = barWidth * numChannels + (numChannels - 1) * barSpacing + padding * 2,
+      // requiredWidth = requiredWidth = bearWidth * numChannels + (numChannels - 1) * barSpacing + padding * 2,
       x = padding;
     surface.removeAll();
     data.forEach(channel => {
-      var powerValues = channel.power;
       surface.add({
-        type: "text",
+        type: "channel",
         x: x,
-        y: height + padding * 1.3,
-        text: band + channel.ch.toString(),
-        fill: "black",
-        textAlign: "start",
-        textBaseline: "top",
-        rotation: {
-          degrees: -90,
-        },
+        power: channel.power,
+        band: band,
+        id: channel.ch,
+        barWidth: barWidth,
+        barSpacing: barSpacing,
+        diagHeight: this.getHeight(),
+        diagPadding: padding,
       });
-      powerValues.forEach((value, index) => {
-        var barHeight = this.transformValue(value);
-        surface.add({
-          id: channel.ch + "-" + index,
-          type: "bar",
-          x: x,
-          y: height + padding - barHeight,
-          width: barWidth,
-          height: barHeight,
-          value: value,
-          name: band + channel.ch,
-        });
-        x += barWidth + barSpacing;
-      });
+      x += (barWidth + barSpacing) * channel.power.length;
     });
     this.yAxis();
     surface.renderFrame();
   },
   //
   updateBars: function(data){
-    var surface = this.getSurface(),
-      padding = this.getDiagPadding(),
-      height = this.getHeight() - padding * 2;
+    var surface = this.getSurface();
     data.forEach(channel => {
-      var powerValues = channel.power;
-      powerValues.forEach((value, index) => {
-        var bar = surface.get(channel.ch + "-" + index);
-        if(bar){
-          var barHeight = this.transformValue(value);
-          bar.setAttributes({
-            y: height + padding - barHeight,
-            value: value,
-            height: barHeight,
-          });
-        }
-      });
+      var channelSprite = surface.get(channel.ch);
+      if(channelSprite){
+        channelSprite.setAttributes({
+          power: channel.power,
+        });
+      }
     });
     surface.renderFrame();
   },
@@ -141,13 +117,9 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     });
   },
   //
-  transformValue(value){
-    return (value + 62) * ((this.getHeight() - this.getDiagPadding() * 2) / 72);
-  },
-  //
   onSpriteMouseOver: function(el, event){
     console.log("Mouse over", el.sprite);
-    if(el.sprite.type === "bar"){
+    if(el.sprite.type === "channel"){
       el.sprite.setAttributes({
         mouseOver: true,
         pageX: event.pageX,
@@ -159,7 +131,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   //
   onSpriteMouseOut: function(el){
     console.log("Mouse out", el.sprite);
-    if(el.sprite.type === "bar"){
+    if(el.sprite.type === "channel"){
       el.sprite.setAttributes({
         mouseOver: false,
       });
