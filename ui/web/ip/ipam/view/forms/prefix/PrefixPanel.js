@@ -167,6 +167,28 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
                     labelWidth: 180,
                     uiStyle: "medium"
                 },
+                {
+                    name: "pools",
+                    xtype: "gridfield",
+                    fieldLabel: __("Address Pools"),
+                    columns: [
+                        {
+                            text: __("Pool"),
+                            dataIndex: "pool",
+                            width: 200,
+                            editor: {
+                                xtype: "inv.resourcepool.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("pool")
+                        },
+                        {
+                            dataIndex: "description",
+                            text: __("Description"),
+                            editor: "textfield",
+                            width: 150
+                        }
+                    ]
+                }
                 // {
                 //     name: "direct_permissions",
                 //     xtype: "gridfield",

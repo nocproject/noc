@@ -6,20 +6,24 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+import datetime
+from typing import Optional, Iterable, List, Tuple, Any
 
 # Third-party modules
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db.utils import IntegrityError
 
 # NOC modules
 from noc.config import config
 from noc.core.model.decorator import on_init
 from noc.core.model.base import NOCModel
+from noc.core.ip import IP
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import INETField, MACField
 from noc.core.validators import ValidationError, check_fqdn, is_ipv4, is_ipv6
+from noc.core.perf import metrics
 from noc.main.models.textindex import full_text_search
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
@@ -33,6 +37,8 @@ from noc.core.translation import ugettext as _
 from .afi import AFI_CHOICES
 from .vrf import VRF
 from .addressprofile import AddressProfile
+
+FREE_ADDRESS_STATE = "Free"
 
 
 @Label.model
@@ -98,6 +104,12 @@ class Address(NOCModel):
     state = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
+        null=True,
+        blank=True,
+        help_text=_("Address temporary allocated till the date"),
+    )
+    allocated_user = models.CharField(
+        _("Allocated User"),
         null=True,
         blank=True,
         help_text=_("Address temporary allocated till the date"),
@@ -285,6 +297,116 @@ class Address(NOCModel):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_ipaddress")
+
+    def reserve(
+        self,
+        allocated_till: Optional[datetime.datetime] = None,
+        user: Optional[Any] = None,
+        confirm: bool = True,
+        reservation_id: Optional[str] = None,
+    ):
+        """
+        Set record As reserve
+        Args:
+            allocated_till:
+            user: Allocated User
+            confirm: Send approve
+            reservation_id: Allocated TT
+        """
+        self.allocated_till = allocated_till
+        self.allocated_user = user
+        self.tt = reservation_id
+        self.fire_event("reserve")
+        if confirm:
+            self.fire_event("approve")
+
+    @classmethod
+    def get_resource_keys(
+        cls,
+        prefix,
+        keys: Optional[List[int]] = None,
+        strategy: str = "L",
+        exclude_keys: Optional[Iterable[int]] = None,
+        limit: int = 1,
+        address_ranges: Optional[str] = None,
+        **kwargs,
+    ) -> List[IP]:
+        """
+        Args:
+            prefix:
+            vlan_filter:
+            addresses:
+            strategy:
+            exclude_keys:
+            limit:
+            kwargs:
+        """
+        prefix = IP.prefix(prefix.prefix)
+        free_states = list(State.objects.filter(name=FREE_ADDRESS_STATE).values_list("id"))
+        occupied_addresses = {a.address for a in Address.objects.filter(prefix=prefix, state__nin=free_states).scalar(
+            "address"
+        )}
+        addresses = []
+        for addr in prefix.iter_address():
+            if addr not in occupied_addresses:
+                occupied_addresses.add(addr)
+            if keys and addr not in keys:
+                continue
+            if exclude_keys and addr in exclude_keys:
+                continue
+            if len(occupied_addresses) == limit:
+                break
+        if strategy == "L":
+            return sorted(addresses, reverse=True)[:limit]
+        elif strategy == "F":
+            return sorted(addresses)[:limit]
+        return addresses
+
+    @classmethod
+    def iter_resources_by_key(
+        cls,
+        keys: Iterable[int],
+        domain,
+        allow_create: bool = False,
+    ) -> Iterable[Tuple[int, Optional["Address"], Optional[str]]]:
+        processed = set()
+        for addr in Address.objects.filter(prefix=domain, address__in=keys):
+            yield addr.address, addr, None
+            processed.add(addr.address)
+        # Create new record ? to resource class
+        for key in set(keys) - processed:
+            record = cls.from_template(address=key, prefix=domain)
+            if not allow_create:
+                yield key, record, None
+                continue
+            error = None
+            try:
+                # ? save to outside allocated ?
+                record.save()
+            except ValidationError as e:
+                record, error = None, f"Validation error when saving record: {e}"
+            except IntegrityError as e:
+                record, error = None, f"VLAN not unique: {e}"
+            yield key, record, error
+
+    @classmethod
+    def from_template(
+        cls,
+        address: str,
+        prefix,
+        name: Optional[str] = None,
+    ) -> "Address":
+        """Create Address from Template"""
+        addr = Address(
+            address=address,
+            name=name or address,
+            prefix=prefix,
+            profile=prefix.get_default_address_profile(),
+            description="",
+        )
+        if name:
+            addr.name = name
+        return addr
 
 
 # Avoid django's validation failure

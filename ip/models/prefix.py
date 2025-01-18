@@ -9,11 +9,13 @@
 from collections import defaultdict
 import operator
 from threading import Lock
-from typing import List, Optional
+from typing import List, Optional, Iterable
 
 # Third-party modules
 from django.db import models, connection
 from django.contrib.postgres.fields import ArrayField
+from django.db.models.query_utils import Q
+from pydantic import RootModel, BaseModel
 import cachetools
 
 # NOC modules
@@ -23,12 +25,13 @@ from noc.aaa.models.user import User
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vlan import VLAN
-from noc.core.model.fields import CIDRField, DocumentReferenceField, CachedForeignKey
+from noc.core.model.fields import CIDRField, DocumentReferenceField, CachedForeignKey, PydanticField
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
+from noc.inv.models.resourcepool import ResourcePool
 from noc.core.translation import ugettext as _
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_delete_check
@@ -40,6 +43,14 @@ from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
 
 id_lock = Lock()
+
+
+class PoolItem(BaseModel):
+    pool: str
+    ip_filter: Optional[str] = None
+
+
+PoolItems = RootModel[List[PoolItem]]
 
 
 @Label.model
@@ -101,6 +112,14 @@ class Prefix(NOCModel):
     # VLAN bound to prefix
     vlan: "VLAN" = DocumentReferenceField(VLAN, null=True, blank=True)
     description: str = models.TextField(_("Description"), blank=True, null=True)
+    # Pools
+    pools: Optional[List[PoolItem]] = PydanticField(
+        "Remote System Mapping Items",
+        schema=PoolItems,
+        blank=True,
+        null=True,
+        default=list,
+    )
     # Labels
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
@@ -176,10 +195,35 @@ class Prefix(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id: int) -> Optional["Prefix"]:
-        mo = Prefix.objects.filter(id=id)[:1]
-        if mo:
-            return mo[0]
-        return None
+        return Prefix.objects.filter(id=id).first()
+
+    @classmethod
+    def get_by_resource_pool(cls, pool: ResourcePool) -> List["Prefix"]:
+        """Getting Prefixes for resource pool"""
+        # Include VRF
+        q = Q(pools__contains=[{"pool": str(pool.id)}])
+        profiles = list(PrefixProfile.objects.filter(pools__pool=pool))
+        if profiles:
+            q |= Q(profile__in=profiles)
+        return list(Prefix.objects.filter(q))
+
+    def iter_pool_settings(self) -> Iterable[PoolItem]:
+        """Iterate over pool item"""
+        processed = []
+        for p in self.pools:
+            processed.append(p.pool.id)
+            yield p
+        for p in self.profile.pools:
+            if p.pool.id in processed:
+                continue
+            yield p
+
+    def get_pool_settings(self, pool) -> Optional[PoolItem]:
+        """Getting pool setting for L2Domain"""
+        # Get Pool Hints
+        for p in self.iter_pool_settings():
+            if p.pool == pool:
+                return p
 
     @property
     def has_transition(self) -> bool:

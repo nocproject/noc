@@ -30,6 +30,10 @@ Ext.define("NOC.ip.ipam.model.Prefix", {
             type: "auto"
         },
         {
+            name: "pools",
+            type: "auto"
+        },
+        {
             name: "project",
             type: "string"
         },

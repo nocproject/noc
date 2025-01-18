@@ -50,6 +50,10 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             persist: false
         },
         {
+            name: "pools",
+            type: "auto"
+        },
+        {
             name: "address_discovery_policy",
             type: "string",
             defaultValue: "D"

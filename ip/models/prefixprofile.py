@@ -13,8 +13,10 @@ import operator
 
 # Third-party modules
 from bson import ObjectId
-from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField, BooleanField, DateTimeField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField, LongField, ListField, BooleanField, DateTimeField, EmbeddedDocumentListField, ReferenceField,
+)
 import cachetools
 
 # NOC modules
@@ -22,6 +24,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.main.models.template import Template
 from noc.main.models.label import Label
+from noc.inv.models.resourcepool import ResourcePool
 from noc.wf.models.workflow import Workflow
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
@@ -29,6 +32,15 @@ from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.scheduler.job import Job
 
 id_lock = Lock()
+
+
+class PoolItem(EmbeddedDocument):
+    pool = ReferenceField(ResourcePool, required=True)
+    description = StringField()
+    ip_filter = StringField()
+
+    def __str__(self):
+        return f"{self.pool}: {self.ip_filter}"
 
 
 @Label.model
@@ -64,6 +76,7 @@ class PrefixProfile(Document):
         Workflow, default=partial(Workflow.get_default_workflow, "ip.PrefixProfile")
     )
     style = ForeignKeyField(Style)
+    pools = EmbeddedDocumentListField(PoolItem)
     # Template.subject to render Prefix.name
     name_template = ForeignKeyField(Template)
     # Discovery policies

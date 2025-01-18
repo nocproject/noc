@@ -199,6 +199,7 @@ class ResourcePool(Document):
             return
         allocated: List[Any] = []
         d = domains.pop()
+        # Replace to hints
         pool_settings = d.get_pool_settings(self)
         processed = set()
         limit = len(resource_keys or []) or limit
@@ -214,7 +215,7 @@ class ResourcePool(Document):
                 vlan_filter=pool_settings.vlan_filter if pool_settings else None,
                 limit=requested_limit,
                 strategy=self.strategy,
-                vlans=resource_keys,
+                keys=resource_keys,
                 exclude_keys=processed,
             )
             if not keys and not domains:
