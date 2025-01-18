@@ -343,9 +343,10 @@ class Address(NOCModel):
         """
         prefix = IP.prefix(prefix.prefix)
         free_states = list(State.objects.filter(name=FREE_ADDRESS_STATE).values_list("id"))
-        occupied_addresses = {a.address for a in Address.objects.filter(prefix=prefix, state__nin=free_states).scalar(
-            "address"
-        )}
+        occupied_addresses = {
+            a.address
+            for a in Address.objects.filter(prefix=prefix, state__nin=free_states).scalar("address")
+        }
         addresses = []
         for addr in prefix.iter_address():
             if addr not in occupied_addresses:

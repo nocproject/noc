@@ -103,8 +103,9 @@ class ResourcePool(Document):
         """Getting Resource Domains"""
         if self.type == "vlan":
             model = get_model("vc.L2Domain")
+        elif self.type == "ip":
+            model = get_model("ip.Prefix")
         else:
-            # model = get_model("ip.Prefix")
             raise NotImplementedError("IP Allocation is not Implemented yet")
         return model.get_by_resource_pool(self)
 

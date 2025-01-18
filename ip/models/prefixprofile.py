@@ -15,7 +15,13 @@ import operator
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField, LongField, ListField, BooleanField, DateTimeField, EmbeddedDocumentListField, ReferenceField,
+    StringField,
+    LongField,
+    ListField,
+    BooleanField,
+    DateTimeField,
+    EmbeddedDocumentListField,
+    ReferenceField,
 )
 import cachetools
 
