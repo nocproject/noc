@@ -340,21 +340,23 @@ class Address(NOCModel):
             limit:
             kwargs:
         """
-        prefix = IP.prefix(prefix.prefix)
+        pp = IP.prefix(prefix.prefix)
         free_states = list(State.objects.filter(name=FREE_ADDRESS_STATE).values_list("id"))
         occupied_addresses = {
-            a.address
-            for a in Address.objects.filter(prefix=prefix, state__nin=free_states).scalar("address")
+            a
+            for a in Address.objects.filter(prefix=prefix)
+            .exclude(state__in=free_states)
+            .values_list("address")
         }
         addresses = []
-        for addr in prefix.iter_address():
-            if addr not in occupied_addresses:
-                occupied_addresses.add(addr)
-            if keys and addr not in keys:
+        for addr in pp.iter_address():
+            if addr.address not in occupied_addresses:
+                addresses.append(addr.address)
+            if keys and addr.address not in keys:
                 continue
-            if exclude_keys and addr in exclude_keys:
+            if exclude_keys and addr.address in exclude_keys:
                 continue
-            if len(occupied_addresses) == limit:
+            if len(addresses) == limit:
                 break
         if strategy == "L":
             return sorted(addresses, reverse=True)[:limit]
@@ -365,10 +367,10 @@ class Address(NOCModel):
     @classmethod
     def iter_resources_by_key(
         cls,
-        keys: Iterable[int],
+        keys: Iterable[str],
         domain,
         allow_create: bool = False,
-    ) -> Iterable[Tuple[int, Optional["Address"], Optional[str]]]:
+    ) -> Iterable[Tuple[str, Optional["Address"], Optional[str]]]:
         processed = set()
         for addr in Address.objects.filter(prefix=domain, address__in=keys):
             yield addr.address, addr, None

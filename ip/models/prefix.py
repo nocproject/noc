@@ -41,6 +41,7 @@ from noc.core.change.decorator import change
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
+from .addressprofile import AddressProfile
 
 id_lock = Lock()
 
@@ -784,6 +785,9 @@ class Prefix(NOCModel):
         if not self.parent:
             return None
         return self.parent.get_effective_as()
+
+    def get_default_address_profile(self) -> AddressProfile:
+        return AddressProfile.objects.filter().first()
 
     @classmethod
     def can_set_label(cls, label):
