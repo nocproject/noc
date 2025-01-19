@@ -17,6 +17,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
   closable: false,
   controller: "opm",
   layout: "border",
+  scrollable: false, 
   viewModel: {
     stores: {
       groupsStore: {
@@ -35,9 +36,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
       icon: "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>",
     },  
   },
-  // listeners: {
-  //   activate: "onActivate",
-  // },
   tbar: [
     {
       xtype: "combobox",
@@ -84,16 +82,25 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
     },
     {
       xtype: "tbtext",
-      bind: {
-        html: "{icon}",
-      },
+      // bind: {
+      // html: "{icon}",
+      // },
     },
   ],
   items: [
     {
-      xtype: "opm.diagram",
-      reference: "opmDiagram",
+      xtype: "panel",
       region: "center",
+      layout: "absolute",
+      border: false,
+      scrollable: true,
+      items: [
+        {
+          xtype: "opm.diagram",
+          reference: "opmDiagram",
+          region: "center",
+        },
+      ],
     },
     {
       xtype: "opm.rightPanel",
@@ -107,9 +114,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
       collapseMode: "mini",
     },
   ],
-  remove: function(){
-    console.log("Remove all");
-  },
   preview: function(data, id){
     var vm = this.getViewModel(),
       bandsStore = vm.getStore("bandsStore"),
@@ -122,7 +126,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
     vm.set("currentId", id);
     vm.set("group", groupsStore.getCount() > 0 ? groupsStore.getAt(0).get("value") : undefined);
     vm.set("band", bandsStore.getCount() > 0 ? bandsStore.getAt(0).get("value") : undefined);
-    this.getController().onReload();
     this.getController().startTimer();
   },
   onDestroy: function(){

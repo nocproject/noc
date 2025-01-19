@@ -13,7 +13,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   ],
   xtype: "opm.diagram",
   alias: "widget.spectrogram",
-  scrollable: "x",
+  scrollable: false,
   defaultListenerScope: true,
   config: {
     diagPadding: 35,
@@ -29,8 +29,8 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     spriteclick: "onSpriteClick",
   },
   //
-  draw: function(data, band, isReload){
-    if(isReload){
+  draw: function(data, band){
+    if(this.getSurface().getItems().length){
       this.updateBars(data);
     } else{
       this.createBars(data, band);
@@ -42,15 +42,19 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       padding = this.getDiagPadding(),
       barSpacing = this.getBarSpacing(),
       maxBarWidth = this.getMaxBarWidth(),
-      // minBarWidth = this.getMinBarWidth(),
+      minBarWidth = this.getMinBarWidth(),
       width = this.getWidth() - padding * 2,
       numChannels = data.reduce((acc, channel) => acc + channel.power.length, 0),
-      barWidth = Math.min(maxBarWidth, (width - (numChannels - 1) * barSpacing) / numChannels),
-      // barWidth = Math.max(minBarWidth, 
-      // Math.min(maxBarWidth, 
-      //  (width - (numChannels - 1) * barSpacing) / numChannels)),
-      // requiredWidth = requiredWidth = bearWidth * numChannels + (numChannels - 1) * barSpacing + padding * 2,
+      barWidthTotal = (numChannels - 1) * barSpacing,
+      barWidth = Math.max(minBarWidth, Math.min(maxBarWidth, (width - barWidthTotal) / numChannels)),
+      requiredWidth = barWidth * numChannels + barWidthTotal + padding * 2,
+      height = this.up().getHeight(),
       x = padding;
+
+    this.getEl().dom.style.width = `${requiredWidth}px`;
+    this.getEl().dom.style.height = `${height}px`;
+    this.getSurface().setRect([0, 0, requiredWidth, height]);
+
     surface.removeAll();
     data.forEach(channel => {
       surface.add({
