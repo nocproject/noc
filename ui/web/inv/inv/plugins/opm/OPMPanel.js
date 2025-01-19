@@ -82,9 +82,13 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
     },
     {
       xtype: "tbtext",
-      // bind: {
-      // html: "{icon}",
-      // },
+      width: 32,
+      height: 32,
+      padding: "8 0 0 4",
+      bind: {
+        html: "{icon}",
+      },
+      updateLayout: Ext.emptyFn,
     },
   ],
   items: [
