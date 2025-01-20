@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
-from typing import Dict, Any, Tuple, Optional
 import logging
 import re
+from collections import defaultdict
+from typing import Dict, Any, Tuple, Optional
 
 # NOC modules
 from .rule import Rule
@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 class RuleSet(object):
+
     def __init__(self):
         self.rules: Dict[Tuple[str, str], RuleLookup] = {}  # (profile, chain) -> [rule, ..., rule]
         self.enumerations: Dict[str, Dict[str, str]] = {}  # name -> value -> enumerated
@@ -126,18 +127,14 @@ class RuleSet(object):
         self,
         event: Event,
         vars: Dict[str, Any],
-        mo=None,
     ) -> Tuple[Optional[Rule], Optional[Dict[str, Any]]]:
         """
         Find first matching classification rule
 
-        :param event: Event
-        :type event: ActiveEvent
-        :param vars: raw and resolved variables
-        :type vars: dict
-        :param mo: Event Managed Object
-        :returns: Event class and extracted variables
-        :rtype: tuple of (EventClass, dict)
+        Args:
+            event: Event
+            vars: raw and resolved variables
+        Returns: Event class and extracted variables
         """
         # Get chain
         if event.type.source == EventSource.SYSLOG:
@@ -149,7 +146,7 @@ class RuleSet(object):
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
                 metrics["rules_checked"] += 1
-                v = r.match(event.message, vars, mo)
+                v = r.match(event.message, vars)
                 if v is not None:
                     logger.debug(
                         "[%s] Matching class for event %s found: %s (Rule: %s)",
@@ -163,21 +160,24 @@ class RuleSet(object):
             return self.default_rule, {}
         return None, None
 
-    def eval_vars(self, event: Event, event_class, vars: Dict[str, Any]):
+    def eval_vars(self, event: Event, event_class, r_vars: Dict[str, Any]):
         """
         Evaluate rule variables
+        Args:
+
         """
         r = {}
+        # Resolve e_vars
         for ecv in event_class.vars:
             # Check variable is present
-            if ecv.name not in vars:
+            if ecv.name not in r_vars:
                 if ecv.required:
                     raise Exception("Required variable '%s' is not found" % ecv.name)
-                else:
-                    continue
+                continue
             # Decode variable
-            v = vars[ecv.name]
+            v = r_vars[ecv.name]
             decoder = getattr(RuleSet, "decode_%s" % ecv.type, None)
+            # resolve_ interface, instance
             if decoder:
                 try:
                     v = decoder(event, v)
@@ -197,8 +197,7 @@ class RuleSet(object):
     def decode_int(event, value):
         if value is not None and value.isdigit():
             return int(value)
-        else:
-            return 0
+        return 0
 
     @staticmethod
     def decode_ipv4_address(event, value):
