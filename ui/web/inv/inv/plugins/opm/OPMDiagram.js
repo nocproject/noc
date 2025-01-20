@@ -20,6 +20,8 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     barSpacing: 2,
     maxBarWidth: 20,
     minBarWidth: 5,
+    defaultBarColor: "blue",
+    barColors: ["#FF0000", "#FF4500", "#FF8C00", "#FFD700", "#ADFF2F", "#32CD32", "#008000", "#006400"],
     data: [],
   },
   plugins: ["spriteevents"],
@@ -56,13 +58,14 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     this.getSurface().setRect([0, 0, requiredWidth, height]);
 
     surface.removeAll();
-    data.forEach(channel => {
+    data.forEach((channel, index) => {
       surface.add({
         type: "channel",
         x: x,
         power: channel.power,
         band: band,
         dir: channel.dir,
+        barColor: Ext.isEmpty(channel.dir) ? this.getDefaultBarColor() : this.mapColor(index),
         id: channel.ch,
         barWidth: barWidth,
         barSpacing: barSpacing,
@@ -146,5 +149,9 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   //
   onSpriteClick: function(sprite){
     console.log("Mouse click", sprite);
+  },
+  //
+  mapColor: function(index){
+    return this.getBarColors()[index % this.getBarColors().length];
   },
 });

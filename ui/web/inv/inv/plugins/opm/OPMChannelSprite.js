@@ -15,6 +15,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         power: "data",
         band: "string",
         dir: "string",
+        barColor: "string",
         id: "number",
         x: "number",
         diagHeight: "number",
@@ -30,6 +31,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         power: "recalculate",
         band: "recalculate",
         dir: "recalculate",
+        barColor: "recalculate",
         id: "recalculate",
         x: "recalculate",
         diagHeight: "recalculate",
@@ -105,7 +107,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
             this.rects.forEach(rect => {
               rect.setAttributes({
                 scalingX: 1,
-                fill: "blue",
+                fill: attr.barColor, 
               })
             });
             this.label.setAttributes({
@@ -130,7 +132,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         return this.add({
           id: attr.id + "-" + index,
           type: "rect",
-          fill: "blue",
+          fill: attr.barColor,
         });
       });
       this.tooltips = attr.power.map(() => {
