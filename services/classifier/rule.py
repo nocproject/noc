@@ -32,9 +32,10 @@ class VarTransformRule:
     enums: Optional[Dict[str, str]] = None
     args: Optional[List[Any]] = None
 
-    def transform(self, v: Dict[str, Any], managed_object=None):
-        if self.f_type == "ifindex" and managed_object:
-            v[self.name] = self.resolve_interface(managed_object, self.var)
+    def transform(self, v: Dict[str, Any]):
+        if self.f_type == "ifindex":
+            # Magic vars name
+            v[f"{self.name}__ifindex"] = v
         elif self.f_type == "enum":
             v[self.name] = self.enums[self.args[0]][v.pop(self.var).lower()]
         elif self.f_type and self.var in v:
@@ -78,25 +79,6 @@ class VarTransformRule:
         x = [int(c) for c in v.split(".")]
         return "".join([chr(c) for c in x[1 : x[0] + 1]])
 
-    @staticmethod
-    def resolve_interface(managed_object, v):
-        """
-        Resolve ifindex to interface name
-        """
-        from noc.inv.models.interface import Interface
-        from noc.inv.models.subinterface import SubInterface
-
-        ifindex = int(v)
-        # Try to resolve interface
-        i = Interface.objects.filter(managed_object=managed_object.id, ifindex=ifindex).first()
-        if i:
-            return i.name
-        # Try to resolve subinterface
-        si = SubInterface.objects.filter(managed_object=managed_object.id, ifindex=ifindex).first()
-        if si:
-            return si.name
-        return v
-
 
 @dataclass(frozen=True, slots=True)
 class Rule:
@@ -113,6 +95,9 @@ class Rule:
     is_unknown: bool = False
     is_unknown_syslog: bool = False
     to_drop: bool = False
+    is_failed: bool = False
+    # metric block
+    processed: int = 0
 
     @classmethod
     def from_rule(cls, rule, enumerations) -> "Rule":
@@ -146,11 +131,6 @@ class Rule:
                 if "__" not in name:
                     continue
                 v, fixup, *args = name.split("__")
-                # if fixup == "enum":
-                #     # transform[name] = (v, partial(to_enum, enumerations, *args))
-                #     transform[v] = VarTransformRule(
-                #         name=v, var=name, fixup=partial(to_enum, enumerations, *args)
-                #     )
                 if hasattr(VarTransformRule, fixup):
                     transform[v] = VarTransformRule(
                         name=v,
@@ -188,7 +168,7 @@ class Rule:
             to_drop=rule.event_class.action == "D",
         )
 
-    def match(self, message, vars, managed_object=None) -> Optional[Dict[str, str]]:
+    def match(self, message, vars) -> Optional[Dict[str, str]]:
         # if self.source != e.type.source:
         #    return None
         # if self.profile and self.profile != e.type.profile:
@@ -205,9 +185,6 @@ class Rule:
                     return None
             except KeyError:
                 return None
-        # Resolve e_vars
-        for t in self.vars_transform:
-            t.transform(e_vars, managed_object=managed_object)
         return e_vars
 
     @classmethod
