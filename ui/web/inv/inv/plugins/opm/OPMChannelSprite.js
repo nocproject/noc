@@ -14,6 +14,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
       processors: {
         power: "data",
         band: "string",
+        dir: "string",
         id: "number",
         x: "number",
         diagHeight: "number",
@@ -28,6 +29,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
       triggers: {
         power: "recalculate",
         band: "recalculate",
+        dir: "recalculate",
         id: "recalculate",
         x: "recalculate",
         diagHeight: "recalculate",
@@ -61,7 +63,8 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
               easing: "easeInOut",
             });
             if(tooltip.isVisible()){
-              tooltip.setHtml(attr.band + rect.id + " : " + rect.attr.value);
+              var text = attr.band + rect.id + ", " + rect.attr.value+ "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
+              tooltip.setHtml(text);
               tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
             }
             x += attr.barWidth + attr.barSpacing;
@@ -83,9 +86,10 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           if(attr.mouseOver){
             var selectedRect = this.rects[this.selectedRectIndex],
               tooltip = this.tooltips[this.selectedRectIndex],
-              y = attr.diagHeight - attr.diagPadding - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value);
+              y = attr.diagHeight - attr.diagPadding - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value),
+              text = attr.band + selectedRect.id + ", " + selectedRect.attr.value+ "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
             selectedRect.setAnimation({duration: 0});
-            tooltip.setHtml(attr.band + selectedRect.id + " : " + selectedRect.attr.value);
+            tooltip.setHtml(text);
             tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
             selectedRect.setAttributes({
               scalingX: 2,

@@ -62,6 +62,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
         x: x,
         power: channel.power,
         band: band,
+        dir: channel.dir,
         id: channel.ch,
         barWidth: barWidth,
         barSpacing: barSpacing,
