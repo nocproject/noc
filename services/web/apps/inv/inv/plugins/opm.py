@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
+from typing import Any, Iterable
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
@@ -48,6 +48,109 @@ class CardConfig(object):
     bands: list[Band]
 
 
+@dataclass
+class BaseToken(object):
+    pass
+
+
+@dataclass
+class PowerToken(BaseToken):
+    channel: str
+    subchannel: int | None
+    power: float
+
+    @staticmethod
+    def parse(ch: str, value: str) -> "PowerToken":
+        if "." in ch:
+            channel, n = ch.split(".", 1)
+            return PowerToken(channel=channel, subchannel=int(n), power=float(value))
+        return PowerToken(channel=ch, subchannel=None, power=float(value))
+
+
+@dataclass
+class DirToken(BaseToken):
+    chanel: str
+    direction: str
+
+
+class BaseCard(object):
+    """Base card handler."""
+
+    groups: list[str]
+    bands: list[Band]
+
+    @classmethod
+    def iter_tokens(
+        cls, group: str, band: str, iter: Iterable[dict[str, Any]]
+    ) -> Iterable[BaseToken]: ...
+
+
+class OPM4Card(BaseCard):
+    """OPM4"""
+
+    groups = ["In 1", "In 2", "In 3", "In 4"]
+    bands = [Band.C, Band.H]
+
+    @classmethod
+    def iter_tokens(
+        cls, group: str, band: str, iter: Iterable[dict[str, Any]]
+    ) -> Iterable[BaseToken]:
+        group = group.replace(" ", "")
+        pwr_prefix = f"{group}Pwr"
+        pwr_prefix_len = len(pwr_prefix)
+        for item in iter:
+            name: str | None = item.get("nam")
+            if not name:
+                continue
+            # Power?
+            if name.startswith(pwr_prefix):
+                value: str | None = item.get("val")
+                if value is not None:
+                    ch = name[pwr_prefix_len:]
+                    if ch.startswith(band):
+                        yield PowerToken.parse(ch, value)
+
+
+class ROADM29Card(BaseCard):
+    """ROADM 2x9"""
+
+    groups = groups = ["Com In", "Com Out"]
+    bands = [Band.C, Band.H]
+
+    @classmethod
+    def iter_tokens(
+        cls, group: str, band: str, iter: Iterable[dict[str, Any]]
+    ) -> Iterable[BaseToken]:
+        group = group.replace(" ", "")
+        pwr_prefix = f"{group}OCMPwr"
+        pwr_prefix_len = len(pwr_prefix)
+        match group:
+            case "ComIn":
+                dir_suffix = "SetOut"
+            case "ComOut":
+                dir_suffix = "SetIn"
+            case _:
+                raise ValueError("Invalid group")
+        dir_suffix_len = len(dir_suffix)
+        for item in iter:
+            name: str | None = item.get("nam")
+            if not name:
+                continue
+            value: str | None = item.get("val")
+            if not value:
+                continue
+            # Power?
+            if name.startswith(pwr_prefix):
+                ch = name[pwr_prefix_len:]
+                if ch.startswith(band):
+                    yield PowerToken.parse(ch, value)
+            elif name.endswith(dir_suffix):
+                if value[-1].isdigit():
+                    ch = name[:-dir_suffix_len]
+                    if ch.startswith(band):
+                        yield DirToken(chanel=ch, direction=value)
+
+
 class OPMPlugin(InvPlugin):
     name = "opm"
     js = "NOC.inv.inv.plugins.opm.OPMPanel"
@@ -66,7 +169,7 @@ class OPMPlugin(InvPlugin):
         )
 
     def get_data(self, request, o: Object):
-        cfg = self.CARD_CONFIG.get(o.model.uuid)
+        cfg = self.CARDS.get(o.model.uuid)
         if not cfg:
             return {"status": False, "msg": "Unsupported card"}
         return {
@@ -77,29 +180,29 @@ class OPMPlugin(InvPlugin):
 
     def api_data(self, request, id: str, g: str, b: str):
         obj = self.app.get_object_or_404(Object, id=id)
-        gn = g.replace(" ", "")
-        if obj.model.uuid == ROADM_2_9_UUID:
-            prefix = f"{gn}OCMPwr"
-        elif obj.model.uuid == OPM4_UUID:
-            prefix = f"{gn}Pwr"
-        else:
+        card = self.CARDS.get(obj.model.uuid)
+        if not card:
             msg = "Not implemented for model {obj.model.name}"
             raise NotImplementedError(msg)
         # Process data
-        power = defaultdict(list)
-        for item in self.fetch_data(obj):
-            name: str | None = item.get("nam")
-            if not name or not name.startswith(prefix):
-                continue
-            value: str | None = item.get("val")
-            if not value:
-                continue
-            ch = name[len(prefix) :].split(".", 1)[0]
-            power[ch].append(float(value))
-        return {
-            "status": True,
-            "power": [{"ch": int(ch[1:]), "power": v} for ch, v in power.items() if ch[0] == b],
-        }
+        power: defaultdict[str, list[float]] = defaultdict(list)
+        directions: dict[str, str] = {}
+        for token in card.iter_tokens(g, b, self.fetch_data(obj)):
+            match token:
+                case PowerToken(ch, _, pwr):
+                    power[ch].append(pwr)
+                case DirToken(ch, direction):
+                    directions[ch] = direction
+                case _:
+                    continue
+        # Build result
+        r: dict[str, Any] = []
+        for ch, v in power.items():
+            x = {"ch": int(ch[1:]), "power": v}
+            if ch in directions:
+                x["dir"] = directions[ch]
+            r.append(x)
+        return {"status": True, "power": r}
 
     def parse_slot(self, obj: Object, data: dict[str, Any]) -> list[dict[str, Any]]:
         """Leave only slot data"""
@@ -171,7 +274,7 @@ class OPMPlugin(InvPlugin):
             return (int(obj.parent.parent_connection) - 1) * 2 + int(obj.parent_connection)
         return (int(obj.parent_connection) - 1) * 2 + 1
 
-    CARD_CONFIG = {
-        ROADM_2_9_UUID: CardConfig(groups=["Com In", "Com Out"], bands=[Band.C, Band.H]),
-        OPM4_UUID: CardConfig(groups=["In 1", "In 2", "In 3", "In 4"], bands=[Band.C, Band.H]),
+    CARDS: dict[uuid.UUID, type[BaseCard]] = {
+        ROADM_2_9_UUID: ROADM29Card,
+        OPM4_UUID: OPM4Card,
     }
