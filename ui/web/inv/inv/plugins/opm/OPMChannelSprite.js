@@ -19,7 +19,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         id: "number",
         x: "number",
         diagHeight: "number",
-        diagPadding: "number",
+        diagPadding: "data",
         barSpacing: "number",
         barWidth: "number",
         value: "number",
@@ -45,12 +45,12 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
       updaters: {
         recalculate: function(attr){
           var x = attr.x,
-            diagHeight = attr.diagHeight - attr.diagPadding * 2;
+            diagHeight = attr.diagHeight - attr.diagPadding[0] - attr.diagPadding[2];
           this.createSprites(attr);
           attr.power.forEach((value, index) => {
             // var randomValue = this.getRandomNumber();
             var barHeight = this.transformValue(attr.diagHeight, attr.diagPadding, value),
-              y = diagHeight + attr.diagPadding - barHeight,
+              y = diagHeight + attr.diagPadding[0] - barHeight,
               rect = this.rects[index],
               tooltip = this.tooltips[index];
             rect.setAttributes({
@@ -74,12 +74,12 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           if(this.label){
             this.label.setAttributes({
               x: attr.x - 5,
-              y: attr.diagHeight - attr.diagPadding,
+              y: attr.diagHeight - attr.diagPadding[2],
               text: attr.band + attr.id,
               rotation: {
                 degrees: -90,
                 centerX: attr.x,
-                centerY: attr.diagHeight - attr.diagPadding,
+                centerY: attr.diagHeight - attr.diagPadding[2],
               },
             });
           }
@@ -88,7 +88,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           if(attr.mouseOver){
             var selectedRect = this.rects[this.selectedRectIndex],
               tooltip = this.tooltips[this.selectedRectIndex],
-              y = attr.diagHeight - attr.diagPadding - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value),
+              y = attr.diagHeight - attr.diagPadding[2] - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value),
               text = attr.band + selectedRect.id + ", " + selectedRect.attr.value+ "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
             selectedRect.setAnimation({duration: 0});
             tooltip.setHtml(text);
@@ -183,7 +183,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
     ];
   },
   transformValue(diagHeight, diagPadding, value){
-    return (value + 62) * ((diagHeight - diagPadding * 2) / 72);
+    return (value + 62) * ((diagHeight - diagPadding[0] - diagPadding[2]) / 72);
   },
   // for testing purposes
   getRandomNumber: function(){

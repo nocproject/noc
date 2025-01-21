@@ -15,8 +15,10 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   alias: "widget.spectrogram",
   scrollable: false,
   defaultListenerScope: true,
+  colorList: {},
+  colorIndex: 0,
   config: {
-    diagPadding: 35,
+    diagPadding: "35 35 40 35", // top right bottom left
     barSpacing: 2,
     maxBarWidth: 20,
     minBarWidth: 5,
@@ -41,36 +43,38 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   //
   createBars: function(data, band){
     var surface = this.getSurface(),
-      padding = this.getDiagPadding(),
       barSpacing = this.getBarSpacing(),
       maxBarWidth = this.getMaxBarWidth(),
       minBarWidth = this.getMinBarWidth(),
-      width = this.getWidth() - padding * 2,
+      diagWidth = this.getWidth() - this.getPaddingBySide("left") - this.getPaddingBySide("right"),
       numChannels = data.reduce((acc, channel) => acc + channel.power.length, 0),
-      barWidthTotal = (numChannels - 1) * barSpacing,
-      barWidth = Math.max(minBarWidth, Math.min(maxBarWidth, (width - barWidthTotal) / numChannels)),
-      requiredWidth = barWidth * numChannels + barWidthTotal + padding * 2,
+      barSpacingTotal = (numChannels - 1) * barSpacing,
+      barWidth = Math.max(minBarWidth, Math.min(maxBarWidth, (diagWidth - barSpacingTotal) / numChannels)),
+      requiredWidth = barWidth * numChannels + barSpacingTotal + this.getPaddingBySide("left") + this.getPaddingBySide("right"), 
       height = this.up().getHeight(),
-      x = padding;
+      x = this.getPaddingBySide("left");
 
+    // Set the width and height of the diagram container
     this.getEl().dom.style.width = `${requiredWidth}px`;
     this.getEl().dom.style.height = `${height}px`;
     this.getSurface().setRect([0, 0, requiredWidth, height]);
 
     surface.removeAll();
-    data.forEach((channel, index) => {
+    data.forEach((channel) => {
+      var barColor = this.mapColor(channel.dir),
+        diagPadding = this.getDiagPadding().split(" ").map(value => parseInt(value, 10));
       surface.add({
         type: "channel",
         x: x,
         power: channel.power,
         band: band,
         dir: channel.dir,
-        barColor: Ext.isEmpty(channel.dir) ? this.getDefaultBarColor() : this.mapColor(index),
+        barColor: barColor,
         id: channel.ch,
         barWidth: barWidth,
         barSpacing: barSpacing,
         diagHeight: this.getHeight(),
-        diagPadding: padding,
+        diagPadding: diagPadding,
       });
       x += (barWidth + barSpacing) * channel.power.length;
     });
@@ -92,20 +96,21 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   },
   //
   yAxis: function(){
-    var yAxisValues = [10, 0, -10, -20, -30, -40, -50, -62],
-      padding = this.getDiagPadding(),
-      height = this.getHeight() - padding * 2,
-      width = this.getWidth() - padding,
-      positionY = padding,
+    var yAxisValues = [-62, -50, -40, -30, -20, -10, 0, 10],
+      height = this.getHeight() - this.getPaddingBySide("top") - this.getPaddingBySide("bottom"),
+      positionY = this.getHeight() - this.getPaddingBySide("bottom"),
       rangeWidth = height / (yAxisValues.length - 1),
+      leftPadding = this.getPaddingBySide("left"),
+      rightPadding = this.getPaddingBySide("right"),
+      lineWidth = this.getWidth() - rightPadding,
       surface = this.getSurface();
     
     yAxisValues.forEach(function(value){
       surface.add({
         type: "line",
-        fromX: padding,
+        fromX: leftPadding, 
         fromY: positionY,
-        toX: width,
+        toX: lineWidth,
         toY: positionY,
         stroke: "gray",
         lineWidth: 1,
@@ -113,7 +118,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
 
       surface.add({
         type: "text",
-        x: padding - 10,
+        x: leftPadding - 10,
         y: positionY,
         text: value.toString(),
         fill: "black",
@@ -121,7 +126,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
         textBaseline: "middle",
       });
 
-      positionY += rangeWidth;
+      positionY -= rangeWidth;
     });
   },
   //
@@ -151,7 +156,23 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     console.log("Mouse click", sprite);
   },
   //
-  mapColor: function(index){
-    return this.getBarColors()[index % this.getBarColors().length];
+  mapColor: function(output){
+    var colors = this.getBarColors();
+    if(Ext.isEmpty(output)) return this.getDefaultBarColor();
+    
+    if(Ext.isEmpty(this.colorList[output])){
+      this.colorList[output] = colors[this.colorIndex % colors.length];
+      this.colorIndex = (this.colorIndex + 1) % colors.length;
+    }
+    return this.colorList[output];
+  },
+  //
+  getPaddingBySide: function(side){
+    var padding = this.getDiagPadding().split(" ");
+    if(side === "top") return parseInt(padding[0], 10);
+    if(side === "right") return parseInt(padding[1], 10) 
+    if(side === "bottom") return parseInt(padding[2], 10)
+    if(side === "left") return parseInt(padding[3], 10);
+    return 0;
   },
 });

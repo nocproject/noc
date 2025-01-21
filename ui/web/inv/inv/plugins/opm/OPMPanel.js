@@ -97,7 +97,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
       region: "center",
       layout: "absolute",
       border: false,
-      scrollable: true,
+      scrollable: "x",
       items: [
         {
           xtype: "opm.diagram",
