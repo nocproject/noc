@@ -47,9 +47,9 @@ class RuleSet(object):
         self.lookup_cls: Optional[RuleLookup] = None
         self.default_rule: Optional[Rule] = None
         #
-        is_failed: bool = False
+        # is_failed: bool = False
         # metric block
-        processed: int = 0
+        # processed: int = 0
 
     def load(self):
         """

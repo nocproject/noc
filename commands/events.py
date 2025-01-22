@@ -83,7 +83,7 @@ class Command(BaseCommand):
         clean.add_argument(
             "--force", default=False, action="store_true", help="Really events remove"
         )
-        test_rule = subparsers.add_parser("test-rule")
+        subparsers.add_parser("test-rule")
         # test_rule.add_argument("-S", "--syslog", dest="syslog", help="SYSLOG Message RE"),
         subparsers.add_parser("inject-event")
 
