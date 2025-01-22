@@ -133,7 +133,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMPanel", {
     this.getController().startTimer();
   },
   onDestroy: function(){
-    console.log("Destroy OPM Panel");
     if(this.timer){
       Ext.TaskManager.stop(this.timer);
     }

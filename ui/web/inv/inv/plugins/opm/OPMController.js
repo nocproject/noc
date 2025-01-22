@@ -22,10 +22,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
     this.onReload();
   },
   onComboboxSelect: function(){
-    var vm = this.getViewModel(),
-      group = vm.get("group"),
-      band = vm.get("band");
-    console.log("Combobox selected", group, band);
     this.lookupReference("opmDiagram").getSurface().removeAll();
     this.onReload();
   },
@@ -56,10 +52,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
     });
   },
   drawDiagram: function(data, band){
-    var spectrogram = this.getView().lookup("opmDiagram"),
-      height = spectrogram.getHeight(),
-      width = spectrogram.getWidth();
-    console.log(data, height, width);
+    var spectrogram = this.getView().lookup("opmDiagram");
     spectrogram.draw(data, band);
   },
   startTimer: function(){

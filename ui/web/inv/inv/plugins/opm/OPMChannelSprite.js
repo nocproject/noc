@@ -49,12 +49,12 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           var x = attr.x,
             diagHeight = attr.diagHeight - attr.diagPadding[0] - attr.diagPadding[2];
           this.createSprites(attr);
-          attr.power.forEach((value, index) => {
-            // var randomValue = this.getRandomNumber();
-            var barHeight = this.transformValue(attr.diagHeight, attr.diagPadding, value),
-              y = diagHeight + attr.diagPadding[0] - barHeight,
-              rect = this.rects[index],
-              tooltip = this.tooltips[index];
+          // Array.from({length: 4}, () => this.getRandomNumber()).forEach((value, index, values) => {
+          attr.power.forEach((value, index, values) => {
+            var rect = this.rects[index],
+              tooltip = this.tooltips[index],
+              barHeight = this.transformValue(attr.diagHeight, attr.diagPadding, value),
+              y = diagHeight + attr.diagPadding[0] - barHeight ;
             rect.setAttributes({
               x: x,
               y: y,
@@ -67,7 +67,10 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
               easing: "easeInOut",
             });
             if(tooltip.isVisible()){
-              var text = attr.band + rect.id + ", " + rect.attr.value+ "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
+              var dir = (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir),
+                v = Ext.isEmpty(this.selectedRectIndex) ? values.join(", ") : value,
+                channelN = Ext.isEmpty(this.selectedRectIndex) ? rect.id.replace(/-0/, "") : rect.id,
+                text = attr.band + channelN + ", " + v + "dBm" + dir;
               tooltip.setHtml(text);
               tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
             }
@@ -88,19 +91,35 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         },
         mouseOver: function(attr){
           if(["all", "withoutTooltip"].includes(attr.mouseOver)){
-            var selectedRect = this.rects[this.selectedRectIndex || 0],
-              tooltip = this.tooltips[this.selectedRectIndex || 0],
-              y = attr.diagHeight - attr.diagPadding[2] - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value),
-              text = attr.band + selectedRect.id + ", " + selectedRect.attr.value+ "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
-            selectedRect.setAnimation({duration: 0});
+            var text,
+              tooltip = this.tooltips[0],  
+              y = attr.diagHeight - attr.diagPadding[2] - this.transformValue(attr.diagHeight, attr.diagPadding, this.rects[0].attr.value);
+            if(Ext.isEmpty(this.selectedRectIndex)){
+              var values = this.rects.map(rect => rect.attr.value).join(", "),
+                channelN = this.rects[0].id.replace(/-0/, ", ");
+              text = attr.band + channelN + values + "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
+              this.rects.forEach(rect => {
+                rect.setAnimation({duration: 0});
+                rect.setAttributes({
+                  fill: attr.selectedBarColor,
+                  lineWidth: 2,
+                });
+              });
+            } else{
+              var selectedRect = this.rects[this.selectedRectIndex];
+              y = attr.diagHeight - attr.diagPadding[2] - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value);
+              tooltip = this.tooltips[this.selectedRectIndex]
+              text = attr.band + selectedRect.id + ", " + selectedRect.attr.value + "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
+              selectedRect.setAnimation({duration: 0});
+              selectedRect.setAttributes({
+                fill: attr.selectedBarColor,
+                lineWidth: 2,
+              });
+            }
             if(attr.mouseOver === "all"){
               tooltip.setHtml(text);
               tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
             }
-            selectedRect.setAttributes({
-              fill: attr.selectedBarColor,
-              lineWidth: 2,
-            });
             this.label.setAttributes({
               scalingX: 1.2,
               scalingY: 1.2,
@@ -109,6 +128,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           } else if(attr.mouseOver === "none"){
             this.tooltips.forEach(tooltip => {tooltip.hide()});
             this.rects.forEach(rect => {
+              rect.setAnimation({duration: 0});
               rect.setAttributes({
                 lineWidth: 1,
                 fill: attr.barColor, 
@@ -164,7 +184,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
       this.selectedRectIndex = null;
     }
     if(this.label && this.isOnSprite(this.label.getBBox(), x, y)){
-      this.selectedRectIndex = 0;
+      this.selectedRectIndex = null;
       return {
         sprite: this,
       };

@@ -292,7 +292,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     }
   },
   onDestroy: function(){
-    console.log("Destroy Config Panel");
     if(this.timer){
       Ext.TaskManager.stop(this.timer);
     }

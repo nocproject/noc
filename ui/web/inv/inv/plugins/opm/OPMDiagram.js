@@ -32,7 +32,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   listeners: {
     spritemouseover: "onSpriteMouseOver",
     spritemouseout: "onSpriteMouseOut",
-    spriteclick: "onSpriteClick",
   },
   //
   draw: function(data, band){
@@ -144,7 +143,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   },
   //
   onSpriteMouseOver: function(el, event){
-    console.log("Mouse over", el.sprite);
     if(el.sprite.type === "channel"){
       el.sprite.setAttributes({
         mouseOver: "all",
@@ -169,7 +167,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   },
   //
   onSpriteMouseOut: function(el){
-    console.log("Mouse out", el.sprite);
     if(el.sprite.type === "channel"){
       el.sprite.setAttributes({
         mouseOver: "none",
@@ -187,10 +184,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       });
       this.getSurface().renderFrame();
     }
-  },
-  //
-  onSpriteClick: function(sprite){
-    console.log("Mouse click", sprite);
   },
   //
   mapColor: function(output){
