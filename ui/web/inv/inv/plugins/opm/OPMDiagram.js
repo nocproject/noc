@@ -145,7 +145,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     console.log("Mouse over", el.sprite);
     if(el.sprite.type === "channel"){
       el.sprite.setAttributes({
-        mouseOver: true,
+        mouseOver: "all",
         pageX: event.pageX,
         pageY: event.pageY,
       });
@@ -154,7 +154,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       this.getSurface().getItems()
         .filter(sprite => sprite.dir === el.sprite.dir)
         .forEach(sprite => sprite.setAttributes({
-          mouseOver: true,
+          mouseOver: "withoutTooltip",
           pageX: event.pageX,
           pageY: event.pageY,
         }));
@@ -170,14 +170,14 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     console.log("Mouse out", el.sprite);
     if(el.sprite.type === "channel"){
       el.sprite.setAttributes({
-        mouseOver: false,
+        mouseOver: "none",
       });
       this.getSurface().renderFrame();
     } else if(el.sprite.type === "legend"){
       this.getSurface().getItems()
       .filter(sprite => sprite.dir === el.sprite.dir)
       .forEach(sprite => sprite.setAttributes({
-        mouseOver: false,
+        mouseOver: "none",
       }));
       el.sprite.setAttributes({
         mouseOver: false,

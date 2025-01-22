@@ -23,7 +23,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         barSpacing: "number",
         barWidth: "number",
         value: "number",
-        mouseOver: "bool",
+        mouseOver: "string", // all | withoutTooltip | none
         pageX: "number",
         pageY: "number",
       },
@@ -85,14 +85,16 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           }
         },
         mouseOver: function(attr){
-          if(attr.mouseOver){
+          if(["all", "withoutTooltip"].includes(attr.mouseOver)){
             var selectedRect = this.rects[this.selectedRectIndex || 0],
               tooltip = this.tooltips[this.selectedRectIndex || 0],
               y = attr.diagHeight - attr.diagPadding[2] - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value),
               text = attr.band + selectedRect.id + ", " + selectedRect.attr.value+ "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
             selectedRect.setAnimation({duration: 0});
-            tooltip.setHtml(text);
-            tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
+            if(attr.mouseOver === "all"){
+              tooltip.setHtml(text);
+              tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
+            }
             selectedRect.setAttributes({
               fill: "red",
               lineWidth: 2,
