@@ -16,6 +16,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         band: "string",
         dir: "string",
         barColor: "string",
+        selectedBarColor: "string",
         id: "number",
         x: "number",
         diagHeight: "number",
@@ -32,6 +33,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         band: "recalculate",
         dir: "recalculate",
         barColor: "recalculate",
+        selectedBarColor: "recalculate",
         id: "recalculate",
         x: "recalculate",
         diagHeight: "recalculate",
@@ -96,7 +98,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
               tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
             }
             selectedRect.setAttributes({
-              fill: "red",
+              fill: attr.selectedBarColor,
               lineWidth: 2,
             });
             this.label.setAttributes({
@@ -104,7 +106,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
               scalingY: 1.2,
               fontWeight: "bold",
             });
-          } else{
+          } else if(attr.mouseOver === "none"){
             this.tooltips.forEach(tooltip => {tooltip.hide()});
             this.rects.forEach(rect => {
               rect.setAttributes({
