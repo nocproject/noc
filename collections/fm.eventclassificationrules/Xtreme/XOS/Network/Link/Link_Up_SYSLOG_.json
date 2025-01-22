@@ -5,24 +5,15 @@
     "description": "10/15/2019 12:47:03.23 <Info:vlan.msgs.portLinkStateUp> Port 11 link UP at speed 100 Mbps and full-duplex\n\n",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "message",
-            "value_re": "Port (?P<interface>\\d+) link UP"
-        },
-        {
-            "key_re": "profile",
-            "value_re": "^Extreme\\.XOS$"
-        },
-        {
-            "key_re": "source",
-            "value_re": "^syslog$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>\\d+) link UP",
+    "profiles__name": ["Extreme.XOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "10/15/2019 12:47:03.23 <Info:vlan.msgs.portLinkStateUp> Port 11 link UP at speed 100 Mbps and full-duplex",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

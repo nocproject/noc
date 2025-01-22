@@ -5,24 +5,15 @@
     "description": "%BGP-3-NOTIFICATION: sent to neighbor 10.110.0.81 4/0 (hold time expired) 0 bytes",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%BGP-3-NOTIFICATION: sent to neighbor .+ \\(hold time expired\\) \\d+ bytes"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%BGP-3-NOTIFICATION: sent to neighbor .+ \\(hold time expired\\) \\d+ bytes",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%BGP-3-NOTIFICATION: sent to neighbor 10.110.0.81 4/0 (hold time expired) 0 bytes",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

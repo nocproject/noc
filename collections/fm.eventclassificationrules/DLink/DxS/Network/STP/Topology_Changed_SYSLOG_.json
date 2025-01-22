@@ -5,24 +5,15 @@
     "description": "INFO(6) Topology changed  (Instance:0, Port:24,MAC:00-22-B0-13-84-00)",
     "event_class__name": "Network | STP | Topology Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Topology changed\\s+\\(Instance:(?P<instance>\\d+),? [Pp]ort:(?P<interface>\\S+?)(,.+)?\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Topology changed\\s+\\(Instance:(?P<instance>\\d+),? [Pp]ort:(?P<interface>\\S+?)(,.+)?\\)",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO(6) Topology changed  (Instance:0, Port:24,MAC:00-22-B0-13-84-00)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

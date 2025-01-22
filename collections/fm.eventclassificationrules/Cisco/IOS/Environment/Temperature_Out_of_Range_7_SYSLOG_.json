@@ -9,24 +9,15 @@
         "name": "name",
         "value": "redundant supervisor engine"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-0-TEMP_CRITFAIL: Temp (?P<threshold>critical) failure"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-0-TEMP_CRITFAIL: Temp (?P<threshold>critical) failure",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-0-TEMP_CRITFAIL: Temp critical failure",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

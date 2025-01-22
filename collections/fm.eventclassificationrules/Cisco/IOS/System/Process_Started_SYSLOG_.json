@@ -5,24 +5,15 @@
     "description": "%SNMP-5-COLDSTART: SNMP agent on host cat-q is undergoing a cold start",
     "event_class__name": "System | Process Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SNMP-5-COLDSTART: (?P<name>SNMP agent) on host \\S+ is undergoing a cold start$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SNMP-5-COLDSTART: (?P<name>SNMP agent) on host \\S+ is undergoing a cold start$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SNMP-5-COLDSTART: SNMP agent on host cat-q is undergoing a cold start",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

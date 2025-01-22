@@ -5,24 +5,15 @@
     "description": "%EC-5-BUNDLE: Interface Gi1/0/1 joined port-channel Po1.",
     "event_class__name": "Network | LAG | Bundle",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%EC-(STBY-)?5-BUNDLE: Interface (?P<interface>\\S+) joined port-channel (?P<lag_interface>\\S+)\\.?$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%EC-(STBY-)?5-BUNDLE: Interface (?P<interface>\\S+) joined port-channel (?P<lag_interface>\\S+)\\.?$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%EC-5-BUNDLE: Interface Gi1/0/1 joined port-channel Po1.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

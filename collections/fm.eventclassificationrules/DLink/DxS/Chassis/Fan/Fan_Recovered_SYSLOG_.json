@@ -5,24 +5,15 @@
     "description": "INFO: Unit 1, Back Fan recovered",
     "event_class__name": "Chassis | Fan | Fan Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) recovered$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) recovered$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Unit 1, Back Fan recovered",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

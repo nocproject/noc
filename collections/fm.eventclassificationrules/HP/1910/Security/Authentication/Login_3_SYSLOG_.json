@@ -5,24 +5,15 @@
     "description": "May  9 05:45:09 2000 3com2952 %%10SHELL/5/SHELL_LOGIN(l): admin logged in from 192.168.1.3.",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10SHELL/\\d+/SHELL_LOGIN\\(l\\):\\s+(?P<user>\\S+) logged in from (?P<ip>\\S+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10SHELL/\\d+/SHELL_LOGIN\\(l\\):\\s+(?P<user>\\S+) logged in from (?P<ip>\\S+)\\.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "May  9 05:45:09 2000 3com2952 %%10SHELL/5/SHELL_LOGIN(l): admin logged in from 192.168.1.3.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

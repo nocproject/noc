@@ -5,24 +5,15 @@
     "description": "%UBR7200-5-MAXHOST: New host with IP address 192.168.0.2 and MAC 0018.c0d8.9614 on SID 50 is ignored.",
     "event_class__name": "Network | DOCSIS | Max CPE Reached",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-5-MAXHOST: New host with IP address (?P<ip>\\S+) and MAC (?P<mac>\\S+) on SID (?P<sid>\\d+) is ignored\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-5-MAXHOST: New host with IP address (?P<ip>\\S+) and MAC (?P<mac>\\S+) on SID (?P<sid>\\d+) is ignored\\.$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-5-MAXHOST: New host with IP address 192.168.0.2 and MAC 0018.c0d8.9614 on SID 50 is ignored.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

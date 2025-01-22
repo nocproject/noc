@@ -5,24 +5,15 @@
     "description": "%IOSXE_PEM-3-PEMFAIL: The PEM in slot 1 is switched off or encountering a failure condition.",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%IOSXE_PEM-3-PEMFAIL: The (?P<name>PEM in slot \\S+) is switched off or encountering a failure condition"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%IOSXE_PEM-3-PEMFAIL: The (?P<name>PEM in slot \\S+) is switched off or encountering a failure condition",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%IOSXE_PEM-3-PEMFAIL: The PEM in slot 1 is switched off or encountering a failure condition.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

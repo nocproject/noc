@@ -5,19 +5,9 @@
     "description": "CRIT(2) Port 24 VID 10 LBD loop occurred. Packet discard begun",
     "event_class__name": "Network | STP | STP Vlan Loop Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>\\S+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun"
-        }
-    ],
-    "test_cases": []
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>\\S+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"]
 }

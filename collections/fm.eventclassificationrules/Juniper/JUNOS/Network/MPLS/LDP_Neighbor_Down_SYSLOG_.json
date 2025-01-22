@@ -5,24 +5,15 @@
     "description": "Apr 27 13:07:53 pmo-cl2 rpd[873]: RPD_LDP_SESSIONDOWN: LDP session 10.100.127.40 is down, reason: all adjacencies down",
     "event_class__name": "Network | MPLS | LDP Neighbor Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "RPD_LDP_SESSIONDOWN: LDP session (?P<neighbor>\\S+) is (?P<state>\\w+), reason: (?P<reason>.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "RPD_LDP_SESSIONDOWN: LDP session (?P<neighbor>\\S+) is (?P<state>\\w+), reason: (?P<reason>.+)",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Apr 27 13:07:53 pmo-cl2 rpd[873]: RPD_LDP_SESSIONDOWN: LDP session 10.100.127.40 is down, reason: all adjacencies down",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

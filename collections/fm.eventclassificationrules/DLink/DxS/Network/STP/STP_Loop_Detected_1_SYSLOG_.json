@@ -5,24 +5,15 @@
     "description": "WARN(4) BPDU Loop Back on Port 24",
     "event_class__name": "Network | STP | STP Loop Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "BPDU Loop Back on Port (?P<interface>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "BPDU Loop Back on Port (?P<interface>\\S+)",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN(4) BPDU Loop Back on Port 24",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "/usr/sbin/cron[94924]: (root) CMD (/usr/libexec/atrun)",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "/usr/sbin/cron\\[\\d+\\]: \\(root\\) CMD \\(/usr/libexec/atrun\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "/usr/sbin/cron\\[\\d+\\]: \\(root\\) CMD \\(/usr/libexec/atrun\\)",
+    "profiles__name": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "/usr/sbin/cron[94924]: (root) CMD (/usr/libexec/atrun)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

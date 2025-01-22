@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Standby Supervisor"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:C4K_)?REDUNDANCY-3-STANDBY_LOST: Standby processor fault"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:C4K_)?REDUNDANCY-3-STANDBY_LOST: Standby processor fault",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%REDUNDANCY-3-STANDBY_LOST: Standby processor fault (PEER_DOWN_INTERRUPT)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

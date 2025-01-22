@@ -5,24 +5,15 @@
     "description": "%CONST_DIAG-SP-4-ERROR_COUNTER_WARNING: Module 4 Error counter exceeds threshold",
     "event_class__name": "Chassis | Hardware | Module | Module Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%CONST_DIAG-(\\S+)?SP-4-ERROR_COUNTER_WARNING: (?P<module>Module \\S+) (?P<reason>Error counter exceeds threshold)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%CONST_DIAG-(\\S+)?SP-4-ERROR_COUNTER_WARNING: (?P<module>Module \\S+) (?P<reason>Error counter exceeds threshold)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%CONST_DIAG-SP-4-ERROR_COUNTER_WARNING: Module 4 Error counter exceeds threshold",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

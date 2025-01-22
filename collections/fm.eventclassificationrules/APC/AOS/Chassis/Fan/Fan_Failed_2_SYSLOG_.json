@@ -5,24 +5,15 @@
     "description": "UPS: An electronics unit fan fault exists. 0x013B",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: (?P<name>An electronics unit fan) fault exists. 0x013B"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: (?P<name>An electronics unit fan) fault exists. 0x013B",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: An electronics unit fan fault exists. 0x013B",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

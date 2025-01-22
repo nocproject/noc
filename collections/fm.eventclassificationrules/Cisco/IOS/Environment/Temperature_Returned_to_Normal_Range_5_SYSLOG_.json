@@ -5,24 +5,15 @@
     "description": "%SYS-2-SYS_TEMPOK: Chassis temperature OK",
     "event_class__name": "Environment | Temperature Returned to Normal Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-2-SYS_TEMPOK:\\s*(?P<name>Chassis) temperature OK"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-2-SYS_TEMPOK:\\s*(?P<name>Chassis) temperature OK",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-2-SYS_TEMPOK: Chassis temperature OK",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

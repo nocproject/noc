@@ -5,24 +5,15 @@
     "description": "May  9 05:45:23 2000 3com2952 %%10SHELL/6/SHELL_CMD(l): -Task=vt0-IPAddr=192.168.11.123-User=admin; Command is quit",
     "event_class__name": "Security | Audit | Command",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10SHELL/\\d+/SHELL_CMD\\(l\\): -Task=vt\\d+-IPAddr=(?P<ip>\\S+)-User=(?P<user>\\S+); Command is (?P<command>.+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10SHELL/\\d+/SHELL_CMD\\(l\\): -Task=vt\\d+-IPAddr=(?P<ip>\\S+)-User=(?P<user>\\S+); Command is (?P<command>.+)$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "May  9 05:45:23 2000 3com2952 %%10SHELL/6/SHELL_CMD(l): -Task=vt0-IPAddr=192.168.11.123-User=admin; Command is quit",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

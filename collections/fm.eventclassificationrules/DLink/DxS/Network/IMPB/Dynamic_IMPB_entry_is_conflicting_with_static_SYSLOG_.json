@@ -5,24 +5,15 @@
     "description": "WARN: Dynamic IMPB entry is conflicting with static IMPB(IP: 172.16.0.8, MAC: 00-22-B0-DE-5E-0D, Port: 4)",
     "event_class__name": "Network | IMPB | Dynamic IMPB entry is conflicting with static",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Dynamic IMPB entry is conflicting with static IMPB\\s*\\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Dynamic IMPB entry is conflicting with static IMPB\\s*\\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Dynamic IMPB entry is conflicting with static IMPB(IP: 172.16.0.8, MAC: 00-22-B0-DE-5E-0D, Port: 4)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%C4K_L2MAN-6-INVALIDSOURCEADDRESSPACKET: (Suppressed 1 times)Packet received with invalid source MAC address (00:00:00:00:00:00) on port Gi2/11 in vlan 100",
     "event_class__name": "Network | MAC | Invalid MAC",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%C\\d+K.+INVALIDSOURCEADDRESSPACKET: \\(Suppressed \\d+ times\\)\\s*Packet received with invalid source MAC address \\((?P<mac>\\S+)\\) on port (?P<interface>\\S+) in vlan (?P<vlan>\\d+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%C\\d+K.+INVALIDSOURCEADDRESSPACKET: \\(Suppressed \\d+ times\\)\\s*Packet received with invalid source MAC address \\((?P<mac>\\S+)\\) on port (?P<interface>\\S+) in vlan (?P<vlan>\\d+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%C4K_L2MAN-6-INVALIDSOURCEADDRESSPACKET: (Suppressed 1 times)Packet received with invalid source MAC address (00:00:00:00:00:00) on port Gi2/11 in vlan 100",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

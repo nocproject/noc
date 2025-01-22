@@ -1,0 +1,25 @@
+{
+    "name": "Juniper | JUNOS | Network | BFD | Session Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "05ff2bb2-778e-4720-bbc8-3dd31915917c",
+    "description": "JNX-STD-MIB-TTI-TRAPS::BfdSessDown",
+    "event_class__name": "Network | BFD | Session Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JNX-STD-MIB-TTI-TRAPS::BfdSessDown$"
+        },
+        {
+            "key_re": "^JNX-STD-MIB-TTI-TRAPS::BfdSessPeerAddr\\..+$",
+            "value_re": "(?P<peer>\\S+)"
+        },
+        {
+            "key_re": "^JNX-STD-MIB-TTI-TRAPS::BfdSessBindIfName\\..+$",
+            "value_re": "(?P<interface>.+)"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
+}

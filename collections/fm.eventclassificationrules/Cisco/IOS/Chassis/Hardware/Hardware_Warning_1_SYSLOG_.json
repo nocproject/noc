@@ -5,24 +5,15 @@
     "description": "%EARL_L3_ASIC-SP-3-INTR_WARN: EARL L3 ASIC: Non-fatal interrupt Netflow interrupt",
     "event_class__name": "Chassis | Hardware | Hardware Warning",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%\\S+ASIC-\\S+(?:WARN|ERR_INTRPT): .+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%\\S+ASIC-\\S+(?:WARN|ERR_INTRPT): .+",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%EARL_L3_ASIC-SP-3-INTR_WARN: EARL L3 ASIC: Non-fatal interrupt Netflow interrupt",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

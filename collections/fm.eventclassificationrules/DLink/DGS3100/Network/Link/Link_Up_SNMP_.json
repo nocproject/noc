@@ -13,14 +13,6 @@
     ],
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "(?:SNMPv2-MIB::snmpTraps|IF-MIB::linkUp)$"
         },
@@ -36,5 +28,8 @@
             "key_re": "^IF-MIB::ifIndex\\.\\d+$",
             "value_re": "(?P<iface>\\d+)$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["DLink.DGS3100"],
+    "sources": ["SNMP Trap"]
 }

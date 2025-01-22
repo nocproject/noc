@@ -5,24 +5,15 @@
     "description": "%PLATFORM_UCAST-4-PREFIX: One or more, more specific prefixes could not be programmed into TCAM and are being covered by a less specific prefix, and the packets may be software forwarded",
     "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PLATFORM_UCAST-4-PREFIX: (?P<reason>.+could not be programmed into TCAM.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PLATFORM_UCAST-4-PREFIX: (?P<reason>.+could not be programmed into TCAM.+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PLATFORM_UCAST-4-PREFIX: One or more, more specific prefixes could not be programmed into TCAM and are being covered by a less specific prefix, and the packets may be software forwarded",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

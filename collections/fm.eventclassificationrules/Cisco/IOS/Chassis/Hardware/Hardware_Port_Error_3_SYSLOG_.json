@@ -5,24 +5,15 @@
     "description": "%ILACC-5-LATECOLL: Unit 0, late collision error",
     "event_class__name": "Chassis | Hardware | Hardware Port Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "LATECOLL: (?P<interface>.+), [Ll]ate collision"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "LATECOLL: (?P<interface>.+), [Ll]ate collision",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ILACC-5-LATECOLL: Unit 0, late collision error",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

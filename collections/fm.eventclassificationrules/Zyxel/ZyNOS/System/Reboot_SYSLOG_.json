@@ -5,24 +5,15 @@
     "description": "Jan  2  1:54:38 sw-name system: System reboot",
     "event_class__name": "System | Reboot",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "system: System reboot$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "system: System reboot$",
+    "profiles__name": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan  2  1:54:38 sw-name system: System reboot",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on Gi0/1",
     "event_class__name": "Chassis | Hardware | Hardware Port Error Recover",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on (?P<interface>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on (?P<interface>\\S+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on Gi0/1",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

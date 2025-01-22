@@ -5,18 +5,9 @@
     "description": "Logout successful",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "auth(entication)?: User (?P<user>.*) logout$"
-        }
-    ]
+    "patterns": [],
+    "labels": [],
+    "message_rx": "auth(entication)?: User (?P<user>.*) logout$",
+    "profiles__name": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"]
 }

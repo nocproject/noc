@@ -5,24 +5,15 @@
     "description": "Nov  7 2016 09:32:55 pushkino-ar01 LINE/4/USERLOGOUT:OID 1.3.6.1.4.1.2011.5.25.207.2.4 A user logout. (UserIndex=129, UserName=nocproject, UserIP=10.50.74.63, UserChannel=VTY0)",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "A user logout\\. \\(UserIndex=129, UserName=(?P<user>\\S+), UserIP=(?P<ip>\\S+), UserChannel=VTY\\d+\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "A user logout\\. \\(UserIndex=129, UserName=(?P<user>\\S+), UserIP=(?P<ip>\\S+), UserChannel=VTY\\d+\\)$",
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Nov  7 2016 09:32:55 pushkino-ar01 LINE/4/USERLOGOUT:OID 1.3.6.1.4.1.2011.5.25.207.2.4 A user logout. (UserIndex=129, UserName=nocproject, UserIP=10.50.74.63, UserChannel=VTY0)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

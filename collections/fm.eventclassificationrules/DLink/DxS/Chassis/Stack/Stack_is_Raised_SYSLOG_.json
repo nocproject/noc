@@ -5,24 +5,15 @@
     "description": "INFO(6) Unit 4,MAC:00-1c-f0-1f-3c-80 Hot insertion",
     "event_class__name": "Chassis | Stack | Stack is Raised",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot insertion"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot insertion",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO(6) Unit 4,MAC:00-1c-f0-1f-3c-80 Hot insertion",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

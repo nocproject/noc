@@ -5,24 +5,15 @@
     "description": "Jul 22 08:47:00 lacpd[1284]: mcae_conn_init_connect in evConnect()",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "mcae_conn_init_connect in evConnect\\(\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "mcae_conn_init_connect in evConnect\\(\\)$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 22 08:47:00 lacpd[1284]: mcae_conn_init_connect in evConnect()",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

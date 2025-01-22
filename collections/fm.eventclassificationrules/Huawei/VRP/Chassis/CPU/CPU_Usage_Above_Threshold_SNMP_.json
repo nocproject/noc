@@ -1,0 +1,29 @@
+{
+    "name": "Huawei | VRP | Chassis | CPU | CPU Usage Above Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "facb8a43-2c0e-40da-a953-f201b6553387",
+    "description": "HUAWEI-BASE-TRAP-MIB::hwCPUUtilizationRisingAlarm. CPU utilization exceed threshold.",
+    "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-BASE-TRAP-MIB::hwCPUUtilizationRisingAlarm$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalName\\.\\S+$",
+            "value_re": "(?P<cpu>.+)"
+        },
+        {
+            "key_re": "^HUAWEI-BASE-TRAP-MIB::hwBaseUsageValue\\.\\S+$",
+            "value_re": "(?P<ovalue>\\d+)"
+        },
+        {
+            "key_re": "^HUAWEI-BASE-TRAP-MIB::hwBaseUsageThreshold\\.\\S+$",
+            "value_re": "(?P<tvalue>\\d+)"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["SNMP Trap"]
+}

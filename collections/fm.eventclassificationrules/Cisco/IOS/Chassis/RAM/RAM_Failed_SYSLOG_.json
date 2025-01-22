@@ -9,24 +9,15 @@
         "name": "bank",
         "value": "Mistral ASIC"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%MISTRAL-SP-3-ERROR:"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%MISTRAL-SP-3-ERROR:",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%MISTRAL-SP-3-ERROR: Error condition detected: TM_NPP_PARITY_ERROR",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

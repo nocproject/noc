@@ -5,24 +5,15 @@
     "description": "%RADIUS-4-RADIUS_DEAD: RADIUS server 10.50.245.20:1812,1813 is not responding.",
     "event_class__name": "Security | Authentication | RADIUS server failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%RADIUS-4-RADIUS_DEAD: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is not responding\\."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%RADIUS-4-RADIUS_DEAD: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is not responding\\.",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%RADIUS-4-RADIUS_DEAD: RADIUS server 10.50.245.20:1812,1813 is not responding.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

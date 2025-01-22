@@ -7,10 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^profile$",
-            "value_re": "^Cisco.IOS$"
-        },
-        {
             "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonSupplyStatusDescr\\.\\d+$",
             "value_re": "^Switch#1, (?P<name>.+), DC Unit = DC $"
         },
@@ -19,12 +15,11 @@
             "value_re": "^notFunctioning$"
         },
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
             "value_re": "^CISCO-ENVMON-MIB::ciscoEnvMonSuppStatusChangeNotif$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
 }

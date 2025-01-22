@@ -5,22 +5,12 @@
     "description": "NOC probe ok",
     "event_class__name": "NOC | Periodic | Periodic OK",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NOC\\.SAE$"
-        },
-        {
-            "key_re": "^type$",
-            "value_re": "^(?P<task>pm probe)$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^OK$"
-        }
-    ]
+    "patterns": [{
+        "key_re": "^type$",
+        "value_re": "^(?P<task>pm probe)$"
+    }],
+    "labels": [],
+    "message_rx": "^OK$",
+    "profiles__name": ["NOC.SAE"],
+    "sources": ["system"]
 }

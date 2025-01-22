@@ -7,10 +7,6 @@
     "preference": 2000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^XPPC-MIB::ppc$"
         },
@@ -18,5 +14,7 @@
             "key_re": "^XPPC-MIB::ppc$",
             "value_re": "^UPS has switched to battery power.$"
         }
-    ]
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
 }

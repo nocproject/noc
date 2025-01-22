@@ -5,24 +5,15 @@
     "description": "%C7600_ES_LINK-DFC3-3-INTR_THROTTLE: Interface TenGigabitEthernet3/2 PHY interrupt is throttled. Total throttle count 1.",
     "event_class__name": "Network | Link | Connection Problem",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%.+-INTR_THROTTLE: Interface (?P<interface>\\S+) PHY interrupt is throttled"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%.+-INTR_THROTTLE: Interface (?P<interface>\\S+) PHY interrupt is throttled",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%C7600_ES_LINK-DFC3-3-INTR_THROTTLE: Interface TenGigabitEthernet3/2 PHY interrupt is throttled. Total throttle count 1.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

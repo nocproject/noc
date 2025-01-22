@@ -5,24 +5,15 @@
     "description": "INFO: Ping of Death Attack is blocked from (IP: 10.201.49.57 Port: 1)",
     "event_class__name": "Security | Attack | Ping Of Death",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Ping of Death Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Ping of Death Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Ping of Death Attack is blocked from (IP: 10.201.49.57 Port: 1)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

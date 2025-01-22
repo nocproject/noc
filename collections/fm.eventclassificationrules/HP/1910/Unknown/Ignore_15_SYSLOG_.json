@@ -5,24 +5,15 @@
     "description": "Feb 11 12:39:20 2013 Teh %%10MSTP/6/MSTP_FORWARDING(l): Instance 0's port GigabitEthernet1/0/7 has been set to forwarding state.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10MSTP/6/MSTP_FORWARDING\\(l\\): Instance \\S+ port \\S+ has been set to forwarding state\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10MSTP/6/MSTP_FORWARDING\\(l\\): Instance \\S+ port \\S+ has been set to forwarding state\\.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Feb 11 12:39:20 2013 Teh %%10MSTP/6/MSTP_FORWARDING(l): Instance 0's port GigabitEthernet1/0/7 has been set to forwarding state.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

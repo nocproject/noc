@@ -5,24 +5,15 @@
     "description": "Oct 17 05:24:43 SYST: Port 1 link active 100Mbs FULL duplex\n\n",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "message",
-            "value_re": "Port (?P<interface>\\d+) link active"
-        },
-        {
-            "key_re": "profile",
-            "value_re": "^Extreme\\.Summit200$"
-        },
-        {
-            "key_re": "source",
-            "value_re": "^syslog$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>\\d+) link active",
+    "profiles__name": ["Extreme.Summit200"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Oct 17 05:24:43 SYST: Port 1 link active 100Mbs FULL duplex",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "UPS: An input voltage or frequency problem prevents switching to bypass mode. 0x020F",
     "event_class__name": "Environment | UPS | Input Voltage or Frequency Problem",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: An input voltage or frequency problem prevents switching to bypass mode. 0x020F"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: An input voltage or frequency problem prevents switching to bypass mode. 0x020F",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: An input voltage or frequency problem prevents switching to bypass mode. 0x020F",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

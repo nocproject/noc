@@ -5,24 +5,15 @@
     "description": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex gi1/0/25.",
     "event_class__name": "Network | LLDP | LLDP Aged Out",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex (?P<interface>\\S+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex (?P<interface>\\S+)\\.$",
+    "profiles__name": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex gi1/0/25.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

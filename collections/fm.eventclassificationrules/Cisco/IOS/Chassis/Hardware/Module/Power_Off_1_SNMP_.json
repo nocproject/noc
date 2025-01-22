@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Power Off #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "309adecb-974a-46d3-a31b-eaf6da258866",
+    "description": "CISCO-ENTITY-FRU-CONTROL-MIB::cefcPowerStatusChange",
+    "event_class__name": "Chassis | Hardware | Module | Module Power Off",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-ENTITY-FRU-CONTROL-MIB::cefcPowerStatusChange$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::cefcFRUPowerOperStatus\\.(?P<module>\\d+)$",
+            "value_re": "^(?P<reason>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

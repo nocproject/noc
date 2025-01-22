@@ -5,24 +5,15 @@
     "description": "%IFMGR-5-OSTATE_UP: Changed interface state to up: Gi 0/19",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Force10\\.FTOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%IFMGR-5-OSTATE_UP: Changed interface state to up: (?P<interface>.+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%IFMGR-5-OSTATE_UP: Changed interface state to up: (?P<interface>.+)$",
+    "profiles__name": ["Force10.FTOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%IFMGR-5-OSTATE_UP: Changed interface state to up: Gi 0/19",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

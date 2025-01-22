@@ -5,24 +5,15 @@
     "description": "sshd[69551]: Received disconnect from 193.34.22.119: 11: disconnected by user",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "sshd\\[\\d+\\]: Received disconnect from (?P<ip>\\S+): 11: disconnected by user$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "sshd\\[\\d+\\]: Received disconnect from (?P<ip>\\S+): 11: disconnected by user$",
+    "profiles__name": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "sshd[69551]: Received disconnect from 193.34.22.119: 11: disconnected by user",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

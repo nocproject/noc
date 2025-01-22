@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Network | SONET | Path Status Change #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "bb5f6ad6-9587-45b4-8623-0edfbedfde47",
+    "description": "CISCO-SONET-MIB::ciscoSonetPathStatusChange",
+    "event_class__name": "Network | SONET | Path Status Change",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-SONET-MIB::ciscoSonetPathStatusChange$"
+        },
+        {
+            "key_re": "^SONET-MIB::sonetLineCurrentStatus\\.\\d+$",
+            "value_re": "^(?P<state>\\S+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<interface>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

@@ -5,24 +5,15 @@
     "description": "002272: dom-5 %Sep 02 11:32:16 2013 MODULE_CONFIG_SNMP[zIMI]:Write configuration successfully!",
     "event_class__name": "Config | Config Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Qtech\\.QSW2800$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "MODULE_CONFIG_SNMP\\[zIMI\\]:Write configuration successfully!"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "MODULE_CONFIG_SNMP\\[zIMI\\]:Write configuration successfully!",
+    "profiles__name": ["Qtech.QSW2800"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "002272: dom-5 %Sep 02 11:32:16 2013 MODULE_CONFIG_SNMP[zIMI]:Write configuration successfully!",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

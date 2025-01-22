@@ -5,24 +5,15 @@
     "description": "%BGP-5-ADJCHANGE: neighbor 10.110.0.83 Down BGP Notification sent",
     "event_class__name": "Network | BGP | Peer Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Down"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Down",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%BGP-5-ADJCHANGE: neighbor 10.110.0.83 Down BGP Notification sent",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

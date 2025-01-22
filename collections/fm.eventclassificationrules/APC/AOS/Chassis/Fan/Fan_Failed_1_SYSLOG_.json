@@ -5,24 +5,15 @@
     "description": "UPS: A base module fan fault exists. 0x0120",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: (?P<name>A base module fan) fault exists. 0x0120"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: (?P<name>A base module fan) fault exists. 0x0120",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: A base module fan fault exists. 0x0120",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

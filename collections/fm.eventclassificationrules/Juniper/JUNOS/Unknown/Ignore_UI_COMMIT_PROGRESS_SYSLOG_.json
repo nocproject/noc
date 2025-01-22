@@ -5,22 +5,13 @@
     "description": "UI_COMMIT_PROGRESS",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UI_COMMIT_PROGRESS"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UI_COMMIT_PROGRESS",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "UI_COMMIT_PROGRESS",
-        "value_re": []
+        "raw_vars": []
     }]
 }

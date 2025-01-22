@@ -5,24 +5,15 @@
     "description": "%Environment-A-FAN-STAT-CHNG: FAN# 1 status changed - not operational.",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%Environment-A-FAN-STAT-CHNG: (?P<name>\\S+ \\d+) status changed - not operational.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%Environment-A-FAN-STAT-CHNG: (?P<name>\\S+ \\d+) status changed - not operational.$",
+    "profiles__name": ["Supertel.K2X"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%Environment-A-FAN-STAT-CHNG: FAN# 1 status changed - not operational.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

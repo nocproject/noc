@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | Link | DOM | TxMinPower Recovered (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "270ad03a-8450-452b-87f4-dddd560b2cfb",
     "description": "Juniper-System-MIB::juniSystemPortSfpTxMinPowerThreshold",
     "event_class__name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
@@ -16,14 +17,6 @@
     ],
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
             "key_re": "^Juniper-System-MIB::juniSystemPortSfpPowerThresholdIfIndex(?:\\.\\d+)*$",
             "value_re": "^(?P<interface__ifindex>\\d+)$"
         },
@@ -35,5 +28,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^Juniper-System-MIB::juniSystemPortSfpTxMinPowerThreshold$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
 }

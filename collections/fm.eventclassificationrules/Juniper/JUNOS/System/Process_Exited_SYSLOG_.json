@@ -5,24 +5,15 @@
     "description": "Jul 22 14:18:58 init: craft-control (PID 1413) exited with status=2",
     "event_class__name": "System | Process Exited",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "init: (?P<name>\\S+) \\(PID (?P<pid>\\d+)\\) exited with status=(?P<status>\\d+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "init: (?P<name>\\S+) \\(PID (?P<pid>\\d+)\\) exited with status=(?P<status>\\d+)$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 22 14:18:58 init: craft-control (PID 1413) exited with status=2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

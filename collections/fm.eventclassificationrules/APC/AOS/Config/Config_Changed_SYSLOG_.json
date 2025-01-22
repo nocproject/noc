@@ -5,24 +5,15 @@
     "description": "System: SNMP configuration change. 0x0003",
     "event_class__name": "Config | Config Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "System: SNMP configuration change. 0x0003"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "System: SNMP configuration change. 0x0003",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "System: SNMP configuration change. 0x0003",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

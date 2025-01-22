@@ -5,22 +5,13 @@
     "description": "%LINK-I-Up:  gi0/3",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Linksys\\.SPS2xx$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%LINK-I-Up:  ?(?P<interface>.+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%LINK-I-Up:  ?(?P<interface>.+)$",
+    "profiles__name": ["Linksys.SPS2xx"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%LINK-I-Up:  gi0/3",
-        "value_re": []
+        "raw_vars": []
     }]
 }

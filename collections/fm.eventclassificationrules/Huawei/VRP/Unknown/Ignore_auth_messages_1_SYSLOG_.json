@@ -5,24 +5,15 @@
     "description": "Jul 20 2012 13:06:40 od-agg-1-dobrovolskogo126 %%01SHELL/5/AUTHCMDNONEED(l): 'User alex doesn't need command authorization.' from 10.48.63.2 by VTY.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "SHELL/\\d+/AUTHCMDNONEED"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SHELL/\\d+/AUTHCMDNONEED",
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 20 2012 13:06:40 od-agg-1-dobrovolskogo126 %%01SHELL/5/AUTHCMDNONEED(l): 'User alex doesn't need command authorization.' from 10.48.63.2 by VTY.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

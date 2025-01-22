@@ -5,22 +5,13 @@
     "description": "UI_CHILD_START",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UI_CHILD_START"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UI_CHILD_START",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "UI_CHILD_START",
-        "value_re": []
+        "raw_vars": []
     }]
 }

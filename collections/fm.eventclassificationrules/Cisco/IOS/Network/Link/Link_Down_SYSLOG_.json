@@ -5,24 +5,15 @@
     "description": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to down",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-(?:UPDOWN|CHANGED): Interface (?P<interface>.+), changed state to(.+)? down$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-(?:UPDOWN|CHANGED): Interface (?P<interface>.+), changed state to(.+)? down$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to down",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -9,24 +9,15 @@
         "name": "name",
         "value": "VTT (voltage termination)"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "SYS-2-VTT_OK: VTT modules recovered from failure"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SYS-2-VTT_OK: VTT modules recovered from failure",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "SYS-2-VTT_OK: VTT modules recovered from failure",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

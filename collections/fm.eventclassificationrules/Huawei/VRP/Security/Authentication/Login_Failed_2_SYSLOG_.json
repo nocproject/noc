@@ -5,24 +5,15 @@
     "description": "Aug  2 2012 12:08:01 od-agg-3-vilyamsa73d1 %%01SHELL/4/TELNETFAILED(l): Login through telnet failed( ip=212.40.34.7 times=3).",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "SHELL/\\d+/TELNETFAILED.+Login through telnet failed.+ip=(?P<ip>\\S+) times=\\d+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SHELL/\\d+/TELNETFAILED.+Login through telnet failed.+ip=(?P<ip>\\S+) times=\\d+",
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug  2 2012 12:08:01 od-agg-3-vilyamsa73d1 %%01SHELL/4/TELNETFAILED(l): Login through telnet failed( ip=212.40.34.7 times=3).",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

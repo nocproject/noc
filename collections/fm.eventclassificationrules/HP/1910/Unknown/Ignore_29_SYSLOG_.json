@@ -5,24 +5,15 @@
     "description": "Sep 6 03:53:46 2013 Batalion %%10NTP/5/NTP_CHANGE_STRATUM(l): System stratum changed from 7 to 6 after clock update.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%%10NTP/5/NTP_CHANGE_STRATUM\\(l\\):\\s+System stratum changed from \\d+ to \\d+ after clock update.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%%10NTP/5/NTP_CHANGE_STRATUM\\(l\\):\\s+System stratum changed from \\d+ to \\d+ after clock update.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Sep 6 03:53:46 2013 Batalion %%10NTP/5/NTP_CHANGE_STRATUM(l): System stratum changed from 7 to 6 after clock update.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

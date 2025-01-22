@@ -5,24 +5,15 @@
     "description": "UPS: Bypass not in range ; distorted waveform. 0x020F",
     "event_class__name": "Environment | UPS | Input Voltage or Frequency Problem",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: Bypass not in range ; (?:distorted waveform|either frequency or voltage|low voltage). 0x020F"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: Bypass not in range ; (?:distorted waveform|either frequency or voltage|low voltage). 0x020F",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: Bypass not in range ; distorted waveform. 0x020F",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

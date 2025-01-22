@@ -5,22 +5,13 @@
     "description": "UPS: Passed a self-test. 0x0105",
     "event_class__name": "Environment | UPS | Self-Test Passed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: Passed a self-test. 0x0105"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: Passed a self-test. 0x0105",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "UPS: Passed a self-test. 0x0105",
-        "value_re": []
+        "raw_vars": []
     }]
 }

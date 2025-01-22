@@ -5,18 +5,9 @@
     "description": "UI_LOGIN_EVENT: User 'noc' login, class 'j-super-user' [1866]",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UI_LOGIN_EVENT: User '(?P<user>.+?)' login, class '.+'"
-        }
-    ]
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UI_LOGIN_EVENT: User '(?P<user>.+?)' login, class '.+'",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"]
 }

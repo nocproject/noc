@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "HUAWEI-L2IF-MIB::hwLoopDetectStatusAlarm"
         },
@@ -26,5 +18,8 @@
             "key_re": "^HUAWEI-L2IF-MIB::hwL2IfPortLoopDetectStatus\\.\\d+$",
             "value_re": "^normal$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["SNMP Trap"]
 }

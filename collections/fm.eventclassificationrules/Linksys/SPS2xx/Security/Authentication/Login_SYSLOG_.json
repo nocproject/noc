@@ -5,24 +5,15 @@
     "description": "%AAA-I-CONNECT: User CLI session for user admin over telnet , source 10.8.4.19 destination  10.8.2.13 ACCEPTED",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Linksys\\.SPS2xx$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) ?, source (?P<ip>\\S+) destination  \\S+ ACCEPTED$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) ?, source (?P<ip>\\S+) destination  \\S+ ACCEPTED$",
+    "profiles__name": ["Linksys.SPS2xx"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%AAA-I-CONNECT: User CLI session for user admin over telnet , source 10.8.4.19 destination  10.8.2.13 ACCEPTED",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "hp93_1, Interface ethernet 2/6, state down",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.ProCurve9xxx$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^\\S+ Interface (?P<interface>[^,]+), state down$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^\\S+ Interface (?P<interface>[^,]+), state down$",
+    "profiles__name": ["HP.ProCurve9xxx"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "hp93_1, Interface ethernet 2/6, state down",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

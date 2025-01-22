@@ -5,24 +5,15 @@
     "description": "Sep 19 14:58:42 Rybatsk-17-1 snmp CPU rising trap.",
     "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "CPU rising trap\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "CPU rising trap\\.$",
+    "profiles__name": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Sep 19 14:58:42 Rybatsk-17-1 snmp CPU rising trap.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%UBR7200-0-TEMPHIGH : [chars] measured at [chars] is too high: shutdown temperature [chars]",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-0-TEMPHIGH\\s*: \\S+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown temperature (?P<max>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-0-TEMPHIGH\\s*: \\S+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown temperature (?P<max>\\S+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-0-TEMPHIGH : [chars] measured at [chars] is too high: shutdown temperature [chars]",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

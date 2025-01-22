@@ -5,22 +5,13 @@
     "description": "INFO: Port 17 link down",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>.+) link down$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>.+) link down$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "INFO: Port 17 link down",
-        "value_re": []
+        "raw_vars": []
     }]
 }

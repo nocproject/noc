@@ -5,24 +5,15 @@
     "description": "%TRUNK-I-PORTADDED: Port g5 added to ch2",
     "event_class__name": "Network | LAG | Bundle",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%TRUNK-I-PORTADDED: Port (?P<interface>\\S+) added to (?P<lag_interface>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%TRUNK-I-PORTADDED: Port (?P<interface>\\S+) added to (?P<lag_interface>\\S+)$",
+    "profiles__name": ["Supertel.K2X"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%TRUNK-I-PORTADDED: Port g5 added to ch2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

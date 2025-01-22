@@ -5,24 +5,15 @@
     "description": "Jul 22 14:15:56 shutdown: reboot by noc:",
     "event_class__name": "System | Reboot",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "shutdown: reboot by (?P<user>.+?):"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "shutdown: reboot by (?P<user>.+?):",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 22 14:15:56 shutdown: reboot by noc:",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

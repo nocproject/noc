@@ -1,0 +1,29 @@
+{
+    "name": "Huawei | VRP | Chassis | CPU | CPU Usage Drops Below Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "afb2ce48-ebbf-40f1-9a02-a47c3aa30d98",
+    "description": "HUAWEI-BASE-TRAP-MIB::hwCPUUtilizationResume.  CPU utilization back to normal level.",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-BASE-TRAP-MIB::hwCPUUtilizationResume$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalName\\.\\S+$",
+            "value_re": "(?P<cpu>.+)"
+        },
+        {
+            "key_re": "^HUAWEI-BASE-TRAP-MIB::hwBaseUsageValue\\.\\S+$",
+            "value_re": "(?P<ovalue>\\d+)"
+        },
+        {
+            "key_re": "^HUAWEI-BASE-TRAP-MIB::hwBaseUsageThreshold\\.\\S+$",
+            "value_re": "(?P<tvalue>\\d+)"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["SNMP Trap"]
+}

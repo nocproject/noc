@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^IRE-Polus.Horizon$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
             "value_re": "^IPG-MIB::ipg.6$"
         },
@@ -62,5 +54,8 @@
             "key_re": "^IPG-MIB::accessDescription$",
             "value_re": "^(?P<access_description>.*)$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["IRE-Polus.Horizon"],
+    "sources": ["SNMP Trap"]
 }

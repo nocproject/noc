@@ -5,24 +5,15 @@
     "description": "%MSDP-5-PEER_UPDOWN: Session to peer 10.225.205.12 going down",
     "event_class__name": "Network | MSDP | Peer Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "profile",
-            "value_re": "^Cisco.IOS$"
-        },
-        {
-            "key_re": "source",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "message",
-            "value_re": "%MSDP-5-PEER_UPDOWN: Session to peer (?P<peer>\\S+) going down"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%MSDP-5-PEER_UPDOWN: Session to peer (?P<peer>\\S+) going down",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%MSDP-5-PEER_UPDOWN: Session to peer 10.225.205.12 going down",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "Aug 8 23:30:19 AkrasRoot System: Power supply 1, left side power supply, normal",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Brocade\\.IronWare$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* System: (?P<name>Power supply \\d+),(\\s+\\S+)+, normal$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* System: (?P<name>Power supply \\d+),(\\s+\\S+)+, normal$",
+    "profiles__name": ["Brocade.IronWare"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 8 23:30:19 AkrasRoot System: Power supply 1, left side power supply, normal",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

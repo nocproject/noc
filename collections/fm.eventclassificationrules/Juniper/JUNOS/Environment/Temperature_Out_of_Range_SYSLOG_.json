@@ -9,24 +9,15 @@
         "name": "name",
         "value": "chassis"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "CHASSISD_HIGH_TEMP_CONDITION: Chassis temperature over (?P<measure>\\d+) degrees C \\(but no fan/impeller failure detected\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "CHASSISD_HIGH_TEMP_CONDITION: Chassis temperature over (?P<measure>\\d+) degrees C \\(but no fan/impeller failure detected\\)$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "CHASSISD_HIGH_TEMP_CONDITION: Chassis temperature over 65 degrees C (but no fan/impeller failure detected)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,22 +5,13 @@
     "description": "INFO,+REBOOT:System reboots",
     "event_class__name": "System | Reboot",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Alcatel\\.7324RU$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "INFO,\\+REBOOT:System reboots"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "INFO,\\+REBOOT:System reboots",
+    "profiles__name": ["Alcatel.7324RU"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "INFO,+REBOOT:System reboots",
-        "value_re": []
+        "raw_vars": []
     }]
 }

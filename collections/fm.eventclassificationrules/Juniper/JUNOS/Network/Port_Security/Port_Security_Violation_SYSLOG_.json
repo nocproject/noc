@@ -5,24 +5,15 @@
     "description": "Mar 19 16:19:41  switchname-asw01 eswd[1262]: ESWD_MAC_LIMIT_BLOCK: MAC limit (3) exceeded at ge-0/0/23.0: shutting down the interface",
     "event_class__name": "Network | Port Security | Port Security Violation",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ESWD_MAC_LIMIT_BLOCK: MAC limit \\((?P<limit>\\d+)\\) exceeded at (?P<interface>.+?): shutting down the interface$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ESWD_MAC_LIMIT_BLOCK: MAC limit \\((?P<limit>\\d+)\\) exceeded at (?P<interface>.+?): shutting down the interface$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Mar 19 16:19:41  switchname-asw01 eswd[1262]: ESWD_MAC_LIMIT_BLOCK: MAC limit (3) exceeded at ge-0/0/23.0: shutting down the interface",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

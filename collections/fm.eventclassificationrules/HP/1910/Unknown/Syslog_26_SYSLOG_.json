@@ -5,24 +5,15 @@
     "description": "Jul  5 15:15:45 2013 2928 %%10NTP/5/NTP_CHANGE_LEAP(l): System Leap Indicator changed from 0 to 3 after clock update.",
     "event_class__name": "Unknown | Syslog",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10NTP/5/NTP_CHANGE_LEAP\\(l\\): System Leap Indicator changed from \\d+ to \\d+ after clock update\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10NTP/5/NTP_CHANGE_LEAP\\(l\\): System Leap Indicator changed from \\d+ to \\d+ after clock update\\.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul  5 15:15:45 2013 2928 %%10NTP/5/NTP_CHANGE_LEAP(l): System Leap Indicator changed from 0 to 3 after clock update.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

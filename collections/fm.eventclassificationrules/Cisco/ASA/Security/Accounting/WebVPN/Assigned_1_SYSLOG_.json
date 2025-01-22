@@ -5,24 +5,15 @@
     "description": "Apr 04 2016 10:06:31: %ASA-4-722051: Group <GroupPolicy> User <user> IP <10.10.10.10> IPv4 Address <11.11.11.11> IPv6 address <64::b5::ff> assigned to session",
     "event_class__name": "Security | Accounting | WebVPN | Assigned",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.ASA$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:ASA|PIX)-4-722051: Group <(?P<group>\\S+)> User <(?P<user>\\S+)> IP <(?P<src_ip>\\S+)> IPv4 Address <(?P<dst_ip>\\S+)> IPv6 address <(?P<dst_ipv6>\\S+)>"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:ASA|PIX)-4-722051: Group <(?P<group>\\S+)> User <(?P<user>\\S+)> IP <(?P<src_ip>\\S+)> IPv4 Address <(?P<dst_ip>\\S+)> IPv6 address <(?P<dst_ipv6>\\S+)>",
+    "profiles__name": ["Cisco.ASA"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Apr 04 2016 10:06:31: %ASA-4-722051: Group <GroupPolicy> User <user> IP <10.10.10.10> IPv4 Address <11.11.11.11> IPv6 address <64::b5::ff> assigned to session",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

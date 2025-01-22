@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Alentis\\.NetPing$"
-        },
-        {
             "key_re": "^DKSF-50-8-1-A-X::npThermoMemo\\.\\d$",
             "value_re": "^(?P<name>.+)$"
         },
@@ -30,5 +22,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^DKSF-50-8-1-A-X::npThermoEntry$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Alentis.NetPing"],
+    "sources": ["SNMP Trap"]
 }

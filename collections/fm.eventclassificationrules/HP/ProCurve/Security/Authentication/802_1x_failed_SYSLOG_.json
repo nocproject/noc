@@ -5,24 +5,15 @@
     "description": "802.1x: 1 auth-timeouts for the last 60 sec.",
     "event_class__name": "Security | Authentication | 802.1x failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.ProCurve$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "802.1x: \\d+ auth-timeouts for the last \\d+ sec."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "802.1x: \\d+ auth-timeouts for the last \\d+ sec.",
+    "profiles__name": ["HP.ProCurve"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "802.1x: 1 auth-timeouts for the last 60 sec.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

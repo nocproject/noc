@@ -5,24 +5,15 @@
     "description": "INFO: Internal Power is recovered",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<name>Internal|Redundant) Power is (?:recovered|working)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<name>Internal|Redundant) Power is (?:recovered|working)",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Internal Power is recovered",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

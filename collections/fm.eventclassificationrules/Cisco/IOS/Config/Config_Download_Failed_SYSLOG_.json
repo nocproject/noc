@@ -5,24 +5,15 @@
     "description": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from (tftp://255.255.255.255/network-confg) failed",
     "event_class__name": "Config | Config Download Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from \\((?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+\\) failed"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from \\((?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+\\) failed",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from (tftp://255.255.255.255/network-confg) failed",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

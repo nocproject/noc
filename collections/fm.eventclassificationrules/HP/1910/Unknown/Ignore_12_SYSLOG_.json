@@ -5,24 +5,15 @@
     "description": "Jul 29 12:07:11 2000 3com2952_1 %%10NTP/4/NTP_LOG(l):   NTP service enabled",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10NTP/4/NTP_LOG\\(l\\):\\s+NTP service enabled$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10NTP/4/NTP_LOG\\(l\\):\\s+NTP service enabled$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 29 12:07:11 2000 3com2952_1 %%10NTP/4/NTP_LOG(l):   NTP service enabled",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

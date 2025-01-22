@@ -5,24 +5,15 @@
     "description": "Aug 11 20:25:33 vyatta shutdown[2919]: shutting down for system halt",
     "event_class__name": "System | Halt",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Vyatta\\.Vyatta$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "shutdown\\[\\d+\\]: shutting down for system halt$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "shutdown\\[\\d+\\]: shutting down for system halt$",
+    "profiles__name": ["Vyatta.Vyatta"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 11 20:25:33 vyatta shutdown[2919]: shutting down for system halt",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

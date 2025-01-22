@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Chassis | CPU | CPU Usage Drops Below Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "9fdc7a03-e366-439c-92c1-480b6421b7c7",
+    "description": "CISCO-PROCESS-MIB::cpmCPUFallingThreshold",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-PROCESS-MIB::cpmCPUFallingThreshold$"
+        },
+        {
+            "key_re": "^CISCO-PROCESS-MIB::cpmCPUFallingThresholdValue\\.\\d+\\.(?P<class>\\S+)$",
+            "value_re": "(?P<tvalue>.+)"
+        },
+        {
+            "key_re": "^CISCO-PROCESS-MIB::cpmCPUTotalMonIntervalValue(?P<cpu>\\.\\d+)$",
+            "value_re": "(?P<ovalue>.+)"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

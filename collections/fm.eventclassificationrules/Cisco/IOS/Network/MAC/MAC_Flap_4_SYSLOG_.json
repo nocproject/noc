@@ -9,24 +9,15 @@
         "name": "from_interface",
         "value": "Null0"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:MAC_MOVE-SP-4-NOTIF|SW_MATM-4-MACFLAP_NOTIF|C4K_EBM-4-HOSTFLAPPING): Host (?P<mac>\\S+) in vlan (?P<vlan>\\d+) is (?:flapping between|moving from) port (?:and|to) port (?P<to_interface>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:MAC_MOVE-SP-4-NOTIF|SW_MATM-4-MACFLAP_NOTIF|C4K_EBM-4-HOSTFLAPPING): Host (?P<mac>\\S+) in vlan (?P<vlan>\\d+) is (?:flapping between|moving from) port (?:and|to) port (?P<to_interface>\\S+)$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SW_MATM-4-MACFLAP_NOTIF: Host 0017.0e82.0850 in vlan 254 is flapping between port and port Gi0/25",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

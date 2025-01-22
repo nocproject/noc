@@ -5,24 +5,15 @@
     "description": "%SPANTREE-2-LOOPGUARD_UNBLOCK: Loop guard unblocking port GigabitEthernet0/39 on VLAN0252.",
     "event_class__name": "Network | STP | STP Vlan Loop Cleared",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:SPANTREE|STP)-2-LOOPGUARD_(?:UN)?BLOCK: Loop guard unblocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+)."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:SPANTREE|STP)-2-LOOPGUARD_(?:UN)?BLOCK: Loop guard unblocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+).",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SPANTREE-2-LOOPGUARD_UNBLOCK: Loop guard unblocking port GigabitEthernet0/39 on VLAN0252.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

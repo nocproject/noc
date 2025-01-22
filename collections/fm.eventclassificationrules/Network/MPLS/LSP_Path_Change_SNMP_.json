@@ -1,0 +1,24 @@
+{
+    "name": "Network | MPLS | LSP Path Change (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "64af61d9-c11e-45fc-9801-d39a56cf2e33",
+    "description": "MPLS-MIB::mplsLspInfoChange",
+    "event_class__name": "Network | MPLS | LSP Path Change",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^MPLS-MIB::mplsLspInfoChange$"
+        },
+        {
+            "key_re": "^MPLS-MIB::mplsLspInfoName\\.\\.+$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^MPLS-MIB::mplsPathInfoName\\.\\.+$",
+            "value_re": "^(?P<path>.+)$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

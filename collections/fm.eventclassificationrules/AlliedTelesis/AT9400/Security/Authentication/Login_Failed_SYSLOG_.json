@@ -5,24 +5,15 @@
     "description": "system: Login failure for admin from serial port",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^AlliedTelesis\\.AT9400$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "system: Login failure for (?P<user>.+?) from serial port$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "system: Login failure for (?P<user>.+?) from serial port$",
+    "profiles__name": ["AlliedTelesis.AT9400"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "system: Login failure for admin from serial port",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

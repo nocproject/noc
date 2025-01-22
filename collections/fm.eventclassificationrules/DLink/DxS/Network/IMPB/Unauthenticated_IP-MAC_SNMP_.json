@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
             "key_re": "^DES35(?:26|50)-L2MGMT-MIB::swL2IpMacBindingPortIndex\\.\\d+$",
             "value_re": "^(?P<interface>.+)$"
         },
@@ -30,5 +22,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
             "value_re": "^DES35(?:26|50)-L2MGMT-MIB::swl2NotifyIpMacBinding\\.0\\.3$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["SNMP Trap"]
 }

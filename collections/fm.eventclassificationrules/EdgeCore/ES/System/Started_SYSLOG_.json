@@ -5,24 +5,15 @@
     "description": "Jun 23 4:10:19 GUT_53 snmp: System coldStart notification.",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "snmp: System coldStart notification\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "snmp: System coldStart notification\\.$",
+    "profiles__name": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jun 23 4:10:19 GUT_53 snmp: System coldStart notification.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

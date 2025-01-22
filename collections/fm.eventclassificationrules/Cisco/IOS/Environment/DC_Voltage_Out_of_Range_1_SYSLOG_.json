@@ -5,24 +5,15 @@
     "description": "%UBR7200-0-VOLTHIGH : [chars] measured at [chars] is too high: shutdown voltage [chars]",
     "event_class__name": "Environment | DC Voltage Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-0-VOLTHIGH\\s*: .+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown voltage (?P<max>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-0-VOLTHIGH\\s*: .+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown voltage (?P<max>\\S+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-0-VOLTHIGH : [chars] measured at [chars] is too high: shutdown voltage [chars]",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

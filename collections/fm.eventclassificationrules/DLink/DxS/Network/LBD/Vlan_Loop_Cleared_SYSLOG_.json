@@ -5,24 +5,15 @@
     "description": "INFO(6) Port 25 VID 356 LBD recovered. Loop detection restarted",
     "event_class__name": "Network | LBD | Vlan Loop Cleared",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO(6) Port 25 VID 356 LBD recovered. Loop detection restarted",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
             "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigDestination\\.\\d+$",
             "value_re": "^startup$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
 }

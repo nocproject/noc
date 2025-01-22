@@ -5,24 +5,15 @@
     "description": "CRIT: Blat Attack is detected from (IP: 193.239.74.146 Port: 23)",
     "event_class__name": "Security | Attack | Blat Attack",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Blat Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Blat Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "CRIT: Blat Attack is detected from (IP: 193.239.74.146 Port: 23)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "WARN: Multicast storm has cleared (port: 13)",
     "event_class__name": "Network | Storm Control | Multicast Storm Cleared",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Multicast storm has cleared \\(port: (?P<interface>\\S+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Multicast storm has cleared \\(port: (?P<interface>\\S+)\\)",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Multicast storm has cleared (port: 13)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

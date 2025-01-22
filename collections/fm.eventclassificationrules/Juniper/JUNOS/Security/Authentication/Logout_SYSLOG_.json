@@ -5,24 +5,15 @@
     "description": "UI_LOGOUT_EVENT: User 'noc-sa' logout",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UI_LOGOUT_EVENT: User '(?P<user>.+?)' logout"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UI_LOGOUT_EVENT: User '(?P<user>.+?)' logout",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UI_LOGOUT_EVENT: User 'noc-sa' logout",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

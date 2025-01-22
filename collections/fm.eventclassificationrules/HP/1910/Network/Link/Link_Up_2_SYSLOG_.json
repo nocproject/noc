@@ -5,24 +5,15 @@
     "description": "May 13 07:30:45 2000 3com2952 %%10IFNET/4/UPDOWN(l):   Line protocol on the interface Vlan-interface10 is UP",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10IFNET/4/UPDOWN\\(l\\):\\s+Line protocol on the interface (?P<interface>\\S+) is UP$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10IFNET/4/UPDOWN\\(l\\):\\s+Line protocol on the interface (?P<interface>\\S+) is UP$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "May 13 07:30:45 2000 3com2952 %%10IFNET/4/UPDOWN(l):   Line protocol on the interface Vlan-interface10 is UP",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

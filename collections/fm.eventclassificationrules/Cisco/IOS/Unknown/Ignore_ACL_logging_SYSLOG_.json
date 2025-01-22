@@ -5,24 +5,15 @@
     "description": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed 1 packet",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed \\d+ packet"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed \\d+ packet",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed 1 packet",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

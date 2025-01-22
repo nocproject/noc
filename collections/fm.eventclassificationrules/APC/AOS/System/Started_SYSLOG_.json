@@ -5,22 +5,13 @@
     "description": "System: Coldstart. 0x0001",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "System: (?:Coldstart. 0x0001|Warmstart. 0x0002)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "System: (?:Coldstart. 0x0001|Warmstart. 0x0002)",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "System: Coldstart. 0x0001",
-        "value_re": []
+        "raw_vars": []
     }]
 }

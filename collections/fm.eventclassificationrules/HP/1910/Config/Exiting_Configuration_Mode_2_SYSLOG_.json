@@ -5,24 +5,15 @@
     "description": "Feb 11 16:25:10 2013 Teh %%10CFGMAN/5/CFGMAN_EXIT(l): Exit from configuration mode.",
     "event_class__name": "Config | Exiting Configuration Mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10CFGMAN/5/CFGMAN_EXIT\\(l\\): Exit from configuration mode\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10CFGMAN/5/CFGMAN_EXIT\\(l\\): Exit from configuration mode\\.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Feb 11 16:25:10 2013 Teh %%10CFGMAN/5/CFGMAN_EXIT(l): Exit from configuration mode.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

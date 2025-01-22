@@ -5,24 +5,15 @@
     "description": "system temperature has recovered to normal state",
     "event_class__name": "Environment | Temperature Returned to Normal Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<name>\\S+) temperature has recovered to normal state"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<name>\\S+) temperature has recovered to normal state",
+    "profiles__name": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "system temperature has recovered to normal state",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

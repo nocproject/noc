@@ -5,24 +5,15 @@
     "description": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface %s has received a clear of remote failure indication from its remote peer(failure reason = %s action = %s)",
     "event_class__name": "Network | OAM | Client Clear Remote Failure",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface (?P<interface>\\S+) has received a clear of remote failure indication from its remote peer\\s*\\(failure reason = (?P<reason>.+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface (?P<interface>\\S+) has received a clear of remote failure indication from its remote peer\\s*\\(failure reason = (?P<reason>.+)\\)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface %s has received a clear of remote failure indication from its remote peer(failure reason = %s action = %s)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

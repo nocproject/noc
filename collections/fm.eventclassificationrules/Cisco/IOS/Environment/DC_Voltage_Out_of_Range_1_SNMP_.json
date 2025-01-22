@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Environment | DC Voltage Out of Range #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "3f2a669a-ff0d-48f0-ab28-3d6e9aecac8f",
+    "description": "CISCO-ENVMON-MIB::ciscoEnvMonVoltageNotification",
+    "event_class__name": "Environment | DC Voltage Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonVoltageState\\.\\d+$",
+            "value_re": "warning"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonVoltageStatusDescr\\.\\d+$",
+            "value_re": "(?P<name>.+) t\\S+"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonVoltageStatusValue\\.\\d+$",
+            "value_re": "(?P<measure>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
+            "value_re": "CISCO-ENVMON-MIB::(?:ciscoEnvMonTemperatureNotification|ciscoEnvMonVoltStatusChangeNotif)"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

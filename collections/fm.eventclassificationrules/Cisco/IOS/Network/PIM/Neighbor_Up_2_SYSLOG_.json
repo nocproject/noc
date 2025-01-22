@@ -5,24 +5,15 @@
     "description": "%PIM-5-NBRCHG: VRF shpd: neighbor 172.18.225.226 UP on interface TenGigabitEthernet1/3",
     "event_class__name": "Network | PIM | Neighbor Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PIM-5-NBRCHG: VRF (?P<vrf>\\S+): neighbor (?P<neighbor>\\S+) UP on interface (?P<interface>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PIM-5-NBRCHG: VRF (?P<vrf>\\S+): neighbor (?P<neighbor>\\S+) UP on interface (?P<interface>\\S+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PIM-5-NBRCHG: VRF shpd: neighbor 172.18.225.226 UP on interface TenGigabitEthernet1/3",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

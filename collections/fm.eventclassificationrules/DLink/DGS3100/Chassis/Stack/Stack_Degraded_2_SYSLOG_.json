@@ -5,24 +5,15 @@
     "description": "%Stack-E-STCK-EXCEP-HNDLR: Lost connection with unit 2 reason 0x20099. Unit will be rebooted .",
     "event_class__name": "Chassis | Stack | Stack Degraded",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%Stack-E-STCK-EXCEP-HNDLR: Lost connection with unit (?P<unit>\\d+) reason .+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%Stack-E-STCK-EXCEP-HNDLR: Lost connection with unit (?P<unit>\\d+) reason .+",
+    "profiles__name": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%Stack-E-STCK-EXCEP-HNDLR: Lost connection with unit 2 reason 0x20099. Unit will be rebooted .",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

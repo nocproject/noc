@@ -5,24 +5,15 @@
     "description": "Oct  2 21:07:36 2000 3Com Baseline Switch %%10HWCM/4/EXIT(l):  exit from configure mode",
     "event_class__name": "Config | Exiting Configuration Mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10HWCM/4/EXIT\\(l\\):\\s+exit from configure mode$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10HWCM/4/EXIT\\(l\\):\\s+exit from configure mode$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Oct  2 21:07:36 2000 3Com Baseline Switch %%10HWCM/4/EXIT(l):  exit from configure mode",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

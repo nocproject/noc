@@ -5,24 +5,15 @@
     "description": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm slot 0/RSP1/CPU0, sensor VP1P2_SERDES_PLL_DAO measured 2499 mV and out of operational range 1165 - 1235 mV",
     "event_class__name": "Environment | Chassis Voltage Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm (?P<name>slot \\S+, sensor \\S+) measured (?P<measure>\\d+ mV) and out of operational range (?P<min>\\d+) - (?P<max>\\d+ mV)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm (?P<name>slot \\S+, sensor \\S+) measured (?P<measure>\\d+ mV) and out of operational range (?P<min>\\d+) - (?P<max>\\d+ mV)",
+    "profiles__name": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm slot 0/RSP1/CPU0, sensor VP1P2_SERDES_PLL_DAO measured 2499 mV and out of operational range 1165 - 1235 mV",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "WARN: [BGP:] BGP connection is closed due to Event: <10> (Peer:<10.0.0.1>).",
     "event_class__name": "Network | BGP | Peer Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "\\[BGP(\\(2\\))?:\\] BGP connection is closed due to Event: <\\d+> \\(Peer:<(?P<peer>\\S+)>\\)\\."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "\\[BGP(\\(2\\))?:\\] BGP connection is closed due to Event: <\\d+> \\(Peer:<(?P<peer>\\S+)>\\)\\.",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: [BGP:] BGP connection is closed due to Event: <10> (Peer:<10.0.0.1>).",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

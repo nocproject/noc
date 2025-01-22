@@ -5,24 +5,15 @@
     "description": "Dec 29 01:01:45 2012 3com2952 %%10NTP/4/NTP_LOG(l):  System leap changes from 3 to 0 after clock update.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10NTP/4/NTP_LOG\\(l\\):\\s+System leap changes from 3 to 0 after clock update\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10NTP/4/NTP_LOG\\(l\\):\\s+System leap changes from 3 to 0 after clock update\\.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Dec 29 01:01:45 2012 3com2952 %%10NTP/4/NTP_LOG(l):  System leap changes from 3 to 0 after clock update.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

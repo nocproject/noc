@@ -5,18 +5,9 @@
     "description": "invalid password for `root' on",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NSN\\.hiX56xx$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "invalid password for `(?P<user>\\S+)' on `ttyp\\d' from `(?P<ip>\\S+)'$"
-        }
-    ]
+    "patterns": [],
+    "labels": [],
+    "message_rx": "invalid password for `(?P<user>\\S+)' on `ttyp\\d' from `(?P<ip>\\S+)'$",
+    "profiles__name": ["NSN.hiX56xx"],
+    "sources": ["syslog"]
 }

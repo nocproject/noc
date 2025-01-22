@@ -1,0 +1,20 @@
+{
+    "name": "Network | MPLS | LDP Init Session Above Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4863c0a0-fb08-4e52-a714-d1bf1e4fb440",
+    "description": "MPLS-LDP-STD-MIB::mplsLdpInitSessionThresholdExceeded",
+    "event_class__name": "Network | MPLS | LDP Init Session Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^MPLS-LDP-STD-MIB::mplsLdpEntityInitSessionThreshold\\.(?P<ldp_id>.+)\\.(\\d+)$",
+            "value_re": "^(?P<tvalue>\\d+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^MPLS-LDP-STD-MIB::mplsLdpInitSessionThresholdExceeded$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

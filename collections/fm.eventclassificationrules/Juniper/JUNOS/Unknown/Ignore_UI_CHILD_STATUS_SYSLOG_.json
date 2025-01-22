@@ -5,22 +5,13 @@
     "description": "UI_CHILD_STATUS",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UI_CHILD_STATUS"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UI_CHILD_STATUS",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "UI_CHILD_STATUS",
-        "value_re": []
+        "raw_vars": []
     }]
 }

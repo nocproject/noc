@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^profile$",
-            "value_re": "^Cisco.IOSXR$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
             "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
             "value_re": "^up$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
             "value_re": "^up$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOSXR"],
+    "sources": ["SNMP Trap"]
 }

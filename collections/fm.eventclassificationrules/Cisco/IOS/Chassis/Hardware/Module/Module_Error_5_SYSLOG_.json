@@ -9,24 +9,15 @@
         "name": "reason",
         "value": "Duplicate serial number"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%GBIC_SECURITY_UNIQUE-(?:3|4)-DUPLICATE_(?:GBIC|SN): (?P<module>GBIC) interface (?P<interface>\\d+/\\d+) (?:is a duplicate of|has the same serial number as another) GBIC interface"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%GBIC_SECURITY_UNIQUE-(?:3|4)-DUPLICATE_(?:GBIC|SN): (?P<module>GBIC) interface (?P<interface>\\d+/\\d+) (?:is a duplicate of|has the same serial number as another) GBIC interface",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%GBIC_SECURITY_UNIQUE-4-DUPLICATE_SN: GBIC interface 0/1 has the same serial number as another GBIC interface.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

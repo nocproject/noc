@@ -1,0 +1,24 @@
+{
+    "name": "Network | IS-IS | Database Overload (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c95bccb6-8d6d-490b-bccd-80b650838846",
+    "description": "ISIS-MIB::isisDatabaseOverload",
+    "event_class__name": "Network | IS-IS | Database Overload",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ISIS-MIB::isisDatabaseOverload$"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisNotificationSysLevelIndex(?:\\.\\S+)*$",
+            "value_re": "^(?P<level>\\S+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisSysLevelState\\.(?P<level>\\S+)$",
+            "value_re": "^(?P<state>\\S+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

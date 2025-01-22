@@ -5,24 +5,15 @@
     "description": "Failed password for andy from 213.42.62.191 port 56871 ssh2",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Failed password for (?P<user>.+?) from (?P<ip>\\S+) port"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Failed password for (?P<user>.+?) from (?P<ip>\\S+) port",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Failed password for andy from 213.42.62.191 port 56871 ssh2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

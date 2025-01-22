@@ -5,24 +5,15 @@
     "description": "%%01PHY/4/PHY_STATUS_UP2DOWN(l)[155]:Slot=1;GigabitEthernet1/1/8 change status to down.",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei.VRP$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Slot=\\d+;(?P<interface>\\S+) change status to down\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Slot=\\d+;(?P<interface>\\S+) change status to down\\.$",
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%%01PHY/4/PHY_STATUS_UP2DOWN(l)[155]:Slot=1;GigabitEthernet1/1/8 change status to down.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

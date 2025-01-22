@@ -5,24 +5,15 @@
     "description": "Port 26 link up, 1Gbps FULL duplex info",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS_Smart$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)",
+    "profiles__name": ["DLink.DxS_Smart"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Port 26 link up, 1Gbps FULL duplex info",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

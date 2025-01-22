@@ -5,24 +5,15 @@
     "description": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_LSP_DOWN: MPLS LSP r1-r2 down on primary()",
     "event_class__name": "Network | MPLS | LSP Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "RPD_MPLS_LSP_DOWN: MPLS LSP (?P<name>.+?) down on"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "RPD_MPLS_LSP_DOWN: MPLS LSP (?P<name>.+?) down on",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_LSP_DOWN: MPLS LSP r1-r2 down on primary()",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

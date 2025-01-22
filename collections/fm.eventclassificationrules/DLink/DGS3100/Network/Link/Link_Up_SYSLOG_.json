@@ -5,22 +5,13 @@
     "description": "%LINK-I-Up:  1:22",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%LINK-I-Up:\\s+(?P<interface>(?:\\d:|ch)\\d+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LINK-I-Up:\\s+(?P<interface>(?:\\d:|ch)\\d+)$",
+    "profiles__name": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%LINK-I-Up:  1:22",
-        "value_re": []
+        "raw_vars": []
     }]
 }

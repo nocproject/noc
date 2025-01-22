@@ -5,24 +5,15 @@
     "description": "%ENVM-4-RPSFAIL: Power Supply may have a failed channel",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ENVM-4-RPSFAIL: (?P<name>.+) may have a failed channel"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ENVM-4-RPSFAIL: (?P<name>.+) may have a failed channel",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ENVM-4-RPSFAIL: Power Supply may have a failed channel",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

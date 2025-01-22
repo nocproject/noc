@@ -5,24 +5,15 @@
     "description": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor 1.1.1.1 UP on BV2",
     "event_class__name": "Network | PIM | Neighbor Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "profile",
-            "value_re": "^Cisco.IOSXR$"
-        },
-        {
-            "key_re": "source",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "message",
-            "value_re": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) UP on (?P<interface>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) UP on (?P<interface>\\S+)$",
+    "profiles__name": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor 1.1.1.1 UP on BV2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%C6KPWR-SP-2-PSFAIL: power supply 1 output failed.",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%C(?:6K|7600_)PWR-SP-2-PSFAIL: (?P<name>power supply \\d+) output failed.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%C(?:6K|7600_)PWR-SP-2-PSFAIL: (?P<name>power supply \\d+) output failed.$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%C6KPWR-SP-2-PSFAIL: power supply 1 output failed.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%PM-4-ERR_DISABLE: gbic-invalid error detected on Gi0/1, putting Gi0/1 in err-disable state",
     "event_class__name": "Chassis | Hardware | Hardware Port Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PM-4-ERR_DISABLE: gbic-invalid error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PM-4-ERR_DISABLE: gbic-invalid error detected on (?P<interface>\\S+), putting \\S+ in err-disable state",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PM-4-ERR_DISABLE: gbic-invalid error detected on Gi0/1, putting Gi0/1 in err-disable state",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

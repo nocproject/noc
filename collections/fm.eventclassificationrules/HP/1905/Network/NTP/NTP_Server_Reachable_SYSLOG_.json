@@ -5,24 +5,15 @@
     "description": "Dec 25 17:30:32 2012 Office [NTP]/6/sync with 192.168.11.7",
     "event_class__name": "Network | NTP | NTP Server Reachable",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1905$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "\\[NTP\\]/6/sync with (?P<server_address>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "\\[NTP\\]/6/sync with (?P<server_address>\\S+)$",
+    "profiles__name": ["HP.1905"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Dec 25 17:30:32 2012 Office [NTP]/6/sync with 192.168.11.7",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

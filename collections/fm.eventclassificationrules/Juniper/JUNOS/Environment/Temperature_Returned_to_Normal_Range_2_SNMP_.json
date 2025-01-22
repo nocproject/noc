@@ -11,14 +11,6 @@
     }],
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
             "key_re": "^Juniper-System-MIB::juniSystemTempStatus(?:\\.\\d+)*$",
             "value_re": "^(?P<measure>nominal)$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^Juniper-System-MIB::juniSystemTempStatusChange$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
 }

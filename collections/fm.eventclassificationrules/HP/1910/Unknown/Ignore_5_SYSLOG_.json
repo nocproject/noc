@@ -5,24 +5,15 @@
     "description": "Oct  5 15:06:49 2000 3Com Baseline Switch %%10SHELL/4/LOGINAUTHFAIL(t):   Trap 1.3.6.1.4.1.43.45.1.10.2.2.1.1.3.0.3<h3cLogInAuthenFailure>:wret failed to login from VTY, reason is 2",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10SHELL/4/LOGINAUTHFAIL\\(t\\):\\s+Trap \\S+<h3cLogInAuthenFailure>:(\\S+|) failed to login from (VTY|Web), reason is \\d+$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10SHELL/4/LOGINAUTHFAIL\\(t\\):\\s+Trap \\S+<h3cLogInAuthenFailure>:(\\S+|) failed to login from (VTY|Web), reason is \\d+$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Oct  5 15:06:49 2000 3Com Baseline Switch %%10SHELL/4/LOGINAUTHFAIL(t):   Trap 1.3.6.1.4.1.43.45.1.10.2.2.1.1.3.0.3<h3cLogInAuthenFailure>:wret failed to login from VTY, reason is 2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

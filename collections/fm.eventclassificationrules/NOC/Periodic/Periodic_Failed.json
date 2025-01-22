@@ -11,20 +11,15 @@
             "value_re": "^failure$"
         },
         {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
             "key_re": "^task$",
             "value_re": "^(?P<task>\\S+)$"
         },
         {
             "key_re": "^type$",
             "value_re": "^periodic status$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NOC\\.SAE$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["NOC.SAE"],
+    "sources": ["system"]
 }

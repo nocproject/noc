@@ -5,24 +5,15 @@
     "description": "UPS: A power supply unit (PSU) fault exists. 0x0A07",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: (?P<name>A power supply unit \\(PSU\\)) fault exists. 0x0A07"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: (?P<name>A power supply unit \\(PSU\\)) fault exists. 0x0A07",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: A power supply unit (PSU) fault exists. 0x0A07",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

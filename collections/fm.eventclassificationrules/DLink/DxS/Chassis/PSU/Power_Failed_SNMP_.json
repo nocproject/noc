@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^DOT3-OAM-MIB::dot3OamNonThresholdEvent$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^DOT3-OAM-MIB::dot3OamEventLogType\\.\\d+\\.\\d+$",
             "value_re": "^257$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["SNMP Trap"]
 }

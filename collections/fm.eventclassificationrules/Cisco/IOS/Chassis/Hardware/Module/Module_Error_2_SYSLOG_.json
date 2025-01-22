@@ -15,24 +15,15 @@
             "value": "Bad eeprom"
         }
     ],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PM_SCP-SP-3-TRANSCEIVER_(?:BAD_EEPROM|UNSUPPORTED): (?:Integrity check on|Unsupported) transceiver in LAN port (?P<interface>\\S+)( failed: .+)?"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PM_SCP-SP-3-TRANSCEIVER_(?:BAD_EEPROM|UNSUPPORTED): (?:Integrity check on|Unsupported) transceiver in LAN port (?P<interface>\\S+)( failed: .+)?",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PM_SCP-SP-3-TRANSCEIVER_BAD_EEPROM: Integrity check on transceiver in LAN port 5/1 failed: bad key",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

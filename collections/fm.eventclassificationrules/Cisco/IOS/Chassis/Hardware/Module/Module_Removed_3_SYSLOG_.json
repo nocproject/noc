@@ -5,24 +5,15 @@
     "description": "%TRANSCEIVER-DFC2-6-REMOVED: Transceiver module removed from TenGigabitEthernet2/0/0",
     "event_class__name": "Chassis | Hardware | Module | Module Removed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%TRANSCEIVER(?:-DFC\\d+)?-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%TRANSCEIVER(?:-DFC\\d+)?-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%TRANSCEIVER-DFC2-6-REMOVED: Transceiver module removed from TenGigabitEthernet2/0/0",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

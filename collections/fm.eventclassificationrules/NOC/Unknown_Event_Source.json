@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NOC\\.SAE$"
-        },
-        {
             "key_re": "^activator$",
             "value_re": "^(?P<activator>\\S+)$"
         },
@@ -30,5 +22,8 @@
             "key_re": "^collector$",
             "value_re": "^(?P<collector_ip>\\S+):(?P<collector_port>\\d+)$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["NOC.SAE"],
+    "sources": ["system"]
 }

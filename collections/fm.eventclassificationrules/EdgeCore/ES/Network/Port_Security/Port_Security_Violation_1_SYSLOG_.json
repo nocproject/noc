@@ -9,24 +9,15 @@
         "name": "interface",
         "value": "='Eth %s/%s' % (unit, port)"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) have intrusion mac address\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) have intrusion mac address\\.$",
+    "profiles__name": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Sep 20 17:12:33 172.16.3.100 snmp Unit 1, Port 1 have intrusion mac address.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

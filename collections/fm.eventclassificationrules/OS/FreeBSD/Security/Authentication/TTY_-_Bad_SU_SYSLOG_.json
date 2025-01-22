@@ -5,24 +5,15 @@
     "description": "su: BAD SU mitya to root on /dev/ttyp1",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "su: BAD SU (?P<user>.+?) to \\S+ on /dev/\\S+$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "su: BAD SU (?P<user>.+?) to \\S+ on /dev/\\S+$",
+    "profiles__name": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "su: BAD SU mitya to root on /dev/ttyp1",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

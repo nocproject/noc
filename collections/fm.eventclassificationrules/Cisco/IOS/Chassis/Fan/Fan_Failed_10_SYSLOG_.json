@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Chassis Fan"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PLATFORM_ENV-1-FAN: Faulty fan detected"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PLATFORM_ENV-1-FAN: Faulty fan detected",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PLATFORM_ENV-1-FAN: Faulty fan detected",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

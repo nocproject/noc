@@ -5,24 +5,15 @@
     "description": "%TDP-5-INFO: Default-IP-Routing-Table: TDP ID removed",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%TDP-5-INFO:.+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%TDP-5-INFO:.+",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%TDP-5-INFO: Default-IP-Routing-Table: TDP ID removed",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

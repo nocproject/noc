@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Dummy PSU"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply.",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

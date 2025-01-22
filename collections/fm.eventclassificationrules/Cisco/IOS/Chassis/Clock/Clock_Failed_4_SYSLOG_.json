@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Cable Clock"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-4-HWFAULT: Hardware Fault$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-4-HWFAULT: Hardware Fault$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-4-HWFAULT: Hardware Fault",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

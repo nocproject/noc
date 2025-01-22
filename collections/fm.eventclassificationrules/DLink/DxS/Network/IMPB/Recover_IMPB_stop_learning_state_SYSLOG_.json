@@ -5,24 +5,15 @@
     "description": "WARN: Port 28 recovers from IMPB stop learning state",
     "event_class__name": "Network | IMPB | Recover IMPB stop learning state",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>\\S+) recovers from IMPB stop learning state$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>\\S+) recovers from IMPB stop learning state$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Port 28 recovers from IMPB stop learning state",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

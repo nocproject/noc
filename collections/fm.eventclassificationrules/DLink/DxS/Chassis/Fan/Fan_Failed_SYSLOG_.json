@@ -5,22 +5,13 @@
     "description": "WARN: Unit 1, Back Fan failed",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) failed$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) failed$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "WARN: Unit 1, Back Fan failed",
-        "value_re": []
+        "raw_vars": []
     }]
 }

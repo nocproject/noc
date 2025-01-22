@@ -5,20 +5,11 @@
     "description": "Oct  4 13:06:45 2000 3Com Baseline Switch %%10SHELL/4/CMD(l): task:vt0 ip:192.168.1.3 user:admin command:_cmdline-mode on",
     "event_class__name": "Security | Authentication | Privilege Level Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10SHELL/4/CMD\\(l\\):\\s+task:vt\\d+ ip:(?P<ip>\\S+) user:(?P<user>\\S+) command:_cmdline-mode on$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10SHELL/4/CMD\\(l\\):\\s+task:vt\\d+ ip:(?P<ip>\\S+) user:(?P<user>\\S+) command:_cmdline-mode on$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Oct  4 13:06:45 2000 3Com Baseline Switch %%10SHELL/4/CMD(l): task:vt0 ip:192.168.1.3 user:admin command:_cmdline-mode on",

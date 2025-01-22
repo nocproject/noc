@@ -5,24 +5,15 @@
     "description": "System detected SYS PS 1 fan fail condition.",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "System detected (?P<name>SYS PS \\d+ fan) fail condition"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "System detected (?P<name>SYS PS \\d+ fan) fail condition",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "System detected SYS PS 1 fan fail condition.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%STP-W-PORTROLE: Spanning Tree port role change (instance 0 port 1:16): Disabled -> Designated",
     "event_class__name": "Network | STP | STP Port Role Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%STP-W-PORTROLE: Spanning Tree port role change \\(instance (?P<instance>\\d+) port (?P<interface>.+)\\): \\S+ -> (?P<role>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%STP-W-PORTROLE: Spanning Tree port role change \\(instance (?P<instance>\\d+) port (?P<interface>.+)\\): \\S+ -> (?P<role>\\S+)",
+    "profiles__name": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%STP-W-PORTROLE: Spanning Tree port role change (instance 0 port 1:16): Disabled -> Designated",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

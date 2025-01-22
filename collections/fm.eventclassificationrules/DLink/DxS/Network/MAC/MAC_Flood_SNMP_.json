@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2FloodMacDetectedTrap$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^D[EG]S-?\\d{4}.+-MIB::swL2FloodMacDetectedMacVid(\\.\\d+)?$",
             "value_re": "^(?P<vlan>\\d+)$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["SNMP Trap"]
 }

@@ -5,24 +5,15 @@
     "description": "%ASA-5-502103: User priv level changed: Uname: enable_15 From: 1 To: 15",
     "event_class__name": "Security | Authentication | Privilege Level Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.ASA$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:ASA|PIX)-5-502103: User priv level changed: Uname: (?P<user>\\S+) From: (?P<from_priv>\\d+) To: (?P<to_priv>\\d+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:ASA|PIX)-5-502103: User priv level changed: Uname: (?P<user>\\S+) From: (?P<from_priv>\\d+) To: (?P<to_priv>\\d+)",
+    "profiles__name": ["Cisco.ASA"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ASA-5-502103: User priv level changed: Uname: enable_15 From: 1 To: 15",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

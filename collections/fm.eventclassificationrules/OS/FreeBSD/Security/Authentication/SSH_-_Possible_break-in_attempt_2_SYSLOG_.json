@@ -5,24 +5,15 @@
     "description": "sshd[82921]: reverse mapping checking getaddrinfo for 94-76-229-166.static.as29550.net [94.76.229.166] failed - POSSIBLE BREAK-IN ATTEMPT!",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "sshd\\[\\d+\\]: reverse mapping checking getaddrinfo for \\S+ \\[(?P<ip>\\S+)\\] failed - POSSIBLE BREAK-IN ATTEMPT!$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "sshd\\[\\d+\\]: reverse mapping checking getaddrinfo for \\S+ \\[(?P<ip>\\S+)\\] failed - POSSIBLE BREAK-IN ATTEMPT!$",
+    "profiles__name": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "sshd[82921]: reverse mapping checking getaddrinfo for 94-76-229-166.static.as29550.net [94.76.229.166] failed - POSSIBLE BREAK-IN ATTEMPT!",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

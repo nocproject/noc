@@ -5,24 +5,15 @@
     "description": "Aug 31 13:34:23 test snmp VLAN 1 link-down notification.",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "snmp (?P<interface>VLAN\\s+\\S+) link-down notification\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "snmp (?P<interface>VLAN\\s+\\S+) link-down notification\\.$",
+    "profiles__name": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 31 13:34:23 test snmp VLAN 1 link-down notification.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

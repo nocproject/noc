@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^f5\\.BIGIP$"
-        },
-        {
             "key_re": "^F5-BIGIP-COMMON-MIB::bigipNotifyObjNode$",
             "value_re": "^(?P<node>.+)$"
         },
@@ -30,5 +22,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^F5-BIGIP-COMMON-MIB::bigipServiceUp$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["f5.BIGIP"],
+    "sources": ["SNMP Trap"]
 }

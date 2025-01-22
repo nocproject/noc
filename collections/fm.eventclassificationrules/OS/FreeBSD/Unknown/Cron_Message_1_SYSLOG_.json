@@ -5,24 +5,15 @@
     "description": "/usr/sbin/cron[94493]: (root) CMD (newsyslog)",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "/usr/sbin/cron\\[\\d+\\]: \\(root\\) CMD \\(newsyslog\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "/usr/sbin/cron\\[\\d+\\]: \\(root\\) CMD \\(newsyslog\\)",
+    "profiles__name": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "/usr/sbin/cron[94493]: (root) CMD (newsyslog)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "Jul 22 14:18:53 init: craft-control (PID 1413) started",
     "event_class__name": "System | Process Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "init: (?P<name>\\S+) \\(PID (?P<pid>\\d+)\\) started$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "init: (?P<name>\\S+) \\(PID (?P<pid>\\d+)\\) started$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 22 14:18:53 init: craft-control (PID 1413) started",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

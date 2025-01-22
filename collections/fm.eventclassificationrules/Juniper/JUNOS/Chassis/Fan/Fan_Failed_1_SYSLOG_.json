@@ -5,24 +5,15 @@
     "description": "craftd[920]: Major alarm set, FPC 0 Fan 2 not spinning",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Major alarm set, (?P<name>.+) not spinning"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Major alarm set, (?P<name>.+) not spinning",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "craftd[920]: Major alarm set, FPC 0 Fan 2 not spinning",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

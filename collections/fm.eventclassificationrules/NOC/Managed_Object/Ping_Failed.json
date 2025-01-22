@@ -7,10 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
             "key_re": "^probe$",
             "value_re": "^ping$"
         },
@@ -18,5 +14,7 @@
             "key_re": "^result$",
             "value_re": "^failed$"
         }
-    ]
+    ],
+    "labels": [],
+    "sources": ["system"]
 }

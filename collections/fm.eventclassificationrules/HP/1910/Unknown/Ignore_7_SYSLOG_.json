@@ -5,24 +5,15 @@
     "description": "Oct  5 21:08:34 2000 3Com Baseline Switch %%10LS/5/WEBOPT_LOCALUSER(l): (by admin via web from host 192.168.11.123)  Added local user root successfully.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10LS/5/WEBOPT_LOCALUSER\\(l\\): \\(by \\S+ via web from host \\S+\\)\\s+Added local user \\S+ successfully\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10LS/5/WEBOPT_LOCALUSER\\(l\\): \\(by \\S+ via web from host \\S+\\)\\s+Added local user \\S+ successfully\\.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Oct  5 21:08:34 2000 3Com Baseline Switch %%10LS/5/WEBOPT_LOCALUSER(l): (by admin via web from host 192.168.11.123)  Added local user root successfully.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

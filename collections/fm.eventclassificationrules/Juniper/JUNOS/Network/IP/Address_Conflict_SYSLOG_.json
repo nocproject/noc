@@ -5,24 +5,15 @@
     "description": "KERN_ARP_DUPLICATE_ADDR: duplicate IP address 10.60.9.1! sent from address: 02:2a:5d:10:e6:93 (error count = 14)",
     "event_class__name": "Network | IP | Address Conflict",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "KERN_ARP_DUPLICATE_ADDR: duplicate IP address (?P<ip>\\S+)! sent from address: (?P<mac>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "KERN_ARP_DUPLICATE_ADDR: duplicate IP address (?P<ip>\\S+)! sent from address: (?P<mac>\\S+)",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "KERN_ARP_DUPLICATE_ADDR: duplicate IP address 10.60.9.1! sent from address: 02:2a:5d:10:e6:93 (error count = 14)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

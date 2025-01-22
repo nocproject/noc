@@ -5,24 +5,15 @@
     "description": "kernel: re0: link state changed to UP",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "kernel: (?P<interface>\\S+): link state changed to UP$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "kernel: (?P<interface>\\S+): link state changed to UP$",
+    "profiles__name": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "kernel: re0: link state changed to UP",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

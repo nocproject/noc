@@ -7,14 +7,6 @@
     "preference": 100,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
             "key_re": "^JUNIPER-MIB::jnxFruType(?:\\..+)*$",
             "value_re": "^(?P<module>.+)$"
         },
@@ -30,5 +22,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^JUNIPER-MIB::jnxFruPowerOff$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
 }

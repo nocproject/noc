@@ -5,24 +5,15 @@
     "description": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_PATH_DOWN: MPLS path  down on LSP r1-r2",
     "event_class__name": "Network | MPLS | Path Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "RPD_MPLS_PATH_DOWN: MPLS path  down on LSP (?P<name>.+?)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "RPD_MPLS_PATH_DOWN: MPLS path  down on LSP (?P<name>.+?)$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 25 00:30:15 rpd[1261]: RPD_MPLS_PATH_DOWN: MPLS path  down on LSP r1-r2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": " Logout through Telnet(IP: 10.116.0.211)",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Logout through (?:Web|Telnet|SSH|Console)\\s*\\(IP: (?P<ip>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Logout through (?:Web|Telnet|SSH|Console)\\s*\\(IP: (?P<ip>\\S+)\\)$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Logout through Telnet(IP: 10.116.0.211)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

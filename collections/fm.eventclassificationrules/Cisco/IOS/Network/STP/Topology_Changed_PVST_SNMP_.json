@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
             "key_re": "^CISCO-VTP-MIB::vtpVlanIndex\\..+$",
             "value_re": "^(?P<vlan>\\d+)$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^BRIDGE-MIB::topologyChange$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
 }

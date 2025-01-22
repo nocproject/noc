@@ -5,24 +5,15 @@
     "description": "Feb  3 2012 05:46:46 switch-test %%01SHELL/5/LOGIN(l)[410]:VTY login from 192.168.220.252.",
     "event_class__name": "Security | Authentication | Login",
     "preference": 2000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "VTY login from (?P<ip>\\S+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "VTY login from (?P<ip>\\S+)\\.$",
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Feb  3 2012 05:46:46 switch-test %%01SHELL/5/LOGIN(l)[410]:VTY login from 192.168.220.252.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

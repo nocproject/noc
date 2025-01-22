@@ -5,24 +5,15 @@
     "description": "system: operator logged in from 10.111.0.14 over Telnet",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^AlliedTelesis\\.AT9400$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "system: (?P<user>.+) logged in from (?P<ip>\\S+) over Telnet$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "system: (?P<user>.+) logged in from (?P<ip>\\S+) over Telnet$",
+    "profiles__name": ["AlliedTelesis.AT9400"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "system: operator logged in from 10.111.0.14 over Telnet",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

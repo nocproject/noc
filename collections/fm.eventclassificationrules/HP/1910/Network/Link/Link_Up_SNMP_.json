@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
             "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
             "value_re": "^up$"
         },
@@ -30,5 +22,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^IF-MIB::linkUp$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["HP.1910"],
+    "sources": ["SNMP Trap"]
 }

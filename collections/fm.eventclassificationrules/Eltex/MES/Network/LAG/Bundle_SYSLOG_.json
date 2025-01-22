@@ -5,24 +5,15 @@
     "description": "%TRUNK-I-PORTADDED: Port gi1/0/12 added to po1",
     "event_class__name": "Network | LAG | Bundle",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%TRUNK-I-PORTADDED: Port (?P<interface>\\S+) added to (?P<lag_interface>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%TRUNK-I-PORTADDED: Port (?P<interface>\\S+) added to (?P<lag_interface>\\S+)$",
+    "profiles__name": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%TRUNK-I-PORTADDED: Port gi1/0/12 added to po1",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

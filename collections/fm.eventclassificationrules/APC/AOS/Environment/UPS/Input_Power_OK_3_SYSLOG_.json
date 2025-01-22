@@ -5,24 +5,15 @@
     "description": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210",
     "event_class__name": "Environment | UPS | Input Power OK",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210$",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

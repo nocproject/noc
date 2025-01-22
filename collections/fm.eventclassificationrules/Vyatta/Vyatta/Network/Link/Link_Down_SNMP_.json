@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Vyatta\\.Vyatta$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^IF-MIB::linkDown$"
         },
@@ -22,5 +14,8 @@
             "key_re": "^IF-MIB::ifDescr\\.\\d+$",
             "value_re": "^(?P<interface>.+)$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Vyatta.Vyatta"],
+    "sources": ["SNMP Trap"]
 }

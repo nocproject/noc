@@ -1,0 +1,13 @@
+{
+    "name": "Cisco | IOS | Chassis | Linecard | LC Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "dcaab6da-e6c3-429a-9b69-241960432525",
+    "description": "6739: Nov 11 23:26:10.203 OMST: %IOSXE_OIR-6-OFFLINECARD: Card (fp) offline in slot F1",
+    "event_class__name": "Chassis | Linecard | LC Down",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%IOSXE_OIR-6-OFFLINECARD: Card \\(\\S+\\) offline in slot (?P<number>\\S+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"]
+}

@@ -5,24 +5,15 @@
     "description": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user 'cisco' from '1.1.1.1' on 'vty3'(cipher 'aes128-cbc', mac 'hmac-md5')",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user '(?P<user>.+)' from '(?P<ip>.+)' on '(?P<line>.+)'\\s*\\(.+\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user '(?P<user>.+)' from '(?P<ip>.+)' on '(?P<line>.+)'\\s*\\(.+\\)",
+    "profiles__name": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user 'cisco' from '1.1.1.1' on 'vty3'(cipher 'aes128-cbc', mac 'hmac-md5')",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,22 +5,13 @@
     "description": "%NTP-4-UNSYNC: NTP sync is lost",
     "event_class__name": "Network | NTP | Lost synchronization",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%NTP-4-UNSYNC: NTP sync is lost"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%NTP-4-UNSYNC: NTP sync is lost",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%NTP-4-UNSYNC: NTP sync is lost",
-        "value_re": []
+        "raw_vars": []
     }]
 }

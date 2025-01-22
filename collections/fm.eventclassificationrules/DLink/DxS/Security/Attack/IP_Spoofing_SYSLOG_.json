@@ -5,24 +5,15 @@
     "description": "CRIT(2) Possible spoofing attack from (IP 10.109.36.1 MAC 00-1C-F0-21-59-03 port 19)",
     "event_class__name": "Security | Attack | IP Spoofing",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "CRIT(2) Possible spoofing attack from (IP 10.109.36.1 MAC 00-1C-F0-21-59-03 port 19)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

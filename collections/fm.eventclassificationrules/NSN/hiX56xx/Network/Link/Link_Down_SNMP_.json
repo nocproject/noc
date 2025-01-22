@@ -7,16 +7,11 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NSN\\.hiX56xx$"
-        },
-        {
             "key_re": "^IF-MIB::ifOperStatus\\.(?P<interface>\\d+)$",
             "value_re": "^2$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["NSN.hiX56xx"],
+    "sources": ["SNMP Trap"]
 }

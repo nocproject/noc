@@ -5,24 +5,15 @@
     "description": "Aug 10 2011 16:25:44: %ASA-3-313001: Denied ICMP type=8, code=0 from 93.119.241.226 on interface outside",
     "event_class__name": "Security | ACL | ACL Deny",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.ASA$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:ASA|PIX)-3-313001: Denied (?P<proto>\\S+) type=\\d+, code=\\d+ from (?P<src_ip>\\S+) on interface (?P<src_interface>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:ASA|PIX)-3-313001: Denied (?P<proto>\\S+) type=\\d+, code=\\d+ from (?P<src_ip>\\S+) on interface (?P<src_interface>\\S+)$",
+    "profiles__name": ["Cisco.ASA"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 10 2011 16:25:44: %ASA-3-313001: Denied ICMP type=8, code=0 from 93.119.241.226 on interface outside",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

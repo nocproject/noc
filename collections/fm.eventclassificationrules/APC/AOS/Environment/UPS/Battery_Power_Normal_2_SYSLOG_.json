@@ -5,24 +5,15 @@
     "description": "UPS: Returned from a Low-Battery condition. 0x0110",
     "event_class__name": "Environment | UPS | Battery Power Normal",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: Returned from a Low-Battery condition. 0x0110"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: Returned from a Low-Battery condition. 0x0110",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: Returned from a Low-Battery condition. 0x0110",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

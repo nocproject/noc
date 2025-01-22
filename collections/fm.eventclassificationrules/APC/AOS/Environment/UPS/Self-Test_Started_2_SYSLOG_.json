@@ -5,24 +5,15 @@
     "description": "UPS: Self-Test started by automatic timer. 0x0137",
     "event_class__name": "Environment | UPS | Self-Test Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: Self-Test started by automatic timer. 0x0137"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: Self-Test started by automatic timer. 0x0137",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: Self-Test started by automatic timer. 0x0137",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

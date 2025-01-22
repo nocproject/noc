@@ -5,24 +5,15 @@
     "description": "%UBR7200-6-HOLDOVER: Cable clock in Holdover mode",
     "event_class__name": "Chassis | Clock | Clock Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-6-(?:HOLDOVER|FREERUN): (?P<name>Cable clock) in (?:Holdover|Freerun) mode$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-6-(?:HOLDOVER|FREERUN): (?P<name>Cable clock) in (?:Holdover|Freerun) mode$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-6-HOLDOVER: Cable clock in Holdover mode",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

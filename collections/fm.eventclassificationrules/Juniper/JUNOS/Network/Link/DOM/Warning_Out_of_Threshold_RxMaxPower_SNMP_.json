@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | Link | DOM | RxMaxPower (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "50569730-4d76-4e33-8df4-b05db3f44ff2",
     "description": "Juniper-System-MIB::juniSystemPortSfpRxMaxPowerThreshold",
     "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
@@ -16,14 +17,6 @@
     ],
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
             "key_re": "^Juniper-System-MIB::juniSystemPortSfpPowerThresholdIfIndex(?:\\.\\d+)*$",
             "value_re": "^(?P<interface__ifindex>\\d+)$"
         },
@@ -35,5 +28,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^Juniper-System-MIB::juniSystemPortSfpRxMaxPowerThreshold$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
 }

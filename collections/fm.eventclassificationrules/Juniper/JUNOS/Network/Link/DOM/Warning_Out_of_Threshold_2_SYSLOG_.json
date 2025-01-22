@@ -5,24 +5,15 @@
     "description": "fpc0 sfp-0/0/6 link 6 SFP receive power low  warning set",
     "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<interface>(?:sfp-\\d+/\\d+/\\d+|MIC\\(\\d+/\\d+\\)) link \\d+) SFP (?P<sensor>.+) (?P<threshold>low|high)\\s+warning set"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<interface>(?:sfp-\\d+/\\d+/\\d+|MIC\\(\\d+/\\d+\\)) link \\d+) SFP (?P<sensor>.+) (?P<threshold>low|high)\\s+warning set",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "fpc0 sfp-0/0/6 link 6 SFP receive power low  warning set",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

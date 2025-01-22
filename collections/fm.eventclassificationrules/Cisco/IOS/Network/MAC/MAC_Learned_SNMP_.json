@@ -11,14 +11,6 @@
     }],
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^CISCO-MAC-NOTIFICATION-MIB::cmnMacChangedNotification$"
         },
@@ -27,6 +19,9 @@
             "value_re": "^\\x02.{2}(?P<mac__bin_to_mac>.{6})(?P<iface>.{2})$"
         }
     ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"],
     "test_cases": [
         {
             "message": null,

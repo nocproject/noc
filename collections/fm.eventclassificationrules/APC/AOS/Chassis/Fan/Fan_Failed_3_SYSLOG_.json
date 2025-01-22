@@ -5,24 +5,15 @@
     "description": "UPS: System level fan fault exists. 0x021D",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: (?P<name>System level fan) fault exists. 0x021D"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: (?P<name>System level fan) fault exists. 0x021D",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: System level fan fault exists. 0x021D",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

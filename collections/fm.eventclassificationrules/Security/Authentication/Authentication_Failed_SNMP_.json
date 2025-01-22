@@ -7,12 +7,10 @@
     "preference": 2000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^SNMPv2-MIB::authenticationFailure$"
         }
-    ]
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
 }

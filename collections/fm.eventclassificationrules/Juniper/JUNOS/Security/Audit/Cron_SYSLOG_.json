@@ -5,24 +5,15 @@
     "description": "/usr/sbin/cron[1845]: (root) CMD (adjkerntz -a)",
     "event_class__name": "Security | Audit | Cron",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "/usr/sbin/cron\\[\\d+\\]: \\((?P<user>.+)\\) CMD \\((?P<command>.+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "/usr/sbin/cron\\[\\d+\\]: \\((?P<user>.+)\\) CMD \\((?P<command>.+)\\)$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "/usr/sbin/cron[1845]: (root) CMD (adjkerntz -a)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

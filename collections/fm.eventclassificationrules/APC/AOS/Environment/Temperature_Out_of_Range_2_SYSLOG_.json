@@ -5,24 +5,15 @@
     "description": "UPS: The internal UPS temperature exceeds the critical threshold. 0x0152",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: The internal UPS temperature exceeds the critical threshold. 0x0152"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: The internal UPS temperature exceeds the critical threshold. 0x0152",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: The internal UPS temperature exceeds the critical threshold. 0x0152",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,18 +5,9 @@
     "description": " root login  on",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NSN\\.hiX56xx$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<user>\\S+) login  on `ttyp\\d' from `(?P<ip>\\S+)'$"
-        }
-    ]
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<user>\\S+) login  on `ttyp\\d' from `(?P<ip>\\S+)'$",
+    "profiles__name": ["NSN.hiX56xx"],
+    "sources": ["syslog"]
 }

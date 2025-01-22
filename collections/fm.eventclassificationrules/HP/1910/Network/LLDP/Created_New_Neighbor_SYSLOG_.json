@@ -5,24 +5,15 @@
     "description": "Mar 19 09:28:30 2013 3com2952 %%10LLDP/6/LLDP_CREATE_NEIGHBOUR(l): New neighbor created on Port GigabitEthernet1/0/1 (IfIndex 9437184), Chassis ID is 20fd-f1ca-61f4, Port ID is Ethernet0/21.",
     "event_class__name": "Network | LLDP | Created New Neighbor",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10LLDP/6/LLDP_CREATE_NEIGHBOUR\\(l\\): New neighbor created on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10LLDP/6/LLDP_CREATE_NEIGHBOUR\\(l\\): New neighbor created on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Mar 19 09:28:30 2013 3com2952 %%10LLDP/6/LLDP_CREATE_NEIGHBOUR(l): New neighbor created on Port GigabitEthernet1/0/1 (IfIndex 9437184), Chassis ID is 20fd-f1ca-61f4, Port ID is Ethernet0/21.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

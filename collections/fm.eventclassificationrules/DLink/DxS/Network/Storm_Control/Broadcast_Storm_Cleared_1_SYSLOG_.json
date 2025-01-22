@@ -5,24 +5,15 @@
     "description": "INFO(6) Port 22 Broadcast storm has cleared",
     "event_class__name": "Network | Storm Control | Broadcast Storm Cleared",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>.+) Broadcast storm has cleared"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>.+) Broadcast storm has cleared",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO(6) Port 22 Broadcast storm has cleared",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

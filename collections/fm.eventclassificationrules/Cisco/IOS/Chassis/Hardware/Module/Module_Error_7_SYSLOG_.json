@@ -5,24 +5,15 @@
     "description": "%PM_SCP-SP-2-LCP_FW_ERR_INFORM: Module 4 is experiencing the following error: Bus Asic #0 transient Pb error",
     "event_class__name": "Chassis | Hardware | Module | Module Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PM_SCP(-SP)?-2-LCP_FW_ERR_INFORM: Module (?P<module>\\d+) is experiencing the following error: (?P<reason>.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PM_SCP(-SP)?-2-LCP_FW_ERR_INFORM: Module (?P<module>\\d+) is experiencing the following error: (?P<reason>.+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PM_SCP-SP-2-LCP_FW_ERR_INFORM: Module 4 is experiencing the following error: Bus Asic #0 transient Pb error",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

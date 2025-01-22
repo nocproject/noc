@@ -5,24 +5,15 @@
     "description": "WARN: Safeguard Engine enters EXHAUSTED mode",
     "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "( Unit (?P<unit>\\d+), )?Safeguard Engine enters EXHAUSTED mode$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "( Unit (?P<unit>\\d+), )?Safeguard Engine enters EXHAUSTED mode$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Safeguard Engine enters EXHAUSTED mode",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

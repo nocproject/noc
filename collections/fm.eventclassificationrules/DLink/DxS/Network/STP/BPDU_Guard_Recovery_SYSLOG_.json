@@ -5,24 +5,15 @@
     "description": "INFO(6) Port <2>  recover from BPDU under attacking state automatically",
     "event_class__name": "Network | STP | BPDU Guard Recovery",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port <?(?P<interface>\\S*\\d+)>?\\s+recover from BPDU under (?:attacking|protection) state automatically"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port <?(?P<interface>\\S*\\d+)>?\\s+recover from BPDU under (?:attacking|protection) state automatically",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO(6) Port <2>  recover from BPDU under attacking state automatically",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

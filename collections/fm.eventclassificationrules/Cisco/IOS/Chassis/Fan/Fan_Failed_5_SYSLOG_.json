@@ -5,24 +5,15 @@
     "description": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

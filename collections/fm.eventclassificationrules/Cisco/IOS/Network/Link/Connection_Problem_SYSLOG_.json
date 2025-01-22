@@ -5,24 +5,15 @@
     "description": "%DEC21140-5-NOCARR: FastEthernet0/1 cable/connector problem?",
     "event_class__name": "Network | Link | Connection Problem",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%.+-NOCARR: (?P<interface>\\S+) cable/connector problem?"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%.+-NOCARR: (?P<interface>\\S+) cable/connector problem?",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%DEC21140-5-NOCARR: FastEthernet0/1 cable/connector problem?",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

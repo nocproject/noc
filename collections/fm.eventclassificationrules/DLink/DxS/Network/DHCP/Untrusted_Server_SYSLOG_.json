@@ -5,24 +5,15 @@
     "description": "INFO: Detected untrusted DHCP server(IP: 192.168.1.1, Port: 4)",
     "event_class__name": "Network | DHCP | Untrusted Server",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Detected untrusted DHCP server\\s*\\(IP: (?P<ip>\\S+), Port: (?P<interface>\\S+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Detected untrusted DHCP server\\s*\\(IP: (?P<ip>\\S+), Port: (?P<interface>\\S+)\\)",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Detected untrusted DHCP server(IP: 192.168.1.1, Port: 4)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

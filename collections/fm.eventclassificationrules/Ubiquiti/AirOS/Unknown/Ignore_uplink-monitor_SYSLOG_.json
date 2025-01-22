@@ -5,24 +5,15 @@
     "description": "Jan 2 10:08:41 syslog: uplink-monitor.update(): prev observation is eth[eth0], seq 7564",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Ubiquiti\\.AirOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* syslog: uplink-monitor\\..*"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* syslog: uplink-monitor\\..*",
+    "profiles__name": ["Ubiquiti.AirOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan 2 10:08:41 syslog: uplink-monitor.update(): prev observation is eth[eth0], seq 7564",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

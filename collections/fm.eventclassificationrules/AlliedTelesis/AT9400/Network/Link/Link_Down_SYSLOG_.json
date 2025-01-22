@@ -5,22 +5,13 @@
     "description": "pcfg: Link DOWN on port 20",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^AlliedTelesis\\.AT9400$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "pcfg: Link DOWN on port (?P<interface>\\d+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "pcfg: Link DOWN on port (?P<interface>\\d+)",
+    "profiles__name": ["AlliedTelesis.AT9400"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "pcfg: Link DOWN on port 20",
-        "value_re": []
+        "raw_vars": []
     }]
 }

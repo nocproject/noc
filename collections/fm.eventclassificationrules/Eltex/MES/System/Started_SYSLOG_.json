@@ -5,22 +5,13 @@
     "description": "%INIT-I-Startup: Warm Startup",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%INIT-I-Startup: (Warm|Cold) Startup$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%INIT-I-Startup: (Warm|Cold) Startup$",
+    "profiles__name": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%INIT-I-Startup: Warm Startup",
-        "value_re": []
+        "raw_vars": []
     }]
 }

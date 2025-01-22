@@ -5,24 +5,15 @@
     "description": "INFO: Login failed through Console (Username: Anonymous)",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Login failed through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Login failed through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Login failed through Console (Username: Anonymous)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

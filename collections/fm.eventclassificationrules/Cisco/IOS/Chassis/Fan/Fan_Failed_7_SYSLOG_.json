@@ -5,24 +5,15 @@
     "description": "%ENVMON-4-FAN_LOW_RPM: Fan 2 service recommended",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ENVMON-4-FAN_LOW_RPM: (?P<name>.+) service recommended"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ENVMON-4-FAN_LOW_RPM: (?P<name>.+) service recommended",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ENVMON-4-FAN_LOW_RPM: Fan 2 service recommended",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "Dec 29 01:01:45 2012 3com2952 %%10SYSMIB/4/CLKCHANGE(t):  1.3.6.1.4.1.43.45.1.5.25.19.2.1<h3cSysClockChangedNotification> System clock changed",
     "event_class__name": "Network | NTP | System Clock Synchronized",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10SYSMIB/4/CLKCHANGE\\(t\\):\\s+\\S+ System clock changed$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10SYSMIB/4/CLKCHANGE\\(t\\):\\s+\\S+ System clock changed$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Dec 29 01:01:45 2012 3com2952 %%10SYSMIB/4/CLKCHANGE(t):  1.3.6.1.4.1.43.45.1.5.25.19.2.1<h3cSysClockChangedNotification> System clock changed",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

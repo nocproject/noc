@@ -11,14 +11,6 @@
     }],
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^PowerNet-MIB::apc$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
             "value_re": "^UPS: No longer on battery power.$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["APC.AOS"],
+    "sources": ["SNMP Trap"]
 }

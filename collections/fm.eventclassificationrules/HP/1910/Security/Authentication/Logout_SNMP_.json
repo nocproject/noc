@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^SNMPv2-SMI::enterprises\\.43\\.45\\.1\\.10\\.2\\.2\\.1\\.1\\.3\\.0\\.2$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^SNMPv2-SMI::enterprises\\.43\\.45\\.1\\.10\\.2\\.2\\.1\\.1\\.2\\.2\\.0$",
             "value_re": "^\\S+$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["HP.1910"],
+    "sources": ["SNMP Trap"]
 }

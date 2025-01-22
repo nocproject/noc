@@ -5,24 +5,15 @@
     "description": "0000001977: Jan  8 19:16:01: torgovaja_4: %LLDP-4-lldpSomthingChangedLoc: 674174:20: MAC PHY status of Port 11 has changed",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Qtech\\.QSW$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%LLDP-4-lldpSomthingChangedLoc: \\S+: (MAC PHY|VLAN ID) status of Port \\S+ has changed$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LLDP-4-lldpSomthingChangedLoc: \\S+: (MAC PHY|VLAN ID) status of Port \\S+ has changed$",
+    "profiles__name": ["Qtech.QSW"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "0000001977: Jan  8 19:16:01: torgovaja_4: %LLDP-4-lldpSomthingChangedLoc: 674174:20: MAC PHY status of Port 11 has changed",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

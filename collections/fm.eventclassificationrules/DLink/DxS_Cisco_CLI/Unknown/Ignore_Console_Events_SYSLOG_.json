@@ -5,24 +5,15 @@
     "description": "%SYS-5-CONFIG_I: Configured from console",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS_Cisco_CLI$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-5-CONFIG_I: Configured from console"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-5-CONFIG_I: Configured from console",
+    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-5-CONFIG_I: Configured from console",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

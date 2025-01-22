@@ -5,24 +5,15 @@
     "description": "%LINEPROTO-5-UPDOWN: Line protocol on Interface Ethernet1/0/9, changed state to DOWN",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NAG\\.SNR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%LINEPROTO-5-UPDOWN: Line protocol on Interface (?P<interface>.+), changed state to DOWN"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LINEPROTO-5-UPDOWN: Line protocol on Interface (?P<interface>.+), changed state to DOWN",
+    "profiles__name": ["NAG.SNR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%LINEPROTO-5-UPDOWN: Line protocol on Interface Ethernet1/0/9, changed state to DOWN",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

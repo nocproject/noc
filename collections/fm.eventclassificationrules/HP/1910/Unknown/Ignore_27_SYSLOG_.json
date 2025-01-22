@@ -5,24 +5,15 @@
     "description": "Jul 23 12:57:26 2013 3com2952 %%10LAGG/1/AggPortRecoverActive(t):   Trap 1.3.6.1.4.1.43.45.1.5.25.25.2.4<hwAggPortActiveNotification>: Aggregation Group 1: port member 9437206 becomes ACTIVE!",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10LAGG/1/AggPortRecoverActive\\(t\\):\\s+Trap \\S+: Aggregation Group \\d+: port member \\d+ becomes ACTIVE!$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10LAGG/1/AggPortRecoverActive\\(t\\):\\s+Trap \\S+: Aggregation Group \\d+: port member \\d+ becomes ACTIVE!$",
+    "profiles__name": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 23 12:57:26 2013 3com2952 %%10LAGG/1/AggPortRecoverActive(t):   Trap 1.3.6.1.4.1.43.45.1.5.25.25.2.4<hwAggPortActiveNotification>: Aggregation Group 1: port member 9437206 becomes ACTIVE!",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

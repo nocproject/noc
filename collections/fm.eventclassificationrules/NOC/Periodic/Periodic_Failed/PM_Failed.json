@@ -5,22 +5,12 @@
     "description": "PM Failed",
     "event_class__name": "NOC | Periodic | Periodic Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NOC\\.SAE$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^Failed .+$"
-        },
-        {
-            "key_re": "^type$",
-            "value_re": "^(?P<task>pm probe)$"
-        }
-    ]
+    "patterns": [{
+        "key_re": "^type$",
+        "value_re": "^(?P<task>pm probe)$"
+    }],
+    "labels": [],
+    "message_rx": "^Failed .+$",
+    "profiles__name": ["NOC.SAE"],
+    "sources": ["system"]
 }

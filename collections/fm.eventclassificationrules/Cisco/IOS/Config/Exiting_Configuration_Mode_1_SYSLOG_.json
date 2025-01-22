@@ -5,24 +5,15 @@
     "description": "%SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
     "event_class__name": "Config | Exiting Configuration Mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-5-CONFIG_I: Configured from console by \\S+ \\(\\S+\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-5-CONFIG_I: Configured from console by \\S+ \\(\\S+\\)$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

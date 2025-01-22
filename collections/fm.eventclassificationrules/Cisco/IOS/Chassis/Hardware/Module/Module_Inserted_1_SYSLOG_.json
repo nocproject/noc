@@ -5,24 +5,15 @@
     "description": "%OIR-SP-6-INSCARD: Card inserted in slot 3, interfaces are now online",
     "event_class__name": "Chassis | Hardware | Module | Module Inserted",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%OIR-SP-6-INSCARD: Card inserted in (?P<module>slot \\S+), interfaces are now online"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%OIR-SP-6-INSCARD: Card inserted in (?P<module>slot \\S+), interfaces are now online",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%OIR-SP-6-INSCARD: Card inserted in slot 3, interfaces are now online",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%QM-4-TCAM_ENTRY: Hardware TCAM entry capacity exceeded",
     "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:Q|F)M-4-TCAM_ENTRY: (?P<reason>.+ capacity exceeded)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:Q|F)M-4-TCAM_ENTRY: (?P<reason>.+ capacity exceeded)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%QM-4-TCAM_ENTRY: Hardware TCAM entry capacity exceeded",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

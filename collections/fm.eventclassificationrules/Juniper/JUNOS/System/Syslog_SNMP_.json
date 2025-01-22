@@ -1,0 +1,25 @@
+{
+    "name": "Juniper | JUNOS | System | Syslog (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "67e84b6d-d6ed-46c6-93e0-89a31a271630",
+    "description": "Notification of a generated syslog message",
+    "event_class__name": "Unknown | Syslog",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-SYSLOG-MIB::jnxSyslogTrap$"
+        },
+        {
+            "key_re": "^JUNIPER-SYSLOG-MIB::jnxSyslogMessage.\\S+$",
+            "value_re": "^(?P<syslog_message>.+)$"
+        },
+        {
+            "key_re": "^JUNIPER-SYSLOG-MIB::jnxSyslogEventName.\\S+$",
+            "value_re": "^(?P<syslog_event_name>.+)$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
+}

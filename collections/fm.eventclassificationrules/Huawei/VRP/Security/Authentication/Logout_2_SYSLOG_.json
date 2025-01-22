@@ -5,24 +5,15 @@
     "description": "Jul 20 2012 11:37:35 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGOUT(l):  amt logout from 212.40.34.7.",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "LOGOUT\\(l\\):\\s+(?P<user>\\S+) logout from (?P<ip>\\S+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "LOGOUT\\(l\\):\\s+(?P<user>\\S+) logout from (?P<ip>\\S+)\\.$",
+    "profiles__name": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 20 2012 11:37:35 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGOUT(l):  amt logout from 212.40.34.7.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

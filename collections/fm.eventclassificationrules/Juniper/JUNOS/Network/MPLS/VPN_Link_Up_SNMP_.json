@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | JUNOS | Network | MPLS | VPN Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "50c4fcd3-4d97-4247-8249-4f9569b5b219",
+    "description": "JUNIPER-VPN-MIB::jnxVpnPwUp, JUNIPER-VPN-MIB::jnxVpnIfUp",
+    "event_class__name": "Network | MPLS | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-VPN-MIB::(jnxVpnIfUp|jnxVpnPwUp)$"
+        },
+        {
+            "key_re": "^JUNIPER-VPN-MIB::(jnxVpnIfVpnName|jnxVpnPwVpnName)\\.\\S+$",
+            "value_re": "^(?P<vpn_name>.+)"
+        },
+        {
+            "key_re": "^JUNIPER-VPN-MIB::(jnxVpnIfVpnType|jnxVpnPwVpnType)\\.\\S+$",
+            "value_re": "^(?P<vpn_type>\\S+)"
+        },
+        {
+            "key_re": "^JUNIPER-VPN-MIB::(jnxVpnIfIndex|jnxVpnPwIndex)\\.\\S+$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
+}

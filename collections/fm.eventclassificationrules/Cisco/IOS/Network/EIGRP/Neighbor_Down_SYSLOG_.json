@@ -5,24 +5,15 @@
     "description": "%DUAL-5-NBRCHANGE: IP-EIGRP(0) 100: Neighbor 172.16.8.62 (FastEthernet0/0.14) is down: holding time expired",
     "event_class__name": "Network | EIGRP | Neighbor Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4|EIGRP-IPv6)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>down): (?P<reason>.*)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4|EIGRP-IPv6)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>down): (?P<reason>.*)$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%DUAL-5-NBRCHANGE: IP-EIGRP(0) 100: Neighbor 172.16.8.62 (FastEthernet0/0.14) is down: holding time expired",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

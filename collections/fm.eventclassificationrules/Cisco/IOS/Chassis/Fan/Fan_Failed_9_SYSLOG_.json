@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Chassis Fan"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%HARDWARE-2-FAN_ERROR: Fan(.+)? Failure."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%HARDWARE-2-FAN_ERROR: Fan(.+)? Failure.",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%HARDWARE-2-FAN_ERROR: Fan Failure.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

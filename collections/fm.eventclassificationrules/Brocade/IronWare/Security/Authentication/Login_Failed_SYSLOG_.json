@@ -5,24 +5,15 @@
     "description": "Aug 9 04:36:32 Foudry-Core Security: SSH access by user backuper from src IP 10.200.202.193, src MAC 001b.2127.12f0 rejected, 2 attempt(s)",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Brocade\\.IronWare$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* Security: (?:SSH|telnet) access by user (?P<user>\\S+) from src IP (?P<ip>\\S+), src MAC \\S+ rejected.*$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* Security: (?:SSH|telnet) access by user (?P<user>\\S+) from src IP (?P<ip>\\S+), src MAC \\S+ rejected.*$",
+    "profiles__name": ["Brocade.IronWare"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 9 04:36:32 Foudry-Core Security: SSH access by user backuper from src IP 10.200.202.193, src MAC 001b.2127.12f0 rejected, 2 attempt(s)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

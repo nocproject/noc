@@ -5,24 +5,15 @@
     "description": ": 2019 Dec 11 11:50:04 MSK: %ETHPORT-5-IF_UP: Interface Ethernet1/8 is up in mode access",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco.NXOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ETHPORT-5-IF_UP: Interface (?P<interface>.+) is up in mode \\S+$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ETHPORT-5-IF_UP: Interface (?P<interface>.+) is up in mode \\S+$",
+    "profiles__name": ["Cisco.NXOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": ": 2019 Dec 11 11:50:04 MSK: %ETHPORT-5-IF_UP: Interface Ethernet1/8 is up in mode access",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

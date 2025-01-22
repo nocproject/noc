@@ -5,24 +5,15 @@
     "description": "2020 Oct 22 19:04:12 MSK: %ETHPORT-3-IF_SFP_ALARM: Interface Ethernet1/1, High Rx Power Alarm cleared",
     "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.NXOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "IF_SFP_ALARM: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Alarm cleared$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "IF_SFP_ALARM: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Alarm cleared$",
+    "profiles__name": ["Cisco.NXOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "2020 Oct 22 19:04:12 MSK: %ETHPORT-3-IF_SFP_ALARM: Interface Ethernet1/1, High Rx Power Alarm cleared",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

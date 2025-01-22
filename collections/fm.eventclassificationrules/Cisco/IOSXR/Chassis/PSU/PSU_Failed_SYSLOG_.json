@@ -5,24 +5,15 @@
     "description": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module 0/PM5/SP failure condition raised : Module shutdown due to no external stable input power feed present",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module (?P<name>\\S+) failure condition raised"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module (?P<name>\\S+) failure condition raised",
+    "profiles__name": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module 0/PM5/SP failure condition raised : Module shutdown due to no external stable input power feed present",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

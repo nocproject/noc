@@ -5,24 +5,15 @@
     "description": "Jul 22 08:15:16 rpd[1262]: RPD_RSVP_NBRDOWN: RSVP neighbor 10.99.2.2 down on interface em1.0, neighbor seq number change",
     "event_class__name": "Network | RSVP | Neighbor Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "RPD_RSVP_NBRDOWN: RSVP neighbor (?P<neighbor>\\S+) down on interface (?P<interface>.+?), (?P<reason>.+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "RPD_RSVP_NBRDOWN: RSVP neighbor (?P<neighbor>\\S+) down on interface (?P<interface>.+?), (?P<reason>.+)$",
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 22 08:15:16 rpd[1262]: RPD_RSVP_NBRDOWN: RSVP neighbor 10.99.2.2 down on interface em1.0, neighbor seq number change",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

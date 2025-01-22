@@ -5,24 +5,15 @@
     "description": "fw-1-sc: NetScreen device_id=fw-1-sc  [Root]system-information-00524: SNMP request has been received from an unknown host in SNMP community PUBLIC at 10.10.65.11:36499. (2011-07-29 10:50:36)",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.ScreenOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "system-information-00524: SNMP request has been received from an unknown host in SNMP community .+? at (?P<ip>\\S+):\\d+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "system-information-00524: SNMP request has been received from an unknown host in SNMP community .+? at (?P<ip>\\S+):\\d+",
+    "profiles__name": ["Juniper.ScreenOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "fw-1-sc: NetScreen device_id=fw-1-sc  [Root]system-information-00524: SNMP request has been received from an unknown host in SNMP community PUBLIC at 10.10.65.11:36499. (2011-07-29 10:50:36)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

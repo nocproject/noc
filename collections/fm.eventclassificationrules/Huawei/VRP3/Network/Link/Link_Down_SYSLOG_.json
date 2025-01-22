@@ -5,24 +5,15 @@
     "description": "L2INF/5/PORT LINK STATUS CHANGE: Ethernet0/1: turns into DOWN state",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP3$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "LINK STATUS CHANGE:\\s*(?P<interface>\\S+): turns into DOWN state"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "LINK STATUS CHANGE:\\s*(?P<interface>\\S+): turns into DOWN state",
+    "profiles__name": ["Huawei.VRP3"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "L2INF/5/PORT LINK STATUS CHANGE: Ethernet0/1: turns into DOWN state",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

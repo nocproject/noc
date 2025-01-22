@@ -5,24 +5,15 @@
     "description": "%STP-I-EDGEPORT: Attention: port ch3 from which the bpdu was received is configured as Fast Port",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%STP-I-EDGEPORT: Attention: port \\S+ from which the bpdu was received is configured as Fast Port$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%STP-I-EDGEPORT: Attention: port \\S+ from which the bpdu was received is configured as Fast Port$",
+    "profiles__name": ["Supertel.K2X"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%STP-I-EDGEPORT: Attention: port ch3 from which the bpdu was received is configured as Fast Port",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

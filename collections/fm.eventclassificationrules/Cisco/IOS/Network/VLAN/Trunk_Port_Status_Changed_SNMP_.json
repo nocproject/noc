@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | VLAN | Trunk Port Status Changed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "aa1f70fe-61bd-4a0a-8c46-9e517da9d0c8",
+    "description": "CISCO-VTP-MIB::vlanTrunkPortDynamicStatusChange\nstatus: \n* trunking(1)\n* notTrunking(2)\n\n}",
+    "event_class__name": "Network | VLAN | Trunk Port Status Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^CISCO-VTP-MIB::vlanTrunkPortDynamicStatus\\.(?P<interface__ifindex>\\d+)$",
+            "value_re": "^(?P<status>.*)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-VTP-MIB::vlanTrunkPortDynamicStatusChange$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

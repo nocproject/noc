@@ -5,24 +5,15 @@
     "description": "%SEC-5-LOGOUT: Exec session is terminated for user noc-sa on line vty0 (10.12.114.17)",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Force10\\.FTOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SEC-5-LOGOUT: Exec session is terminated for user (?P<user>.+) on line \\S+ \\((?P<ip>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SEC-5-LOGOUT: Exec session is terminated for user (?P<user>.+) on line \\S+ \\((?P<ip>\\S+)\\)$",
+    "profiles__name": ["Force10.FTOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SEC-5-LOGOUT: Exec session is terminated for user noc-sa on line vty0 (10.12.114.17)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

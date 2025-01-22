@@ -5,24 +5,15 @@
     "description": "%DYINGGASP-0-POWER_LOSS: Shutdown due to power loss",
     "event_class__name": "Chassis | PSU | Power Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%DYINGGASP-0-POWER_LOSS: Shutdown due to (?P<condition>power loss)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%DYINGGASP-0-POWER_LOSS: Shutdown due to (?P<condition>power loss)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%DYINGGASP-0-POWER_LOSS: Shutdown due to power loss",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

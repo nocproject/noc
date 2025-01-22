@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Sensor Threshold Exceeded (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a6860d69-02f9-43d1-afb3-4b9cad789138",
+    "description": "CISCO-ENTITY-SENSOR-MIB::entSensorThresholdNotification",
+    "event_class__name": "Chassis | Hardware | Module | Sensor Threshold Exceeded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^CISCO-ENTITY-SENSOR-MIB::entSensorThresholdValue\\.\\d+$",
+            "value_re": "(?P<tvalue>.+)"
+        },
+        {
+            "key_re": "^CISCO-ENTITY-SENSOR-MIB::entSensorValue\\.(?P<sensor>\\S+)$",
+            "value_re": "(?P<ovalue>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
+            "value_re": "^CISCO-ENTITY-SENSOR-MIB::entSensorThresholdNotification$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

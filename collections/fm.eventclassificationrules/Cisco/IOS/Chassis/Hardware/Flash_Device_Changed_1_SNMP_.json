@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Flash Device Changed #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0a664a22-9759-456a-a90c-c6569cdf1bf8",
+    "description": "CISCO-FLASH-MIB::ciscoFlashDeviceChangeTrap",
+    "event_class__name": "Chassis | Hardware | Flash Device Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-FLASH-MIB::ciscoFlashDeviceChangeTrap$"
+        },
+        {
+            "key_re": "^CISCO-FLASH-MIB::ciscoFlashDeviceName\\.\\d+$",
+            "value_re": "^(?P<device>.+)$"
+        },
+        {
+            "key_re": "^CISCO-FLASH-MIB::ciscoFlashDeviceMinPartitionSize\\.\\d+$",
+            "value_re": "^(?P<size>\\d+)$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

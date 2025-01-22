@@ -5,24 +5,15 @@
     "description": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C",
+    "profiles__name": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

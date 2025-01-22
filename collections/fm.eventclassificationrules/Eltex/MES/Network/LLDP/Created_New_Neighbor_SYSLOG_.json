@@ -5,24 +5,15 @@
     "description": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex gi1/0/11.",
     "event_class__name": "Network | LLDP | Created New Neighbor",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex (?P<interfaces>\\S+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex (?P<interfaces>\\S+)\\.$",
+    "profiles__name": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex gi1/0/11.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

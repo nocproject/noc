@@ -9,24 +9,15 @@
         "name": "name",
         "value": "FAN1"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "The RPM of the fan has recovered to normal state$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "The RPM of the fan has recovered to normal state$",
+    "profiles__name": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug  5 10: 9:12 sw1 system: The RPM of the fan has recovered to normal state",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

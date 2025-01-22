@@ -5,24 +5,15 @@
     "description": "INFO(6) Unit 4,MAC:00-1c-f0-1f-3c-80 Hot removal",
     "event_class__name": "Chassis | Stack | Stack Degraded",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot removal"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot removal",
+    "profiles__name": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO(6) Unit 4,MAC:00-1c-f0-1f-3c-80 Hot removal",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

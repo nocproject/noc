@@ -5,24 +5,15 @@
     "description": "%POWER_SUPPLIES-3-PWR_FAIL: Power supply 2 is not functioning",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%POWER_SUPPLIES-3-PWR_FAIL: (?P<name>Power supply \\d+) is not functioning"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%POWER_SUPPLIES-3-PWR_FAIL: (?P<name>Power supply \\d+) is not functioning",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%POWER_SUPPLIES-3-PWR_FAIL: Power supply 2 is not functioning",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

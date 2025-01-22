@@ -5,24 +5,15 @@
     "description": "Dec 25 17:30:32 2012 Office [NTP]/5/System clock modified by ntpclient",
     "event_class__name": "Network | NTP | System Clock Synchronized",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1905$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "\\[NTP\\]/5/System clock modified by ntpclient$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "\\[NTP\\]/5/System clock modified by ntpclient$",
+    "profiles__name": ["HP.1905"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Dec 25 17:30:32 2012 Office [NTP]/5/System clock modified by ntpclient",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

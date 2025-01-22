@@ -5,24 +5,15 @@
     "description": "%MCAST-SP-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan 2120",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%MCAST-SP(?:-STDBY)?-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan \\d+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%MCAST-SP(?:-STDBY)?-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan \\d+",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%MCAST-SP-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan 2120",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

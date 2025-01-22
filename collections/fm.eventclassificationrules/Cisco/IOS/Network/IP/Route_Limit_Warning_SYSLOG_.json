@@ -5,24 +5,15 @@
     "description": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - 1010:6699",
     "event_class__name": "Network | IP | Route Limit Warning",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - (?P<reason>.+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - (?P<reason>.+)$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - 1010:6699",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

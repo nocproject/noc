@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | Link | DOM | RxMinPower (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3a745c0a-e77f-4c23-8e58-f4103d9cea17",
     "description": "Juniper-System-MIB::juniSystemPortSfpRxMinPowerThreshold",
     "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
@@ -16,14 +17,6 @@
     ],
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
             "key_re": "^Juniper-System-MIB::juniSystemPortSfpPowerThresholdIfIndex(?:\\.\\d+)*$",
             "value_re": "^(?P<interface__ifindex>\\d+)$"
         },
@@ -35,5 +28,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^Juniper-System-MIB::juniSystemPortSfpRxMinPowerThreshold$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles__name": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
 }

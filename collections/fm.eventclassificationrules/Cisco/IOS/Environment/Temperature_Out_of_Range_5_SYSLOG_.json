@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Chassis"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

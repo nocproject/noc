@@ -5,24 +5,15 @@
     "description": "%PS-3-PSOK: Power System is now normal",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PS-3-PSOK: (?P<name>Power System) is now normal\\.?$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PS-3-PSOK: (?P<name>Power System) is now normal\\.?$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PS-3-PSOK: Power System is now normal",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

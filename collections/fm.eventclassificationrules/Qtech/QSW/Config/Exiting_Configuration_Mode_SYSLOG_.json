@@ -5,24 +5,15 @@
     "description": "0000000173: Feb  8 10:15:39: uzel: %CMDLINE-6-COMMAND: (1) admin: end",
     "event_class__name": "Config | Exiting Configuration Mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Qtech\\.QSW$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%CMDLINE-6-COMMAND: \\(1\\)( (?P<user>\\S+):|) end$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%CMDLINE-6-COMMAND: \\(1\\)( (?P<user>\\S+):|) end$",
+    "profiles__name": ["Qtech.QSW"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "0000000173: Feb  8 10:15:39: uzel: %CMDLINE-6-COMMAND: (1) admin: end",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

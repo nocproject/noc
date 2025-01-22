@@ -5,24 +5,15 @@
     "description": "%CFIB-SP-7-CFIB_EXCEPTION: FIB TCAM exception, Some entries will be software switched",
     "event_class__name": "Chassis | TCAM | TCAM Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%.+_EXCEPTION: (?P<reason>.+ TCAM exception.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%.+_EXCEPTION: (?P<reason>.+ TCAM exception.+)",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%CFIB-SP-7-CFIB_EXCEPTION: FIB TCAM exception, Some entries will be software switched",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

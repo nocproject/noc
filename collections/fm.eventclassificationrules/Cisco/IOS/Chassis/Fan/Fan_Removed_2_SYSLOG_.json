@@ -5,22 +5,13 @@
     "description": "%OIR-SP-6-REMFAN: Fan 1 removed",
     "event_class__name": "Chassis | Fan | Fan Removed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%OIR-SP-6-REMFAN: (?P<name>.+) removed"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%OIR-SP-6-REMFAN: (?P<name>.+) removed",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%OIR-SP-6-REMFAN: Fan 1 removed",
-        "value_re": []
+        "raw_vars": []
     }]
 }

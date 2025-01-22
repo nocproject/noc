@@ -5,24 +5,15 @@
     "description": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (TenGigabitEthernet8/2) Up, new adjacency",
     "event_class__name": "Network | IS-IS | Adjacency Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\sUp,.+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\sUp,.+",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (TenGigabitEthernet8/2) Up, new adjacency",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

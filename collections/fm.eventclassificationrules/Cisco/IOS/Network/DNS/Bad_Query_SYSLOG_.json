@@ -5,24 +5,15 @@
     "description": "%DNSSERVER-3-BADQUERY: Bad DNS query from 7.2.1.2",
     "event_class__name": "Network | DNS | Bad Query",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%DNSSERVER-3-BADQUERY: Bad DNS query from (?P<ip>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%DNSSERVER-3-BADQUERY: Bad DNS query from (?P<ip>\\S+)$",
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%DNSSERVER-3-BADQUERY: Bad DNS query from 7.2.1.2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | CEF | Inconsistency Detection (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "08238e5f-3679-4c5b-958b-30db2f17a2c1",
+    "description": "CISCO-CEF-MIB::cefInconsistencyDetection\ntime - sysUpTime",
+    "event_class__name": "Network | CEF | Inconsistency Detection",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^CISCO-CEF-MIB::entLastInconsistencyDetectTime$",
+            "value_re": "^(?P<time>\\d+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-CEF-MIB::cefInconsistencyDetection$"
+        }
+    ],
+    "labels": [],
+    "profiles__name": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

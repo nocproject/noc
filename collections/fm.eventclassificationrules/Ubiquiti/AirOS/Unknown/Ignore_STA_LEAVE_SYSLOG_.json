@@ -5,24 +5,15 @@
     "description": "Jan 12 14:00:54 syslog: wevent.wevent_main(): wevent: EVENT_STA_LEAVE ath2: 3",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Ubiquiti\\.AirOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* EVENT_STA_LEAVE .*"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* EVENT_STA_LEAVE .*",
+    "profiles__name": ["Ubiquiti.AirOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan 12 14:00:54 syslog: wevent.wevent_main(): wevent: EVENT_STA_LEAVE ath2: 3",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }
