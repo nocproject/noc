@@ -305,13 +305,19 @@ class Command(BaseCommand):
         ruleset = RuleSet()
         ruleset.load()
         # event_class_rules = EventClassificationRule.objects.filter(name="Application | Database | Default (Zabbix)")
-        event_class_rules = EventClassificationRule.objects.filter(name="HP | 1910 | Unknown | Syslog #17 (SYSLOG)")
+        event_class_rules = EventClassificationRule.objects.filter(
+            name="HP | 1910 | Unknown | Syslog #17 (SYSLOG)"
+        )
         for event_class_rule in event_class_rules:
             for event, v in event_class_rule.iter_cases():
                 rule, e_vars = ruleset.find_rule(event, v)
                 if rule is None:
-                    self.print(f"[{event_class_rule.name}] Testing with result: Cannot find matching rule")
-                self.print(f"[{event_class_rule.name}] Testing with result: {rule.name}: '{rule.event_class}': {e_vars}")
+                    self.print(
+                        f"[{event_class_rule.name}] Testing with result: Cannot find matching rule"
+                    )
+                self.print(
+                    f"[{event_class_rule.name}] Testing with result: {rule.name}: '{rule.event_class}': {e_vars}"
+                )
                 assert (
                     rule.event_class == event_class_rule.event_class
                 ), f"Mismatched event class '{rule.event_class.name}' vs '{event_class_rule.event_class.name}'"
