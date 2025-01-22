@@ -19,7 +19,7 @@ class SuppressFilter(BaseEvFilter):
     update_deadline = True
 
     @staticmethod
-    def event_hash(event: Event, event_class, **kwargs) -> int:
+    def event_hash(event: Event, event_class, e_vars) -> int:
         e_vars = {
             v.name: event.vars.get(v.name, "") or "" for v in event_class.vars if v.match_suppress
         }

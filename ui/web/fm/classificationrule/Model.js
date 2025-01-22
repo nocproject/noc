@@ -28,6 +28,22 @@ Ext.define("NOC.fm.classificationrule.Model", {
             type: "auto"
         },
         {
+            name: "labels",
+            type: "auto"
+        },
+        {
+            name: "message_rx",
+            type: "string"
+        },
+        {
+            name: "sources",
+            type: "auto"
+        },
+        {
+            name: "profiles",
+            type: "auto"
+        },
+        {
             name: "name",
             type: "string"
         },
@@ -57,10 +73,6 @@ Ext.define("NOC.fm.classificationrule.Model", {
             name: "event_class__label",
             type: "string",
             persist: false
-        },
-        {
-            name: "datasources",
-            type: "auto"
         }
     ]
 });

@@ -18,14 +18,17 @@ from mongoengine.fields import (
     ObjectIdField,
     UUIDField,
     EmbeddedDocumentListField,
+    EnumField,
+    ReferenceField,
+    BooleanField,
 )
 from mongoengine.document import EmbeddedDocument, Document
 
 # NOC modules
 from .eventclass import EventClass
-from .datasource import DataSource
 from noc.fm.models.mib import MIB
-from noc.sa.models.profile import GENERIC_PROFILE
+from noc.fm.models.enumeration import Enumeration
+from noc.sa.models.profile import GENERIC_PROFILE, Profile
 from noc.core.fm.event import Event, MessageType, EventSource, Target
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.escape import fm_unescape
@@ -36,6 +39,15 @@ from noc.core.prettyjson import to_json
 class EventClassificationRuleVar(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField(required=True)
+    convert = StringField(
+        choices=[
+            ("ifindex", "Resolve ifindex"),
+            ("enum", "Enum"),
+            ("bin_mac", "Binary to MAC"),
+        ],
+        required=False,
+    )
+    enum = PlainReferenceField(Enumeration)
     value = StringField(required=False)
 
     def __str__(self):
@@ -47,6 +59,27 @@ class EventClassificationRuleVar(EmbeddedDocument):
     @property
     def json_data(self):
         return {"name": self.name, "value": self.value}
+
+
+class EventClassificationRuleLabel(EmbeddedDocument):
+    meta = {"strict": False}
+    wildcard = StringField(required=True)
+    is_required = BooleanField(default=True)
+    # set_label = StringField(required=False)
+    # rewrite_label
+    set_var = StringField()
+
+    def __str__(self):
+        if self.is_required:
+            return f"{self.wildcard} (required)"
+        return self.wildcard
+
+    @property
+    def json_data(self):
+        r = {"wildcard": self.wildcard, "is_required": self.is_required}
+        if self.set_var:
+            r["set_var"] = self.set_var
+        return r
 
 
 class EventClassificationRuleCategory(Document):
@@ -94,15 +127,20 @@ class EventClassificationPattern(EmbeddedDocument):
 
 
 class EventClassificationTestCase(EmbeddedDocument):
+    meta = {"strict": False}
     message = StringField()
     raw_vars = ListField(DictField())
+    input_labels = ListField(StringField())
 
     @property
     def json_data(self):
-        return {
+        r = {
             "message": self.message,
             "raw_vars": self.raw_vars,
         }
+        if self.input_labels:
+            r["input_labels"] = list(self.input_labels)
+        return r
 
 
 class EventClassificationRule(Document):
@@ -126,8 +164,14 @@ class EventClassificationRule(Document):
     patterns: List[EventClassificationPattern] = EmbeddedDocumentListField(
         EventClassificationPattern
     )
-    datasources = EmbeddedDocumentListField(DataSource)
+    sources: List[EventSource] = ListField(EnumField(EventSource))
+    profiles: List[Profile] = ListField(ReferenceField(Profile))
+    message_rx: str = StringField()
+    # datasources = EmbeddedDocumentListField(DataSource)
     vars: List[EventClassificationRuleVar] = EmbeddedDocumentListField(EventClassificationRuleVar)
+    labels: List[EventClassificationRuleLabel] = EmbeddedDocumentListField(
+        EventClassificationRuleLabel
+    )
     test_cases: List[EventClassificationTestCase] = EmbeddedDocumentListField(
         EventClassificationTestCase
     )
@@ -158,8 +202,14 @@ class EventClassificationRule(Document):
             "uuid": self.uuid,
             "event_class__name": self.event_class.name,
             "preference": self.preference,
+            "sources": [s.value for s in self.sources],
             "patterns": [p.json_data for p in self.patterns],
+            "labels": [ll.json_data for ll in self.labels],
         }
+        if self.message_rx:
+            r["message_rx"] = self.message_rx
+        if self.profiles:
+            r["profiles__name"] = [mt.name for mt in self.profiles]
         if self.description:
             r["description"] = self.description
         if self.vars:
@@ -215,4 +265,5 @@ class EventClassificationRule(Document):
                 data=[],
                 type=mt,
                 message=tc.message,
+                labels=tc.input_labels if tc.input_labels else None,
             ), self.resolve_vars(tc.raw_vars)
