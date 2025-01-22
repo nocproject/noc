@@ -164,7 +164,7 @@ class EventClassificationRule(Document):
     patterns: List[EventClassificationPattern] = EmbeddedDocumentListField(
         EventClassificationPattern
     )
-    sources: List[EventSource] = ListField(EnumField(EventSource))
+    sources: List[EventSource] = ListField(EnumField(EventSource), required=True)
     profiles: List[Profile] = ListField(ReferenceField(Profile))
     message_rx: str = StringField()
     # datasources = EmbeddedDocumentListField(DataSource)
@@ -252,7 +252,9 @@ class EventClassificationRule(Document):
 
     def iter_cases(self) -> Iterable[Tuple[Event, Dict[str, Any]]]:
         ts = 0
-        mt = MessageType(profile=GENERIC_PROFILE)
+        mt = MessageType(profile=GENERIC_PROFILE, source=self.sources[0])
+        if self.profiles:
+            mt.profile = self.profiles[0].name
         for p in self.patterns:
             if p.key_re == "^source$" or p.key_re == "source":
                 mt.source = EventSource(p.value_re.strip("^$"))

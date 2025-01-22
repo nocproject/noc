@@ -107,7 +107,11 @@ class Rule:
     def from_rule(cls, rule, enumerations) -> "Rule":
         """Create from EventClassificationRule"""
         matcher, message_rx = [], re.compile(rule.message_rx) if rule.message_rx else None
-        profile, source = r"^.*$", EventSource.OTHER
+        source = rule.sources[0] if rule.sources else EventSource.OTHER
+        if rule.profiles:
+            profile = rule.profiles[0].name
+        else:
+            profile = r"^.*$"
         patterns, transform = [], {}
         for x in rule.patterns:
             key_s, value_s = x.key_re.strip("^$"), x.value_re.strip("^$")
