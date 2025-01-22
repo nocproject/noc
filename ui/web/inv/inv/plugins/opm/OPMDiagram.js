@@ -24,7 +24,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     maxBarWidth: 20,
     minBarWidth: 5,
     defaultBarColor: "#2c3e50",
-    selectedBarColor: "blue",
+    selectedBarColor: "#f1c40f",
     barColors: ["#16a085", "#f39c12", "#2980b9", "#8e44ad", "#c0392b", "#95a5a6", "#3498db", "#e74c3c"],
     data: [],
   },
