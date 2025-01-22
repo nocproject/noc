@@ -271,7 +271,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       // uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
       firstTable = Ext.isEmpty(data.tables) ? __("no tables") : data.tables[0].id,
       firstGroup = Ext.isEmpty(data.groups) ? __("no groups") : data.groups[0].id;
- 
+
+    if(Ext.isEmpty(gridStore) || Ext.isEmpty(groupStore) || Ext.isEmpty(tableStore)){
+      return;
+    }
     if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
       NOC.error(data.message);
       return
