@@ -62,6 +62,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
 
     surface.removeAll();
     this.colorList = {};
+    this.colorIndex = 0;
     data.forEach((channel) => {
       var barColor = this.mapColor(channel.dir),
         diagPadding = this.getDiagPadding().split(" ").map(value => parseInt(value, 10));
