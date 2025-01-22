@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SEC-6-IPACCESSLOGS: list (?P<name>\\S+) denied (?P<src_ip>\\S+) (?P<count>\\d+) packets?$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

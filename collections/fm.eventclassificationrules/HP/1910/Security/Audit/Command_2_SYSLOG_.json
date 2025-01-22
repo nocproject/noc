@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10SHELL/\\d+/SHELL_CMD\\(l\\): -Task=vt\\d+-IPAddr=(?P<ip>\\S+)-User=(?P<user>\\S+); Command is (?P<command>.+)$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%AAA-I-CONNECT: User CLI session for user (?P<user>\\S+) over telnet , source (?P<ip>\\S+) destination\\s+\\S+\\s+ACCEPTED$",
-    "profiles__name": ["Supertel.K2X"],
+    "profiles": ["Supertel.K2X"],
     "sources": ["syslog"],
     "test_cases": [
         {

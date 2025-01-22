@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ENVM-6-PSOK: (?P<name>.+) now appears to be working correctly",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

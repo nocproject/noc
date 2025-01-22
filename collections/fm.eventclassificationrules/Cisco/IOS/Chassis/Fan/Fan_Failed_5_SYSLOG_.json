@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

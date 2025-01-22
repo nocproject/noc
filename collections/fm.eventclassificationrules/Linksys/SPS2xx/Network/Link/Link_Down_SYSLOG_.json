@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%LINK-W-Down:  ?(?P<interface>.+)$",
-    "profiles__name": ["Linksys.SPS2xx"],
+    "profiles": ["Linksys.SPS2xx"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%LINK-W-Down:  gi0/3",

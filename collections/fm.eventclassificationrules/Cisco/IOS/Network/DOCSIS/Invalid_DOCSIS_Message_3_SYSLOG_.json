@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "First fragment is lost or discarded.  Discard fragment.  SID = (?P<sid>\\d+)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

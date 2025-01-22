@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^\\S+ next hop router (?P<ip>\\S+) moved from port (?P<from_interface>[\\d\\/]+) to port (?P<to_interface>[\\d\\/]+)$",
-    "profiles__name": ["HP.ProCurve9xxx"],
+    "profiles": ["HP.ProCurve9xxx"],
     "sources": ["syslog"],
     "test_cases": [
         {

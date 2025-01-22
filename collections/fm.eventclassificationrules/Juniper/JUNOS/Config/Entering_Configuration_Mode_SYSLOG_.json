@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UI_DBASE_LOGIN_EVENT: User '(?P<user>.+?)' entering configuration mode$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SNMP request received from (?P<ip>\\S+) with invalid community string",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

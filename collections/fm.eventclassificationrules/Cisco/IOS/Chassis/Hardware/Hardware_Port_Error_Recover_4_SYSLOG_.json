@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on (?P<interface>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

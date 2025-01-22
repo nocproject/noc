@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : (?P<interface>\\S+): OAM discovery failed to complete in the specified time",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

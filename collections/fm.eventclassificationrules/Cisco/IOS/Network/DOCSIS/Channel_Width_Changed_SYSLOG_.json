@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-5-USCWCHG: Interface (?P<interface>\\S+) U(?P<upstream>\\d+), channel width changed to (?P<width>\\S+) kHz",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -16,6 +16,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Force10.FTOS"],
+    "profiles": ["Force10.FTOS"],
     "sources": ["SNMP Trap"]
 }

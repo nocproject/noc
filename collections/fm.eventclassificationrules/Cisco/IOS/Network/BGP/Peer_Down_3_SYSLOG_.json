@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:BGP_SESSION-5-ADJCHANGE|BGP-5-NBR_RESET): [Nn]eighbor (?P<peer>\\S+) .+Peer closed the session",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -12,6 +12,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["SNMP Trap"]
 }

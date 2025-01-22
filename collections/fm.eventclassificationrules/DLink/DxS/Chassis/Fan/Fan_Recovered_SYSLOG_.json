@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) recovered$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

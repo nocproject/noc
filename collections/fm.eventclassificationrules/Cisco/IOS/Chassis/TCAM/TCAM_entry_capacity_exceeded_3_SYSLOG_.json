@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PLATFORM_UCAST-4-PREFIX: (?P<reason>.+could not be programmed into TCAM.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

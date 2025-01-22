@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10SHELL/4/CMD\\(l\\): task:vt\\d+ ip:(?P<ip>\\S+) user:(?P<user>\\S+) command:(?P<command>.+)$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RPD_MPLS_PATH_UP: MPLS path  up on LSP (?P<name>.+?) path bandwidth (?P<bandwidth>\\d+) bps$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

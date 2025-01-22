@@ -14,7 +14,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LINK-5-CHANGED: Interface (?P<iface>.+?), changed state to administratively down",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

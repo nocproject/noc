@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Logout through (?:Web|Telnet|SSH)\\s*\\(User(name)?: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:,\\s*MAC: \\S+)?\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

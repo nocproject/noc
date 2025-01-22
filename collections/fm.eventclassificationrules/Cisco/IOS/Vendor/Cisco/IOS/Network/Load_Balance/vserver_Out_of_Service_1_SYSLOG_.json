@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CSM_SLB-6-INFO: Module (?P<module>\\d+) info: SLB-NETMGT: vserver (?P<name>.+?) out of service$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

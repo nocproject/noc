@@ -28,6 +28,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["SNMP Trap"]
 }

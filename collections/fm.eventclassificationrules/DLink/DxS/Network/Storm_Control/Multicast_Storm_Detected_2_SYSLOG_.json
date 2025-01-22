@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Multicast storm is occurring \\(port: (?P<interface>\\S+)\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

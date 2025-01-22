@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%AAA-W-REJECT: New telnet connection for user (?P<user>\\S+), source (?P<ip>\\S+) destination \\S+  REJECTED$",
-    "profiles__name": ["Supertel.K2X"],
+    "profiles": ["Supertel.K2X"],
     "sources": ["syslog"],
     "test_cases": [
         {

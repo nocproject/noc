@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "kernel: arp: (?P<ip>\\S+) moved from (?P<from_mac>\\S+) to (?P<to_mac>\\S+) on (?P<interface>\\S+)?",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

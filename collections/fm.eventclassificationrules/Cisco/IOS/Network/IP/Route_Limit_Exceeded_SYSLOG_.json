@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - (?P<reason>.+)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

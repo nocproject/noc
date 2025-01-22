@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-4-HWFAULT: Hardware Fault$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

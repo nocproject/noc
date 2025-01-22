@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "(?P<user>\\S+) login  on `ttyp\\d' from `(?P<ip>\\S+)'$",
-    "profiles__name": ["NSN.hiX56xx"],
+    "profiles": ["NSN.hiX56xx"],
     "sources": ["syslog"]
 }

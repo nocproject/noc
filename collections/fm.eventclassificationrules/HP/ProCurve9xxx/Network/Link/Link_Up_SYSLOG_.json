@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^\\S+ Interface (?P<interface>[^,]+), state up$",
-    "profiles__name": ["HP.ProCurve9xxx"],
+    "profiles": ["HP.ProCurve9xxx"],
     "sources": ["syslog"],
     "test_cases": [
         {

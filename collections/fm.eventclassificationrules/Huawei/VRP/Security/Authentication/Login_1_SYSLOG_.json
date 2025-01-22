@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "VTY login from (?P<ip>\\S+)\\.$",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

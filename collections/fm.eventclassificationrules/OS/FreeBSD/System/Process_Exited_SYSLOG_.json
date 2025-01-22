@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "kernel: pid (?P<pid>\\d+) \\((?P<name>\\S+)\\), uid \\d+: exited on signal \\d+( \\(core dumped\\))?$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

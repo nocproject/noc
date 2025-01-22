@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Detected untrusted DHCP server\\s*\\(IP: (?P<ip>\\S+), Port: (?P<interface>\\S+)\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

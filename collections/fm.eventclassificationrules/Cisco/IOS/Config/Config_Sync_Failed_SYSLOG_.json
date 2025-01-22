@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PFINIT-SP-1-CONFIG_SYNC_FAIL(?:_RETRY)?: Sync'ing the (?P<config>startup|private) configuration to the standby Router FAILED.*",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

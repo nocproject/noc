@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* System: Interface (?P<interface>\\S+ \\d+/\\d+), state up$",
-    "profiles__name": ["Brocade.IronWare"],
+    "profiles": ["Brocade.IronWare"],
     "sources": ["syslog"],
     "test_cases": [
         {

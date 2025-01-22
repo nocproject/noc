@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module (?P<name>\\S+) failure condition cleared",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ipfw: (?P<name>\\d+) Accept (?P<proto>\\S+) (?P<src_ip>\\S+):(?P<src_port>\\d+) (?P<dst_ip>\\S+):(?P<dst_port>\\d+) in via (?P<src_interface>\\S+)",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

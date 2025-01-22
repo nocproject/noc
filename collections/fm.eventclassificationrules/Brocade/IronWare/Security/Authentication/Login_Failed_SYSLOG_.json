@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* Security: (?:SSH|telnet) access by user (?P<user>\\S+) from src IP (?P<ip>\\S+), src MAC \\S+ rejected.*$",
-    "profiles__name": ["Brocade.IronWare"],
+    "profiles": ["Brocade.IronWare"],
     "sources": ["syslog"],
     "test_cases": [
         {

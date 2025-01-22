@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "port has been set to (?P<state__enum__stp_state>\\S+) state.+InstanceID=(?P<instance>\\S+),.+PortName=(?P<interface>\\S+)\\)$",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

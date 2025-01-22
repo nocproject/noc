@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10SHELL/4/LOGIN\\(l\\):\\s+(?P<user>\\S+) login from (?P<ip>\\S+)$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

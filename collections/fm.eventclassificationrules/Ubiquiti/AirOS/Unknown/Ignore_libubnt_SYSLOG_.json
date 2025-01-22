@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* syslog: libubnt.*",
-    "profiles__name": ["Ubiquiti.AirOS"],
+    "profiles": ["Ubiquiti.AirOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

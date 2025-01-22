@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LDP-5-NBRCHG: LDP Neighbor (?P<neighbor>\\S+):\\d+.+is UP( \\((?P<reason>.+)\\))?$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^\\S+ Security: SSH logout by (?P<user>\\S+) from src IP (?P<ip>\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}), src MAC (?P<mac>\\w{4}\\.\\w{4}\\.\\w{4})$",
-    "profiles__name": ["HP.ProCurve9xxx"],
+    "profiles": ["HP.ProCurve9xxx"],
     "sources": ["syslog"],
     "test_cases": [
         {

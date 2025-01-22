@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-5-PRIV_AUTH_FAIL: Authentication to privilege level (?P<to_priv>\\d+) failed by (?P<user>\\S+) on \\S+ \\((?P<ip>\\S+)\\)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

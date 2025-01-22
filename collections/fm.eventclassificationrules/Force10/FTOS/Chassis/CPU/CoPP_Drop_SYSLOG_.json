@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%KERN-6-INT: (?P<cpu>\\S+) CPU receiving excessive control plane traffic: will be rate controlled$",
-    "profiles__name": ["Force10.FTOS"],
+    "profiles": ["Force10.FTOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

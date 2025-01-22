@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%OAM-5-CPU_BUSY: cpu is busy\\.$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

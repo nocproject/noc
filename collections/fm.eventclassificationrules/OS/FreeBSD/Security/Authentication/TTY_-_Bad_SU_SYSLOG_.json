@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "su: BAD SU (?P<user>.+?) to \\S+ on /dev/\\S+$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

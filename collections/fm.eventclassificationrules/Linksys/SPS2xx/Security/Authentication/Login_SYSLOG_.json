@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) ?, source (?P<ip>\\S+) destination  \\S+ ACCEPTED$",
-    "profiles__name": ["Linksys.SPS2xx"],
+    "profiles": ["Linksys.SPS2xx"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "interface\\(\\d+/\\d+\\)(?P<interface>\\S+) loopback detect status: 1\\.\\s*\\(1:normal; 2:block; 3:shutdown",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

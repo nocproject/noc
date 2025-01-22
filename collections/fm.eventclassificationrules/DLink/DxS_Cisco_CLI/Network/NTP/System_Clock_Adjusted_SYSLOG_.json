@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-6-CLOCKUPDATE: System clock has been updated to.+",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

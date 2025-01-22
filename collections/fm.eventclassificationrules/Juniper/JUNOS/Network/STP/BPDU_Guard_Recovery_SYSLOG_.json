@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ESWD_BPDU_BLOCK_ERROR_ENABLED: (?P<interface>\\S+): bpdu-block enabled port$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

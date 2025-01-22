@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "LINK STATUS CHANGE:\\s*(?P<interface>\\S+): turns into UP state",
-    "profiles__name": ["Huawei.VRP3"],
+    "profiles": ["Huawei.VRP3"],
     "sources": ["syslog"],
     "test_cases": [
         {

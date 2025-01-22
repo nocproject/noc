@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* dropbear\\[\\d+\\]: Child connection from (?P<ip>\\S+):\\d+$",
-    "profiles__name": ["Ubiquiti.AirOS"],
+    "profiles": ["Ubiquiti.AirOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%AAA-W-REJECT: New (ssh|telnet|http) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+  ?REJECTED",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [
         {

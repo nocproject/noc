@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface (?P<interface>.+) is down",
-    "profiles__name": ["Cisco.NXOS"],
+    "profiles": ["Cisco.NXOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

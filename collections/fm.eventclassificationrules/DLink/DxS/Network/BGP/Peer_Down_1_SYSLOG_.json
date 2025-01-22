@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "\\[BGP(\\(2\\))?:\\] BGP connection is normally closed \\(Peer:<(?P<peer>\\S+)>\\)\\.",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

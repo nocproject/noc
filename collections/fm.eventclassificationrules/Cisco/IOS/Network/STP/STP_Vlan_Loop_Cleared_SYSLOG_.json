@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:SPANTREE|STP)-2-LOOPGUARD_(?:UN)?BLOCK: Loop guard unblocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+).",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

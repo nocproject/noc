@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "NTP/\\d+/SOURCE_LOST.+[Ss]ystem.+synchronization.+source.+lost",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

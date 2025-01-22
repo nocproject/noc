@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SEC-5-LOGIN_SUCCESS: Login successful for user (?P<user>.+) on line \\S+ \\((?P<ip>\\S+)\\)$",
-    "profiles__name": ["Force10.FTOS"],
+    "profiles": ["Force10.FTOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

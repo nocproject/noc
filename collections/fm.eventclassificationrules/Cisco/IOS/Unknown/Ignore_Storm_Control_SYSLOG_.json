@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on \\S+. The interface has been disabled.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

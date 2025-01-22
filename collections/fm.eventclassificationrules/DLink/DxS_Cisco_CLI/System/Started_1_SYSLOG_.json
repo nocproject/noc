@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%DEVICE-5-CHANGED: Device .+ changed state to up",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

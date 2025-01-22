@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "[Pp]ort: (?P<interface>\\S+) is unidirectional",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ESWD_ST_CTL_ERROR_(?:DISABLED|IN_EFFECT): (?P<interface>\\S+): storm control (?:disabled port|in effect on the port)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

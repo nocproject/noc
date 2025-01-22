@@ -16,6 +16,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["SNMP Trap"]
 }

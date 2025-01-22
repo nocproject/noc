@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "The flooding MAC is detected \\(VID: (?P<vlan>\\d+), MAC: (?P<mac>\\S+)\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LDP-5-NBRCHG: TDP Neighbor (?P<neighbor>\\S+):.* is DOWN( \\((?P<reason>.+)\\))?",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

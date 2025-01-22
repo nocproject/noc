@@ -14,7 +14,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PKT_INFRA-LINK-5-CHANGED : Interface (?P<iface>.+), changed state to Administratively Down",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

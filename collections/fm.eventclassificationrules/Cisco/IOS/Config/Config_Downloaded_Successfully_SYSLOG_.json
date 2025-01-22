@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-5-CONFIG_I: Configured from (?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+ by (?P<user>.+) on\\s*vty\\d+",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

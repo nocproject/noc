@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10IC/6/SYS_RESTART: System restarted -- HP Platform Software\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

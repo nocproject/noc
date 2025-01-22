@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "The mac-address has flap value.+MacAdd=(?P<mac>\\S+),vlanid=(?P<vlan>\\d+),  FormerIfDescName=(?P<from_interface>\\S+),CurrentIfDescName=(?P<to_interface>\\S+),.+\\)",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

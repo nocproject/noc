@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-2-REDUNDANTCLOCK_FAIL: (?P<name>Redundant clock) failed$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

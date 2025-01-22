@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "\\[PHY\\]/5/PORT LINK STATUS CHANGE: (?P<interface>\\S+) turns into UP state$",
-    "profiles__name": ["HP.1905"],
+    "profiles": ["HP.1905"],
     "sources": ["syslog"],
     "test_cases": [
         {

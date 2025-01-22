@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) recovered from the (?P<threshold>low|high) warning threshold",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

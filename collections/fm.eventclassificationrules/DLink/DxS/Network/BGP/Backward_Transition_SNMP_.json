@@ -20,6 +20,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["SNMP Trap"]
 }

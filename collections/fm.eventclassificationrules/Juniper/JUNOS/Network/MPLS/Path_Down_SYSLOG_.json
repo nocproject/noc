@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RPD_MPLS_PATH_DOWN: MPLS path  down on LSP (?P<name>.+?)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

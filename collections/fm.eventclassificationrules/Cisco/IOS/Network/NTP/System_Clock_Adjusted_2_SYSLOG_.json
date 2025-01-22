@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-6-CLOCKUPDATE: System clock has been updated from .+ to .+, configured from console by \\S+ on vty\\d+ \\((?P<server_address>\\S+)\\)\\.$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

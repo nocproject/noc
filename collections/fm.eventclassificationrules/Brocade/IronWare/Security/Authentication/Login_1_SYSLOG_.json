@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* Security: (?:SSH|telnet) login by (?P<user>\\S+) from src IP (?P<ip>\\S+), src MAC \\S+ to PRIVILEGE EXEC mode",
-    "profiles__name": ["Brocade.IronWare"],
+    "profiles": ["Brocade.IronWare"],
     "sources": ["syslog"],
     "test_cases": [
         {

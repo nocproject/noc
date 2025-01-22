@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%COPY-N-TRAP: The copy operation was completed successfully$",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-5-CONFIG_I: Configured from \\S+ by \\S+",
-    "profiles__name": ["Force10.FTOS"],
+    "profiles": ["Force10.FTOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

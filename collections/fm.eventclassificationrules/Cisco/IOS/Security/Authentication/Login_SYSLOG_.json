@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SEC_LOGIN-5-LOGIN_SUCCESS: Login Success \\[user: (?P<user>.*)\\] \\[Source: (?P<ip>\\S+)\\] \\[localport: (?P<lport>\\d+)\\]",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

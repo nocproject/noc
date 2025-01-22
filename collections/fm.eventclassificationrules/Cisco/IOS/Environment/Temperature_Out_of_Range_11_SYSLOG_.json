@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "HARDWARE-\\d+-THERMAL_(?:WARNING|CRITICAL).+[Tt]emperature has reached (?:warning|critical) threshold",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

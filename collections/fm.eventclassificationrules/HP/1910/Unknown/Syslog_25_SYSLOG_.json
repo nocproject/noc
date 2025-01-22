@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10VLAN/5/WEBOPT_HYBRID_DEL_VLAN\\(\\d+\\): \\(by admin via web from host \\S+\\)\\s+Deleting hybrid port \\S+ from VLAN \\d+\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

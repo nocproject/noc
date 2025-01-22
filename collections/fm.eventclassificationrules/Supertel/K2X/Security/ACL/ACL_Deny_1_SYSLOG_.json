@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%MNGINF-W-ACL: Management ACL drop packet received on interface (?P<dst_interface>(\\S+ \\d+|\\S+)) from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) protocol \\d+ service (?P<proto>\\S+)$",
-    "profiles__name": ["Supertel.K2X"],
+    "profiles": ["Supertel.K2X"],
     "sources": ["syslog"],
     "test_cases": [
         {

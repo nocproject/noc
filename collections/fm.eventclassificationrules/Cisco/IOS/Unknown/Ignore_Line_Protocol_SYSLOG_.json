@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LINEPROTO-.*5-UPDOWN",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%LINEPROTO-5-UPDOWN",

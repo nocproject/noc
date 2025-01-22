@@ -19,6 +19,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Qtech.BFC_PBIC_S"],
+    "profiles": ["Qtech.BFC_PBIC_S"],
     "sources": ["SNMP Trap"]
 }

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%Stack-E-STCK-EXCEP-HNDLR: Lost connection with unit (?P<unit>\\d+) reason .+",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

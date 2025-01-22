@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "telnet from (?P<ip>\\S+) exceeded counts\\/min \\(limit \\d+/min\\)",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

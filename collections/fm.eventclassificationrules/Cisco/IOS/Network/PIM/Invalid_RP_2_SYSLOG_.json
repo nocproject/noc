@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PIM-6-INVALID_RP_JOIN: Received .+ Join from (?P<pim_router>\\S+) for invalid RP (?P<invalid_rp>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PARSER-5-CFGLOG_LOGGEDCMD: User:(?P<user>.+?)\\s+logged command:(?P<command>.*)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

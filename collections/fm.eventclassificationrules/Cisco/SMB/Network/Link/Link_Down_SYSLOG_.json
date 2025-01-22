@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LINK-W-Down:\\s+(?P<interface>\\S+)$",
-    "profiles__name": ["Cisco.SMB"],
+    "profiles": ["Cisco.SMB"],
     "sources": ["syslog"],
     "test_cases": [
         {

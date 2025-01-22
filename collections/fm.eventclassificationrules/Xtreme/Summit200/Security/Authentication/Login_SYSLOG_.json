@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "(?P<user>.*) logged in through ",
-    "profiles__name": ["Extreme.Summit200"],
+    "profiles": ["Extreme.Summit200"],
     "sources": ["syslog"],
     "test_cases": [
         {

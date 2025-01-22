@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "system-information-00524: SNMP request has been received from an unknown host in SNMP community .+? at (?P<ip>\\S+):\\d+",
-    "profiles__name": ["Juniper.ScreenOS"],
+    "profiles": ["Juniper.ScreenOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

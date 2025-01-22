@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Successful Enable (?P<to_priv>Admin) through (?:Web|Telnet|SSH|Console) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>.+?)\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

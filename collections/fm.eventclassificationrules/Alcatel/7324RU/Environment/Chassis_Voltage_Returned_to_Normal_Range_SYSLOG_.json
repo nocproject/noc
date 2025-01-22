@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "CRITICAL,-VOL_ERR:Voltage (?P<name>\\S+) input (?P<measure>\\S+), low (?P<min>\\S+), high (?P<max>\\S+)",
-    "profiles__name": ["Alcatel.7324RU"],
+    "profiles": ["Alcatel.7324RU"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4|EIGRP-IPv6)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>up): (?P<reason>.*)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

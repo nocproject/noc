@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "sshd\\[\\d+\\]: reverse mapping checking getaddrinfo for \\S+ \\[(?P<ip>\\S+)\\] failed - POSSIBLE BREAK-IN ATTEMPT!$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

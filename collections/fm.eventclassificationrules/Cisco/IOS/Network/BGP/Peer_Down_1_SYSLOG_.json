@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Down",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:ASA|PIX)-4-106023: Deny (?P<proto>\\S+) src (?P<interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) dst (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) by access-group \"(?P<name>\\S+)\"",
-    "profiles__name": ["Cisco.ASA"],
+    "profiles": ["Cisco.ASA"],
     "sources": ["syslog"],
     "test_cases": [
         {

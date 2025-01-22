@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:PIX|ASA)-7-715",
-    "profiles__name": ["Cisco.ASA"],
+    "profiles": ["Cisco.ASA"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%PIX-7-715xxx debug messages",

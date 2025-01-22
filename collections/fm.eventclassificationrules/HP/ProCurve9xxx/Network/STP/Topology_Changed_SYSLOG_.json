@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^\\S+ VLAN (?P<vlan>\\d+) Port (?P<interface>[\\d\\/]+) Bridge TC Event \\(\\w+\\)$",
-    "profiles__name": ["HP.ProCurve9xxx"],
+    "profiles": ["HP.ProCurve9xxx"],
     "sources": ["syslog"],
     "test_cases": [
         {

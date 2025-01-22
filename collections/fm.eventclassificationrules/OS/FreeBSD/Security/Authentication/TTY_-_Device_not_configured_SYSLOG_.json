@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "login: in prompt_echo_off\\(\\): tcgetattr\\(\\): Device not configured$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

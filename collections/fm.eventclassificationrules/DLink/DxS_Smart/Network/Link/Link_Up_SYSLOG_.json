@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)",
-    "profiles__name": ["DLink.DxS_Smart"],
+    "profiles": ["DLink.DxS_Smart"],
     "sources": ["syslog"],
     "test_cases": [
         {

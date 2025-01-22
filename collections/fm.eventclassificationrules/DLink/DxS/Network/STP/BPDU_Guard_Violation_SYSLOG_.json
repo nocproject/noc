@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port <?(?P<interface>\\S*\\d+)>?\\s+enter BPDU under (?:attacking|protection) state \\(mode: \\S+\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

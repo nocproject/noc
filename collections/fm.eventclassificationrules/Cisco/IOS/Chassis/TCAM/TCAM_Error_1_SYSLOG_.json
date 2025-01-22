@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%.+_EXCEPTION: (?P<reason>.+ TCAM exception.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

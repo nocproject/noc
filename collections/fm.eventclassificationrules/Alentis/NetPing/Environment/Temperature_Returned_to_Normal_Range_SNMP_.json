@@ -24,6 +24,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Alentis.NetPing"],
+    "profiles": ["Alentis.NetPing"],
     "sources": ["SNMP Trap"]
 }

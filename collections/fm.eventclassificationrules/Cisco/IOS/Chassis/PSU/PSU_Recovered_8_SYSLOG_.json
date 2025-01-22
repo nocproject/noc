@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C(?:6K|7600_)PWR-SP-4-PSOK: (?P<name>power supply \\d+) turned on.$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

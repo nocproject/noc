@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%FABRIC-3-CRC: Switch card (?P<name>\\S+)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%FABRIC-3-CRC: Switch card 1",

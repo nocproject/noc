@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SECURITY-login-\\d+-AUTHEN_FAILED : Failed authentication attempt by user \\'(?P<user>\\S+)' from '(?P<ip>\\S+)'",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10IFNET/3/LINK_UPDOWN\\(l\\): (?P<interface>\\S+) link status is DOWN\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

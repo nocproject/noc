@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10IPTRAP/5/WEBOPT_IPADDR_ADDMAIN\\(l\\): \\(by \\S+ via \\S+ from host \\S+\\) Primary IP address \\S+ with subnet mask \\S+ was configured on interface Vlan-interface\\d+\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

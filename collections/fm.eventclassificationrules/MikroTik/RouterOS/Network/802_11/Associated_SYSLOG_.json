@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "wireless,info (?P<mac>\\S+)@(?P<interface>\\S+): connected",
-    "profiles__name": ["MikroTik.RouterOS"],
+    "profiles": ["MikroTik.RouterOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

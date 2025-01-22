@@ -12,6 +12,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Vyatta.Vyatta"],
+    "profiles": ["Vyatta.Vyatta"],
     "sources": ["SNMP Trap"]
 }

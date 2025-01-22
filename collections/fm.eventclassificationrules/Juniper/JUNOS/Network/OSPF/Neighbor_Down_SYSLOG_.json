@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RPD_OSPF_NBRDOWN: OSPF neighbor (?P<neighbor>\\S+) \\(realm \\S+ (?P<interface>\\S+) area (?P<area>\\S+)\\) state changed from (?P<from_state>\\S+) to (?P<to_state>\\S+) due to .+ \\(event reason: (?P<reason>.*)\\)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10IFNET/4/INTERFACE UPDOWN\\(t\\):\\s+Trap \\S+<link(Up|Down)>: Interface \\d+ is (Up|Down), ifAdminStatus is \\d+, ifOperStatus is \\d+$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

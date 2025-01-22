@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "AAA server (?P<ip>\\S+) \\(Protocol: RADIUS\\) connection failed",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

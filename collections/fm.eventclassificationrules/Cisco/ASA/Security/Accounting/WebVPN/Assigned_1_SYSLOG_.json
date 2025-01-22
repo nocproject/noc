@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:ASA|PIX)-4-722051: Group <(?P<group>\\S+)> User <(?P<user>\\S+)> IP <(?P<src_ip>\\S+)> IPv4 Address <(?P<dst_ip>\\S+)> IPv6 address <(?P<dst_ipv6>\\S+)>",
-    "profiles__name": ["Cisco.ASA"],
+    "profiles": ["Cisco.ASA"],
     "sources": ["syslog"],
     "test_cases": [
         {

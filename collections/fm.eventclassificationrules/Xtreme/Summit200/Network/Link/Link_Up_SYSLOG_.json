@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port (?P<interface>\\d+) link active",
-    "profiles__name": ["Extreme.Summit200"],
+    "profiles": ["Extreme.Summit200"],
     "sources": ["syslog"],
     "test_cases": [
         {

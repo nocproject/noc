@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "MODULE_CONFIG_SNMP\\[zIMI\\]:Write configuration successfully!",
-    "profiles__name": ["Qtech.QSW2800"],
+    "profiles": ["Qtech.QSW2800"],
     "sources": ["syslog"],
     "test_cases": [
         {

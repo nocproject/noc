@@ -24,6 +24,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Juniper.ScreenOS"],
+    "profiles": ["Juniper.ScreenOS"],
     "sources": ["SNMP Trap"]
 }

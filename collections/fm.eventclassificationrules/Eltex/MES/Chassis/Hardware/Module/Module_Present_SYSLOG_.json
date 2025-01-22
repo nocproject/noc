@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%Fiber-I-SFP-PRESENT-CHNG: (?P<interface>\\S+) (?P<module>SFP) status is present.",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [
         {

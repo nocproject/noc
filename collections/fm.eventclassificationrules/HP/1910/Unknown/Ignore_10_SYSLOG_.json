@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10NTP/4/NTP_LOG\\(l\\):\\s+System leap changes from 3 to 0 after clock update\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

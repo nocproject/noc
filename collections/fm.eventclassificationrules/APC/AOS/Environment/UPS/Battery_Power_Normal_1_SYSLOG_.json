@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UPS: A discharged battery condition no longer exists. 0x0108",
-    "profiles__name": ["APC.AOS"],
+    "profiles": ["APC.AOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

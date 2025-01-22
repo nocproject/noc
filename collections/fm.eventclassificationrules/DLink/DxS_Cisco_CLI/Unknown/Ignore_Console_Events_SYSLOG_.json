@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-5-CONFIG_I: Configured from console",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

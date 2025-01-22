@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%AAA-I-DISCONNECT: User CLI session for user (?P<user>\\S+) over (web|telnet|ssh)\\s*, source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED. The Telnet/SSH session may still be connected.",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

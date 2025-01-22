@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SPANTREE_VLAN_SW-2-MAX_INSTANCE: Platform limit of (?P<limit>\\d+) STP instances exceeded",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

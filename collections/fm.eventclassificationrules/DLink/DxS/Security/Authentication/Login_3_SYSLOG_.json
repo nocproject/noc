@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Successful login through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>\\S+?)(?:, MAC: \\S+)?\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

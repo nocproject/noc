@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-0-VOLTLOW\\s*: .+ measured at (?P<name>\\S+) is too (?P<threshold>low): shutdown voltage (?P<min>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

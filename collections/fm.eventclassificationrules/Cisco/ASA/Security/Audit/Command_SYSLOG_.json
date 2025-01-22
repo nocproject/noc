@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:ASA|PIX)-5-111008: User '(?P<user>\\S+)' executed the '(?P<command>.+)' command\\.",
-    "profiles__name": ["Cisco.ASA"],
+    "profiles": ["Cisco.ASA"],
     "sources": ["syslog"],
     "test_cases": [
         {

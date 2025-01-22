@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-5-CONFIG_E: Enter configuration mode from",
-    "profiles__name": ["Arista.EOS"],
+    "profiles": ["Arista.EOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

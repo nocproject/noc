@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:C4K_)?REDUNDANCY-3-SIMPLEX_MODE: The peer Supervisor has been lost",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

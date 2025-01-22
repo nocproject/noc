@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Spanning Tree port .+ change \\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+)\\) .+",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"]
 }

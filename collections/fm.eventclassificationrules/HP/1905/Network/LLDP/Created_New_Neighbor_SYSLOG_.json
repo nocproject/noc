@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "\\[LLDP\\]/5/CREREM Port (?P<interface>\\S+) \\(IfIndex \\d+\\):Created New Neighbor,Chassis ID: \\S+; Port ID: \\S+\\.$",
-    "profiles__name": ["HP.1905"],
+    "profiles": ["HP.1905"],
     "sources": ["syslog"],
     "test_cases": [
         {

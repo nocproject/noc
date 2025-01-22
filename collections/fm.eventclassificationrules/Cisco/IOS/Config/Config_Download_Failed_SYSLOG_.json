@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from \\((?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+\\) failed",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

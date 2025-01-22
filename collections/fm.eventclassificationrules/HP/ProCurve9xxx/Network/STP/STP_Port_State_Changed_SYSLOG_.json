@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^\\S+ VLAN\\s(?P<vlan>\\d+)\\sPort\\s(?P<interface>[\\d\\/]+)\\sSTP\\sState\\s->\\s(?P<state__enum__stp_state>\\w+)\\s\\(\\w+\\)$",
-    "profiles__name": ["HP.ProCurve9xxx"],
+    "profiles": ["HP.ProCurve9xxx"],
     "sources": ["syslog"],
     "test_cases": [
         {

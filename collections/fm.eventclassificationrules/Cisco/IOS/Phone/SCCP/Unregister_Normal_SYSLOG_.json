@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IPPHONE-6-UNREGISTER_NORMAL: (?P<name>\\S+?):(?P<sn>\\S+) IP:(?P<ip>\\S+) Socket:(?P<socket>\\d+) DeviceType:(?P<type>\\S+) has unregistered normally",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

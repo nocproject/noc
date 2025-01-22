@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:SYS-(?:SP-)?2-MALLOCFAIL|MCAST-SP-STDBY-6-GC_LIMIT_EXCEEDED|EARL_NETFLOW-SP-4-TCAM_THRLD|SYS-2-CHUNKEXPANDFAIL|SYS-4-FREEMEMLOW): (?P<reason>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

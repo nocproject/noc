@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%LINK-I-Up:\\s+(?P<interface>(\\S+ \\d+|\\S+))$",
-    "profiles__name": ["Supertel.K2X"],
+    "profiles": ["Supertel.K2X"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%LINK-I-Up:  ch1",

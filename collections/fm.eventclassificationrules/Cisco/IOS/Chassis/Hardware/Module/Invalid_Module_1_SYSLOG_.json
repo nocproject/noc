@@ -18,6 +18,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PM_SCP-SP-3-TRANSCEIVER_UNSUPPORTED: Unsupported transceiver in LAN port (?P<interface>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"]
 }

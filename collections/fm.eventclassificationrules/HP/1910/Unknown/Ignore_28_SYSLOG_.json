@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10LAGG/1/AggPortInactive2\\(t\\):\\s+Trap \\S+: Aggregation Group \\d+: port member \\d+ becomes INACTIVE!$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

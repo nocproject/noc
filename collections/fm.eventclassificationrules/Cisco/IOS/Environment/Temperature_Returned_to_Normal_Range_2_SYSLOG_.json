@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)RECOVER:\\s*(?P<name>Supervisor in slot \\d+) \\S+ (?P<threshold>minor|major) temperature threshold recovered",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

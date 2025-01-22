@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PS-3-DCOUTPUTVOLTOK: (?P<name>Power System) (?:AC|DC) condition is now normal\\.$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

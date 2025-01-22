@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10LLDP/6/LLDP_CREATE_NEIGHBOUR\\(l\\): New neighbor created on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

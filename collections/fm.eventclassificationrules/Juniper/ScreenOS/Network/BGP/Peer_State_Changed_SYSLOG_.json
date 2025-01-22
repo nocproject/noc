@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "system-information-00542: BGP peer (?P<peer>\\S+) changed to (?P<to_state__enum__bgp_state>\\S+) state",
-    "profiles__name": ["Juniper.ScreenOS"],
+    "profiles": ["Juniper.ScreenOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

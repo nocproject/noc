@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IOSXE_OIR-6-ONLINECARD: Card \\(\\S+\\) online in slot (?P<number>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"]
 }

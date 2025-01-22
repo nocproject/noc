@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10LLDP/2/CREREM\\(l\\): Port \\S+ \\(IfIndex \\d+\\):Created new neighbor, chassis ID: \\S+, port ID: \\S+\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

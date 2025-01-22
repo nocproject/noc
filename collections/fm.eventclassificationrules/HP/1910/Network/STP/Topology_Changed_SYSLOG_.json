@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10MSTP/6/MSTP_(DETECTED|NOTIFIED)_TC\\(l\\): Instance \\S+ port (?P<interface>\\S+) (detected|was notified of) a topology change\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

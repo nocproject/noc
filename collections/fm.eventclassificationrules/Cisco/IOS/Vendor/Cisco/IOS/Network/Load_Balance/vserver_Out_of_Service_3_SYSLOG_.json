@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CSM_SLB-6-RSERVERSTATE: Module (?P<module>\\d+) server state changed: server (?P<name>.+?) in serverfarm '(?P<farm>.+)' has reached configured .+ health retries",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

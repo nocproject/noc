@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%OSPF-5-ADJCHG: Process \\d+, Nbr (?P<neighbor>\\S+)\\s*on (?P<interface>.+) from (?P<from_state>LOADING) to (?P<to_state>FULL), Loading Done$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

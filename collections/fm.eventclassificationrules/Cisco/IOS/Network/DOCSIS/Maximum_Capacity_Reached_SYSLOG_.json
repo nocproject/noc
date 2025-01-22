@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-5-OVERLIMIT: Interface (?P<interface>.+).Current total reservation of (?P<cur_bps>\\d+) bps on Port (?P<upstream>U\\d+), exceeds its.+maximum configured reservation limit of (?P<res_bps>\\d+) bps",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

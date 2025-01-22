@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "LBD recovers port (?P<port>\\d+)\\.$",
-    "profiles__name": ["EdgeCore.ES"],
+    "profiles": ["EdgeCore.ES"],
     "sources": ["syslog"],
     "test_cases": [
         {

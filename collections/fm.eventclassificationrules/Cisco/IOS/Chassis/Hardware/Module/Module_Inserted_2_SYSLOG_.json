@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C4K_IOSINTF-5-TRANSCEIVERINSERTED: Slot=(?P<module>\\d+) Port=(?P<interface>\\d+): Transceiver has been inserted",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

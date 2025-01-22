@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR7200-6-REFLOCK: (?P<name>Cable clock) locked to .+ reference$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

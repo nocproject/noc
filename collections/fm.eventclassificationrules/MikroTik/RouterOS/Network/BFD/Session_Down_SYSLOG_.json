@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "BFD neighbor (?P<peer>\\S+) on (?P<interface>.+) changed state to DOWN",
-    "profiles__name": ["MikroTik.RouterOS"],
+    "profiles": ["MikroTik.RouterOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

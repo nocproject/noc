@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "The RPM of the fan has recovered to normal state$",
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

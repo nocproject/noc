@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%AAA-I-DISCONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) ?, source (?P<ip>\\S+) destination  \\S+  TERMINATED\\. The Telnet/SSH session may still be connected\\.$",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [
         {

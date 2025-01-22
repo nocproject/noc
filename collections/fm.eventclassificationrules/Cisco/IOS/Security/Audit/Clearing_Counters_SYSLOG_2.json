@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CLEAR-5-COUNTERS: Clear counter on (?P<interface>all) interfaces by (?P<user>\\S+) on\\s*\\S+ \\((?P<ip>\\S+)\\)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

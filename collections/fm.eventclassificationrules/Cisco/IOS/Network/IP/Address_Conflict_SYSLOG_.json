@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IP-4-DUPADDR: Duplicate address (?P<ip>\\S+) on (?P<interface>\\S+), sourced by (?P<mac>\\S+)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

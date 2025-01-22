@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%DOT11-6-ASSOC: Interface (?P<interface>\\S+), Station\\s+(?P<mac>\\S+) Associated",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

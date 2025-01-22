@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%INIT-I-Startup: (Warm|Cold) Startup$",
-    "profiles__name": ["Linksys.SPS2xx"],
+    "profiles": ["Linksys.SPS2xx"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%INIT-I-Startup: Warm Startup",

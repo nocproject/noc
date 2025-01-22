@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UPS: (?P<name>A power module) fault no longer exists. 0x0202",
-    "profiles__name": ["APC.AOS"],
+    "profiles": ["APC.AOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "init: (?P<name>\\S+) \\(PID (?P<pid>\\d+)\\) exited with status=(?P<status>\\d+)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IOSXE_PEM-3-PEMFAIL: The (?P<name>PEM in slot \\S+) is switched off or encountering a failure condition",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

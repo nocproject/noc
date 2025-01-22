@@ -18,7 +18,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:MAC_MOVE-SP-4-NOTIF|SW_MATM-4-MACFLAP_NOTIF|C4K_EBM-4-HOSTFLAPPING): Host (?P<mac>\\S+) in vlan (?P<vlan>\\d+) is (?:flapping between|moving from) port (?:and|to) port$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

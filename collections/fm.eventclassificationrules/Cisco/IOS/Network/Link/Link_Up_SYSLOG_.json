@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-UPDOWN: Interface (?P<interface>.+), changed state to up$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

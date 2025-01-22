@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%DEVICE-3-LINKUPDOWN:\\s+(?P<interface>.+)\\s+LinkDown.$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

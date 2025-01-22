@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Unauthenticated IP-MAC address and discarded by ip mac port binding \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

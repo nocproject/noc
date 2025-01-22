@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

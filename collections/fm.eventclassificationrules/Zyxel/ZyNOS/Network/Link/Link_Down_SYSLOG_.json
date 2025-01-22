@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "interface: Port (?P<interface>\\S+) link down$",
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["syslog"]
 }

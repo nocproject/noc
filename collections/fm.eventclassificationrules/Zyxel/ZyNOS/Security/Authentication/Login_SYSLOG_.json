@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "auth(entication)?: (?:\\S+: )?User (?P<user>.*) login$",
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["syslog"]
 }

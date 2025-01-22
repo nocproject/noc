@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PM_SCP-SP-3-GBIC_BAD: (?P<module>\\S+) integrity check on port (?P<interface>\\S+) failed: (?P<reason>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ENVM-6-PS(?:CHANGE|LEV): (?P<name>Power Supply \\d+)( state)? changed from (?P<from_state>.+) to (?P<to_state>.+)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

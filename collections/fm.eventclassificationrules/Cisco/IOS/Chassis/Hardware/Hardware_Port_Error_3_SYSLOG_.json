@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "LATECOLL: (?P<interface>.+), [Ll]ate collision",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

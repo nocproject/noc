@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10IFNET/5/LINEPROTO_UPDOWN\\(l\\):\\s+Line protocol on the interface (?P<interface>\\S+) is UP\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

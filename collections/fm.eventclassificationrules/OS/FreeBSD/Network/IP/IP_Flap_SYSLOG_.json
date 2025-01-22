@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "kernel: arp: (?P<ip>\\S+) is on (?P<from_interface>\\S+) but got reply from (?P<mac>\\S+) on (?P<to_interface>\\S+)$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

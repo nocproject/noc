@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SRM/\\d+/PortPhysicalEthHalfDuplexClear.+port work at full-duplex state.+EntPhysicalName=(?P<interface>.+),",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C6KENV-SP-4-(?:MINOR|MAJOR)TEMPALARM: (?P<name>.+) temperature crossed threshold #1\\(=(?P<threshold>\\d+)C\\). It has exceeded normal operating temperature range.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ARP-4-DUPADDR: Duplicate address (?P<ip>\\S+) on interface (?P<interface>.+) port .+, sourced by (?P<mac>\\S+)\\.",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RPD_BGP_NEIGHBOR_STATE_CHANGED: BGP peer (?P<peer>\\S+) \\(.+? AS (?P<as>\\d+)\\) changed state from (?P<from_state__enum__bgp_state>\\S+) to (?P<to_state__enum__bgp_state>\\S+)",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

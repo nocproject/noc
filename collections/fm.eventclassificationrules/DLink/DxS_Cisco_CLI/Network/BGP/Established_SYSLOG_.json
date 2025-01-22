@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%BGP-5-ADJCHANGE: Neighbor (?P<peer>\\S+) Up\\.",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

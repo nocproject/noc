@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%MNGINF-W-ACL: (?P<name>Management) ACL drop packet received on interface (?P<src_interface>.+) from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) protocol (?P<proto>\\d+) service \\S+",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IFMGR-5-OSTATE_UP: Changed interface state to up: (?P<interface>.+)$",
-    "profiles__name": ["Force10.FTOS"],
+    "profiles": ["Force10.FTOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

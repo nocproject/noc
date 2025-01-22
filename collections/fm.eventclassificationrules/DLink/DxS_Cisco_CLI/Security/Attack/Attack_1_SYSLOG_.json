@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ARPGUARD-4-DOS_DETECTED: (?P<name>ARP DoS) attack was detected.",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

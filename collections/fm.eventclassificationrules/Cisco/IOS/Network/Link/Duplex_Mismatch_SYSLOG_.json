@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on (?P<interface>\\S+) .+",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

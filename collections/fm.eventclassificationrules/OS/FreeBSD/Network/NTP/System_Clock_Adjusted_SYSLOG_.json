@@ -14,7 +14,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ntpd\\[\\d+\\]: time reset (?P<adjustment_s>\\S+) s$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

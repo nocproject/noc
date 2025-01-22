@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%OSPF-5-ADJCHG: Process \\d+, Nbr (?P<neighbor>\\S+)\\s*on (?P<interface>.+) from (?P<from_state>INIT|FULL|2WAY) to (?P<to_state>DOWN), Neighbor Down: (?P<reason>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

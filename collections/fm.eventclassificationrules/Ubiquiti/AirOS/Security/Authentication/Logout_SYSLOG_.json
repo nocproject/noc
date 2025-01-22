@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* dropbear\\[\\d+\\]: exit after auth \\((?P<user>\\w+)\\): Exited normally$",
-    "profiles__name": ["Ubiquiti.AirOS"],
+    "profiles": ["Ubiquiti.AirOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

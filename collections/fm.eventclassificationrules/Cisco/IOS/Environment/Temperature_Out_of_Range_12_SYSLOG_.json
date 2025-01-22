@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ENVIRONMENTAL-\\d+-ALERT.+[Tt]emp: (?P<name>.+), [Ll]ocation.+State.+Reading: (?P<measure>\\S+) Celsius",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

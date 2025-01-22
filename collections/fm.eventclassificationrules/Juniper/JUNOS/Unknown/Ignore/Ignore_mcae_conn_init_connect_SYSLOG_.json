@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "mcae_conn_init_connect in evConnect\\(\\)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

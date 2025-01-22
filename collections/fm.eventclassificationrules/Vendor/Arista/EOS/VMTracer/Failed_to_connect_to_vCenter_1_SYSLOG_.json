@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%VMWAREVI-3-CONNECT_FAILED: Failed to connect to vCenter. (?P<reason>.+?)\\. \\(",
-    "profiles__name": ["Arista.EOS"],
+    "profiles": ["Arista.EOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

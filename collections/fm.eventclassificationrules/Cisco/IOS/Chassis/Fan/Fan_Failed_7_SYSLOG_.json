@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ENVMON-4-FAN_LOW_RPM: (?P<name>.+) service recommended",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

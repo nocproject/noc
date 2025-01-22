@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "\\[HTTP\\]/5/logout \\((?P<ip>\\S+)\\)$",
-    "profiles__name": ["HP.1905"],
+    "profiles": ["HP.1905"],
     "sources": ["syslog"],
     "test_cases": [
         {

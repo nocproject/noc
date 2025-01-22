@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SHELL\\/\\d\\/TIMEOUT.+VTY login from (?P<ip>\\S+) is time out",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

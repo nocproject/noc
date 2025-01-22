@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Land Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

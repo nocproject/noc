@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "link (?P<interface>\\d+/\\d+/\\d+) SFP (?P<sensor>.+) (?P<threshold>low|high)\\s+warning set",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

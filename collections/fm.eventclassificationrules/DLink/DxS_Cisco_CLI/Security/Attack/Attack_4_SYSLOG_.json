@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%NFPP_DHCP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=(?P<src_mac>\\S+),port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected.",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

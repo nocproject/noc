@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%L2-ELO-6-INTF_SESSION_UP : (?P<interface>\\S+): OAM session has come up",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

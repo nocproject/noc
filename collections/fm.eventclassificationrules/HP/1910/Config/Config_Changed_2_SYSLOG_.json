@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10CFGMAN/5/CFGMAN_CFGCHANGED\\(l\\): -EventIndex=\\d+-CommandSource=\\d+-ConfigSource=\\d+-ConfigDestination=\\d+; Configuration is changed\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

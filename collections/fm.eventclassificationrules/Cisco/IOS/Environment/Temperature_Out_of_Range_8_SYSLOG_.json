@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-0-TEMPHIGH\\s*: \\S+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown temperature (?P<max>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

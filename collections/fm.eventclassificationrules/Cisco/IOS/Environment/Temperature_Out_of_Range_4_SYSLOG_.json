@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-0-MOD_THERMAL(?:SHUTDOWN|WARNING):\\s*(?P<name>Module \\S+) '(?P<threshold>shutdown|warning)' temperature threshold exceeded on CPU \\d+",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%.+-THRESHOLD_VIOLATION: (?P<interface>\\S+): (?P<sensor>.+) (?P<threshold>high|low) alarm; Operating value: (?P<ovalue>.+), Threshold value: (?P<tvalue>.+)\\.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

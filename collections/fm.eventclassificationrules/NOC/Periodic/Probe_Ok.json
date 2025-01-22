@@ -11,6 +11,6 @@
     }],
     "labels": [],
     "message_rx": "^OK$",
-    "profiles__name": ["NOC.SAE"],
+    "profiles": ["NOC.SAE"],
     "sources": ["system"]
 }

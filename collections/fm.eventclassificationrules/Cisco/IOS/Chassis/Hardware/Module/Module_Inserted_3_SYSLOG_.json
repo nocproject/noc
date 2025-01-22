@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%TRANSCEIVER(?:-DFC\\d+)?-6-INSERTED: [Tt]ransceiver module inserted in \\D+(?P<module>\\d+)/(?P<interface>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

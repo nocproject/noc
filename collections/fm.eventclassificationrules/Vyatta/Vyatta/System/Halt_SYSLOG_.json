@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "shutdown\\[\\d+\\]: shutting down for system halt$",
-    "profiles__name": ["Vyatta.Vyatta"],
+    "profiles": ["Vyatta.Vyatta"],
     "sources": ["syslog"],
     "test_cases": [
         {

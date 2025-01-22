@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port <?(?P<interface>\\S*\\d+)>?\\s+recover from BPDU under (?:attacking|protection) state automatically",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

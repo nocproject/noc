@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Failed to login through SSH\\. \\(IP=(?P<ip>\\S+), UserName=(?P<user>\\S+), Times=\\d+, FailedReason=User authentication failed\\)$",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

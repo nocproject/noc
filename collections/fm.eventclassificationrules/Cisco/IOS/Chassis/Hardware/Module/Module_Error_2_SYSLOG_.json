@@ -18,7 +18,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PM_SCP-SP-3-TRANSCEIVER_(?:BAD_EEPROM|UNSUPPORTED): (?:Integrity check on|Unsupported) transceiver in LAN port (?P<interface>\\S+)( failed: .+)?",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

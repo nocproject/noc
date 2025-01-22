@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%BGP-4-MAXPFX: Number of prefixes received from (?P<peer>.+) vpn vrf (?P<vrf>\\S+) \\(afi \\d+\\) reaches (?P<recv>\\d+), max (?P<max>\\d+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

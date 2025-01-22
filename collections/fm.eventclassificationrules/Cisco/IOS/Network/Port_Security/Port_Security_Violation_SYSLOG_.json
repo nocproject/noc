@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PORT_SECURITY-2-PSECURE_VIOLATION:\\s*Security violation occurred,? caused by MAC( address)? (?P<mac>\\S+) on port (?P<interface>\\S+)\\.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

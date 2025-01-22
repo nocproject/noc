@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%TRUNK-I-PORTADDED: Port (?P<interface>\\S+) added to (?P<lag_interface>\\S+)$",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [
         {

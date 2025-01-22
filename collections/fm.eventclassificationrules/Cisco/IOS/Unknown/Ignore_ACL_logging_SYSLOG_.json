@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed \\d+ packet",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

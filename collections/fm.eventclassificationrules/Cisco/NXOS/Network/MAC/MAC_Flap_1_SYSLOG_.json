@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%L2FM-2-L2FM_MAC_FLAP_DISABLE_LEARN_N3K: Loops detected in the network for mac (?P<mac>\\S+) among ports (?P<from_interface>\\S+) and (?P<to_interface>\\S+) vlan (?P<vlan>\\d+) - Disabling dynamic learning notifications for a period between \\d+ and \\d+ seconds on vlan \\d+",
-    "profiles__name": ["Cisco.NXOS"],
+    "profiles": ["Cisco.NXOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

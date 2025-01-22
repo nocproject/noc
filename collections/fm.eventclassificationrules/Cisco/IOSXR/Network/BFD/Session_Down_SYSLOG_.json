@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%L2-BFD-6-SESSION_STATE_DOWN : BFD session to neighbor (?P<peer>\\S+) on interface (?P<interface>\\S+) has gone down. Reason: (?P<reason>.+)$",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"]
 }

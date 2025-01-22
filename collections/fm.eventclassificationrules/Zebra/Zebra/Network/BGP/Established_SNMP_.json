@@ -16,6 +16,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Zebra.Zebra"],
+    "profiles": ["Zebra.Zebra"],
     "sources": ["SNMP Trap"]
 }

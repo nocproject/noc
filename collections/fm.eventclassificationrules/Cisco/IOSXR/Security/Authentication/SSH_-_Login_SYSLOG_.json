@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user '(?P<user>.+)' from '(?P<ip>.+)' on '(?P<line>.+)'\\s*\\(.+\\)",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

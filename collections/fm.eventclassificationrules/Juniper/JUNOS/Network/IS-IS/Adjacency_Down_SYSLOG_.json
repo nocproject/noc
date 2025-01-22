@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RPD_ISIS_ADJDOWN: IS-IS lost (?P<level>\\S+) adjacency to (?P<neighbor>.+?) on (?P<interface>.+?), reason: (?P<reason>.+)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-0-SYS_TEMP(?:MINOR|MAJOR)FAIL:\\s*(?P<name>Chassis) (?P<threshold>major|minor) temperature threshold exceeded",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

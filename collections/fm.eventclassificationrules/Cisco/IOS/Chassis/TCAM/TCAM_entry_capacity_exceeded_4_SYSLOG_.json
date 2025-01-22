@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%MLSCEF-.+-4-FIB_EXCEPTION_THRESHOLD: (?P<reason>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

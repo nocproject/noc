@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UPS: Battery power is low and will soon be exhausted. 0x010F",
-    "profiles__name": ["APC.AOS"],
+    "profiles": ["APC.AOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%COPY-N-TRAP: The copy operation was completed successfully$",
-    "profiles__name": ["Linksys.SPS2xx"],
+    "profiles": ["Linksys.SPS2xx"],
     "sources": ["syslog"],
     "test_cases": [
         {

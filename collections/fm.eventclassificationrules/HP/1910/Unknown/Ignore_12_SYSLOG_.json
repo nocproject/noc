@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10NTP/4/NTP_LOG\\(l\\):\\s+NTP service enabled$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

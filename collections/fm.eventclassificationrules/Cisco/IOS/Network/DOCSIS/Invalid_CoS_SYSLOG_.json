@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-5-CLASSFAIL: Registration failed for Cable Modem (?P<mac>\\S+) on interface (?P<interface>.+):",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

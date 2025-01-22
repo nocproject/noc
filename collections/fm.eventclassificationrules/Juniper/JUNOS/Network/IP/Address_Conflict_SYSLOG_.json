@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "KERN_ARP_DUPLICATE_ADDR: duplicate IP address (?P<ip>\\S+)! sent from address: (?P<mac>\\S+)",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

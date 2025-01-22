@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10SYSMIB/4/CLKCHANGE\\(t\\):\\s+\\S+ System clock changed$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

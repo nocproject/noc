@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%.+-INTR_THROTTLE: Interface (?P<interface>\\S+) PHY interrupt is throttled",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

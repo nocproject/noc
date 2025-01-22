@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10CFM/5/(WEBOPT|SHEL)_CFM_SAVELOG\\(l\\):\\s+\\(by \\S+ via (web|VTY) from host \\S+\\)\\s+Configuration is saved successfully\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the master loopback mode",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

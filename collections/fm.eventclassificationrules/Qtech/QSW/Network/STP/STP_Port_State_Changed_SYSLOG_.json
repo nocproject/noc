@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%STP-4-Stp:\\s+\\S+\\s+port\\s+(?P<interface>.+)\\s+turns\\s+to\\s+(?P<state__enum__stp_state>\\S+)$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

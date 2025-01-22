@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PLATFORM-ENVMON-2-TEMP : Hotpoint temp sensor\\((?P<name>.+)\\) temperature has reached (?P<threshold>\\S+) level at (?P<measure>\\d+)\\(C\\)",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

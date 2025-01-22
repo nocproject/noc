@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\sDown,\\s(?P<reason>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

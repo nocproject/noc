@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Conflict IP was detected with (?:this|the) device(?:!)? \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), Port \\S+, Interface: (?P<interface>\\S+?)\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

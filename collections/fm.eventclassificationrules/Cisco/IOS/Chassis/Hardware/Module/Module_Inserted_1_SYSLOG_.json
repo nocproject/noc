@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%OIR-SP-6-INSCARD: Card inserted in (?P<module>slot \\S+), interfaces are now online",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

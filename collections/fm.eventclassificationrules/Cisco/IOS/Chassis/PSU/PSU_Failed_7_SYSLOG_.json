@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PS-3-MULTFAIL: There is more than one failure with the (?P<name>Power System) \\d+; please resolve problems immediately\\.$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

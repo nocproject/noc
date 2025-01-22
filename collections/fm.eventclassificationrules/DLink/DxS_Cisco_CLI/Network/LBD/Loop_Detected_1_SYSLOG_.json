@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%RLDP-3-LINK_DETECT_ERROR: Detected loop detection error on interface (?P<interface>.+)\\.Set this interface errordisable.",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

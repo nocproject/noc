@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer down:\\s+(?P<peer>\\S+) : (?P<reason>.+)",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"]
 }

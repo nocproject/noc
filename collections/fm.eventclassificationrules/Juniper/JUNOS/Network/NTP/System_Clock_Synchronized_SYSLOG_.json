@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "xntpd\\[\\d+\\]: synchronized to (?P<server_address>\\S+), stratum=(?P<stratum>\\d+)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

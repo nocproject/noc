@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "radius: Can't reach RADIUS server (?P<ip>\\S+)",
-    "profiles__name": ["HP.ProCurve"],
+    "profiles": ["HP.ProCurve"],
     "sources": ["syslog"],
     "test_cases": [
         {

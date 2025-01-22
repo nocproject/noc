@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ELRP\\.Report: \\[CLI:vlan(?P<vlan>\\d+):\\d+] LOOP DETECTED : \\d+ transmited, \\d+ received, ingress slot:(?P<interface>\\S+ \\(\\d+\\))",
-    "profiles__name": ["Extreme.XOS"],
+    "profiles": ["Extreme.XOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10HWCM/4/TRAP\\(t\\):\\s+\\S+<h3cCfgManEventlog> configure changed:\\s+EventIndex=\\d+,CommandSource=\\d+,ConfigSource=\\d+,ConfigDestination=\\d+$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

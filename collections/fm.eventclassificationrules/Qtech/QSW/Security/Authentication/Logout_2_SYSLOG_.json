@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CMDLINE-5-LOGOUT: The remote client (?P<ip>\\S+) has logged out at terminal \\d+\\.$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "system: [Ss]ystem has reset (without|due to a) management command$",
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

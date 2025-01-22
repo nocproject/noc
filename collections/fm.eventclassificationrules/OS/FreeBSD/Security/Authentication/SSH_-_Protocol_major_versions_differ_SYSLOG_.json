@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "sshd\\[\\d+\\]: Protocol major versions differ for (?P<ip>\\S+): .+ vs\\. .+",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

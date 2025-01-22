@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "/usr/sbin/cron\\[\\d+\\]: \\(operator\\) CMD \\(/usr/libexec/save-entropy\\)",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

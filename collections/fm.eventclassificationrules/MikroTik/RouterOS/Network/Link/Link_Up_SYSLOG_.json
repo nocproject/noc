@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "(?P<interface>\\S+) link up \\(speed (?P<speed>\\S+), (?P<duplex>\\S+ duplex)\\)",
-    "profiles__name": ["MikroTik.RouterOS"],
+    "profiles": ["MikroTik.RouterOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Loopback does exist on port (?P<interface>\\S+) vlan (?P<vlan>\\d+), please check it",
-    "profiles__name": ["Huawei.VRP3"],
+    "profiles": ["Huawei.VRP3"],
     "sources": ["syslog"],
     "test_cases": [
         {

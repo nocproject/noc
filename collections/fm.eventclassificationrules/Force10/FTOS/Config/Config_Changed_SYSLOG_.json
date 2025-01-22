@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%FILEMGR-5-FILESAVED: Copied running-config to startup-config in .+ by (?P<user>.+)$",
-    "profiles__name": ["Force10.FTOS"],
+    "profiles": ["Force10.FTOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

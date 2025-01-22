@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "login: login on tty\\S+ as (?P<user>.+)",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "login: login on ttyv1 as root",

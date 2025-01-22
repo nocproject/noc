@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%Environment-A-FAN-STAT-CHNG: (?P<name>\\S+ \\d+) status changed - not operational.$",
-    "profiles__name": ["Supertel.K2X"],
+    "profiles": ["Supertel.K2X"],
     "sources": ["syslog"],
     "test_cases": [
         {

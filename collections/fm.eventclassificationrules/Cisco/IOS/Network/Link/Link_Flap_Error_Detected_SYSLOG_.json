@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PM-4-ERR_DISABLE: link-flap error detected on (?P<interface>\\S+), putting \\S+ in err-disable state",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

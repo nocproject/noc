@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface (?P<interface>\\S+) has received a clear of remote failure indication from its remote peer\\s*\\(failure reason = (?P<reason>.+)\\)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10VLAN/5/WEBOPT_HYBRID_ADD_TAG_VLAN\\(l\\):\\s+\\(by \\S+ via web from host \\S+\\)\\s+Adding \\S+ port \\S+ to VLAN \\d+ as (tagged|untagged)\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

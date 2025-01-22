@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Loop detected on port (?P<interface>\\d+)\\. Disabling port.",
-    "profiles__name": ["Extreme.Summit200"],
+    "profiles": ["Extreme.Summit200"],
     "sources": ["syslog"],
     "test_cases": [
         {

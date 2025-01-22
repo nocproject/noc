@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port (?P<interface>.+) link down",
-    "profiles__name": ["DLink.DxS_Smart"],
+    "profiles": ["DLink.DxS_Smart"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "Port 26 link down",

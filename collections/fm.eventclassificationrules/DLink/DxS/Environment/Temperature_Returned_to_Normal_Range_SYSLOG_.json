@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "( Unit \\d+ )?(?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) recovers to normal state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

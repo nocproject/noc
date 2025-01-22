@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port security violation \\([Pp]ort: (?P<interface>\\S+), MAC: (?P<mac>\\S+)\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

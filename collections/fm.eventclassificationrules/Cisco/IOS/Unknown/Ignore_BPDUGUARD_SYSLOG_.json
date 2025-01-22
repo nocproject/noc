@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SPANTREE(-SP)?-2-BLOCK_BPDUGUARD: Received BPDU on port \\S+ with BPDU Guard enabled. Disabling port.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot removal",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

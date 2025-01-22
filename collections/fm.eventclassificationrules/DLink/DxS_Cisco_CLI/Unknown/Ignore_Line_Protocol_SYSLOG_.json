@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LINEPROTO-5-UPDOWN: Line protocol on Interface .+, changed state to (?:up|down).",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

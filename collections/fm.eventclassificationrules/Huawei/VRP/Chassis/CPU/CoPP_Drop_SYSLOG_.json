@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "CPCAR_DROP_MPU\\(l\\)\\[\\d+\\]:Some packets are dropped by cpcar on the MPU.+Protocol=(?P<proto>\\S+), Drop-Count=(?P<count>\\S+)\\)$",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

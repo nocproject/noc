@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10SHELL/\\d+/LOG(IN|OUT)\\(t\\):\\s+Trap \\S+:\\S+ log(in|out) from Web$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

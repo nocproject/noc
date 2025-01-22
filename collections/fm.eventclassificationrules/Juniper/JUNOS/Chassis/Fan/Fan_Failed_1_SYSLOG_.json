@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Major alarm set, (?P<name>.+) not spinning",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C4K_IOSMODPORTMAN-4-POWERSUPPLYBAD: (?P<name>Power supply 1) has failed or been turned off",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

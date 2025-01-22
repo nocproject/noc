@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LINEPROTO-5-UPDOWN: Line protocol on Interface (?P<interface>.+), changed state to DOWN",
-    "profiles__name": ["NAG.SNR"],
+    "profiles": ["NAG.SNR"],
     "sources": ["syslog"],
     "test_cases": [
         {

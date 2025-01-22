@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from (?P<ip>\\S+) to (?P<dst_ip>\\S+) \\(.+\\)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

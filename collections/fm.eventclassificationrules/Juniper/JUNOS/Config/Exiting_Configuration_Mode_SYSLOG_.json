@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UI_DBASE_LOGOUT_EVENT: User '(?P<user>.+)' exiting configuration mode$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Failed to login through telnet\\. \\([Ii][Pp]=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+(\\)|,)",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

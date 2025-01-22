@@ -30,6 +30,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["SNMP Trap"]
 }

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - (?P<reason>.+)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

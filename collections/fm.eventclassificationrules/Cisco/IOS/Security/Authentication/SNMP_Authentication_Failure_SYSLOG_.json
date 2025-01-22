@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host (?P<ip>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

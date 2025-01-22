@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "VIN voltage value \\S+ exceeds its limit voltage value",
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

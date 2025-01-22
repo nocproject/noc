@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "snmp Authentication failure notification.$",
-    "profiles__name": ["EdgeCore.ES"],
+    "profiles": ["EdgeCore.ES"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "ESWD_MAC_LIMIT_BLOCK: MAC limit \\((?P<limit>\\d+)\\) exceeded at (?P<interface>.+?): shutting down the interface$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

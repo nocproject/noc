@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "system: System (cold|warm) start$",
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

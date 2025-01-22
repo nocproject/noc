@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "getty\\[\\d+\\]: \\/usr\\/bin\\/login: Exec format error$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

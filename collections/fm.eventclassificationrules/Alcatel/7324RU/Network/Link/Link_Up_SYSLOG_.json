@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "DSLAM-(?P<interface>\\d+):MINOR,-LINE_DOWN:The line is down$",
-    "profiles__name": ["Alcatel.7324RU"],
+    "profiles": ["Alcatel.7324RU"],
     "sources": ["syslog"],
     "test_cases": [
         {

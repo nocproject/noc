@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Physical entity is removed.\\s*\\(Index=\\d+, Severity=\\d+, ProbableCause=\\d+, EventType=\\d+, ContainedIn=\\d+, PhysicalName=\"(?P<interface>\\S+) (?P<module>.+) module\"\\)",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

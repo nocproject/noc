@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%LINK-W-Down:  ?(?P<interface>.+)$",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%LINK-W-Down:  gi0/3",

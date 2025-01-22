@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%%10NTP/5/NTP_CHANGE_STRATUM\\(l\\):\\s+System stratum changed from \\d+ to \\d+ after clock update.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

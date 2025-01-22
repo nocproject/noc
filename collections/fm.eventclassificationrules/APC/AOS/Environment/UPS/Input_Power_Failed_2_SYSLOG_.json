@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UPS: Switched to battery backup power. 0x0109",
-    "profiles__name": ["APC.AOS"],
+    "profiles": ["APC.AOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

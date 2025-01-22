@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "LBD detects loopback on port (?P<port>\\d+), VLAN (?P<vlan>\\d+)\\.$",
-    "profiles__name": ["EdgeCore.ES"],
+    "profiles": ["EdgeCore.ES"],
     "sources": ["syslog"],
     "test_cases": [
         {

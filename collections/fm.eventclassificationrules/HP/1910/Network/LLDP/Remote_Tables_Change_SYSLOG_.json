@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10LLDP\\/\\d+\\/REMCHG\\(t\\): lldpRemTablesChangeRemInserts : (?P<table_inserts>\\d+),RemDeletes : (?P<table_deletes>\\d+),RemDrops : (?P<table_drops>\\d+),RemAgeouts : (?P<table_ageouts>\\d+)$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

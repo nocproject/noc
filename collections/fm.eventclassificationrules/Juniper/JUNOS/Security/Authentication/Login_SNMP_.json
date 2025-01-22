@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UI_LOGIN_EVENT: User '(?P<user>.+?)' login, class '.+'",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"]
 }

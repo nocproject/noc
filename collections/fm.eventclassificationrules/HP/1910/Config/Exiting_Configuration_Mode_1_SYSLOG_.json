@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10HWCM/4/EXIT\\(l\\):\\s+exit from configure mode$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

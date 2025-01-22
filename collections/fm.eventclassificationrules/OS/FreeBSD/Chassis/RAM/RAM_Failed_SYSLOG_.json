@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "kernel: MCA: Bank (?P<bank>\\d+), Status 0x\\S+$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

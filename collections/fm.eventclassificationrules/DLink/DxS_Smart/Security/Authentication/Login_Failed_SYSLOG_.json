@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Login failed through (?:Web|Telnet)\\s*\\(\\s*IP: (?P<ip>\\S+)\\s*\\)",
-    "profiles__name": ["DLink.DxS_Smart"],
+    "profiles": ["DLink.DxS_Smart"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10SC/\\d+/SC_AAA_(LAUNCH|SUCCESS)\\(l\\): -AAAType=(AUTHEN|ACCOUNT|AUTHOR)-AAAScheme= local-Service=login-UserName=\\S+@system; AAA (launched|is successful)\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

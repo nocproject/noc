@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10SHELL/4/LOGINAUTHFAIL\\(t\\):\\s+Trap \\S+<h3cLogInAuthenFailure>:(\\S+|) failed to login from (VTY|Web), reason is \\d+$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

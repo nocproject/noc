@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UI_CMDLINE_READ_LINE: User '(?P<user>.+?)', command '(?P<command>.*)'$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

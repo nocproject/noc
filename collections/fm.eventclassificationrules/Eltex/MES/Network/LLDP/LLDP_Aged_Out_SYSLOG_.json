@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex (?P<interface>\\S+)\\.$",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [
         {

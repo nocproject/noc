@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "snmp (?P<interface>VLAN\\s+\\S+) link-up notification\\.$",
-    "profiles__name": ["EdgeCore.ES"],
+    "profiles": ["EdgeCore.ES"],
     "sources": ["syslog"],
     "test_cases": [
         {

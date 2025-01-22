@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "sshd\\[\\d+\\]: Invalid user (?P<user>.+?) from (?P<ip>\\S+)$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

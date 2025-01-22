@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\S+00-3-OVERLAPIP: Interface (?P<interface>\\S+), IP address (?P<src_ip>\\S+) from MAC (?P<src_mac>\\S+) is already in use on .+.  SID = \\d+",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

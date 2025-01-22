@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%BGP-3-NOTIFICATION: sent to neighbor .+ \\(hold time expired\\) \\d+ bytes",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

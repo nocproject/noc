@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10MSTP/1/PFWD\\(t\\):\\s+Trap \\S+: Instance \\S+ Port \\S+ has been set to forwarding state!$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

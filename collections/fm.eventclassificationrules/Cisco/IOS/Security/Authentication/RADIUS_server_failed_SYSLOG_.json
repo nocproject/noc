@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%RADIUS-4-RADIUS_DEAD: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is not responding\\.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

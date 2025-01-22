@@ -16,6 +16,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Linksys.SPS2xx"],
+    "profiles": ["Linksys.SPS2xx"],
     "sources": ["SNMP Trap"]
 }

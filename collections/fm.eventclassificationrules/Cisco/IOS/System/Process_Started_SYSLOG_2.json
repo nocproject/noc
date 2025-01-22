@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SSH-5-ENABLED: (?P<name>SSH 2\\.0) has been enabled$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

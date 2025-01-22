@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "IF(?:NET|PDT)/\\d+/IF_STATE.+Interface (?P<interface>\\S+)( has)? turned into DOWN state\\.$",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

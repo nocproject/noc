@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%\\S+ASIC-\\S+(?:WARN|ERR_INTRPT): .+",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Unit (?P<unit>\\S+) port\\s+(?P<port>\\d+) have intrusion MAC (?P<mac>\\S+)\\.$",
-    "profiles__name": ["EdgeCore.ES"],
+    "profiles": ["EdgeCore.ES"],
     "sources": ["syslog"],
     "test_cases": [
         {

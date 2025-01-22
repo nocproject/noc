@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "A user logout\\. \\(UserIndex=129, UserName=(?P<user>\\S+), UserIP=(?P<ip>\\S+), UserChannel=VTY\\d+\\)$",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

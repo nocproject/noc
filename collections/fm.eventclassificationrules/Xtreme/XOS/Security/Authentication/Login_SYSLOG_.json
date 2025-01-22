@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Login passed for user (?P<user>.*) through",
-    "profiles__name": ["Extreme.XOS"],
+    "profiles": ["Extreme.XOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

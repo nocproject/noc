@@ -12,6 +12,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["EdgeCore.ES"],
+    "profiles": ["EdgeCore.ES"],
     "sources": ["SNMP Trap"]
 }

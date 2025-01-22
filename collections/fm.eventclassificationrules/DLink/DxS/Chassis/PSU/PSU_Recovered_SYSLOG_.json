@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "(?P<name>Internal|Redundant) Power is (?:recovered|working)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

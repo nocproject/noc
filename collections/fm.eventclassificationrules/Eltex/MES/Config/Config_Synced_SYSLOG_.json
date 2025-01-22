@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config$",
-    "profiles__name": ["Eltex.MES"],
+    "profiles": ["Eltex.MES"],
     "sources": ["syslog"],
     "test_cases": [
         {

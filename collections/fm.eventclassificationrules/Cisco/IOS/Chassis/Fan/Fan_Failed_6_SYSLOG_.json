@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "System detected (?P<name>SYS PS \\d+ fan) fail condition",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

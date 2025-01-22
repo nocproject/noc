@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RECEIVE_(?:MSTITC|CISTTC).+instance (?P<instance>\\d+), port name is (?P<interface>.+).",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

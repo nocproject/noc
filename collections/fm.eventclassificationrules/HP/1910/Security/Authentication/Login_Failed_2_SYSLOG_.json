@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10WEB/4/WEBOPT_LOGIN_FAIL\\(l\\):\\s+(?P<user>\\S+) failed to log in from (?P<ip>\\S+)$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

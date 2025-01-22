@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PM_SCP(-SP)?-2-LCP_FW_ERR_INFORM: Module (?P<module>\\d+) is experiencing the following error: (?P<reason>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

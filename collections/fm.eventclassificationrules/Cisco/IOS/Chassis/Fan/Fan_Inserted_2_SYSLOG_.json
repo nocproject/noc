@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%OIR-SP-6-INSFAN: (?P<name>.+) inserted",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

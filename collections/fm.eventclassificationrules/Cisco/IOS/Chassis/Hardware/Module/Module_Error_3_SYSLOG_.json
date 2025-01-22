@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CONST_DIAG-(\\S+)?SP-4-ERROR_COUNTER_WARNING: (?P<module>Module \\S+) (?P<reason>Error counter exceeds threshold)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

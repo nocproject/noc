@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CMDLINE-6-COMMAND: \\(1\\) (?P<user>\\S+): (?P<to_priv>enable)$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

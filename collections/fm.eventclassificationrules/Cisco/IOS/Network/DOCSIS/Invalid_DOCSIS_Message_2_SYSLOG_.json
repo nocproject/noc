@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-5-NOTIMPLMENTEDMNCSMSG: Not implemented DOCSIS MESSAGE received from a Cable Modem for interface (?P<interface>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%TRANSCEIVER(?:-DFC\\d+)?-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

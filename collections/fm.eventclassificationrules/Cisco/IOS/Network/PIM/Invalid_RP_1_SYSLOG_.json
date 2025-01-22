@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PIM-1-INVALID_RP_REG: Received Register from router (?P<pim_router>\\S+) for group .+, (?P<invalid_rp>\\S+) not willing to be RP",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PHY-4-\\S+_NOT_SUPPORTED: The (?P<module>\\S+) in (?P<interface>\\S+) is not supported",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

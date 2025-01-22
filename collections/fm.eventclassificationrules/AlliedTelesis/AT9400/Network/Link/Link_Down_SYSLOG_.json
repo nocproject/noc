@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "pcfg: Link DOWN on port (?P<interface>\\d+)",
-    "profiles__name": ["AlliedTelesis.AT9400"],
+    "profiles": ["AlliedTelesis.AT9400"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "pcfg: Link DOWN on port 20",

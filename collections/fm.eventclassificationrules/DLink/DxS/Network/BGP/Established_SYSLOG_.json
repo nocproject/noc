@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "\\[BGP(\\(1\\))?:\\] BGP connection is successfully established Peer:<(?P<peer>\\S+)>\\.",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

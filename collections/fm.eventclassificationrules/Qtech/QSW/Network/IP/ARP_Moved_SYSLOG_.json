@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ARP-4-ARP: Duplicate ipaddress (?P<ip>\\S+),\\s*old info:(?P<from_mac>\\S+), vid \\d+, (?P<interface>\\S+), new info:(?P<to_mac>\\S+), vid \\d+, \\S+\\.$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

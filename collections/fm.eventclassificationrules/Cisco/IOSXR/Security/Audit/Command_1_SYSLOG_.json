@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%OS-SYSMGR-4-PROC_RESTART_NAME : User (?P<user>.+) \\(vty\\d+\\) requested a restart of process msdp at .+",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

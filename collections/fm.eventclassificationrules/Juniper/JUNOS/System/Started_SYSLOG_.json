@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SNMPD_TRAP_COLD_START: trap_generate_cold: SNMP trap: cold start$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

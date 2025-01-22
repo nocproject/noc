@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "IF_SFP_ALARM: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Alarm$",
-    "profiles__name": ["Cisco.NXOS"],
+    "profiles": ["Cisco.NXOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SNMP_TRAP_LINK_UP:.+ifName (?P<interface>\\S+)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

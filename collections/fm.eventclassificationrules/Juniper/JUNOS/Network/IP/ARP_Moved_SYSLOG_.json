@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "KERN_ARP_ADDR_CHANGE: arp info overwritten for (?P<ip>\\S+) from (?P<from_mac>\\S+) to (?P<to_mac>\\S+)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

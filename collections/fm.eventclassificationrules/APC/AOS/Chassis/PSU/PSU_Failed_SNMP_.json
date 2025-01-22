@@ -20,6 +20,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["APC.AOS"],
+    "profiles": ["APC.AOS"],
     "sources": ["SNMP Trap"]
 }

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SPANTREE-5-ROOTCHANGE: Root Changed for instance (?P<instance>\\d+): New Root Port is (?P<interface>\\S+)\\. New Root Mac Address is \\S+",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* EVENT_STA_JOIN .*",
-    "profiles__name": ["Ubiquiti.AirOS"],
+    "profiles": ["Ubiquiti.AirOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%POWER_SUPPLIES-5-PWR_OK: (?P<name>Power supply \\d+) is functioning",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

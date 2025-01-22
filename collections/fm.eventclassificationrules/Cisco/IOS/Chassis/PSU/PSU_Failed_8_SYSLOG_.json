@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C(?:6K|7600_)PWR-SP-2-PSFAIL: (?P<name>power supply \\d+) output failed.$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PLATFORM_ENV-1-FAN: Faulty fan detected",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

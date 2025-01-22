@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%STCK SYSL-I-UNITMSG: UNIT ID (?P<unit>\\d+),Msg:%INIT-I-InitCompleted: Initialization task is completed",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-5-(?:USIPLCHG|USIPLFIX): Interface (?P<interface>\\S+) U(?P<upstream>\\d+), input power level (?:changed to|fixed at) (?P<power>\\d+) dBmV",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

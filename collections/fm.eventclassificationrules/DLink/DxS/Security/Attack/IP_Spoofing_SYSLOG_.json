@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

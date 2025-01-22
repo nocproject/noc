@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "System cold restart\\.+$",
-    "profiles__name": ["Qtech.QSW2800"],
+    "profiles": ["Qtech.QSW2800"],
     "sources": ["syslog"],
     "test_cases": [
         {

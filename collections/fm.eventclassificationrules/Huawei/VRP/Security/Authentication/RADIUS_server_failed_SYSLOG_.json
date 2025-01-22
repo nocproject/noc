@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RDS/\\d+/RDAUTHDOWN.+RADIUS authentication server.+IP:\\s+(?P<ip>\\S+).+is down",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

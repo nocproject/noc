@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on (?P<interface>.+)\\. A packet filter action has been applied on the interface",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

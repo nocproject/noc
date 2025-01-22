@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "\\[zIMI\\]:\\[Telnet/SSH\\] (?P<user>\\S+)@(?P<ip>\\S+):\\d+, (?P<command>\\S+)",
-    "profiles__name": ["EdgeCore.ES"],
+    "profiles": ["EdgeCore.ES"],
     "sources": ["syslog"],
     "test_cases": [
         {

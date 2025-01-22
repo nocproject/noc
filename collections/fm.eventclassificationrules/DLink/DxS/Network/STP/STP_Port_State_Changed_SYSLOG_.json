@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Spanning Tree port status change \\(Instance:\\d+, Port:(?P<interface>\\d+)\\) \\S+->(?P<state__enum__stp_state>\\S+)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"]
 }

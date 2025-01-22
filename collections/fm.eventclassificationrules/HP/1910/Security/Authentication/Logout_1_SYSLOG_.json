@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10(WEB/\\d+/WEBOPT_LOGOUT|SHELL/\\d+/LOGOUT)\\(l\\):\\s+(?P<user>\\S+) (logged out|logout) from (?P<ip>\\S+)$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

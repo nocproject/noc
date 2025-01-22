@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "sshd\\[\\d+\\]: Accepted keyboard-interactive/pam for (?P<user>.+?) from (?P<ip>\\S+) port \\d+ ssh\\S+",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

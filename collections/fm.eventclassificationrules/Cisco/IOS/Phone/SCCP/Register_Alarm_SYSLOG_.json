@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IPPHONE-6-REG_ALARM: (?:(?P<socket>\\d+): )?Name=(?P<sn>\\S+) Load=\\s*(?P<image>\\S+) Last=(?P<reason>.+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

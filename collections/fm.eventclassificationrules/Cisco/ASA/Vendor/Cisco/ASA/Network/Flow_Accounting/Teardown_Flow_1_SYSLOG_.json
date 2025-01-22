@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:ASA|PIX)-6-302014: Teardown (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) duration .+? bytes (?P<bytes>\\d+).*?(?:\\((?P<user>\\S+)\\))?$",
-    "profiles__name": ["Cisco.ASA"],
+    "profiles": ["Cisco.ASA"],
     "sources": ["syslog"],
     "test_cases": [
         {

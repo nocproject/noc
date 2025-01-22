@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IOSXE_OIR-6-OFFLINECARD: Card \\(\\S+\\) offline in slot (?P<number>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"]
 }

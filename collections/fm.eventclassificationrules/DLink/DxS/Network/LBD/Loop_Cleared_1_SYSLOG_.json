@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Port (?P<interface>.+) LBD port recovered. Loop detection restarted",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

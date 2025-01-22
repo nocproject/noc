@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%DOT11-4-MAXRETRIES: Packet to client (?P<mac>\\S+) reached max retries, removing the client$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

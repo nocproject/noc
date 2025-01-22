@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Login failed through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

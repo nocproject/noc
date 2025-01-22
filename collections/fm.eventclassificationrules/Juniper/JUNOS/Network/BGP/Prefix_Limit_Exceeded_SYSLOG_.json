@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "rpd\\[\\d+\\]: (?P<peer>\\S+) \\(\\S+ AS (?P<as>\\d+)\\): Configured maximum prefix-limit threshold\\(\\d+\\) exceeded",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

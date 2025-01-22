@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%HARDWARE-5-FAN_OK: Fan works fine.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

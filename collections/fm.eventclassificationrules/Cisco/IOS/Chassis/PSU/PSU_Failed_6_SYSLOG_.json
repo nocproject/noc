@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PS-3-DCOUTPUTVOLTFAIL: System detected (?P<name>Power System) \\d+ (?:AC|DC) FAIL condition\\.$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

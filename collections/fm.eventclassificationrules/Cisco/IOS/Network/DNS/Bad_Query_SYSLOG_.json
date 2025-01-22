@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%DNSSERVER-3-BADQUERY: Bad DNS query from (?P<ip>\\S+)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

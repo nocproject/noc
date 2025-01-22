@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10IFNET/5/WEBOPT_SET_INTERFACE\\(l\\): \\(by \\S+ via web from host \\S+\\s+Interface Vlan-interface(?P<vlan>\\d+) is created\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

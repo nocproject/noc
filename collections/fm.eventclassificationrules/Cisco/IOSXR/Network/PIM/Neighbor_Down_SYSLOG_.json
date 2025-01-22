@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) DOWN on (?P<interface>\\S+) - (?P<reason>.+)$",
-    "profiles__name": ["Cisco.IOSXR"],
+    "profiles": ["Cisco.IOSXR"],
     "sources": ["syslog"],
     "test_cases": [
         {

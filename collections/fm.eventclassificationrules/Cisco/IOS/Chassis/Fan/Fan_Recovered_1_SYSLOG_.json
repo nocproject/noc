@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%FAN-3-FAN_OK: (?P<name>Fan \\S+) had earlier reported a rotation error\\. It is ok now",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

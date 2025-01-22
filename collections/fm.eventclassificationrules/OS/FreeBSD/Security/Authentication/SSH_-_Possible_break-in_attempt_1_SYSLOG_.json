@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "sshd\\[\\d+\\]: Address (?P<ip>\\S+) maps to \\S+, but this does not map back to the address - POSSIBLE BREAK-IN ATTEMPT!$",
-    "profiles__name": ["OS.Linux"],
+    "profiles": ["OS.Linux"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PS-3-PSOK: (?P<name>Power System) is now normal\\.?$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

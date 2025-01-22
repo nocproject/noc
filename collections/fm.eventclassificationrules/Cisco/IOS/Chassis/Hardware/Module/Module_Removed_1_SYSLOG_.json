@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%OIR-SP-6-REMCARD: Card removed from (?P<module>slot \\S+), interfaces disabled",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

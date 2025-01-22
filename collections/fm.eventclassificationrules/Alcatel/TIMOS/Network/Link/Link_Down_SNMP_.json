@@ -16,6 +16,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Alcatel.TIMOS"],
+    "profiles": ["Alcatel.TIMOS"],
     "sources": ["SNMP Trap"]
 }

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%DYINGGASP-0-POWER_LOSS: Shutdown due to (?P<condition>power loss)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

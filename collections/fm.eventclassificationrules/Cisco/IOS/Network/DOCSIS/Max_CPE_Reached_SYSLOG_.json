@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-5-MAXHOST: New host with IP address (?P<ip>\\S+) and MAC (?P<mac>\\S+) on SID (?P<sid>\\d+) is ignored\\.$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

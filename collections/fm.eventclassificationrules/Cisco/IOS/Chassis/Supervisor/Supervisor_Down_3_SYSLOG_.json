@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PFREDUN-SP-6-ACTIVE: Standby processor removed or reloaded, changing to Simplex mode",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:ASA|PIX)-6-113005: AAA user authentication Rejected : reason = (?P<reason>\\D+) : server = (?P<server>\\S+) : user = (?P<user>.*) : user IP = (?P<src_ip>.*)",
-    "profiles__name": ["Cisco.ASA"],
+    "profiles": ["Cisco.ASA"],
     "sources": ["syslog"],
     "test_cases": [
         {

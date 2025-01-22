@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "RPD_RSVP_NBRDOWN: RSVP neighbor (?P<neighbor>\\S+) down on interface (?P<interface>.+?), (?P<reason>.+)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

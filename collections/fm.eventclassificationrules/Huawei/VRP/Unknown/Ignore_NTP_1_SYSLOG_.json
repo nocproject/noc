@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "NTP/\\d+/LEAP_CHANGE.+System leap changes from [01] to [01] after clock update",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

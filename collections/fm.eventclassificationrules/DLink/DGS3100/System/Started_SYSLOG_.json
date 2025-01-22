@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%INIT-I-Startup: Cold Startup$",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%INIT-I-Startup: Cold Startup",

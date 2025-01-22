@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "SYS-2-FAN_OK: Fan okay",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "%SYS-2-FAN_OK: Fan okay",

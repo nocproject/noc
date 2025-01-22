@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ARP-4-ARPCHANGEMAC: ARP entry (?P<ip>\\S+) on VLAN \\d+ changed (?P<from_mac>\\S+) to (?P<to_mac>\\S+) due to ARP packet from (?P<interface>.+)\\.$",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

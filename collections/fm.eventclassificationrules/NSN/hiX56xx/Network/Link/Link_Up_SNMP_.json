@@ -12,6 +12,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["NSN.hiX56xx"],
+    "profiles": ["NSN.hiX56xx"],
     "sources": ["SNMP Trap"]
 }

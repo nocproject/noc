@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY\\(l\\): Configuration is saved successfully\\.$",
-    "profiles__name": ["HP.1910"],
+    "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "shutdown: halt by (?P<user>.+?):$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%01SHELL/5/LOGIN\\(l\\):\\s+(?P<user>\\S+) login from (?P<ip>\\S+)\\.$",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%STP-W-PORTROLE: Spanning Tree port role change \\(instance (?P<instance>\\d+) port (?P<interface>.+)\\): \\S+ -> (?P<role>\\S+)",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

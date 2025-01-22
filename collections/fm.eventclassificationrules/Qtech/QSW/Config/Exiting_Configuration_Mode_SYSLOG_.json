@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CMDLINE-6-COMMAND: \\(1\\)( (?P<user>\\S+):|) end$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%(?:ASA|PIX)-6-106015: Deny (?P<proto>\\S+) .*?from (?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_ip>\\S+)/(?P<dst_port>\\d+).*?on interface (?P<src_interface>\\S+)$",
-    "profiles__name": ["Cisco.ASA"],
+    "profiles": ["Cisco.ASA"],
     "sources": ["syslog"],
     "test_cases": [
         {

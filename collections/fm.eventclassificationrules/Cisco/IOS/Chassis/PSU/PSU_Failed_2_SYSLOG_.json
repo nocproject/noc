@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ENVM-4-RPSFAIL: (?P<name>.+) may have a failed channel",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

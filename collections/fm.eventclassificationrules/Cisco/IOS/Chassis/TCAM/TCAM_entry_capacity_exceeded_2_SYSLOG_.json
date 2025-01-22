@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%EARL_NETFLOW-SP(-STDBY)?-4-TCAM_THRLD: (?P<reason>.+ threshold exceeded(, TCAM Utilization \\[\\d+%\\])?)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%ETHERNET_OAM-5-LINK_MONITOR: (?P<error>.+) errors detected over the last .+ on interface (?P<interface>\\S+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

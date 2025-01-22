@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": ".* dropbear\\[\\d+\\]: password auth succeeded for '(?P<user>\\S+)' from (?P<ip>\\S+):\\d+$",
-    "profiles__name": ["Ubiquiti.AirOS"],
+    "profiles": ["Ubiquiti.AirOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

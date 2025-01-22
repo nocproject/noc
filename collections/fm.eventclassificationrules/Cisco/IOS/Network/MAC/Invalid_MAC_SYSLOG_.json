@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C\\d+K.+INVALIDSOURCEADDRESSPACKET: \\(Suppressed \\d+ times\\)\\s*Packet received with invalid source MAC address \\((?P<mac>\\S+)\\) on port (?P<interface>\\S+) in vlan (?P<vlan>\\d+)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

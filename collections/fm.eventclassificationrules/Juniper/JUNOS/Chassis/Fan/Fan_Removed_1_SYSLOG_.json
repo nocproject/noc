@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "CHASSISD_SNMP_TRAP6: SNMP trap generated: Fan/Blower Removed .+ jnxContentsDescr (?P<name>.+), jnxOperatingState",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

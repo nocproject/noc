@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SNMP-5-CHASSISALARM: Chassis Alarm Trap: tmpAlarm\\(\\S+\\), minorAlarm\\(\\S+\\), and/or majorAlarm\\(\\S+\\)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

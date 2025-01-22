@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SLB-6-REAL: Real (?P<real>\\S+) \\((?P<farm>.+)\\) has changed state to (?P<state>MAXCONNS|FAILED)$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SPA-DFC\\d-4-TEMP_WARNING: (?P<name>.+) temperature too high. \\((?P<measure>\\S+)\\)",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

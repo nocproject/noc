@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "auth(entication)?: \\S+ authentication failure \\[username: (?P<user>.*)\\]$",
-    "profiles__name": ["Zyxel.ZyNOS"],
+    "profiles": ["Zyxel.ZyNOS"],
     "sources": ["syslog"]
 }

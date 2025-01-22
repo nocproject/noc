@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) failed$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "WARN: Unit 1, Back Fan failed",

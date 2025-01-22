@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SYS-5-(?:SCHEDULED_)?RELOAD: Reload requested.+ by (?P<user>\\S+) on vty\\d+ (\\S+). Reload Reason: Reload Command.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

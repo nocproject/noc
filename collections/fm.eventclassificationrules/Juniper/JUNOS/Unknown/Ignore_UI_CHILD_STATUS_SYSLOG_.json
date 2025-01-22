@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "UI_CHILD_STATUS",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "UI_CHILD_STATUS",

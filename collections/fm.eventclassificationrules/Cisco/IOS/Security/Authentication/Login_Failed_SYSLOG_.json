@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed \\[user: (?P<user>.*)\\] \\[Source: (?P<ip>\\S+)\\] \\[localport: (?P<lport>.+)\\] \\[Reason: Login Authentication Failed\\]",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LLDP-4-lldpSomthingChangedLoc: \\S+: (MAC PHY|VLAN ID) status of Port \\S+ has changed$",
-    "profiles__name": ["Qtech.QSW"],
+    "profiles": ["Qtech.QSW"],
     "sources": ["syslog"],
     "test_cases": [
         {

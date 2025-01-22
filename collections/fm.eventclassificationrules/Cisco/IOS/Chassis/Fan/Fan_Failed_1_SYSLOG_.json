@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+|Fans) had a rotation error reported",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "FIB/\\d+/REFRESH_\\w+\\(l\\): FIB refreshing \\w+, the refresh group map is \\d+",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -12,6 +12,6 @@
         }
     ],
     "labels": [],
-    "profiles__name": ["Supertel.K2X"],
+    "profiles": ["Supertel.K2X"],
     "sources": ["SNMP Trap"]
 }

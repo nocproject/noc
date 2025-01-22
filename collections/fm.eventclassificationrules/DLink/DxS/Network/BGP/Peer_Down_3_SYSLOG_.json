@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "\\[BGP(\\(3\\))?:\\] BGP connection is closed due to error \\(.+ Peer:<(?P<peer>\\S+)>\\)\\.",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

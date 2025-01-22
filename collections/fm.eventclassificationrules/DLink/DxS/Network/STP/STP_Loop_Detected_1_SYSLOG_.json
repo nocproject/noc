@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "BPDU Loop Back on Port (?P<interface>\\S+)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

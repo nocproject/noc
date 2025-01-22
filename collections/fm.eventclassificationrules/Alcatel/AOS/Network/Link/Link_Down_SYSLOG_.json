@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "INTERFACE\\(6\\) Data: (?P<interface>.+): link DOWN",
-    "profiles__name": ["Alcatel.AOS"],
+    "profiles": ["Alcatel.AOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

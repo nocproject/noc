@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%NTP-4-PEERUNREACH: Peer (?P<server_address>\\S+) is unreachable$",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

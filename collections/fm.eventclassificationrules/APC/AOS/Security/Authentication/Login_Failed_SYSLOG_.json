@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "System: Detected an unauthorized user attempting to access the \\S+ interface from (?P<ip>\\S+)\\. 0x0006",
-    "profiles__name": ["APC.AOS"],
+    "profiles": ["APC.AOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

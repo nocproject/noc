@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "User (?P<user>.+) logout from (?P<ip>\\S+):\\d+\\.$",
-    "profiles__name": ["Qtech.QSW2800"],
+    "profiles": ["Qtech.QSW2800"],
     "sources": ["syslog"],
     "test_cases": [
         {

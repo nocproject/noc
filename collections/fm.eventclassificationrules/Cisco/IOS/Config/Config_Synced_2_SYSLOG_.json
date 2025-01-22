@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the (?:startup|private) configuration to the standby Router.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

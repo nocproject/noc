@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Topology changed\\s+\\(Instance:(?P<instance>\\d+),? [Pp]ort:(?P<interface>\\S+?)(,.+)?\\)",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

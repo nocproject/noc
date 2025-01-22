@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C6KENV-SP-4-PSFANFAILED: the (?P<name>fan in power supply \\d+) has failed",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

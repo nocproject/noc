@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

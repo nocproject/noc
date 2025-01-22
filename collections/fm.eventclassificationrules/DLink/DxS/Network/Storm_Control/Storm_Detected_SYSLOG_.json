@@ -8,6 +8,6 @@
     "patterns": [],
     "labels": [],
     "message_rx": "WARN: Port (?P<interface>\\S+) is currently shut down due to a packet storm$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"]
 }

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

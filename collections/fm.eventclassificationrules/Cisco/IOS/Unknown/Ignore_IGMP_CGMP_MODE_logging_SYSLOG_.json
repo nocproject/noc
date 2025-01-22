@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%MCAST-SP(?:-STDBY)?-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan \\d+",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

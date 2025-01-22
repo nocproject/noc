@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Record( display)? command information\\. \\(Task=\\S+\\d+ , [Ii][Pp]=(?P<ip>\\S+), [Uu]ser=(?P<user>.+), [Cc]ommand=\"(?P<command>.+)\"\\)",
-    "profiles__name": ["Huawei.VRP"],
+    "profiles": ["Huawei.VRP"],
     "sources": ["syslog"],
     "test_cases": [
         {

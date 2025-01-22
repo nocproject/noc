@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%UBR\\d+00-5-(?:USFREQCHG|USCONTEND): Interface (?P<interface>\\S+) U(?P<upstream>\\d+), (?:frequency changed to|continuous frequency hop ended at|changed to Freq) (?P<frequency>\\S+) MHz",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Configuration (and log )*saved to flash \\(Username: (?P<user>.+)\\)$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {

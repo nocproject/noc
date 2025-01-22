@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "system-information-00524: SNMP request from an unknown SNMP community .+? at (?P<ip>\\S+):\\d+ has been received\\.",
-    "profiles__name": ["Juniper.ScreenOS"],
+    "profiles": ["Juniper.ScreenOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

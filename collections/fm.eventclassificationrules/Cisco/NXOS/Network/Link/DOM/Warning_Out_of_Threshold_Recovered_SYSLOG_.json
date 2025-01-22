@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "IF_SFP_WARNING: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Warning cleared$",
-    "profiles__name": ["Cisco.NXOS"],
+    "profiles": ["Cisco.NXOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

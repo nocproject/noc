@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "Failed password for (?P<user>.+?) from (?P<ip>\\S+) port",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

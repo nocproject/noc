@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "( Unit (?P<unit>\\d+), )?System (cold|warm) start$",
-    "profiles__name": ["DLink.DxS"],
+    "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [{
         "message": "CRIT: System cold start",

@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%MC-6-HASH_CONFLICT: Failed to allocate multicast entry .+ (?P<reason>due to hash conflict)",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

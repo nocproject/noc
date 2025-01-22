@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%BRG_IGMP-W-TABLE_OVERFLOW: (?P<reason>.+)",
-    "profiles__name": ["DLink.DGS3100"],
+    "profiles": ["DLink.DGS3100"],
     "sources": ["syslog"],
     "test_cases": [
         {

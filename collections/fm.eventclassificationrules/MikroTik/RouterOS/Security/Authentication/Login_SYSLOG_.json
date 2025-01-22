@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "account user (?P<user>.+?) logged in from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)$",
-    "profiles__name": ["MikroTik.RouterOS"],
+    "profiles": ["MikroTik.RouterOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

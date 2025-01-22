@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%C7600_ENV-SP-4-MINORTEMPALARM: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+)\\). It has exceeded normal operating temperature range.",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

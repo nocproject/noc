@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%IOSXE_PEM-6-PEMOK: The (?P<name>PEM in slot \\S+) is functioning properly",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

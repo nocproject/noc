@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%LINK-3-UPDOWN: Interface (?P<interface>.+), changed state to down.",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

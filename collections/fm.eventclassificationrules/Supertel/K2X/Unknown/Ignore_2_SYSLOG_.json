@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "^%STP-I-EDGEPORT: Attention: port \\S+ from which the bpdu was received is configured as Fast Port$",
-    "profiles__name": ["Supertel.K2X"],
+    "profiles": ["Supertel.K2X"],
     "sources": ["syslog"],
     "test_cases": [
         {

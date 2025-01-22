@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type",
-    "profiles__name": ["Cisco.IOS"],
+    "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

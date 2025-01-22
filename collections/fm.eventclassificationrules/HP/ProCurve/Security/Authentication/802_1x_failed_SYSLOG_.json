@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "802.1x: \\d+ auth-timeouts for the last \\d+ sec.",
-    "profiles__name": ["HP.ProCurve"],
+    "profiles": ["HP.ProCurve"],
     "sources": ["syslog"],
     "test_cases": [
         {

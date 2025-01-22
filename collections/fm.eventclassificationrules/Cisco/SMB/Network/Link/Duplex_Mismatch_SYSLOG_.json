@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%CDP-W-DUPLEX_MISMATCH: Duplex mismatch detected on interface (?P<interface>\\S+)\\.$",
-    "profiles__name": ["Cisco.SMB"],
+    "profiles": ["Cisco.SMB"],
     "sources": ["syslog"],
     "test_cases": [
         {

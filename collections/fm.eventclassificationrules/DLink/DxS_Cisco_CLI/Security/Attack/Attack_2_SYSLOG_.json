@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "%NFPP_ARP_GUARD-4-DOS_DETECTED: Host<IP=(?P<src_ip>\\d+\\S+),MAC=\\S+,port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected.",
-    "profiles__name": ["DLink.DxS_Cisco_CLI"],
+    "profiles": ["DLink.DxS_Cisco_CLI"],
     "sources": ["syslog"],
     "test_cases": [
         {

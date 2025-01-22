@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "system-notification-00531: The system clock was updated from (?P<server_name>\\S+) NTP server type (?P<server_address>\\S+) with an adjustment of (?P<adjustment_ms>-?\\d+) ms\\. Authentication was",
-    "profiles__name": ["Juniper.ScreenOS"],
+    "profiles": ["Juniper.ScreenOS"],
     "sources": ["syslog"],
     "test_cases": [
         {

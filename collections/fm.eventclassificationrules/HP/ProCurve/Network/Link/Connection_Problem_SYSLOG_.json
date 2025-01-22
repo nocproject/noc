@@ -8,7 +8,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "FFI: port (?P<interface>\\d+)-Excessive CRC/alignment errors. See help.",
-    "profiles__name": ["HP.ProCurve"],
+    "profiles": ["HP.ProCurve"],
     "sources": ["syslog"],
     "test_cases": [
         {

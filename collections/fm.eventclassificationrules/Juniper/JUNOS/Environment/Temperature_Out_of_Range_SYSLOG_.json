@@ -12,7 +12,7 @@
     "patterns": [],
     "labels": [],
     "message_rx": "CHASSISD_HIGH_TEMP_CONDITION: Chassis temperature over (?P<measure>\\d+) degrees C \\(but no fan/impeller failure detected\\)$",
-    "profiles__name": ["Juniper.JUNOS"],
+    "profiles": ["Juniper.JUNOS"],
     "sources": ["syslog"],
     "test_cases": [
         {
