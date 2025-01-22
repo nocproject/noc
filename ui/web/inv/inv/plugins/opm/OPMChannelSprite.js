@@ -86,16 +86,16 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
         },
         mouseOver: function(attr){
           if(attr.mouseOver){
-            var selectedRect = this.rects[this.selectedRectIndex],
-              tooltip = this.tooltips[this.selectedRectIndex],
+            var selectedRect = this.rects[this.selectedRectIndex || 0],
+              tooltip = this.tooltips[this.selectedRectIndex || 0],
               y = attr.diagHeight - attr.diagPadding[2] - this.transformValue(attr.diagHeight, attr.diagPadding, selectedRect.attr.value),
               text = attr.band + selectedRect.id + ", " + selectedRect.attr.value+ "dBm" + (Ext.isEmpty(attr.dir) ? "" : ", " + attr.dir);
             selectedRect.setAnimation({duration: 0});
             tooltip.setHtml(text);
             tooltip.showAt(this.canvasToPageCoordinates(attr.x, y - 40));
             selectedRect.setAttributes({
-              scalingX: 2,
               fill: "red",
+              lineWidth: 2,
             });
             this.label.setAttributes({
               scalingX: 1.2,
@@ -106,7 +106,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
             this.tooltips.forEach(tooltip => {tooltip.hide()});
             this.rects.forEach(rect => {
               rect.setAttributes({
-                scalingX: 1,
+                lineWidth: 1,
                 fill: attr.barColor, 
               })
             });
@@ -133,6 +133,8 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           id: attr.id + "-" + index,
           type: "rect",
           fill: attr.barColor,
+          strokeStyle: attr.barColor,
+          lineWidth: 1,
         });
       });
       this.tooltips = attr.power.map(() => {

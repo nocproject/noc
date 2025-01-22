@@ -10,6 +10,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   extend: "Ext.draw.Container",
   requires: [
     "NOC.inv.inv.plugins.opm.OPMChannelSprite",
+    "NOC.inv.inv.plugins.opm.OPMLegendSprite",
   ],
   xtype: "opm.diagram",
   alias: "widget.spectrogram",
@@ -18,7 +19,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
   colorList: {},
   colorIndex: 0,
   config: {
-    diagPadding: "35 35 40 35", // top right bottom left
+    diagPadding: "35 35 80 35", // top right bottom left
     barSpacing: 2,
     maxBarWidth: 20,
     minBarWidth: 5,
@@ -60,6 +61,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     this.getSurface().setRect([0, 0, requiredWidth, height]);
 
     surface.removeAll();
+    this.colorList = {};
     data.forEach((channel) => {
       var barColor = this.mapColor(channel.dir),
         diagPadding = this.getDiagPadding().split(" ").map(value => parseInt(value, 10));
@@ -79,6 +81,14 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
       x += (barWidth + barSpacing) * channel.power.length;
     });
     this.yAxis();
+    surface.add({
+      type: "legend",
+      dirs: Ext.Object.getKeys(this.colorList),
+      colors: Ext.Object.getValues(this.colorList),
+      x: this.getPaddingBySide("left"),
+      y: this.getHeight() - this.getPaddingBySide("bottom") + this.getPaddingBySide("top"),
+      width: diagWidth,
+    });
     surface.renderFrame();
   },
   //
@@ -139,6 +149,19 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
         pageY: event.pageY,
       });
       this.getSurface().renderFrame();
+    } else if(el.sprite.type === "legend"){
+      this.getSurface().getItems()
+        .filter(sprite => sprite.dir === el.sprite.dir)
+        .forEach(sprite => sprite.setAttributes({
+          mouseOver: true,
+          pageX: event.pageX,
+          pageY: event.pageY,
+        }));
+      el.sprite.setAttributes({
+        mouseOver: true,
+        dir: el.sprite.dir,
+      });
+      this.getSurface().renderFrame();
     }
   },
   //
@@ -147,6 +170,17 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMDiagram", {
     if(el.sprite.type === "channel"){
       el.sprite.setAttributes({
         mouseOver: false,
+      });
+      this.getSurface().renderFrame();
+    } else if(el.sprite.type === "legend"){
+      this.getSurface().getItems()
+      .filter(sprite => sprite.dir === el.sprite.dir)
+      .forEach(sprite => sprite.setAttributes({
+        mouseOver: false,
+      }));
+      el.sprite.setAttributes({
+        mouseOver: false,
+        dir: el.sprite.dir,
       });
       this.getSurface().renderFrame();
     }

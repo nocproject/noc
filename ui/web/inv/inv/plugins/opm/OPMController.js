@@ -13,7 +13,13 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMController", {
     "NOC.inv.inv.plugins.Mixins",
   ],
   collapseSettings: function(){
+    var diag = this.lookupReference("opmDiagram"),
+      [x, y, width, height] = diag.getSurface().getRect();
     this.lookupReference("opmRightPanel").toggleCollapse();
+    diag.getEl().dom.style.width = `${width}px`;
+    diag.getEl().dom.style.height = `${height}px`;
+    diag.getSurface().setRect([x, y, width, height]);
+    this.onReload();
   },
   onComboboxSelect: function(){
     var vm = this.getViewModel(),
