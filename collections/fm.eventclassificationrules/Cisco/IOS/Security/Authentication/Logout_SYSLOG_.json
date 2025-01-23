@@ -5,24 +5,15 @@
     "description": "%SYS-6-EXIT_CONFIG: User root has exited tty session 3(10.10.10.2)",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-6-EXIT_CONFIG: User (?P<user>.+?) has exited tty session \\d+\\s*\\((?P<ip>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-6-EXIT_CONFIG: User (?P<user>.+?) has exited tty session \\d+\\s*\\((?P<ip>\\S+)\\)$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-6-EXIT_CONFIG: User root has exited tty session 3(10.10.10.2)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

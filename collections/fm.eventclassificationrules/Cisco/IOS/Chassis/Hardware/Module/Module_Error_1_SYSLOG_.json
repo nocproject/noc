@@ -5,24 +5,15 @@
     "description": "%PM_SCP-SP-3-GBIC_BAD: GBIC integrity check on port 1/2 failed: bad key",
     "event_class__name": "Chassis | Hardware | Module | Module Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PM_SCP-SP-3-GBIC_BAD: (?P<module>\\S+) integrity check on port (?P<interface>\\S+) failed: (?P<reason>.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PM_SCP-SP-3-GBIC_BAD: (?P<module>\\S+) integrity check on port (?P<interface>\\S+) failed: (?P<reason>.+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PM_SCP-SP-3-GBIC_BAD: GBIC integrity check on port 1/2 failed: bad key",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

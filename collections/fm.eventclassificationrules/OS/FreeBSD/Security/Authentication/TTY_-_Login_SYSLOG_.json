@@ -5,22 +5,13 @@
     "description": "login: login on ttyv1 as root",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "login: login on tty\\S+ as (?P<user>.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "login: login on tty\\S+ as (?P<user>.+)",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "login: login on ttyv1 as root",
-        "value_re": []
+        "raw_vars": []
     }]
 }

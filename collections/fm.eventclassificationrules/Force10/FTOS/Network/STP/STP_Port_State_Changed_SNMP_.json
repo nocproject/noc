@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Force10\\.FTOS$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^BRIDGE-MIB::topologyChange$"
         },
@@ -22,5 +14,8 @@
             "key_re": "^BRIDGE-MIB::dot1dNotifications$",
             "value_re": "^PVST_TOPOLOGY_CHANGE: Topology change for instance: (?P<instance>\\d+) BridgeAddr: \\S+ Bridge port (?P<interface>.+) transitioned from \\S+ to (?P<state__enum__stp_state>\\S+) state\\.$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["Force10.FTOS"],
+    "sources": ["SNMP Trap"]
 }

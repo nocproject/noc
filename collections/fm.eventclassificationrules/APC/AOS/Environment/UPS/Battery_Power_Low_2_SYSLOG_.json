@@ -5,24 +5,15 @@
     "description": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F",
     "event_class__name": "Environment | UPS | Battery Power Low",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

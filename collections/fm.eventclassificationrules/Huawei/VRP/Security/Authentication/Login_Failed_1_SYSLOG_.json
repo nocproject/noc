@@ -5,24 +5,15 @@
     "description": "Feb  3 2012 09:30:30 switch-test %%01SHELL/4/TELNETFAILED(l)[419]:Failed to login through telnet. (Ip=192.168.220.252, UserName=test, Times=1)",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Failed to login through telnet\\. \\([Ii][Pp]=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+(\\)|,)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Failed to login through telnet\\. \\([Ii][Pp]=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+(\\)|,)",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Feb  3 2012 09:30:30 switch-test %%01SHELL/4/TELNETFAILED(l)[419]:Failed to login through telnet. (Ip=192.168.220.252, UserName=test, Times=1)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

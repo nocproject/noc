@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Network | PPPOE | Accounting | Session Threshold Exceeded #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8bca8b2d-0ff8-43a6-a316-1a05c858126e",
+    "description": "CISCO-PPPOE-MIB::cPppoeSystemSessionThresholdTrap",
+    "event_class__name": "Network | PPPOE | Accounting | Session Threshold Exceeded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-PPPOE-MIB::cPppoeSystemSessionThresholdTrap$"
+        },
+        {
+            "key_re": "^CISCO-PPPOE-MIB::cPppoeSystemCurrSessions(?:\\.\\d+)*$",
+            "value_re": "^(?P<ovalue>\\d+)$"
+        },
+        {
+            "key_re": "^CISCO-PPPOE-MIB::cPppoeSystemMaxAllowedSessions(?:\\.\\d+)*$",
+            "value_re": "^(?P<session_max>\\d+)$"
+        },
+        {
+            "key_re": "^CISCO-PPPOE-MIB::cPppoeSystemThresholdSessions(?:\\.\\d+)*$",
+            "value_re": "^(?P<tvalue>\\d+)$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

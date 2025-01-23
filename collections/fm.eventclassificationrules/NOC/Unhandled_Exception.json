@@ -17,14 +17,9 @@
         {
             "key_re": "^type$",
             "value_re": "^Unhandled Exception$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^NOC\\.SAE$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["NOC.SAE"],
+    "sources": ["system"]
 }

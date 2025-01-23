@@ -1,0 +1,32 @@
+{
+    "name": "Huawei | VRP | Chassis | Board | Board Fail (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "914ba867-d81d-43e0-99a7-05430565ff7e",
+    "description": "HUAWEI-ENTITY-TRAP-MIB::hwBoardInvalid\ntype:\n* mpu\n* lpu\n* sfu\n* pic\n* cfcard\n* ofc\n",
+    "event_class__name": "Chassis | Linecard | LC Error",
+    "preference": 100,
+    "patterns": [
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalName(?:\\.\\d+)*$",
+            "value_re": "^(?P<number>.+)"
+        },
+        {
+            "key_re": "^HUAWEI-ENTITY-TRAP-MIB::hwEntityTrapEntType(?:\\.\\d+)*$",
+            "value_re": "^(?P<board_type>\\S+)$"
+        },
+        {
+            "key_re": "^HUAWEI-ENTITY-TRAP-MIB::hwEntityTrapFaultID(?:\\.\\d+)*$",
+            "value_re": "^(?P<fault_id>\\S+)$"
+        },
+        {
+            "key_re": "^HUAWEI-ENTITY-TRAP-MIB::hwEntityTrapReasonDescr(?:\\.\\d+)*$",
+            "value_re": "^(?P<reason>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-ENTITY-TRAP-MIB::(hwBoardFail|hwBoardInvalid)$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

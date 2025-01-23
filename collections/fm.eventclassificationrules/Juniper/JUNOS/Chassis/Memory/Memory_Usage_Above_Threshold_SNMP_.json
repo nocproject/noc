@@ -1,0 +1,32 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Memory | Memory Usage Above Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6e099fa8-d124-467c-8961-a8ba43631cad",
+    "description": "Juniper-System-MIB::juniSystemUtilizationThreshold",
+    "event_class__name": "Chassis | Memory | Memory Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^Juniper-System-MIB::juniSystemUtilizationThreshold$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemUtilizationResourceType\\..+$",
+            "value_re": "memory"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemUtilizationLocation\\..+$",
+            "value_re": "memory"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemUtilizationMaxCapacity\\..+$",
+            "value_re": "(?P<tvalue>.+)"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemUtilizationCurrentValue\\..+$",
+            "value_re": "(?P<ovalue>.+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Alentis\\.LC-SM$"
-        },
-        {
             "key_re": "^DKSF-50-8-1-A-X::npIoLevelIn\\.1$",
             "value_re": "^0$"
         },
@@ -30,5 +22,7 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^DKSF-50-8-1-A-X::npIoEntry$"
         }
-    ]
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
 }

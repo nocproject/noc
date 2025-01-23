@@ -5,18 +5,9 @@
     "description": "Login successful",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "auth(entication)?: (?:\\S+: )?User (?P<user>.*) login$"
-        }
-    ]
+    "patterns": [],
+    "labels": [],
+    "message_rx": "auth(entication)?: (?:\\S+: )?User (?P<user>.*) login$",
+    "profiles": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"]
 }

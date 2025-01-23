@@ -5,24 +5,15 @@
     "description": "Jan 22 13:24:55  switchname-sw01 eswd[72792]: ESWD_ST_CTL_ERROR_ENABLED: ae0.0: storm control enabled port",
     "event_class__name": "Network | Storm Control | Storm Cleared",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ESWD_ST_CTL_ERROR_ENABLED: (?P<interface>\\S+): storm control enabled port$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ESWD_ST_CTL_ERROR_ENABLED: (?P<interface>\\S+): storm control enabled port$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan 22 13:24:55  switchname-sw01 eswd[72792]: ESWD_ST_CTL_ERROR_ENABLED: ae0.0: storm control enabled port",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

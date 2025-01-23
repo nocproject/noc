@@ -5,24 +5,15 @@
     "description": "Aug 29 16:27:45 test snmp VLAN 1 link-up notification.",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "snmp (?P<interface>VLAN\\s+\\S+) link-up notification\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "snmp (?P<interface>VLAN\\s+\\S+) link-up notification\\.$",
+    "profiles": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 29 16:27:45 test snmp VLAN 1 link-up notification.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

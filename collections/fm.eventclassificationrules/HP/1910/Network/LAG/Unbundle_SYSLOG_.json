@@ -5,24 +5,15 @@
     "description": "Jul 23 12:36:19 2013 3com2952_1 %%10LAGG/5/LAGG_INACTIVE_CONFIGURATION(l): Member port GigabitEthernet1/0/23 of aggregation group BAGG1 becomes INACTIVE because the port's configuration is improper for aggregation.",
     "event_class__name": "Network | LAG | Unbundle",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10LAGG/5/LAGG_INACTIVE_CONFIGURATION\\(l\\): Member port (?P<interface>\\S+) of aggregation group (?P<lag_interface>\\S+) becomes INACTIVE because the port's configuration is improper for aggregation\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10LAGG/5/LAGG_INACTIVE_CONFIGURATION\\(l\\): Member port (?P<interface>\\S+) of aggregation group (?P<lag_interface>\\S+) becomes INACTIVE because the port's configuration is improper for aggregation\\.$",
+    "profiles": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 23 12:36:19 2013 3com2952_1 %%10LAGG/5/LAGG_INACTIVE_CONFIGURATION(l): Member port GigabitEthernet1/0/23 of aggregation group BAGG1 becomes INACTIVE because the port's configuration is improper for aggregation.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

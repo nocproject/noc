@@ -5,5 +5,7 @@
     "description": "Last rule in the chain",
     "event_class__name": "Unknown | Default",
     "preference": 10000,
-    "patterns": []
+    "patterns": [],
+    "labels": [],
+    "sources": ["other"]
 }

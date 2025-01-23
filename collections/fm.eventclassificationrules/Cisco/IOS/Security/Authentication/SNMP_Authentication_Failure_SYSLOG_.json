@@ -5,24 +5,15 @@
     "description": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host 69.175.126.170",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host (?P<ip>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host (?P<ip>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host 69.175.126.170",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Chassis Fan"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

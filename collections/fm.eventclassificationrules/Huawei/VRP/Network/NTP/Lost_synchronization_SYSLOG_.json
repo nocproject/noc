@@ -5,24 +5,15 @@
     "description": "Jul 26 2012 10:02:45 kiev-l9-sw6 %%01NTP/4/SOURCE_LOST(l)[784]:System synchronization source lost.",
     "event_class__name": "Network | NTP | Lost synchronization",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "NTP/\\d+/SOURCE_LOST.+[Ss]ystem.+synchronization.+source.+lost"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "NTP/\\d+/SOURCE_LOST.+[Ss]ystem.+synchronization.+source.+lost",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 26 2012 10:02:45 kiev-l9-sw6 %%01NTP/4/SOURCE_LOST(l)[784]:System synchronization source lost.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

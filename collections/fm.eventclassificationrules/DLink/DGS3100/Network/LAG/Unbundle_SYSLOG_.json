@@ -5,24 +5,15 @@
     "description": "%TRUNK-W-PORTREMOVED: Port 1:11 removed from ch3",
     "event_class__name": "Network | LAG | Unbundle",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%TRUNK-W-PORTREMOVED: Port 1:11 removed from ch3",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

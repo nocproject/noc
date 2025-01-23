@@ -5,24 +5,15 @@
     "description": "Apr 27 13:08:26 pmo-cl2 rpd[873]: RPD_LDP_SESSIONUP: LDP session 10.100.127.40 is up",
     "event_class__name": "Network | MPLS | LDP Neighbor Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "RPD_LDP_SESSIONUP: LDP session (?P<neighbor>\\S+) is (?P<state>\\w+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "RPD_LDP_SESSIONUP: LDP session (?P<neighbor>\\S+) is (?P<state>\\w+)",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Apr 27 13:08:26 pmo-cl2 rpd[873]: RPD_LDP_SESSIONUP: LDP session 10.100.127.40 is up",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

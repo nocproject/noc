@@ -5,24 +5,15 @@
     "description": "UPS: On battery power in response to distorted input. 0x0109",
     "event_class__name": "Environment | UPS | Input Voltage or Frequency Problem",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: On battery power in response to distorted input. 0x0109"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: On battery power in response to distorted input. 0x0109",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: On battery power in response to distorted input. 0x0109",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

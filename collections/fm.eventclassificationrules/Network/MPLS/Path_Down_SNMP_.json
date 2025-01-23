@@ -1,0 +1,24 @@
+{
+    "name": "Network | MPLS | Path Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "491c302f-8d77-4097-8110-e119ecb6608c",
+    "description": "MPLS-MIB::mplsLspInfoPathDown",
+    "event_class__name": "Network | MPLS | Path Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^MPLS-MIB::mplsLspInfoPathDown$"
+        },
+        {
+            "key_re": "^MPLS-MIB::mplsLspInfoName\\.\\.+$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^MPLS-MIB::mplsPathInfoName\\.\\.+$",
+            "value_re": "^(?P<path>.+)$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

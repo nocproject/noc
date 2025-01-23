@@ -5,22 +5,13 @@
     "description": "%PIX-7-715xxx debug messages",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.ASA$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:PIX|ASA)-7-715"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:PIX|ASA)-7-715",
+    "profiles": ["Cisco.ASA"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%PIX-7-715xxx debug messages",
-        "value_re": []
+        "raw_vars": []
     }]
 }

@@ -5,24 +5,15 @@
     "description": "%UBR7200-6-REFLOCK: Cable clock locked to [chars] reference",
     "event_class__name": "Chassis | Clock | Clock Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR7200-6-REFLOCK: (?P<name>Cable clock) locked to .+ reference$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR7200-6-REFLOCK: (?P<name>Cable clock) locked to .+ reference$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-6-REFLOCK: Cable clock locked to [chars] reference",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

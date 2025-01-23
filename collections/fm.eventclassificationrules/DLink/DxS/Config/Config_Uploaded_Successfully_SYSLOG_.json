@@ -5,24 +5,15 @@
     "description": "INFO: Configuration successfully uploaded (Username: admin, IP: 172.16.0.1)",
     "event_class__name": "Config | Config Uploaded Successfully",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Configuration successfully uploaded \\(Username: (?P<user>.+), IP: (?P<ip>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Configuration successfully uploaded \\(Username: (?P<user>.+), IP: (?P<ip>\\S+)\\)$",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Configuration successfully uploaded (Username: admin, IP: 172.16.0.1)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

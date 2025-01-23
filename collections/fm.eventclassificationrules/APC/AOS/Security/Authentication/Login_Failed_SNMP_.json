@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^PowerNet-MIB::apc$"
         },
@@ -22,5 +14,8 @@
             "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
             "value_re": "System: Detected an unauthorized user attempting to access the \\S+ interface from (?P<ip>\\S+)\\."
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["APC.AOS"],
+    "sources": ["SNMP Trap"]
 }

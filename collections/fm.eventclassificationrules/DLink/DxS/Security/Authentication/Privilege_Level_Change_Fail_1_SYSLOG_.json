@@ -5,24 +5,15 @@
     "description": "WARN: Enable Admin failed through Telnet from 192.168.133.100 authenticated by AAA local_enable method (Username: admin)",
     "event_class__name": "Security | Authentication | Privilege Level Change Fail",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Enable (?P<to_priv>Admin) failed through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>.+?)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Enable (?P<to_priv>Admin) failed through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>.+?)\\)",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Enable Admin failed through Telnet from 192.168.133.100 authenticated by AAA local_enable method (Username: admin)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

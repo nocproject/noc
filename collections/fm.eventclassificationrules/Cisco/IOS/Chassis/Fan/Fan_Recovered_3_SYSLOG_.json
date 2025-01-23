@@ -9,22 +9,13 @@
         "name": "name",
         "value": "Chassis Fan"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "SYS-2-FAN_OK: Fan okay"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SYS-2-FAN_OK: Fan okay",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%SYS-2-FAN_OK: Fan okay",
-        "value_re": []
+        "raw_vars": []
     }]
 }

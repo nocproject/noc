@@ -1,0 +1,32 @@
+{
+    "name": "Network | MPLS | VRF Interface Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a758eecf-4aeb-4508-9caa-e9abe602b060",
+    "description": "MPLS-VPN-MIB::mplsVrfIfDown, MPLS-L3VPN-STD-MIB::mplsL3VpnVrfDown",
+    "event_class__name": "Network | MPLS | VRF Interface Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^(MPLS-VPN-MIB::mplsVrfIfDown|MPLS-L3VPN-STD-MIB::mplsL3VpnVrfDown)$"
+        },
+        {
+            "key_re": "^(MPLS-VPN-MIB::mplsVpnVrfOperStatus|MPLS-L3VPN-STD-MIB::mplsL3VpnVrfOperStatus)\\.(?P<vrf>.+)$",
+            "value_re": "^(?P<vrf_oper_status>\\S+)$"
+        },
+        {
+            "key_re": "^(MPLS-VPN-MIB::mplsVpnIfConfRowStatus|MPLS-L3VPN-STD-MIB::mplsL3VpnIfConfRowStatus)\\.(?P<interface__ifindex>\\d+)$",
+            "value_re": "^(?P<if_conf_status>\\S+)$"
+        },
+        {
+            "key_re": "^(MPLS-VPN-MIB::mplsL3VpnVrfName|MPLS-L3VPN-STD-MIB::mplsL3VpnVrfName)\\.\\S+$",
+            "value_re": "^(?P<name>\\S+)$"
+        },
+        {
+            "key_re": "^(MPLS-VPN-MIB::mplsL3VpnVrfDescription|MPLS-L3VPN-STD-MIB::mplsL3VpnVrfDescription)\\.\\S+$",
+            "value_re": "^(?P<description>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

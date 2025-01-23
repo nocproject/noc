@@ -5,22 +5,13 @@
     "description": "%LINK-W-Down:  gi0/3",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%LINK-W-Down:  ?(?P<interface>.+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%LINK-W-Down:  ?(?P<interface>.+)$",
+    "profiles": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%LINK-W-Down:  gi0/3",
-        "value_re": []
+        "raw_vars": []
     }]
 }

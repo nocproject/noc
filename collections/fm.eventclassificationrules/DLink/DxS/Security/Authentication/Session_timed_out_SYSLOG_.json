@@ -5,24 +5,15 @@
     "description": "INFO: Web session timed out (Username: grant, IP: 172.16.0.4)",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?:Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?:Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Web session timed out (Username: grant, IP: 172.16.0.4)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

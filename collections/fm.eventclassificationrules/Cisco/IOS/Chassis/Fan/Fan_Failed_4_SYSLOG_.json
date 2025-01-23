@@ -5,24 +5,15 @@
     "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ENVM-2-FAN: (?P<name>Blower) has failed, shutdown in 2 minutes"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ENVM-2-FAN: (?P<name>Blower) has failed, shutdown in 2 minutes",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

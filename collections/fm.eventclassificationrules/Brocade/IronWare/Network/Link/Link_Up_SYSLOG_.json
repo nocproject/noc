@@ -5,24 +5,15 @@
     "description": "Aug 8 21:34:39 Foudry-Core System: Interface ethernet 7/3, state up",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Brocade\\.IronWare$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* System: Interface (?P<interface>\\S+ \\d+/\\d+), state up$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* System: Interface (?P<interface>\\S+ \\d+/\\d+), state up$",
+    "profiles": ["Brocade.IronWare"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 8 21:34:39 Foudry-Core System: Interface ethernet 7/3, state up",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

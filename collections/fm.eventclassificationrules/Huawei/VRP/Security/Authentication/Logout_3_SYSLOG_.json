@@ -5,24 +5,15 @@
     "description": "Aug  2 2012 06:32:06 od-agg-1-arnautskaya15 %%01SHELL/5/TIMEOUT(l)[670]:VTY login from 10.48.63.2 is time out.",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "SHELL\\/\\d\\/TIMEOUT.+VTY login from (?P<ip>\\S+) is time out"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SHELL\\/\\d\\/TIMEOUT.+VTY login from (?P<ip>\\S+) is time out",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug  2 2012 06:32:06 od-agg-1-arnautskaya15 %%01SHELL/5/TIMEOUT(l)[670]:VTY login from 10.48.63.2 is time out.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "Aug 8 12:56:07 Foudry-Core VLAN: Id 1945 added from telnet session.",
     "event_class__name": "Network | VLAN | VLAN Created",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Brocade\\.IronWare$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* VLAN: Id (?P<vlan>\\d+) added from \\S+ session\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* VLAN: Id (?P<vlan>\\d+) added from \\S+ session\\.$",
+    "profiles": ["Brocade.IronWare"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 8 12:56:07 Foudry-Core VLAN: Id 1945 added from telnet session.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

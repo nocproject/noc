@@ -5,19 +5,9 @@
     "description": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:  1.1.1.1",
     "event_class__name": "Network | MSDP | Peer Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "profile",
-            "value_re": "^Cisco.IOSXR$"
-        },
-        {
-            "key_re": "source",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "message",
-            "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:\\s+(?P<peer>\\S+)"
-        }
-    ],
-    "test_cases": []
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:\\s+(?P<peer>\\S+)",
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["syslog"]
 }

@@ -5,24 +5,15 @@
     "description": "%UBR7100-5-USIPLCHG: Interface Cable1/0 U3, input power level changed to 1 dBmV",
     "event_class__name": "Network | DOCSIS | Upstream Input Power Level Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-5-(?:USIPLCHG|USIPLFIX): Interface (?P<interface>\\S+) U(?P<upstream>\\d+), input power level (?:changed to|fixed at) (?P<power>\\d+) dBmV"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-5-(?:USIPLCHG|USIPLFIX): Interface (?P<interface>\\S+) U(?P<upstream>\\d+), input power level (?:changed to|fixed at) (?P<power>\\d+) dBmV",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7100-5-USIPLCHG: Interface Cable1/0 U3, input power level changed to 1 dBmV",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

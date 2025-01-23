@@ -5,24 +5,15 @@
     "description": "Aug 7 07:11:00 nechaeva-4 Security: SSH logout by USER from src IP 10.200.201.137, src MAC 000c.db44.e900",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Brocade\\.IronWare$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* Security: (?:SSH|telnet) logout by (?P<user>\\S+) from src IP (?P<ip>\\S+),.*"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* Security: (?:SSH|telnet) logout by (?P<user>\\S+) from src IP (?P<ip>\\S+),.*",
+    "profiles": ["Brocade.IronWare"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 7 07:11:00 nechaeva-4 Security: SSH logout by USER from src IP 10.200.201.137, src MAC 000c.db44.e900",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

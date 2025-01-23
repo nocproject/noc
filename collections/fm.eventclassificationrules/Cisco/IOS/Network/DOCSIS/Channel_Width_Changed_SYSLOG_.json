@@ -5,24 +5,15 @@
     "description": "%UBR7100-5-USCWCHG: Interface Cable1/0 U3, channel width changed to 3200 kHz",
     "event_class__name": "Network | DOCSIS | Channel Width Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-5-USCWCHG: Interface (?P<interface>\\S+) U(?P<upstream>\\d+), channel width changed to (?P<width>\\S+) kHz"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-5-USCWCHG: Interface (?P<interface>\\S+) U(?P<upstream>\\d+), channel width changed to (?P<width>\\S+) kHz",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7100-5-USCWCHG: Interface Cable1/0 U3, channel width changed to 3200 kHz",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

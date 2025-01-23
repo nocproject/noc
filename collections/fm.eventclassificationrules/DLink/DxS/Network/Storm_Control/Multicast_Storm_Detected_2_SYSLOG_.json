@@ -5,24 +5,15 @@
     "description": "WARN: Multicast storm is occurring (port: 13)",
     "event_class__name": "Network | Storm Control | Multicast Storm Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Multicast storm is occurring \\(port: (?P<interface>\\S+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Multicast storm is occurring \\(port: (?P<interface>\\S+)\\)",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Multicast storm is occurring (port: 13)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

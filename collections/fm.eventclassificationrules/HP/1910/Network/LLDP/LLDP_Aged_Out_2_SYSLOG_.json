@@ -5,24 +5,15 @@
     "description": "Jul 23 13:48:22 2013 Teh %%10LLDP/6/LLDP_DELETE_NEIGHBOUR(l): Neighbor deleted on Port GigabitEthernet1/0/8 (IfIndex 9437191), Chassis ID is a8f9-4b85-6a40, Port ID is gi1/0/11.",
     "event_class__name": "Network | LLDP | LLDP Aged Out",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10LLDP/6/LLDP_DELETE_NEIGHBOUR\\(l\\): Neighbor deleted on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10LLDP/6/LLDP_DELETE_NEIGHBOUR\\(l\\): Neighbor deleted on Port (?P<interface>\\S+) \\(IfIndex \\d+\\), Chassis ID is \\S+, Port ID is \\S+\\.$",
+    "profiles": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 23 13:48:22 2013 Teh %%10LLDP/6/LLDP_DELETE_NEIGHBOUR(l): Neighbor deleted on Port GigabitEthernet1/0/8 (IfIndex 9437191), Chassis ID is a8f9-4b85-6a40, Port ID is gi1/0/11.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

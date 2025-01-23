@@ -5,24 +5,15 @@
     "description": "Oct 16 15:11:55 USER: admin logged in through telnet (10.10.1.250)\n\n",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "message",
-            "value_re": "(?P<user>.*) logged in through "
-        },
-        {
-            "key_re": "profile",
-            "value_re": "^Extreme\\.Summit200$"
-        },
-        {
-            "key_re": "source",
-            "value_re": "^syslog$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<user>.*) logged in through ",
+    "profiles": ["Extreme.Summit200"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Oct 16 15:11:55 USER: admin logged in through telnet (10.10.1.250)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

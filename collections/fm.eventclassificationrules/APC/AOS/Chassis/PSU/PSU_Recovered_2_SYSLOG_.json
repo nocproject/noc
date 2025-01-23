@@ -5,24 +5,15 @@
     "description": "UPS: A logic power supply fault no longer exists. 0x016A",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: (?P<name>A logic power supply) fault no longer exists. 0x0?16A"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: (?P<name>A logic power supply) fault no longer exists. 0x0?16A",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: A logic power supply fault no longer exists. 0x016A",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

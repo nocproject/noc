@@ -1,0 +1,20 @@
+{
+    "name": "Network | VRRP | New Master (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a2bd8e5a-8334-42e7-bef9-3d99a5a651de",
+    "description": "VRRP-MIB::vrrpTrapNewMaster",
+    "event_class__name": "Network | VRRP | New Master",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^VRRP-MIB::vrrpOperMasterIpAddr(?P<interface__ifindex>\\d+)\\.\\d+$",
+            "value_re": "^(?P<ip>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^VRRP-MIB::vrrpTrapNewMaster$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

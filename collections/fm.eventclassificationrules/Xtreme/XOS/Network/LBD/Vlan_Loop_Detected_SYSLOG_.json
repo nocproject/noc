@@ -5,24 +5,15 @@
     "description": "ELRP.Report: [CLI:vlan3333:1] LOOP DETECTED : 136 transmited, 1 received, ingress slot:port (11) egress slot:port (10)\n(?P<interface>\\S+)",
     "event_class__name": "Network | LBD | Vlan Loop Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^message$",
-            "value_re": "ELRP\\.Report: \\[CLI:vlan(?P<vlan>\\d+):\\d+] LOOP DETECTED : \\d+ transmited, \\d+ received, ingress slot:(?P<interface>\\S+ \\(\\d+\\))"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Extreme\\.XOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ELRP\\.Report: \\[CLI:vlan(?P<vlan>\\d+):\\d+] LOOP DETECTED : \\d+ transmited, \\d+ received, ingress slot:(?P<interface>\\S+ \\(\\d+\\))",
+    "profiles": ["Extreme.XOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "ELRP.Report: [CLI:vlan3333:1] LOOP DETECTED : 136 transmited, 1 received, ingress slot:port (11) egress slot:port (10)\n(?P<interface>\\S+)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

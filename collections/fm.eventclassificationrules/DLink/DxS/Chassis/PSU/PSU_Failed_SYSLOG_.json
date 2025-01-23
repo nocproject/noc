@@ -5,22 +5,13 @@
     "description": "WARN: Internal Power failed",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<name>Internal|Redundant) Power failed"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<name>Internal|Redundant) Power failed",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "WARN: Internal Power failed",
-        "value_re": []
+        "raw_vars": []
     }]
 }

@@ -5,24 +5,15 @@
     "description": "Jan  1  0: 1:41 sw-name system: System cold start",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "system: System (cold|warm) start$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "system: System (cold|warm) start$",
+    "profiles": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan  1  0: 1:41 sw-name system: System cold start",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

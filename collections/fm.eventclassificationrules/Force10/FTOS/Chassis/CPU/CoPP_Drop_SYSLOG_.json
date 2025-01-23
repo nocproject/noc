@@ -5,24 +5,15 @@
     "description": "Aug 11 01:24:44 UTC: %STKUNIT1-M:CP %KERN-6-INT: CP CPU receiving excessive control plane traffic: will be rate controlled",
     "event_class__name": "Chassis | CPU | CoPP Drop",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Force10\\.FTOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%KERN-6-INT: (?P<cpu>\\S+) CPU receiving excessive control plane traffic: will be rate controlled$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%KERN-6-INT: (?P<cpu>\\S+) CPU receiving excessive control plane traffic: will be rate controlled$",
+    "profiles": ["Force10.FTOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 11 01:24:44 UTC: %STKUNIT1-M:CP %KERN-6-INT: CP CPU receiving excessive control plane traffic: will be rate controlled",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

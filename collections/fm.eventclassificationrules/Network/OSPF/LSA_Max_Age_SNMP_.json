@@ -1,0 +1,36 @@
+{
+    "name": "Network | OSPF | LSA Max Age (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "fb76e05b-059f-4d5b-8b5e-6ec962d4182a",
+    "description": "OSPF-TRAP-MIB::ospfMaxAgeLsa",
+    "event_class__name": "Network | OSPF | LSA Max Age",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfMaxAgeLsa$"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfRouterId\\.\\S+$",
+            "value_re": "^(?P<router_id>.+)$"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbAreaId\\.\\S+$",
+            "value_re": "^(?P<lsdb_area>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbType\\.\\S+$",
+            "value_re": "^(?P<lsdb_type>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbLsid\\.\\S+$",
+            "value_re": "^(?P<lsdb_lsid>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbRouterId\\.\\S+$",
+            "value_re": "^(?P<lsdb_routerid>\\S+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

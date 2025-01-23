@@ -5,24 +5,15 @@
     "description": "Jan  1  0: 1:42 switch-name system: system has reset without management command",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "system: [Ss]ystem has reset (without|due to a) management command$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "system: [Ss]ystem has reset (without|due to a) management command$",
+    "profiles": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan  1  0: 1:42 switch-name system: system has reset without management command",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

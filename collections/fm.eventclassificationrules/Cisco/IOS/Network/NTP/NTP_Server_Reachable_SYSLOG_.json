@@ -5,24 +5,15 @@
     "description": "%NTP-6-PEERREACH: Peer 192.168.100.253 is reachable",
     "event_class__name": "Network | NTP | NTP Server Reachable",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%NTP-6-PEERREACH: Peer (?P<server_address>\\S+) is reachable$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%NTP-6-PEERREACH: Peer (?P<server_address>\\S+) is reachable$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%NTP-6-PEERREACH: Peer 192.168.100.253 is reachable",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

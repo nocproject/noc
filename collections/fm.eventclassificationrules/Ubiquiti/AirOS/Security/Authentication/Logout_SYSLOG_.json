@@ -5,24 +5,15 @@
     "description": "Jan 12 03:19:28 dropbear[13418]: exit after auth (Admin): Exited normally",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Ubiquiti\\.AirOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* dropbear\\[\\d+\\]: exit after auth \\((?P<user>\\w+)\\): Exited normally$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* dropbear\\[\\d+\\]: exit after auth \\((?P<user>\\w+)\\): Exited normally$",
+    "profiles": ["Ubiquiti.AirOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan 12 03:19:28 dropbear[13418]: exit after auth (Admin): Exited normally",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "UPS: No longer compensating for a low input voltage. 0x010C",
     "event_class__name": "Environment | UPS | Input Power OK",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: No longer compensating for a low input voltage. 0x010C"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: No longer compensating for a low input voltage. 0x010C",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: No longer compensating for a low input voltage. 0x010C",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

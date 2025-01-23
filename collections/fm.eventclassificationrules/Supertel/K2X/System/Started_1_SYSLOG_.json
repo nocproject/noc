@@ -5,22 +5,13 @@
     "description": "%INIT-I-Startup: Warm Startup",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%INIT-I-Startup: Warm Startup$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%INIT-I-Startup: Warm Startup$",
+    "profiles": ["Supertel.K2X"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%INIT-I-Startup: Warm Startup",
-        "value_re": []
+        "raw_vars": []
     }]
 }

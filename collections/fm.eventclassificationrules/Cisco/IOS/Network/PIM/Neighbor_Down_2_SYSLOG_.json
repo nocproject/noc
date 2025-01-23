@@ -5,24 +5,15 @@
     "description": "%PIM-5-NBRCHG: VRF shpd: neighbor 172.18.228.154 DOWN on interface Vlan884 DR",
     "event_class__name": "Network | PIM | Neighbor Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PIM-5-NBRCHG: VRF (?P<vrf>\\S+): neighbor (?P<neighbor>\\S+) DOWN on interface (?P<interface>\\S+)( non)? DR"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PIM-5-NBRCHG: VRF (?P<vrf>\\S+): neighbor (?P<neighbor>\\S+) DOWN on interface (?P<interface>\\S+)( non)? DR",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PIM-5-NBRCHG: VRF shpd: neighbor 172.18.228.154 DOWN on interface Vlan884 DR",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

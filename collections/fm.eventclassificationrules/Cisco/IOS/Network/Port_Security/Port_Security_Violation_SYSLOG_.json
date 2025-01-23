@@ -5,24 +5,15 @@
     "description": "%PORT_SECURITY-2-PSECURE_VIOLATION:Security violation occurred caused by MAC 0017.0e82.0850 on port Gi2/1.",
     "event_class__name": "Network | Port Security | Port Security Violation",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PORT_SECURITY-2-PSECURE_VIOLATION:\\s*Security violation occurred,? caused by MAC( address)? (?P<mac>\\S+) on port (?P<interface>\\S+)\\."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PORT_SECURITY-2-PSECURE_VIOLATION:\\s*Security violation occurred,? caused by MAC( address)? (?P<mac>\\S+) on port (?P<interface>\\S+)\\.",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PORT_SECURITY-2-PSECURE_VIOLATION:Security violation occurred caused by MAC 0017.0e82.0850 on port Gi2/1.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

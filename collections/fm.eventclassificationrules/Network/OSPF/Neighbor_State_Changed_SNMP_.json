@@ -1,0 +1,36 @@
+{
+    "name": "Network | OSPF | Neighbor State Changed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "b175b0c9-419a-4f98-984d-c8b8cd135f3e",
+    "description": "OSPF-TRAP-MIB::ospfNbrStateChange",
+    "event_class__name": "Unknown | Default",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfNbrStateChange$"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfRouterId\\.\\S+$",
+            "value_re": "^(?P<router_id>.+)$"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfNbrIpAddr\\.\\S+$",
+            "value_re": "^(?P<neighbor_address>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfNbrAddressLessIndex\\.\\S+$",
+            "value_re": "^(?P<interface__ifindex>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfNbrRtrId\\.\\S+$",
+            "value_re": "^(?P<neighbor>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfNbrState\\.\\S+$",
+            "value_re": "^(?P<to_state__enum__ospf_state>\\S+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

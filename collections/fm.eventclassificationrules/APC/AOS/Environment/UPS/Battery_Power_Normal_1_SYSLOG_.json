@@ -5,24 +5,15 @@
     "description": "UPS: A discharged battery condition no longer exists. 0x0108",
     "event_class__name": "Environment | UPS | Battery Power Normal",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: A discharged battery condition no longer exists. 0x0108"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: A discharged battery condition no longer exists. 0x0108",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: A discharged battery condition no longer exists. 0x0108",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

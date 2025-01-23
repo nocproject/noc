@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^CISCO-PRODUCTS-MIB::"
         },
@@ -26,5 +18,8 @@
             "key_re": "^CISCO-SYSTEM-MIB::csySnmpAuthFailAddress\\.0$",
             "value_re": "^(?P<ip__bin_to_ip>.+)$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["SNMP Trap"]
 }

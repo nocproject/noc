@@ -5,24 +5,15 @@
     "description": "Voltage 1 3300 mv has exceeded recommended operating limits.",
     "event_class__name": "Environment | DC Voltage Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<name>Voltage \\d+ \\d+ mv) has exceeded recommended operating limits."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<name>Voltage \\d+ \\d+ mv) has exceeded recommended operating limits.",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Voltage 1 3300 mv has exceeded recommended operating limits.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

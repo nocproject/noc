@@ -5,24 +5,15 @@
     "description": "kernel: MCA: Bank 0, Status 0xcc00000120040189",
     "event_class__name": "Chassis | RAM | RAM Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "kernel: MCA: Bank (?P<bank>\\d+), Status 0x\\S+$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "kernel: MCA: Bank (?P<bank>\\d+), Status 0x\\S+$",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "kernel: MCA: Bank 0, Status 0xcc00000120040189",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%FAN-3-FAN_FAILED: Fan 1 had a rotation error reported.",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+|Fans) had a rotation error reported"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+|Fans) had a rotation error reported",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%FAN-3-FAN_FAILED: Fan 1 had a rotation error reported.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

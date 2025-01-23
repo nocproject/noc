@@ -5,24 +5,15 @@
     "description": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on Fa0/1. A packet filter action has been applied on the interface",
     "event_class__name": "Network | Storm Control | Broadcast Storm Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on (?P<interface>.+)\\. A packet filter action has been applied on the interface"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on (?P<interface>.+)\\. A packet filter action has been applied on the interface",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on Fa0/1. A packet filter action has been applied on the interface",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

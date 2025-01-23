@@ -5,24 +5,15 @@
     "description": "*Jul 24 11:35:23: %ARP-4-ZERO_ADDR: Zero MAC address for 10.200.235.195 in ARP cache.",
     "event_class__name": "Network | IP | ARP Zero MAC",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS_Cisco_CLI$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ARP-4-ZERO_ADDR: Zero MAC address for (?P<ip>\\S+) in ARP cache\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ARP-4-ZERO_ADDR: Zero MAC address for (?P<ip>\\S+) in ARP cache\\.$",
+    "profiles": ["DLink.DxS_Cisco_CLI"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "*Jul 24 11:35:23: %ARP-4-ZERO_ADDR: Zero MAC address for 10.200.235.195 in ARP cache.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

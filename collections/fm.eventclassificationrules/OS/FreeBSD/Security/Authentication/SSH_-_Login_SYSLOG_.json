@@ -5,24 +5,15 @@
     "description": "sshd[69546]: Accepted keyboard-interactive/pam for sgrant from 10.88.5.4 port 1395 ssh2",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "sshd\\[\\d+\\]: Accepted keyboard-interactive/pam for (?P<user>.+?) from (?P<ip>\\S+) port \\d+ ssh\\S+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "sshd\\[\\d+\\]: Accepted keyboard-interactive/pam for (?P<user>.+?) from (?P<ip>\\S+) port \\d+ ssh\\S+",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "sshd[69546]: Accepted keyboard-interactive/pam for sgrant from 10.88.5.4 port 1395 ssh2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%UBR7100-5-UNREGSIDTIMEOUT: CMTS deleted unregistered Cable Modem 0018.c0d8.9614",
     "event_class__name": "Network | DOCSIS | Unregistered Modem Deleted",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-5-UNREGSIDTIMEOUT: CMTS deleted unregistered Cable Modem (?P<mac>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-5-UNREGSIDTIMEOUT: CMTS deleted unregistered Cable Modem (?P<mac>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7100-5-UNREGSIDTIMEOUT: CMTS deleted unregistered Cable Modem 0018.c0d8.9614",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

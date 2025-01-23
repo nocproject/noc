@@ -5,24 +5,15 @@
     "description": "FFI: port 43-Excessive CRC/alignment errors. See help.",
     "event_class__name": "Network | Link | Connection Problem",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.ProCurve$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "FFI: port (?P<interface>\\d+)-Excessive CRC/alignment errors. See help."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "FFI: port (?P<interface>\\d+)-Excessive CRC/alignment errors. See help.",
+    "profiles": ["HP.ProCurve"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "FFI: port 43-Excessive CRC/alignment errors. See help.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

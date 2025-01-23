@@ -5,24 +5,15 @@
     "description": "%SYSLOG-N-LOGGING: Logging started.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%SYSLOG-N-LOGGING: Logging started\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%SYSLOG-N-LOGGING: Logging started\\.$",
+    "profiles": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYSLOG-N-LOGGING: Logging started.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

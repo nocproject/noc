@@ -5,24 +5,15 @@
     "description": "WARN(4) Port 22 Broadcast storm is occurring",
     "event_class__name": "Network | Storm Control | Broadcast Storm Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>.+) Broadcast storm is occurring"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>.+) Broadcast storm is occurring",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN(4) Port 22 Broadcast storm is occurring",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

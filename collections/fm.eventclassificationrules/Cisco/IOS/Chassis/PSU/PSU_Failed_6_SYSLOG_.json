@@ -5,24 +5,15 @@
     "description": "%PS-3-DCOUTPUTVOLTFAIL: System detected Power System 1 DC FAIL condition.",
     "event_class__name": "Chassis | PSU | PSU Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PS-3-DCOUTPUTVOLTFAIL: System detected (?P<name>Power System) \\d+ (?:AC|DC) FAIL condition\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PS-3-DCOUTPUTVOLTFAIL: System detected (?P<name>Power System) \\d+ (?:AC|DC) FAIL condition\\.$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PS-3-DCOUTPUTVOLTFAIL: System detected Power System 1 DC FAIL condition.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "UPS: A power supply unit (PSU) fault no longer exists. 0x0A08",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: (?P<name>A power supply unit \\(PSU\\)) fault no longer exists. 0x0A08"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: (?P<name>A power supply unit \\(PSU\\)) fault no longer exists. 0x0A08",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: A power supply unit (PSU) fault no longer exists. 0x0A08",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

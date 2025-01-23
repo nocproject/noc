@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^CISCO-SYSLOG-MIB::clogMessageGenerated$"
         },
@@ -34,5 +26,8 @@
             "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgText\\.\\d+$",
             "value_re": "^Line protocol on Interface (?P<interface>\\S+), changed state to down$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
 }

@@ -5,24 +5,15 @@
     "description": "%PM-4-ERR_RECOVER: Attempting to recover from link-flap err-disable state on Te1/6",
     "event_class__name": "Network | Link | Link Flap Error Recovery",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PM-4-ERR_RECOVER: Attempting to recover from link-flap err-disable state on (?P<interface>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PM-4-ERR_RECOVER: Attempting to recover from link-flap err-disable state on (?P<interface>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PM-4-ERR_RECOVER: Attempting to recover from link-flap err-disable state on Te1/6",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

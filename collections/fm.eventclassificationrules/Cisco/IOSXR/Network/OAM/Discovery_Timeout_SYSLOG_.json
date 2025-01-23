@@ -5,24 +5,15 @@
     "description": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : TenGigE0/0/1/0: OAM discovery failed to complete in the specified time",
     "event_class__name": "Network | OAM | Discovery Timeout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : (?P<interface>\\S+): OAM discovery failed to complete in the specified time"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : (?P<interface>\\S+): OAM discovery failed to complete in the specified time",
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : TenGigE0/0/1/0: OAM discovery failed to complete in the specified time",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

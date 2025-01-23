@@ -5,24 +5,15 @@
     "description": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : Chassis ambient temperature 56.0C at or above rising T3 threshold 56.0C",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : (?P<name>Chassis) ambient temperature (?P<measure>\\S+C) at or above rising \\S+ threshold (?P<threshold>\\S+C)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : (?P<name>Chassis) ambient temperature (?P<measure>\\S+C) at or above rising \\S+ threshold (?P<threshold>\\S+C)",
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : Chassis ambient temperature 56.0C at or above rising T3 threshold 56.0C",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

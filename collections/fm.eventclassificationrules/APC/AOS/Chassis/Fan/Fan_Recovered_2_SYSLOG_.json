@@ -5,24 +5,15 @@
     "description": "UPS: An electronics unit fan fault no longer exists. 0x013C",
     "event_class__name": "Chassis | Fan | Fan Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UPS: (?P<name>An electronics unit fan) fault no longer exists. 0x013C"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UPS: (?P<name>An electronics unit fan) fault no longer exists. 0x013C",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "UPS: An electronics unit fan fault no longer exists. 0x013C",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

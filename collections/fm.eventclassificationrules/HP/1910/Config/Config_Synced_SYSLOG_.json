@@ -5,24 +5,15 @@
     "description": "Feb 11 15:02:43 2013 Teh %%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY(l): Configuration is saved successfully.",
     "event_class__name": "Config | Config Synced",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY\\(l\\): Configuration is saved successfully\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY\\(l\\): Configuration is saved successfully\\.$",
+    "profiles": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Feb 11 15:02:43 2013 Teh %%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY(l): Configuration is saved successfully.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

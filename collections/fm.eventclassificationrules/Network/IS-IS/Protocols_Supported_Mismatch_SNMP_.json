@@ -1,0 +1,36 @@
+{
+    "name": "Network | IS-IS | Protocols Supported Mismatch (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ea65b0fd-1ca8-4e45-89d5-7957a4585d6a",
+    "description": "ISIS-MIB::isisProtocolsSupportedMismatch",
+    "event_class__name": "Network | IS-IS | Protocols Supported Mismatch",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ISIS-MIB::isisProtocolsSupportedMismatch$"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisNotificationSysLevelIndex(?:\\.\\S+)*$",
+            "value_re": "^(?P<level>\\S+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisNotificationCircIfIndex(?:\\.\\S+)*$",
+            "value_re": "^(?P<interface__ifindex>\\S+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisPduLspId(?:\\.\\S+)*$",
+            "value_re": "(?P<lsp_id>[a-z]+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisPduFragment(?:\\.\\S+)*$",
+            "value_re": "^(?P<pdu_fragment>.+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisPduProtocolsSupported(?:\\.\\S+)*$",
+            "value_re": "^(?P<protocol>.+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

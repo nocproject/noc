@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | CEF | Peer FIB State Changed #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "874f3aa1-42bd-4bd5-a397-6a63db964627",
+    "description": "CISCO-CEF-MIB::cefPeerFIBStateChange\n\npeer - entPhysicalIndex.entPeerPhysicalIndex.cefFIBIpVersion",
+    "event_class__name": "Network | CEF | Peer State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^CISCO-CEF-MIB::cefPeerFIBOperState\\.(?P<peer>\\S+)$",
+            "value_re": "^(?P<state>\\S+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-CEF-MIB::cefPeerFIBStateChange$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

@@ -5,24 +5,15 @@
     "description": "system: System initialization complete",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^AlliedTelesis\\.AT9400$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "system: System initialization complete$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "system: System initialization complete$",
+    "profiles": ["AlliedTelesis.AT9400"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "system: System initialization complete",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

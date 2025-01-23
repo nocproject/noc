@@ -1,0 +1,25 @@
+{
+    "name": "Huawei | VRP | Network | BFD | Session Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "05ff2bbf-778e-4720-bbc8-3dd31915917c",
+    "description": "HUAWEI-BFD-MIB::hwBfdSessDown",
+    "event_class__name": "Network | BFD | Session Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-BFD-MIB::hwBfdSessDown$"
+        },
+        {
+            "key_re": "^HUAWEI-BFD-MIB::hwBfdSessPeerAddr\\..+$",
+            "value_re": "(?P<peer>\\S+)"
+        },
+        {
+            "key_re": "^HUAWEI-BFD-MIB::hwBfdSessBindIfName\\..+$",
+            "value_re": "(?P<interface>.+)"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Huawei.VRP"],
+    "sources": ["SNMP Trap"]
+}

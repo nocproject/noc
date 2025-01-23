@@ -5,24 +5,15 @@
     "description": "System: Console user 'admin' logged in from 192.168.220.54. 0x0014",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^APC\\.AOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "System: \\S+ user '(?P<user>.+?)' logged in from (?P<ip>\\S+). \\S+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "System: \\S+ user '(?P<user>.+?)' logged in from (?P<ip>\\S+). \\S+",
+    "profiles": ["APC.AOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "System: Console user 'admin' logged in from 192.168.220.54. 0x0014",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

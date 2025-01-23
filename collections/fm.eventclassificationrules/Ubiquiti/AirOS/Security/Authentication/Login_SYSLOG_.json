@@ -5,24 +5,15 @@
     "description": "Jan 12 03:11:10 dropbear[12784]: password auth succeeded for 'Admin' from 10.200.201.137:19553",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Ubiquiti\\.AirOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": ".* dropbear\\[\\d+\\]: password auth succeeded for '(?P<user>\\S+)' from (?P<ip>\\S+):\\d+$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": ".* dropbear\\[\\d+\\]: password auth succeeded for '(?P<user>\\S+)' from (?P<ip>\\S+):\\d+$",
+    "profiles": ["Ubiquiti.AirOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jan 12 03:11:10 dropbear[12784]: password auth succeeded for 'Admin' from 10.200.201.137:19553",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

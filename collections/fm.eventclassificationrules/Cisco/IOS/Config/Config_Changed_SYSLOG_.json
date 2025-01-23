@@ -5,24 +5,15 @@
     "description": "%SYS-5-CONFIG_I: Configured from 192.168.167.124 by snmp",
     "event_class__name": "Config | Config Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-5-CONFIG_I: Configured from \\S+ by snmp"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-5-CONFIG_I: Configured from \\S+ by snmp",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-5-CONFIG_I: Configured from 192.168.167.124 by snmp",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

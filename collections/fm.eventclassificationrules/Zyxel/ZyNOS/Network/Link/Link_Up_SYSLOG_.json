@@ -5,18 +5,9 @@
     "description": "Link Up",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel\\.ZyNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "interface: Port (?P<interface>\\S+) link up$"
-        }
-    ]
+    "patterns": [],
+    "labels": [],
+    "message_rx": "interface: Port (?P<interface>\\S+) link up$",
+    "profiles": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"]
 }

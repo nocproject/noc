@@ -9,24 +9,15 @@
         "name": "interface",
         "value": "='Eth %s/%s' % (unit, port)"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) link-down notification\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) link-down notification\\.$",
+    "profiles": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Unit 1, Port 25 link-down notification.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

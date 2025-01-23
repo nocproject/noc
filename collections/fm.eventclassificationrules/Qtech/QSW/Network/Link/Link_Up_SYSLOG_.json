@@ -5,24 +5,15 @@
     "description": "0000000158: Jan 1 14:52:20: torgovaja_4: %DEVICE-3-LINKUPDOWN: e0/1 LinkUp.",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Qtech\\.QSW$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%DEVICE-3-LINKUPDOWN:\\s+(?P<interface>.+)\\s+LinkUp.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%DEVICE-3-LINKUPDOWN:\\s+(?P<interface>.+)\\s+LinkUp.$",
+    "profiles": ["Qtech.QSW"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "0000000158: Jan 1 14:52:20: torgovaja_4: %DEVICE-3-LINKUPDOWN: e0/1 LinkUp.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

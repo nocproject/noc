@@ -5,24 +5,15 @@
     "description": "WARN: Port Security Violation (MAC: B4-82-FE-C2-A3-6A, Port: 8)",
     "event_class__name": "Network | Port Security | Port Security Violation",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port [Ss]ecurity [Vv]iolation \\(MAC( address)?: (?P<mac>\\S+)(?:,| on) [Pp]ort: (?P<interface>\\S+)\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port [Ss]ecurity [Vv]iolation \\(MAC( address)?: (?P<mac>\\S+)(?:,| on) [Pp]ort: (?P<interface>\\S+)\\)$",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Port Security Violation (MAC: B4-82-FE-C2-A3-6A, Port: 8)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

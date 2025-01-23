@@ -21,6 +21,8 @@ rx_exact = re.compile(r"^\^?[a-zA-Z0-9%: \-_]+\$?$")
 rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
+ANY_VALUE = "*"
+
 
 @dataclass(slots=True)
 class VarTransformRule:
@@ -32,16 +34,18 @@ class VarTransformRule:
     enums: Optional[Dict[str, str]] = None
     args: Optional[List[Any]] = None
 
-    def transform(self, v: Dict[str, Any]):
+    def transform(self, v: Dict[str, Any], var_ctx: Dict[str, Any]):
         if self.f_type == "ifindex":
             # Magic vars name
-            v[f"{self.name}__ifindex"] = v
+            v[f"{self.name}__ifindex"] = v[self.var]
         elif self.f_type == "enum":
             v[self.name] = self.enums[self.args[0]][v.pop(self.var).lower()]
         elif self.f_type and self.var in v:
             v[self.name] = getattr(self, self.f_type)(v.pop(self.var))
         if self.function:
-            v[self.name] = eval(self.function, {}, v)
+            v[self.name] = eval(self.function, {"__builtins__": {}}, var_ctx)
+        elif self.name in var_ctx:
+            v[self.name] = var_ctx[self.name]
         elif self.name not in v and self.default:
             v[self.name] = self.default
 
@@ -91,19 +95,23 @@ class Rule:
     message_rx: Optional[re.Pattern] = None
     vars: Optional[Dict[str, str]] = None
     vars_transform: Optional[Tuple[VarTransformRule, ...]] = None
-    matcher: Optional[List[Callable]] = None
+    matcher: Optional[Tuple[Callable, ...]] = None
+    label_matchers: Optional[Tuple[Callable, ...]] = None
+    set_labels: Optional[Tuple[str, ...]] = None
+    is_transparent_labels: bool = False
     is_unknown: bool = False
     is_unknown_syslog: bool = False
     to_drop: bool = False
-    is_failed: bool = False
-    # metric block
-    processed: int = 0
 
     @classmethod
     def from_rule(cls, rule, enumerations) -> "Rule":
         """Create from EventClassificationRule"""
-        matcher, message_rx = [], None
-        profile, source = r"^.*$", EventSource.OTHER
+        matcher, message_rx = [], re.compile(rule.message_rx) if rule.message_rx else None
+        source = rule.sources[0] if rule.sources else EventSource.OTHER
+        if rule.profiles:
+            profile = rule.profiles[0].name
+        else:
+            profile = r"^.*$"
         patterns, transform = [], {}
         for x in rule.patterns:
             key_s, value_s = x.key_re.strip("^$"), x.value_re.strip("^$")
@@ -131,7 +139,7 @@ class Rule:
                 if "__" not in name:
                     continue
                 v, fixup, *args = name.split("__")
-                if hasattr(VarTransformRule, fixup):
+                if hasattr(VarTransformRule, fixup) or fixup == "enum" or fixup == "ifindex":
                     transform[v] = VarTransformRule(
                         name=v,
                         var=name,
@@ -141,6 +149,13 @@ class Rule:
                     )
                 else:
                     print(f"Unknown fixup: {fixup}")
+        label_matchers = []
+        # Parse Labels
+        for x in rule.labels:
+            m = cls.get_label_matcher(x.wildcard, set_var=x.set_var, is_required=x.is_required)
+            if not m:
+                continue
+            label_matchers.append(m)
         # Parse vars
         for v in rule.vars:
             value, name = v["value"], v["name"]
@@ -162,13 +177,19 @@ class Rule:
             profile=profile,
             preference=rule.preference,
             message_rx=message_rx,
-            matcher=matcher,
+            matcher=tuple(matcher) if matcher else None,
             vars_transform=tuple(transform.values()),
+            label_matchers=tuple(label_matchers) if label_matchers else None,
             # vars=rule_vars,
             to_drop=rule.event_class.action == "D",
         )
 
-    def match(self, message, vars) -> Optional[Dict[str, str]]:
+    def match(
+        self,
+        message,
+        vars: Dict[str, Any],
+        labels: Optional[List[str]] = None,
+    ) -> Optional[Dict[str, str]]:
         # if self.source != e.type.source:
         #    return None
         # if self.profile and self.profile != e.type.profile:
@@ -185,10 +206,37 @@ class Rule:
                     return None
             except KeyError:
                 return None
+        if not self.label_matchers:
+            return e_vars
+        elif not labels:
+            return None
+        # Labels ctx
+        lx = {}
+        for ll in labels or []:
+            scope, *value = ll.rsplit("::", 1)
+            lx[scope] = value[0] if value else None
+            lx[ll] = None
+        for m in self.label_matchers or []:
+            try:
+                if not m(lx, e_vars):
+                    return None
+            except KeyError:
+                return None
         return e_vars
 
     @classmethod
+    def get_label_matcher(cls, wildcard, set_var, is_required: bool = True) -> Callable:
+        """Create label matcher callable"""
+        scope, *value = wildcard.rsplit("::", 1)
+        if not value:
+            return partial(match_label, set_var=set_var, default_fail=not is_required)
+        return partial(
+            match_scoped_label, scope, value[0], set_var=set_var, default_fail=not is_required
+        )
+
+    @classmethod
     def get_matcher(cls, key_re: str, value_re: str) -> Tuple[Callable, List[str]]:
+        """Create variable matcher callable"""
         x_key, rx_key = None, None
         x_value, rx_value = None, None
         rxs = []
@@ -292,6 +340,39 @@ def match_k_v_regex(
             storage.update(v_s.groupdict())
             return True
     return False
+
+
+def match_scoped_label(
+    scope: str,
+    value: str,
+    ctx: Dict[str, Optional[str]],
+    storage: Dict[str, str],
+    set_var: Optional[str] = None,
+    default_fail: bool = False,
+) -> bool:
+    # check scope in labels ctx
+    if scope not in ctx:
+        return default_fail
+    if value != ANY_VALUE and ctx[scope] != value:
+        return default_fail
+    if set_var and value:
+        storage[set_var] = ctx[scope]
+    return True
+
+
+def match_label(
+    label: str,
+    ctx: Dict[str, str],
+    storage: Dict[str, str],
+    set_var: Optional[str] = None,
+    default_fail: bool = False,
+) -> bool:
+    # check label value in labels ctx
+    if label not in ctx:
+        return default_fail
+    if set_var and label:
+        storage[set_var] = label
+    return True
 
 
 def to_enum(enum: Dict[str, Dict[str, str]], key, value):

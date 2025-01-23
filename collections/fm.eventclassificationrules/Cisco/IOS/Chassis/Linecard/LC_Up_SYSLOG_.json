@@ -1,0 +1,13 @@
+{
+    "name": "Cisco | IOS | Chassis | Linecard | LC Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8329091e-798e-4d78-96b6-e7bbd01697de",
+    "description": "6742: Nov 11 23:28:04.276 OMST: %IOSXE_OIR-6-ONLINECARD: Card (fp) online in slot F1",
+    "event_class__name": "Chassis | Linecard | LC Up",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%IOSXE_OIR-6-ONLINECARD: Card \\(\\S+\\) online in slot (?P<number>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"]
+}

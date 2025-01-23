@@ -5,24 +5,15 @@
     "description": "Jul 20 2012 11:37:29 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGIN(l):  amt login from 212.40.34.7.",
     "event_class__name": "Security | Authentication | Login",
     "preference": 2000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%01SHELL/5/LOGIN\\(l\\):\\s+(?P<user>\\S+) login from (?P<ip>\\S+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%01SHELL/5/LOGIN\\(l\\):\\s+(?P<user>\\S+) login from (?P<ip>\\S+)\\.$",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 20 2012 11:37:29 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGIN(l):  amt login from 212.40.34.7.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -9,24 +9,15 @@
         "name": "interface",
         "value": "='Eth 1/%s' % port"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "LBD recovers port (?P<port>\\d+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "LBD recovers port (?P<port>\\d+)\\.$",
+    "profiles": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Sep 2 16:41:51 test snmp LBD recovers port 8.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

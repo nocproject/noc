@@ -9,24 +9,15 @@
         "name": "reason",
         "value": "Online diagnostic failed"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%DIAG-SP-3-(?:MINOR|MAJOR)_HW: (?P<module>Module \\S+) Online Diagnostics detected (?:Minor|Major) Hardware Error"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%DIAG-SP-3-(?:MINOR|MAJOR)_HW: (?P<module>Module \\S+) Online Diagnostics detected (?:Minor|Major) Hardware Error",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%DIAG-SP-3-MINOR_HW: Module 1: Online Diagnostics detected Minor Hardware Error",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

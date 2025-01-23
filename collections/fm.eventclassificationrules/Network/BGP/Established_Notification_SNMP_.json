@@ -1,0 +1,20 @@
+{
+    "name": "Network | BGP | Established Notification (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e1351faa-4b10-40a0-88a1-b26c6fa773e4",
+    "description": "BGP4-MIB::bgpEstablishedNotification",
+    "event_class__name": "Network | BGP | Established",
+    "preference": 3000,
+    "patterns": [
+        {
+            "key_re": "^BGP4-MIB::bgpPeerState\\.(?P<peer>\\S+)$",
+            "value_re": "^established$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^BGP4-MIB::bgpEstablishedNotification$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Hardware | Module | Module not Present #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "bc155020-eba4-400e-af10-721143369781",
+    "description": "Juniper-System-MIB::juniSystemModuleOperStatusChange",
+    "event_class__name": "Chassis | Hardware | Module | Module not Present",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^Juniper-System-MIB::juniSystemModuleOperStatusChange$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemModuleCurrentType\\.(?P<slot_index>\\S+)$",
+            "value_re": "^(?P<module>\\S+)$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemModuleOperStatus\\.\\S+$",
+            "value_re": "notPresent"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemModuleDescr\\.\\S+$",
+            "value_re": "^(?P<module_descr>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

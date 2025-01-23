@@ -5,24 +5,15 @@
     "description": "ENVM-6-PSOK: [chars] now appears to be working correctly",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ENVM-6-PSOK: (?P<name>.+) now appears to be working correctly"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ENVM-6-PSOK: (?P<name>.+) now appears to be working correctly",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "ENVM-6-PSOK: [chars] now appears to be working correctly",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

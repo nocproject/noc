@@ -5,24 +5,15 @@
     "description": "Mar 19 14:18:40  switchname-asw01 eswd[1262]: ESWD_BPDU_BLOCK_ERROR_DISABLED: ge-0/0/47.0: bpdu-block disabled port",
     "event_class__name": "Network | STP | BPDU Guard Violation",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ESWD_BPDU_BLOCK_ERROR_DISABLED: (?P<interface>\\S+): bpdu-block disabled port$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ESWD_BPDU_BLOCK_ERROR_DISABLED: (?P<interface>\\S+): bpdu-block disabled port$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Mar 19 14:18:40  switchname-asw01 eswd[1262]: ESWD_BPDU_BLOCK_ERROR_DISABLED: ge-0/0/47.0: bpdu-block disabled port",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

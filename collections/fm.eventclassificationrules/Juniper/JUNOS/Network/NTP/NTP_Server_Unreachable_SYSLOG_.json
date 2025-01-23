@@ -5,24 +5,15 @@
     "description": "Aug 21 19:21:33 xntpd[1406]: NTP Server Unreachable",
     "event_class__name": "Network | NTP | NTP Server Unreachable",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "xntpd\\[\\d+\\]: NTP Server Unreachable$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "xntpd\\[\\d+\\]: NTP Server Unreachable$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 21 19:21:33 xntpd[1406]: NTP Server Unreachable",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

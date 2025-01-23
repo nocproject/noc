@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Environment | DC Voltage Returned to Normal Range #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "61d2b12d-7180-431d-b933-6c2201ba6d51",
+    "description": "CISCO-ACCESS-ENVMON-MIB::caemVoltageNotification",
+    "event_class__name": "Environment | DC Voltage Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonVoltageState\\.\\d+$",
+            "value_re": "normal"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonVoltageStatusDescr\\.\\d+$",
+            "value_re": "(?P<name>.+) t\\S+"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
+            "value_re": "CISCO-ACCESS-ENVMON-MIB::caemVoltageNotification"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

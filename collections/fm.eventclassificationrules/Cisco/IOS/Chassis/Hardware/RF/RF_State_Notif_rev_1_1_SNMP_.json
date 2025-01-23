@@ -1,0 +1,33 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | RF | RF State Notif rev.1 #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ee7a71c0-6528-42d9-9e5f-f5056b6084f7",
+    "description": "CISCO-RF-MIB::ciscoRFIssuStateNotifRev1",
+    "event_class__name": "Chassis | Hardware | Version Upgrading",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-RF-MIB::ciscoRFSwactNotif$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusIssuStateRev1(?:\\.\\d+)*$",
+            "value_re": "^(?P<issu_state>\\S+)$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusIssuFromVersion(?:\\.\\d+)*$",
+            "value_re": "^(?P<from_version>\\S+)$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusIssuToVersion(?:\\.\\d+)*$",
+            "value_re": "^(?P<to_version>\\S+)$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusLastSwactReasonCode(?:\\.\\d+)*$",
+            "value_re": "^(?P<reason>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

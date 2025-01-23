@@ -5,24 +5,15 @@
     "description": "%RLDP-3-LINK_DETECT_RECOVER: Interface TenGigabitEthernet 1/1 recovered from loop error.",
     "event_class__name": "Network | LBD | Loop Cleared",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS_Cisco_CLI$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%RLDP-3-LINK_DETECT_RECOVER: Interface (?P<interface>.+) recovered from loop error."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%RLDP-3-LINK_DETECT_RECOVER: Interface (?P<interface>.+) recovered from loop error.",
+    "profiles": ["DLink.DxS_Cisco_CLI"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%RLDP-3-LINK_DETECT_RECOVER: Interface TenGigabitEthernet 1/1 recovered from loop error.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

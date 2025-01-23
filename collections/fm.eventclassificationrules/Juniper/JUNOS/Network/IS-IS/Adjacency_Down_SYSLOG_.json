@@ -5,24 +5,15 @@
     "description": "Jul 21 08:02:19 rpd[968]: RPD_ISIS_ADJDOWN: IS-IS lost L2 adjacency to r1 on em1.0, reason: Aged Out",
     "event_class__name": "Network | IS-IS | Adjacency Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "RPD_ISIS_ADJDOWN: IS-IS lost (?P<level>\\S+) adjacency to (?P<neighbor>.+?) on (?P<interface>.+?), reason: (?P<reason>.+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "RPD_ISIS_ADJDOWN: IS-IS lost (?P<level>\\S+) adjacency to (?P<neighbor>.+?) on (?P<interface>.+?), reason: (?P<reason>.+)$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 21 08:02:19 rpd[968]: RPD_ISIS_ADJDOWN: IS-IS lost L2 adjacency to r1 on em1.0, reason: Aged Out",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

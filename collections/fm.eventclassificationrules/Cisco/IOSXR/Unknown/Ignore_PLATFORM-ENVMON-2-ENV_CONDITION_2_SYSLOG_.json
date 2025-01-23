@@ -5,24 +5,15 @@
     "description": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition exists in the chassis",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition (?:exists|cleared) in the chassis"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition (?:exists|cleared) in the chassis",
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition exists in the chassis",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -15,19 +15,9 @@
             "value": "SFP is not supported"
         }
     ],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PM_SCP-SP-3-TRANSCEIVER_UNSUPPORTED: Unsupported transceiver in LAN port (?P<interface>\\S+)"
-        }
-    ],
-    "test_cases": []
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PM_SCP-SP-3-TRANSCEIVER_UNSUPPORTED: Unsupported transceiver in LAN port (?P<interface>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"]
 }

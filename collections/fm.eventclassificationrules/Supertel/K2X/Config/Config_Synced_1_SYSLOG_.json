@@ -5,24 +5,15 @@
     "description": "%COPY-N-TRAP: The copy operation was completed successfully",
     "event_class__name": "Config | Config Synced",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%COPY-N-TRAP: The copy operation was completed successfully$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%COPY-N-TRAP: The copy operation was completed successfully$",
+    "profiles": ["Supertel.K2X"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%COPY-N-TRAP: The copy operation was completed successfully",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

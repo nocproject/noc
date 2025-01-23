@@ -5,24 +5,15 @@
     "description": "INFO: Port 11 LBD port recovered. Loop detection restarted",
     "event_class__name": "Network | LBD | Loop Cleared",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>.+) LBD port recovered. Loop detection restarted"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>.+) LBD port recovered. Loop detection restarted",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Port 11 LBD port recovered. Loop detection restarted",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

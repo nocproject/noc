@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
             "key_re": "^BGP4-MIB::bgpPeerState\\.\\S+$",
             "value_re": "^(?P<to_state__enum__bgp_state>\\S+)$"
         },
@@ -27,6 +19,9 @@
             "value_re": "^CISCO-BGP4-MIB::ciscoBgp4MIB$"
         }
     ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"],
     "test_cases": [
         {
             "message": null,

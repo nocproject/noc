@@ -5,24 +5,15 @@
     "description": "%%01PHY/4/PHY_STATUS_UP(l)[157]:Slot=1;GigabitEthernet1/1/8 change status to up.",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei.VRP$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Slot=\\d+;(?P<interface>\\S+) change status to up.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Slot=\\d+;(?P<interface>\\S+) change status to up.$",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%%01PHY/4/PHY_STATUS_UP(l)[157]:Slot=1;GigabitEthernet1/1/8 change status to up.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

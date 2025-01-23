@@ -1,0 +1,28 @@
+{
+    "name": "ElectronR | KO01M.V2 | Environment | UPS | Input Power OK (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "75c33c97-8954-465f-8e75-ad710fff7e5c",
+    "event_class__name": "Environment | UPS | Input Power OK",
+    "preference": 1000,
+    "vars": [{
+        "name": "name",
+        "value": "Controller"
+    }],
+    "patterns": [
+        {
+            "key_re": "^1.3.6.1.6.3.1.1.4.1.0$",
+            "value_re": "^1.3.6.1.4.1.35419.20.1.0.1$"
+        },
+        {
+            "key_re": "^1.3.6.1.4.1.35419.20.1.105.0$",
+            "value_re": "^1$"
+        },
+        {
+            "key_re": "^1.3.6.1.2.1.1.3.0$",
+            "value_re": "^(\\d+)$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["ElectronR.KO01M"],
+    "sources": ["SNMP Trap"]
+}

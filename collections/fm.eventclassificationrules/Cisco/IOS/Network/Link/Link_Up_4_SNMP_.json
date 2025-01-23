@@ -7,20 +7,12 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
             "key_re": "^IF-MIB::ifType\\.\\d+$",
             "value_re": "^\\d+$"
         },
         {
             "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
             "value_re": "^up$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
         },
         {
             "key_re": "^IF-MIB::ifDescr\\.\\d+$",
@@ -38,5 +30,8 @@
             "key_re": "^IF-MIB::ifIndex\\.\\d+$",
             "value_re": "^\\d+$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
 }

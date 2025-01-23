@@ -1,0 +1,28 @@
+{
+    "name": "Huawei | VRP | Network | Port | Loss of Signal (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "06a7054c-1ca2-479e-81b5-b9e229e21d95",
+    "description": "HUAWEI-PORT-MIB::hwLosAlarm - Port Loss of Signal Alarm",
+    "event_class__name": "Network | Port | Loss of Signal",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-PORT-MIB::hwLosAlarm$"
+        },
+        {
+            "key_re": "^HUAWEI-PORT-MIB::hwPhysicalPortName\\.\\d+$",
+            "value_re": "(?P<interface>.+)"
+        },
+        {
+            "key_re": "^HUAWEI-PORT-MIB::hwPhysicalPortInSlot\\.\\d+$",
+            "value_re": "(?P<slot>\\S+)"
+        },
+        {
+            "key_re": "^HUAWEI-PORT-MIB::hwPhysicalPortInCard\\.\\d+$",
+            "value_re": "(?P<card>\\S+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}
