@@ -159,7 +159,7 @@ class Prefix(NOCModel):
         null=False,
     )
     default_address_profile: Optional["AddressProfile"] = DocumentReferenceField(
-        AddressProfile, required=False, null=True, blank=True
+        AddressProfile, null=True, blank=True
     )
     source = models.CharField(
         "Source",
