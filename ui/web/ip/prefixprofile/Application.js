@@ -11,6 +11,8 @@ Ext.define("NOC.ip.prefixprofile.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.ip.prefixprofile.Model",
+        "NOC.ip.addressprofile.LookupField",
+        "NOC.inv.resourcepool.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.remotesystem.LookupField",
@@ -116,6 +118,12 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "default_address_profile",
+                    xtype: "ip.addressprofile.LookupField",
+                    fieldLabel: __("Default Address Profile"),
+                    allowBlank: true
+                },
+                {
                     name: "seen_propagation_policy",
                     xtype: "combobox",
                     fieldLabel: __("Seen propagation"),
@@ -142,6 +150,28 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     listeners: {
                         render: me.addTooltip
                     }
+                },
+                {
+                    name: "pools",
+                    xtype: "gridfield",
+                    fieldLabel: __("Address Pools"),
+                    columns: [
+                        {
+                            text: __("Pool"),
+                            dataIndex: "pool",
+                            width: 200,
+                            editor: {
+                                xtype: "inv.resourcepool.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("pool")
+                        },
+                        {
+                            dataIndex: "description",
+                            text: __("Description"),
+                            editor: "textfield",
+                            width: 150
+                        }
+                    ]
                 },
                 {
                     xtype: "fieldset",

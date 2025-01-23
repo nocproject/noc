@@ -12,6 +12,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
     requires: [
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.vrf.LookupField",
+        "NOC.ip.addressprofile.LookupField",
         "NOC.peer.as.LookupField",
         "NOC.vc.vlan.LookupField",
         "NOC.project.project.LookupField",
@@ -145,12 +146,13 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
                     name: "prefix_discovery_policy",
                     xtype: "combobox",
                     fieldLabel: __("Prefix Discovery Policy"),
-                    allowBlank: false,
+                    allowBlank: true,
                     store: [
                         ["P", __("Profile")],
                         ["E", __("Enable")],
                         ["D", __("Disable")]
                     ],
+                    defaultValue: "P",
                     labelWidth: 180,
                     uiStyle: "medium"
                 },
@@ -158,15 +160,44 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
                     name: "address_discovery_policy",
                     xtype: "combobox",
                     fieldLabel: __("Address Discovery Policy"),
-                    allowBlank: false,
+                    allowBlank: true,
                     store: [
                         ["P", __("Profile")],
                         ["E", __("Enable")],
                         ["D", __("Disable")]
                     ],
+                    defaultValue: "P",
                     labelWidth: 180,
                     uiStyle: "medium"
                 },
+                {
+                    name: "default_address_profile",
+                    xtype: "ip.addressprofile.LookupField",
+                    fieldLabel: __("Default Address Profile"),
+                    allowBlank: true
+                },
+                {
+                    name: "pools",
+                    xtype: "gridfield",
+                    fieldLabel: __("Address Pools"),
+                    columns: [
+                        {
+                            text: __("Pool"),
+                            dataIndex: "pool",
+                            width: 200,
+                            editor: {
+                                xtype: "inv.resourcepool.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("pool")
+                        },
+                        {
+                            dataIndex: "description",
+                            text: __("Description"),
+                            editor: "textfield",
+                            width: 150
+                        }
+                    ]
+                }
                 // {
                 //     name: "direct_permissions",
                 //     xtype: "gridfield",
