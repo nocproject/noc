@@ -164,7 +164,9 @@ class EventClassificationRule(Document):
     patterns: List[EventClassificationPattern] = EmbeddedDocumentListField(
         EventClassificationPattern
     )
-    sources: List[EventSource] = ListField(EnumField(EventSource), required=True)
+    sources: List[EventSource] = ListField(
+        EnumField(EventSource), default=lambda: [EventSource.OTHER]
+    )
     profiles: List[Profile] = ListField(ReferenceField(Profile))
     message_rx: str = StringField()
     # datasources = EmbeddedDocumentListField(DataSource)
@@ -209,7 +211,7 @@ class EventClassificationRule(Document):
         if self.message_rx:
             r["message_rx"] = self.message_rx
         if self.profiles:
-            r["profiles__name"] = [mt.name for mt in self.profiles]
+            r["profiles"] = [mt.name for mt in self.profiles]
         if self.description:
             r["description"] = self.description
         if self.vars:
@@ -228,6 +230,7 @@ class EventClassificationRule(Document):
                 "description",
                 "event_class__name",
                 "preference",
+                "sources",
                 "vars",
                 "patterns",
             ],

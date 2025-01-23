@@ -149,12 +149,10 @@ class Rule:
                     )
                 else:
                     print(f"Unknown fixup: {fixup}")
-        label_matchers, set_labels = [], []
+        label_matchers = []
         # Parse Labels
         for x in rule.labels:
             m = cls.get_label_matcher(x.wildcard, set_var=x.set_var, is_required=x.is_required)
-            if x.set_label and not x.set_label.endswith(ANY_VALUE):
-                set_labels.append(x.set_label)
             if not m:
                 continue
             label_matchers.append(m)
