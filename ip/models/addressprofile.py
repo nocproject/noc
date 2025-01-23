@@ -35,6 +35,8 @@ id_lock = Lock()
 @on_delete_check(
     check=[
         ("ip.Address", "profile"),
+        ("ip.Prefix", "default_address_profile"),
+        ("ip.PrefixProfile", "default_address_profile"),
         ("sa.ManagedObjectProfile", "address_profile_interface"),
         ("sa.ManagedObjectProfile", "address_profile_management"),
         ("sa.ManagedObjectProfile", "address_profile_dhcp"),

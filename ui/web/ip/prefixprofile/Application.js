@@ -11,7 +11,7 @@ Ext.define("NOC.ip.prefixprofile.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.ip.prefixprofile.Model",
-        "NOC.ip.addressprofile.Model",
+        "NOC.ip.addressprofile.LookupField",
         "NOC.inv.resourcepool.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",
