@@ -6,7 +6,7 @@
     "description": "OPM-4-C-H4 – модуль мониторинга оптических каналов.",
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARDH4",
-    "plugins": ["pconf"],
+    "plugins": ["pconf", "opm"],
     "labels": ["noc::inv::lc"],
     "configuration_rule__name": "OM/OD Rules",
     "connections": [
