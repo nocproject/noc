@@ -59,6 +59,10 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             defaultValue: "D"
         },
         {
+            name: "default_address_profile",
+            type: "string"
+        },
+        {
             name: "enable_ip_ping_discovery",
             type: "boolean",
             defaultValue: false

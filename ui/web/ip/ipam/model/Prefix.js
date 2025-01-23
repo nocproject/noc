@@ -41,6 +41,10 @@ Ext.define("NOC.ip.ipam.model.Prefix", {
             name: "state",
             type: "string"
         },
+        {
+            name: "default_address_profile",
+            type: "string"
+        },
         // {
         //     name: "direct_permissions",
         //     type: "auto"

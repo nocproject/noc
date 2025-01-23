@@ -158,6 +158,9 @@ class Prefix(NOCModel):
         blank=False,
         null=False,
     )
+    default_address_profile: Optional["AddressProfile"] = DocumentReferenceField(
+        AddressProfile, required=False, null=True, blank=True
+    )
     source = models.CharField(
         "Source",
         max_length=1,
@@ -786,8 +789,21 @@ class Prefix(NOCModel):
             return None
         return self.parent.get_effective_as()
 
+    def get_effective_address_profile(self) -> Optional["AddressProfile"]:
+        """Return effective Address Profile (first found upwards)"""
+        if self.default_address_profile:
+            return self.default_address_profile
+        elif self.profile.default_address_profile:
+            return self.profile.default_address_profile
+        if not self.parent:
+            return None
+        return self.parent.get_effective_address_profile()
+
     def get_default_address_profile(self) -> AddressProfile:
-        return AddressProfile.objects.filter().first()
+        p = self.get_effective_address_profile()
+        if p:
+            return p
+        return AddressProfile.get_default_profile()
 
     @classmethod
     def can_set_label(cls, label):

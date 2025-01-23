@@ -11,6 +11,7 @@ Ext.define("NOC.ip.prefixprofile.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.ip.prefixprofile.Model",
+        "NOC.ip.addressprofile.Model",
         "NOC.inv.resourcepool.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",
@@ -114,6 +115,12 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     name: "name_template",
                     xtype: "main.template.LookupField",
                     fieldLabel: __("Template"),
+                    allowBlank: true
+                },
+                {
+                    name: "default_address_profile",
+                    xtype: "ip.addressprofile.LookupField",
+                    fieldLabel: __("Default Address Profile"),
                     allowBlank: true
                 },
                 {

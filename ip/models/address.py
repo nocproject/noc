@@ -333,11 +333,11 @@ class Address(NOCModel):
         """
         Args:
             prefix:
-            vlan_filter:
-            addresses:
+            keys:
             strategy:
             exclude_keys:
             limit:
+            address_ranges:
             kwargs:
         """
         pp = IP.prefix(prefix.prefix)

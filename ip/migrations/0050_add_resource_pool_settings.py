@@ -10,6 +10,7 @@ from django.db import models
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import DocumentReferenceField
 
 
 class Migration(BaseMigration):
@@ -17,7 +18,17 @@ class Migration(BaseMigration):
         self.db.add_column(
             "ip_prefix",
             "pools",
-            models.JSONField("Remote System mappings", null=True, blank=True, default=lambda: "[]"),
+            models.JSONField(
+                "Remote System mappings",
+                null=True,
+                blank=True,
+                default=lambda: "[]",
+            ),
+        )
+        self.db.add_column(
+            "ip_prefix",
+            "default_address_profile",
+            DocumentReferenceField("ip.AddressProfile", null=True, blank=True),
         )
         self.db.add_column(
             "ip_address",
