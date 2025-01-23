@@ -8,13 +8,21 @@
 # Python modules
 from threading import Lock
 from functools import partial
-from typing import Optional, Union
+from typing import Optional, Union, List
 import operator
 
 # Third-party modules
 from bson import ObjectId
-from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField, BooleanField, DateTimeField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    LongField,
+    ListField,
+    BooleanField,
+    DateTimeField,
+    EmbeddedDocumentListField,
+    ReferenceField,
+)
 import cachetools
 
 # NOC modules
@@ -22,13 +30,24 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.main.models.template import Template
 from noc.main.models.label import Label
+from noc.inv.models.resourcepool import ResourcePool
 from noc.wf.models.workflow import Workflow
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.scheduler.job import Job
+from .addressprofile import AddressProfile
 
 id_lock = Lock()
+
+
+class PoolItem(EmbeddedDocument):
+    pool = ReferenceField(ResourcePool, required=True)
+    description = StringField()
+    ip_filter = StringField()
+
+    def __str__(self):
+        return f"{self.pool}: {self.ip_filter}"
 
 
 @Label.model
@@ -64,8 +83,12 @@ class PrefixProfile(Document):
         Workflow, default=partial(Workflow.get_default_workflow, "ip.PrefixProfile")
     )
     style = ForeignKeyField(Style)
+    pools: List["PoolItem"] = EmbeddedDocumentListField(PoolItem)
     # Template.subject to render Prefix.name
     name_template = ForeignKeyField(Template)
+    default_address_profile: Optional["AddressProfile"] = ReferenceField(
+        AddressProfile, required=False
+    )
     # Discovery policies
     prefix_discovery_policy = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="D")
     address_discovery_policy = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="D")
@@ -90,7 +113,9 @@ class PrefixProfile(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=10, ttl=60)
 
+    DEFAULT_PROFILE_NAME = "default"
     DEFAULT_WORKFLOW_NAME = "Default Resource"
 
     def __str__(self):
@@ -112,6 +137,22 @@ class PrefixProfile(Document):
 
     def on_save(self):
         self.ensure_ip_discovery_job()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
+    def get_default_profile(cls) -> "PrefixProfile":
+        pp = AddressProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+        if not pp:
+            wf = Workflow.get_default_workflow("ip.Prefix")
+            if not wf:
+                wf = Workflow.objects.filter(name=cls.DEFAULT_WORKFLOW_NAME).first()
+            pp = PrefixProfile(
+                name=cls.DEFAULT_PROFILE_NAME,
+                description="Default prefix profile",
+                workflow=wf,
+            )
+            pp.save()
+        return pp
 
     def ensure_ip_discovery_job(self):
         from noc.services.discovery.jobs.ipping.address import JCLS_IPPING_PREFIX

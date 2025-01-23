@@ -10,7 +10,7 @@ import itertools
 import operator
 import logging
 from threading import Lock
-from typing import Optional, Union, Iterable, List, Dict
+from typing import Optional, Union, Iterable, List, Dict, Any
 
 # Third-party modules
 from bson import ObjectId
@@ -150,11 +150,11 @@ class L2Domain(Document):
                 continue
             yield p
 
-    def get_pool_settings(self, pool) -> Optional[PoolItem]:
+    def get_pool_hints(self, pool) -> Optional[Dict[str, Any]]:
         """Getting pool setting for L2Domain"""
         for p in self.iter_pool_settings():
             if p.pool == pool:
-                return p
+                return {"vlan_filter": p.vlan_filter}
 
     def clean(self):
         pools = [pp.pool.id for pp in self.get_effective_pools()]

@@ -35,6 +35,8 @@ id_lock = Lock()
 @on_delete_check(
     check=[
         ("ip.Address", "profile"),
+        ("ip.Prefix", "default_address_profile"),
+        ("ip.PrefixProfile", "default_address_profile"),
         ("sa.ManagedObjectProfile", "address_profile_interface"),
         ("sa.ManagedObjectProfile", "address_profile_management"),
         ("sa.ManagedObjectProfile", "address_profile_dhcp"),
@@ -72,7 +74,9 @@ class AddressProfile(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=10, ttl=60)
 
+    DEFAULT_PROFILE_NAME = "default"
     DEFAULT_WORKFLOW_NAME = "Default Resource"
 
     def __str__(self):
@@ -96,3 +100,19 @@ class AddressProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_addressprofile")
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
+    def get_default_profile(cls) -> "AddressProfile":
+        ap = AddressProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+        if not ap:
+            wf = Workflow.get_default_workflow("ip.Address")
+            if not wf:
+                wf = Workflow.objects.filter(name=cls.DEFAULT_WORKFLOW_NAME).first()
+            ap = AddressProfile(
+                name=cls.DEFAULT_PROFILE_NAME,
+                description="Default address profile",
+                workflow=wf,
+            )
+            ap.save()
+        return ap

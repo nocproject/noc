@@ -103,8 +103,9 @@ class ResourcePool(Document):
         """Getting Resource Domains"""
         if self.type == "vlan":
             model = get_model("vc.L2Domain")
+        elif self.type == "ip":
+            model = get_model("ip.Prefix")
         else:
-            # model = get_model("ip.Prefix")
             raise NotImplementedError("IP Allocation is not Implemented yet")
         return model.get_by_resource_pool(self)
 
@@ -199,7 +200,8 @@ class ResourcePool(Document):
             return
         allocated: List[Any] = []
         d = domains.pop()
-        pool_settings = d.get_pool_settings(self)
+        # Replace to hints
+        pool_hints = d.get_pool_hints(self)
         processed = set()
         limit = len(resource_keys or []) or limit
         # ToDo Pool.threshold limit (max allocation by user)
@@ -211,11 +213,11 @@ class ResourcePool(Document):
             requested_limit = limit - len(allocated)
             keys = self.resource_model.get_resource_keys(
                 d,
-                vlan_filter=pool_settings.vlan_filter if pool_settings else None,
                 limit=requested_limit,
                 strategy=self.strategy,
-                vlans=resource_keys,
+                keys=resource_keys,
                 exclude_keys=processed,
+                **pool_hints,
             )
             if not keys and not domains:
                 logger.debug("[%s|%s] Nothing keys for allocated. Stop", self.name, d.name)

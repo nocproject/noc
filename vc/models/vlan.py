@@ -117,14 +117,14 @@ class VLAN(Document):
         cls,
         domain: L2Domain,
         vlan_filter: Optional[VLANFilter] = None,
-        vlans: Optional[List[int]] = None,
+        keys: Optional[List[int]] = None,
         strategy: str = "L",
         exclude_keys: Optional[Iterable[int]] = None,
         limit: int = 1,
         **kwargs,
     ) -> List[int]:
         """Generate Non-used vlan keys"""
-        vlans: Set[int] = set(vlans or []) or FULL_VLAN_RANGE
+        vlans: Set[int] = set(keys or []) or FULL_VLAN_RANGE
         if vlan_filter:
             vlans &= set(vlan_filter.include_vlans)
         if vlan_filter and vlan_filter.exclude_vlans:
