@@ -5,24 +5,15 @@
     "description": "%AAA-I-DISCONNECT: http connection for user admin, source 10.8.4.19 destination 10.8.2.13 TERMINATED",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%AAA-I-DISCONNECT: http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ TERMINATED$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%AAA-I-DISCONNECT: http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ TERMINATED$",
+    "profiles": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%AAA-I-DISCONNECT: http connection for user admin, source 10.8.4.19 destination 10.8.2.13 TERMINATED",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

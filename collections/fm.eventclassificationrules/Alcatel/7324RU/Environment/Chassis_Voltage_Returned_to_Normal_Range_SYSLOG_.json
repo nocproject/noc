@@ -5,24 +5,15 @@
     "description": "CRITICAL,-VOL_ERR:Voltage 2 input 1.933, low 1.656, high 1.944",
     "event_class__name": "Environment | Chassis Voltage Returned to Normal Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Alcatel\\.7324RU$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "CRITICAL,-VOL_ERR:Voltage (?P<name>\\S+) input (?P<measure>\\S+), low (?P<min>\\S+), high (?P<max>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "CRITICAL,-VOL_ERR:Voltage (?P<name>\\S+) input (?P<measure>\\S+), low (?P<min>\\S+), high (?P<max>\\S+)",
+    "profiles": ["Alcatel.7324RU"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "CRITICAL,-VOL_ERR:Voltage 2 input 1.933, low 1.656, high 1.944",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

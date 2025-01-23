@@ -5,24 +5,15 @@
     "description": "interface,info ether3-TRANSIT link up (speed 100M, full duplex) ",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^MikroTik\\.RouterOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<interface>\\S+) link up \\(speed (?P<speed>\\S+), (?P<duplex>\\S+ duplex)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<interface>\\S+) link up \\(speed (?P<speed>\\S+), (?P<duplex>\\S+ duplex)\\)",
+    "profiles": ["MikroTik.RouterOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "interface,info ether3-TRANSIT link up (speed 100M, full duplex)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

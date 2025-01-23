@@ -5,24 +5,15 @@
     "description": "%EARL_NETFLOW-SP-STDBY-4-TCAM_THRLD: Netflow TCAM threshold exceeded, TCAM Utilization [99%]",
     "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%EARL_NETFLOW-SP(-STDBY)?-4-TCAM_THRLD: (?P<reason>.+ threshold exceeded(, TCAM Utilization \\[\\d+%\\])?)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%EARL_NETFLOW-SP(-STDBY)?-4-TCAM_THRLD: (?P<reason>.+ threshold exceeded(, TCAM Utilization \\[\\d+%\\])?)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%EARL_NETFLOW-SP-STDBY-4-TCAM_THRLD: Netflow TCAM threshold exceeded, TCAM Utilization [99%]",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

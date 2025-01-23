@@ -5,24 +5,15 @@
     "description": "Jul 21 01:00:22 mgd[1594]: UI_CMDLINE_READ_LINE: User 'noc', command 'show snmp statistics '",
     "event_class__name": "Security | Audit | Command",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "UI_CMDLINE_READ_LINE: User '(?P<user>.+?)', command '(?P<command>.*)'$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "UI_CMDLINE_READ_LINE: User '(?P<user>.+?)', command '(?P<command>.*)'$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 21 01:00:22 mgd[1594]: UI_CMDLINE_READ_LINE: User 'noc', command 'show snmp statistics '",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

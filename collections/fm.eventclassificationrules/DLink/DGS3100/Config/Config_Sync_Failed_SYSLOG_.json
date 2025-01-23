@@ -5,24 +5,15 @@
     "description": "%SNMP-W-UNITUPDFAIL: Configuration update of unit 2 failed. Reason:",
     "event_class__name": "Config | Config Sync Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SNMP-W-UNITUPDFAIL: Configuration update of (?P<config>.+) failed. Reason:"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SNMP-W-UNITUPDFAIL: Configuration update of (?P<config>.+) failed. Reason:",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SNMP-W-UNITUPDFAIL: Configuration update of unit 2 failed. Reason:",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

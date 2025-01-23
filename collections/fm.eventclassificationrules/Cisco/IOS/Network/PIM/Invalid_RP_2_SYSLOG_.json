@@ -5,24 +5,15 @@
     "description": "%PIM-6-INVALID_RP_JOIN: Received (*, 225.1.1.6) Join from 150.1.45.5 for invalid RP 150.1.4.4",
     "event_class__name": "Network | PIM | Invalid RP",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PIM-6-INVALID_RP_JOIN: Received .+ Join from (?P<pim_router>\\S+) for invalid RP (?P<invalid_rp>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PIM-6-INVALID_RP_JOIN: Received .+ Join from (?P<pim_router>\\S+) for invalid RP (?P<invalid_rp>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PIM-6-INVALID_RP_JOIN: Received (*, 225.1.1.6) Join from 150.1.45.5 for invalid RP 150.1.4.4",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

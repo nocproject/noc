@@ -5,24 +5,15 @@
     "description": "kernel: arp: 193.34.20.5 is on em0 but got reply from 00:e0:81:b8:62:db on em1",
     "event_class__name": "Network | IP | IP Flap",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "kernel: arp: (?P<ip>\\S+) is on (?P<from_interface>\\S+) but got reply from (?P<mac>\\S+) on (?P<to_interface>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "kernel: arp: (?P<ip>\\S+) is on (?P<from_interface>\\S+) but got reply from (?P<mac>\\S+) on (?P<to_interface>\\S+)$",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "kernel: arp: 193.34.20.5 is on em0 but got reply from 00:e0:81:b8:62:db on em1",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

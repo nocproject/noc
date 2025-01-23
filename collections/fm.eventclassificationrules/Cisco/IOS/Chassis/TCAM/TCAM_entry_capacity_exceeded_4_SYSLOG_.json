@@ -5,24 +5,15 @@
     "description": "%MLSCEF-DFC8-4-FIB_EXCEPTION_THRESHOLD: Hardware CEF entry usage is at 95% capacity for IPv4 unicast protocol.",
     "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%MLSCEF-.+-4-FIB_EXCEPTION_THRESHOLD: (?P<reason>.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%MLSCEF-.+-4-FIB_EXCEPTION_THRESHOLD: (?P<reason>.+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%MLSCEF-DFC8-4-FIB_EXCEPTION_THRESHOLD: Hardware CEF entry usage is at 95% capacity for IPv4 unicast protocol.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

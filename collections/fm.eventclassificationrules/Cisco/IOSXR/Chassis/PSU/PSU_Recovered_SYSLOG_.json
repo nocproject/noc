@@ -5,24 +5,15 @@
     "description": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module 0/PM5/SP failure condition cleared",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module (?P<name>\\S+) failure condition cleared"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module (?P<name>\\S+) failure condition cleared",
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PLATFORM-PWR_MGMT-2-MODULE_FAILURE : Power-module 0/PM5/SP failure condition cleared",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

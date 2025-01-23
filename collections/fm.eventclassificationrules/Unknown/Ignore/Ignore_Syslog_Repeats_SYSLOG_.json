@@ -5,20 +5,14 @@
     "description": "Jul 22 08:40:00 last message repeated 42 times",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "last message repeated \\d+ times$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "last message repeated \\d+ times$",
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 22 08:40:00 last message repeated 42 times",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

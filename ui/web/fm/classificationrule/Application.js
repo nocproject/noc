@@ -11,11 +11,17 @@ Ext.define("NOC.fm.classificationrule.Application", {
     requires: [
         "NOC.core.JSONPreview",
         "NOC.core.TemplatePreview",
+        "NOC.core.StringListField",
+        "NOC.core.tagfield.Tagfield",
+        "NOC.core.ListFormField",
         "NOC.fm.classificationrule.Model",
         "NOC.fm.classificationrule.TestForm",
         "NOC.fm.eventclass.LookupField",
+        "NOC.main.label.LookupField",
+        "NOC.sa.profile.LookupField",
         'Ext.ux.form.JSONField',
-        "Ext.ux.form.GridField"
+        "Ext.ux.form.GridField",
+        "Ext.form.field.Tag"
     ],
     model: "NOC.fm.classificationrule.Model",
     search: true,
@@ -95,26 +101,68 @@ Ext.define("NOC.fm.classificationrule.Application", {
                     allowBlank: true
                 },
                 {
-                    xtype: "numberfield",
-                    name: "preference",
-                    fieldLabel: __("Preference"),
-                    allowBlank: false,
-                    defaultValue: 1000,
-                    minValue: 0,
-                    maxValue: 10000
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Match"),
+                    labelAlign: "right",
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            xtype: "numberfield",
+                            name: "preference",
+                            fieldLabel: __("Preference"),
+                            allowBlank: false,
+                            uiStyle: "small",
+                            defaultValue: 1000,
+                            minValue: 0,
+                            maxValue: 10000
+                        },
+                        {
+                            name: "sources",
+                            xtype: "tagfield",
+                            fieldLabel: __("Sources"),
+                            allowBlank: false,
+                            store: [
+                                    ["syslog", __("SYSLOG")],
+                                    ["SNMP Trap", __("SNMP_TRAP")],
+                                    ["other", __("OTHER")]
+                                ],
+                            uiStyle: "medium"
+                        },
+                        {
+                            xtype: "fm.eventclass.LookupField",
+                            name: "event_class",
+                            fieldLabel: __("Event Class"),
+                            allowBlank: false,
+                            uiStyle: "large",
+                            listeners: {
+                                select: {
+                                    scope: me,
+                                    fn: me.onSelectEventClass
+                                }
+                            }
+                        }
+                    ]
                 },
                 {
-                    xtype: "fm.eventclass.LookupField",
-                    name: "event_class",
-                    fieldLabel: __("Event Class"),
-                    allowBlank: false,
+                    xtype: "core.tagfield",
+                    url: "/sa/profile/lookup/",
+                    fieldLabel: __("Profiles"),
+                    tooltip: __("SA Profiles, for match rules"),
+                    name: "profiles",
                     uiStyle: "large",
                     listeners: {
-                        select: {
-                            scope: me,
-                            fn: me.onSelectEventClass
-                        }
+                        render: me.addTooltip
                     }
+                },
+                {
+                    xtype: "textarea",
+                    name: "message_rx",
+                    fieldLabel: __("Message Pattern"),
+                    allowBlank: true
                 },
                 {
                     xtype: "gridfield",
@@ -135,6 +183,42 @@ Ext.define("NOC.fm.classificationrule.Application", {
                             flex: 1,
                             editor: "textfield",
                             renderer: NOC.render.htmlEncode
+                        }
+                    ]
+                },
+                {
+                    xtype: "gridfield",
+                    name: "labels",
+                    fieldLabel: __("Labels"),
+                    allowBlank: false,
+                    columns: [
+                        {
+                            text: __("Wildcard"),
+                            dataIndex: "wildcard",
+                            width: 200,
+                            editor: "textfield",
+                        },
+                        {
+                            dataIndex: "is_required",
+                            text: __("Required"),
+                            width: 50,
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Set Label"),
+                            dataIndex: "set_label",
+                            width: 200,
+                            editor: {
+                                xtype: "main.label.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("set_label")
+                        },
+                        {
+                            text: __("Set Var"),
+                            dataIndex: "set_var",
+                            width: 100,
+                            editor: "textfield",
                         }
                     ]
                 },
@@ -161,26 +245,61 @@ Ext.define("NOC.fm.classificationrule.Application", {
                     ]
                 },
                 {
-                    xtype: "gridfield",
                     name: "test_cases",
+                    xtype: "listform",
+                    rows: 3,
                     fieldLabel: __("Test cases"),
-                    allowBlank: true,
-                    columns: [
+                    labelAlign: "top",
+                    items: [
                         {
-                            text: __("Message"),
-                            dataIndex: "message",
-                            width: 200,
-                            editor: "textfield",
+                            xtype: "textfield",
+                            name: "message",
+                            width: 900,
+                            fieldLabel: __("Message"),
                         },
                         {
-                            text: __("Raw Vars"),
-                            dataIndex: "raw_vars",
-                            flex: 1,
+                            xtype: "stringlistfield",
+                            name: "input_labels",
+                            width: 400,
+                            fieldLabel: __("In Labels"),
+                        },
+                        {
+                            xtype: "jsonfield",
+                            name: "raw_vars",
+                            fieldLabel: __("Raw Vars"),
+                            width: 500,
                             editor: 'jsonfield',
                             renderer: NOC.render.JSON
-                        }
+                        },
                     ]
                 }
+                // {
+                //     xtype: "gridfield",
+                //     name: "test_cases",
+                //     fieldLabel: __("Test cases"),
+                //     allowBlank: true,
+                //     columns: [
+                //         {
+                //             text: __("Message"),
+                //             dataIndex: "message",
+                //             width: 200,
+                //             editor: "textfield",
+                //         },
+                //         {
+                //             text: __('Labels'),
+                //             dataIndex: 'labels',
+                //             width: 200,
+                //             editor: 'stringlistfield'
+                //         },
+                //         {
+                //             text: __("Raw Vars"),
+                //             dataIndex: "raw_vars",
+                //             flex: 1,
+                //             editor: 'jsonfield',
+                //             renderer: NOC.render.JSON
+                //         }
+                //     ]
+                // }
             ],
             formToolbar: [
                 {

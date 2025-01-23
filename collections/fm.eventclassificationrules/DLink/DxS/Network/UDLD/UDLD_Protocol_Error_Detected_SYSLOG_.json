@@ -5,24 +5,15 @@
     "description": "INFO: Port: 10 is unidirectional",
     "event_class__name": "Network | UDLD | UDLD Protocol Error Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "profile",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "source",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "message",
-            "value_re": "[Pp]ort: (?P<interface>\\S+) is unidirectional"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "[Pp]ort: (?P<interface>\\S+) is unidirectional",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Port: 10 is unidirectional",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

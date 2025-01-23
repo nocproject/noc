@@ -5,24 +5,15 @@
     "description": "DDM Port 9 optic module RX power exceeded the low warning threshold",
     "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) exceeded the (?P<threshold>low|high) warning threshold"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) exceeded the (?P<threshold>low|high) warning threshold",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "DDM Port 9 optic module RX power exceeded the low warning threshold",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

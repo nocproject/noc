@@ -5,24 +5,15 @@
     "description": "First fragment is lost or discarded.  Discard fragment.  SID = 50",
     "event_class__name": "Network | DOCSIS | Invalid DOCSIS Message",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "First fragment is lost or discarded.  Discard fragment.  SID = (?P<sid>\\d+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "First fragment is lost or discarded.  Discard fragment.  SID = (?P<sid>\\d+)$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "First fragment is lost or discarded.  Discard fragment.  SID = 50",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

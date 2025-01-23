@@ -5,24 +5,15 @@
     "description": "getty[1039]: /usr/bin/login: Exec format error",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "getty\\[\\d+\\]: \\/usr\\/bin\\/login: Exec format error$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "getty\\[\\d+\\]: \\/usr\\/bin\\/login: Exec format error$",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "getty[1039]: /usr/bin/login: Exec format error",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

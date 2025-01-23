@@ -5,24 +5,15 @@
     "description": "%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config",
     "event_class__name": "Config | Config Synced",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config$",
+    "profiles": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

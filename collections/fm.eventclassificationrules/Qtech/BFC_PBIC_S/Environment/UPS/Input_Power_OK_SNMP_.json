@@ -1,0 +1,20 @@
+{
+    "name": "Qtech | BFC_PBIC_S | Environment | UPS | Input Power OK (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4c4783b8-4fda-467a-81e1-bd51c8e546ae",
+    "event_class__name": "Environment | UPS | Input Power OK",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^1.3.6.1.3.55.1.3.1.4.1$",
+            "value_re": "^0$"
+        },
+        {
+            "key_re": "^1.3.6.1.6.3.1.1.4.1.0$",
+            "value_re": "^1.3.6.1.3.55.1$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Qtech.BFC_PBIC_S"],
+    "sources": ["SNMP Trap"]
+}

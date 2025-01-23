@@ -1,0 +1,25 @@
+{
+    "name": "Huawei | VRP | Chassis | Hardware | Module | Module Invalid Resume #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c1d7c24a-bca2-48f4-ada2-f89ef6ca69fc",
+    "description": "HUAWEI-ENTITY-TRAP-MIB::hwOpticalInvalidResume",
+    "event_class__name": "Chassis | Hardware | Module | Invalid Resume Module",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-ENTITY-TRAP-MIB::hwOpticalInvalidResume$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalName\\.\\d+$",
+            "value_re": "(?P<module>.+)"
+        },
+        {
+            "key_re": "^ENTITY-MIB::hwEntityTrapReasonDescr(?:\\.\\d+)*$",
+            "value_re": "(?P<reason>.+)"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Huawei.VRP"],
+    "sources": ["SNMP Trap"]
+}

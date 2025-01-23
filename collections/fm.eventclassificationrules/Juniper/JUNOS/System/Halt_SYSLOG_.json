@@ -5,24 +5,15 @@
     "description": "Jul 22 14:49:39 shutdown: halt by noc:",
     "event_class__name": "System | Halt",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "shutdown: halt by (?P<user>.+?):$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "shutdown: halt by (?P<user>.+?):$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 22 14:49:39 shutdown: halt by noc:",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

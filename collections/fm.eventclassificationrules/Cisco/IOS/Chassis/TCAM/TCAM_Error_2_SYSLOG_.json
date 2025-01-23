@@ -5,24 +5,15 @@
     "description": "%HARDWARE-1-TCAM_ERROR: Found error in HFTM TCAM Space and not able to recover the error",
     "event_class__name": "Chassis | TCAM | TCAM Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%HARDWARE-1-TCAM_ERROR: (?P<reason>.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%HARDWARE-1-TCAM_ERROR: (?P<reason>.+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%HARDWARE-1-TCAM_ERROR: Found error in HFTM TCAM Space and not able to recover the error",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

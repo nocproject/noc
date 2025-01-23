@@ -5,24 +5,15 @@
     "description": "%AAA-W-REJECT: New telnet connection for user admin, source 172.16.16.1 destination 172.16.17.153 REJECTED",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%AAA-W-REJECT: New telnet connection for user admin, source 172.16.16.1 destination 172.16.17.153 REJECTED",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -1,0 +1,36 @@
+{
+    "name": "Network | IS-IS | SP Error (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "14c44879-2c91-435d-9dc6-c3ca6bc5025c",
+    "description": "ISIS-MIB::isisLSPErrorDetected",
+    "event_class__name": "Network | IS-IS | SP Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ISIS-MIB::isisLSPErrorDetected$"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisNotificationSysLevelIndex\\..+$",
+            "value_re": "^(?P<level>\\S+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisNotificationCircIfIndex(?:\\.\\S+)*$",
+            "value_re": "^(?P<interface__ifindex>\\S+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisPduLspId(?:\\.\\S+)*$",
+            "value_re": "(?P<lsp_id>[a-z]+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisPduFragment(?:\\.\\S+)*$",
+            "value_re": "^(?P<pdu_fragment>.+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisErrorTLVType(?:\\.\\S+)*$",
+            "value_re": "^(?P<error_type>\\d+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

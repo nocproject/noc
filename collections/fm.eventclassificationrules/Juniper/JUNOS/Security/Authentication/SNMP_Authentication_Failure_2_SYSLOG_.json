@@ -5,24 +5,15 @@
     "description": "Nov 3 12:53:21 pmo-cl1 snmpd[2219]: SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from 10.17.58.127 to 255.255.255.255 (public)",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from (?P<ip>\\S+) to (?P<dst_ip>\\S+) \\(.+\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from (?P<ip>\\S+) to (?P<dst_ip>\\S+) \\(.+\\)$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Nov 3 12:53:21 pmo-cl1 snmpd[2219]: SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from 10.17.58.127 to 255.255.255.255 (public)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

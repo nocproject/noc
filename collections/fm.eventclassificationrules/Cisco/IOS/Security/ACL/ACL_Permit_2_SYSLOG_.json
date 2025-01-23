@@ -5,24 +5,15 @@
     "description": "%SEC-6-IPACCESSLOGP: list ins_ban permitted udp 3.1.2.1(500) (GigabitEthernet0/1.3321 001f.9d60.741b) -> 7.2.2.6(500), 24 packets",
     "event_class__name": "Security | ACL | ACL Permit",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) permitted (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) \\((?P<src_interface>.+?) (?P<src_mac>\\S+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) permitted (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) \\((?P<src_interface>.+?) (?P<src_mac>\\S+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SEC-6-IPACCESSLOGP: list ins_ban permitted udp 3.1.2.1(500) (GigabitEthernet0/1.3321 001f.9d60.741b) -> 7.2.2.6(500), 24 packets",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

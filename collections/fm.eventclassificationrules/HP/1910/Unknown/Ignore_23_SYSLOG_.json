@@ -5,24 +5,15 @@
     "description": "Jun  1 19:03:53 2000 3com2952_1 %%10LLDP/2/CREREM(l): Port (?P<interfaces>\\S+) (IfIndex 9437215):Created new neighbor, chassis ID: 4001-c647-7358, port ID: GigabitEthernet1/0/47.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10LLDP/2/CREREM\\(l\\): Port \\S+ \\(IfIndex \\d+\\):Created new neighbor, chassis ID: \\S+, port ID: \\S+\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10LLDP/2/CREREM\\(l\\): Port \\S+ \\(IfIndex \\d+\\):Created new neighbor, chassis ID: \\S+, port ID: \\S+\\.$",
+    "profiles": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jun  1 19:03:53 2000 3com2952_1 %%10LLDP/2/CREREM(l): Port (?P<interfaces>\\S+) (IfIndex 9437215):Created new neighbor, chassis ID: 4001-c647-7358, port ID: GigabitEthernet1/0/47.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

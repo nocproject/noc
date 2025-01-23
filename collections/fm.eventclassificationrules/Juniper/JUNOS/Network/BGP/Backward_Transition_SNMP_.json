@@ -1,0 +1,20 @@
+{
+    "name": "Juniper | JUNOS | Network | BGP | Backward Transition (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a0b17396-f973-474f-83d6-50f76e1e8cb0",
+    "description": "BGP4-V2-MIB-JUNIPER::jnxBgpM2BackwardTransition",
+    "event_class__name": "Network | BGP | Backward Transition",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^BGP4-V2-MIB-JUNIPER::jnxBgpM2PeerState\\.(?P<peer>\\S+)$",
+            "value_re": "^(?P<state__enum__bgp_state>\\S+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^BGP4-V2-MIB-JUNIPER::jnxBgpM2BackwardTransition$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

@@ -5,24 +5,15 @@
     "description": "Aug 9 09:32:43 UTC: %RPM0-P:CP %SYS-5-CONFIG_I: Configured from console by vty0 ( 172.19.130.250 )",
     "event_class__name": "Config | Entering Configuration Mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Force10\\.FTOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-5-CONFIG_I: Configured from \\S+ by \\S+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-5-CONFIG_I: Configured from \\S+ by \\S+",
+    "profiles": ["Force10.FTOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 9 09:32:43 UTC: %RPM0-P:CP %SYS-5-CONFIG_I: Configured from console by vty0 ( 172.19.130.250 )",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

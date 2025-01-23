@@ -5,24 +5,15 @@
     "description": "%AAA-I-DISCONNECT: User CLI session for user supertel over telnet , source 4.1.1.9 destination  192.168.1.1  TERMINATED. The Telnet/SSH session may still be connected.",
     "event_class__name": "Security | Authentication | Logout",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%AAA-I-DISCONNECT: User CLI session for user (?P<user>\\S+) over telnet , source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED. The Telnet/SSH session may still be connected.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%AAA-I-DISCONNECT: User CLI session for user (?P<user>\\S+) over telnet , source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED. The Telnet/SSH session may still be connected.$",
+    "profiles": ["Supertel.K2X"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%AAA-I-DISCONNECT: User CLI session for user supertel over telnet , source 4.1.1.9 destination  192.168.1.1  TERMINATED. The Telnet/SSH session may still be connected.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

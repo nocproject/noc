@@ -5,24 +5,15 @@
     "description": "%SYS-2-PS_FANFAIL: Power supply 2 fan failed",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-2-PS_FANFAIL: (?P<name>Power supply \\d+ fan) failed"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-2-PS_FANFAIL: (?P<name>Power supply \\d+ fan) failed",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-2-PS_FANFAIL: Power supply 2 fan failed",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

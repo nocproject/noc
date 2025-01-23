@@ -1,0 +1,33 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | RF | RF Progression Changed #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "620aeccd-7cc2-4e72-9dac-254fe70767f9",
+    "description": "CISCO-RF-MIB::ciscoRFProgressionNotif",
+    "event_class__name": "Chassis | Hardware | RF | RF Progression Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-RF-MIB::ciscoRFProgressionNotif$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusUnitId(?:\\.\\d+)*$",
+            "value_re": "^(?P<unit>\\S+)$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusPeerUnitId(?:\\.\\d+)*$",
+            "value_re": "^(?P<peer_unit>\\S+)$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusUnitState(?:\\.\\d+)*$",
+            "value_re": "^(?P<state>\\S+)$"
+        },
+        {
+            "key_re": "^CISCO-RF-MIB::cRFStatusPeerUnitState(?:\\.\\d+)*$",
+            "value_re": "^(?P<peer_state>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

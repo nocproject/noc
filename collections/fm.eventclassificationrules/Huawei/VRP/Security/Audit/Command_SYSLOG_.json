@@ -5,24 +5,15 @@
     "description": "%%01SHELL/6/DISPLAY_CMDRECORD(l)[437]:Record command information. (Task=VT0 , Ip=192.168.220.252, User=admin, Command=\"display current-configuration\")",
     "event_class__name": "Security | Audit | Command",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Record( display)? command information\\. \\(Task=\\S+\\d+ , [Ii][Pp]=(?P<ip>\\S+), [Uu]ser=(?P<user>.+), [Cc]ommand=\"(?P<command>.+)\"\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Record( display)? command information\\. \\(Task=\\S+\\d+ , [Ii][Pp]=(?P<ip>\\S+), [Uu]ser=(?P<user>.+), [Cc]ommand=\"(?P<command>.+)\"\\)",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%%01SHELL/6/DISPLAY_CMDRECORD(l)[437]:Record command information. (Task=VT0 , Ip=192.168.220.252, User=admin, Command=\"display current-configuration\")",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%UBR7200-6-LOS: Cable clock [chars] reference Loss of Signal",
     "event_class__name": "Chassis | Clock | Clock Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-6-LOS: (?P<name>Cable clock) .+ reference Loss of Signal$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-6-LOS: (?P<name>Cable clock) .+ reference Loss of Signal$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-6-LOS: Cable clock [chars] reference Loss of Signal",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

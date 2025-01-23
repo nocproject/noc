@@ -1,0 +1,24 @@
+{
+    "name": "ElectronR | KO01M | Security | Access | Door Close (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "9d967c3f-8534-4278-af25-4b9e11cf0a12",
+    "event_class__name": "Security | Access | Door Close",
+    "preference": 1001,
+    "vars": [{
+        "name": "name",
+        "value": "Controller"
+    }],
+    "patterns": [
+        {
+            "key_re": "^1.3.6.1.6.3.1.1.4.1.0$",
+            "value_re": "^1.3.6.1.4.1.35419.20.1.0.1$"
+        },
+        {
+            "key_re": "^1.3.6.1.4.1.35419.20.1.101.0$",
+            "value_re": "^1$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["ElectronR.KO01M"],
+    "sources": ["SNMP Trap"]
+}

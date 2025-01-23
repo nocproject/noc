@@ -5,24 +5,15 @@
     "description": "CHASSISD_SNMP_TRAP6: SNMP trap generated: Fan/Blower OK (jnxContentsContainerIndex 4, jnxContentsL1Index 1, jnxContentsL2Index 1, jnxContentsL3Index 1, jnxContentsDescr FAN: Fan 1 @ 0/0/0, jnxOperatingState/Temp 2)",
     "event_class__name": "Chassis | Fan | Fan Inserted",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "CHASSISD_SNMP_TRAP6: SNMP trap generated: Fan/Blower OK .+ jnxContentsDescr (?P<name>.+), jnxOperatingState"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "CHASSISD_SNMP_TRAP6: SNMP trap generated: Fan/Blower OK .+ jnxContentsDescr (?P<name>.+), jnxOperatingState",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "CHASSISD_SNMP_TRAP6: SNMP trap generated: Fan/Blower OK (jnxContentsContainerIndex 4, jnxContentsL1Index 1, jnxContentsL2Index 1, jnxContentsL3Index 1, jnxContentsDescr FAN: Fan 1 @ 0/0/0, jnxOperatingState/Temp 2)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

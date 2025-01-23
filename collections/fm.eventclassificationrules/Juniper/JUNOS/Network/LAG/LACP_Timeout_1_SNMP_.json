@@ -1,0 +1,25 @@
+{
+    "name": "Juniper | JUNOS | Network | LAG | LACP Timeout #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0a84931b-8550-48a1-b4f7-7527619fee94",
+    "description": "JUNIPER-L2CP-FEATURES-MIB::jnxLacpTimeOut",
+    "event_class__name": "Network | LAG | LACP Timeout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-L2CP-FEATURES-MIB::jnxLacpTimeOut$"
+        },
+        {
+            "key_re": "^JUNIPER-L2CP-FEATURES-MIB::jnxLacpInterfaceName$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^JUNIPER-L2CP-FEATURES-MIB::jnxLacpAggregateInterfaceName$",
+            "value_re": "^(?P<lag_interface>.+)$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["SNMP Trap"]
+}

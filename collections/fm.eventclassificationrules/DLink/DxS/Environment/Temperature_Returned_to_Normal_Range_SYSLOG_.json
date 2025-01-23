@@ -5,24 +5,15 @@
     "description": "Temperatrue Sensor:2 recovers to normal state.(current temperatrue:37)",
     "event_class__name": "Environment | Temperature Returned to Normal Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "( Unit \\d+ )?(?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) recovers to normal state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "( Unit \\d+ )?(?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) recovers to normal state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Temperatrue Sensor:2 recovers to normal state.(current temperatrue:37)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

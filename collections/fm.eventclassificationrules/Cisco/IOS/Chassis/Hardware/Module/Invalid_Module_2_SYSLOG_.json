@@ -9,24 +9,15 @@
         "name": "reason",
         "value": "module is not supported"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PHY-4-\\S+_NOT_SUPPORTED: The (?P<module>\\S+) in (?P<interface>\\S+) is not supported"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PHY-4-\\S+_NOT_SUPPORTED: The (?P<module>\\S+) in (?P<interface>\\S+) is not supported",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PHY-4-SFP_NOT_SUPPORTED: The SFP in Gi0/1 is not supported",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

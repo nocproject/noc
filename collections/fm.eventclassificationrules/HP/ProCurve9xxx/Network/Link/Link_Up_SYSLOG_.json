@@ -5,24 +5,15 @@
     "description": "hp93_1, Interface ethernet 2/5, state up",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.ProCurve9xxx$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^\\S+ Interface (?P<interface>[^,]+), state up$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^\\S+ Interface (?P<interface>[^,]+), state up$",
+    "profiles": ["HP.ProCurve9xxx"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "hp93_1, Interface ethernet 2/5, state up",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

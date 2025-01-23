@@ -22,12 +22,10 @@
             "value_re": "^(?P<old_state>.+)$"
         },
         {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
             "key_re": "^metric_type$",
             "value_re": "^(?P<metric_type>.+)$"
         }
-    ]
+    ],
+    "labels": [],
+    "sources": ["system"]
 }

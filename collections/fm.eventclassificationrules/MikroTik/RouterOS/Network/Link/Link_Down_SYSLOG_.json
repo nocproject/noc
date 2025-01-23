@@ -5,24 +5,15 @@
     "description": "interface,info ether3-TRANSIT link down",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^MikroTik\\.RouterOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "(?P<interface>\\S+) link down$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<interface>\\S+) link down$",
+    "profiles": ["MikroTik.RouterOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "interface,info ether3-TRANSIT link down",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

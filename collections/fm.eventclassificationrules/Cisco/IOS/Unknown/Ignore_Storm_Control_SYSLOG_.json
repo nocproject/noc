@@ -5,24 +5,15 @@
     "description": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on Gi0/24. The interface has been disabled.",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on \\S+. The interface has been disabled."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on \\S+. The interface has been disabled.",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on Gi0/24. The interface has been disabled.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

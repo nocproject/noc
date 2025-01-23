@@ -5,24 +5,15 @@
     "description": "Dec 24 12:41:56  switchname-sw01 eswd[72792]: ESWD_ST_CTL_ERROR_DISABLED: ae0.0: storm control disabled port",
     "event_class__name": "Network | Storm Control | Storm Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ESWD_ST_CTL_ERROR_(?:DISABLED|IN_EFFECT): (?P<interface>\\S+): storm control (?:disabled port|in effect on the port)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ESWD_ST_CTL_ERROR_(?:DISABLED|IN_EFFECT): (?P<interface>\\S+): storm control (?:disabled port|in effect on the port)$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Dec 24 12:41:56  switchname-sw01 eswd[72792]: ESWD_ST_CTL_ERROR_DISABLED: ae0.0: storm control disabled port",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

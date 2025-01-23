@@ -5,24 +5,15 @@
     "description": "WARN: The flooding MAC is detected (VID: 23, MAC: 00-1E-8C-A4-A6-96)",
     "event_class__name": "Network | MAC | MAC Flood",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "The flooding MAC is detected \\(VID: (?P<vlan>\\d+), MAC: (?P<mac>\\S+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "The flooding MAC is detected \\(VID: (?P<vlan>\\d+), MAC: (?P<mac>\\S+)\\)",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: The flooding MAC is detected (VID: 23, MAC: 00-1E-8C-A4-A6-96)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

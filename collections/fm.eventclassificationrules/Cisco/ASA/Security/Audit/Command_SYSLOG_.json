@@ -5,24 +5,15 @@
     "description": "%ASA-5-111008: User 'username' executed the 'enable' command.",
     "event_class__name": "Security | Audit | Command",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.ASA$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:ASA|PIX)-5-111008: User '(?P<user>\\S+)' executed the '(?P<command>.+)' command\\."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:ASA|PIX)-5-111008: User '(?P<user>\\S+)' executed the '(?P<command>.+)' command\\.",
+    "profiles": ["Cisco.ASA"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ASA-5-111008: User 'username' executed the 'enable' command.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

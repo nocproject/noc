@@ -5,24 +5,15 @@
     "description": "Aug  2 13:55:03 login: 1 LOGIN FAILURE FROM 10.0.0.4",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "LOGIN FAILURE FROM (?P<ip>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "LOGIN FAILURE FROM (?P<ip>\\S+)$",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug  2 13:55:03 login: 1 LOGIN FAILURE FROM 10.0.0.4",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

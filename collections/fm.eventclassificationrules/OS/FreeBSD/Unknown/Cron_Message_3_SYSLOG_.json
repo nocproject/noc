@@ -5,24 +5,15 @@
     "description": "/usr/sbin/cron[95217]: (operator) CMD (/usr/libexec/save-entropy)",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "/usr/sbin/cron\\[\\d+\\]: \\(operator\\) CMD \\(/usr/libexec/save-entropy\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "/usr/sbin/cron\\[\\d+\\]: \\(operator\\) CMD \\(/usr/libexec/save-entropy\\)",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "/usr/sbin/cron[95217]: (operator) CMD (/usr/libexec/save-entropy)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

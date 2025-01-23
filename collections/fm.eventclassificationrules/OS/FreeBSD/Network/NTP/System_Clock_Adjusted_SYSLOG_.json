@@ -11,24 +11,15 @@
             "value": "=str(int(float(adjustment_s) * 1000))"
         }
     ],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ntpd\\[\\d+\\]: time reset (?P<adjustment_s>\\S+) s$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ntpd\\[\\d+\\]: time reset (?P<adjustment_s>\\S+) s$",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "ntpd[11213]: time reset +0.320022 s",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

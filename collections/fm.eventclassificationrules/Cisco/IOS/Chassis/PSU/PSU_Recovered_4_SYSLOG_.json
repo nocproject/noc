@@ -5,24 +5,15 @@
     "description": "%ENVMON-5-48V_STATUS: -48V supply OK",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ENVMON-5-\\S+V_STATUS: (?P<name>\\S+V) supply OK"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ENVMON-5-\\S+V_STATUS: (?P<name>\\S+V) supply OK",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ENVMON-5-48V_STATUS: -48V supply OK",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

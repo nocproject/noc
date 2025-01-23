@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Standby Supervisor"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PFREDUN-SP-6-ACTIVE: Standby processor removed or reloaded, changing to Simplex mode"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PFREDUN-SP-6-ACTIVE: Standby processor removed or reloaded, changing to Simplex mode",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PFREDUN-SP-6-ACTIVE: Standby processor removed or reloaded, changing to Simplex mode",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

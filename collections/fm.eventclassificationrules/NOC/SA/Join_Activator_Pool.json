@@ -26,10 +26,6 @@
             "value_re": "^(?P<sessions>\\d+)$"
         },
         {
-            "key_re": "^source$",
-            "value_re": "^system$"
-        },
-        {
             "key_re": "^event$",
             "value_re": "^activator_join$"
         },
@@ -41,5 +37,7 @@
             "key_re": "^min_members$",
             "value_re": "^(?P<min_members>\\d+)$"
         }
-    ]
+    ],
+    "labels": [],
+    "sources": ["system"]
 }

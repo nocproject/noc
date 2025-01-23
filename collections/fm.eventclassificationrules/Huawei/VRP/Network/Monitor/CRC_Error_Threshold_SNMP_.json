@@ -1,0 +1,33 @@
+{
+    "name": "Huawei | VRP | Network | Monitor | CRC Error Threshold (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "954974a8-8fcf-4461-81e1-d04b0a84ae92",
+    "description": "HUAWEI-IF-EXT-MIB::hwIfMonitorCrcErrorRising",
+    "event_class__name": "Network | Monitor | CRC Error Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^HUAWEI-IF-EXT-MIB::hwIfMonitorName\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^HUAWEI-IF-EXT-MIB::hwIfMonitorCrcErrorThreshold\\.\\d+$",
+            "value_re": "^(?P<tvalue>.+)$"
+        },
+        {
+            "key_re": "^HUAWEI-IF-EXT-MIB::hwIfMonitorCrcErrorInterval\\.\\d+$",
+            "value_re": "^(?P<tinterval>.+)$"
+        },
+        {
+            "key_re": "^HUAWEI-IF-EXT-MIB::hwIfMonitorCrcErrorStatistics\\.\\d+$",
+            "value_re": "^(?P<ovalue>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-IF-EXT-MIB::hwIfMonitorCrcErrorRising$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Huawei.VRP"],
+    "sources": ["SNMP Trap"]
+}

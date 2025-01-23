@@ -5,24 +5,15 @@
     "description": "%TRUNK-W-PORTREMOVED: Port gi1/0/12 removed from po1",
     "event_class__name": "Network | LAG | Unbundle",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)$",
+    "profiles": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%TRUNK-W-PORTREMOVED: Port gi1/0/12 removed from po1",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

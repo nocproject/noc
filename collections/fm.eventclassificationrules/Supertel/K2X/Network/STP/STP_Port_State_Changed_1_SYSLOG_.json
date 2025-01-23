@@ -5,24 +5,15 @@
     "description": "%STP-W-PORTSTATUS: ch2: STP status Forwarding",
     "event_class__name": "Network | STP | STP Port State Changed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^message$",
-            "value_re": "^%STP-W-PORTSTATUS: (?P<interface>\\S+): STP status (?P<state__enum__stp_state>\\S+)$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%STP-W-PORTSTATUS: (?P<interface>\\S+): STP status (?P<state__enum__stp_state>\\S+)$",
+    "profiles": ["Supertel.K2X"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%STP-W-PORTSTATUS: ch2: STP status Forwarding",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

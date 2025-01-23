@@ -5,24 +5,15 @@
     "description": "%Environment-A-TEMP-RISING-ALARM: Overheat temperature (sensor 1)",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%Environment-A-TEMP-RISING-ALARM: Overheat temperature \\((?P<name>sensor \\d+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%Environment-A-TEMP-RISING-ALARM: Overheat temperature \\((?P<name>sensor \\d+)\\)",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%Environment-A-TEMP-RISING-ALARM: Overheat temperature (sensor 1)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

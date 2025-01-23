@@ -5,24 +5,15 @@
     "description": "%DSYNCH-I-SYNCH_SUCCEEDED: Synchronization with unit 2 is finished successfully",
     "event_class__name": "Chassis | Stack | Stack is Raised",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%DSYNCH-I-SYNCH_SUCCEEDED: Synchronization with unit (?P<unit>\\d+) is finished successfully"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%DSYNCH-I-SYNCH_SUCCEEDED: Synchronization with unit (?P<unit>\\d+) is finished successfully",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%DSYNCH-I-SYNCH_SUCCEEDED: Synchronization with unit 2 is finished successfully",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "003375: sw-dom-5 %Nov 27 15:00:45 2012 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User admin login successfully from 192.168.220.252:41784.",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Qtech\\.QSW2800$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "User (?P<user>.+) login successfully from (?P<ip>\\S+):\\d+\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "User (?P<user>.+) login successfully from (?P<ip>\\S+):\\d+\\.$",
+    "profiles": ["Qtech.QSW2800"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "003375: sw-dom-5 %Nov 27 15:00:45 2012 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User admin login successfully from 192.168.220.252:41784.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

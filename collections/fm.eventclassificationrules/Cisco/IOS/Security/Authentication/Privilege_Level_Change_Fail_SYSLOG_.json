@@ -5,24 +5,15 @@
     "description": "%SYS-5-PRIV_AUTH_FAIL: Authentication to privilege level 15 failed by qqq on vty1 (192.168.87.228)",
     "event_class__name": "Security | Authentication | Privilege Level Change Fail",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-5-PRIV_AUTH_FAIL: Authentication to privilege level (?P<to_priv>\\d+) failed by (?P<user>\\S+) on \\S+ \\((?P<ip>\\S+)\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-5-PRIV_AUTH_FAIL: Authentication to privilege level (?P<to_priv>\\d+) failed by (?P<user>\\S+) on \\S+ \\((?P<ip>\\S+)\\)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-5-PRIV_AUTH_FAIL: Authentication to privilege level 15 failed by qqq on vty1 (192.168.87.228)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to up",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-UPDOWN: Interface (?P<interface>.+), changed state to up$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-UPDOWN: Interface (?P<interface>.+), changed state to up$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to up",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

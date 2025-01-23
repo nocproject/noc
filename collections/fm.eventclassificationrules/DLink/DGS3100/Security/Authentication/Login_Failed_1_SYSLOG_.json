@@ -5,24 +5,15 @@
     "description": "%AAA-W-REJECT: New telnet connection, source 10.116.0.2 destination 10.116.0.10  REJECTED",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection, source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection, source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%AAA-W-REJECT: New telnet connection, source 10.116.0.2 destination 10.116.0.10  REJECTED",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

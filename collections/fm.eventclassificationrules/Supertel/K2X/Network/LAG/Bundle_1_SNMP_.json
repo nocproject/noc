@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^profile$",
-            "value_re": "^Supertel.K2X$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
             "key_re": "^1.3.6.1.6.3.1.1.4.1.0$",
             "value_re": "^1.3.6.1.4.1.89.0.160$"
         },
@@ -22,5 +14,8 @@
             "key_re": "^1.3.6.1.4.1.89.2.3.1.0$",
             "value_re": "^%TRUNK-I-PORTADDED: Port (?P<interface>\\S+) added to (?P<lag_interface>\\S+)(.|)$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["Supertel.K2X"],
+    "sources": ["SNMP Trap"]
 }

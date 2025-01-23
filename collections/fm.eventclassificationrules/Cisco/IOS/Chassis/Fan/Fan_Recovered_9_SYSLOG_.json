@@ -9,24 +9,15 @@
         "name": "name",
         "value": "Chassis Fan"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%HARDWARE-5-FAN_OK: Fan works fine."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%HARDWARE-5-FAN_OK: Fan works fine.",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%HARDWARE-5-FAN_OK: Fan works fine.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

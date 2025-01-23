@@ -5,24 +5,15 @@
     "description": "Sep 19 13:36:03 Karavaev-28 snmp Authentication failure notification.",
     "event_class__name": "Security | Authentication | Authentication Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "snmp Authentication failure notification.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "snmp Authentication failure notification.$",
+    "profiles": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Sep 19 13:36:03 Karavaev-28 snmp Authentication failure notification.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

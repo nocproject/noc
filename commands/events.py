@@ -27,7 +27,9 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.mib import MIB
+from noc.services.classifier.ruleset import RuleSet
 from noc.core.validators import is_oid
 from noc.core.escape import json_escape
 from noc.core.comp import smart_bytes
@@ -81,6 +83,9 @@ class Command(BaseCommand):
         clean.add_argument(
             "--force", default=False, action="store_true", help="Really events remove"
         )
+        subparsers.add_parser("test-rule")
+        # test_rule.add_argument("-S", "--syslog", dest="syslog", help="SYSLOG Message RE"),
+        subparsers.add_parser("inject-event")
 
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
     rx_float = re.compile(r"\d+\.\d+")
@@ -162,7 +167,7 @@ class Command(BaseCommand):
     def _handle(self, *args, **options):
         connect()
         try:
-            handler = getattr(self, "handle_%s" % options["cmd"])
+            handler = getattr(self, "handle_%s" % options["cmd"].replace("-", "_"))
             events = self.get_events(options)
             handler(options, events)
         except AttributeError:
@@ -295,6 +300,37 @@ class Command(BaseCommand):
                 self.print("%d\n" % i)
                 time.sleep(1)
             ae.bulk_write(bulk)
+
+    def handle_test_rule(self, options, events, **kwargs):
+        ruleset = RuleSet()
+        ruleset.load()
+        # event_class_rules = EventClassificationRule.objects.filter(name="Application | Database | Default (Zabbix)")
+        event_class_rules = EventClassificationRule.objects.filter(
+            name="HP | 1910 | Unknown | Syslog #17 (SYSLOG)"
+        )
+        for event_class_rule in event_class_rules:
+            for event, v in event_class_rule.iter_cases():
+                rule, e_vars = ruleset.find_rule(event, v)
+                if rule is None:
+                    self.print(
+                        f"[{event_class_rule.name}] Testing with result: Cannot find matching rule"
+                    )
+                self.print(
+                    f"[{event_class_rule.name}] Testing with result: {rule.name}: '{rule.event_class}': {e_vars}"
+                )
+                assert (
+                    rule.event_class == event_class_rule.event_class
+                ), f"Mismatched event class '{rule.event_class.name}' vs '{event_class_rule.event_class.name}'"
+                var_ctx = {"message": event.message}
+                var_ctx |= v
+                var_ctx |= e_vars
+                for t in rule.vars_transform or []:
+                    t.transform(e_vars, var_ctx)
+                try:
+                    vv = ruleset.eval_vars(event, rule.event_class, e_vars)
+                    self.print("End variables: ", vv)
+                except Exception as e:
+                    self.print(e)
 
 
 if __name__ == "__main__":

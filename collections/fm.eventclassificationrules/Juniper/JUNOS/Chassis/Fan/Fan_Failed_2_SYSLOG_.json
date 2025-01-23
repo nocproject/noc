@@ -5,24 +5,15 @@
     "description": "scb CM: ALARM SET: (Major) Rear left fan stopped spinning",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ALARM SET: \\(Major\\) (?P<name>.+ fan) (?:stopped spinning|failed)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ALARM SET: \\(Major\\) (?P<name>.+ fan) (?:stopped spinning|failed)",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "scb CM: ALARM SET: (Major) Rear left fan stopped spinning",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

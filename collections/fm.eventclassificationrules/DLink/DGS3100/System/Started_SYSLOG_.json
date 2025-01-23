@@ -5,22 +5,13 @@
     "description": "%INIT-I-Startup: Cold Startup",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%INIT-I-Startup: Cold Startup$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%INIT-I-Startup: Cold Startup$",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%INIT-I-Startup: Cold Startup",
-        "value_re": []
+        "raw_vars": []
     }]
 }

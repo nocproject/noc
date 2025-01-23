@@ -5,24 +5,15 @@
     "description": "Feb 12 10:36:37 2013 Teh %%10IFNET/5/LINEPROTO_UPDOWN(l): Line protocol on the interface Vlan-interface200 is UP.",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10IFNET/5/LINEPROTO_UPDOWN\\(l\\):\\s+Line protocol on the interface (?P<interface>\\S+) is UP\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10IFNET/5/LINEPROTO_UPDOWN\\(l\\):\\s+Line protocol on the interface (?P<interface>\\S+) is UP\\.$",
+    "profiles": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Feb 12 10:36:37 2013 Teh %%10IFNET/5/LINEPROTO_UPDOWN(l): Line protocol on the interface Vlan-interface200 is UP.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

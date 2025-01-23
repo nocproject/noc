@@ -7,10 +7,6 @@
     "preference": 900,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
             "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
             "value_re": "^CISCO-ENVMON-MIB::ciscoEnvMonFanStatusChangeNotif$"
         },
@@ -21,10 +17,9 @@
         {
             "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonFanState$",
             "value_re": "^notFunctioning$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.ESR$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["Eltex.ESR"],
+    "sources": ["SNMP Trap"]
 }

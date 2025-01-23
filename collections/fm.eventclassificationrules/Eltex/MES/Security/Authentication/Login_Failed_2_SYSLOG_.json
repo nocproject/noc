@@ -5,24 +5,15 @@
     "description": "%AAA-W-REJECT: New telnet connection, source 10.8.4.19 destination 10.8.2.13  REJECTED",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Eltex\\.MES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%AAA-W-REJECT: New (ssh|telnet|http) connection, source (?P<ip>\\S+) destination \\S+  ?REJECTED$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%AAA-W-REJECT: New (ssh|telnet|http) connection, source (?P<ip>\\S+) destination \\S+  ?REJECTED$",
+    "profiles": ["Eltex.MES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%AAA-W-REJECT: New telnet connection, source 10.8.4.19 destination 10.8.2.13  REJECTED",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

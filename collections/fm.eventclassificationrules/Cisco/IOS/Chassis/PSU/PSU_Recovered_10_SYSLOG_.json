@@ -5,24 +5,15 @@
     "description": "%IOSXE_PEM-6-PEMOK: The PEM in slot 1 is functioning properly",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%IOSXE_PEM-6-PEMOK: The (?P<name>PEM in slot \\S+) is functioning properly"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%IOSXE_PEM-6-PEMOK: The (?P<name>PEM in slot \\S+) is functioning properly",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%IOSXE_PEM-6-PEMOK: The PEM in slot 1 is functioning properly",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

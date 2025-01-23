@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "225c79de-9800-4a8f-a973-2eb487d21f10",
+    "description": "CISCO-ENTITY-FRU-CONTROL-MIB::cefcFRURemoved",
+    "event_class__name": "Chassis | Hardware | Module | Module Removed",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-ENTITY-FRU-CONTROL-MIB::cefcFRURemoved$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalContainedIn\\.(?P<module>\\d+)$",
+            "value_re": "^(?P<slot_index>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
+}

@@ -5,24 +5,15 @@
     "description": "001272: dom-5 %Jan 24 15:21:39 2014 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User login failed from 192.168.220.252:39591.",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Qtech\\.QSW2800$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "User (?P<user>\\w+)?,?\\s?login failed from (?P<ip>[\\d\\.]+)(?::\\d+)?\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "User (?P<user>\\w+)?,?\\s?login failed from (?P<ip>[\\d\\.]+)(?::\\d+)?\\.$",
+    "profiles": ["Qtech.QSW2800"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "001272: dom-5 %Jan 24 15:21:39 2014 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User login failed from 192.168.220.252:39591.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

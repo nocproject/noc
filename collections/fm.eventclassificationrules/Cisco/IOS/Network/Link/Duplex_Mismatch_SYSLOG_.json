@@ -5,24 +5,15 @@
     "description": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on GigabitEthernet3/16 (not half duplex), with SEP001193222F48 Port 1 (half duplex).",
     "event_class__name": "Network | Link | Duplex Mismatch",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on (?P<interface>\\S+) .+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on (?P<interface>\\S+) .+",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on GigabitEthernet3/16 (not half duplex), with SEP001193222F48 Port 1 (half duplex).",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

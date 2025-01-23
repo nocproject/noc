@@ -5,24 +5,15 @@
     "description": "Aug 16 02:53:29.934: %IPPHONE-6-UNREGISTER_ABNORMAL: ephone-47:SEPC89C1DD55AD8 IP:192.168.79.69 Socket:26 DeviceType:Phone has unregistered abnormally.",
     "event_class__name": "Phone | SCCP | Unregister Abnormal",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%IPPHONE-6-UNREGISTER_ABNORMAL: (?P<name>\\S+?):(?P<sn>\\S+) IP:(?P<ip>\\S+) Socket:(?P<socket>\\d+) DeviceType:(?P<type>\\S+) has unregistered abnormally"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%IPPHONE-6-UNREGISTER_ABNORMAL: (?P<name>\\S+?):(?P<sn>\\S+) IP:(?P<ip>\\S+) Socket:(?P<socket>\\d+) DeviceType:(?P<type>\\S+) has unregistered abnormally",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 16 02:53:29.934: %IPPHONE-6-UNREGISTER_ABNORMAL: ephone-47:SEPC89C1DD55AD8 IP:192.168.79.69 Socket:26 DeviceType:Phone has unregistered abnormally.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -11,24 +11,15 @@
             "value": "='interface %s shutdown' % iface"
         }
     ],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PKT_INFRA-LINK-5-CHANGED : Interface (?P<iface>.+), changed state to Administratively Down"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PKT_INFRA-LINK-5-CHANGED : Interface (?P<iface>.+), changed state to Administratively Down",
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PKT_INFRA-LINK-5-CHANGED : Interface TenGigE0/0/1/1, changed state to Administratively Down",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

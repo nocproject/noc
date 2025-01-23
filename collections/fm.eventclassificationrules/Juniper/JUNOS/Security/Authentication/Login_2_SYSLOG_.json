@@ -9,24 +9,15 @@
         "name": "ip",
         "value": "ip_address"
     }],
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "telnet from (?P<ip>\\S+) exceeded counts\\/min \\(limit \\d+/min\\)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "telnet from (?P<ip>\\S+) exceeded counts\\/min \\(limit \\d+/min\\)",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "telnet from 10.33.0.150 exceeded counts/min (limit 150/min)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

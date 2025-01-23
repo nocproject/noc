@@ -46,6 +46,10 @@ class RuleSet(object):
         self.enumerations: Dict[str, Dict[str, str]] = {}  # name -> value -> enumerated
         self.lookup_cls: Optional[RuleLookup] = None
         self.default_rule: Optional[Rule] = None
+        #
+        # is_failed: bool = False
+        # metric block
+        # processed: int = 0
 
     def load(self):
         """
@@ -146,7 +150,7 @@ class RuleSet(object):
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
                 metrics["rules_checked"] += 1
-                v = r.match(event.message, vars)
+                v = r.match(event.message, vars, event.labels)
                 if v is not None:
                     logger.debug(
                         "[%s] Matching class for event %s found: %s (Rule: %s)",
@@ -161,11 +165,7 @@ class RuleSet(object):
         return None, None
 
     def eval_vars(self, event: Event, event_class, r_vars: Dict[str, Any]):
-        """
-        Evaluate rule variables
-        Args:
-
-        """
+        """Evaluate rule variables"""
         r = {}
         # Resolve e_vars
         for ecv in event_class.vars:
@@ -176,7 +176,7 @@ class RuleSet(object):
                 continue
             # Decode variable
             v = r_vars[ecv.name]
-            decoder = getattr(RuleSet, "decode_%s" % ecv.type, None)
+            decoder = getattr(RuleSet, f"decode_{ecv.type}", None)
             # resolve_ interface, instance
             if decoder:
                 try:

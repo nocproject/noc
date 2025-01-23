@@ -5,24 +5,15 @@
     "description": "%SYS-2-REDUNDANTCLOCK_OK: Redundant clock recovered",
     "event_class__name": "Chassis | Clock | Clock Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-2-REDUNDANTCLOCK_OK: (?P<name>Redundant clock) recovered$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-2-REDUNDANTCLOCK_OK: (?P<name>Redundant clock) recovered$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-2-REDUNDANTCLOCK_OK: Redundant clock recovered",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

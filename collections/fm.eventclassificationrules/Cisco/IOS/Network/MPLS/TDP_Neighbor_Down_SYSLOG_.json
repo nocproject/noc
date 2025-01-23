@@ -5,24 +5,15 @@
     "description": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10:0 is DOWN (TCP connection closed by peer) ",
     "event_class__name": "Network | MPLS | TDP Neighbor Down",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%LDP-5-NBRCHG: TDP Neighbor (?P<neighbor>\\S+):.* is DOWN( \\((?P<reason>.+)\\))?"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LDP-5-NBRCHG: TDP Neighbor (?P<neighbor>\\S+):.* is DOWN( \\((?P<reason>.+)\\))?",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10:0 is DOWN (TCP connection closed by peer)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

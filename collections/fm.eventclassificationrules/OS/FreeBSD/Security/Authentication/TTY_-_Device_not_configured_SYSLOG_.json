@@ -5,24 +5,15 @@
     "description": "login: in prompt_echo_off(): tcgetattr(): Device not configured",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "login: in prompt_echo_off\\(\\): tcgetattr\\(\\): Device not configured$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "login: in prompt_echo_off\\(\\): tcgetattr\\(\\): Device not configured$",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "login: in prompt_echo_off(): tcgetattr(): Device not configured",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

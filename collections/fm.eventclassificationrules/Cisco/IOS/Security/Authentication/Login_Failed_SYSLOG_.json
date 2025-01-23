@@ -5,24 +5,15 @@
     "description": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: ] [Source: 172.16.0.22] [localport: 22] [Reason: Login Authentication Failed]",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed \\[user: (?P<user>.*)\\] \\[Source: (?P<ip>\\S+)\\] \\[localport: (?P<lport>.+)\\] \\[Reason: Login Authentication Failed\\]"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed \\[user: (?P<user>.*)\\] \\[Source: (?P<ip>\\S+)\\] \\[localport: (?P<lport>.+)\\] \\[Reason: Login Authentication Failed\\]",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: ] [Source: 172.16.0.22] [localport: 22] [Reason: Login Authentication Failed]",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

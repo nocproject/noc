@@ -407,7 +407,7 @@ class ClassifierService(FastAPIService):
             return rule.event_class, r_vars
         # Apply transform
         for t in rule.vars_transform or []:
-            t.transform(r_vars)
+            t.transform(r_vars, raw_vars)
         if rule.is_unknown_syslog:
             # Append to codebook
             cb = self.get_msg_codebook(event.message or "")
@@ -487,8 +487,8 @@ class ClassifierService(FastAPIService):
         self.logger.info(
             "[%s|%s|%s] Duplicates event %s. Discarding",
             event.id,
-            event.target.address,
             event.target.name,
+            event.target.address,
             de_id,
         )
         # de.log_message("Duplicated event %s has been discarded" % event.id)
@@ -708,7 +708,7 @@ class ClassifierService(FastAPIService):
         # Store event variables, without snmp_raw
         # Detect profile by rule (for SNMP message)
         # Syslog - ignore profile
-        raw_vars, snmp_vars = {"profile": event.type.profile}, {}
+        raw_vars, snmp_vars = {"profile": event.type.profile, "message": event.message}, {}
         for d in event.data:
             if d.snmp_raw:
                 snmp_vars[d.name] = d.value

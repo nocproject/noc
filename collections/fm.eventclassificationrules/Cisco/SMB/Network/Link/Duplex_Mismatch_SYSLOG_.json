@@ -5,24 +5,15 @@
     "description": "Apr  5 13:35:45 192.168.32.16 %CDP-W-DUPLEX_MISMATCH: Duplex mismatch detected on interface gi39.",
     "event_class__name": "Network | Link | Duplex Mismatch",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco.SMB$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%CDP-W-DUPLEX_MISMATCH: Duplex mismatch detected on interface (?P<interface>\\S+)\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%CDP-W-DUPLEX_MISMATCH: Duplex mismatch detected on interface (?P<interface>\\S+)\\.$",
+    "profiles": ["Cisco.SMB"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Apr  5 13:35:45 192.168.32.16 %CDP-W-DUPLEX_MISMATCH: Duplex mismatch detected on interface gi39.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

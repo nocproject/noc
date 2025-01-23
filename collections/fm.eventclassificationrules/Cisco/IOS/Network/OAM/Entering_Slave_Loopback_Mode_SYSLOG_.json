@@ -5,24 +5,15 @@
     "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has entered the slave loopback mode.",
     "event_class__name": "Network | OAM | Entering Slave Loopback Mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has entered the slave loopback mode"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has entered the slave loopback mode",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has entered the slave loopback mode.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

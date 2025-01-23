@@ -5,24 +5,15 @@
     "description": "%C6KENV-SP-4-PSFANFAILED: the fan in power supply 1 has failed",
     "event_class__name": "Chassis | Fan | Fan Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%C6KENV-SP-4-PSFANFAILED: the (?P<name>fan in power supply \\d+) has failed"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%C6KENV-SP-4-PSFANFAILED: the (?P<name>fan in power supply \\d+) has failed",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%C6KENV-SP-4-PSFANFAILED: the fan in power supply 1 has failed",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

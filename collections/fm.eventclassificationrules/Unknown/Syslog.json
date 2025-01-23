@@ -5,14 +5,8 @@
     "description": "Next to last in the chain. Catches all unclassified syslog messages",
     "event_class__name": "Unknown | Syslog",
     "preference": 4990,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^(?P<syslog_message>.*)$"
-        }
-    ]
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^(?P<syslog_message>.*)$",
+    "sources": ["syslog"]
 }

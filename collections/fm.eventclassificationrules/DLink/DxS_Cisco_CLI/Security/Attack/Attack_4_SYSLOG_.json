@@ -9,24 +9,15 @@
         "name": "name",
         "value": "DHCP DoS"
     }],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS_Cisco_CLI$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%NFPP_DHCP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=(?P<src_mac>\\S+),port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%NFPP_DHCP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=(?P<src_mac>\\S+),port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected.",
+    "profiles": ["DLink.DxS_Cisco_CLI"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%NFPP_DHCP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=404a.0378.12db,port=Gi0/16,VLAN=10> was detected.(2014-7-2 20:36:17)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

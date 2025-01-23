@@ -5,24 +5,15 @@
     "description": "ipfw: 400 Deny TCP 78.189.188.92:2661 193.34.20.247:135 in via fxp0",
     "event_class__name": "Security | ACL | ACL Deny",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^OS\\.Linux$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ipfw: (?P<name>\\d+) Deny (?P<proto>\\S+) (?P<src_ip>\\S+):(?P<src_port>\\d+) (?P<dst_ip>\\S+):(?P<dst_port>\\d+) in via (?P<src_interface>\\S+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ipfw: (?P<name>\\d+) Deny (?P<proto>\\S+) (?P<src_ip>\\S+):(?P<src_port>\\d+) (?P<dst_ip>\\S+):(?P<dst_port>\\d+) in via (?P<src_interface>\\S+)",
+    "profiles": ["OS.Linux"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "ipfw: 400 Deny TCP 78.189.188.92:2661 193.34.20.247:135 in via fxp0",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -1,0 +1,20 @@
+{
+    "name": "Network | BGP | Backward Transition Notification (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c7279a74-1bd1-4624-8673-1ef9ef44a253",
+    "description": "BGP4-MIB::bgpBackwardTransNotification",
+    "event_class__name": "Network | BGP | Backward Transition",
+    "preference": 3000,
+    "patterns": [
+        {
+            "key_re": "^BGP4-MIB::bgpPeerState\\.(?P<peer>\\S+)$",
+            "value_re": "^(?P<state__enum__bgp_state>\\S+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^BGP4-MIB::bgpBackwardTransNotification$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

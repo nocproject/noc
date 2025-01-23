@@ -5,24 +5,15 @@
     "description": "%ARPGUARD-4-DOS_DETECTED: ARP DoS attack was detected.",
     "event_class__name": "Security | Attack | Attack",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS_Cisco_CLI$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%ARPGUARD-4-DOS_DETECTED: (?P<name>ARP DoS) attack was detected."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%ARPGUARD-4-DOS_DETECTED: (?P<name>ARP DoS) attack was detected.",
+    "profiles": ["DLink.DxS_Cisco_CLI"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ARPGUARD-4-DOS_DETECTED: ARP DoS attack was detected.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

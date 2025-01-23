@@ -5,24 +5,15 @@
     "description": "Aug 31 15:37:30 test snmp LoginSuccess,admin,TELNET,172.16.3.254",
     "event_class__name": "Security | Authentication | Login",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "snmp LoginSuccess,(?P<user>.*),(?:TELNET|Console|WEB),(?P<ip>\\S+)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "snmp LoginSuccess,(?P<user>.*),(?:TELNET|Console|WEB),(?P<ip>\\S+)$",
+    "profiles": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Aug 31 15:37:30 test snmp LoginSuccess,admin,TELNET,172.16.3.254",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

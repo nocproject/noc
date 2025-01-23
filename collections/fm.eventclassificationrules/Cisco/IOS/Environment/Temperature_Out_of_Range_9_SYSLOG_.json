@@ -5,24 +5,15 @@
     "description": "%THERMAL-3-PS: System detected Power System 1 THERMAL FAIL condition.",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%(?:THERMAL-3-PS|PS-3-THERMAL): System detected (?P<name>.+) THERMAL FAIL condition."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%(?:THERMAL-3-PS|PS-3-THERMAL): System detected (?P<name>.+) THERMAL FAIL condition.",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%THERMAL-3-PS: System detected Power System 1 THERMAL FAIL condition.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

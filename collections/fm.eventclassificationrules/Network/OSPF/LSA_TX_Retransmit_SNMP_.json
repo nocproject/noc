@@ -1,0 +1,48 @@
+{
+    "name": "Network | OSPF | LSA TX Retransmit (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "54ad9b71-6caa-4ccc-b577-7316e666861c",
+    "description": "OSPF-TRAP-MIB::ospfTxRetransmit\n\nospfAddressLessIf - 0 if ospfIfIpAddress otherwise ifindex",
+    "event_class__name": "Network | OSPF | LSA TX Retransmit",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfTxRetransmit$"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfRouterId\\.\\S+$",
+            "value_re": "^(?P<router_id>.+)$"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfPacketType\\.\\S+$",
+            "value_re": "^(?P<packet_type>.+)$"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfNbrRtrId\\.\\S+$",
+            "value_re": "^(?P<neighbor>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfIfIpAddress\\.\\S+$",
+            "value_re": "^(?P<address>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfAddressLessIf\\.\\S+$",
+            "value_re": "^(?P<interface__ifindex>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbType\\.\\S+$",
+            "value_re": "^(?P<lsdb_type>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbLsid\\.\\S+$",
+            "value_re": "^(?P<lsdb_lsid>\\S+)"
+        },
+        {
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbRouterId\\.\\S+$",
+            "value_re": "^(?P<lsdb_routerid>\\S+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

@@ -5,24 +5,15 @@
     "description": "%ENVIRONMENTAL-1-ALERT: Temp: Left Ext, Location: F0, State: Minor, Reading: 57 Celsius",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "ENVIRONMENTAL-\\d+-ALERT.+[Tt]emp: (?P<name>.+), [Ll]ocation.+State.+Reading: (?P<measure>\\S+) Celsius"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ENVIRONMENTAL-\\d+-ALERT.+[Tt]emp: (?P<name>.+), [Ll]ocation.+State.+Reading: (?P<measure>\\S+) Celsius",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%ENVIRONMENTAL-1-ALERT: Temp: Left Ext, Location: F0, State: Minor, Reading: 57 Celsius",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

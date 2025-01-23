@@ -5,22 +5,13 @@
     "description": "CRIT: System cold start",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "( Unit (?P<unit>\\d+), )?System (cold|warm) start$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "( Unit (?P<unit>\\d+), )?System (cold|warm) start$",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "CRIT: System cold start",
-        "value_re": []
+        "raw_vars": []
     }]
 }

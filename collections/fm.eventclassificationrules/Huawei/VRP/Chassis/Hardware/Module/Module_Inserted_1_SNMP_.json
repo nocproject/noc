@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Chassis | Hardware | Module | Module Inserted #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "29a333a5-1df8-4790-9901-dbc735badce7",
+    "description": "HUAWEI-ENTITY-TRAP-MIB::hwOpticalInsert",
+    "event_class__name": "Chassis | Hardware | Module | Module Inserted",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-ENTITY-TRAP-MIB::hwOpticalInsert$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalName\\.\\d+$",
+            "value_re": "(?P<module>.+)"
+        }
+    ],
+    "labels": [],
+    "profiles": ["Huawei.VRP"],
+    "sources": ["SNMP Trap"]
+}

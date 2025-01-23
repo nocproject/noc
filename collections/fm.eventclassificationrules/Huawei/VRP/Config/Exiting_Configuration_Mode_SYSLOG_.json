@@ -5,24 +5,15 @@
     "description": "%%01HWCM/4/EXIT(l)[1498]:Exit from configure mode.",
     "event_class__name": "Config | Exiting Configuration Mode",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei\\.VRP$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Exit from configure mode\\."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Exit from configure mode\\.",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%%01HWCM/4/EXIT(l)[1498]:Exit from configure mode.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

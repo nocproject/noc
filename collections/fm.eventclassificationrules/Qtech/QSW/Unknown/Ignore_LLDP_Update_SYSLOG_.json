@@ -5,24 +5,15 @@
     "description": "0000002810: Jan 11 14:54:55: torgovaja_4: %LLDP-4-lldpUpdateNeignborEntry: 917708:12: Update neignbor entry 1 of port 25",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Qtech\\.QSW$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%LLDP-4-lldpUpdateNeignborEntry: \\d+:\\d+: Update neignbor entry \\d+ of port \\d+$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LLDP-4-lldpUpdateNeignborEntry: \\d+:\\d+: Update neignbor entry \\d+ of port \\d+$",
+    "profiles": ["Qtech.QSW"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "0000002810: Jan 11 14:54:55: torgovaja_4: %LLDP-4-lldpUpdateNeignborEntry: 917708:12: Update neignbor entry 1 of port 25",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

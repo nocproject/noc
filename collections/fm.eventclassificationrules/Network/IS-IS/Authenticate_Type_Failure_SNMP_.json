@@ -1,0 +1,28 @@
+{
+    "name": "Network | IS-IS | Authenticate Type Failure (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5380a5c0-9844-4864-ac77-64b508e09b04",
+    "description": "ISIS-MIB::isisAuthenticationTypeFailure",
+    "event_class__name": "Network | IS-IS | Authentication Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ISIS-MIB::isisAuthenticationTypeFailure$"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisNotificationSysLevelIndex(?:\\.\\S+)*$",
+            "value_re": "^(?P<level>\\S+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisNotificationCircIfIndex(?:\\.\\S+)*$",
+            "value_re": "^(?P<interface__ifindex>\\S+)"
+        },
+        {
+            "key_re": "^ISIS-MIB::isisPduFragment(?:\\.\\S+)*$",
+            "value_re": "^(?P<pdu_fragment>.+)"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

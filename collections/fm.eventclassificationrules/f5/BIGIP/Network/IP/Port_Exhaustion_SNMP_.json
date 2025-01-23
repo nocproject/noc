@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^f5\\.BIGIP$"
-        },
-        {
             "key_re": "^F5-BIGIP-COMMON-MIB::bigipNotifyObjMsg$",
             "value_re": "^Inet port exhaustion on (?P<src_ip>\\S+) to (?P<dst_ip>\\S+):(?P<dst_port>\\d+) \\(proto (?P<proto>\\d+)\\)$"
         },
@@ -26,5 +18,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^F5-BIGIP-COMMON-MIB::bigipInetPortExhaustion$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["f5.BIGIP"],
+    "sources": ["SNMP Trap"]
 }

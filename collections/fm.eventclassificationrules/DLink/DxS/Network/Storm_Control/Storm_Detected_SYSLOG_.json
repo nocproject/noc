@@ -5,19 +5,9 @@
     "description": "Mar 30 14:06:06 10.137.10.100 WARN: Port 30 is currently shut down due to a packet storm",
     "event_class__name": "Network | Storm Control | Storm Detected",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "profile",
-            "value_re": "DLink.DxS"
-        },
-        {
-            "key_re": "source",
-            "value_re": "syslog"
-        },
-        {
-            "key_re": "message",
-            "value_re": "WARN: Port (?P<interface>\\S+) is currently shut down due to a packet storm$"
-        }
-    ],
-    "test_cases": []
+    "patterns": [],
+    "labels": [],
+    "message_rx": "WARN: Port (?P<interface>\\S+) is currently shut down due to a packet storm$",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"]
 }

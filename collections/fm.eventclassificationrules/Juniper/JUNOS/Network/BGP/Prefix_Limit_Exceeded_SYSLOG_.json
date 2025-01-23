@@ -5,24 +5,15 @@
     "description": "Jul 25 23:31:36 rpd[1260]: 10.99.2.1 (External AS 65000): Configured maximum prefix-limit threshold(1) exceeded for inet-unicast nlri: 2",
     "event_class__name": "Network | BGP | Prefix Limit Exceeded",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Juniper\\.JUNOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "rpd\\[\\d+\\]: (?P<peer>\\S+) \\(\\S+ AS (?P<as>\\d+)\\): Configured maximum prefix-limit threshold\\(\\d+\\) exceeded"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "rpd\\[\\d+\\]: (?P<peer>\\S+) \\(\\S+ AS (?P<as>\\d+)\\): Configured maximum prefix-limit threshold\\(\\d+\\) exceeded",
+    "profiles": ["Juniper.JUNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 25 23:31:36 rpd[1260]: 10.99.2.1 (External AS 65000): Configured maximum prefix-limit threshold(1) exceeded for inet-unicast nlri: 2",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

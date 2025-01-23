@@ -5,24 +5,15 @@
     "description": "Nov 25 13:39:44 sw-169-mich7 system: 1.8VIN voltage value 1.984 exceeds its limit voltage value",
     "event_class__name": "Chassis | PSU | Internal Voltage Out of Range",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Zyxel.ZyNOS$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "VIN voltage value \\S+ exceeds its limit voltage value"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "VIN voltage value \\S+ exceeds its limit voltage value",
+    "profiles": ["Zyxel.ZyNOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Nov 25 13:39:44 sw-169-mich7 system: 1.8VIN voltage value 1.984 exceeds its limit voltage value",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,24 +5,15 @@
     "description": "%C6KPWR-SP-4-PSOK: power supply 1 turned on.",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%C(?:6K|7600_)PWR-SP-4-PSOK: (?P<name>power supply \\d+) turned on.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%C(?:6K|7600_)PWR-SP-4-PSOK: (?P<name>power supply \\d+) turned on.$",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%C6KPWR-SP-4-PSOK: power supply 1 turned on.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

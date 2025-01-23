@@ -11,24 +11,15 @@
             "value": "='%s/%s/%s/%s' % (iface1, iface2, iface3, iface4)"
         }
     ],
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOSXR$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%L2-L2FIB-5-SECURITY_MAC_SECURE_VIOLATION_AC : MAC secure in AC (?P<iface1>\\S+\\d)_(?P<iface2>\\d+)_(?P<iface3>\\d+)_(?P<iface4>\\d+)\\.(?P<vlan>\\d+) detected violated packet - source MAC: (?P<mac>\\S+), destination MAC: \\S+; action: \\S+"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%L2-L2FIB-5-SECURITY_MAC_SECURE_VIOLATION_AC : MAC secure in AC (?P<iface1>\\S+\\d)_(?P<iface2>\\d+)_(?P<iface3>\\d+)_(?P<iface4>\\d+)\\.(?P<vlan>\\d+) detected violated packet - source MAC: (?P<mac>\\S+), destination MAC: \\S+; action: \\S+",
+    "profiles": ["Cisco.IOSXR"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%L2-L2FIB-5-SECURITY_MAC_SECURE_VIOLATION_AC : MAC secure in AC GigabitEthernet0_1_0_19.29 detected violated packet - source MAC: 0025.5cdf.4060, destination MAC: 0100.5e00.0009; action: none",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

@@ -5,22 +5,13 @@
     "description": "%INIT-I-Startup: Warm Startup",
     "event_class__name": "System | Started",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Linksys\\.SPS2xx$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "^%INIT-I-Startup: (Warm|Cold) Startup$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^%INIT-I-Startup: (Warm|Cold) Startup$",
+    "profiles": ["Linksys.SPS2xx"],
+    "sources": ["syslog"],
     "test_cases": [{
         "message": "%INIT-I-Startup: Warm Startup",
-        "value_re": []
+        "raw_vars": []
     }]
 }

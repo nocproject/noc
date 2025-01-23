@@ -5,24 +5,15 @@
     "description": "%SYS-2-PS_OK: Power supply 2 okay",
     "event_class__name": "Chassis | PSU | PSU Recovered",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%SYS-2-PS_OK: Power supply (?P<name>\\d+) okay"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-2-PS_OK: Power supply (?P<name>\\d+) okay",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%SYS-2-PS_OK: Power supply 2 okay",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

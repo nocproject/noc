@@ -5,24 +5,15 @@
     "description": "INFO: Port 17 link up, 100Mbps  FULL duplex",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DxS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Port 17 link up, 100Mbps  FULL duplex",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

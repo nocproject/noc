@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
             "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureState\\.\\d+$",
             "value_re": "warning"
         },
@@ -30,5 +22,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
             "value_re": "CISCO-ENVMON-MIB::(?:ciscoEnvMonTemperatureNotification|ciscoEnvMonTempStatusChangeNotif)"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["Cisco.IOS"],
+    "sources": ["SNMP Trap"]
 }

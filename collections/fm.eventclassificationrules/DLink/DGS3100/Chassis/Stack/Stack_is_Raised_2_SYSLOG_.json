@@ -5,24 +5,15 @@
     "description": "%STCK SYSL-I-UNITMSG: UNIT ID 2,Msg:%INIT-I-InitCompleted: Initialization task is completed",
     "event_class__name": "Chassis | Stack | Stack is Raised",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^DLink\\.DGS3100$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%STCK SYSL-I-UNITMSG: UNIT ID (?P<unit>\\d+),Msg:%INIT-I-InitCompleted: Initialization task is completed"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%STCK SYSL-I-UNITMSG: UNIT ID (?P<unit>\\d+),Msg:%INIT-I-InitCompleted: Initialization task is completed",
+    "profiles": ["DLink.DGS3100"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%STCK SYSL-I-UNITMSG: UNIT ID 2,Msg:%INIT-I-InitCompleted: Initialization task is completed",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

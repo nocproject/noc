@@ -1,0 +1,24 @@
+{
+    "name": "Network | MPLS | LDP Session Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2d12fbe1-0602-4be9-af3b-7d42cfe90a07",
+    "description": "MPLS-LDP-STD-MIB::mplsLdpSessionUp, CISCO-MPLS-LDP-MIB::mplsLdpSessionUp",
+    "event_class__name": "Network | MPLS | LDP Session Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^(MPLS-LDP-STD-MIB|CISCO-MPLS-LDP-MIB)::mplsLdpSessionState\\.(?P<peer>.+)$",
+            "value_re": "^(?P<state>\\S+)$"
+        },
+        {
+            "key_re": "^(MPLS-LDP-STD-MIB|CISCO-MPLS-LDP-MIB)::mplsLdpSessionStatsUnknownMesTypeErrors\\..+$",
+            "value_re": "^(?P<mes_errors>\\d+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^(MPLS-LDP-STD-MIB|CISCO-MPLS-LDP-MIB)::mplsLdpSessionUp$"
+        }
+    ],
+    "labels": [],
+    "sources": ["SNMP Trap"]
+}

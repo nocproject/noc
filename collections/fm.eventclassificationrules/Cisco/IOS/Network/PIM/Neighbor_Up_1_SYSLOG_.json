@@ -5,24 +5,15 @@
     "description": "%PIM-5-NBRCHG: neighbor 10.10.20.21 UP on interface Vlan444 (vrf default)",
     "event_class__name": "Network | PIM | Neighbor Up",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%PIM-5-NBRCHG: neighbor (?P<neighbor>\\S+) UP on interface (?P<interface>\\S+)( \\(vrf (?P<vrf>\\S+)\\))?"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PIM-5-NBRCHG: neighbor (?P<neighbor>\\S+) UP on interface (?P<interface>\\S+)( \\(vrf (?P<vrf>\\S+)\\))?",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%PIM-5-NBRCHG: neighbor 10.10.20.21 UP on interface Vlan444 (vrf default)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

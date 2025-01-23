@@ -5,24 +5,15 @@
     "description": "%HARDWARE-3-PORTNUM_ERROR: port number 1 is invalid.",
     "event_class__name": "Chassis | Hardware | Hardware Port Error",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "HARDWARE-3-PORTNUM_ERROR: port number (?P<interface>\\d+) is invalid."
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "HARDWARE-3-PORTNUM_ERROR: port number (?P<interface>\\d+) is invalid.",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%HARDWARE-3-PORTNUM_ERROR: port number 1 is invalid.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

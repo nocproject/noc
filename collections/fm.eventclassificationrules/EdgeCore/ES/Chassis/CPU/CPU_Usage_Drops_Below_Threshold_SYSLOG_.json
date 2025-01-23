@@ -5,24 +5,15 @@
     "description": "Sep 19 14:59:37 Rybatsk-17-1 snmp CPU falling trap.",
     "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "CPU falling trap\\.$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "CPU falling trap\\.$",
+    "profiles": ["EdgeCore.ES"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Sep 19 14:59:37 Rybatsk-17-1 snmp CPU falling trap.",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

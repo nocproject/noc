@@ -7,14 +7,6 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "^source$",
-            "value_re": "^SNMP Trap$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^EdgeCore\\.ES$"
-        },
-        {
             "key_re": "^ES3528MO-MIB::trapIfIndex\\.0$",
             "value_re": "^(?P<interface__ifindex>\\d+)$"
         },
@@ -22,5 +14,8 @@
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^ES3528MO-MIB::lbdRecoveryTrap$"
         }
-    ]
+    ],
+    "labels": [],
+    "profiles": ["EdgeCore.ES"],
+    "sources": ["SNMP Trap"]
 }

@@ -5,24 +5,15 @@
     "description": "Jul 23 12:36:19 2013 3com2952_1 %%10LAGG/1/AggPortInactive2(t):   Trap 1.3.6.1.4.1.43.45.1.5.25.25.2.3<hwAggPortInactiveNotification2>: Aggregation Group 1: port member 9437208 becomes INACTIVE!",
     "event_class__name": "Unknown | Ignore",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^HP\\.1910$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%10LAGG/1/AggPortInactive2\\(t\\):\\s+Trap \\S+: Aggregation Group \\d+: port member \\d+ becomes INACTIVE!$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%10LAGG/1/AggPortInactive2\\(t\\):\\s+Trap \\S+: Aggregation Group \\d+: port member \\d+ becomes INACTIVE!$",
+    "profiles": ["HP.1910"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Jul 23 12:36:19 2013 3com2952_1 %%10LAGG/1/AggPortInactive2(t):   Trap 1.3.6.1.4.1.43.45.1.5.25.25.2.3<hwAggPortInactiveNotification2>: Aggregation Group 1: port member 9437208 becomes INACTIVE!",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

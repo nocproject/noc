@@ -5,24 +5,15 @@
     "description": "%%01SSH/4/SSH_FAIL(l)[47]:Failed to login through SSH. (IP=172.25.127.55, UserName=qqq, Times=3, FailedReason=User public key authentication failed)",
     "event_class__name": "Security | Authentication | Login Failed",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^profile$",
-            "value_re": "^Huawei.VRP$"
-        },
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "Failed to login through SSH\\. \\(IP=(?P<ip>\\S+), UserName=(?P<user>\\S+), Times=\\d+, FailedReason=User public key authentication failed\\)$"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Failed to login through SSH\\. \\(IP=(?P<ip>\\S+), UserName=(?P<user>\\S+), Times=\\d+, FailedReason=User public key authentication failed\\)$",
+    "profiles": ["Huawei.VRP"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%%01SSH/4/SSH_FAIL(l)[47]:Failed to login through SSH. (IP=172.25.127.55, UserName=qqq, Times=3, FailedReason=User public key authentication failed)",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }

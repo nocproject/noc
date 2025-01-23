@@ -5,24 +5,15 @@
     "description": "%UBR7200-3-NOMORESIDS: Maximum number of SIDS have been allocated for interface Cable1/0",
     "event_class__name": "Network | DOCSIS | Maximum SIDs",
     "preference": 1000,
-    "patterns": [
-        {
-            "key_re": "^source$",
-            "value_re": "^syslog$"
-        },
-        {
-            "key_re": "^profile$",
-            "value_re": "^Cisco\\.IOS$"
-        },
-        {
-            "key_re": "^message$",
-            "value_re": "%UBR\\d+00-3-NOMORESIDS: Maximum number of SIDS have been allocated for interface (?P<interface>.+)"
-        }
-    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%UBR\\d+00-3-NOMORESIDS: Maximum number of SIDS have been allocated for interface (?P<interface>.+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%UBR7200-3-NOMORESIDS: Maximum number of SIDS have been allocated for interface Cable1/0",
-            "value_re": []
+            "raw_vars": []
         }
     ]
 }
