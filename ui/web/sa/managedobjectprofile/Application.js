@@ -726,7 +726,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     defaultValue: 1000,
                                                     minValue: 0,
                                                     labelWidth: 220,
-                                                    uiStyle: "small",
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {

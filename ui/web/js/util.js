@@ -119,7 +119,7 @@ Ext.apply(NOC.render, {
   },
 
   WrapColumn: function(val){
-    return '<div style="white-space:normal !important;">' + val + '</div>';
+    return '<div style="white-space:normal !important;">' + val + "</div>";
   },
 
   Date: function(val){
@@ -206,7 +206,7 @@ Ext.apply(NOC.render, {
       M = d.getMinutes(),
       s = d.getSeconds(),
       f = function(v){
-        return v <= 9 ? '0' + v : v;
+        return v <= 9 ? "0" + v : v;
       };
     return "" + y + "-" + f(m) + "-" + f(D) + " " +
             f(h) + ":" + f(M) + ":" + f(s);
@@ -214,7 +214,7 @@ Ext.apply(NOC.render, {
 
   Duration: function(val){
     var f = function(v){
-      return v <= 9 ? '0' + v : v;
+      return v <= 9 ? "0" + v : v;
     };
 
     if(!val){
@@ -372,22 +372,22 @@ Ext.apply(NOC.render, {
 Ext.apply(NOC.msg, {
   started: function(){
     Ext.toast({
-      html: '<div style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
-      align: 'bl',
+      html: '<div style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + "</div>",
+      align: "bl",
       bodyStyle: {
-        background: '#1E90FF',
-        color: 'white',
-        "font-weight": 'bold',
+        background: "#1E90FF",
+        color: "white",
+        "font-weight": "bold",
       },
       style: {
-        background: '#1E90FF',
+        background: "#1E90FF",
       },
       listeners: {
         focusenter: function(){
           this.close();
         },
       },
-      width: '50%',
+      width: "50%",
       minHeight: 10,
       paddingY: 0,
       border: false,
@@ -395,22 +395,22 @@ Ext.apply(NOC.msg, {
   },
   complete: function(){
     Ext.toast({
-      html: '<div style="text-align: center;"><i class="fa fa-check-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
-      align: 'bl',
+      html: '<div style="text-align: center;"><i class="fa fa-check-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + "</div>",
+      align: "bl",
       bodyStyle: {
-        background: 'green',
-        color: 'white',
-        "font-weight": 'bold',
+        background: "green",
+        color: "white",
+        "font-weight": "bold",
       },
       style: {
-        background: 'green',
+        background: "green",
       },
       listeners: {
         focusenter: function(){
           this.close();
         },
       },
-      width: '50%',
+      width: "50%",
       minHeight: 10,
       paddingY: 0,
       border: false,
@@ -418,22 +418,22 @@ Ext.apply(NOC.msg, {
   },
   failed: function(){
     Ext.toast({
-      html: '<div style="text-align: center;"><i class="fa fa-bolt" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
-      align: 'bl',
+      html: '<div style="text-align: center;"><i class="fa fa-bolt" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + "</div>",
+      align: "bl",
       bodyStyle: {
-        background: 'red',
-        color: 'white',
-        "font-weight": 'bold',
+        background: "red",
+        color: "white",
+        "font-weight": "bold",
       },
       style: {
-        background: 'red',
+        background: "red",
       },
       listeners: {
         focusenter: function(){
           this.close();
         },
       },
-      width: '50%',
+      width: "50%",
       minHeight: 10,
       paddingY: 0,
       border: false,
@@ -442,22 +442,22 @@ Ext.apply(NOC.msg, {
   info_icon: function(icon){
     var args = Array.prototype.slice.call(arguments, 1);
     Ext.toast({
-      html: '<div style="text-align: center;"><i class="fa ' + icon + ' " aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, args) + '</div>',
-      align: 'bl',
+      html: '<div style="text-align: center;"><i class="fa ' + icon + ' " aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, args) + "</div>",
+      align: "bl",
       bodyStyle: {
-        background: '#1E90FF',
-        color: 'white',
-        "font-weight": 'bold',
+        background: "#1E90FF",
+        color: "white",
+        "font-weight": "bold",
       },
       style: {
-        background: '#1E90FF',
+        background: "#1E90FF",
       },
       listeners: {
         focusenter: function(){
           this.close();
         },
       },
-      width: '50%',
+      width: "50%",
       minHeight: 10,
       paddingY: 0,
       border: false,
@@ -474,11 +474,11 @@ NOC.mrt = function(options){
   scope.mask();
   // Start streaming request
   xhr.open(
-    'POST',
-    '/api/mrt/',
+    "POST",
+    "/api/mrt/",
     true,
   );
-  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onprogress = function(){
     // Parse incoming chunks
     var ft = xhr.responseText.substr(offset),
@@ -569,7 +569,7 @@ NOC.is_asn = function(value){
 //
 NOC.is_ipv4 = function(value){
   var arrayX = value.split("."),
-    arrayoct = new Array();
+    arrayoct = [];
   if(arrayX.length != 4)
     return false;
   else{
@@ -600,7 +600,7 @@ NOC.is_ipv4_prefix = function(value){
 //
 // init quick labels for vtype validators
 Ext.QuickTips.init();
-Ext.form.Field.prototype.msgTarget = 'side';
+Ext.form.Field.prototype.msgTarget = "side";
 
 //
 // Custom VTypes
@@ -761,7 +761,7 @@ NOC.uiStyles = function(style){
     case "small": {
       // 3 letters
       return {
-        width: 50,
+        width: 55,
         anchor: null,
       }
     }
@@ -805,7 +805,7 @@ NOC.openHelp = function(topic){
     NOC.settings.helpLanguage,
     topic,
   );
-  win = window.open(url, '_blank');
+  win = window.open(url, "_blank");
   win.focus();
 };
 
