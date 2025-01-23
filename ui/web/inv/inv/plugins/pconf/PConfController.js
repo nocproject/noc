@@ -9,7 +9,9 @@ console.debug("Defining NOC.inv.inv.plugins.pconf.PConfController");
 Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   extend: "Ext.app.ViewController",
   alias: "controller.pconf",
-
+  mixins: [
+    "NOC.inv.inv.plugins.Mixins",
+  ],
   onDataChanged: function(store){
     var vm = this.getViewModel();
     if(vm){
@@ -17,15 +19,15 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     }
   },
   onReload: function(){
-    var me = this,
-      vm = me.getViewModel(),
+    var vm = this.getViewModel(),
       currentId = vm.get("currentId");
     if(Ext.isEmpty(currentId)) return;
-    vm.set("icon", this.generateIcon("spinner", "grey", __("loading")));
+    var isUpdatable = this.getView().down("combo[itemId=tabType]").getValue() === 2;
+    vm.set("icon", this.generateIcon(isUpdatable, "spinner", "grey", __("loading")));
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/data/",
       method: "GET",
-      scope: me,
+      scope: this,
       params: {
         t: vm.get("tabType"),
         g: vm.get("groupParam"),
@@ -33,30 +35,31 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       success: function(response){
         var data = Ext.decode(response.responseText),
           gridStore = vm.getStore("gridStore");
+        if(Ext.isEmpty(gridStore)) return;
         gridStore.loadData(data.conf);
-        vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
+        vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.yes, __("online")));
       },
       failure: function(){
-        vm.set("icon", this.generateIcon("circle", NOC.colors.no, __("offline")));
+        vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.no, __("offline")));
         NOC.error(__("Failed to load data"));
       },
     });
   },
   onValueChanged: function(data){
-    var me = this,
-      maskComponent = me.getView().up("[appId=inv.inv]").maskComponent,
+    var maskComponent = this.getView().up("[appId=inv.inv]").maskComponent,
       messageId = maskComponent.show("saving", "pconf"),
-      currentId = me.getViewModel().get("currentId");
+      currentId = this.getViewModel().get("currentId");
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/pconf/set/",
-      method: 'POST',
+      method: "POST",
+      scope: this,
       jsonData: data,
       success: function(response){
         var data = Ext.decode(response.responseText);
         if(data.status){
           NOC.info(__("Parameter has been set"));
-          me.getView().down("grid").findPlugin("valueedit").cancelEdit();
-          me.onReload();
+          this.getView().down("grid").findPlugin("valueedit").cancelEdit();
+          this.onReload();
         } else{
           NOC.error(data.message);
         }
@@ -85,49 +88,32 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
   //   }
   // },
   onTabTypeChange: function(combo, record){
-    var me = this.getView(),
-      getTimerInterval = function(value){
-        if(!Ext.isEmpty(value)){
-          var interval = value.get("autoreload");
+    var view = this.getView(),
+      vm = this.getViewModel(),
+      getTimerInterval = function(record){
+        if(!Ext.isEmpty(record)){
+          var interval = record.get("autoreload");
           return interval ? interval * 1000 : undefined;
         }
         return undefined;
       },
       timerInterval = getTimerInterval(record);
-    if(Ext.isEmpty(me.getViewModel().get("currentId"))) return;
+    if(Ext.isEmpty(view.getViewModel().get("currentId"))) return;
     this.onReload();
     if(!Ext.isEmpty(timerInterval)){
-      if(Ext.isEmpty(me.observer)){
-        me.observer = new IntersectionObserver(function(entries){
-          me.isIntersecting = entries[0].isIntersecting;
-        }, {
-          threshold: 1.0,
-        });
-      }
-      me.observer.observe(me.getEl().dom);
-      me.timer = Ext.TaskManager.start({
-        run: function(){
-          var panel = this.getView(),
-            vm = this.getViewModel(),
-            isVisible = !document.hidden,
-            isFocused = document.hasFocus(),
-            isIntersecting = panel.isIntersecting;
-          if(isIntersecting && isVisible && isFocused){
-            vm.set("icon", this.generateIcon("circle", NOC.colors.yes, __("online")));
-            this.onReload();
-          } else{
-            vm.set("icon", this.generateIcon("stop-circle-o", "grey", __("suspend")));
-          }
-        },
+      view.observer = this.setObservable(view);
+      view.timer = Ext.TaskManager.start({
+        run: this.reloadTask,
         interval: timerInterval,
-        scope: this,
+        args: [this.onReload, vm, "pconf"],
+        scope: view,
       });
     } else{
-      if(me.timer){
-        Ext.TaskManager.stop(me.timer);
-        me.timer = null;
+      if(view.timer){
+        Ext.TaskManager.stop(view.timer);
+        view.timer = null;
       }
-      me.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
+      view.getViewModel().set("icon", "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>");
     }
   },
   // onButtonsRender: function(segmented){
@@ -246,12 +232,6 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
     if(statusFilter){
       filters.remove(statusFilter);
     }
-  },
-  generateIcon(icon, color, msg){
-    if(this.getView().down("combo[itemId=tabType]").getValue() === 2){
-      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
-    }
-    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
   onMgmtClick: function(){
     var vm = this.getViewModel(),

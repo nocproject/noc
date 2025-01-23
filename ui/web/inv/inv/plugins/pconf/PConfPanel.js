@@ -264,15 +264,17 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   ],
   //
   preview: function(data, id){
-    var me = this,
-      vm = me.getViewModel(),
+    var vm = this.getViewModel(),
       gridStore = vm.getStore("gridStore"),
       groupStore = vm.getStore("groupStore"),
       tableStore = vm.getStore("tableStore"),
       // uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
       firstTable = Ext.isEmpty(data.tables) ? __("no tables") : data.tables[0].id,
       firstGroup = Ext.isEmpty(data.groups) ? __("no groups") : data.groups[0].id;
- 
+
+    if(Ext.isEmpty(gridStore) || Ext.isEmpty(groupStore) || Ext.isEmpty(tableStore)){
+      return;
+    }
     if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
       NOC.error(data.message);
       return
@@ -288,5 +290,11 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     if(vm.get("groupParam") === ""){
       vm.set("groupParam", firstGroup);
     }
+  },
+  onDestroy: function(){
+    if(this.timer){
+      Ext.TaskManager.stop(this.timer);
+    }
+    this.callParent();
   },
 });

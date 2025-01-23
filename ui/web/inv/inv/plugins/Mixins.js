@@ -18,9 +18,8 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
         }
         return "scheme";
       },
-      me = this,
-      currentId = me.getViewModel().get("currentId"),
-      imageContainer = me.down("#schemeContainer"),
+      currentId = this.getViewModel().get("currentId"),
+      imageContainer = this.down("#schemeContainer"),
       filenamePrefix = _getFilenamePrefix(imageContainer),
       imageDom = imageContainer.getEl(),
       image = imageDom.dom.querySelector("svg") || imageDom.dom.querySelector("object").contentDocument,
@@ -131,5 +130,36 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
                {type: "text/plain;charset=utf-8"}),
       filename,
     );
+  },
+  setObservable: function(view){
+    var observer = view.observer;
+    if(Ext.isEmpty(observer)){
+      observer = new IntersectionObserver(function(entries){
+        view.isIntersecting = entries[0].isIntersecting;
+      }, {
+        threshold: 0.1,
+      });
+    }
+    observer.observe(view.getEl().dom);
+    return observer;
+  },
+  checkVisibility: function(isIntersecting){
+    var isVisible = !document.hidden,
+      isFocused = document.hasFocus();
+    return isIntersecting && isVisible && isFocused;
+  },
+  reloadTask: function(callback, vm){
+    var controller = this.getController();
+    if(controller.checkVisibility(this.isIntersecting)){
+      Ext.Function.bind(callback, controller)();
+    } else{
+      vm.set("icon", controller.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
+    }
+  },
+  generateIcon(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
 });
