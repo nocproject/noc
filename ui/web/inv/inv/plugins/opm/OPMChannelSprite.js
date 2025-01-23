@@ -157,7 +157,6 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMChannelSprite", {
           id: attr.id + "-" + index,
           type: "rect",
           fill: attr.barColor,
-          strokeStyle: attr.barColor,
           lineWidth: 1,
         });
       });
