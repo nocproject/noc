@@ -25,6 +25,7 @@ class BaseCard(object):
     name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
+    actions = []
     TEMPLATE_PATH = config.get_customized_paths(
         os.path.join("services", "card", "templates"), prefer_custom=True
     )
