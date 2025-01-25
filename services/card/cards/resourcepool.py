@@ -17,6 +17,7 @@ from pydantic import BaseModel
 from noc.inv.models.resourcepool import ResourcePool
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
+from noc.wf.models.state import State
 from .base import BaseCard
 
 
@@ -49,10 +50,20 @@ class ResourcePoolCard(BaseCard):
             Prefix.get_by_resource_pool(self.object),
             key=operator.attrgetter("prefix"),
         )
+        domain = self.handler.get_argument("domain", strict=False)
+        limit = self.handler.get_argument("limit", strict=False)
+        free_only = self.handler.get_argument("free_only", strict=False)
+        if domain:
+            resources = Address.objects.filter(prefix=domain)
+        else:
+            resources = Address.objects.filter(prefix__in=prefixes)
+        if free_only:
+            states = list(State.objects.filter(name="Free"))
+            resources = resources.exclude(state__in=states)
         return {
             "object": self.object,
             "domains": prefixes,
-            "resources": list(Address.objects.filter(prefix__in=prefixes).order_by("address")),
+            "resources": list(resources.order_by("address")),
         }
 
     @classmethod
