@@ -139,6 +139,10 @@ class Script(BaseScript):
         slots, modules, ports = set(), set(), set()
         if not self.has_snmp():
             return slots, modules, ports
+        max_slots, s_pos = 0, 0
+        if self.is_me60:
+            # ME60-X16A, ME60-X8A, ME60-X16, ME60-X8, ME60-X3 filter LPU
+            max_slots = int(self.version["platform"].strip("A")[6:])
         for oid, entity_class in self.snmp.getnext(
             mib["ENTITY-MIB::entPhysicalClass"],
             bulk=False,
@@ -146,8 +150,12 @@ class Script(BaseScript):
             _, index = oid.rsplit(".", 1)
             if entity_class == 9:
                 modules.add(index)
+                if max_slots:
+                    slots.add(s_pos)
             elif entity_class == 10:
                 ports.add(index)
+            elif entity_class == 5:
+                s_pos = index
         transceivers = set()
         if ports:
             r = self.snmp.get_chunked(
@@ -157,36 +165,12 @@ class Script(BaseScript):
                 if not v.strip():
                     continue
                 transceivers.add(oid.rsplit(".", 1)[-1])
+        if slots:
+            r = self.snmp.get_chunked(
+                [mib["ENTITY-MIB::entPhysicalParentRelPos", x] for x in sorted(slots)],
+            )
+            slots = [str(x) for x in set(r.values()) if x <= max_slots]
         return slots, modules, transceivers
-
-    def has_slot(self):
-        """
-        For devices contains more one slots get count
-        """
-        slots = set()
-        if "ME60" in self.version.get("platform", ""):
-            # ME60-X16A, ME60-X8A, ME60-X16, ME60-X8, ME60-X3 filter LPU
-            n = self.version.get("platform", "").strip("A")
-            n = int(n[6:])
-
-            if self.has_snmp():
-                s_pos = 0
-                for index, entity_type, entity_pos in list(
-                    self.snmp.get_tables(
-                        [
-                            mib["ENTITY-MIB::entPhysicalClass"],
-                            mib["ENTITY-MIB::entPhysicalParentRelPos"],
-                        ],
-                        bulk=True,
-                        cached=True,
-                    )
-                ):
-                    if entity_type == 5:
-                        s_pos = entity_pos
-                    elif entity_type == 9:
-                        slots.add(s_pos)
-            return [str(x) for x in slots if x <= n]
-        return slots
 
     @false_on_cli_error
     def has_lacp_cli(self):
@@ -210,6 +194,8 @@ class Script(BaseScript):
             caps["Slot | Member Ids"] = " | ".join(slots)
         if modules:
             caps["Huawei | SNMP | ModuleIndex"] = " | ".join(modules)
+        if transceivers:
+            caps["Huawei | SNMP | DOM Indexes"] = " | ".join(sorted(transceivers, key=alnum_key))
         # Check IP SLA status
         # sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
         # if sla_v:

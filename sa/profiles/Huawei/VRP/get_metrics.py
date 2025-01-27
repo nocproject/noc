@@ -176,7 +176,7 @@ class Script(GetMetricsScript):
             metric="Interface | DOM | Bias Current",
             oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalBiasCurrent"],
             sla_types=[],
-            scale=1,
+            scale=scale(0.001),
             units="m,A",
         ),
     }
@@ -207,19 +207,7 @@ class Script(GetMetricsScript):
         access="S",  # not CLI version
     )
     def get_subscribers_metrics(self, metrics):
-        if "Slot | Member Ids" in self.capabilities:
-            hwSlotIndex = self.capabilities["Slot | Member Ids"].split(" | ")
-            for si in hwSlotIndex:
-                for mi in [0, 1]:
-                    v = self.snmp.get(f"1.3.6.1.4.1.2011.5.2.1.33.1.8.{si}.{mi}")
-                    if v:
-                        self.set_metric(
-                            id=("Subscribers | Summary", None),
-                            labels=("noc::chassis::0", f"noc::slot::{si}", f"noc::module::{mi}"),
-                            value=int(v),
-                            multi=True,
-                        )
-        v = self.snmp.get("1.3.6.1.4.1.2011.5.2.1.14.1.2.0")
+        v = self.snmp.get(mib["HUAWEI-AAA-MIB::hwTotalPPPoeOnlineNum", 0])
         if v:
             self.set_metric(
                 id=("Subscribers | Summary", None),
@@ -227,6 +215,20 @@ class Script(GetMetricsScript):
                 value=int(v),
                 multi=True,
             )
+
+        if "Slot | Member Ids" not in self.capabilities:
+            return
+        hwSlotIndex = self.capabilities["Slot | Member Ids"].split(" | ")
+        for si in hwSlotIndex:
+            for mi in [0, 1]:
+                v = self.snmp.get(mib["HUAWEI-AAA-MIB::hwSlotCardConnectNumPPPAuthNum", si, mi])
+                if v:
+                    self.set_metric(
+                        id=("Subscribers | Summary", None),
+                        labels=("noc::chassis::0", f"noc::slot::{si}", f"noc::module::{mi}"),
+                        value=int(v),
+                        multi=True,
+                    )
 
     @metrics(
         [
@@ -771,7 +773,7 @@ class Script(GetMetricsScript):
             timeout_limits=self.get_snmp_metrics_get_timeout(),
         )
         for r in results:
-            if results[r] is None or results[r] == -1:
+            if results[r] is None or results[r] == -1 or results[r] == 6553 or results[r] == -255:
                 continue
             iface, mc = oids[r]
             self.set_metric(

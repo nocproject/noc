@@ -114,7 +114,7 @@ class MIB(Document):
         """
         # Get MIB preference
         mp = MIBPreference.objects.filter(mib=self.name).first()
-        mib_preference = mp.preference if mp else None
+        mib_preference = mp.preference if mp else 999999
         prefs = {}  # MIB Preferences cache
         # Prefetch existing MIB data
         oids = [v["oid"] for v in data]
