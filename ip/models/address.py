@@ -297,6 +297,10 @@ class Address(NOCModel):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_ipaddress")
 
+    @property
+    def resource_key(self):
+        return self.address
+
     def reserve(
         self,
         allocated_till: Optional[datetime.datetime] = None,

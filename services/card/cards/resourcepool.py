@@ -84,7 +84,7 @@ class ResourcePoolCard(BaseCard):
         # keys
         # resource_pool
         #
-        for a in Address.objects.filter(address__in=item.keys):
+        for a in Address.objects.filter(address__in=[x.key for x in item.keys]):
             if item.action == "allocate":
                 a.reserve(
                     allocated_till=item.allocated_till,
