@@ -37,12 +37,18 @@
     </tbody>
 </table>
 <div class="row" style="padding-left: 15px;">
-    <div class="form-group form-inline">
+    <div class="form-group form-inline col-md-6">
         <div id="filter-text" class="field">Filter by Domain</div>
         <label for="limit" class="control-label">Show Limit:</label>
-        <input id="limit" type="number" class="form-control small-input" value="1" min="1" max="1000" step="1">
+        <input id="limit" type="number" class="form-control input-sm" value="1" min="1" max="1000" step="1">
         <button id="reset-btn" type="button" class="btn btn-sm btn-secondary"
                 onclick="resetFilter()">Reset Filter</button>
+    </div>
+    <div class="form-group form-inline col-md-6">
+        <label for="allocated_till" class="control-label">Allocated till:</label>
+        <input id="allocated_till" type="date" class="form-control input-sm">
+        <label for="tt_id" class="control-label">TT id:</label>
+        <input id="tt_id" type="text" class="form-control input-sm">
     </div>
 </div>
 <div class="row" style="padding-right: 15px;">
@@ -89,14 +95,20 @@
 function toFreeClick(objectId){
     const resources = getSelectedResource(),
           body = {keys: resources, resource_pool: objectId, action: "free"};
-    console.log("free", body);
     sendPost(body);
 }
 function reserveClick(objectId){
     const resources = getSelectedResource(),
-          body = {keys: resources, resource_pool: objectId, action: "allocate"};
-    console.log("reserve", body);
-//    sendPost(body);
+          body = {keys: resources, resource_pool: objectId, action: "allocate"},
+          allocated_till = document.getElementById("allocated_till").value,
+          tt_id = document.getElementById("tt_id").value;
+    if(allocated_till){
+        body.allocated_till = allocated_till;
+    }
+    if(tt_id){
+        body.tt_id = tt_id;
+    }
+    sendPost(body);
 }
 function getSelectedResource(){
     const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -133,7 +145,6 @@ function sendPost(data){
             }
         })
         .then(result => {
-            console.log('Success:', result);
             window.location.reload();
         })
         .catch(error => {
@@ -158,7 +169,6 @@ function updateParams(params){
     window.location.href = url.toString();
 }
 $(document).ready(function() {
-    console.log("Document Ready");
     const filterTextField = document.getElementById("filter-text"),
         limitField = document.getElementById("limit"),
         urlParams = new URLSearchParams(window.location.search),
