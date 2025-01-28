@@ -1,0 +1,186 @@
+<div class="row">
+    <div class="col-md-4 field">
+        <b>Name:</b>
+        <span>{{ object.name }}</span>
+    </div>
+    <div class="col-md-4 field">
+        <b>Description:</b>
+        <span>{{ object.description }}</span>
+    </div>
+    <div class="col-md-4 field">
+        <b>Used:</b>
+        <span>{{ object.used | default('0') }}</span>
+    </div>
+</div>
+<table class="table table-condensed table-hover my-2">
+    <thead>
+        <tr>
+            <th class="col-md-3">Name</th>
+            <th class="col-md-6">Description</th>
+            <th class="col-md-1">Used</th>
+            <th class="col-md-1">Show Resource</th>
+            <th class="col-md-1">Show Free</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for d in domains %}
+        <tr >
+            <td id="domain-{{ d.id }}">{{ d.name }}</td>
+            <td>{{ d.description }}</td>
+            <td>{{ d.used | default('0') }}</td>
+            <td><button type="button" class="btn btn-xs btn-secondary" 
+                        onclick="updateParams([['domain', {{ d.id }}], ['free_only', false]])">Show</button></td>
+            <td><button type="button" class="btn btn-xs btn-secondary" 
+                        onclick="updateParams([['domain', {{ d.id }}], ['free_only', true]])">Show Free</button></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="row" style="padding-left: 15px;">
+    <div class="form-group form-inline">
+        <div id="filter-text" class="field">Filter by Domain</div>
+        <label for="limit" class="control-label">Show Limit:</label>
+        <input id="limit" type="number" class="form-control small-input" value="1" min="1" max="1000" step="1">
+        <button id="reset-btn" type="button" class="btn btn-sm btn-secondary"
+                onclick="resetFilter()">Reset Filter</button>
+    </div>
+</div>
+<div class="row" style="padding-right: 15px;">
+    <div class="pull-right">
+        <div class="form-inline">
+            <button id="to-free-btn" type="button" class="btn btn-sm btn-secondary allocate"
+                    onclick="toFreeClick('{{ object.id }}')" disabled>To Free</button>
+            <button id="reserve-btn" type="button" class="btn btn-sm btn-secondary allocate"
+                    onclick="reserveClick('{{ object.id }}')" disabled>Reserve</button>
+        </div>
+    </div>
+</div>
+<table class="table table-condensed table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Resource</th>
+            <th>Name</th>
+            <th>State</th>
+            <th>Last Seen</th>
+            <th>Device</th>
+            <th>allocated</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in resources %}
+        <tr>
+            <td><input data-id="{{ r.id }}" data-domain="{{ r.prefix.id }}" type="checkbox"></td>
+            <td>{{ r }}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.state }}</td>
+            <td>{{ r.last_seen if r.last_seen == "None" else "None is string" }}</td>
+            <td>{{ r.device | default('-') }}</td>
+            <td>{{ r.allocated | default('-') }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="7">There are no resources for the selected criteria</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<script>
+function toFreeClick(objectId){
+    const resources = getSelectedResource(),
+          body = {keys: resources, resource_pool: objectId, action: "free"};
+    console.log("free", body);
+    sendPost(body);
+}
+function reserveClick(objectId){
+    const resources = getSelectedResource(),
+          body = {keys: resources, resource_pool: objectId, action: "allocate"};
+    console.log("reserve", body);
+//    sendPost(body);
+}
+function getSelectedResource(){
+    const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    return [...checkedCheckboxes].map(el=>{return {key: el.dataset.id, domain: el.dataset.domain}});
+}
+function resetFilter(){
+    const url = new URL(window.location.href);
+    url.search = '';
+    window.location.href = url.toString();
+}
+function enableButtons(state){
+    const buttons = document.querySelectorAll("button.allocate");
+    buttons.forEach(button=>{
+        button.disabled = state;
+    });
+}
+function checkSelection(){
+    if (getSelectedResource().length > 0) {
+        enableButtons(false); 
+    } else {
+        enableButtons(true);
+    }
+}
+function sendPost(data){
+    fetch('/api/card/resourcepool/allocate/', {
+        method: 'POST',
+        body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error: ' + response.statusText);
+            }
+        })
+        .then(result => {
+            console.log('Success:', result);
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error(error);
+        });
+ }
+function updateParams(params){
+    const url = new URL(window.location.href),
+          limitField = parseInt(document.getElementById("limit").value);
+    params.push(["limit", limitField]);
+    for(const [key, value] of params){
+        if(key === "free_only" && value === false){
+         if(url.searchParams.has(key)) url.searchParams.delete(key);
+            continue;
+        }
+        if(key === "limit" && value === 1){
+            if(url.searchParams.has(key)) url.searchParams.delete(key); 
+            continue;
+        }
+        url.searchParams.set(key, value);
+    }
+    window.location.href = url.toString();
+}
+$(document).ready(function() {
+    console.log("Document Ready");
+    const filterTextField = document.getElementById("filter-text"),
+        limitField = document.getElementById("limit"),
+        urlParams = new URLSearchParams(window.location.search),
+        domainId = urlParams.get("domain"),
+        isFree = urlParams.get("free_only"),
+        limit = urlParams.get("limit") || 1,
+        checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    let domainText = "None", isFreeText = "All";
+    if(domainId){
+        const domainField = document.getElementById("domain-" + domainId);
+        domainText = domainField.innerText || "None";
+    }
+    if(limitField){
+        limitField.value = limit;
+    }
+    if(isFree){
+        isFreeText = "Yes";
+    }
+    checkSelection();
+    filterTextField.innerText = `Filter by domain: '${domainText}', is free '${isFreeText}'`;
+    [...checkboxes].forEach(ch=>{
+        ch.addEventListener('change', checkSelection);
+    })
+});
+</script>
