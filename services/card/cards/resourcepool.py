@@ -84,6 +84,16 @@ class ResourcePoolCard(BaseCard):
         # keys
         # resource_pool
         #
+        for a in Address.objects.filter(address__in=item.keys):
+            if item.action == "allocate":
+                a.reserve(
+                    allocated_till=item.allocated_till,
+                    reservation_id=item.tt_id,
+                    confirm=item.confirm,
+                )
+            elif item.action == "free":
+                new_state = a.profile.workflow.get_default_state()
+                a.set_state(new_state)
         return RedirectResponse(
             f"/api/card/view/{cls.name}/{item.resource_pool}/",
             status_code=status.HTTP_200_OK,
