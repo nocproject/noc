@@ -12,6 +12,8 @@ from typing import List, Optional
 
 # Python modules
 from pydantic import BaseModel
+from fastapi import status
+from fastapi.responses import RedirectResponse
 
 # NOC modules
 from noc.inv.models.resourcepool import ResourcePool
@@ -59,7 +61,7 @@ class ResourcePoolCard(BaseCard):
             resources = Address.objects.filter(prefix__in=prefixes)
         if free_only:
             states = list(State.objects.filter(name="Free"))
-            resources = resources.exclude(state__in=states)
+            resources = resources.filter(state__in=states)
         return {
             "object": self.object,
             "domains": prefixes,
@@ -82,4 +84,7 @@ class ResourcePoolCard(BaseCard):
         # keys
         # resource_pool
         #
-        return cls.render()
+        return RedirectResponse(
+            f"/api/card/view/{cls.name}/{item.resource_pool}/",
+            status_code=status.HTTP_200_OK,
+        )
