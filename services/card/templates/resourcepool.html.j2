@@ -36,9 +36,10 @@
                 onclick="allocateClick('{{ object.id }}')">Allocate</button>
     </div>
 </div>
-<table class="table table-condensed table-hover my-2">
+<table class="domains table table-condensed table-hover my-2">
     <thead>
         <tr>
+            <th></th>
             <th class="col-md-3">Name</th>
             <th class="col-md-6">Description</th>
             <th class="col-md-1">Usage</th>
@@ -48,7 +49,8 @@
     </thead>
     <tbody>
     {% for d in domains %}
-        <tr >
+        <tr>
+            <td><input data-domain="{{ d.id }}" type="checkbox"></td>
             <td id="domain-{{ d.id }}">{{ d.name }}</td>
             <td>{{ d.description }}</td>
             <td>{{ d.usage | default('0') | round(2) }}%</td>
@@ -75,7 +77,7 @@
         </div>
     </div>
 </div>
-<table class="table table-condensed table-hover">
+<table class="resources table table-condensed table-hover">
     <thead>
         <tr>
             <th></th>
@@ -106,19 +108,19 @@
     </tbody>
 </table>
 <script>
-function allocateClick(objectId){
-    allocate(objectId, "allocate");
-}
 function toFreeClick(objectId){
-    const resources = getSelectedResource(),
+    const resources = getSelected(".resource"),
           body = {keys: resources, resource_pool: objectId, action: "free"};
     sendPost(body);
 }
-function reserveClick(objectId){
-    allocate(objectId, "reserve");
+function allocateClick(objectId){
+    allocate(objectId, "allocate", ".domains");
 }
-function allocate(objectId, action){
-    const resources = getSelectedResource(),
+function reserveClick(objectId){
+    allocate(objectId, "reserve", ".resources");
+}
+function allocate(objectId, action, select){
+    const resources = getSelected(select),
           body = {keys: resources, resource_pool: objectId, action: action},
           allocated_till = document.getElementById("allocated_till").value,
           tt_id = document.getElementById("tt_id").value;
@@ -130,9 +132,15 @@ function allocate(objectId, action){
     }
     sendPost(body);
 }
-function getSelectedResource(){
-    const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    return [...checkedCheckboxes].map(el=>{return {key: el.dataset.id, domain: el.dataset.domain}});
+function getSelected(table){
+    const checkedCheckboxes = document.querySelectorAll(table + ' input[type="checkbox"]:checked');
+    return [...checkedCheckboxes].map(el=>{
+            let value = {domain: el.dataset.domain};
+            if(el.dataset.id) {
+                value.key = el.dataset.id;
+            }
+            return value;
+        });
 }
 function resetFilter(){
     const url = new URL(window.location.href);
@@ -146,7 +154,7 @@ function enableButtons(state){
     });
 }
 function checkSelection(){
-    if (getSelectedResource().length > 0) {
+    if (getSelected(".resources").length > 0) {
         enableButtons(false); 
     } else {
         enableButtons(true);
