@@ -258,3 +258,18 @@ class ResourcePool(Document):
         # errors_count
         # Errors
         return allocated
+
+    @property
+    def usage(self) -> Optional[float]:
+        """Calculate pool resource usage"""
+        from noc.ip.models.prefix import Prefix
+        from noc.vc.models.l2domain import L2Domain
+
+        domains = self.get_resource_domains()
+        if not domains:
+            return
+        if self.type == "ip":
+            return Prefix.get_resource_pool_usage([self])
+        elif self.type == "vlan":
+            return L2Domain.get_resource_pool_usage([self])
+        return

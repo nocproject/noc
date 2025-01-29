@@ -301,6 +301,10 @@ class Address(NOCModel):
     def resource_key(self):
         return self.address
 
+    @property
+    def resource_domain(self):
+        return self.prefix
+
     def reserve(
         self,
         allocated_till: Optional[datetime.datetime] = None,
