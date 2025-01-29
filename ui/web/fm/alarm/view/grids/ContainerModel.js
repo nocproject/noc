@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarm application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.ContainerModel");
@@ -18,6 +18,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
       objectsFiltered: 0,
       activeAlarmsSelected: null,
     },
+    volume: false,
+    autoReload: false,
   },
   formulas: {
     alarmsTotal: function(get){
@@ -56,6 +58,17 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
     },
     activeFilterIsClosed: function(get){
       return get("activeFilter.status") === "C";
+    },
+    volumeIcon: function(get){
+      // NOC.glyph.volume_up or NOC.glyph.volume_off
+      return get("volume") ? "xf028" : "xf026";
+    },
+    autoReloadIcon: function(get){
+      //  NOC.glyph.refresh or NOC.glyph.ban
+      return get("autoReload") ? "xf021" : "xf05e";
+    },
+    autoReloadText: function(get){
+      return __("Auto reload : ") + (get("autoReload") ? __("ON") : __("OFF"));
     },
   },
 });
