@@ -1,15 +1,39 @@
-<div class="row">
-    <div class="col-md-4 field">
+<style>
+    .p-l {
+        padding-left: 15px;
+    }
+    .p-r {
+        padding-right: 15px;
+    }
+</style>
+<div class="row" style="padding: 10px 0;">
+    <div class="col-md-4">
         <b>Name:</b>
         <span>{{ object.name }}</span>
     </div>
-    <div class="col-md-4 field">
+    <div class="col-md-4">
         <b>Description:</b>
         <span>{{ object.description }}</span>
     </div>
-    <div class="col-md-4 field">
-        <b>Used:</b>
-        <span>{{ object.used | default('0') }}</span>
+    <div class="col-md-4">
+        <b>Usage:</b>
+        <span>{{ object.usage | default('0') | round(2) }}%</span>
+    </div>
+</div>
+<div class="row p-l">
+    <div class="form-group form-inline">
+        <label for="allocated_till" class="control-label">Allocated till:</label>
+        <input id="allocated_till" type="date" class="form-control input-sm">
+        <label for="tt_id" class="control-label">TT id:</label>
+        <input id="tt_id" type="text" class="form-control input-sm">
+        <label for="limit" class="control-label">Allocated Limit:</label>
+        <input id="limit" type="number" class="form-control input-sm" value="1" min="1" max="1000" step="1">
+    </div>
+</div>
+<div class="row">
+    <div class="form-group form-inline col-md-6">
+        <button id="allocate-btn" type="button" class="btn btn-sm btn-secondary"
+                onclick="allocateClick('{{ object.id }}')">Allocate</button>
     </div>
 </div>
 <table class="table table-condensed table-hover my-2">
@@ -17,9 +41,9 @@
         <tr>
             <th class="col-md-3">Name</th>
             <th class="col-md-6">Description</th>
-            <th class="col-md-1">Used</th>
-            <th class="col-md-1">Show Resource</th>
-            <th class="col-md-1">Show Free</th>
+            <th class="col-md-1">Usage</th>
+            <th class="col-md-1">Resource</th>
+            <th class="col-md-1">Free</th>
         </tr>
     </thead>
     <tbody>
@@ -27,7 +51,7 @@
         <tr >
             <td id="domain-{{ d.id }}">{{ d.name }}</td>
             <td>{{ d.description }}</td>
-            <td>{{ d.used | default('0') }}</td>
+            <td>{{ d.usage | default('0') | round(2) }}%</td>
             <td><button type="button" class="btn btn-xs btn-secondary" 
                         onclick="updateParams([['domain', {{ d.id }}], ['free_only', false]])">Show</button></td>
             <td><button type="button" class="btn btn-xs btn-secondary" 
@@ -36,24 +60,14 @@
     {% endfor %}
     </tbody>
 </table>
-<div class="row" style="padding-left: 15px;">
+<div class="row p-l p-r">
     <div class="form-group form-inline col-md-6">
         <div id="filter-text" class="field">Filter by Domain</div>
-        <label for="limit" class="control-label">Show Limit:</label>
-        <input id="limit" type="number" class="form-control input-sm" value="1" min="1" max="1000" step="1">
-        <button id="reset-btn" type="button" class="btn btn-sm btn-secondary"
-                onclick="resetFilter()">Reset Filter</button>
     </div>
-    <div class="form-group form-inline col-md-6">
-        <label for="allocated_till" class="control-label">Allocated till:</label>
-        <input id="allocated_till" type="date" class="form-control input-sm">
-        <label for="tt_id" class="control-label">TT id:</label>
-        <input id="tt_id" type="text" class="form-control input-sm">
-    </div>
-</div>
-<div class="row" style="padding-right: 15px;">
     <div class="pull-right">
         <div class="form-inline">
+            <button id="reset-btn" type="button" class="btn btn-sm btn-secondary"
+                    onclick="resetFilter()">Reset Filter</button>
             <button id="to-free-btn" type="button" class="btn btn-sm btn-secondary allocate"
                     onclick="toFreeClick('{{ object.id }}')" disabled>To Free</button>
             <button id="reserve-btn" type="button" class="btn btn-sm btn-secondary allocate"
@@ -80,7 +94,7 @@
             <td>{{ r }}</td>
             <td>{{ r.name }}</td>
             <td>{{ r.state }}</td>
-            <td>{{ r.last_seen if r.last_seen == "None" else "None is string" }}</td>
+            <td>{{ r.last_seen | default('-')}}</td>
             <td>{{ r.device | default('-') }}</td>
             <td>{{ r.allocated | default('-') }}</td>
         </tr>
@@ -92,14 +106,20 @@
     </tbody>
 </table>
 <script>
+function allocateClick(objectId){
+    allocate(objectId, "allocate");
+}
 function toFreeClick(objectId){
     const resources = getSelectedResource(),
           body = {keys: resources, resource_pool: objectId, action: "free"};
     sendPost(body);
 }
 function reserveClick(objectId){
+    allocate(objectId, "reserve");
+}
+function allocate(objectId, action){
     const resources = getSelectedResource(),
-          body = {keys: resources, resource_pool: objectId, action: "allocate"},
+          body = {keys: resources, resource_pool: objectId, action: action},
           allocated_till = document.getElementById("allocated_till").value,
           tt_id = document.getElementById("tt_id").value;
     if(allocated_till){
