@@ -167,6 +167,9 @@ function checkSelection(){
 function sendPost(data){
     fetch('/api/card/resourcepool/allocate/', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data)
         })
         .then(response => {
