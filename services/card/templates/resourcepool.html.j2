@@ -130,6 +130,10 @@ function allocate(objectId, action, select){
     if(tt_id){
         body.tt_id = tt_id;
     }
+    if(action === "allocate"){
+        const limit = parseInt(document.getElementById("limit").value);
+        body.limit = limit;
+    }
     sendPost(body);
 }
 function getSelected(table){
@@ -180,16 +184,10 @@ function sendPost(data){
         });
  }
 function updateParams(params){
-    const url = new URL(window.location.href),
-          limitField = parseInt(document.getElementById("limit").value);
-    params.push(["limit", limitField]);
+    const url = new URL(window.location.href);
     for(const [key, value] of params){
         if(key === "free_only" && value === false){
          if(url.searchParams.has(key)) url.searchParams.delete(key);
-            continue;
-        }
-        if(key === "limit" && value === 1){
-            if(url.searchParams.has(key)) url.searchParams.delete(key); 
             continue;
         }
         url.searchParams.set(key, value);
@@ -198,19 +196,14 @@ function updateParams(params){
 }
 $(document).ready(function() {
     const filterTextField = document.getElementById("filter-text"),
-        limitField = document.getElementById("limit"),
         urlParams = new URLSearchParams(window.location.search),
         domainId = urlParams.get("domain"),
         isFree = urlParams.get("free_only"),
-        limit = urlParams.get("limit") || 1,
         checkboxes = document.querySelectorAll('input[type="checkbox"]');
     let domainText = "None", isFreeText = "All";
     if(domainId){
         const domainField = document.getElementById("domain-" + domainId);
         domainText = domainField.innerText || "None";
-    }
-    if(limitField){
-        limitField.value = limit;
     }
     if(isFree){
         isFreeText = "Yes";
