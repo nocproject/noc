@@ -25,6 +25,12 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
       },
     });
   },
+  onRefresh: function(){
+    this.getView().lookup("fm-alarm-active").getStore().reload();
+    if(this.getViewModel().get("recentFilter.cleared_after") > 0){
+      this.getView().lookup("fm-alarm-recent").getStore().reload();
+    }
+  },
   onReload: function(grid){
     grid.getStore().reload();
   },

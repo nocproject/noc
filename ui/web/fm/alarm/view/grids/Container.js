@@ -24,6 +24,10 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
   reference: "fm-alarm-list",
   tbar: [
     {
+      glyph: NOC.glyph.refresh,
+      handler: "onRefresh",
+    },
+    {
       text: __("Filtering List"),
       glyph: NOC.glyph.filter,
       tooltip: __("Show/Hide Filter"),
