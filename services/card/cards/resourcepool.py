@@ -12,7 +12,7 @@ from typing import List, Optional
 
 # Python modules
 from pydantic import BaseModel
-from fastapi import status
+from fastapi import status, Request
 from fastapi.responses import RedirectResponse
 
 # NOC modules
@@ -24,15 +24,15 @@ from .base import BaseCard
 
 
 class ResourceKey(BaseModel):
-    key: str
+    key: Optional[str] = None
     domain: Optional[str] = None
 
 
 class AllocatorRequest(BaseModel):
     # [{"domain": XXX, "key": XXXX}]
-    keys: List[ResourceKey]
     resource_pool: str
     limit: int = 1
+    keys: List[ResourceKey]
     tt_id: Optional[str] = None
     allocated_till: Optional[datetime.date] = None
     action: str = "allocate"
@@ -72,6 +72,7 @@ class ResourcePoolCard(BaseCard):
     def allocate(
         cls,
         item: AllocatorRequest,
+        request: Request,
     ):
         """
         keys: [{"domain": XXX, "key": XXXX}]
@@ -81,19 +82,31 @@ class ResourcePoolCard(BaseCard):
         confirm: bool
         """
         print("Allocator", item)
+        pool = ResourcePool.get_by_id(item.resource_pool)
+        keys = [k.key for k in item.keys]
+        with ResourcePool.acquire([pool]):
+            allocator = pool.get_allocator()
+            r = allocator(
+                # domain=l2_domain,
+                resource_keys=keys or None,
+                limit=item.limit,
+                reservation_id=item.tt_id,
+                allocated_till=item.allocated_till,
+                user=request.user,
+            )
         # keys
         # resource_pool
         #
-        for a in Address.objects.filter(address__in=[x.key for x in item.keys]):
-            if item.action == "allocate":
-                a.reserve(
-                    allocated_till=item.allocated_till,
-                    reservation_id=item.tt_id,
-                    confirm=item.confirm,
-                )
-            elif item.action == "free":
-                new_state = a.profile.workflow.get_default_state()
-                a.set_state(new_state)
+        # for a in Address.objects.filter(address__in=[x.key for x in item.keys]):
+        #     if item.action == "allocate":
+        #         a.reserve(
+        #             allocated_till=item.allocated_till,
+        #             reservation_id=item.tt_id,
+        #             confirm=item.confirm,
+        #         )
+        #     elif item.action == "free":
+        #         new_state = a.profile.workflow.get_default_state()
+        #         a.set_state(new_state)
         return RedirectResponse(
             f"/api/card/view/{cls.name}/{item.resource_pool}/",
             status_code=status.HTTP_200_OK,
