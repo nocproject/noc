@@ -20,6 +20,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
     },
     volume: false,
     autoReload: false,
+    icon: "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>",
   },
   formulas: {
     alarmsTotal: function(get){

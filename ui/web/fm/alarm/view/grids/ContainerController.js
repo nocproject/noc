@@ -35,11 +35,26 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     });
     this.callParent();
     this.subscribeToEvents();
+    var activeGridStore = this.lookupReference("fm-alarm-active").getStore();
+    activeGridStore.addListener("beforeload", this.onBeforeLoad, this);
+    activeGridStore.addListener("load", this.onLoad, this);
   },
   destroy: function(){
     this.unsubscribeFromEvents();
     this.stopPolling();
     this.setContainerDisabled(false);
+    this.lookupReference("fm-alarm-active").getStore().removeListener("beforeload", this.onBeforeLoad);
+    this.lookupReference("fm-alarm-active").getStore().removeListener("load", this.onLoad);
+  },
+  onBeforeLoad: function(){
+    this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
+  },
+  onLoad: function(){
+    var app = this.getView().up("[itemId=fm-alarm]"),
+      vm = app.getViewModel();
+    if(!vm.get("containerDisabled")){
+      this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+    }
   },
   subscribeToEvents: function(){
     window.addEventListener("focus", this.handleWindowFocus.bind(this));
@@ -74,6 +89,9 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     var app = this.getView().up("[itemId=fm-alarm]"),
       vm = app.getViewModel();
     vm.set("containerDisabled", value);
+    if(value){
+      this.getViewModel().set("icon", this.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
+    }
   },
   onAutoReloadToggle: function(self, pressed){
     this.getViewModel().set("autoReload", pressed);
@@ -444,5 +462,11 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         }
       }),
     }).show();
+  },
+  generateIcon: function(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
 });

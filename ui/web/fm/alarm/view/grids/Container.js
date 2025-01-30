@@ -127,6 +127,16 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
         click: "onResetFilter",
       },
     },
+    "->",
+    {
+      xtype: "tbtext",
+      width: 32,
+      height: 32,
+      padding: "8 0 0 4",
+      bind: {
+        html: "{icon}",
+      },
+    },
   ],
   items: [
     {
