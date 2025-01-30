@@ -41,6 +41,8 @@ from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
 from noc.core.service.loader import get_service
+from noc.core.models.serviceinstances import InstanceType, ServiceInstanceConfig
+from noc.core.models.inputsources import InputSource
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -680,55 +682,14 @@ class Service(Document):
             "caps": self.get_caps(),
         }
 
-    def find_instance(
-        self,
-        port: int = 0,
-        name: Optional[str] = None,
-        addresses: Optional[List[str]] = None,
-        pool: Optional[str] = None,
-        managed_object: Optional[str] = None,
-        remote_id: Optional[str] = None,
-    ) -> Optional["ServiceInstance"]:
-        """
-        Find Service instance by host ID
-
-        Attrs:
-            address: Instance IP Address
-            pool: Address Pool
-            managed_object: Instance Host
-            remote_id: Instance ID on Remote System
-
-        """
-        if remote_id:
-            return ServiceInstance.objects.filter(service=self.id, remote_id=remote_id).first()
-        si = None
-        if managed_object and port:
-            si = ServiceInstance.objects.filter(
-                service=self.id, managed_object=managed_object, port=port
-            ).first()
-        elif managed_object:
-            si = ServiceInstance.objects.filter(
-                service=self.id,
-                managed_object=managed_object,
-            ).first()
-        if not si and addresses and port:
-            si = ServiceInstance.objects.filter(
-                service=self.id, addresses__address__in=addresses
-            ).first()
-        elif not si and addresses:
-            si = ServiceInstance.objects.filter(
-                service=self.id, addresses__address__in=addresses
-            ).first()
-        return si
-
     def register_instance(
         self,
-        source: str,
-        port: int,
-        name: str,
-        addresses: Optional[List[str]] = None,
+        type: InstanceType,
+        source: InputSource = InputSource.MANUAL,
+        name: Optional[str] = None,
+        macs: Optional[List[str]] = None,
         fqdn: Optional[str] = None,
-        pool: Optional[str] = None,
+        nri_port: Optional[str] = None,
         managed_object: Optional[str] = None,
         remote_id: Optional[str] = None,
     ):
@@ -736,41 +697,45 @@ class Service(Document):
         Register Instance for Service
 
         Args:
+            type: Instance type (from config)
             source: Instance source: manual, etl, discovery
-            port: Instance TCP/UDP port
             name: Instance name, for host - process name
-            addresses: Instance IP Address
             fqdn: Instance FQDN (for resolve address)
-            pool: Address Pool
+            macs: MAC Address List
             managed_object: Instance Host
             remote_id: Instance ID on Remote System
+            nri_port: Network interface name on Remote System
         """
-        if source == "etl" and not remote_id:
+        if source == InputSource.ETL and not remote_id:
             raise AttributeError("remote_id required for ETL source")
-        if source == "discovery" and not managed_object:
+        elif source == InputSource.DISCOVERY and not managed_object:
             raise AttributeError("managed_object required for Discovery source")
-        if not addresses and not managed_object and not remote_id:
-            raise AttributeError("One of Host ID required")
-        instance = self.find_instance(
-            addresses=addresses,
-            managed_object=managed_object,
+        cfg = ServiceInstanceConfig.get_config(type, self)
+        qs = cfg.queryset(
+            service=self,
+            name=name,
+            macs=macs,
             remote_id=remote_id,
-            port=port,
-            pool=pool,
+            managed_object=managed_object,
         )
-        if not instance:
-            instance = ServiceInstance(
-                service=self.id,
+        si = ServiceInstance.objects.filter(qs)
+        if not si:
+            si = ServiceInstance.from_config(
+                service=self,
+                config=cfg,
                 name=name,
                 fqdn=fqdn,
-                # pool=pool,
                 remote_id=remote_id,
+                nri_port=nri_port,
+                macs=macs,
             )
-        if instance.managed_object != managed_object:
-            instance.managed_object = managed_object
-        instance.save()
-        instance.seen(source=source, addresses=addresses, port=port)
-        return instance
+        if si.managed_object:
+            si.set_object(managed_object)
+        if si.fqdn != fqdn:
+            si.fqdn = fqdn
+            ServiceInstance.objects.filter(id=si.id).update(fqdn=fqdn)
+        # ? si.seen(source=source)
+        return si
 
     @classmethod
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:

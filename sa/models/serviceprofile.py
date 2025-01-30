@@ -8,7 +8,7 @@
 # Python modules
 import operator
 import re
-from enum import IntEnum
+import enum
 from threading import Lock
 from typing import Optional, Union, Tuple, List
 from functools import partial
@@ -41,6 +41,7 @@ from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import defer
 from noc.core.hash import hash_int
+from noc.core.models.serviceinstances import Status, InstanceType
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
@@ -50,14 +51,6 @@ from noc.core.change.decorator import change
 
 
 id_lock = Lock()
-
-
-class Status(IntEnum):
-    UNKNOWN = 0
-    UP = 1
-    SLIGHTLY_DEGRADED = 2
-    DEGRADED = 3
-    DOWN = 4
 
 
 class CapsSettings(EmbeddedDocument):
@@ -77,23 +70,32 @@ class InstancePolicySettings(EmbeddedDocument):
     """
     Rules for Resource to Instance map.
     Attributes:
-        type:
-            * AS Service - on local instance
-            * AS Client - create binding instance
+        # type:
+        #     * AS Service - on local instance
+        #     * AS Client - create binding instance
+        type: global_id/resources
+            * L2 (MAC) - interface, vlan
+            * L3 (IP + Port ? pool) - interface, subinterface, vlan
+            * OS Process (ManagedObject + Pid|Name) - L3
+            * Chanel - Interface, BGP Peer
+
         only_one_object: Instance only one object (if more - replace)
         allow_manual: Allow manual binding instance
         send_approve: Send Resource Approve if bind to Instance   # Reserved ?
         allow_resources: Resource Codes Allowed to bind
+        allow_dynamic_register: Allow automatically update address/port
     """
 
-    provide = StringField(choices=[("C", "AS Client"), ("S", "AS Service")], default="S")
+    # provide = StringField(choices=[("C", "AS Client"), ("S", "AS Service")], default="S")
+    instance_type = EnumField(InstanceType, default=InstanceType.OTHER)
     allow_manual: bool = BooleanField(default=False)
     only_one_object = BooleanField(default=True)  # Allow bind multiple resources
     allow_resources: List[str] = ListField(
         StringField(choices=[("si", "SubInterface"), ("if", "Interface")])
     )
     send_approve: bool = BooleanField(default=False)
-    # Update resource Status from service
+    # allow_dynamic_register: bool  = BooleanField(default=False)
+    # Update Instance Status from resource
     # update_status = BooleanField(default=False)
 
 

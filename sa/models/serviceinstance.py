@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import logging
+from hashlib import sha512
 from dataclasses import dataclass
 from typing import Optional, List, Iterable, Any
 
@@ -21,6 +22,8 @@ from mongoengine.fields import (
     DateTimeField,
     FloatField,
     ListField,
+    EnumField,
+    BinaryField,
     EmbeddedDocumentListField,
 )
 from mongoengine.queryset.visitor import Q
@@ -29,14 +32,15 @@ from mongoengine.queryset.visitor import Q
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.ip import IP
 from noc.core.resource import from_resource
+from noc.core.models.serviceinstances import InstanceType, ServiceInstanceConfig
+from noc.core.models.inputsources import InputSource
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.main.models.pool import Pool
 
-DISCOVERY_SOURCE = "discovery"
-SOURCES = {"discovery", "etl", "manual"}
+DISCOVERY_SOURCE = InputSource.DISCOVERY.value
 CLIENT_INSTANCE_NAME = "client"
 
 logger = logging.getLogger(__name__)
@@ -56,10 +60,15 @@ class AddressItem(EmbeddedDocument):
     address: str = StringField(required=True)
     address_bin = IntField()
     is_active = BooleanField(default=True)
-    sources: List[str] = ListField(StringField(choices=list(SOURCES)))
+    sources: List[str] = ListField(EnumField(InputSource))
 
     def clean(self):
         self.address_bin = IP.prefix(self.address).d
+
+
+class MACItem(EmbeddedDocument):
+    mac = StringField()
+    vlan = IntField(min_value=1, max_value=4095)
 
 
 class ServiceInstance(Document):
@@ -72,7 +81,7 @@ class ServiceInstance(Document):
 
     Attributes:
         service: Reference to Service
-        managed_object: Object for resource binded
+        managed_object: Object for resource bind
         resources: Resource Id List
     """
 
@@ -85,31 +94,42 @@ class ServiceInstance(Document):
             "managed_object",
             "addresses.address",
             "resources",
+            "#reference",
+            "type",
             "remote_id",
-            {"fields": ["service", "managed_object", "remote_id", "port"], "unique": True},
             ("addresses.address_bin", "port"),
+            {"fields": ["service", "managed_object", "remote_id", "port"], "unique": True},
+            {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
-    name: str = StringField(required=True)
     service = PlainReferenceField("sa.Service", required=True)
+    # Instance Description
+    type: InstanceType = EnumField(InstanceType, required=True, default=InstanceType.OTHER)
+    # ? discriminator
+    reference = BinaryField(required=False)
+    # Not required/TTL
     # For port services
     managed_object = ForeignKeyField(ManagedObject, required=False)
     fqdn = StringField()
-    # ? discriminator
     # Sources that find sensor
-    sources = ListField(StringField(choices=list(SOURCES)))
+    sources = ListField(EnumField(InputSource))
     port = IntField(min_value=0, max_value=65536, default=0)
     addresses: List[AddressItem] = EmbeddedDocumentListField(AddressItem)
     # NRI port id, converted by portmapper to native name
+    name: str = StringField(required=False)
+    macs: List[MACItem] = EmbeddedDocumentListField(MACItem)
     nri_port = StringField()
     # Object id in remote system
     remote_id = StringField()
     # CPE
     resources: List[str] = ListField(StringField(required=False))
-    status: bool = BooleanField()
+    # Operation Attributes
+    oper_status: bool = BooleanField()
+    oper_status_change = DateTimeField()
     # Timestamp of last confirmation
     last_seen = DateTimeField()
     uptime = FloatField(default=0)
+    expires = DateTimeField(required=False)
     # used by
     # weight ?
     # labels ?
@@ -186,10 +206,12 @@ class ServiceInstance(Document):
 
     def seen(
         self,
-        source: Optional[str],
+        source: InputSource,
         pool: Optional[Pool] = None,
         addresses: Optional[List[str]] = None,
         port: Optional[str] = None,
+        # managed_object
+        #
         ts: Optional[datetime.datetime] = None,
     ):
         """
@@ -220,7 +242,7 @@ class ServiceInstance(Document):
         """
         Unseen Instance on current source
         """
-        if source and source in SOURCES:
+        if source and source in InputSource:
             self.sources = list(set(self.sources or []) - {source})
             self._get_collection().update_one({"_id": self.id}, {"$pull": {"sources": source}})
         if not source or not self.sources:
@@ -333,6 +355,20 @@ class ServiceInstance(Document):
             if rds and si.remote_id and str(si.service.remote_system.id) != rds.get(si.remote_id):
                 continue
             yield si
+
+    @classmethod
+    def from_config(cls, service, config: ServiceInstanceConfig, **kwargs) -> "ServiceInstance":
+        si = ServiceInstance(
+            type=config.type,
+            service=service,
+            name=kwargs.get("name"),
+            fqdn=kwargs.get("fqdn"),
+            remote_id=kwargs.get("remote_id"),
+            nri_port=kwargs.get("nri_port"),
+        )
+        if kwargs.get("macs"):
+            si.macs = [MACItem(mac=m) for m in kwargs["macs"]]
+        return si
 
     @classmethod
     def get_object_resources(cls, o):

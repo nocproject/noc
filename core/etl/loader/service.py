@@ -13,6 +13,8 @@ from noc.inv.models.capability import Capability
 from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.serviceprofile import ServiceProfile
+from noc.core.models.inputsources import InputSource
+from noc.core.models.serviceinstances import InstanceType
 from .base import BaseLoader
 from ..models.service import Service, Instance
 
@@ -53,22 +55,21 @@ class ServiceLoader(BaseLoader):
         instances = {i["remote_id"]: Instance(**i) for i in fields}
         for si in ServiceInstance.objects.filter(service=o.id, remote_id__exists=True):
             if si.remote_id not in instances:
-                si.unseen("etl")
+                si.unseen(InputSource.ETL)
                 continue
             i = instances.pop(si.remote_id)
-            si.seen("etl", addresses=i.addresses, port=i.port)
+            si.seen(InputSource.ETL, addresses=i.addresses, port=i.port)
             if si.fqdn != i.fqdn:
                 si.fqdn = i.fqdn
                 si.save()
         for i in instances.values():
-            o.register_instance(
-                source="etl",
-                name="",
-                port=i.port,
-                addresses=i.addresses,
+            si = o.register_instance(
+                type=InstanceType.NETWORK_HOST if not i.nri_port else InstanceType.NETWORK_CHANNEL,
+                source=InputSource.ETL,
                 fqdn=i.fqdn,
                 remote_id=i.remote_id,
             )
+            si.seen(InputSource.ETL, addresses=i.addresses, port=i.port)
 
     def find_object(self, v: Dict[str, Any]):
         """
