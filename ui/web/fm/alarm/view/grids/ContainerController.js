@@ -30,6 +30,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   init: function(view){
     this.observer = new IntersectionObserver(function(entries){
       view.isIntersecting = entries[0].isIntersecting;
+      view.getController().disableHandler(!entries[0].isIntersecting);
     }, {
       threshold: 0.1,
     });
@@ -71,7 +72,9 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     this.fireViewEvent("fmAlarmResetFilter");
   },
   handleWindowFocus: function(){
-    this.disableHandler(false);
+    setTimeout(function(me){
+      me.disableHandler(false);
+    }, 100, this);
   },
   //
   handleWindowBlur: function(){
