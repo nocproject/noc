@@ -116,8 +116,8 @@ class VLAN(Document):
         if not vlan:
             return
         domain = managed_object.get_effective_l2_domain()
-        if managed_object.пуе:
-            return VLAN.objects.filter(l2_domain=managed_object.l2_domain, vlan=int(vlan)).first()
+        if domain:
+            return VLAN.get_by_vlan_num(domain, vlan=int(vlan)).first()
 
     @classmethod
     def get_resource_keys(

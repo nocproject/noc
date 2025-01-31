@@ -916,6 +916,15 @@ class ManagedObject(NOCModel):
             )
         ).first()
 
+    @classmethod
+    def get_by_l2_domains(cls, domains: Iterable[str]):
+        """Getting object by L2 Domains"""
+        q = Q(l2_domain__in=[str(x) for x in domains])
+        ns = list(NetworkSegment.objects.filter(l2_domain__in=domains).scalar("id"))
+        if ns:
+            q |= Q(segment__in=ns)
+        return ManagedObject.objects.filter(q)
+
     def iter_changed_datastream(self, changed_fields=None):
         changed_fields = set(changed_fields or [])
         if config.datastream.enable_managedobject:

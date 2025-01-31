@@ -439,7 +439,7 @@ class NetworkSegment(Document):
             Job.remove("scheduler", self.DISCOVERY_JOB, key=self.id)
 
     def on_save(self):
-        from noc.sa.models.managedobject import ManagedObject, MANAGEDOBJECT_CACHE_VERSION
+        from noc.sa.models.managedobject import MANAGEDOBJECT_CACHE_VERSION
 
         if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
             self.ensure_discovery_jobs()
