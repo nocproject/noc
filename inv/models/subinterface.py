@@ -22,6 +22,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 from noc.core.change.decorator import change
 from noc.vc.models.l2domain import L2Domain
+from noc.vc.models.vlan import VLAN
 from noc.main.models.label import Label
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
@@ -157,6 +158,12 @@ class SubInterface(Document):
             yield Label.get_effective_prefixfilter_labels(
                 "subinterface_ipv4_addresses", instance.ipv4_addresses
             )
+        l2_domain = instance.managed_object.get_effective_l2_domain()
+        if instance.untagged_vlan and l2_domain:
+            vlan = VLAN.get_by_vlan_num(l2_domain=l2_domain, vlan_num=instance.untagged_vlan)
+            if vlan and vlan.vlan_role_label:
+                return
+            yield [vlan.vlan_role_label]
 
     @property
     def service(self):
