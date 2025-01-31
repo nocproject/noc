@@ -276,7 +276,7 @@ class RefAppplication(ExtApplication):
 
     def build_vlanrole(self):
         """Vlan Roles Lookup"""
-        return sorted([{"id": x.value, "label": x.name} for x in VLANRole], key=lambda x: x["name"])
+        return sorted([{"id": x.value, "label": x.name} for x in VLANRole], key=lambda x: x["id"])
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):

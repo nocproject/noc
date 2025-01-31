@@ -10,7 +10,7 @@
     "display_order": 0,
     "allow_models": ["inv.Interface", "vc.VLAN"],
     "allow_auto_create": true,
-    "propagate": false,
+    "propagate": true,
     "is_protected": false,
     "is_matching": false,
     "expose_metric": false,

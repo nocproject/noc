@@ -78,8 +78,8 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                 {
                     name: "role",
                     xtype: "main.ref.vlanrole.LookupField",
-                    fieldLabel: __("Workflow"),
-                    allowBlank: false
+                    fieldLabel: __("Role"),
+                    allowBlank: true
                 },
                 {
                     xtype: "fieldset",

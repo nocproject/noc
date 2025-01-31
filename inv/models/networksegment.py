@@ -36,6 +36,7 @@ from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 from noc.core.scheduler.job import Job
+from noc.core.cache.base import cache
 from noc.vc.models.vlanfilter import VLANFilter
 from noc.vc.models.vlan import VLAN
 from noc.vc.models.l2domain import L2Domain
@@ -438,6 +439,8 @@ class NetworkSegment(Document):
             Job.remove("scheduler", self.DISCOVERY_JOB, key=self.id)
 
     def on_save(self):
+        from noc.sa.models.managedobject import ManagedObject, MANAGEDOBJECT_CACHE_VERSION
+
         if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
             self.ensure_discovery_jobs()
         if (
@@ -454,6 +457,11 @@ class NetworkSegment(Document):
             self.update_links()
             if self.parent:
                 self.parent.update_links()
+        # Clean cache
+        cache.delete_many(
+            [f"managedobject-id-{x}" for x in self.managed_objects.values_list("id", flat=True)],
+            version=MANAGEDOBJECT_CACHE_VERSION,
+        )
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_border_cache"), lock=lambda _: id_lock)

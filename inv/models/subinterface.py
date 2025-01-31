@@ -80,7 +80,9 @@ class SubInterface(Document):
     l2_domain = PlainReferenceField(L2Domain, required=False)
     name = StringField()
     description = StringField(required=False)
-    profile = PlainReferenceField(InterfaceProfile, default=InterfaceProfile.get_default_profile)
+    profile: "InterfaceProfile" = PlainReferenceField(
+        InterfaceProfile, default=InterfaceProfile.get_default_profile
+    )
     mtu = IntField(required=False)
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])
@@ -112,6 +114,10 @@ class SubInterface(Document):
     @classmethod
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["SubInterface"]:
         return SubInterface.objects.filter(id=oid).first()
+
+    @property
+    def allow_subinterface_metrics(self):
+        return self.profile.subinterface_apply_policy != "D" and self.profile.metrics
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
@@ -160,10 +166,9 @@ class SubInterface(Document):
             )
         l2_domain = instance.managed_object.get_effective_l2_domain()
         if instance.untagged_vlan and l2_domain:
-            vlan = VLAN.get_by_vlan_num(l2_domain=l2_domain, vlan_num=instance.untagged_vlan)
+            vlan = VLAN.get_by_vlan_num(l2_domain.id, instance.untagged_vlan)
             if vlan and vlan.vlan_role_label:
-                return
-            yield [vlan.vlan_role_label]
+                yield [vlan.vlan_role_label]
 
     @property
     def service(self):
