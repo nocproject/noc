@@ -33,7 +33,7 @@ from mongoengine.queryset.visitor import Q as m_q
 import cachetools
 
 # NOC modules
-from .serviceprofile import ServiceProfile, Status, CalculatedStatusRule
+from .serviceprofile import ServiceProfile, CalculatedStatusRule
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete_check, on_init
@@ -41,7 +41,8 @@ from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
 from noc.core.service.loader import get_service
-from noc.core.models.serviceinstances import InstanceType, ServiceInstanceConfig
+from noc.core.models.servicestatus import Status
+from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 from noc.core.models.inputsources import InputSource
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
@@ -285,6 +286,11 @@ class Service(Document):
         si = ServiceInstance.objects.filter(addresses__address=address).first()
         return si.service if si else None
 
+    def __str__(self):
+        if self.label:
+            return self.label
+        return str(self.id) if self.id else "new"
+
     @property
     def service_instances(self) -> List["ServiceInstance"]:
         return list(ServiceInstance.objects.filter(service=self.id))
@@ -318,10 +324,15 @@ class Service(Document):
         """Check service in maintenance"""
         return False
 
-    def __str__(self):
-        if self.label:
-            return self.label
-        return str(self.id) if self.id else "new"
+    def get_effective_managed_object(self) -> Optional[Any]:
+        """Return ManagedObject to upper level"""
+        path = self.get_path()
+        for si in ServiceInstance.objects.filter(
+            service__in=path,
+            managed_object__exists=True,
+        ).salar("id", "managed_object"):
+            if si.managed_object:
+                return si.managed_object
 
     def on_save(self):
         # if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
@@ -336,7 +347,7 @@ class Service(Document):
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
 
-        mo = self.get_managed_object()
+        mo = self.get_effective_managed_object()
         if mo:
             ServiceSummary.refresh_object(mo)
 
@@ -443,7 +454,7 @@ class Service(Document):
         Register Group alarm when changed Oper Status
         old_status: Previous status
         """
-        mo = self.get_managed_object()
+        mo = self.get_effective_managed_object()
         if not mo:
             logger.warning("[%s] Unknown ManagedObject for Raise alarm. Skipping", self.id)
         # Raise alarm
@@ -615,15 +626,8 @@ class Service(Document):
         # Interface._get_collection().update_many({"service": self.id}, {"$unset": {"service": ""}})
         self._refresh_managed_object()
 
-    def get_managed_object(self):
-        for si in ServiceInstance.objects.filter(
-            service__in=self.service_path, managed_object__exists=True
-        ):
-            if si.managed_object:
-                return si.managed_object
-        return None
-
     def get_caps(self) -> Dict[str, Any]:
+        # Update caps
         return CapsItem.get_caps(self.caps, self.profile.caps)
 
     def set_caps(
@@ -709,33 +713,72 @@ class Service(Document):
         if source == InputSource.ETL and not remote_id:
             raise AttributeError("remote_id required for ETL source")
         elif source == InputSource.DISCOVERY and not managed_object:
+            # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
         cfg = ServiceInstanceConfig.get_config(type, self)
-        qs = cfg.queryset(
+        if not cfg:
+            logger.info("[%s|%s] Instance Type is not allowed by Service settings", self.id, type)
+            return
+        # Check Allowed create instance
+        qs = cfg.get_queryset(
             service=self,
             name=name,
             macs=macs,
             remote_id=remote_id,
             managed_object=managed_object,
         )
-        si = ServiceInstance.objects.filter(qs)
+        # Check multiple instances
+        si = ServiceInstance.objects.filter(qs).first()
+        changed = False
         if not si:
-            si = ServiceInstance.from_config(
+            si = ServiceInstance(
+                type=cfg.type,
                 service=self,
-                config=cfg,
+                sources=[source],
                 name=name,
-                fqdn=fqdn,
+                macs=macs or [],
                 remote_id=remote_id,
                 nri_port=nri_port,
-                macs=macs,
             )
-        if si.managed_object:
-            si.set_object(managed_object)
+            changed |= True
+        # Update data
+        if source not in si.sources:
+            si.sources += [source]
+            changed |= True
+        if si.nri_port != nri_port:
+            si.nri_port = nri_port
+            changed |= True
         if si.fqdn != fqdn:
             si.fqdn = fqdn
-            ServiceInstance.objects.filter(id=si.id).update(fqdn=fqdn)
-        # ? si.seen(source=source)
+            changed |= True
+        if si.managed_object:
+            si.refresh_managed_object(managed_object)
+        if changed:
+            si.save()
         return si
+
+    def deregister_instance(
+        self,
+        type: InstanceType,
+        source: InputSource = InputSource.MANUAL,
+        name: Optional[str] = None,
+    ):
+        """Remove service info for source"""
+        # Check multiple instances
+        instances = ServiceInstance.objects.filter(type=type, service=self)
+        if not instances:
+            return
+        for si in instances:
+            if source in si.sources:
+                si.sources.remove(source)
+            if not si.sources:
+                # For empty source, clean sources
+                self._get_collection().delete_one({"_id": self.id})
+            else:
+                self._get_collection().update_one(
+                    {"_id": self.id}, {"$set": {"sources": si.sources}}
+                )
+            # delete
 
     @classmethod
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:

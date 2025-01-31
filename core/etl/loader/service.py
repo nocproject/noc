@@ -14,7 +14,7 @@ from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.core.models.inputsources import InputSource
-from noc.core.models.serviceinstances import InstanceType
+from noc.core.models.serviceinstanceconfig import InstanceType
 from .base import BaseLoader
 from ..models.service import Service, Instance
 
@@ -55,10 +55,10 @@ class ServiceLoader(BaseLoader):
         instances = {i["remote_id"]: Instance(**i) for i in fields}
         for si in ServiceInstance.objects.filter(service=o.id, remote_id__exists=True):
             if si.remote_id not in instances:
-                si.unseen(InputSource.ETL)
+                o.deregister_instance(si.type, source=InputSource.ETL)
                 continue
             i = instances.pop(si.remote_id)
-            si.seen(InputSource.ETL, addresses=i.addresses, port=i.port)
+            si.register_endpoint(InputSource.ETL, addresses=i.addresses, port=i.port)
             if si.fqdn != i.fqdn:
                 si.fqdn = i.fqdn
                 si.save()
@@ -69,7 +69,7 @@ class ServiceLoader(BaseLoader):
                 fqdn=i.fqdn,
                 remote_id=i.remote_id,
             )
-            si.seen(InputSource.ETL, addresses=i.addresses, port=i.port)
+            si.register_endpoint(InputSource.ETL, addresses=i.addresses, port=i.port)
 
     def find_object(self, v: Dict[str, Any]):
         """
