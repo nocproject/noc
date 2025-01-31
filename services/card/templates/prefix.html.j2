@@ -1,58 +1,91 @@
-<table class="table table-condensed table-hover">
-<tbody>
-    <tr>
-        <th colspan="2">
-            <a href="/api/card/view/vrf/{{ object.vrf.id }}/">{{ object.vrf.name }}</a> |
-            IPv{{ object.afi }} |
-            {% for p in path%}
-            <a href="/api/card/view/prefix/{{ p.id }}/" title="{{ p.name }}">{{ p.prefix }}</a> |
-            {% endfor %}
-            {{ object.prefix }}
-        </th>
-    </tr>
-    <tr>
-        <th scope="row">{{ _("Name") }}</th>
-        <td>{{object.name}}</td>
-    <tr>
-    <tr>
-        <th scope="row">{{ _("Profile") }}</th>
-        <td>{{object.profile.name}}</td>
-    <tr>
-    {% if object.asn %}
-    <tr>
-        <th scope="row">{{ _("AS") }}</th>
-        <td>{% if object.asn.as_name %}{{object.asn.as_name}} (AS{{ object.asn.asn }}){% else %}AS{{ object.asn.asn }}{% endif %}</td>
-    <tr>
-    {% endif %}
-    <tr>
-        <th scope="row">{{ _("State") }}</th>
-        <td>{{object.state.name}}</td>
-    <tr>
-    <tr>
-        <th scope="row">{{ _("Description") }}</th>
-        <td>{{object.description}}</td>
-    <tr>
-    <tr>
-        <th scope="row">{{ _("Source") }}</th>
-        <td>{{source}}</td>
-    </tr>
-</tbody>
-</table>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-condensed table-hover">
+        <tbody>
+            <tr>
+                <th colspan="2">
+                    <a href="/api/card/view/vrf/{{ object.vrf.id }}/">{{ object.vrf.name }}</a> |
+                    IPv{{ object.afi }} |
+                    {% for p in path%}
+                    <a href="/api/card/view/prefix/{{ p.id }}/" title="{{ p.name }}">{{ p.prefix }}</a> |
+                    {% endfor %}
+                    {{ object.prefix }}
+                </th>
+            </tr>
+            <tr>
+                <th scope="row">{{ _("Name") }}</th>
+                <td>{{object.name}}</td>
+            <tr>
+            <tr>
+                <th scope="row">{{ _("Profile") }}</th>
+                <td>{{object.profile.name}}</td>
+            <tr>
+            {% if object.asn %}
+            <tr>
+                <th scope="row">{{ _("AS") }}</th>
+                <td>{% if object.asn.as_name %}{{object.asn.as_name}} (AS{{ object.asn.asn }}){% else %}AS{{ object.asn.asn }}{% endif %}</td>
+            <tr>
+            {% endif %}
+            <tr>
+                <th scope="row">{{ _("State") }}</th>
+                <td>{{object.state.name}}</td>
+            <tr>
+            <tr>
+                <th scope="row">{{ _("Description") }}</th>
+                <td>{{object.description}}</td>
+            <tr>
+            <tr>
+                <th scope="row">{{ _("Source") }}</th>
+                <td>{{source}}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-12 text-center">Pools</div>
+        </div>
+        <table class="table table-condensed table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Usage</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in pools %}
+            <tr>
+                <td>{{ p.name }}</td>
+                <td>{{ p.description }}</td>
+                <td>{{ p.usage }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
 {% if prefixes %}
 <table class="table table-condensed table-hover">
 <thead>
 <tr>
     <th>Prefix</th>
+    <th>State</th>
     <th>AS</th>
+    <th>Vlan</th>
+    <th>Last Seen</th>
+    <th>Size (Usage)</th>
 </tr>
 </thead>
 <tbody>
 {% for p in prefixes %}
     <tr>
-        <td>
-            <a href="/api/card/view/prefix/{{ p.id }}/">{{ p.prefix }}</a>
-        </td>
-        <td>{% if p.asn %}AS{{ p.asn.asn }}{% endif %}</td>
+        <td><a href="/api/card/view/prefix/{{ p.id }}/">{{ p.prefix }}</a></td>
+        <td>{{ p.state }}</td>
+        <td>{% if p.as %}AS{{ p.as }}{% endif %}</td>
+        <td>{{ p.vlan }}</td>
+        <td>{{ p.last_seen }}</td>
+        <td>{{ p.usage }}</td>
     </tr>
 {% endfor %}
 </tbody>
@@ -63,14 +96,24 @@
 <thead>
 <tr>
     <th>Address</th>
+    <th>State</th>
+    <th>Last Seen</th>
+    <th>Device</th>
+    <th>MAC</th>
+    <th>FQDN</th>
+    <th>Allocated</th>
 </tr>
 </thead>
 <tbody>
 {% for a in addresses %}
     <tr>
-        <td>
-            <a href="/api/card/view/address/{{ a.id }}/">{{ a.address }}</a>
-        </td>
+        <td><a href="/api/card/view/address/{{ a.id }}/">{{ a.address }}</a></td>
+        <td>{{ a.state }}</td>
+        <td>{{ a.last_seen }}</td>
+        <td>-</td>
+        <td>{{ a.mac }}</td>
+        <td>{{ a.fqdn }}</td>
+        <td>{{ a.allocated_till }}</td>
     </tr>
 {% endfor %}
 </tbody>
