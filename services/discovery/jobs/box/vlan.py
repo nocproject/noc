@@ -52,10 +52,10 @@ class VLANCheck(PolicyDiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking VLANs")
-        if not self.object.l2_domain:
+        object_l2domain: Optional["L2Domain"] = self.object.get_effective_l2_domain()
+        if not object_l2domain:
             self.logger.info("L2Domain for object is not set. Skipping")
             return
-        object_l2domain: Optional["L2Domain"] = self.object.l2_domain
         if object_l2domain.get_vlan_discovery_policy() == "D":
             self.logger.info(
                 "VLAN discovery is disabled for l2domain '%s'. Skipping...",
@@ -77,20 +77,16 @@ class VLANCheck(PolicyDiscoveryCheck):
         self.refresh_discovery_timestamps(ensured_vlans)
         # Send "seen" events
         self.send_seen_events(ensured_vlans)
-        self.update_caps(
-            {"DB | VLANs": VLAN.objects.filter(sources__managed_object=self.object)},
-            source="vlan",
-        )
+        # self.update_caps(
+        #     {"DB | VLANs": VLAN.objects.filter(sources__managed_object=self.object)},
+        #     source="vlan",
+        # )
 
     def allocate_vlans(self, l2_domain: "L2Domain", vlans: List["DiscoveryVLAN"]) -> List["VLAN"]:
         """
         1. Getting pools
         3. Lock by pool
         4. Allocate VLANs (separate method) if condition - create. Param sync_vlans
-
-        :param l2_domain:
-        :param vlans:
-        :return:
         """
         pools = [p.pool for p in l2_domain.iter_pool_settings()]
         # @todo Filter pool by allocate vland + pool filter
@@ -139,9 +135,6 @@ class VLANCheck(PolicyDiscoveryCheck):
         Get existing VLAN
         2. Getting vlans
         5. Return VLANs
-
-        :param vlans:
-        :return:
         """
         result: List["VLAN"] = []
         l2domains_vlan_map: Dict["L2Domain", Dict[int, "DiscoveryVLAN"]] = {}

@@ -13,6 +13,7 @@ Ext.define("NOC.vc.vlanprofile.Application", {
         "NOC.vc.vlanprofile.Model",
         "NOC.wf.workflow.LookupField",
         "NOC.main.style.LookupField",
+        "NOC.main.ref.vlanrole.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.vc.vlanprofile.Model",
@@ -73,6 +74,12 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     name: "enable_provisioning",
                     xtype: "checkbox",
                     boxLabel: __("Enable Provisioning")
+                },
+                {
+                    name: "role",
+                    xtype: "main.ref.vlanrole.LookupField",
+                    fieldLabel: __("Workflow"),
+                    allowBlank: false
                 },
                 {
                     xtype: "fieldset",

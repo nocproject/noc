@@ -91,6 +91,7 @@ class VLAN(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _domain_vlan_cache = cachetools.TTLCache(maxsize=200, ttl=60)
 
     def __str__(self):
         return f"{self.l2_domain}:{self.vlan} ({self.name})"
@@ -106,10 +107,16 @@ class VLAN(Document):
         return VLAN.objects.filter(bi_id=bi_id).first()
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_domain_vlan_cache"), lock=lambda _: id_lock)
+    def get_by_vlan_num(cls, l2_domain: str, vlan_num: int) -> Optional["VLAN"]:
+        return VLAN.objects.filter(l2_domain=l2_domain, vlan=vlan_num).first()
+
+    @classmethod
     def get_component(cls, managed_object, vlan=None, **kwargs) -> Optional["VLAN"]:
         if not vlan:
             return
-        if managed_object.l2_domain:
+        domain = managed_object.get_effective_l2_domain()
+        if managed_object.пуе:
             return VLAN.objects.filter(l2_domain=managed_object.l2_domain, vlan=int(vlan)).first()
 
     @classmethod
@@ -225,3 +232,7 @@ class VLAN(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_vlan")
+
+    @property
+    def vlan_role_label(self) -> Optional[str]:
+        return self.profile.role_label

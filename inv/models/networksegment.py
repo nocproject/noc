@@ -35,12 +35,13 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
-from .networksegmentprofile import NetworkSegmentProfile
-from .allocationgroup import AllocationGroup
-from .link import Link
 from noc.core.scheduler.job import Job
 from noc.vc.models.vlanfilter import VLANFilter
 from noc.vc.models.vlan import VLAN
+from noc.vc.models.l2domain import L2Domain
+from .networksegmentprofile import NetworkSegmentProfile
+from .allocationgroup import AllocationGroup
+from .link import Link
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -103,6 +104,7 @@ class NetworkSegment(Document):
 
     settings = DictField(default=lambda: {}.copy())
     labels = ListField(StringField())
+    l2_domain = ReferenceField(L2Domain, required=False)
     # Sibling segment, if part of larger structure with
     # horizontal links
     sibling = ReferenceField("self")
@@ -379,8 +381,12 @@ class NetworkSegment(Document):
             return self.horizontal_transit_policy
         elif self.horizontal_transit_policy == "P" and self.profile:
             return self.profile.horizontal_transit_policy
-        else:
-            return "D"
+        return "D"
+
+    def get_effective_l2_domain(self) -> Optional["L2Domain"]:
+        if self.l2_domain or not self.parent:
+            return self.l2_domain
+        return self.parent.get_effective_l2_domain()
 
     def get_management_vlan(self):
         """
@@ -391,8 +397,7 @@ class NetworkSegment(Document):
             return self.management_vlan or None
         elif self.management_vlan_policy == "p":
             return self.profile.management_vlan or None
-        else:
-            return None
+        return None
 
     def get_multicast_vlan(self):
         """

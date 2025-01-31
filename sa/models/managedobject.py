@@ -2103,6 +2103,11 @@ class ManagedObject(NOCModel):
             return self.object_profile.dynamic_classification_policy
         return self.dynamic_classification_policy
 
+    def get_effective_l2_domain(self) -> Optional["L2Domain"]:
+        if self.l2_domain:
+            return self.l2_domain
+        return self.segment.get_effective_l2_domain()
+
     def get_full_fqdn(self):
         if not self.fqdn:
             return None

@@ -17,6 +17,7 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.inv.networksegmentprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.vc.vlanfilter.LookupField",
+        "NOC.vc.l2domain.LookupField",
         "NOC.vc.vlan.LookupField",
         "Ext.ux.form.DictField",
         "Ext.ux.form.GridField"
@@ -192,6 +193,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "allocation_group",
                     xtype: "inv.allocationgroup.LookupField",
                     fieldLabel: __("Allocation Group"),
+                    allowBlank: true
+                },
+                {
+                    name: "l2_domain",
+                    xtype: "vc.l2domain.LookupField",
+                    fieldLabel: __("L2 Domain"),
                     allowBlank: true
                 },
                 {
