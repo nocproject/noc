@@ -110,6 +110,7 @@ class VLANCheck(PolicyDiscoveryCheck):
                 avlan = VLAN.from_template(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)
                 if avlan:
                     avlan.__allow_seen = dvlan.allow_seen
+                    avlan.save()
                     r.append(avlan)
             self.logger.info(
                 "[%s] Create VLANs: %s", l2_domain.name, list_to_ranges([v.vlan for v in r])
@@ -124,6 +125,7 @@ class VLANCheck(PolicyDiscoveryCheck):
                 if avlan:
                     avlan.__allow_seen = dvlan.allow_seen
                     r.append(avlan)
+                    avlan.save()
                 self.logger.info(
                     "[%s] Create VLANs: %s", l2_domain.name, list_to_ranges([v.vlan for v in r])
                 )

@@ -59,7 +59,11 @@ class PoolItem(EmbeddedDocument):
 @bi_sync
 @on_save
 @on_delete_check(
-    check=[("vc.VLAN", "l2_domain"), ("sa.ManagedObject", "l2_domain")],
+    check=[
+        ("vc.VLAN", "l2_domain"),
+        ("sa.ManagedObject", "l2_domain"),
+        ("inv.NetworkSegment", "l2_domain"),
+    ],
     clean=[("inv.SubInterface", "l2_domain")],
 )
 class L2Domain(Document):
