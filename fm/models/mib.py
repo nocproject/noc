@@ -145,9 +145,10 @@ class MIB(Document):
                     if not mp and mib_preference == DEFAULT_PREFERENCE:
                         # No preference for destination MIB
                         raise OIDCollision(oid, oid_name, o.name, "No preference for %s" % o_mib)
-                    else:
+                    elif not mp:
                         prefs[o_mib] = DEFAULT_PREFERENCE
-                    prefs[o_mib] = mp.preference  # Add to cache
+                    else:
+                        prefs[o_mib] = mp.preference  # Add to cache
                 o_preference = prefs[o_mib]
                 if mib_preference == o_preference:
                     # Equal preferences, collision
