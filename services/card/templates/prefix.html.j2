@@ -56,8 +56,8 @@
         <tbody>
         {% for p in pools %}
             <tr>
-                <td>{{ p.name }}</td>
-                <td>{{ p.description }}</td>
+                <td><a href="/api/card/view/resourcepool/{{ p.id }}/">{{ p.name }}</a></td>
+                <td>{{ p.description | default('-', true) }}</td>
                 <td>{{ p.usage }}</td>
             </tr>
         {% endfor %}
@@ -83,8 +83,8 @@
         <td><a href="/api/card/view/prefix/{{ p.id }}/">{{ p.prefix }}</a></td>
         <td>{{ p.state }}</td>
         <td>{% if p.as %}AS{{ p.as }}{% endif %}</td>
-        <td>{{ p.vlan }}</td>
-        <td>{{ p.last_seen }}</td>
+        <td>{{ p.vlan | default('-', true)  }}</td>
+        <td>{{ p.last_seen | default('-', true) }}</td>
         <td>{{ p.usage }}</td>
     </tr>
 {% endfor %}
@@ -109,11 +109,11 @@
     <tr>
         <td><a href="/api/card/view/address/{{ a.id }}/">{{ a.address }}</a></td>
         <td>{{ a.state }}</td>
-        <td>{{ a.last_seen }}</td>
+        <td>{{ a.last_seen | default('-', true) }}</td>
         <td>-</td>
-        <td>{{ a.mac }}</td>
-        <td>{{ a.fqdn }}</td>
-        <td>{{ a.allocated_till }}</td>
+        <td>{{ a.mac | default('-', true) }}</td>
+        <td>{{ a.fqdn | default('-', true) }}</td>
+        <td>{{ a.allocated_till | default('-', true) }}</td>
     </tr>
 {% endfor %}
 </tbody>

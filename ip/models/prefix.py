@@ -47,7 +47,7 @@ id_lock = Lock()
 
 
 class PoolItem(BaseModel):
-    pool: str
+    pool: Any
     ip_filter: Optional[str] = None
 
 
@@ -215,6 +215,8 @@ class Prefix(NOCModel):
         """Iterate over pool item"""
         processed = []
         for p in self.pools:
+            pool = ResourcePool.get_by_id(p["pool"])
+            p = PoolItem(pool=pool)
             processed.append(p.pool.id)
             yield p
         for p in self.profile.pools:

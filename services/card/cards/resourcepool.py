@@ -7,18 +7,15 @@
 
 # NOC modules
 import datetime
-import operator
 from typing import List, Optional
 
 # Python modules
 from pydantic import BaseModel
-from fastapi import status, Request
+from fastapi import status, Request, Header, HTTPException
 from fastapi.responses import RedirectResponse
 
 # NOC modules
 from noc.inv.models.resourcepool import ResourcePool
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.address import Address
 from noc.wf.models.state import State
 from .base import BaseCard
 
@@ -48,23 +45,26 @@ class ResourcePoolCard(BaseCard):
     def get_data(self):
         # Build upwards path
         #
-        prefixes = sorted(
-            Prefix.get_by_resource_pool(self.object),
-            key=operator.attrgetter("prefix"),
-        )
         domain = self.handler.get_argument("domain", strict=False)
-        limit = self.handler.get_argument("limit", strict=False)
         free_only = self.handler.get_argument("free_only", strict=False)
-        if domain:
-            resources = Address.objects.filter(prefix=domain)
-        else:
-            resources = Address.objects.filter(prefix__in=prefixes)
+        domains = []
+        for d in self.object.get_resource_domains():
+            if domain and str(d.id) != domain:
+                continue
+            domains.append(d)
         if free_only:
             states = list(State.objects.filter(name="Free"))
-            resources = resources.filter(state__in=states)
+        if self.object.type == "ip":
+            resources = self.object.resource_model.objects.filter(prefix__in=domains)
+            if free_only:
+                resources = resources.filter(state__in=states)
+        elif self.object.type == "vlan":
+            resources = self.object.resource_model.objects.filter(l2_domain__in=domains)
+            if free_only:
+                resources = resources.filter(state__in=states)
         return {
             "object": self.object,
-            "domains": prefixes,
+            "domains": sorted(domains),
             "resources": list(resources.order_by("address")),
         }
 
@@ -73,6 +73,7 @@ class ResourcePoolCard(BaseCard):
         cls,
         item: AllocatorRequest,
         request: Request,
+        remote_user: Optional[str] = Header(None, alias="Remote-User"),
     ):
         """
         keys: [{"domain": XXX, "key": XXXX}]
@@ -81,32 +82,21 @@ class ResourcePoolCard(BaseCard):
         action: free | reserve = reserve
         confirm: bool
         """
-        print("Allocator", item)
+        if not remote_user:
+            raise HTTPException(404, "Not found")
         pool = ResourcePool.get_by_id(item.resource_pool)
         keys = [k.key for k in item.keys]
         with ResourcePool.acquire([pool]):
             allocator = pool.get_allocator()
+            print("Allocate", allocator)
             r = allocator(
-                # domain=l2_domain,
                 resource_keys=keys or None,
                 limit=item.limit,
                 reservation_id=item.tt_id,
                 allocated_till=item.allocated_till,
-                user=request.user,
+                # user=remote_user,
             )
-        # keys
-        # resource_pool
-        #
-        # for a in Address.objects.filter(address__in=[x.key for x in item.keys]):
-        #     if item.action == "allocate":
-        #         a.reserve(
-        #             allocated_till=item.allocated_till,
-        #             reservation_id=item.tt_id,
-        #             confirm=item.confirm,
-        #         )
-        #     elif item.action == "free":
-        #         new_state = a.profile.workflow.get_default_state()
-        #         a.set_state(new_state)
+            print("Result", r)
         return RedirectResponse(
             f"/api/card/view/{cls.name}/{item.resource_pool}/",
             status_code=status.HTTP_200_OK,

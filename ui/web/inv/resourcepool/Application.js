@@ -17,6 +17,14 @@ Ext.define("NOC.inv.resourcepool.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -99,8 +107,20 @@ Ext.define("NOC.inv.resourcepool.Application", {
                         },
                     ]
                 }
+            ],
+            formToolbar: [
+                me.cardButton
             ]
         });
         me.callParent();
+    },
+
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/resourcepool/" + me.currentRecord.get("id") + "/"
+            );
+        }
     }
 });

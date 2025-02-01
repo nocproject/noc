@@ -31,7 +31,7 @@ class PrefixCard(BaseCard):
             "object": self.object,
             "source": self.SOURCES.get(self.object.source, "Unknown"),
             "path": reversed(path),
-            "pools": list(ResourcePool.objects.filter()),
+            "pools": [p.pool for p in self.object.iter_pool_settings()],
             "prefixes": list(Prefix.objects.filter(parent=self.object).order_by("prefix")),
             "addresses": list(Address.objects.filter(prefix=self.object).order_by("address")),
         }
