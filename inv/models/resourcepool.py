@@ -269,7 +269,7 @@ class ResourcePool(Document):
         if not domains:
             return
         if self.type == "ip":
-            return Prefix.get_resource_pool_usage([self])
+            return round(Prefix.get_resource_pool_usage([self]), 2)
         elif self.type == "vlan":
-            return L2Domain.get_resource_pool_usage([self])
+            return round(L2Domain.get_resource_pool_usage([self]), 2)
         return

@@ -88,7 +88,6 @@ class ResourcePoolCard(BaseCard):
         keys = [k.key for k in item.keys]
         with ResourcePool.acquire([pool]):
             allocator = pool.get_allocator()
-            print("Allocate", allocator)
             r = allocator(
                 resource_keys=keys or None,
                 limit=item.limit,
