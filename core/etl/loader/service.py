@@ -61,10 +61,9 @@ class ServiceLoader(BaseLoader):
             si.register_endpoint(InputSource.ETL, addresses=i.addresses, port=i.port)
             if si.fqdn != i.fqdn:
                 si.fqdn = i.fqdn
-                si.save()
             if si.nri_port != i.nri_port:
                 si.nri_port = i.nri_port
-                si.save()
+            si.save()
         for i in instances.values():
             i_type = InstanceType.SERVICE_ENDPOINT
             if i.nri_port:
@@ -76,6 +75,7 @@ class ServiceLoader(BaseLoader):
                 remote_id=i.remote_id,
             )
             si.register_endpoint(InputSource.ETL, addresses=i.addresses, port=i.port)
+            si.save()
 
     def find_object(self, v: Dict[str, Any]):
         """

@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extapplication import view
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.core.translation import ugettext as _

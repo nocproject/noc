@@ -330,7 +330,7 @@ class Service(Document):
         for si in ServiceInstance.objects.filter(
             service__in=path,
             managed_object__exists=True,
-        ).salar("id", "managed_object"):
+        ).scalar("id", "managed_object"):
             if si.managed_object:
                 return si.managed_object
 

@@ -8,7 +8,6 @@
 # Python modules
 import operator
 import re
-import enum
 from threading import Lock
 from typing import Optional, Union, Tuple, List
 from functools import partial
@@ -41,7 +40,8 @@ from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import defer
 from noc.core.hash import hash_int
-from noc.core.models.serviceinstances import Status, InstanceType
+from noc.core.models.servicestatus import Status
+from noc.core.models.serviceinstanceconfig import InstanceType
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow

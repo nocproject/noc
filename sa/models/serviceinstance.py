@@ -313,7 +313,7 @@ class ServiceInstance(Document):
             processed.add(a.address)
         # New Addresses
         for a in set(addresses) - set(processed):
-            self.addresses.append(
+            new_addresses.append(
                 AddressItem(address=a, address_bin=IP.prefix(a).d, sources=[source], pool=pool),
             )
         self.addresses = new_addresses
@@ -322,7 +322,8 @@ class ServiceInstance(Document):
         # Update instance
         self.service.fire_event("seen")
         now = datetime.datetime.now()
-        self.last_seen = ts or now
+        if source == InputSource.DISCOVERY:
+            self.last_seen = ts or now
 
     def deregister_endpoint(
         self,

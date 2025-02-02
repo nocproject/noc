@@ -64,7 +64,7 @@ class ServiceInstanceConfig:
                 cfg = ServiceEndPont()
             case _:
                 cfg = ServiceInstanceConfig()
-        for p in service.profile.instance_policy_settings:
+        for p in service.profile.instance_policy_settings or []:
             if p.type != type:
                 continue
             cfg.allow_manual = p.allow_manual
