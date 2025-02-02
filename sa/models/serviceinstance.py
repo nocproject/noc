@@ -66,11 +66,6 @@ class AddressItem(EmbeddedDocument):
         self.address_bin = IP.prefix(self.address).d
 
 
-class MACItem(EmbeddedDocument):
-    mac = StringField()
-    vlan = IntField(min_value=1, max_value=4095)
-
-
 class ServiceInstance(Document):
     """
     Service Instance.
