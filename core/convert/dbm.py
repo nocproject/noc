@@ -19,12 +19,10 @@ def dbm2mw(v):
     >>> dbm2mw(10)
     10.0
     """
-    if not bool(v):
-        return 0.0
     return math.pow(10, v / 10)
 
 
-def mw2dbm(v):
+def mw2dbm(v, ):
     """
     mW to dBm
     dBm = 10 log10 (mW)
