@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Various conversions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,8 @@ def dbm2mw(v):
     >>> dbm2mw(10)
     10.0
     """
+    if int(v) == 0:
+        return 0.0
     return math.pow(10, v / 10)
 
 
@@ -33,4 +35,7 @@ def mw2dbm(v):
     >>> mw2dbm(10)
     10.0
     """
+    if int(v) == 0:
+        return 0.0
+    print("Convert Value", v)
     return 10 * math.log10(float(v))

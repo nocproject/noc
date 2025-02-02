@@ -155,15 +155,17 @@ class Script(GetMetricsScript):
             metric="Interface | DOM | TxPower",
             oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalTxPower"],
             sla_types=[],
-            scale=scale(0.01),
-            units="dBm",
+            scale=scale(0.000001),
+            # skip_values={6553},
+            units="W",
         ),
         "Interface | DOM | RxPower": ProfileMetricConfig(
             metric="Interface | DOM | RxPower",
             oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalRxPower"],
             sla_types=[],
-            scale=scale(0.01),
-            units="dBm",
+            scale=scale(0.000001),
+            # skip_values={6553},
+            units="W",
         ),
         "Interface | DOM | Voltage": ProfileMetricConfig(
             metric="Interface | DOM | Voltage",
@@ -177,6 +179,7 @@ class Script(GetMetricsScript):
             oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalBiasCurrent"],
             sla_types=[],
             scale=scale(0.001),
+            # skip_values={-255},
             units="m,A",
         ),
     }
@@ -776,6 +779,8 @@ class Script(GetMetricsScript):
             if results[r] is None or results[r] == -1 or results[r] == 6553 or results[r] == -255:
                 continue
             iface, mc = oids[r]
+            # if mc.skip_values and results[r] in mc.skip_values:
+            #     continue
             self.set_metric(
                 id=(mc.metric, iface.labels),
                 metric=mc.metric,
