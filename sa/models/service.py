@@ -712,7 +712,7 @@ class Service(Document):
         """
         if source == InputSource.ETL and not remote_id:
             raise AttributeError("remote_id required for ETL source")
-        elif source == InputSource.DISCOVERY and not managed_object:
+        if source == InputSource.DISCOVERY and not managed_object:
             # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
         cfg = ServiceInstanceConfig.get_config(type, self)

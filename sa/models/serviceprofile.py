@@ -85,6 +85,7 @@ class InstancePolicySettings(EmbeddedDocument):
         allow_resources: Resource Codes Allowed to bind
         allow_dynamic_register: Allow automatically update address/port
     """
+    meta = {"strict": False, "auto_create_index": False}
 
     # provide = StringField(choices=[("C", "AS Client"), ("S", "AS Service")], default="S")
     instance_type = EnumField(InstanceType, default=InstanceType.OTHER)

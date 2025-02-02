@@ -64,14 +64,14 @@ class ServiceInstanceConfig:
                 cfg = ServiceEndPont()
             case _:
                 cfg = ServiceInstanceConfig()
-        for p in service.profile.instance_policy_settings or []:
-            if p.type != type:
-                continue
+        if service.profile.instance_policy_settings:
+            p = service.profile.instance_policy_settings
+            if p.instance_type != type:
+                pass
             cfg.allow_manual = p.allow_manual
             cfg.only_one_object = p.only_one_object
             cfg.allow_resources = list(p.allow_resources)
             cfg.send_approve = p.send_approve
-            break
         return cfg
 
 

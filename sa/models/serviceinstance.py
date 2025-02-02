@@ -302,6 +302,7 @@ class ServiceInstance(Document):
         """
         processed = set()
         new_addresses = []
+        changed = False
         for a in self.addresses:
             if a.address not in addresses and source in a.sources:
                 # Skip
@@ -309,6 +310,7 @@ class ServiceInstance(Document):
             elif a.address in addresses and source not in a.sources:
                 # Additional source
                 a.sources.append(source)
+                changed |= True
             new_addresses.append(a)
             processed.add(a.address)
         # New Addresses
@@ -316,14 +318,18 @@ class ServiceInstance(Document):
             new_addresses.append(
                 AddressItem(address=a, address_bin=IP.prefix(a).d, sources=[source], pool=pool),
             )
+            changed |= True
         self.addresses = new_addresses
         if port and self.port != port:
+            changed |= True
             self.port = port
         # Update instance
         self.service.fire_event("seen")
         now = datetime.datetime.now()
         if source == InputSource.DISCOVERY:
             self.last_seen = ts or now
+            changed |= True
+        return changed
 
     def deregister_endpoint(
         self,
