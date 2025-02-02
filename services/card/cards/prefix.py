@@ -1,14 +1,13 @@
 # ----------------------------------------------------------------------
 # Prefix card
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
-from noc.inv.models.resourcepool import ResourcePool
 from .base import BaseCard
 
 
