@@ -168,7 +168,7 @@ class ServiceInstance(Document):
     def __str__(self) -> str:
         name = self.name or self.service.label
         if self.type == InstanceType.NETWORK_HOST:
-            return f"[{self.type}|{self.macs[0]}] {self.managed_object.name}"
+            return f"[{self.type}|{self.macs[0]}] {name}"
         elif self.type == InstanceType.NETWORK_CHANNEL and self.managed_object:
             return f"[{self.type}|{self.managed_object}] {name}"
         elif self.type == InstanceType.NETWORK_CHANNEL and self.remote_id:
@@ -418,7 +418,7 @@ class ServiceInstance(Document):
             nri_port=kwargs.get("nri_port"),
         )
         if kwargs.get("macs"):
-            si.macs = [MACItem(mac=m) for m in kwargs["macs"]]
+            si.macs = [m for m in kwargs["macs"]]
         return si
 
     @classmethod
