@@ -62,9 +62,15 @@ class ServiceLoader(BaseLoader):
             if si.fqdn != i.fqdn:
                 si.fqdn = i.fqdn
                 si.save()
+            if si.nri_port != i.nri_port:
+                si.nri_port = i.nri_port
+                si.save()
         for i in instances.values():
+            i_type = InstanceType.SERVICE_ENDPOINT
+            if i.nri_port:
+                i_type = InstanceType.NETWORK_CHANNEL
             si = o.register_instance(
-                type=InstanceType.NETWORK_HOST if not i.nri_port else InstanceType.NETWORK_CHANNEL,
+                type=i_type,
                 source=InputSource.ETL,
                 fqdn=i.fqdn,
                 remote_id=i.remote_id,

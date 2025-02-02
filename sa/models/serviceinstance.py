@@ -59,7 +59,7 @@ class AddressItem(EmbeddedDocument):
     address: str = StringField(required=True)
     address_bin = IntField()
     is_active = BooleanField(default=True)
-    sources: List[str] = ListField(EnumField(InputSource))
+    sources: List[InputSource] = ListField(EnumField(InputSource))
     # session
 
     def clean(self):
@@ -183,11 +183,18 @@ class ServiceInstance(Document):
     def refresh_managed_object(
         self, o: Optional["ManagedObject"] = None, source: Optional[InputSource] = None, bulk=None
     ):
-        """Update ManagedObject on instance"""
+        """
+        Update ManagedObject on instance
+        Args:
+            o: ManagedObject
+            source: Update source
+            bulk: Update query accumulator
+        """
         if not o:
             # Getting managed_object by query
             return
         elif self.managed_object and self.managed_object.id == o.id:
+            # Already set
             return
         oo = self.managed_object
         self.managed_object = o
@@ -199,6 +206,19 @@ class ServiceInstance(Document):
             ServiceSummary.refresh_object(oo)
             if self.managed_object:
                 ServiceSummary.refresh_object(self.managed_object)
+
+    def reset_object(self, bulk=None):
+        """Clean ManagedObject from Instance"""
+        if not self.managed_object:
+            return
+        oo = self.managed_object
+        self.managed_object = None
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$unset": {"managed_object": 1}})]
+        else:
+            ServiceInstance.objects.filter(id=self.id).update(managed_object=None)
+            # Update Summary
+            ServiceSummary.refresh_object(oo)
 
     @classmethod
     def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
@@ -270,76 +290,57 @@ class ServiceInstance(Document):
         #
         ts: Optional[datetime.datetime] = None,
     ):
-        """Add endpoint address to instance"""
-        changed = {}
-        if source not in self.sources:
-            self.sources.append(source)
-            changed["sources"] = list(self.sources)
-        if port and self.port != port:
-            self.port = port
-            changed["port"] = port
-        addresses = set(addresses or [])
-        for a in self.addresses or []:
-            if a.address in addresses:
-                addresses.remove(a.address)
-        for a in addresses:
+        """
+        Add endpoint address to instance
+        Args:
+            source: Source data instance
+            addresses: IP Address list
+            port: TCP/UDP port number
+            session: Register DCS session
+            pool: Address pool
+            ts: Registered timestamp
+        """
+        processed = set()
+        new_addresses = []
+        for a in self.addresses:
+            if a.address not in addresses and source in a.sources:
+                # Skip
+                continue
+            elif a.address in addresses and source not in a.sources:
+                # Additional source
+                a.sources.append(source)
+            new_addresses.append(a)
+            processed.add(a.address)
+        # New Addresses
+        for a in set(addresses) - set(processed):
             self.addresses.append(
                 AddressItem(address=a, address_bin=IP.prefix(a).d, sources=[source], pool=pool),
             )
+        self.addresses = new_addresses
+        if port and self.port != port:
+            self.port = port
+        # Update instance
         self.service.fire_event("seen")
-        self.last_seen = ts
+        now = datetime.datetime.now()
+        self.last_seen = ts or now
 
-    def deregister_endpoint(self, source: InputSource):
+    def deregister_endpoint(
+        self,
+        source: InputSource,
+        session: Optional[str] = None,
+        addresses: Optional[List[str]] = None,
+    ):
         """Remove endpoint address from instance"""
+        address = []
+        for a in self.addresses:
+            if source in a.sources:
+                a.sources.remove(source.value)
+            if not a.sources:
+                continue
+            address.append(a)
+        self.addresses = address
 
-    @classmethod
-    def from_config(
-        cls,
-        service,
-        config: ServiceInstanceConfig,
-        **kwargs,
-    ) -> "ServiceInstance":
-        si = ServiceInstance(
-            type=config.type,
-            service=service,
-            name=kwargs.get("name"),
-            fqdn=kwargs.get("fqdn"),
-            remote_id=kwargs.get("remote_id"),
-            nri_port=kwargs.get("nri_port"),
-        )
-        if kwargs.get("macs"):
-            si.macs = [MACItem(mac=m) for m in kwargs["macs"]]
-        return si
-
-    def set_object(self, o, bulk=None):
-        """Set instance ManagedObject instance"""
-        if self.managed_object and self.managed_object.id == o.id:
-            return
-        oo = self.managed_object
-        self.managed_object = o
-        if bulk is not None:
-            bulk += [UpdateOne({"_id": self.id}, {"$set": {"managed_object": o.id}})]
-        else:
-            ServiceInstance.objects.filter(id=self.id).update(managed_object=o)
-            # Update Summary
-            ServiceSummary.refresh_object(oo)
-            if self.managed_object:
-                ServiceSummary.refresh_object(self.managed_object)
-
-    def reset_object(self, bulk=None):
-        """"""
-        if not self.managed_object:
-            return
-        oo = self.managed_object
-        self.managed_object = None
-        if bulk is not None:
-            bulk += [UpdateOne({"_id": self.id}, {"$unset": {"managed_object": 1}})]
-        else:
-            ServiceInstance.objects.filter(id=self.id).update(managed_object=None)
-            # Update Summary
-            ServiceSummary.refresh_object(oo)
-
-    def add_resource(self, o):
+    def bind_resource(self, o):
         """Add Resource to ServiceInstance"""
         if not hasattr(o, "as_resource"):
             raise AttributeError("Model %s not Supported Resource Method" % get_model_id(o))
@@ -396,6 +397,27 @@ class ServiceInstance(Document):
             ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
             if self.managed_object:
                 ServiceSummary.refresh_object(self.managed_object)
+
+    @classmethod
+    def from_config(
+        cls,
+        service,
+        config: ServiceInstanceConfig,
+        **kwargs,
+    ) -> "ServiceInstance":
+        """Create Service Instance"""
+        # First discovered
+        si = ServiceInstance(
+            type=config.type,
+            service=service,
+            name=kwargs.get("name"),
+            fqdn=kwargs.get("fqdn"),
+            remote_id=kwargs.get("remote_id"),
+            nri_port=kwargs.get("nri_port"),
+        )
+        if kwargs.get("macs"):
+            si.macs = [MACItem(mac=m) for m in kwargs["macs"]]
+        return si
 
     @classmethod
     def get_object_resources(cls, o):
