@@ -22,7 +22,7 @@ def dbm2mw(v):
     return math.pow(10, v / 10)
 
 
-def mw2dbm(v, ):
+def mw2dbm(v):
     """
     mW to dBm
     dBm = 10 log10 (mW)
