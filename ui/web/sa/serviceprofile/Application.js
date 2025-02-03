@@ -446,19 +446,23 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                             //width: 350,
                             columns: [
                                 {
-                                    text: __("Provide"),
-                                    dataIndex: "provide",
+                                    text: __("Instance Type"),
+                                    dataIndex: "instance_type",
                                     width: 100,
                                     editor: {
                                         xtype: "combobox",
                                         store: [
-                                            ["C", "AS Client"],
-                                            ["S", "AS Service"]
+                                            ["endpoint", "L3 Endpoint"],
+                                            ["network_channel", "Channel"],
+                                            ["network_host", "L2 Host"],
+                                            ["other", "Other"]
                                         ]
                                     },
                                     renderer: NOC.render.Choices({
-                                        "C": "AS Client",
-                                        "S": "AS Service"
+                                        "endpoint": "L3 Endpoint",
+                                        "network_channel": "Channel",
+                                        "network_host": "L2 Host",
+                                        "other": "Other"
                                     })
                                 },
                                 {
