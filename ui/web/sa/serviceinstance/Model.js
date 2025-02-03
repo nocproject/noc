@@ -16,11 +16,15 @@ Ext.define("NOC.sa.serviceinstance.Model", {
             type: "string"
         },
         {
-            name: "name",
+            name: "label",
             type: "string"
         },
         {
             name: "type",
+            type: "string"
+        },
+        {
+            name: "fqdn",
             type: "string"
         },
         {
@@ -32,7 +36,16 @@ Ext.define("NOC.sa.serviceinstance.Model", {
             type: "string"
         },
         {
-            name: "service__label",
+            name: "service_label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "managed_object",
+            type: "string"
+        },
+        {
+            name: "managed_object__label",
             type: "string",
             persist: false
         },
@@ -40,5 +53,9 @@ Ext.define("NOC.sa.serviceinstance.Model", {
             name: "addresses",
             type: "auto"
         },
+        {
+            name: "macs",
+            type: "auto"
+        }
     ]
 });

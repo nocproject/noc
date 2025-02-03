@@ -1,14 +1,13 @@
 # ----------------------------------------------------------------------
 # Service Instance
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
 import logging
-from dataclasses import dataclass
 from typing import Optional, List, Iterable, Any
 
 # Third-party modules
@@ -43,15 +42,6 @@ DISCOVERY_SOURCE = InputSource.DISCOVERY
 CLIENT_INSTANCE_NAME = "client"
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class InstanceSettings:
-    allow_resources: List[str]
-    provide: str = "S"
-    allow_manual: bool = False
-    only_one_object: bool = False
-    send_approve: bool = False
 
 
 class AddressItem(EmbeddedDocument):
