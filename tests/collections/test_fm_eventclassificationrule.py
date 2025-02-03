@@ -131,3 +131,9 @@ def test_rules_collection_cases(ruleset, event_class_rule):
         assert (
             rule.event_class == event_class_rule.event_class
         ), f"Mismatched event class '{rule.event_class.name}' vs '{event_class_rule.event_class.name}'"
+        var_ctx = {"message": e.message}
+        var_ctx |= v
+        var_ctx |= e_vars
+        for t in rule.vars_transform or []:
+            t.transform(e_vars, var_ctx)
+        ruleset.eval_vars(e, rule.event_class, e_vars)
