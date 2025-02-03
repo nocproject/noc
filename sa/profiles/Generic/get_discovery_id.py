@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_discovery_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,15 +22,18 @@ class Script(BaseScript):
     def execute(self):
         data = {}
         with self.cached():
-            x_list = (self.CLISyntaxError, self.NotSupportedError, self.UnexpectedResultError)
+            x_list = (
+                self.CLISyntaxError,
+                self.NotSupportedError,
+                self.UnexpectedResultError,
+                self.snmp.SNMPError,
+            )
             # Get Chassis Id
-            if "get_chassis_id" in self.scripts:
-                with self.ignored_exceptions(x_list):
-                    r = self.scripts.get_chassis_id()
-                    data["chassis_mac"] = r
+            with self.ignored_exceptions(x_list):
+                r = self.scripts.get_chassis_id()
+                data["chassis_mac"] = r
             # Get fqdn
-            if "get_fqdn" in self.scripts:
-                with self.ignored_exceptions(x_list):
-                    r = self.scripts.get_fqdn()
-                    data["hostname"] = r
+            with self.ignored_exceptions(x_list):
+                r = self.scripts.get_fqdn()
+                data["hostname"] = r
         return data
