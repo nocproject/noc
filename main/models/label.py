@@ -774,9 +774,11 @@ class Label(Document):
             else:
                 # Apply new rule
                 params = [[self.name]]
-                for _, rxs in regxs[model]:
+                conditions = []
+                for field, rxs in regxs[model]:
                     params += rxs
-                condition = " OR ".join([f"{field} ~ %s" for field, _ in regxs[model]])
+                    conditions += [f"{field} ~ %s"] * len(rxs)
+                condition = " OR ".join(conditions)
                 sql = f"""
                 UPDATE {model._meta.db_table}
                 SET effective_labels=ARRAY (
