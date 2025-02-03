@@ -550,7 +550,7 @@ class Label(Document):
         r: List[str] = []
         for labels in iter_labels:
             for label in labels:
-                if label in seen:
+                if label in seen or label.endswith("::*"):
                     continue
                 elif "::" in label and label[-1] not in MATCH_OPS:
                     scope = label.rsplit("::", 1)[0]
