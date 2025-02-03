@@ -48,23 +48,22 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     this.mask(__("Loading tab with") + " " + panel_class + " ...");
     Ext.Loader.require(panel_class, function(){
       var app = Ext.create(panel_class, {
-        noc: params,
-        title: title,
-        closable: true,
-      });
-      var tab = this.add({
-        title: title,
-        closable: true,
-        layout: "fit",
-        items: app,
-        listeners: {
-          scope: this,
-          beforeclose: this.onTabClose,
-        },
-        menuNode: node,
-      });
-      // Close Home tab, if any
-      var first = this.items.first();
+          noc: params,
+          title: title,
+          closable: true,
+        }),tab = this.add({
+          title: title,
+          closable: true,
+          layout: "fit",
+          items: app,
+          listeners: {
+            scope: this,
+            beforeclose: this.onTabClose,
+          },
+          menuNode: node,
+        }),
+        // Close Home tab, if any
+        first = this.items.first();
       if(first && first.title !== title && first.title === "Home"){
         first.close();
       }
@@ -80,7 +79,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
   onTabChange: function(panel, tab){
     var app = tab.items.first(),
       h = app.getHistoryHash();
-    if(h !== "main.welcome"){
+    if(h !== "main.home"){
       Ext.History.setHash(h);
     }
   },

@@ -9,6 +9,7 @@ console.debug("Defining NOC.main.home.Application");
 Ext.define("NOC.main.home.Application", {
   extend: "NOC.core.Application",
   layout: "auto",
+  appId: "main.home",
   baseCls: "noc-home-container",
   scrollable: true,
   smallHeight: 90,
