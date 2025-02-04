@@ -62,17 +62,18 @@ class CardAPI(BaseAPI):
     openapi_tags = ["card API"]
 
     CARDS = None
+    CARDS_ACTION = None
     CARD_TEMPLATE_PATH = config.path.card_template_path
     CARD_TEMPLATE = None
 
     _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __init__(self, router: APIRouter):
-        super().__init__(router)
         if not self.CARD_TEMPLATE:
             with open(self.CARD_TEMPLATE_PATH) as f:
                 self.CARD_TEMPLATE = Template(f.read())
         self.load_cards()
+        super().__init__(router)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_user_cache"), lock=lambda _: user_lock)
@@ -122,6 +123,10 @@ class CardAPI(BaseAPI):
                         and getattr(c, "name", None)
                     ):
                         cls.CARDS[c.name] = c
+                        for a in c.actions or []:
+                            if not cls.CARDS_ACTION:
+                                cls.CARDS_ACTION = {}
+                            cls.CARDS_ACTION[a] = getattr(c, a)
 
     def get_routes(self):
         route_card = {
@@ -142,7 +147,20 @@ class CardAPI(BaseAPI):
             "name": "card-search",
             "description": "",
         }
-        return [route_card, route_search]
+        r = [route_card, route_search]
+        for a, endpoint in self.CARDS_ACTION.items():
+            r.append(
+                {
+                    "path": f"/api/card/resourcepool/{a}/",
+                    "method": "POST",
+                    "endpoint": endpoint,
+                    "response_class": ORJSONResponse,
+                    "response_model": None,
+                    "name": f"card-{a}",
+                    "description": "",
+                }
+            )
+        return r
 
     def handler_card_view(
         self,

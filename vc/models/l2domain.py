@@ -268,3 +268,28 @@ class L2Domain(Document):
         """Calculate statistics Pool usage"""
         # l2
         return []
+
+    @property
+    def usage(self) -> float:
+        """Calculate vlan usage on l2 domain"""
+
+        return 0.0
+
+    @classmethod
+    def get_resource_pool_usage(
+        cls,
+        pools: List[ResourcePool],
+        domains: Optional[List["L2Domain"]] = None,
+    ):
+        """"""
+        return 0.0
+
+    @property
+    def resource_usage(self) -> Optional[float]:
+        from noc.vc.models.vlan import VLAN
+
+        vlans = VLAN.objects.filter(l2_domain=self).count()
+        if not vlans:
+            return 0.0
+
+        return vlans * 100.0 / 4095

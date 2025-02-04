@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Prefix card
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,6 +30,7 @@ class PrefixCard(BaseCard):
             "object": self.object,
             "source": self.SOURCES.get(self.object.source, "Unknown"),
             "path": reversed(path),
+            "pools": [p.pool for p in self.object.iter_pool_settings()],
             "prefixes": list(Prefix.objects.filter(parent=self.object).order_by("prefix")),
             "addresses": list(Address.objects.filter(prefix=self.object).order_by("address")),
         }
