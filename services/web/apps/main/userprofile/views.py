@@ -11,7 +11,7 @@ from noc.sa.interfaces.base import StringParameter, ListOfParameter, DictParamet
 from noc.settings import LANGUAGES
 from noc.main.models.timepattern import TimePattern
 from noc.aaa.models.usercontact import UserContact
-from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES, NotificationGroup
 from noc.core.translation import ugettext as _
 
 
@@ -36,6 +36,32 @@ class UserProfileApplication(ExtApplication):
             }
             for c in UserContact.objects.filter(user=user)
         ]
+        subscription_settings = []
+        for g in NotificationGroup.get_groups_by_user(user):
+            ss = {
+                "notification_group": str(g.id),
+                "notification_group__label": g.name,
+                "user_policy": "A",
+                "time_pattern": None,
+                "supress": False,
+                "message_types": [t["message_type"] for t in g.message_types],
+            }
+            uc = g.get_subscription_by_user(user)
+            if not uc:
+                subscription_settings.append(ss)
+                continue
+            if uc.time_pattern:
+                ss["time_pattern"] = uc.time_pattern.id
+                ss["time_pattern__label"] = uc.time_pattern.name
+            ss.update(
+                {
+                    "user_policy": "A",
+                    "supress": uc.suppress,
+                    "expired_at": uc.expired_at,
+                    "title_tag": "",
+                }
+            )
+            subscription_settings.append(ss)
         return {
             "username": user.username,
             "name": (" ".join([x for x in (user.first_name, user.last_name) if x])).strip(),
@@ -43,6 +69,7 @@ class UserProfileApplication(ExtApplication):
             "preferred_language": language or "en",
             "contacts": contacts,
             "groups": [g.name for g in user.groups.all().order_by("name")],
+            "subscription_settings": subscription_settings,
         }
 
     @view(
