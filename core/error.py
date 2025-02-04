@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base Error class and error codes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -94,6 +94,9 @@ ERR_RTSP_UNKNOWN = 10700
 ERR_RTSP_CONNECTION_REFUSED = 10701
 ERR_RTSP_AUTH_FAILED = 10702
 ERR_RTSP_BAD_RESPONSE = 10703
+# Auth error
+ERR_AUTH_UNKNOWN = 10800
+ERR_AUTH_CRED_CHANGE = 10801
 
 
 class NOCError(Exception):
@@ -103,4 +106,4 @@ class NOCError(Exception):
     def __init__(self, msg=None, code=None):
         super().__init__(msg or self.default_msg)
         self.code = code or self.default_code
-        metrics["err_%s" % self.code] += 1
+        metrics[f"err_{self.code}"] += 1

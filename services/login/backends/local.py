@@ -19,6 +19,8 @@ class LocalBackend(BaseAuthBackend):
             raise self.LoginError(_("User does not exists"))
         if not user.check_password(password):
             raise self.LoginError(_("Invalid password"))
+        if not user.can_login_now():
+            raise self.LoginError(_("User account is blocked"))
         return user.username
 
     def change_credentials(self, user=None, old_password=None, new_password=None, **kwargs):
@@ -28,5 +30,7 @@ class LocalBackend(BaseAuthBackend):
             raise self.LoginError(_("User does not exists"))
         if not user.check_password(old_password):
             raise self.LoginError(_("Invalid password"))
-        user.set_password(new_password)
-        user.save()
+        try:
+            user.set_password(new_password)
+        except ValueError as e:
+            raise self.LoginError(str(e.args[0]))

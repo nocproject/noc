@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # User model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from typing import Optional
 import cachetools
 from django.db import models
 from django.core import validators
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.config import config
@@ -24,6 +24,8 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
 from noc.settings import LANGUAGES
 from noc.main.models.avatar import Avatar
+from noc.core.password.hasher import UNUSABLE_PASSWORD, check_password, make_password, must_change
+from noc.core.password.check import check_password_policy
 from .group import Group
 
 id_lock = Lock()
@@ -107,6 +109,11 @@ class User(NOCModel):
     )
     # Last login (Populated by login service)
     last_login = models.DateTimeField("Last Login", blank=True, null=True)
+    # Password policy
+    change_at = models.DateTimeField("Change password at", blank=True, null=True)
+    valid_from = models.DateTimeField("Password valid from", blank=True, null=True)
+    valid_until = models.DateTimeField("Password valid until", blank=True, null=True)
+    password_history = ArrayField(models.CharField(max_length=128), blank=True, null=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -142,24 +149,119 @@ class User(NOCModel):
         """
         return True
 
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
-
-    def check_password(self, raw_password):
+    def set_password(self, password: str, save: bool = True) -> None:
         """
-        Returns a boolean of whether the raw_password was correct. Handles
-        hashing formats behind the scenes.
+        Set new password.
+
+        Update password history when necessary.
+
+        Args:
+            password: Raw password.
+            save: Save changes.
+
+        Raises:
+            ValueError: if password policy is violated
         """
+        # Check password policy
+        # Raises ValueError
+        if config.login.password_history:
+            history = self.password_history or []
+            # Add current password to check
+            history.append(self.password)
+        else:
+            history = None
+        check_password_policy(
+            password,
+            min_password_len=config.login.min_password_len or None,
+            min_password_uppercase=config.login.min_password_uppercase or None,
+            min_password_lowercase=config.login.min_password_lowercase or None,
+            min_password_numbers=config.login.min_password_numbers or None,
+            min_password_specials=config.login.min_password_specials or None,
+            history=history or None,
+        )
+        # Update history
+        if (
+            self.password
+            and self.password != UNUSABLE_PASSWORD
+            and config.login.password_history > 0
+        ):
+            hist = self.password_history or []
+            hist.insert(0, self.password)
+            self.password_history = hist[: config.login.password_history]
+        # Update password ttl
+        if config.login.password_ttl > 0:
+            self.change_at = datetime.datetime.now() + datetime.timedelta(
+                seconds=config.login.password_ttl
+            )
+        else:
+            self.change_at = None
+        # Calculate hash
+        self.password = make_password(password)
+        if save:
+            self.save(update_fields=["password", "password_history", "change_at"])
 
-        def setter(raw_password):
-            self.set_password(raw_password)
-            self.save(update_fields=["password"])
+    def check_password(self, password: str) -> bool:
+        """
+        Check if password is correct.
 
-        return check_password(raw_password, self.password, setter)
+        Password policies must be checked separately.
+
+        Args:
+            password: Raw password.
+
+        Returns:
+            True: If password is valid.
+            False: If password is invalid.
+        """
+        if self.password == UNUSABLE_PASSWORD:
+            return False
+
+        return check_password(password, self.password)
+
+    def can_login_now(self) -> bool:
+        """
+        Check if user can login now.
+
+        Validate password validity range.
+
+        Returns:
+            True: If user can log in.
+            False: User cannot login.
+        """
+        now = datetime.datetime.now()
+        if self.valid_from and self.valid_from > now:
+            return False
+        if self.valid_until and self.valid_until < now:
+            return False
+        return True
 
     def set_unusable_password(self):
-        # Sets a value that will never be a valid hash
-        self.password = make_password(None)
+        """
+        Sets a value that will never be a valid hash.
+
+        Doesn't changes a model. Must be saved explicitly.
+        """
+        self.password = UNUSABLE_PASSWORD
+
+    def must_change_password(self) -> bool:
+        """
+        Check if user must change password.
+
+        User can change password in case:
+        * Password is expired.
+        * Password hash is weak.
+
+        Returns:
+            True: if user must change password immediately.
+        """
+        if self.password == UNUSABLE_PASSWORD:
+            return False
+        # Time based
+        if self.change_at:
+            now = datetime.datetime.now()
+            if self.change_at < now:
+                return True
+        return must_change(self.password)
 
     @property
     def contacts(self):
