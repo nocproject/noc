@@ -44,6 +44,7 @@ class UserProfileApplication(ExtApplication):
                 "user_policy": "A",
                 "time_pattern": None,
                 "supress": False,
+                "preferred_method": "",
                 "message_types": [t["message_type"] for t in g.message_types],
             }
             uc = g.get_subscription_by_user(user)
