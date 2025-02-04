@@ -1,0 +1,228 @@
+<style>
+    .p-l {
+        padding-left: 15px;
+    }
+    .p-r {
+        padding-right: 15px;
+    }
+</style>
+<div class="row" style="padding: 10px 0;">
+    <div class="col-md-4">
+        <b>Name:</b>
+        <span>{{ object.name }}</span>
+    </div>
+    <div class="col-md-4">
+        <b>Description:</b>
+        <span>{{ object.description | default('-', true) }}</span>
+    </div>
+    <div class="col-md-4">
+        <b>Usage:</b>
+        <span>{{ object.usage | default('-', true) }} %</span>
+    </div>
+</div>
+<div class="row p-l">
+    <div class="form-group form-inline">
+        <label for="allocated_till" class="control-label">Allocated till:</label>
+        <input id="allocated_till" type="date" class="form-control input-sm">
+        <label for="tt_id" class="control-label">TT id:</label>
+        <input id="tt_id" type="text" class="form-control input-sm">
+        <label for="limit" class="control-label">Allocated Limit:</label>
+        <input id="limit" type="number" class="form-control input-sm" value="1" min="1" max="1000" step="1">
+    </div>
+</div>
+<div class="row">
+    <div class="form-group form-inline col-md-6">
+        <button id="allocate-btn" type="button" class="btn btn-sm btn-secondary"
+                onclick="allocateClick('{{ object.id }}')">Allocate</button>
+    </div>
+</div>
+<table class="domains table table-condensed table-hover my-2">
+    <thead>
+        <tr>
+            <th></th>
+            <th class="col-md-3">Name</th>
+            <th class="col-md-6">Description</th>
+            <th class="col-md-1">Usage</th>
+            <th class="col-md-1">Resource</th>
+            <th class="col-md-1">Free</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for d in domains %}
+        <tr>
+            <td><input data-domain="{{ d.id }}" type="checkbox"></td>
+            {% if object.type == 'ip' %}
+                <td id="domain-{{ d.id }}"><a href="/api/card/view/prefix/{{ d.id }}/" title="{{ d.name }}">{{ d.name }}</a></td>
+            {% else %}
+                <td id="domain-{{ d.id }}">{{ d.name }}</td>
+            {% endif %}
+            <td>{{ d.description | default('-', true ) }}</td>
+            <td>{{ d.usage | default('-', true ) }}%</td>
+            <td><button type="button" class="btn btn-xs btn-secondary" 
+                        onclick="updateParams([['domain', '{{ d.id }}'], ['free_only', false]])">Show</button></td>
+            <td><button type="button" class="btn btn-xs btn-secondary" 
+                        onclick="updateParams([['domain', '{{ d.id }}'], ['free_only', true]])">Show Free</button></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="row p-l p-r">
+    <div class="form-group form-inline col-md-6">
+        <div id="filter-text" class="field">Filter by Domain</div>
+    </div>
+    <div class="pull-right">
+        <div class="form-inline">
+            <button id="reset-btn" type="button" class="btn btn-sm btn-secondary"
+                    onclick="resetFilter()">Reset Filter</button>
+            <button id="to-free-btn" type="button" class="btn btn-sm btn-secondary allocate"
+                    onclick="toFreeClick('{{ object.id }}')" disabled>To Free</button>
+            <button id="reserve-btn" type="button" class="btn btn-sm btn-secondary allocate"
+                    onclick="reserveClick('{{ object.id }}')" disabled>Reserve</button>
+        </div>
+    </div>
+</div>
+<table class="resources table table-condensed table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Resource</th>
+            <th>Name</th>
+            <th>State</th>
+            <th>Last Seen</th>
+            <th>Device</th>
+            <th>allocated</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in resources %}
+        <tr>
+            <td><input data-id="{{ r.id }}" data-domain="{{ r.resource_domain.id }}" type="checkbox"></td>
+            {% if object.type == 'ip' %}
+                <td><a href="/api/card/view/address/{{ r.id }}/">{{ r.resource_key }}</a></td>
+            {% else %}
+                <td><a href="/api/card/view/vlan/{{ r.id }}/">{{ r.resource_key }}</a></td>
+            {% endif %}
+            <td>{{ r.name }}</td>
+            <td>{{ r.state }}</td>
+            <td>{{ r.last_seen | default('-', true) }}</td>
+            <td>{{ r.device | default('-', true) }}</td>
+            <td>{{ r.allocated | default('-', true) }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="7">There are no resources for the selected criteria</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<script>
+function toFreeClick(objectId){
+    const resources = getSelected(".resource"),
+          body = {keys: resources, resource_pool: objectId, action: "free"};
+    sendPost(body);
+}
+function allocateClick(objectId){
+    allocate(objectId, "allocate", ".domains");
+}
+function reserveClick(objectId){
+    allocate(objectId, "reserve", ".resources");
+}
+function allocate(objectId, action, select){
+    const resources = getSelected(select),
+          body = {keys: resources, resource_pool: objectId, action: action},
+          allocated_till = document.getElementById("allocated_till").value,
+          tt_id = document.getElementById("tt_id").value;
+    if(allocated_till){
+        body.allocated_till = allocated_till;
+    }
+    if(tt_id){
+        body.tt_id = tt_id;
+    }
+    if(action === "allocate"){
+        const limit = parseInt(document.getElementById("limit").value);
+        body.limit = limit;
+    }
+    sendPost(body);
+}
+function getSelected(table){
+    const checkedCheckboxes = document.querySelectorAll(table + ' input[type="checkbox"]:checked');
+    return [...checkedCheckboxes].map(el=>{
+            let value = {domain: el.dataset.domain};
+            if(el.dataset.id) {
+                value.key = el.dataset.id;
+            }
+            return value;
+        });
+}
+function resetFilter(){
+    const url = new URL(window.location.href);
+    url.search = '';
+    window.location.href = url.toString();
+}
+function enableButtons(state){
+    const buttons = document.querySelectorAll("button.allocate");
+    buttons.forEach(button=>{
+        button.disabled = state;
+    });
+}
+function checkSelection(){
+    if (getSelected(".resources").length > 0) {
+        enableButtons(false); 
+    } else {
+        enableButtons(true);
+    }
+}
+function sendPost(data){
+    fetch('/api/card/resourcepool/allocate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error: ' + response.statusText);
+            }
+        })
+        .then(result => {
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error(error);
+        });
+ }
+function updateParams(params){
+    const url = new URL(window.location.href);
+    for(const [key, value] of params){
+        if(key === "free_only" && value === false){
+         if(url.searchParams.has(key)) url.searchParams.delete(key);
+            continue;
+        }
+        url.searchParams.set(key, value);
+    }
+    window.location.href = url.toString();
+}
+$(document).ready(function() {
+    const filterTextField = document.getElementById("filter-text"),
+        urlParams = new URLSearchParams(window.location.search),
+        domainId = urlParams.get("domain"),
+        isFree = urlParams.get("free_only"),
+        checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    let domainText = "None", isFreeText = "All";
+    if(domainId){
+        const domainField = document.getElementById("domain-" + domainId);
+        domainText = domainField.innerText || "None";
+    }
+    if(isFree){
+        isFreeText = "Yes";
+    }
+    checkSelection();
+    filterTextField.innerText = `Filter by domain: '${domainText}', is free '${isFreeText}'`;
+    [...checkboxes].forEach(ch=>{
+        ch.addEventListener('change', checkSelection);
+    })
+});
+</script>

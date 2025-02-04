@@ -112,6 +112,14 @@ class VLAN(Document):
         if managed_object.l2_domain:
             return VLAN.objects.filter(l2_domain=managed_object.l2_domain, vlan=int(vlan)).first()
 
+    @property
+    def resource_key(self):
+        return self.vlan
+
+    @property
+    def resource_domain(self):
+        return self.l2_domain
+
     @classmethod
     def get_resource_keys(
         cls,

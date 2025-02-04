@@ -47,7 +47,7 @@ id_lock = Lock()
 
 
 class PoolItem(BaseModel):
-    pool: str
+    pool: Any
     ip_filter: Optional[str] = None
 
 
@@ -215,6 +215,8 @@ class Prefix(NOCModel):
         """Iterate over pool item"""
         processed = []
         for p in self.pools:
+            pool = ResourcePool.get_by_id(p["pool"])
+            p = PoolItem(pool=pool)
             processed.append(p.pool.id)
             yield p
         for p in self.profile.pools:
@@ -756,7 +758,7 @@ class Prefix(NOCModel):
     def address_usage_percent(self) -> str:
         u = self.address_usage
         if u is None:
-            return ""
+            return "-"
         return "%.2f%%" % u
 
     def is_empty(self) -> bool:
@@ -808,6 +810,19 @@ class Prefix(NOCModel):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_ipprefix")
+
+    @classmethod
+    def get_resource_pool_usage(
+        cls,
+        pools: List[ResourcePool],
+        domains: Optional[List["Prefix"]] = None,
+    ):
+        """"""
+        return 0.0
+
+    @property
+    def resource_usage(self) -> Optional[float]:
+        return self.address_usage
 
 
 # Avoid circular references
