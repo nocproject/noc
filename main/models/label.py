@@ -550,7 +550,7 @@ class Label(Document):
         r: List[str] = []
         for labels in iter_labels:
             for label in labels:
-                if label in seen:
+                if label in seen or label.endswith("::*"):
                     continue
                 elif "::" in label and label[-1] not in MATCH_OPS:
                     scope = label.rsplit("::", 1)[0]
@@ -774,9 +774,11 @@ class Label(Document):
             else:
                 # Apply new rule
                 params = [[self.name]]
-                for _, rxs in regxs[model]:
+                conditions = []
+                for field, rxs in regxs[model]:
                     params += rxs
-                condition = " OR ".join([f"{field} ~ %s" for field, _ in regxs[model]])
+                    conditions += [f"{field} ~ %s"] * len(rxs)
+                condition = " OR ".join(conditions)
                 sql = f"""
                 UPDATE {model._meta.db_table}
                 SET effective_labels=ARRAY (
