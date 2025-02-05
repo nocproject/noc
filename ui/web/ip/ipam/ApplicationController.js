@@ -9,14 +9,10 @@ console.debug("Defining NOC.ip.ipam.ApplicationController");
 Ext.define("NOC.ip.ipam.ApplicationController", {
   extend: "Ext.app.ViewController",
   alias: "controller.ip.ipam",
-  init: function(view){
+  init: function(){
     var id, mode, url = Ext.History.getHash().split("?"),
-      // viewModel = view.getViewModel(),
-      prefix = url[0], queryStr = url.length ? url[1] : undefined;
+      prefix = url[0];
 
-    if(prefix){
-      this.getView().currentHistoryHash = prefix;
-    }
     // url router
     if(Ext.String.startsWith(prefix, "ip.ipam/vrf")){
       id = prefix.replace("ip.ipam/vrf", "").replace("/", "");
