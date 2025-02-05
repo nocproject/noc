@@ -1,0 +1,172 @@
+{
+    "name": "TPLink | T2600G | TL-SX3008F",
+    "$collection": "inv.objectmodels",
+    "uuid": "41a68336-6079-4f87-afc4-497f8473afaf",
+    "vendor__code": "TPLINK",
+    "description": "Управляемый коммутатор JetStream уровня 2+ с 8 портами SFP+",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "name": "Console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Te1/0/1",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/1",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Te1/0/2",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/2",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Te1/0/3",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/3",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Te1/0/4",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/4",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Te1/0/5",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/5",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Te1/0/6",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/6",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Te1/0/7",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/7",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Te1/0/8",
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpTe1/0/8",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "usb",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
+            "type__name": "Electrical | mini-USB"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SX3008F 1.20", "TL-SX3008F 1.0"]
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 15.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}
