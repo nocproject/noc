@@ -80,10 +80,7 @@ class ServiceApplication(ExtDocApplication):
             q = Q(id__in=svcs)
         elif is_mac(query.strip()):
             svcs = [
-                s.id
-                for s in ServiceInstance.objects.filter(macs=[query.strip()]).scalar(
-                    "service"
-                )
+                s.id for s in ServiceInstance.objects.filter(macs=[query.strip()]).scalar("service")
             ]
             q = Q(id__in=svcs)
         else:
