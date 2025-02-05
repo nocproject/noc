@@ -69,18 +69,17 @@ Ext.define("NOC.core.ComboBox", {
 
   initComponent: function(){
     var tokens,
-      extraParams = {"__format": "ext"},
-      me = this;
+      extraParams = {"__format": "ext"};
 
     // Calculate restUrl
-    if(Ext.isFunction(me.restUrl)){
-      me.restUrl = me.restUrl();
+    if(Ext.isFunction(this.restUrl)){
+      this.restUrl = this.restUrl();
     }
 
-    if(!me.restUrl
-            && Ext.String.startsWith(me.$className, "NOC.")
-            && Ext.String.endsWith(me.$className, "LookupField")){
-      me.restUrl = me.$className
+    if(!this.restUrl
+            && Ext.String.startsWith(this.$className, "NOC.")
+            && Ext.String.endsWith(this.$className, "LookupField")){
+      this.restUrl = this.$className
                 .replace("NOC", "")
                 .replace(/\./g, "/")
                 .replace("/LookupField", "/lookup/");
@@ -93,11 +92,11 @@ Ext.define("NOC.core.ComboBox", {
     // Fix combobox with paging
     this.pickerId = this.getId() + "_picker";
     // end
-    me.showTriggers(null);
-    if(!Ext.Object.isEmpty(me.query)){
-      Ext.apply(extraParams, me.query);
+    this.showTriggers(null);
+    if(!Ext.Object.isEmpty(this.query)){
+      Ext.apply(extraParams, this.query);
     }
-    Ext.apply(me, {
+    Ext.apply(this, {
       store: {
         fields: ["id", "label"],
         pageSize: 25,
@@ -121,38 +120,37 @@ Ext.define("NOC.core.ComboBox", {
     this.callParent();
   },
 
-  showTriggers: function(value){
-    var me = this,
-      process = function(value, perms){
-        me.getTrigger("create").hide();
-        me.getTrigger("clear").show();
-        if(value == null || value === ""){
-          if(Ext.Array.contains(perms, "create")){
-            if(!me.hideTriggerCreate) me.getTrigger("create").show();
-          }
-          me.getTrigger("clear").hide();
-          me.getTrigger("update").hide();
-          return;
-        }
-        if(Ext.Array.contains(perms, "launch")){
-          if(!me.hideTriggerUpdate) me.getTrigger("update").show();
-        }
-      };
+  process: function(value, perms){
+    this.getTrigger("create").hide();
+    this.getTrigger("clear").show();
+    if(value == null || value === ""){
+      if(Ext.Array.contains(perms, "create")){
+        if(!this.hideTriggerCreate) this.getTrigger("create").show();
+      }
+      this.getTrigger("clear").hide();
+      this.getTrigger("update").hide();
+      return;
+    }
+    if(Ext.Array.contains(perms, "launch")){
+      if(!this.hideTriggerUpdate) this.getTrigger("update").show();
+    }
+  },
 
+  showTriggers: function(value){
     if(this.askPermission){
       if(NOC.permissions$.isLoaded()){
-        process(value, NOC.permissions$.getPermissions(me.app));
+        this.process(value, NOC.permissions$.getPermissions(this.app));
       } else{
         NOC.permissions$.subscribe({
           key: this.app,
-          value: function(perms){
-            process(value, perms);
+          value: (perms) =>{
+            this.process(value, perms);
           },
         },
         );
       }
     } else{
-      process(value, []);
+      this.process(value, []);
     }
   },
 
@@ -161,76 +159,71 @@ Ext.define("NOC.core.ComboBox", {
   },
 
   onSpecialKey: function(field, e){
-    var me = this;
     switch(e.keyCode){
       case e.ESC:
-        me.clearValue();
-        me.fireEvent("clear");
+        this.clearValue();
+        this.fireEvent("clear");
         break;
     }
   },
 
   onBeforeQuery: function(){
-    var me = this,
-      v = this.getRawValue();
+    var v = this.getRawValue();
     if(typeof v === "undefined" || v === null || v === ""){
-      me.clearValue();
-      me.fireEvent("clear");
+      this.clearValue();
+      this.fireEvent("clear");
     }
   },
 
   setValue: function(value, doSelect){
-    var me = this,
-      vm,
-      params = {};
+    var vm, params = {};
 
     if(value === null){
-      me.callParent([value]);
+      this.callParent([value]);
       return;
     }
     if(typeof value === "string" || typeof value === "number"){
       if(value === "" || value === 0){
-        me.clearValue();
+        this.clearValue();
         return;
       }
-      params[me.valueField] = value;
+      params[this.valueField] = value;
       Ext.Ajax.request({
-        url: me.restUrl,
+        url: this.restUrl,
         method: "GET",
-        scope: me,
+        scope: this,
         params: params,
         success: function(response){
           var data = Ext.decode(response.responseText);
           if(data.length === 1){
-            vm = me.store.getModel().create(data[0]);
-            me.setValue(vm);
+            vm = this.store.getModel().create(data[0]);
+            this.setValue(vm);
             if(doSelect){
-              me.fireEvent("select", me, vm, {});
+              this.fireEvent("select", this, vm, {});
             }
           }
         },
       });
     } else{
-      if(!value.hasOwnProperty("data")){
+      if(!Ext.isDefined(value.data)){
         value = Ext.create("Ext.data.Model", value);
       }
-      me.callParent([value]);
+      this.callParent([value]);
     }
   },
   // Called by ModelApplication
-  cleanValue: function(record, restURL){
-    var me = this,
-      rv = record.get(me.name),
+  cleanValue: function(record){
+    var rv = record.get(this.name),
       mv = {};
     if(!rv || rv === "" || rv === 0){
       return ""
     }
-    mv[me.valueField] = rv;
-    mv[me.displayField] = record.get(me.name + "__label");
-    if(mv[me.displayField] === undefined){
+    mv[this.valueField] = rv;
+    mv[this.displayField] = record.get(this.name + "__label");
+    if(mv[this.displayField] === undefined){
       // Incomplete input data. Just use value as label
-      mv[me.displayField] = rv
+      mv[this.displayField] = rv
     }
-    return me.store.getModel().create(mv)
+    return this.store.getModel().create(mv)
   },
 });

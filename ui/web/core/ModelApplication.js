@@ -806,6 +806,7 @@ Ext.define("NOC.core.ModelApplication", {
             return !(Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal);
           }));
         me.unmask();
+        // clean for reload from grid
         me.dirtyReset(me.form);
         me.showGrid();
         NOC.msg.complete(__("Saved"));
@@ -939,7 +940,10 @@ Ext.define("NOC.core.ModelApplication", {
     me.form.reset();
     me.form.setValues(r);
     me.loadInlines();
-    me.dirtyReset(me.form);
+    // ToDo reset dirty flag, method dirtyReset doesn't work
+    // resetOriginalValue from me.dirtyReset set current value to originalValue
+    // but originalValue set to previous value
+    // me.dirtyReset(me.form);
     // Activate delete button
     me.deleteButton.setDisabled(!me.hasPermission("delete"));
     me.saveButton.setDisabled(!me.hasPermission("update"));
@@ -1124,9 +1128,8 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Reset button pressed
   onReset: function(){
-    var me = this;
-    me.form.reset();
-    me.dirtyReset(me.form);
+    this.form.reset();
+    this.dirtyReset(this.form);
   },
   // Delete button pressed
   onDelete: function(){
@@ -1312,12 +1315,11 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Load inline stores
   loadInlines: function(){
-    var me = this;
     // Do not load store on new record
-    if(!me.currentRecord || !me.inlineStores.length)
+    if(!this.currentRecord || !this.inlineStores.length)
       return;
-    var parentId = me.currentRecord.get(me.idField);
-    Ext.each(me.inlineStores, function(istore){
+    var parentId = this.currentRecord.get(this.idField);
+    Ext.each(this.inlineStores, function(istore){
       istore.setParent(parentId);
       istore.load();
     });
