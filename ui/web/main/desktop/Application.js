@@ -143,7 +143,7 @@ Ext.define("NOC.main.desktop.Application", {
       // Open tab
       me.workplacePanel.setActiveTab(me.launchedTabs[node]);
     } else{
-      if(title !== "Welcome"){
+      if(title !== "Home"){
         NOC.msg.started(__("Starting \"{0}\""), title);
       }
       // Launch new tab
@@ -328,7 +328,7 @@ Ext.define("NOC.main.desktop.Application", {
         NOC.error(__("Failed to get user settings"));
       },
     });
-    // Launch welcome application
+    // Launch home application
     if(!Ext.History.getHash()){
       me.launchTab("NOC.main.home.Application", "Home", {});
     }
