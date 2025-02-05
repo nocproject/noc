@@ -18,6 +18,7 @@ from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.resourcepool import ResourcePool
+from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import DocumentParameter, IntParameter, StringParameter
 from noc.vc.models.vlan import VLAN
@@ -81,10 +82,14 @@ class VLANApplication(ExtDocApplication):
             return data
         objects = defaultdict(list)
         # @todo group by for speedup
-        for mo_id, l2_domain in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(
-            "id", "l2_domain"
+        for mo_id, l2_domain, segment in ManagedObject.get_by_l2_domains(l2_domains).values_list(
+            "id", "l2_domain", "segment"
         ):
-            objects[l2_domain].append(mo_id)
+            if l2_domain:
+                objects[l2_domain].append(mo_id)
+                continue
+            ns = NetworkSegment.get_by_id(segment)
+            objects[str(ns.l2_domain.id)].append(mo_id)
         interfaces_count = {}
         for l2_domain in objects:
             r = self.get_l2domain_interfaces_count(l2_domain)
@@ -97,15 +102,10 @@ class VLANApplication(ExtDocApplication):
     def bulk_field_prefixes(self, data):
         if not data:
             return data
-        l2_domains = tuple(d["l2_domain"] for d in data if "l2_domain" in d)
+        l2_domains = tuple(set(d["l2_domain"] for d in data if "l2_domain" in d))
         if not l2_domains:
             return data
-        objects = dict(
-            mo
-            for mo in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(
-                "id", "l2_domain"
-            )
-        )
+        objects = ManagedObject.get_by_l2_domains(l2_domains).values_list("id", flat=True)
 
         vlans = [d["vlan"] for d in data]
 
@@ -117,12 +117,15 @@ class VLANApplication(ExtDocApplication):
             & Q(vlan_ids__in=vlans)
             & (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
         ).only("managed_object", "enabled_afi", "ipv4_addresses", "ipv6_addresses", "vlan_ids"):
+            d = si.managed_object.get_effective_l2_domain()
+            if not d:
+                continue
             if "IPv4" in si.enabled_afi:
-                prefixes[(objects[si["managed_object"].id], si["vlan_ids"][0])].update(
+                prefixes[(str(d.id), si["vlan_ids"][0])].update(
                     {IP.prefix(ip).first for ip in si.ipv4_addresses}
                 )
             if "IPv6" in si.enabled_afi:
-                prefixes[(objects[si["managed_object"].id], si["vlan_ids"][0])].update(
+                prefixes[(str(d.id), si["vlan_ids"][0])].update(
                     {IP.prefix(ip).first for ip in si.ipv6_addresses}
                 )
 

@@ -117,6 +117,15 @@ Ext.define("NOC.inv.networksegment.Model", {
             persist: false
         },
         {
+            name: "l2_domain",
+            type: "string"
+        },
+        {
+            name: "l2_domain__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "l2_mtu",
             type: "int"
         },

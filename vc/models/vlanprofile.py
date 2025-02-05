@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # VLAN Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import operator
 # Third-party modules
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField
+from mongoengine.fields import StringField, LongField, ListField, EnumField
 import cachetools
 
 # NOC modules
@@ -23,12 +23,17 @@ from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.vlanroles import VLANRole
 
 id_lock = Lock()
 
 
+VLAN_ROLE_LABEL_SCOPE = "vlanrole"
+
+
 @Label.model
+@on_save
 @bi_sync
 @on_delete_check(
     check=[
@@ -49,8 +54,9 @@ class VLANProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     # VLAN workflow
-    workflow = PlainReferenceField(Workflow)
+    workflow = PlainReferenceField(Workflow, required=True)
     style = ForeignKeyField(Style)
+    role: Optional[VLANRole] = EnumField(VLANRole, required=False)
     # Labels
     labels = ListField(StringField())
     # Integration with external NRI and TT systems
@@ -97,3 +103,16 @@ class VLANProfile(Document):
             )
             vp.save()
         return vp
+
+    @property
+    def role_label(self):
+        """Generate role label"""
+        if not self.role:
+            return None
+        elif self.role == VLANRole.PROFILE:
+            return f"{VLAN_ROLE_LABEL_SCOPE}::{self.name}"
+        return f"{VLAN_ROLE_LABEL_SCOPE}::{self.role.value}"
+
+    def on_save(self):
+        if self.role_label:
+            Label.ensure_label(self.role_label, model_ids=["vc.VLAN", "inv.Interface"])

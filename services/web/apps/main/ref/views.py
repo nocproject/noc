@@ -29,6 +29,7 @@ from noc.core.mx import MessageType, MESSAGE_HEADERS
 from noc.core.datasources.loader import loader as ds_loader
 from noc.core.protodcsources.loader import loader as pds_loader
 from noc.core.reporter.formatter.loader import loader as r_formatter_loader
+from noc.core.vlanroles import VLANRole
 from noc.main.reportsources.loader import loader as rds_loader
 from noc.models import iter_model_id
 from noc import settings
@@ -272,6 +273,10 @@ class RefAppplication(ExtApplication):
                 continue
             r += [{"id": name, "label": ds.name}]
         return r  # list(sorted(r))
+
+    def build_vlanrole(self):
+        """Vlan Roles Lookup"""
+        return sorted([{"id": x.value, "label": x.name} for x in VLANRole], key=lambda x: x["id"])
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
