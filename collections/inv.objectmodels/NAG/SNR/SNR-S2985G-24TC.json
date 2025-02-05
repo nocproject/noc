@@ -1,15 +1,26 @@
 {
-    "name": "NAG | SNR | SNR-S2985G-24T-POE-E",
+    "name": "NAG | SNR | SNR-S2985G-24TC",
     "$collection": "inv.objectmodels",
-    "uuid": "4cb56833-7467-4d39-8846-672b6c0b7944",
+    "uuid": "d2d56cd0-9f5c-4801-9c50-26e1dfaf695c",
     "vendor__code": "NAG",
-    "description": "24 порта 10/100/1000BASE-T с поддержкой POE 802.3at/af, 4 порта 100/1000BASE-X SFP\nБюджет POE 370W",
+    "description": "Управляемый гигабитный коммутатор уровня 2, 24 порта 10/100/1000Base-T, 2 порта Combo 10/100/1000Base-T|100/1000Base-X SFP, 2 порта 100/1000Base-X SFP, встроенный БП ~220V AC",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "power",
+            "description": null,
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
             "name": "Ethernet1/0/1",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -24,17 +35,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/2",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -49,17 +56,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/3",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -74,17 +77,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/4",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -99,17 +98,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/5",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -124,17 +119,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/6",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -149,17 +140,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/7",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -174,17 +161,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/8",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -199,17 +182,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/9",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -224,17 +203,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/10",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -249,17 +224,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/11",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -274,17 +245,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/12",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -299,17 +266,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/13",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -324,17 +287,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/14",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -349,17 +308,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/15",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -374,17 +329,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/16",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -399,17 +350,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/17",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -424,17 +371,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/18",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -449,17 +392,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/19",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -474,17 +413,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/20",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -499,17 +434,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/21",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -524,17 +455,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/22",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -549,17 +476,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/23",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -574,17 +497,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
             "name": "Ethernet1/0/24",
-            "description": "",
+            "description": null,
             "direction": "s",
             "gender": "f",
             "protocols": [
@@ -599,17 +518,36 @@
                 {
                     "direction": "*",
                     "protocol__code": "1000BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "Ethernet1/0/25",
-            "description": "",
+            "name": "Ethernet1/0/25_rj",
+            "description": null,
+            "combo": "25",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Ethernet1/0/25_sfp",
+            "description": null,
+            "combo": "25",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/25",
@@ -623,11 +561,34 @@
                     "protocol__code": "TransEth1G"
                 }
             ],
-            "type__name": "Transceiver | SFP+"
+            "type__name": "Transceiver | SFP"
         },
         {
-            "name": "Ethernet1/0/26",
-            "description": "",
+            "name": "Ethernet1/0/26_rj",
+            "description": null,
+            "combo": "26",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Ethernet1/0/26_sfp",
+            "description": null,
+            "combo": "26",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/26",
@@ -641,11 +602,11 @@
                     "protocol__code": "TransEth1G"
                 }
             ],
-            "type__name": "Transceiver | SFP+"
+            "type__name": "Transceiver | SFP"
         },
         {
             "name": "Ethernet1/0/27",
-            "description": "",
+            "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/27",
@@ -659,11 +620,11 @@
                     "protocol__code": "TransEth1G"
                 }
             ],
-            "type__name": "Transceiver | SFP+"
+            "type__name": "Transceiver | SFP"
         },
         {
             "name": "Ethernet1/0/28",
-            "description": "",
+            "description": null,
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/28",
@@ -677,14 +638,15 @@
                     "protocol__code": "TransEth1G"
                 }
             ],
-            "type__name": "Transceiver | SFP+"
+            "type__name": "Transceiver | SFP"
         },
         {
             "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [{
+            "protocols": [
+                {
                 "direction": ">",
                 "protocol__code": "RS232"
             }],
@@ -695,10 +657,6 @@
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "protocols": [{
-                "direction": ">",
-                "protocol__code": "220VAC"
-            }],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
@@ -706,22 +664,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["SNR-S2985G-24T-POE-E"]
-        },
-        {
-            "attr": "depth",
-            "interface": "dimensions",
-            "value": 280
-        },
-        {
-            "attr": "height",
-            "interface": "dimensions",
-            "value": 44
-        },
-        {
-            "attr": "width",
-            "interface": "dimensions",
-            "value": 442
+            "value": ["SNR-S2985G-24TC"]
         },
         {
             "attr": "managed",
