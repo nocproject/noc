@@ -22,6 +22,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 from noc.core.change.decorator import change
 from noc.vc.models.l2domain import L2Domain
+from noc.vc.models.vlan import VLAN
 from noc.main.models.label import Label
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
@@ -79,7 +80,9 @@ class SubInterface(Document):
     l2_domain = PlainReferenceField(L2Domain, required=False)
     name = StringField()
     description = StringField(required=False)
-    profile = PlainReferenceField(InterfaceProfile, default=InterfaceProfile.get_default_profile)
+    profile: "InterfaceProfile" = PlainReferenceField(
+        InterfaceProfile, default=InterfaceProfile.get_default_profile
+    )
     mtu = IntField(required=False)
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])
@@ -111,6 +114,10 @@ class SubInterface(Document):
     @classmethod
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["SubInterface"]:
         return SubInterface.objects.filter(id=oid).first()
+
+    @property
+    def allow_subinterface_metrics(self):
+        return self.profile.subinterface_apply_policy != "D" and self.profile.metrics
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
@@ -157,6 +164,11 @@ class SubInterface(Document):
             yield Label.get_effective_prefixfilter_labels(
                 "subinterface_ipv4_addresses", instance.ipv4_addresses
             )
+        l2_domain = instance.managed_object.get_effective_l2_domain()
+        if instance.untagged_vlan and l2_domain:
+            vlan = VLAN.get_by_vlan_num(l2_domain.id, instance.untagged_vlan)
+            if vlan and vlan.vlan_role_label:
+                yield [vlan.vlan_role_label]
 
     @property
     def service(self):

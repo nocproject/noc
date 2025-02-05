@@ -35,12 +35,14 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
+from noc.core.scheduler.job import Job
+from noc.core.cache.base import cache
+from noc.vc.models.vlanfilter import VLANFilter
+from noc.vc.models.vlan import VLAN
+from noc.vc.models.l2domain import L2Domain
 from .networksegmentprofile import NetworkSegmentProfile
 from .allocationgroup import AllocationGroup
 from .link import Link
-from noc.core.scheduler.job import Job
-from noc.vc.models.vlanfilter import VLANFilter
-from noc.vc.models.vlan import VLAN
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -103,6 +105,7 @@ class NetworkSegment(Document):
 
     settings = DictField(default=lambda: {}.copy())
     labels = ListField(StringField())
+    l2_domain = ReferenceField(L2Domain, required=False)
     # Sibling segment, if part of larger structure with
     # horizontal links
     sibling = ReferenceField("self")
@@ -379,8 +382,12 @@ class NetworkSegment(Document):
             return self.horizontal_transit_policy
         elif self.horizontal_transit_policy == "P" and self.profile:
             return self.profile.horizontal_transit_policy
-        else:
-            return "D"
+        return "D"
+
+    def get_effective_l2_domain(self) -> Optional["L2Domain"]:
+        if self.l2_domain or not self.parent:
+            return self.l2_domain
+        return self.parent.get_effective_l2_domain()
 
     def get_management_vlan(self):
         """
@@ -391,8 +398,7 @@ class NetworkSegment(Document):
             return self.management_vlan or None
         elif self.management_vlan_policy == "p":
             return self.profile.management_vlan or None
-        else:
-            return None
+        return None
 
     def get_multicast_vlan(self):
         """
@@ -433,6 +439,8 @@ class NetworkSegment(Document):
             Job.remove("scheduler", self.DISCOVERY_JOB, key=self.id)
 
     def on_save(self):
+        from noc.sa.models.managedobject import MANAGEDOBJECT_CACHE_VERSION
+
         if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
             self.ensure_discovery_jobs()
         if (
@@ -449,6 +457,11 @@ class NetworkSegment(Document):
             self.update_links()
             if self.parent:
                 self.parent.update_links()
+        # Clean cache
+        cache.delete_many(
+            [f"managedobject-id-{x}" for x in self.managed_objects.values_list("id", flat=True)],
+            version=MANAGEDOBJECT_CACHE_VERSION,
+        )
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_border_cache"), lock=lambda _: id_lock)

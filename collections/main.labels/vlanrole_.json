@@ -1,0 +1,19 @@
+{
+    "name": "vlanrole::*",
+    "$collection": "main.labels",
+    "uuid": "eef023fe-3ba4-401d-bfa5-fd9328024c46",
+    "description": "Wildcard labels for VLAN role",
+    "bg_color1": 15844367,
+    "fg_color1": 16777215,
+    "bg_color2": 2719929,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Interface", "vc.VLAN"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

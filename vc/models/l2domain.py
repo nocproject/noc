@@ -59,7 +59,11 @@ class PoolItem(EmbeddedDocument):
 @bi_sync
 @on_save
 @on_delete_check(
-    check=[("vc.VLAN", "l2_domain"), ("sa.ManagedObject", "l2_domain")],
+    check=[
+        ("vc.VLAN", "l2_domain"),
+        ("sa.ManagedObject", "l2_domain"),
+        ("inv.NetworkSegment", "l2_domain"),
+    ],
     clean=[("inv.SubInterface", "l2_domain")],
 )
 class L2Domain(Document):
@@ -260,8 +264,14 @@ class L2Domain(Document):
     def get_l2_domain_object_ids(cls, l2_domain: str):
         """Get list of all managed object ids belonging to same L2 domain"""
         from noc.sa.models.managedobject import ManagedObject
+        from noc.inv.models.networksegment import NetworkSegment
+        from django.db.models.query_utils import Q as d_q
 
-        return list(ManagedObject.objects.filter(l2_domain=l2_domain).values_list("id", flat=True))
+        q = d_q(l2_domain=l2_domain)
+        ns = NetworkSegment.objects.filter(l2_domain=l2_domain)
+        if ns:
+            q |= d_q(segment__in=ns)
+        return list(ManagedObject.objects.filter(q).values_list("id", flat=True))
 
     @classmethod
     def calculate_stats(cls, l2_domains: List["L2Domain"]) -> List[Dict[str, Union[str, int]]]:
