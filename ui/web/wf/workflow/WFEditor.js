@@ -726,7 +726,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             var allowed_models = [];
 
             ret["allowed_models"].forEach(function(key) {
-                    allowed_models.push(key.id);
+                    allowed_models.push(key);
             });
             ret["allowed_models"] = allowed_models;
         }
