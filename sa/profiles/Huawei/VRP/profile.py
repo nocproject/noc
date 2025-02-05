@@ -101,6 +101,7 @@ class Profile(BaseProfile):
         "is_quidway_S9xxx": {"platform": {"$regex": r"^S9...\S*"}},
         "is_s77xx": {"platform": {"$regex": r"^S77\S+"}},
         "is_s127xx": {"platform": {"$regex": r"^S127\S+"}},
+        "is_me60": {"platform": {"$regex": r"ME60\S+"}},
     }
 
     rx_ver = re.compile(

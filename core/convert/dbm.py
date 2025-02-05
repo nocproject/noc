@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Various conversions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,4 +33,6 @@ def mw2dbm(v):
     >>> mw2dbm(10)
     10.0
     """
+    if not bool(v):
+        return 0.0
     return 10 * math.log10(float(v))
