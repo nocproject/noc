@@ -12,6 +12,7 @@ import re
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 from noc.core.mib import mib
+from noc.core.text import alnum_key
 
 
 class Script(BaseScript):
@@ -25,6 +26,12 @@ class Script(BaseScript):
         ],
         "Huawei | OID | hwCBQoSPolicyStatisticsClassifierTable": mib[
             "HUAWEI-CBQOS-MIB::hwCBQoSPolicyStatClassifierMatchedPassPackets"
+        ],
+        "Huawei | OID | hwOpticalModuleInfoTable": mib[
+            "HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalMode"
+        ],
+        "Huawei | OID | hwOpticalModuleInfoTable Lane": mib[
+            "HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalLaneBiasCurrent"
         ],
     }
 
@@ -127,35 +134,43 @@ class Script(BaseScript):
         r = self.profile.parse_table(out, part_name="stack")
         return [ll[0] for ll in r["stack"]["table"]] if "table" in r["stack"] else []
 
-    def has_slot(self):
-        """
-        For devices contains more one slots get count
-        :return:
-        """
-        slots = set()
-        if "ME60" in self.version.get("platform", ""):
+    def get_inventory(self):
+        """Collect slot, modules and sfp on ENTITY-MIB"""
+        slots, modules, ports = set(), set(), set()
+        if not self.has_snmp():
+            return slots, modules, ports
+        max_slots, s_pos = 0, 0
+        if self.is_me60:
             # ME60-X16A, ME60-X8A, ME60-X16, ME60-X8, ME60-X3 filter LPU
-            n = self.version.get("platform", "").strip("A")
-            n = int(n[6:])
-
-            if self.has_snmp():
-                s_pos = 0
-                for index, entity_type, entity_pos in list(
-                    self.snmp.get_tables(
-                        [
-                            mib["ENTITY-MIB::entPhysicalClass"],
-                            mib["ENTITY-MIB::entPhysicalParentRelPos"],
-                        ],
-                        bulk=True,
-                        cached=True,
-                    )
-                ):
-                    if entity_type == 5:
-                        s_pos = entity_pos
-                    elif entity_type == 9:
-                        slots.add(s_pos)
-            return [str(x) for x in slots if x <= n]
-        return slots
+            max_slots = int(self.version["platform"].strip("A")[6:])
+        for oid, entity_class in self.snmp.getnext(
+            mib["ENTITY-MIB::entPhysicalClass"],
+            bulk=False,
+        ):
+            _, index = oid.rsplit(".", 1)
+            if entity_class == 9:
+                modules.add(index)
+                if max_slots:
+                    slots.add(s_pos)
+            elif entity_class == 10:
+                ports.add(index)
+            elif entity_class == 5:
+                s_pos = index
+        transceivers = set()
+        if ports:
+            r = self.snmp.get_chunked(
+                [mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityBoardType", x] for x in sorted(ports)],
+            )
+            for oid, v in r.items():
+                if not v.strip():
+                    continue
+                transceivers.add(oid.rsplit(".", 1)[-1])
+        if slots:
+            r = self.snmp.get_chunked(
+                [mib["ENTITY-MIB::entPhysicalParentRelPos", x] for x in sorted(slots)],
+            )
+            slots = [str(x) for x in set(r.values()) if x <= max_slots]
+        return slots, modules, transceivers
 
     @false_on_cli_error
     def has_lacp_cli(self):
@@ -166,38 +181,21 @@ class Script(BaseScript):
         r = self.cli("display lacp statistics eth-trunk")
         return r
 
-    def get_modules(self):
-        modules = set()
-        if self.has_snmp():
-            for index, entity_descr, entity_class, entity_fru in list(
-                self.snmp.get_tables(
-                    [
-                        mib["ENTITY-MIB::entPhysicalDescr"],
-                        mib["ENTITY-MIB::entPhysicalClass"],
-                        mib["ENTITY-MIB::entPhysicalIsFRU"],
-                    ],
-                    bulk=False,
-                    cached=True,
-                )
-            ):
-                if entity_class == 9:
-                    modules.add(str(index.split(".")[-1]))
-        return list(sorted(modules))
-
     def execute_platform_cli(self, caps):
         if self.has_ndp_cli():
             caps["Huawei | NDP"] = True
         s = self.has_stack()
-        sl = self.has_slot()
+        slots, modules, transceivers = self.get_inventory()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
-        if sl:
-            caps["Slot | Members"] = len(sl) if len(sl) != 1 else 0
-            caps["Slot | Member Ids"] = " | ".join(sl)
-        mod = self.get_modules()
-        if mod:
-            caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
+        if slots:
+            caps["Slot | Members"] = len(slots) if len(slots) != 1 else 0
+            caps["Slot | Member Ids"] = " | ".join(slots)
+        if modules:
+            caps["Huawei | SNMP | ModuleIndex"] = " | ".join(modules)
+        if transceivers:
+            caps["Huawei | SNMP | DOM Indexes"] = " | ".join(sorted(transceivers, key=alnum_key))
         # Check IP SLA status
         # sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
         # if sla_v:
@@ -210,13 +208,14 @@ class Script(BaseScript):
             caps["Huawei | NQA | Probes"] = np
 
     def execute_platform_snmp(self, caps):
-        sl = self.has_slot()
-        if sl:
-            caps["Slot | Members"] = len(sl) if len(sl) != 1 else 0
-            caps["Slot | Member Ids"] = " | ".join(sl)
-        mod = self.get_modules()
-        if mod:
-            caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
+        slots, modules, transceivers = self.get_inventory()
+        if slots:
+            caps["Slot | Members"] = len(slots) if len(slots) != 1 else 0
+            caps["Slot | Member Ids"] = " | ".join(slots)
+        if modules:
+            caps["Huawei | SNMP | ModuleIndex"] = " | ".join(modules)
+        if transceivers:
+            caps["Huawei | SNMP | DOM Indexes"] = " | ".join(sorted(transceivers, key=alnum_key))
         # Check IP SLA status
         # sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
         # IP SLA Probes

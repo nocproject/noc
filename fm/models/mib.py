@@ -36,6 +36,8 @@ rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
 TRY_ENCODINGS = ["utf-8", "big5", "gb2312", "cp1251"]
 
+DEFAULT_PREFERENCE = 999_999
+
 
 @on_delete_check(check=[("fm.MIBData", "mib")])
 class MIB(Document):
@@ -114,7 +116,7 @@ class MIB(Document):
         """
         # Get MIB preference
         mp = MIBPreference.objects.filter(mib=self.name).first()
-        mib_preference = mp.preference if mp else None
+        mib_preference = mp.preference if mp else DEFAULT_PREFERENCE
         prefs = {}  # MIB Preferences cache
         # Prefetch existing MIB data
         oids = [v["oid"] for v in data]
@@ -140,10 +142,13 @@ class MIB(Document):
                 o_mib = o.name.split("::")[0]
                 if o_mib not in prefs:
                     mp = MIBPreference.objects.filter(mib=o_mib).first()
-                    if not mp:
+                    if not mp and mib_preference == DEFAULT_PREFERENCE:
                         # No preference for destination MIB
                         raise OIDCollision(oid, oid_name, o.name, "No preference for %s" % o_mib)
-                    prefs[o_mib] = mp.preference  # Add to cache
+                    elif not mp:
+                        prefs[o_mib] = DEFAULT_PREFERENCE
+                    else:
+                        prefs[o_mib] = mp.preference  # Add to cache
                 o_preference = prefs[o_mib]
                 if mib_preference == o_preference:
                     # Equal preferences, collision
