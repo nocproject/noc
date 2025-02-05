@@ -5,10 +5,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from mongoengine.queryset import Q
+
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.sa.models.serviceinstance import ServiceInstance, AddressItem
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.validators import is_ipv4, is_mac
 from noc.core.translation import ugettext as _
 
 
@@ -20,7 +24,7 @@ class ServiceInstanceApplication(ExtDocApplication):
     title = _("Service Instances")
     menu = _("Service Instances")
     model = ServiceInstance
-    query_fields = ["name__contains"]
+    query_fields = ["name__contains", "fqdn__contains"]
 
     def field_label(self, o):
         return str(o)
@@ -48,3 +52,12 @@ class ServiceInstanceApplication(ExtDocApplication):
             return o.address
         data = super().instance_to_dict(o, fields, nocustom)
         return data
+
+    def get_Q(self, request, query):
+        if is_ipv4(query.strip()):
+            q = Q(addresses__address=query.strip())
+        elif is_mac(query.strip()):
+            q = Q(macs=[query.strip()])
+        else:
+            q = super().get_Q(request, query)
+        return q
