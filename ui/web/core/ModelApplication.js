@@ -867,25 +867,28 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // New record. Hide grid and open form
   newRecord: function(defaults){
-    var me = this,
-      fv = {};
-    me.form.reset();
+    var fv = {};
+    this.form.getFields().each(function(field){
+      field.setValue("");
+      field.resetOriginalValue();
+    });
+    this.form.reset();
     // Calculate form field values
-    Ext.merge(fv, me.store.defaultValues);
+    Ext.merge(fv, this.store.defaultValues);
     Ext.merge(fv, defaults || {});
-    me.form.setValues(fv);
+    this.form.setValues(fv);
     //
-    me.currentRecord = null;
-    me.resetInlines(defaults);
-    me.setFormTitle(me.createTitle, "NEW");
-    me.showForm();
+    this.currentRecord = null;
+    this.resetInlines(defaults);
+    this.setFormTitle(this.createTitle, "NEW");
+    this.showForm();
     // Activate delete button
-    me.deleteButton.setDisabled(true);
-    me.saveButton.setDisabled(!me.hasPermission("create"));
-    me.resetButton.setDisabled(!me.hasPermission("create"));
-    me.cloneButton.setDisabled(true);
+    this.deleteButton.setDisabled(true);
+    this.saveButton.setDisabled(!this.hasPermission("create"));
+    this.resetButton.setDisabled(!this.hasPermission("create"));
+    this.cloneButton.setDisabled(true);
     // Disable custom form toolbar
-    me.activateCustomFormToolbar(false);
+    this.activateCustomFormToolbar(false);
   },
   //
   onNewRecord: function(){
@@ -1117,8 +1120,11 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Reset button pressed
   onReset: function(){
+    this.form.getFields().each(function(field){
+      field.setValue("");
+      field.resetOriginalValue();
+    });
     this.form.reset();
-    this.dirtyReset(this.form);
   },
   // Delete button pressed
   onDelete: function(){
