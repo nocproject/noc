@@ -193,6 +193,7 @@ Ext.define("NOC.core.ComboBox", {
         method: "GET",
         scope: this,
         params: params,
+        async: false,
         success: function(response){
           var data = Ext.decode(response.responseText);
           if(data.length === 1){

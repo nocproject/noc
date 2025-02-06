@@ -792,22 +792,16 @@ Ext.define("NOC.core.ModelApplication", {
       method: me.currentRecord ? "PUT" : "POST",
       scope: me,
       jsonData: result,
-      success: function(response){
+      success: function(){
         // Process result
-        var data = Ext.decode(response.responseText);
         // @todo: Update current record with data
         if(me.currentQuery[me.idField]){
           delete me.currentQuery[me.idField];
         }
         me.reloadStore();
-        me.saveInlines(
-          data[me.idField],
-          me.inlineStores.filter(function(store){
-            return !(Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal);
-          }));
+        // clean dirty for reload browser
+        me.form.reset();
         me.unmask();
-        // clean for reload from grid
-        me.dirtyReset(me.form);
         me.showGrid();
         NOC.msg.complete(__("Saved"));
       },
@@ -817,7 +811,7 @@ Ext.define("NOC.core.ModelApplication", {
           try{
             message = Ext.decode(response.responseText).message;
           } catch(err){
-            console.log(response.responseText);
+            console.log(err, response.responseText);
           }
         }
         NOC.error(message);
@@ -936,14 +930,10 @@ Ext.define("NOC.core.ModelApplication", {
     });
     // Show edit form
     me.showForm();
-    // Load records
     me.form.reset();
     me.form.setValues(r);
     me.loadInlines();
-    // ToDo reset dirty flag, method dirtyReset doesn't work
-    // resetOriginalValue from me.dirtyReset set current value to originalValue
-    // but originalValue set to previous value
-    // me.dirtyReset(me.form);
+    me.dirtyReset(this.form); 
     // Activate delete button
     me.deleteButton.setDisabled(!me.hasPermission("delete"));
     me.saveButton.setDisabled(!me.hasPermission("update"));
@@ -1004,14 +994,13 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Reload store with current query
   reloadStore: function(){
-    var me = this;
-    me.store.setFilterParams(me.currentQuery);
-    me.saveFilterToUrl(me.currentQuery);
+    this.store.setFilterParams(this.currentQuery);
+    this.saveFilterToUrl(this.currentQuery);
     // Reload store
     // ExtJS 5.0.0 WARNING:
     // me.store.reload() sometimes leaves empty grid
     // so we must use load() instead
-    me.loadStore();
+    this.loadStore();
   },
   // Search
   onSearch: function(query){
