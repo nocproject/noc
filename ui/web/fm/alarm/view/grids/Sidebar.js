@@ -25,10 +25,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     "Ext.ux.form.SearchField",
   ],
   reference: "fm-alarm-filter",
-  bind: {
-    title: "{alarmsTotal}",
-  },
-  titleAlign: "right",
+  title: __("Filter"),
   minWidth: 350,
   scrollable: {
     indicators: false,
@@ -42,6 +39,14 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     collapsible: true,
   },
   items: [
+    {
+      xtype: "button",
+      text: __("Reset Filter"),
+      iconAlign: "right",
+      listeners: {
+        click: "onResetFilter",
+      },
+    },
     {
       title: __("Summary"),
       bind: {hidden: "{isActiveAlarmsSelected}"},
@@ -368,6 +373,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
       })
     };
     this.callParent();
+    this.enableBubble("fmAlarmResetFilter");
     Ext.each(this.query("[xtype=datefield]"), addListeter, this);
   },
   onBeforePickerShow: function(picker){

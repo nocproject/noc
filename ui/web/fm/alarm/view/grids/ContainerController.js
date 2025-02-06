@@ -68,9 +68,6 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   onSoundToggle: function(self, pressed){
     this.getViewModel().set("volume", pressed);
   },
-  onResetFilter: function(){
-    this.fireViewEvent("fmAlarmResetFilter");
-  },
   handleWindowFocus: function(){
     setTimeout(function(me){
       me.disableHandler(false);

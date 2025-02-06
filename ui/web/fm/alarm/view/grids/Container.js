@@ -120,21 +120,12 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
         toggle: "onSoundToggle",
       },
     },
-    {
-      text: __("Reset Filter"),
-      iconAlign: "right",
-      listeners: {
-        click: "onResetFilter",
-      },
-    },
     "->",
     {
       xtype: "tbtext",
-      width: 32,
-      height: 32,
       padding: "8 0 0 4",
       bind: {
-        html: "{icon}",
+        html: "{alarmsTotal}{icon}",
       },
     },
   ],

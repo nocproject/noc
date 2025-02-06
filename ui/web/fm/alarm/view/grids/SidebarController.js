@@ -13,4 +13,7 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
   onResetStatuses: function(){
     this.fireViewEvent("fmAlarmSidebarResetSelection");
   },
+  onResetFilter: function(){
+    this.fireViewEvent("fmAlarmResetFilter");
+  },
 });
