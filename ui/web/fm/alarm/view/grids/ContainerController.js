@@ -30,7 +30,9 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   init: function(view){
     this.observer = new IntersectionObserver(function(entries){
       view.isIntersecting = entries[0].isIntersecting;
-      view.getController().disableHandler(!entries[0].isIntersecting);
+      if(!Ext.isEmpty(view.getController())){
+        view.getController().disableHandler(!entries[0].isIntersecting);
+      }
     }, {
       threshold: 0.1,
     });
@@ -41,18 +43,25 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     activeGridStore.addListener("load", this.onLoad, this);
   },
   destroy: function(){
+    var activeGrid = this.lookupReference("fm-alarm-active");
     this.unsubscribeFromEvents();
     this.stopPolling();
     this.setContainerDisabled(false);
-    this.lookupReference("fm-alarm-active").getStore().removeListener("beforeload", this.onBeforeLoad);
-    this.lookupReference("fm-alarm-active").getStore().removeListener("load", this.onLoad);
+    if(Ext.isEmpty(activeGrid)){
+      return;
+    }
+    activeGrid.getStore().removeListener("beforeload", this.onBeforeLoad);
+    activeGrid.getStore().removeListener("load", this.onLoad);
   },
   onBeforeLoad: function(){
     this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
   },
   onLoad: function(){
-    var app = this.getView().up("[itemId=fm-alarm]"),
-      vm = app.getViewModel();
+    var vm, app = this.getView().up("[itemId=fm-alarm]");
+    if(Ext.isEmpty(app)){
+      return;
+    }
+    vm = app.getViewModel();
     if(!vm.get("containerDisabled")){
       this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
     }
@@ -86,8 +95,11 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     }
   },
   setContainerDisabled: function(value){
-    var app = this.getView().up("[itemId=fm-alarm]"),
-      vm = app.getViewModel();
+    var vm, app = this.getView().up("[itemId=fm-alarm]");
+    if(Ext.isEmpty(app)){
+      return;
+    }
+    vm = app.getViewModel();
     vm.set("containerDisabled", value);
     if(value){
       this.getViewModel().set("icon", this.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
