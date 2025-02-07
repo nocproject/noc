@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Route
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from typing import (
     Dict,
     List,
     Iterator,
-    Iterable,
     Callable,
     Union,
     Any,
@@ -220,11 +219,11 @@ class Route(object):
         for a in self.actions:
             yield from a.iter_action(msg, message_type)
 
-    def set_type(self, r_type: Union[str, FrozenSet]):
-        if isinstance(r_type, Iterable):
-            self.type = frozenset(x.encode() for x in r_type)
-        else:
+    def set_type(self, r_type: Union[str, FrozenSet[bytes]]):
+        if isinstance(r_type, str):
             self.type = frozenset([r_type.encode(encoding=DEFAULT_ENCODING)])
+        else:
+            self.type = frozenset(x for x in r_type)
 
     def set_order(self, order: int):
         self.order = order
