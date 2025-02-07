@@ -51,7 +51,6 @@ class NRIServiceCheck(DiscoveryCheck):
             sources__in=[DISCOVERY_SOURCE],
         ):
             si.reset_object()
-            si.unseen(DISCOVERY_SOURCE)
             self.logger.info("UnBind object to Service Instance: %s", si)
         bulk = []
         # Extract ResourceKey

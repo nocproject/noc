@@ -188,9 +188,9 @@ class ServiceInstance(Document):
         else:
             ServiceInstance.objects.filter(id=self.id).update(managed_object=o)
             # Update Summary
-            ServiceSummary.refresh_object(oo)
-            if self.managed_object:
-                ServiceSummary.refresh_object(self.managed_object)
+            ServiceSummary.refresh_object(self.managed_object)
+            if oo:
+                ServiceSummary.refresh_object(oo)
 
     def reset_object(self, bulk=None):
         """Clean ManagedObject from Instance"""
