@@ -62,6 +62,8 @@ from .loader import set_service
 from ..router.datastream import RouteDataStreamClient
 
 T = TypeVar("T")
+DCS_SLOTS_CACHE = {}  # PROCESS -> object cache
+dcs_slot_lock = threading.Lock()
 
 
 class BaseService(object):
@@ -1003,12 +1005,12 @@ class BaseService(object):
                 await asyncio.sleep(1)
 
     @staticmethod
-    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
+    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60), lock=dcs_slot_lock)
     def get_slot_limits(slot_name):
         """
         Get slot count
-        :param slot_name:
-        :return:
+        Args:
+            slot_name:
         """
         from noc.core.dcs.loader import get_dcs
         from noc.core.ioloop.util import run_sync
