@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Route
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from typing import (
     Dict,
     List,
     Iterator,
-    Iterable,
     Callable,
     Union,
     Any,
