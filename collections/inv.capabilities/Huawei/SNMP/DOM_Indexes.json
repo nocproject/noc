@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SNMP | DOM Indexes",
+    "$collection": "inv.capabilities",
+    "uuid": "5cd59ca0-94ed-41e3-a5af-06ec77ccac54",
+    "description": "Physical port indexes with DOM metrics",
+    "type": "str",
+    "card_template": null
+}

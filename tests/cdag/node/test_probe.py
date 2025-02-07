@@ -461,6 +461,13 @@ from .util import NodeCDAG
                 (1621601002_000000000, 3_000, "ki,bit", 3_072, None),
             ],
         ),
+        # Scale dBm
+        (
+            "dBm",
+            [
+                (1621601000_000000000, 0.00023, "W", -6.38272163982407, None),
+            ],
+        ),
     ],
 )
 def test_probe(unit, data):
@@ -514,6 +521,7 @@ def setup_module(_module):
                 "bit": "delta / time_delta",
                 "byte": "delta * 8 / time_delta",
             },
+            "dBm": {"W": "mw2dbm(x * 1000)"},
         }
     )
     ProbeNode.set_scale(
