@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | OID | hwOpticalModuleInfoTable Lane",
+    "$collection": "inv.capabilities",
+    "uuid": "5246a43a-6d14-4a28-99cb-a3b962876fed",
+    "description": "Supported Optical Module stat on hwOpticalModuleInfoTable Lane OIDs (hwEntityOpticalLaneBiasCurrent, hwEntityOpticalLaneRxPower,  hwEntityOpticalLaneTxPower)",
+    "type": "bool",
+    "card_template": null
+}

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ from .oidrules.slot import SlotRule
 from .oidrules.sslot import SSlotRule
 from noc.core.mib import mib
 from noc.core.ip import IPv4, IPv6
+from noc.core.script.metrics import scale
 from noc.core.snmp.render import render_IPV6
 
 SLA_ICMP_METRIC_MAP = {
@@ -142,6 +143,47 @@ class Script(GetMetricsScript):
         ),
     }
 
+    DOM_METRICS_CONFIG = {
+        "Interface | DOM | Temperature": ProfileMetricConfig(
+            metric="Interface | DOM | Temperature",
+            oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalTemperature"],
+            sla_types=[],
+            scale=1,
+            units="C",
+        ),
+        "Interface | DOM | TxPower": ProfileMetricConfig(
+            metric="Interface | DOM | TxPower",
+            oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalTxPower"],
+            sla_types=[],
+            scale=scale(0.000001),
+            # skip_values={6553},
+            units="W",
+        ),
+        "Interface | DOM | RxPower": ProfileMetricConfig(
+            metric="Interface | DOM | RxPower",
+            oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalRxPower"],
+            sla_types=[],
+            scale=scale(0.000001),
+            # skip_values={6553},
+            units="W",
+        ),
+        "Interface | DOM | Voltage": ProfileMetricConfig(
+            metric="Interface | DOM | Voltage",
+            oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalVoltage"],
+            sla_types=[],
+            scale=scale(0.001),
+            units="VDC",
+        ),
+        "Interface | DOM | Bias Current": ProfileMetricConfig(
+            metric="Interface | DOM | Bias Current",
+            oid=mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalBiasCurrent"],
+            sla_types=[],
+            scale=scale(0.001),
+            # skip_values={-255},
+            units="m,A",
+        ),
+    }
+
     @metrics(
         ["Interface | Status | Duplex"],
         has_capability="DB | Interfaces",
@@ -168,19 +210,7 @@ class Script(GetMetricsScript):
         access="S",  # not CLI version
     )
     def get_subscribers_metrics(self, metrics):
-        if "Slot | Member Ids" in self.capabilities:
-            hwSlotIndex = self.capabilities["Slot | Member Ids"].split(" | ")
-            for si in hwSlotIndex:
-                for mi in [0, 1]:
-                    v = self.snmp.get(f"1.3.6.1.4.1.2011.5.2.1.33.1.8.{si}.{mi}")
-                    if v:
-                        self.set_metric(
-                            id=("Subscribers | Summary", None),
-                            labels=("noc::chassis::0", f"noc::slot::{si}", f"noc::module::{mi}"),
-                            value=int(v),
-                            multi=True,
-                        )
-        v = self.snmp.get("1.3.6.1.4.1.2011.5.2.1.14.1.2.0")
+        v = self.snmp.get(mib["HUAWEI-AAA-MIB::hwTotalPPPoeOnlineNum", 0])
         if v:
             self.set_metric(
                 id=("Subscribers | Summary", None),
@@ -188,6 +218,20 @@ class Script(GetMetricsScript):
                 value=int(v),
                 multi=True,
             )
+
+        if "Slot | Member Ids" not in self.capabilities:
+            return
+        hwSlotIndex = self.capabilities["Slot | Member Ids"].split(" | ")
+        for si in hwSlotIndex:
+            for mi in [0, 1]:
+                v = self.snmp.get(mib["HUAWEI-AAA-MIB::hwSlotCardConnectNumPPPAuthNum", si, mi])
+                if v:
+                    self.set_metric(
+                        id=("Subscribers | Summary", None),
+                        labels=("noc::chassis::0", f"noc::slot::{si}", f"noc::module::{mi}"),
+                        value=int(v),
+                        multi=True,
+                    )
 
     @metrics(
         [
@@ -682,3 +726,68 @@ class Script(GetMetricsScript):
                     multi=True,
                     units="%",
                 )
+
+    @metrics(
+        [
+            "Interface | DOM | Temperature",
+            "Interface | DOM | Bias Current",
+            "Interface | DOM | TxPower",
+            "Interface | DOM | RxPower",
+            "Interface | DOM | Voltage",
+        ],
+        access="S",
+        has_capability="Huawei | OID | hwOpticalModuleInfoTable",
+        volatile=False,
+    )  # SNMP version
+    def get_optical_transceiver_metrics(self, metrics: List[MetricConfig]):
+        """
+        Huawei used physical index for DOM Oids.
+        For convert it to ifindex used mappings from ENTITY-MIB::entAliasMappingIdentifier table
+        For stored SFP physical indexes used capabilities 'Huawei | SNMP | DOM Indexes'
+        """
+        self.logger.debug("Use hwOpticalModuleInfoTable for collected DOM metrics")
+        ifindex_map = {m.ifindex: m for m in metrics if m.ifindex}
+
+        caps = self.capabilities.get("Huawei | SNMP | DOM Indexes")
+        # Build physical_index, ifindex map
+        physical_index_map = {}
+        if caps:
+            indexes = [
+                mib["ENTITY-MIB::entAliasMappingIdentifier", int(x), 1] for x in caps.split(" | ")
+            ]
+            r = self.snmp.get_chunked(indexes)
+            for oid, v in r.items():
+                physical_index, ifindex = oid.split(".")[-2], v.rsplit(".", 1)[-1]
+                if ifindex in ifindex_map:
+                    physical_index_map[physical_index] = ifindex_map[ifindex]
+        else:
+            for oid, v in self.snmp.getnext(mib["ENTITY-MIB::entAliasMappingIdentifier"]):
+                physical_index, ifindex = oid.split(".")[-2], v.rsplit(".", 1)[-1]
+                if ifindex in ifindex_map:
+                    physical_index_map[physical_index] = ifindex_map[ifindex]
+        oids = {}
+        for p_index, m in physical_index_map.items():
+            for mc in self.DOM_METRICS_CONFIG.values():
+                oids[f"{mc.oid}.{p_index}"] = (m, mc)
+        ts = self.get_ts()
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        for r in results:
+            if results[r] is None or results[r] == -1 or results[r] == 6553 or results[r] == -255:
+                continue
+            iface, mc = oids[r]
+            # if mc.skip_values and results[r] in mc.skip_values:
+            #     continue
+            self.set_metric(
+                id=(mc.metric, iface.labels),
+                metric=mc.metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=iface.labels,
+                multi=True,
+                scale=mc.scale,
+                units=mc.units,
+            )

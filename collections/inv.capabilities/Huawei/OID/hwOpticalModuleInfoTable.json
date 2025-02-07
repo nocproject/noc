@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | OID | hwOpticalModuleInfoTable",
+    "$collection": "inv.capabilities",
+    "uuid": "4fcfd776-8307-417d-ba20-58c242432057",
+    "description": "Supported Optical Module stat on hwOpticalModuleInfoTable OIDs",
+    "type": "bool",
+    "card_template": null
+}
