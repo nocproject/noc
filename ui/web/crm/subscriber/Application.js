@@ -23,8 +23,7 @@ Ext.define("NOC.crm.subscriber.Application", {
   helpId: "reference-subscriber",
 
   initComponent: function(){
-    var me = this;
-    Ext.apply(me, {
+    Ext.apply(this, {
       columns: [
         {
           text: __("Name"),
@@ -119,6 +118,6 @@ Ext.define("NOC.crm.subscriber.Application", {
         },
       ],
     });
-    me.callParent();
+    this.callParent();
   },
 });
