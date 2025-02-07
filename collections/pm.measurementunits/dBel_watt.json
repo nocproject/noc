@@ -1,9 +1,13 @@
 {
-    "name": "dBel*watt",
+    "name": "dBel*milliwatt",
     "$collection": "pm.measurementunits",
     "uuid": "3b9d6c9e-576e-4638-91e8-4c077f6dae57",
     "code": "dBm",
     "label": "dBm",
     "dashboard_label": "dBm",
-    "base_unit__code": "BW"
+    "base_unit__code": "BW",
+    "convert_from": [{
+        "expr": "mw2dbm(x * 1000)",
+        "unit__code": "W"
+    }]
 }

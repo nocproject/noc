@@ -1,13 +1,18 @@
 # ----------------------------------------------------------------------
 # Python expression utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import ast
 from typing import List, Set, Any, Callable
+
+# NOC modules
+from noc.core.convert.dbm import dbm2mw, mw2dbm
+
+FN_LOCALS = {"dbm2mw": dbm2mw, "mw2dbm": mw2dbm}
 
 
 class _VarVisitor(ast.NodeVisitor):
@@ -53,5 +58,5 @@ def get_fn(expr: str) -> Callable:
     x_vars = get_vars(expr)
     src = f"def fn({','.join(x_vars)}):\n    return {expr}\n"
     ctx = {}
-    exec(src, {}, ctx)
+    exec(src, FN_LOCALS, ctx)
     return ctx["fn"]
