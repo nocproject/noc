@@ -68,6 +68,7 @@ class Script(BaseScript):
     CHECK_SNMP_GETNEXT_GENERIC = {
         "SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"],
         "Network | BGP": mib["BGP4-MIB::bgpPeerIdentifier"],
+        "SNMP | OID | RFC1213-MIB::ipAddrTable": mib["RFC1213-MIB::ipAddrEntry"],
     }
     #
     GET_SNMP_TABLE_IDX = {}
