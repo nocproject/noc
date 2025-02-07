@@ -792,21 +792,16 @@ Ext.define("NOC.core.ModelApplication", {
       method: me.currentRecord ? "PUT" : "POST",
       scope: me,
       jsonData: result,
-      success: function(response){
+      success: function(){
         // Process result
-        var data = Ext.decode(response.responseText);
         // @todo: Update current record with data
         if(me.currentQuery[me.idField]){
           delete me.currentQuery[me.idField];
         }
         me.reloadStore();
-        me.saveInlines(
-          data[me.idField],
-          me.inlineStores.filter(function(store){
-            return !(Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal);
-          }));
+        // clean dirty for reload browser
+        me.form.reset();
         me.unmask();
-        me.dirtyReset(me.form);
         me.showGrid();
         NOC.msg.complete(__("Saved"));
       },
@@ -816,7 +811,7 @@ Ext.define("NOC.core.ModelApplication", {
           try{
             message = Ext.decode(response.responseText).message;
           } catch(err){
-            console.log(response.responseText);
+            console.log(err, response.responseText);
           }
         }
         NOC.error(message);
@@ -872,25 +867,28 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // New record. Hide grid and open form
   newRecord: function(defaults){
-    var me = this,
-      fv = {};
-    me.form.reset();
+    var fv = {};
+    this.form.getFields().each(function(field){
+      field.setValue("");
+      field.resetOriginalValue();
+    });
+    this.form.reset();
     // Calculate form field values
-    Ext.merge(fv, me.store.defaultValues);
+    Ext.merge(fv, this.store.defaultValues);
     Ext.merge(fv, defaults || {});
-    me.form.setValues(fv);
+    this.form.setValues(fv);
     //
-    me.currentRecord = null;
-    me.resetInlines(defaults);
-    me.setFormTitle(me.createTitle, "NEW");
-    me.showForm();
+    this.currentRecord = null;
+    this.resetInlines(defaults);
+    this.setFormTitle(this.createTitle, "NEW");
+    this.showForm();
     // Activate delete button
-    me.deleteButton.setDisabled(true);
-    me.saveButton.setDisabled(!me.hasPermission("create"));
-    me.resetButton.setDisabled(!me.hasPermission("create"));
-    me.cloneButton.setDisabled(true);
+    this.deleteButton.setDisabled(true);
+    this.saveButton.setDisabled(!this.hasPermission("create"));
+    this.resetButton.setDisabled(!this.hasPermission("create"));
+    this.cloneButton.setDisabled(true);
     // Disable custom form toolbar
-    me.activateCustomFormToolbar(false);
+    this.activateCustomFormToolbar(false);
   },
   //
   onNewRecord: function(){
@@ -935,11 +933,10 @@ Ext.define("NOC.core.ModelApplication", {
     });
     // Show edit form
     me.showForm();
-    // Load records
     me.form.reset();
     me.form.setValues(r);
     me.loadInlines();
-    me.dirtyReset(me.form);
+    me.dirtyReset(this.form); 
     // Activate delete button
     me.deleteButton.setDisabled(!me.hasPermission("delete"));
     me.saveButton.setDisabled(!me.hasPermission("update"));
@@ -1000,14 +997,13 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Reload store with current query
   reloadStore: function(){
-    var me = this;
-    me.store.setFilterParams(me.currentQuery);
-    me.saveFilterToUrl(me.currentQuery);
+    this.store.setFilterParams(this.currentQuery);
+    this.saveFilterToUrl(this.currentQuery);
     // Reload store
     // ExtJS 5.0.0 WARNING:
     // me.store.reload() sometimes leaves empty grid
     // so we must use load() instead
-    me.loadStore();
+    this.loadStore();
   },
   // Search
   onSearch: function(query){
@@ -1124,9 +1120,11 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Reset button pressed
   onReset: function(){
-    var me = this;
-    me.form.reset();
-    me.dirtyReset(me.form);
+    this.form.getFields().each(function(field){
+      field.setValue("");
+      field.resetOriginalValue();
+    });
+    this.form.reset();
   },
   // Delete button pressed
   onDelete: function(){
@@ -1312,12 +1310,11 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Load inline stores
   loadInlines: function(){
-    var me = this;
     // Do not load store on new record
-    if(!me.currentRecord || !me.inlineStores.length)
+    if(!this.currentRecord || !this.inlineStores.length)
       return;
-    var parentId = me.currentRecord.get(me.idField);
-    Ext.each(me.inlineStores, function(istore){
+    var parentId = this.currentRecord.get(this.idField);
+    Ext.each(this.inlineStores, function(istore){
       istore.setParent(parentId);
       istore.load();
     });
