@@ -149,7 +149,8 @@ class Script(BaseScript):
     def get_enabled_proto(self):
         return {}
 
-    def get_ip_ifaces(self) -> Dict[int, List[Tuple[str, str]]]:
+    def get_ip_ifaces(self) -> Dict[int, List[IPv4]]:
+        """Getting IP Address -> iface by RFC1213-MIB"""
         r = defaultdict(list)
         ip_mask = {}
         for oid, mask in self.snmp.getnext(
@@ -158,13 +159,37 @@ class Script(BaseScript):
             max_retries=self.get_getnext_retires(),
         ):
             address = oid.split(mib["RFC1213-MIB::ipAdEntNetMask"])[-1].strip(".")
-            ip_mask[address] = [(address, mask)]
+            ip_mask[address] = [IPv4(address, mask)]
         for oid, ifindex in self.snmp.getnext(
             mib["RFC1213-MIB::ipAdEntIfIndex"],
             max_repetitions=self.get_max_repetitions(),
             max_retries=self.get_getnext_retires(),
         ):
             address = oid.split(mib["RFC1213-MIB::ipAdEntIfIndex"])[-1].strip(".")
+            r[ifindex] += ip_mask[address]
+        return r
+
+    def get_ip_ifaces_ip_mib(self) -> Dict[int, List[IPv4]]:
+        """Getting IP Address -> Iface by IP-MIB"""
+        r = defaultdict(list)
+        ip_mask = {}
+        for oid, mask in self.snmp.getnext(
+            mib["IP-MIB::ipAddressPrefix"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+        ):
+            _, index = oid.split(mib["IP-MIB::ipAddressPrefix"])
+            _, a_type, address = index.strip(".").split(".", 2)
+            # address = oid.split(mib["IP-MIB::ipAddressPrefix"])[-1].strip(".")
+            ip_mask[address] = [IPv4(f"{address}/{mask.rsplit('.', 1)[-1]}")]
+        for oid, ifindex in self.snmp.getnext(
+            mib["IP-MIB::ipAddressIfIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+        ):
+            _, index = oid.split(mib["IP-MIB::ipAddressIfIndex"])
+            _, a_type, address = index.strip(".").split(".", 2)
+            # address = oid.split(mib["IP-MIB::ipAddressIfIndex"])[-1].strip(".")
             r[ifindex] += ip_mask[address]
         return r
 
@@ -209,8 +234,13 @@ class Script(BaseScript):
         subifaces = {}  # For subinterfaces like Fa 0/1.XXX
         switchports = self.get_switchport()
         portchannels = self.get_portchannels()  # portchannel map
-        ips = self.get_ip_ifaces()
-
+        if self.has_capability("SNMP | OID | RFC1213-MIB::ipAddrTable"):
+            ips = self.get_ip_ifaces()
+        else:
+            self.logger.debug("Use IP-MIB for getting iface -> IP Address bind")
+            ips = self.get_ip_ifaces_ip_mib()
+        if not ips:
+            self.logger.info("Not found iface -> IP Address bind")
         # Getting initial iface info, filter result if needed
         for iface in self.scripts.get_interface_properties(
             enable_ifindex=True, enable_oper_status=True
@@ -282,7 +312,7 @@ class Script(BaseScript):
                     {
                         "name": iface["name"],
                         "enabled_afi": ["IPv4"],
-                        "ipv4_addresses": [IPv4(*i) for i in ips[ifindex]],
+                        "ipv4_addresses": [str(i) for i in ips[ifindex]],
                     }
                 ]
                 vlan_iface_match = self.rx_vlan_interface.match(iface["name"])
@@ -311,7 +341,7 @@ class Script(BaseScript):
                 sub.update(data[ifindex])
             if ifindex in ips:
                 sub["enabled_afi"] = ["IPv4"]
-                sub["ipv4_addresses"] = [IPv4(*i) for i in ips[ifindex]]
+                sub["ipv4_addresses"] = [str(i) for i in ips[ifindex]]
             if ifindex in portchannels:
                 # For Juniper Aggregated Interface use unit - '.0' ifindex
                 interfaces[ifname]["aggregated_interface"] = ifaces[portchannels[ifindex]]["name"]

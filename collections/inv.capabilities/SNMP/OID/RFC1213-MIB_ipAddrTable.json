@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | OID | RFC1213-MIB::ipAddrTable",
+    "$collection": "inv.capabilities",
+    "uuid": "cfbc4ed4-2677-4ffb-a458-456cbdaa4172",
+    "description": "Support ipAddrTable on RFC1213-MIB for IP -> Port bind",
+    "type": "bool",
+    "card_template": null
+}
