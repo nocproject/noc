@@ -262,6 +262,10 @@ class ConstraintSet(object):
                         yield l_item
                         break
 
+        if self.is_empty():
+            return other
+        if other.is_empty():
+            return self
         r = ConstraintSet()
         for key, left in self._data.items():
             right = other._data[key]
