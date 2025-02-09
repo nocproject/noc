@@ -271,7 +271,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     var currentId = this.getViewModel().get("currentId"),
       selectedRecord = this.getSelectedRow(),
       maskComponent = this.up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show(__("Create new channel ...")); 
+      message = Ext.isDefined(params.channel_id) ? __("Create new channel ..."): __("Update channel"),
+      messageId = maskComponent.show(message); 
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
       method: "POST",
@@ -300,21 +301,66 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   onCreateBtn: function(){
     var panel = this.down("invChannelParamsForm"),
-      form = panel.down("form").getForm(),
+      formPanel = panel.down("form"), 
       selectedRecord = this.getSelectedRow();
     if(Ext.isEmpty(selectedRecord)){
       NOC.error(__("Please select a row"));
       return;
     }
-    if(Ext.isEmpty(selectedRecord.get("channel_id"))){
-      form.reset();
-    } else{
-      form.setValues({
-        channel_id: selectedRecord.get("channel_id"),
-        name: selectedRecord.get("channel_name"),
-      });
-    }
+    this.addFields(formPanel, selectedRecord);
     panel.show();
+  },
+  addFields: function(panel, record){
+    panel.removeAll();    
+    panel.add({
+      xtype: "hiddenfield",
+      name: "channel_id",
+      value: record.get("channel_id"),
+    });
+    panel.add({
+      xtype: "textfield",
+      name: "name",
+      fieldLabel: __("Name"),
+      allowBlank: false,
+      value: record.get("channel_name"),
+    });
+    this.addParamFields(panel, record.get("params") || []);
+    panel.add({
+      xtype: "checkbox",
+      name: "dry_run",
+      inputValue: true,
+      uncheckedValue: false,
+      fieldLabel: __("Dry Run"),
+    });
+  },
+  //
+  addParamFields: function(panel, params){
+    Ext.Array.each(params, function(param){
+      console.log(param);
+      var field = {
+        xtype: "textfield", // default field type
+        name: param.name,
+        fieldLabel: param.label || param.key || __("Unknowns"),
+        disabled: param.readonly,
+        value: param.value || "",
+        // allowBlank: !param.required,
+      };
+
+      if(Ext.isDefined(param.choices)){
+        field.xtype = "combo";
+        field.store = Ext.create("Ext.data.Store", {
+          fields: ["id", "label"],
+          data: param.choices,
+        });
+        field.displayField = "label";
+        field.valueField = "id";
+        field.queryMode = "local";
+        field.editable = false;
+        field.forceSelection = true;
+      }
+
+      panel.add(field);
+    });
   },
   //
   onDeselect: function(){
@@ -324,10 +370,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   onEdit: function(tableView, rowIndex){
     var record = tableView.getStore().getAt(rowIndex),
       id = record.get("id"),
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      channelPanel = this,
       showGrid = function(){
         var panel = this.up();
         if(!Ext.isEmpty(tableView.getSelectionModel())){
-          this.showChannelPanel();
+          channelPanel.showChannelPanel();
           tableView.getSelectionModel().select(rowIndex);
         }
         if(panel){

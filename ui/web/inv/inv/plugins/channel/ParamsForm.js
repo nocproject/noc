@@ -22,29 +22,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
       defaultFocus: "name",
       defaults: {
         anchor: "100%",
-        labelWidth: 100,
+        labelWidth: 200,
+        listeners: {
+          specialkey: "onSpecialKey",
+        },
       },
       items: [
-        {
-          xtype: "hiddenfield",
-          name: "channel_id",
-        },
-        {
-          xtype: "textfield",
-          name: "name",
-          fieldLabel: __("Name"),
-          allowBlank: false,
-          listeners: {
-            specialkey: "onSpecialKey",
-          },
-        },
-        {
-          xtype: "checkbox",
-          name: "dry_run",
-          inputValue: true,
-          uncheckedValue: false,
-          fieldLabel: __("Dry Run"),
-        },
       ],
       buttons: [
         {
