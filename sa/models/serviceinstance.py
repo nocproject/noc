@@ -158,7 +158,7 @@ class ServiceInstance(Document):
     def __str__(self) -> str:
         name = self.name or self.service.label
         if self.type == InstanceType.NETWORK_HOST:
-            return f"[{self.type}|{self.macs[0]}] {name}"
+            return f"[{self.type}|{','.join(self.macs)}] {name}"
         elif self.type == InstanceType.NETWORK_CHANNEL and self.managed_object:
             return f"[{self.type}|{self.managed_object}] {name}"
         elif self.type == InstanceType.NETWORK_CHANNEL and self.remote_id:

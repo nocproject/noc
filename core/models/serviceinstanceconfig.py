@@ -86,7 +86,7 @@ class NetworkHostInstance(ServiceInstanceConfig):
         return sha512(macs[0].encode("utf-8")).digest()[:10]
 
     def get_queryset(self, service: str, macs=None, **kwargs):
-        return Q(type=self.type, macs__mac=macs)
+        return Q(type=self.type, macs__in=macs)
 
 
 class NetworkChannelInstance(ServiceInstanceConfig):
