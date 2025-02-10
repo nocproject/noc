@@ -88,6 +88,18 @@ class ResourceItem(BaseModel):
     # Caps
     user: Optional[Any] = None  # User for changes
 
+    def merge_data(self, ri: "ResourceItem"):
+        """Merge data over Multiple Resource Item"""
+        if not self.mappings:
+            self.mappings = {}
+        for m in ri.mappings or {}:
+            if m not in self.mappings:
+                self.mappings[m] = ri.mappings[m]
+        keys = {(d.name, d.remote_system) for d in self.data}
+        for d in ri.data:
+            if (d.name, d.remote_system) not in keys:
+                self.data.append(d)
+
 
 class Result(BaseModel):
     id: Optional[str] = None
