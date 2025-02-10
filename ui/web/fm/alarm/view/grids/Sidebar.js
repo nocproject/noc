@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarm application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.Sidebar");
@@ -25,10 +25,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     "Ext.ux.form.SearchField",
   ],
   reference: "fm-alarm-filter",
-  bind: {
-    title: "{alarmsTotal}",
-  },
-  titleAlign: "right",
+  title: __("Filter"),
   minWidth: 350,
   scrollable: {
     indicators: false,
@@ -42,6 +39,14 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     collapsible: true,
   },
   items: [
+    {
+      xtype: "button",
+      text: __("Reset Filter"),
+      iconAlign: "right",
+      listeners: {
+        click: "onResetFilter",
+      },
+    },
     {
       title: __("Summary"),
       bind: {hidden: "{isActiveAlarmsSelected}"},
@@ -57,57 +62,6 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
           ],
         },
         {xtype: "button", text: __("Reset"), margin: "0 0 5 0", handler: "onResetStatuses"},
-      ],
-    },
-    {
-      title: __("Control"),
-      detaults: {
-        xtype: "checkboxfield",
-      },
-      items: [
-        {
-          xtype: "fieldcontainer",
-          layout: "column",
-          padding: "5 0 5",
-          defaults: {
-            xtype: "button",
-            columnWidth: .33,
-            enableToggle: true,
-          },
-          items: [
-            {
-              text: __("Reload"),
-              iconAlign: "right",
-              enableToggle: true,
-              tooltip: __("Toggle autoreload"),
-              bind: {
-                glyph: "{autoReloadIcon}",
-                pressed: "{autoReload}",
-              },
-              listeners: {
-                toggle: "onAutoReloadToggle",
-              },
-            },
-            {
-              tooltip: __("Toggle sound"),
-              bind: {
-                glyph: "{volumeIcon}",
-                pressed: "{volume}",
-              },
-              listeners: {
-                toggle: "onSoundToggle",
-              },
-            },
-            {
-              text: __("Reset Filter"),
-              iconAlign: "right",
-              enableToggle: false,
-              listeners: {
-                click: "onResetFilter",
-              },
-            },
-          ],
-        },
       ],
     },
     {

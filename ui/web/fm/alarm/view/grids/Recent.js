@@ -18,8 +18,7 @@ Ext.define("NOC.fm.alarm.view.grids.Recent", {
   ],
   emptyText: __("No recently closed alarms"),
   initComponent: function(){
-    var me = this;
-    Ext.apply(me, {
+    Ext.apply(this, {
       store: {
         type: "fm.alarm",
       },
