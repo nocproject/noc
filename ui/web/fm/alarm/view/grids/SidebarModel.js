@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarm application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.SidebarModel");
@@ -10,20 +10,7 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarModel", {
   extend: "Ext.app.ViewModel",
   alias: "viewmodel.fm.alarm.sidebar",
 
-  data: {
-    volume: false,
-    autoReload: false,
-    loadingStore: true,
-  },
   formulas: {
-    volumeIcon: function(get){
-      // NOC.glyph.volume_up or NOC.glyph.volume_off
-      return get("volume") ? "xf028" : "xf026";
-    },
-    autoReloadIcon: function(get){
-      //  NOC.glyph.refresh or NOC.glyph.ban
-      return get("autoReload") ? "xf021" : "xf05e";
-    },
     status: {
       bind: "{activeFilter.status}",
       get: function(value){

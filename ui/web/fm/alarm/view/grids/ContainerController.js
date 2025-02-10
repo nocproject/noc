@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarm application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.ContainerController");
@@ -11,6 +11,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   requires: [
     "NOC.fm.alarm.view.form.ClearAlarms",
   ],
+  pollingTaskId: undefined,
+  pollingInterval: 120000,
   initViewModel: function(){
     var profiles = Ext.create("NOC.fm.alarm.store.Profile", {autoLoad: false});
     profiles.load({
@@ -24,6 +26,179 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         }, this));
       },
     });
+  },
+  init: function(view){
+    this.observer = new IntersectionObserver(function(entries){
+      view.isIntersecting = entries[0].isIntersecting;
+      if(!Ext.isEmpty(view.getController())){
+        view.getController().disableHandler(!entries[0].isIntersecting);
+      }
+    }, {
+      threshold: 0.1,
+    });
+    this.callParent();
+    this.subscribeToEvents();
+    var activeGridStore = this.lookupReference("fm-alarm-active").getStore();
+    activeGridStore.addListener("beforeload", this.onBeforeLoad, this);
+    activeGridStore.addListener("load", this.onLoad, this);
+  },
+  destroy: function(){
+    var activeGrid = this.lookupReference("fm-alarm-active");
+    this.unsubscribeFromEvents();
+    this.stopPolling();
+    this.setContainerDisabled(false);
+    if(Ext.isEmpty(activeGrid)){
+      return;
+    }
+    activeGrid.getStore().removeListener("beforeload", this.onBeforeLoad);
+    activeGrid.getStore().removeListener("load", this.onLoad);
+  },
+  onBeforeLoad: function(){
+    this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
+  },
+  onLoad: function(){
+    var vm, app = this.getView().up("[itemId=fm-alarm]");
+    if(Ext.isEmpty(app)){
+      return;
+    }
+    vm = app.getViewModel();
+    if(!vm.get("containerDisabled")){
+      this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+    }
+  },
+  subscribeToEvents: function(){
+    window.addEventListener("focus", this.handleWindowFocus.bind(this));
+    window.addEventListener("blur", this.handleWindowBlur.bind(this));
+  },
+  unsubscribeFromEvents: function(){
+    window.removeEventListener("focus", this.handleWindowFocus.bind(this));
+    window.removeEventListener("blur", this.handleWindowBlur.bind(this));
+  },
+  onSoundToggle: function(self, pressed){
+    this.getViewModel().set("volume", pressed);
+  },
+  handleWindowFocus: function(){
+    setTimeout(function(me){
+      me.disableHandler(false);
+    }, 100, this);
+  },
+  //
+  handleWindowBlur: function(){
+    this.disableHandler(true);
+  },
+  disableHandler: function(state){
+    var isVisible = !document.hidden, // check is user has switched to another tab browser
+      isIntersecting = this.getView().isIntersecting; // switch to other application tab
+    if(this.pollingTaskId && isIntersecting && isVisible){
+      this.setContainerDisabled(state);
+      this.pollingTask();
+    }
+  },
+  setContainerDisabled: function(value){
+    var vm, app = this.getView().up("[itemId=fm-alarm]");
+    if(Ext.isEmpty(app)){
+      return;
+    }
+    vm = app.getViewModel();
+    vm.set("containerDisabled", value);
+    if(value){
+      this.getViewModel().set("icon", this.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
+    }
+  },
+  onAutoReloadToggle: function(self, pressed){
+    this.getViewModel().set("autoReload", pressed);
+    this.setContainerDisabled(false);
+    if(pressed){
+      this.startPolling();
+    } else{
+      this.stopPolling();
+    }
+  },
+  startPolling: function(){
+    this.observer.observe(this.getView().getEl().dom);
+    if(Ext.isEmpty(this.pollingTaskId)){
+      this.pollingTaskId = Ext.TaskManager.start({
+        run: this.pollingTask,
+        interval: this.pollingInterval,
+        scope: this,
+      });
+    } else{
+      this.pollingTask();
+    }
+  },
+  stopPolling: function(){
+    if(this.pollingTaskId){
+      Ext.TaskManager.stop(this.pollingTaskId);
+      this.pollingTaskId = undefined;
+    }
+  },
+  pollingTask: function(){
+    var app = this.getView().up("[itemId=fm-alarm]"),
+      gridsContainer = this.getView(),
+      isVisible = !document.hidden, // check is user has switched to another tab browser
+      isFocused = document.hasFocus(), // check is user has minimized browser window
+      isIntersecting = this.getView().isIntersecting; // switch to other application tab
+    
+    // lib visibilityJS
+    if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
+      this.setContainerDisabled(false);
+      // Check for new alarms and play sound
+      this.checkNewAlarms();
+      // Poll only application tab is visible
+      if(!app.ownerCt.isVisible()){ // e.g. app.isActive()
+        return;
+      }
+      // Poll only when in grid preview
+      if(!gridsContainer.isVisible()){
+        return;
+      }
+      // Poll only if polling is not locked
+      if(this.isNotLocked(gridsContainer)){
+        gridsContainer.down("[reference=fm-alarm-active]").getStore().reload();
+        if(this.isRecentActive()){
+          gridsContainer.down("[reference=fm-alarm-recent]").getStore().reload();
+        }
+      }
+    } else{
+      this.setContainerDisabled(true);
+    }
+  },
+  isRecentActive: function(){
+    return this.getViewModel().get("recentFilter.cleared_after") > 0
+  },
+  isNotLocked: function(container){
+    var viewTable = container.down("[reference=fm-alarm-active]").getView(),
+      buttonPressed = this.getViewModel().get("autoReload"),
+      isNotScrolling = viewTable.getScrollable().getPosition().y === 0,
+      contextMenuHidden = viewTable.isHidden();
+    return buttonPressed && isNotScrolling && contextMenuHidden;
+  },
+  checkNewAlarms: function(){
+    var ts, delta;
+    ts = new Date().getTime();
+    if(this.lastCheckTS && this.getViewModel().get("volume")){
+      delta = Math.ceil((ts - this.lastCheckTS) / 1000.0);
+      Ext.Ajax.request({
+        url: "/fm/alarm/notification/?delta=" + delta,
+        scope: this,
+        success: function(response){
+          var data = Ext.decode(response.responseText);
+          if(data.sound){
+            Ext.applyIf(this, {sounds: {} });
+            this.sounds[data.sound] = new Audio(data.sound);
+            this.sounds[data.sound].volume = data.volume || 1.0;
+            this.sounds[data.sound].play();
+          }
+        },
+      });
+    }
+    this.lastCheckTS = ts;
+  },
+  onRefresh: function(){
+    this.getView().lookup("fm-alarm-active").getStore().reload();
+    if(this.isRecentActive()){
+      this.getView().lookup("fm-alarm-recent").getStore().reload();
+    }
   },
   onReload: function(grid){
     grid.getStore().reload();
@@ -298,5 +473,12 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
           managed_object__label: alarm.get("managed_object__label"),
         }
       }),
-    }).show(); },
+    }).show();
+  },
+  generateIcon: function(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
+  },
 });

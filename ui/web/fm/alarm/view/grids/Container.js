@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarm application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.Container");
@@ -23,6 +23,10 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
   layout: "border",
   reference: "fm-alarm-list",
   tbar: [
+    {
+      glyph: NOC.glyph.refresh,
+      handler: "onRefresh",
+    },
     {
       text: __("Filtering List"),
       glyph: NOC.glyph.filter,
@@ -91,7 +95,40 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
           },
         ],
       },
-    }],
+    },
+    {
+      text: __("Reload"),
+      iconAlign: "right",
+      enableToggle: true,
+      bind: {
+        glyph: "{autoReloadIcon}",
+        tooltip: "{autoReloadText}",
+        pressed: "{autoReload}",
+      },
+      listeners: {
+        toggle: "onAutoReloadToggle",
+      },
+    },
+    {
+      tooltip: __("Toggle sound"),
+      enableToggle: true,
+      bind: {
+        glyph: "{volumeIcon}",
+        pressed: "{volume}",
+      },
+      listeners: {
+        toggle: "onSoundToggle",
+      },
+    },
+    "->",
+    {
+      xtype: "tbtext",
+      padding: "8 0 0 4",
+      bind: {
+        html: "{alarmsTotal}{icon}",
+      },
+    },
+  ],
   items: [
     {
       layout: "border",
