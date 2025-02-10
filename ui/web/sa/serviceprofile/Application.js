@@ -204,7 +204,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                         {
                             text: __("Function"),
                             dataIndex: "weight_function",
-                            width: 100,
+                            width: 150,
                             editor: {
                                 xtype: "combobox",
                                 store: [
@@ -215,10 +215,10 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                 ]
                             },
                             renderer: NOC.render.Choices({
-                                "C": "C",
-                                "CP": "CP",
-                                "MIN": "MIN",
-                                "MAX": "MAX"
+                                "C": "Count",
+                                "CP": "By Percent",
+                                "MIN": "Minimal",
+                                "MAX": "Maximum"
                             })
                         },
                         {
@@ -249,7 +249,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                         {
                             text: __("Min. Status"),
                             dataIndex: "min_status",
-                            width: 100,
+                            width: 150,
                             editor: {
                                 xtype: "combobox",
                                 store: [
@@ -271,7 +271,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                         {
                             text: __("Max. Status"),
                             dataIndex: "max_status",
-                            width: 100,
+                            width: 150,
                             editor: {
                                 xtype: "combobox",
                                 store: [
@@ -293,7 +293,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                         {
                             text: __("To Status"),
                             dataIndex: "set_status",
-                            width: 100,
+                            width: 150,
                             editor: {
                                 xtype: "combobox",
                                 store: [
@@ -350,6 +350,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     dataIndex: "alarm_class_template",
                                     text: __("Alarm class RE"),
                                     editor: "textfield",
+                                    width: 300
                                     allowBlank: true
                                 },
                                 {

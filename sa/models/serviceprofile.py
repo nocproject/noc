@@ -292,7 +292,7 @@ class ServiceProfile(Document):
         ],
         default="MX",
     )
-    calculate_status_rule: List["CalculatedStatusRule"] = EmbeddedDocumentListField(
+    calculate_status_rules: List["CalculatedStatusRule"] = EmbeddedDocumentListField(
         CalculatedStatusRule
     )
     # Alarm Binding
