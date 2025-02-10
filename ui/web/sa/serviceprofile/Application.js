@@ -350,7 +350,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     dataIndex: "alarm_class_template",
                                     text: __("Alarm class RE"),
                                     editor: "textfield",
-                                    width: 300
+                                    width: 300,
                                     allowBlank: true
                                 },
                                 {

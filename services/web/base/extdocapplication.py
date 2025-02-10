@@ -350,7 +350,7 @@ class ExtDocApplication(ExtApplication):
                     pass
                 elif isinstance(f, EnumField):
                     r["%s__label" % f.name] = v.name
-                    v = smart_text(v.value)
+                    v = v.value
                 elif isinstance(f, ForeignKeyListField):
                     v = [{"label": str(vv.name), "id": vv.id} for vv in v]
                 elif isinstance(f, PlainReferenceListField):
