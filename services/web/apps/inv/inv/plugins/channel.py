@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv channel plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,13 @@ from bson import ObjectId
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.resource import resource_label
-from noc.sa.interfaces.base import StringParameter, OBJECT_ID, ObjectIdParameter, BooleanParameter
+from noc.sa.interfaces.base import (
+    StringParameter,
+    OBJECT_ID,
+    ObjectIdParameter,
+    BooleanParameter,
+    DictParameter,
+)
 from noc.core.techdomain.controller.loader import loader as controller_loader
 from noc.core.techdomain.controller.base import Endpoint, BaseController, ConstraintSet
 from noc.inv.models.channel import Channel
@@ -47,6 +53,7 @@ class ChannelPlugin(InvPlugin):
                 "endpoint": StringParameter(),
                 "controller": StringParameter(),
                 "name": StringParameter(),
+                "params": DictParameter(required=False),
                 "dry_run": BooleanParameter(required=False, default=False),
             },
         )
@@ -188,15 +195,17 @@ class ChannelPlugin(InvPlugin):
         def build_params(
             controller: BaseController,
             constraints: ConstraintSet | None,
-            values: dict[str, Any] | None,
+            values: list[dict[str, str]] | None,
         ) -> list[dict[str, Any]]:
             if not constraints:
                 return []
+            current_values = {item["name"]: item["value"] for item in values or []}
             values = values or {}
             r = []
             for p in controller.to_params(constraints):
                 # Set current value
-                p.value = values.get(p.name)
+                if p.name in current_values:
+                    p.value = current_values[p.name]
                 if p.value is None and p.choices and len(p.choices) == 1:
                     # Single value in choices
                     p.value = p.choices[0].id
@@ -328,6 +337,7 @@ class ChannelPlugin(InvPlugin):
         controller: str,
         channel_id: str | None = None,
         dry_run: bool | None = None,
+        params: dict[str, str] | None = None,
     ):
         self.app.get_object_or_404(Object, id=id)
         # Get channel
@@ -338,7 +348,10 @@ class ChannelPlugin(InvPlugin):
         # Run controller
         ep = Endpoint.from_resource(endpoint)
         ctl = controller_loader[controller]()
-        ch, msg = ctl.sync_ad_hoc_channel(name=name, ep=ep, channel=channel, dry_run=dry_run)
+        params = params or {}
+        ch, msg = ctl.sync_ad_hoc_channel(
+            name=name, ep=ep, channel=channel, dry_run=dry_run, **params
+        )
         r = {"status": ch is not None, "msg": msg}  # @todo: Replace with message
         if ch:
             r["channel_id"] = str(ch.id)

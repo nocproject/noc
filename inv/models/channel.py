@@ -150,3 +150,33 @@ class Channel(Document):
         for ep in Endpoint.objects.filter(used_by__channel=self.id):
             ep.used_by = [i for i in ep.used_by if i.channel.id != self.id]
             ep.save()
+
+    def update_params(self, **kwargs: dict[str, str | None]) -> bool:
+        """
+        Update channel parameters.
+
+        Save when necessary.
+
+        Returns:
+            True: If channel has been modified.
+            False: No changes.
+        """
+        changed = False
+        new_params: list[ParamItem] = []
+        # Update/Delete
+        for item in self.params or []:
+            new_value = kwargs.get(item.name)
+            if new_value:
+                if new_value != item.value:
+                    changed = True
+                new_params.append(ParamItem(name=item.name, value=new_value))
+            else:
+                changed = True  # Skip
+        # Insert
+        for name in set(kwargs) - {item.name for item in self.params or []}:
+            if kwargs[name]:
+                new_params.append(ParamItem(name=name, value=kwargs[name]))
+                changed = True
+        if changed:
+            self.params = new_params
+            self.save()

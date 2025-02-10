@@ -179,8 +179,19 @@ class OTNODUController(BaseController):
         ep: Endpoint,
         channel: Channel | None = None,
         dry_run: bool = False,
+        client_protocol: str | None = None,
         **kwargs: Any,
     ) -> tuple[Channel | None, str]:
+        """
+        Create/update OTN ODU channel.
+
+        Args:
+            name: Channel name.
+            ep: Starting endpoint.
+            channel: Channel reference.
+            dry_run: Dry run mode.
+            client_protocol: Client protocol.
+        """
 
         def ensure_usage(ch: Channel, ep: Endpoint) -> str:
             e = DBEndpoint.objects.filter(resource=ep.as_resource()).first()
@@ -249,7 +260,7 @@ class OTNODUController(BaseController):
                 self.logger.info("Controller is not supported, skipping")
                 continue
             self.logger.info("Preparing setup")
-            job = ctl.setup(ep, dry_run=dry_run)
+            job = ctl.setup(ep, dry_run=dry_run, client_protocol=client_protocol)
             if job:
                 job.name = f"Set up {ep.resource_label}"
                 job.entity = f"ep:{ep.id}"
@@ -260,6 +271,8 @@ class OTNODUController(BaseController):
             job.submit()
         else:
             self.logger.info("Nothing to submit. skipping.")
+        # Update channels
+        channel.update_params(client_protocol=client_protocol)
         # Return
         if is_new:
             return channel, "Channel created"
