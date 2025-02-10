@@ -324,8 +324,6 @@ class ChannelPlugin(InvPlugin):
         # @todo: Offload to the thread pools
         for name in controller_loader:
             r += get_controller_proposals(name)
-        # Get channel statuses
-        print("@@@@@@@@@@@@", r)
         return r
 
     def api_create_adhoc(

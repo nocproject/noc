@@ -15,7 +15,11 @@ from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from noc.core.runner.models.jobreq import JobRequest
 from ..profile.channel import ProfileChannelController
-from .base import BaseController, Endpoint, PathItem
+from .base import BaseController, Endpoint, PathItem, ProtocolConstraint, ConstraintSet, Param
+
+
+class OTUPrococolConstraint(ProtocolConstraint):
+    pass
 
 
 class OTNOTUController(BaseController):
@@ -105,7 +109,8 @@ class OTNOTUController(BaseController):
             if not other_protocols:
                 self.logger.info("Does not support OTU: %s, stopping", end)
                 return
-            if not (protocols.intersection(other_protocols)):
+            matched_protocols = protocols.intersection(other_protocols)
+            if not matched_protocols:
                 self.logger.info(
                     "Protocols mismatch. %s supports only %s. Stopping.",
                     end,
@@ -114,6 +119,9 @@ class OTNOTUController(BaseController):
                 return
             path.append(PathItem(object=end.object, input=end.name, output=None))
             self.logger.info("Traced. Full path: %s", path)
+            # Add OTU constraints
+            for proto in matched_protocols:
+                self.constraints.extend(OTUPrococolConstraint(proto))
             yield from path
             return
         self.logger.info("%s is not transceiver and not channel entrypoint. Stopping.", ep.label)
@@ -252,3 +260,7 @@ class OTNOTUController(BaseController):
         if is_new:
             return channel, "Channel created"
         return channel, "Channel updated"
+
+    @classmethod
+    def to_params(cls, constraints: ConstraintSet) -> list[Param]:
+        return []

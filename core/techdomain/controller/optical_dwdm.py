@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # OpticalDWDMControllerclass
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.runner.models.jobreq import JobRequest
 from ..profile.channel import ProfileChannelController
-from .base import BaseController, Endpoint, PathItem
+from .base import BaseController, Endpoint, PathItem, LambdaConstraint
 
 
 class OpticalDWDMController(BaseController):
@@ -84,6 +84,8 @@ class OpticalDWDMController(BaseController):
             self.logger.info("No discriminator")
             return None
         self.logger.debug("Discriminator: %s", discriminator)
+        if discriminator.startswith("lambda::"):
+            self.constraints.extend(LambdaConstraint.from_discriminator(discriminator))
 
         queue = [start]
         prev: dict[Endpoint, PathItem] = {}

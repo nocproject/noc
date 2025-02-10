@@ -81,6 +81,7 @@ class Param(object):
     label: str | None = None
     choices: list[Choice] | None = None
     readonly: bool = False
+    required: bool = True
 
     def to_json(self) -> dict[str, Any]:
         r: dict[str, Any] = {
@@ -89,6 +90,7 @@ class Param(object):
             "label": self.label or self.name,
             "value": self.value,
             "readonly": self.readonly,
+            "required": self.required,
         }
         if self.choices:
             r["choices"] = [c.to_json() for c in self.choices]
@@ -175,13 +177,16 @@ class LambdaConstraint(Constraint):
     Represented by central frequency and width.
 
     Args:
-        freq: Central frequency in GHz.
-        width: Channel width in GHz.
+        freq: Central frequency in MHz.
+        width: Channel width in MHz.
     """
 
     def __init__(self: "LambdaConstraint", freq: float, width: float) -> None:
         self._freq = freq
         self._width = width
+
+    def __str__(self: "LambdaConstraint") -> str:
+        return f"{self._freq}-{self._width}"
 
     def __eq__(self, value: object) -> bool:
         return (
@@ -199,6 +204,12 @@ class LambdaConstraint(Constraint):
     def max_freq(self: "LambdaConstraint") -> float:
         """Maximal frequency in GHz."""
         return self._freq + self._width / 2
+
+    @classmethod
+    def from_discriminator(cls: "type[LambdaConstraint]", v: str) -> "LambdaConstraint":
+        """Create constraint from lambda discriminator."""
+        freq, width = v[8:].split("-")
+        return LambdaConstraint(int(freq) * 1_000, float(width) * 1_000.0)
 
 
 class ConstraintSet(object):
