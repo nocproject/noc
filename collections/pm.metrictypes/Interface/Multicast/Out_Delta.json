@@ -1,0 +1,13 @@
+{
+    "name": "Interface | Multicast | Out | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "54d11fd7-286f-4824-9149-dec9e11fcbec",
+    "scope__name": "Interface",
+    "field_name": "multicast_out_delta",
+    "field_type": "UInt64",
+    "description": "Multicast packets on output interface Delta",
+    "measure": null,
+    "units__code": "pkt",
+    "scale__code": "1",
+    "is_delta": true
+}
