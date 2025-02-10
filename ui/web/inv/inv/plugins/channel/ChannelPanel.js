@@ -343,7 +343,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         fieldLabel: param.label || param.key || __("Unknowns"),
         disabled: param.readonly,
         value: param.value || "",
-        // allowBlank: !param.required,
+        allowBlank: !param.required || false,
       };
 
       if(Ext.isDefined(param.choices)){
