@@ -339,7 +339,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       console.log(param);
       var field = {
         xtype: "textfield", // default field type
-        name: param.name,
+        name: "params." + param.name,
         fieldLabel: param.label || param.key || __("Unknowns"),
         disabled: param.readonly,
         value: param.value || "",
