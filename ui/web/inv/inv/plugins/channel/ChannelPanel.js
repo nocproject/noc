@@ -178,11 +178,13 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   handleEyeClick: function(recordId, rowIndex){
     var tableView = this.down("grid").getView(),
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      channelPanel = this,
       showGrid = function(){
         var panel = this.up();
         if(!Ext.isEmpty(tableView.getSelectionModel())){
           tableView.getSelectionModel().select(parseInt(rowIndex));
-          this.showChannelPanel();
+          channelPanel.showChannelPanel();
         }
         if(panel){
           panel.close();
