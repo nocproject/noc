@@ -39,6 +39,7 @@ class ChannelApplication(ExtDocApplication):
     endpoints = EndpointDocInline(Endpoint)
     parent_model = Channel
     parent_field = "parent"
+    query_fields = ["name__icontains"]
 
     @view(url="^(?P<id>[0-9a-f]{24})/viz/", method=["GET"], api=True, access="read")
     def api_viz(self, request, id: str):
