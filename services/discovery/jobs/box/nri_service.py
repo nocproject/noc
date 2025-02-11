@@ -7,36 +7,18 @@
 
 # Python modules
 from collections import defaultdict
-import datetime
 
 # Third-party modules
-import orjson
 from typing import Dict, List, Any, DefaultDict
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.serviceinstance import ServiceInstance, DISCOVERY_SOURCE, CLIENT_INSTANCE_NAME
+from noc.sa.models.serviceinstance import ServiceInstance, DISCOVERY_SOURCE
 from noc.sa.models.servicesummary import ServiceSummary
-from noc.sa.models.service import Service
-from noc.sa.models.serviceprofile import ServiceProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.core.change.policy import change_tracker
-from noc.core.clickhouse.connect import connection
 from noc.core.ip import IP
-
-
-SQL = """
-SELECT interface, groupUniqArray(MACNumToString(if_mac)) as macs, COUNT(DISTINCT if_mac) as macs_cnt
-  FROM (
-    SELECT interface, argMax(mac, ts) as if_mac
-    FROM mac WHERE date >= %s AND managed_object = %s
-    GROUP BY interface, mac
-  )
-  GROUP BY interface
-  HAVING macs_cnt < 3
-  FORMAT JSON
-"""
 
 
 class NRIServiceCheck(DiscoveryCheck):
@@ -59,20 +41,9 @@ class NRIServiceCheck(DiscoveryCheck):
                 continue
             if not si.managed_object or si.managed_object != self.object:
                 self.logger.info("Bind object to Service Instance: %s", si)
-                si.set_object(self.object)
-            si.seen(DISCOVERY_SOURCE)
+                si.bind_object(self.object)
             processed_instances[si.id] = si
         # New Instances
-        global_iface_map_instances = self.get_remote_resource_svcs()
-        for svc, iface in global_iface_map_instances.items():
-            si = svc.register_instance(
-                DISCOVERY_SOURCE,
-                port=0,
-                name=CLIENT_INSTANCE_NAME,
-                managed_object=self.object,
-            )
-            processed_instances[si.id] = si
-            resources[si].append(iface)
         # unseen
         for si in ServiceInstance.objects.filter(
             managed_object=self.object,
@@ -80,7 +51,6 @@ class NRIServiceCheck(DiscoveryCheck):
             sources__in=[DISCOVERY_SOURCE],
         ):
             si.reset_object()
-            si.unseen(DISCOVERY_SOURCE)
             self.logger.info("UnBind object to Service Instance: %s", si)
         bulk = []
         # Extract ResourceKey
@@ -90,12 +60,12 @@ class NRIServiceCheck(DiscoveryCheck):
         for si in ServiceInstance.objects.filter(managed_object=self.object):
             if si.service.profile.instance_policy == "D":
                 # Disabled resource binding
+                # Unbind
                 continue
-            ss = si.get_instance_settings()
             # Local Binding
             if si.nri_port:
                 nri_map_instances[si.nri_port] = si
-            if ss.allow_resources:
+            if si.config.allow_resources:
                 for addr in si.addresses:
                     p = IP.prefix(addr.address)
                     address_map_instance[p.address] = si
@@ -150,46 +120,3 @@ class NRIServiceCheck(DiscoveryCheck):
                 if addr.address not in addresses:
                     continue
                 resources[addresses[addr.address]] += [si]
-
-    def get_mac_neighbors(self) -> Dict[str, Interface]:
-        """Return Iface -> Mac Neighbor map"""
-        now = (datetime.datetime.now() - datetime.timedelta(days=1)).date()
-        ch = connection()
-        r = ch.execute(SQL, args=[now.isoformat(), self.object.bi_id], return_raw=True)
-        r = orjson.loads(r)
-        mac_iface_map = {}
-        for row in r["data"]:
-            for m in row["macs"]:
-                iface = self.object.get_interface(row["interface"])
-                if not iface:
-                    continue
-                mac_iface_map[m] = iface
-        return mac_iface_map
-
-    def get_remote_resource_svcs(self) -> Dict[Service, Interface]:
-        """Mapping Remote Resource to Service"""
-        if not self.has_capability("DB | Interfaces"):
-            self.logger.info("No interfaces discovered. Skipping Remote Portmap")
-            return {}
-        elif not self.object.object_profile.enable_periodic_discovery_mac:
-            self.logger.info("No MAC discovered enabled. Skipping Remote Portmap")
-            return {}
-        remote_resource_svcs = list(
-            ServiceProfile.objects.filter(
-                instance_policy="O",
-                instance_policy_settings__provide="C",
-            ).scalar("id")
-        )
-        if not remote_resource_svcs:
-            return {}
-        # Remote By MAC
-        r = {}
-        mac_iface_map = self.get_mac_neighbors()
-        if not mac_iface_map:
-            return r
-        for svc in Service.objects.filter(
-            cpe_mac__in=list(mac_iface_map),
-            profile__in=remote_resource_svcs,
-        ):
-            r[svc] = mac_iface_map[svc.cpe_mac]
-        return r

@@ -33,7 +33,7 @@ from mongoengine.queryset.visitor import Q as m_q
 import cachetools
 
 # NOC modules
-from .serviceprofile import ServiceProfile, Status, CalculatedStatusRule
+from .serviceprofile import ServiceProfile, CalculatedStatusRule
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete_check, on_init
@@ -41,6 +41,9 @@ from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
 from noc.core.service.loader import get_service
+from noc.core.models.servicestatus import Status
+from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
+from noc.core.models.inputsources import InputSource
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -283,6 +286,11 @@ class Service(Document):
         si = ServiceInstance.objects.filter(addresses__address=address).first()
         return si.service if si else None
 
+    def __str__(self):
+        if self.label:
+            return self.label
+        return str(self.id) if self.id else "new"
+
     @property
     def service_instances(self) -> List["ServiceInstance"]:
         return list(ServiceInstance.objects.filter(service=self.id))
@@ -316,10 +324,15 @@ class Service(Document):
         """Check service in maintenance"""
         return False
 
-    def __str__(self):
-        if self.label:
-            return self.label
-        return str(self.id) if self.id else "new"
+    def get_effective_managed_object(self) -> Optional[Any]:
+        """Return ManagedObject to upper level"""
+        path = self.get_path()
+        for si in ServiceInstance.objects.filter(
+            service__in=path,
+            managed_object__exists=True,
+        ).scalar("id", "managed_object"):
+            if si.managed_object:
+                return si.managed_object
 
     def on_save(self):
         # if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
@@ -334,7 +347,7 @@ class Service(Document):
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
 
-        mo = self.get_managed_object()
+        mo = self.get_effective_managed_object()
         if mo:
             ServiceSummary.refresh_object(mo)
 
@@ -441,7 +454,7 @@ class Service(Document):
         Register Group alarm when changed Oper Status
         old_status: Previous status
         """
-        mo = self.get_managed_object()
+        mo = self.get_effective_managed_object()
         if not mo:
             logger.warning("[%s] Unknown ManagedObject for Raise alarm. Skipping", self.id)
         # Raise alarm
@@ -613,15 +626,8 @@ class Service(Document):
         # Interface._get_collection().update_many({"service": self.id}, {"$unset": {"service": ""}})
         self._refresh_managed_object()
 
-    def get_managed_object(self):
-        for si in ServiceInstance.objects.filter(
-            service__in=self.service_path, managed_object__exists=True
-        ):
-            if si.managed_object:
-                return si.managed_object
-        return None
-
     def get_caps(self) -> Dict[str, Any]:
+        # Update caps
         return CapsItem.get_caps(self.caps, self.profile.caps)
 
     def set_caps(
@@ -680,55 +686,14 @@ class Service(Document):
             "caps": self.get_caps(),
         }
 
-    def find_instance(
-        self,
-        port: int = 0,
-        name: Optional[str] = None,
-        addresses: Optional[List[str]] = None,
-        pool: Optional[str] = None,
-        managed_object: Optional[str] = None,
-        remote_id: Optional[str] = None,
-    ) -> Optional["ServiceInstance"]:
-        """
-        Find Service instance by host ID
-
-        Attrs:
-            address: Instance IP Address
-            pool: Address Pool
-            managed_object: Instance Host
-            remote_id: Instance ID on Remote System
-
-        """
-        if remote_id:
-            return ServiceInstance.objects.filter(service=self.id, remote_id=remote_id).first()
-        si = None
-        if managed_object and port:
-            si = ServiceInstance.objects.filter(
-                service=self.id, managed_object=managed_object, port=port
-            ).first()
-        elif managed_object:
-            si = ServiceInstance.objects.filter(
-                service=self.id,
-                managed_object=managed_object,
-            ).first()
-        if not si and addresses and port:
-            si = ServiceInstance.objects.filter(
-                service=self.id, addresses__address__in=addresses
-            ).first()
-        elif not si and addresses:
-            si = ServiceInstance.objects.filter(
-                service=self.id, addresses__address__in=addresses
-            ).first()
-        return si
-
     def register_instance(
         self,
-        source: str,
-        port: int,
-        name: str,
-        addresses: Optional[List[str]] = None,
+        type: InstanceType,
+        source: InputSource = InputSource.MANUAL,
+        name: Optional[str] = None,
+        macs: Optional[List[str]] = None,
         fqdn: Optional[str] = None,
-        pool: Optional[str] = None,
+        nri_port: Optional[str] = None,
         managed_object: Optional[str] = None,
         remote_id: Optional[str] = None,
     ):
@@ -736,41 +701,84 @@ class Service(Document):
         Register Instance for Service
 
         Args:
+            type: Instance type (from config)
             source: Instance source: manual, etl, discovery
-            port: Instance TCP/UDP port
             name: Instance name, for host - process name
-            addresses: Instance IP Address
             fqdn: Instance FQDN (for resolve address)
-            pool: Address Pool
+            macs: MAC Address List
             managed_object: Instance Host
             remote_id: Instance ID on Remote System
+            nri_port: Network interface name on Remote System
         """
-        if source == "etl" and not remote_id:
+        if source == InputSource.ETL and not remote_id:
             raise AttributeError("remote_id required for ETL source")
-        if source == "discovery" and not managed_object:
+        if source == InputSource.DISCOVERY and not managed_object:
+            # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
-        if not addresses and not managed_object and not remote_id:
-            raise AttributeError("One of Host ID required")
-        instance = self.find_instance(
-            addresses=addresses,
-            managed_object=managed_object,
+        cfg = ServiceInstanceConfig.get_config(type, self)
+        if not cfg:
+            logger.info("[%s|%s] Instance Type is not allowed by Service settings", self.id, type)
+            return
+        # Check Allowed create instance
+        qs = cfg.get_queryset(
+            service=self,
+            name=name,
+            macs=macs,
             remote_id=remote_id,
-            port=port,
-            pool=pool,
+            managed_object=managed_object,
         )
-        if not instance:
-            instance = ServiceInstance(
-                service=self.id,
+        # Check multiple instances
+        si = ServiceInstance.objects.filter(qs).first()
+        changed = False
+        if not si:
+            si = ServiceInstance(
+                type=cfg.type,
+                service=self,
+                sources=[source],
                 name=name,
-                fqdn=fqdn,
-                # pool=pool,
+                macs=macs or [],
                 remote_id=remote_id,
+                nri_port=nri_port,
             )
-        if instance.managed_object != managed_object:
-            instance.managed_object = managed_object
-        instance.save()
-        instance.seen(source=source, addresses=addresses, port=port)
-        return instance
+            changed |= True
+        # Update data
+        if source not in si.sources:
+            si.sources += [source]
+            changed |= True
+        if si.nri_port != nri_port:
+            si.nri_port = nri_port
+            changed |= True
+        if si.fqdn != fqdn:
+            si.fqdn = fqdn
+            changed |= True
+        if si.managed_object:
+            si.refresh_managed_object(managed_object)
+        if changed:
+            si.save()
+        return si
+
+    def deregister_instance(
+        self,
+        type: InstanceType,
+        source: InputSource = InputSource.MANUAL,
+        name: Optional[str] = None,
+    ):
+        """Remove service info for source"""
+        # Check multiple instances
+        instances = ServiceInstance.objects.filter(type=type, service=self)
+        if not instances:
+            return
+        for si in instances:
+            if source in si.sources:
+                si.sources.remove(source)
+            if not si.sources:
+                # For empty source, clean sources
+                self._get_collection().delete_one({"_id": self.id})
+            else:
+                self._get_collection().update_one(
+                    {"_id": self.id}, {"$set": {"sources": si.sources}}
+                )
+            # delete
 
     @classmethod
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:

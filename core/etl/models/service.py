@@ -31,6 +31,8 @@ class Instance(_BaseModel):
     port: Optional[int] = None
     remote_id: Optional[str] = None
     nri_port: Optional[str] = None
+    mac_addresses: Optional[List[str]] = None
+    last_update: Optional[datetime] = None
 
 
 class Service(BaseModel):

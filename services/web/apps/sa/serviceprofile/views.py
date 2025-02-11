@@ -29,4 +29,6 @@ class ServiceProfileApplication(ExtDocApplication):
     def clean(self, data):
         if data.get("instance_policy_settings"):
             data["instance_policy_settings"] = data["instance_policy_settings"][0]
+        else:
+            del data["instance_policy_settings"]
         return super().clean(data)

@@ -103,7 +103,7 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             defaultValue: "MN"
         },
         {
-            name: "calculate_status_rule",
+            name: "calculate_status_rules",
             type: "auto"
         },
         {
