@@ -37,7 +37,7 @@ def test_constraint_satisfy(left: Constraint, right: Constraint, expected: bool)
 @pytest.mark.parametrize(
     ("left", "right", "expected"),
     [
-        ([], [], None),
+        ([], [], []),
         ([ProtocolConstraint("ODU2")], [ProtocolConstraint("ODU4")], None),
         ([ProtocolConstraint("ODU4")], [ProtocolConstraint("ODU4")], [ProtocolConstraint("ODU4")]),
         (
