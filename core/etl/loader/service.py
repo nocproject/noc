@@ -13,6 +13,8 @@ from noc.inv.models.capability import Capability
 from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.serviceprofile import ServiceProfile
+from noc.core.models.inputsources import InputSource
+from noc.core.models.serviceinstanceconfig import InstanceType
 from .base import BaseLoader
 from ..models.service import Service, Instance
 
@@ -50,25 +52,36 @@ class ServiceLoader(BaseLoader):
     @classmethod
     def apply_instances(cls, o: ServiceModel, fields: List[Dict[str, Any]]):
         """Synchronize Service Instances"""
-        instances = {i["remote_id"]: Instance(**i) for i in fields}
-        for si in ServiceInstance.objects.filter(service=o.id, remote_id__exists=True):
-            if si.remote_id not in instances:
-                si.unseen("etl")
-                continue
-            i = instances.pop(si.remote_id)
-            si.seen("etl", addresses=i.addresses, port=i.port)
-            if si.fqdn != i.fqdn:
-                si.fqdn = i.fqdn
-                si.save()
-        for i in instances.values():
-            o.register_instance(
-                source="etl",
-                name="",
-                port=i.port,
-                addresses=i.addresses,
-                fqdn=i.fqdn,
-                remote_id=i.remote_id,
+        processed = set()
+        for etl_i in fields:
+            etl_i = Instance(**etl_i)
+            # Detect type to internal method
+            if etl_i.nri_port:
+                i_type = InstanceType.NETWORK_CHANNEL
+            elif etl_i.mac_addresses:
+                i_type = InstanceType.NETWORK_HOST
+            else:
+                i_type = InstanceType.SERVICE_ENDPOINT
+            si = o.register_instance(
+                type=i_type,
+                source=InputSource.ETL,
+                fqdn=etl_i.fqdn,
+                remote_id=etl_i.remote_id or o.remote_id,
+                nri_port=etl_i.nri_port,
+                macs=etl_i.mac_addresses or None,
+                name=etl_i.name,
             )
+            changed = si.register_endpoint(
+                InputSource.ETL, addresses=etl_i.addresses, port=etl_i.port, ts=etl_i.last_update
+            )
+            if changed:
+                si.save()
+            processed.add(si.id)
+        for si in ServiceInstance.objects.filter(
+            service=o.id, sources=[InputSource.ETL], id__nin=list(processed)
+        ):
+            # Deregister
+            si.delete()
 
     def find_object(self, v: Dict[str, Any]):
         """
