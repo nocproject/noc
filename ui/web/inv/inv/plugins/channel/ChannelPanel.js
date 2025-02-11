@@ -30,7 +30,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       items: [
         {
           glyph: NOC.glyph.star,
-          tooltip: __('Mark/Unmark'),
+          tooltip: __("Mark/Unmark"),
           getColor: function(cls, meta, r){
             return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
           },
@@ -38,7 +38,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         },
         {
           glyph: NOC.glyph.edit,
-          tooltip: __('Edit'),
+          tooltip: __("Edit"),
           handler: "onEdit",
         },
       ],
@@ -166,31 +166,31 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   afterRender: function(){
-    var me = this;
-    me.callParent(arguments);
-    me.el.on("click", function(event, target){
-      if(target.classList.contains('job-status')){
-        var recordId = target.getAttribute('data-record-id'),
-          rowIndex = target.getAttribute('data-row-index');
-        me.handleEyeClick(recordId, rowIndex);
+    this.callParent(arguments);
+    this.el.on("click", function(event, target){
+      if(target.classList.contains("job-status")){
+        var recordId = target.getAttribute("data-record-id"),
+          rowIndex = target.getAttribute("data-row-index");
+        this.handleEyeClick(recordId, rowIndex);
       }
-    }, me, {delegate: '.job-status'});
+    }, this, {delegate: ".job-status"});
   },
   //
   handleEyeClick: function(recordId, rowIndex){
-    var me = this,
-      tableView = this.down("grid").getView(),
+    var tableView = this.down("grid").getView(),
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      channelPanel = this,
       showGrid = function(){
         var panel = this.up();
         if(!Ext.isEmpty(tableView.getSelectionModel())){
           tableView.getSelectionModel().select(parseInt(rowIndex));
-          me.showChannelPanel();
+          channelPanel.showChannelPanel();
         }
         if(panel){
           panel.close();
         }
       };
-    me.mask(__("Loading jpb panel ..."));
+    this.mask(__("Loading job panel ..."));
     NOC.launch("sa.job", "history", {
       "args": [recordId],
       "override": [
@@ -199,37 +199,35 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       "callback": Ext.bind(function(){
         tableView.getSelectionModel().select(parseInt(rowIndex));
         this.unmask();
-      }, me),
+      }, this),
     });
 
   },
   //
   getSelectedRow: function(){
-    var me = this,
-      grid = me.down("invchannelmagic").down("grid"),
+    var grid = this.down("invchannelmagic").down("grid"),
       selectionModel = grid.getSelectionModel(),
       selectedRecord = selectionModel.getSelection()[0];
     return selectedRecord;
   },
   //
   onAdHoc: function(){
-    var me = this,
-      currentId = me.getViewModel().get("currentId"),
+    var currentId = this.getViewModel().get("currentId"),
       url = "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
-      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      maskComponent = this.up("[appId=inv.inv]").maskComponent,
       messageId = maskComponent.show(__("Fetching data for ad-hoc channels"));
-    me.getViewModel().set("createInvChannelBtnDisabled", true);
+    this.getViewModel().set("createInvChannelBtnDisabled", true);
     Ext.Ajax.request({
       url: url,
       method: "GET",
-      scope: me,
+      scope: this,
       success: function(response){
         var obj = Ext.decode(response.responseText);
         if(Ext.isEmpty(obj)){
           NOC.info(__("No ad-hoc channels available"));
         } else{
-          me.showMagicPanel();
-          me.down("[xtype=invchannelmagic] grid").getStore().loadData(obj);
+          this.showMagicPanel();
+          this.down("[xtype=invchannelmagic] grid").getStore().loadData(obj);
         }
       },
       failure: function(response){
@@ -242,18 +240,17 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   onChangeSelection: function(rowModel, selected){
-    var me = this,
-      schemeContainer = me.down("#schemeContainer");
+    var schemeContainer = this.down("#schemeContainer");
     if(selected.length > 0){
       var recordData = selected[0].getData(),
         url = "/inv/channel/" + recordData.id + "/viz/",
-        maskComponent = me.up("[appId=inv.inv]").maskComponent,
+        maskComponent = this.up("[appId=inv.inv]").maskComponent,
         messageId = maskComponent.show(__("Fetching data for draw scheme ..."));
-      me.getViewModel().set("downloadSvgItemDisabled", false);
+      this.getViewModel().set("downloadSvgItemDisabled", false);
       Ext.Ajax.request({
         url: url,
         method: "GET",
-        scope: me,
+        scope: this,
         success: function(response){
           var obj = Ext.decode(response.responseText);
           this.renderScheme(obj.data);
@@ -266,21 +263,22 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         },
       });
     } else{
-      me.getViewModel().set("downloadSvgItemDisabled", true);
-      me.getViewModel().set("zoomDisabled", true);
+      this.getViewModel().set("downloadSvgItemDisabled", true);
+      this.getViewModel().set("zoomDisabled", true);
       schemeContainer.setHtml("");
     }
   },
   //
   onCreateAdHoc: function(params){
-    var me = this,
-      currentId = me.getViewModel().get("currentId"),
+    var currentId = this.getViewModel().get("currentId"),
       selectedRecord = this.getSelectedRow(),
-      maskComponent = me.up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show(__("Create new channel ...")); 
+      maskComponent = this.up("[appId=inv.inv]").maskComponent,
+      message = Ext.isDefined(params.channel_id) ? __("Create new channel ..."): __("Update channel"),
+      messageId = maskComponent.show(message); 
     Ext.Ajax.request({
       url: "/inv/inv/" + currentId + "/plugin/channel/adhoc/",
       method: "POST",
+      scope: this,
       jsonData: Ext.apply(
         {endpoint: selectedRecord.get("start_endpoint"), controller: selectedRecord.get("controller")},
         params,
@@ -289,7 +287,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         var data = Ext.decode(response.responseText);
         if(data.status){
           NOC.info(data.msg);
-          me.showChannelPanel(data.channel_id);
+          this.showChannelPanel(data.channel_id);
         } else{
           NOC.error(data.msg);
         }
@@ -305,21 +303,66 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   onCreateBtn: function(){
     var panel = this.down("invChannelParamsForm"),
-      form = panel.down("form").getForm(),
+      formPanel = panel.down("form"), 
       selectedRecord = this.getSelectedRow();
     if(Ext.isEmpty(selectedRecord)){
       NOC.error(__("Please select a row"));
       return;
     }
-    if(Ext.isEmpty(selectedRecord.get("channel_id"))){
-      form.reset();
-    } else{
-      form.setValues({
-        channel_id: selectedRecord.get("channel_id"),
-        name: selectedRecord.get("channel_name"),
-      });
-    }
+    this.addFields(formPanel, selectedRecord);
     panel.show();
+  },
+  addFields: function(panel, record){
+    panel.removeAll();    
+    panel.add({
+      xtype: "hiddenfield",
+      name: "channel_id",
+      value: record.get("channel_id"),
+    });
+    panel.add({
+      xtype: "textfield",
+      name: "name",
+      fieldLabel: __("Name"),
+      allowBlank: false,
+      value: record.get("channel_name"),
+    });
+    this.addParamFields(panel, record.get("params") || []);
+    panel.add({
+      xtype: "checkbox",
+      name: "dry_run",
+      inputValue: true,
+      uncheckedValue: false,
+      fieldLabel: __("Dry Run"),
+    });
+  },
+  //
+  addParamFields: function(panel, params){
+    Ext.Array.each(params, function(param){
+      console.log(param);
+      var field = {
+        xtype: "textfield", // default field type
+        name: "params." + param.name,
+        fieldLabel: param.label || param.key || __("Unknowns"),
+        disabled: param.readonly,
+        value: param.value || "",
+        allowBlank: !param.required || false,
+      };
+
+      if(Ext.isDefined(param.choices)){
+        field.xtype = "combo";
+        field.store = Ext.create("Ext.data.Store", {
+          fields: ["id", "label"],
+          data: param.choices,
+        });
+        field.displayField = "label";
+        field.valueField = "id";
+        field.queryMode = "local";
+        field.editable = false;
+        field.forceSelection = true;
+      }
+
+      panel.add(field);
+    });
   },
   //
   onDeselect: function(){
@@ -327,13 +370,14 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   onEdit: function(tableView, rowIndex){
-    var me = this,
-      record = tableView.getStore().getAt(rowIndex),
+    var record = tableView.getStore().getAt(rowIndex),
       id = record.get("id"),
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      channelPanel = this,
       showGrid = function(){
         var panel = this.up();
         if(!Ext.isEmpty(tableView.getSelectionModel())){
-          me.showChannelPanel();
+          channelPanel.showChannelPanel();
           tableView.getSelectionModel().select(rowIndex);
         }
         if(panel){
@@ -347,23 +391,22 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       ],
       "callback": Ext.bind(function(){
         tableView.getSelectionModel().select(rowIndex);
-      }, me),
+      }, this),
     });
   },
   //
   onFavItem: function(grid, rowIndex){
-    var me = this,
-      r = grid.getStore().getAt(rowIndex),
+    var r = grid.getStore().getAt(rowIndex),
       id = r.get("id"),
       action = r.get("fav_status") ? "reset" : "set",
-      maskComponent = me.up("[appId=inv.inv]").maskComponent,
+      maskComponent = this.up("[appId=inv.inv]").maskComponent,
       messageId = maskComponent.show(__("Favorite status updating ...")),
       url = "/inv/channel/favorites/item/" + id + "/" + action + "/";
 
     Ext.Ajax.request({
       url: url,
       method: "POST",
-      scope: me,
+      scope: this,
       success: function(){
         // Invert current status
         r.set("fav_status", !r.get("fav_status"));
@@ -386,15 +429,14 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   onReload: function(){
-    var me = this,
-      activeItem = me.getLayout().getActiveItem();
+    var activeItem = this.getLayout().getActiveItem();
     
     if(activeItem.xtype === "panel"){
-      me.callParent();
+      this.callParent();
     }
 
     if(activeItem.xtype === "invchannelmagic"){
-      me.onAdHoc();
+      this.onAdHoc();
     }
   },
   //
@@ -410,7 +452,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         obj = Ext.decode(response.responseText),
         grid = this.down("grid"),
         store = grid.getStore();        
-      store.loadData(obj.records);
+      store.loadData(obj.records || []);
       if(Ext.isEmpty(channelId)){
         return;
       }

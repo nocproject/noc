@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv channel plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,9 +15,15 @@ from bson import ObjectId
 # NOC modules
 from noc.inv.models.object import Object
 from noc.core.resource import resource_label
-from noc.sa.interfaces.base import StringParameter, OBJECT_ID, ObjectIdParameter, BooleanParameter
+from noc.sa.interfaces.base import (
+    StringParameter,
+    OBJECT_ID,
+    ObjectIdParameter,
+    BooleanParameter,
+    DictParameter,
+)
 from noc.core.techdomain.controller.loader import loader as controller_loader
-from noc.core.techdomain.controller.base import Endpoint
+from noc.core.techdomain.controller.base import Endpoint, BaseController, ConstraintSet
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.main.models.favorites import Favorites
@@ -47,6 +53,7 @@ class ChannelPlugin(InvPlugin):
                 "endpoint": StringParameter(),
                 "controller": StringParameter(),
                 "name": StringParameter(),
+                "params": DictParameter(required=False),
                 "dry_run": BooleanParameter(required=False, default=False),
             },
         )
@@ -185,21 +192,42 @@ class ChannelPlugin(InvPlugin):
                 )
             ]
 
+        def build_params(
+            controller: BaseController,
+            constraints: ConstraintSet | None,
+            values: list[dict[str, str]] | None,
+        ) -> list[dict[str, Any]]:
+            if not constraints:
+                return []
+            current_values = {item["name"]: item["value"] for item in values or []}
+            values = values or {}
+            r = []
+            for p in controller.to_params(constraints):
+                # Set current value
+                if p.name in current_values:
+                    p.value = current_values[p.name]
+                if p.value is None and p.choices and len(p.choices) == 1:
+                    # Single value in choices
+                    p.value = p.choices[0].id
+                r.append(p.to_json())
+            return r
+
         def get_controller_proposals(controller_name: str) -> list[dict[str, Any]]:
             """
             Build proposals for controller.
             """
             r = []
-            controller = controller_loader[controller_name]()
+            controller: BaseController = controller_loader[controller_name]()
             is_bidi = controller.topology.is_bidirectional
             seen = set()
+            constraints: dict[str, ConstraintSet] = {}  # Start endpoint -> constraints
             # Query conditions
             qualified = set()
             unqualified = set()
             # For all nested objects
             for no in nested_objects:
                 # Find suitable channels
-                for sep, eep, params in controller.iter_adhoc_endpoints(no):
+                for sep, eep, cs in controller.iter_adhoc_endpoints(no):
                     # Restrict to port if necessary
                     if is_xcvr and not (sep == xep or eep == xep):
                         continue
@@ -209,6 +237,9 @@ class ChannelPlugin(InvPlugin):
                         if h in seen:
                             continue
                         seen.add(h)
+                    # Preserve constraints
+                    if cs:
+                        constraints[sep.as_resource()] = cs
                     # Collect query conditions
                     if sep.is_qualified and eep.is_qualified:
                         qualified.add(sep.as_resource())
@@ -257,6 +288,11 @@ class ChannelPlugin(InvPlugin):
             for x in r:
                 ch1 = ch_ep.get(x["start_endpoint"])
                 ch2 = ch_ep.get(x["end_endpoint"])
+                x["params"] = build_params(
+                    controller,
+                    constraints.get(x["start_endpoint"]),
+                    channel_params.get(ch1) if ch1 else None,
+                )
                 if not ch1 and not ch2:
                     x["status"] = "new"
                 elif is_bidi:
@@ -264,7 +300,6 @@ class ChannelPlugin(InvPlugin):
                         x["status"] = "done"
                         x["channel_id"] = str(ch1)
                         x["channel_name"] = channel_name.get(ch1) or ""
-                        x["params"] = channel_params.get(ch1) or []
                     else:
                         x["status"] = "broken"
                 else:
@@ -273,7 +308,6 @@ class ChannelPlugin(InvPlugin):
                         x["status"] = "done"
                         x["channel_id"] = str(ch1)
                         x["channel_name"] = channel_name.get(ch1, "")
-                        x["params"] = channel_params.get(ch1) or []
                     else:
                         x["status"] = "new"
             return r
@@ -287,9 +321,9 @@ class ChannelPlugin(InvPlugin):
             nested_objects = list(Object.objects.filter(id__in=o.get_nested_ids()))
         r: list[dict[str, str | bool]] = []
         # Check all controllers
+        # @todo: Offload to the thread pools
         for name in controller_loader:
             r += get_controller_proposals(name)
-        # Get channel statuses
         return r
 
     def api_create_adhoc(
@@ -301,6 +335,7 @@ class ChannelPlugin(InvPlugin):
         controller: str,
         channel_id: str | None = None,
         dry_run: bool | None = None,
+        params: dict[str, str] | None = None,
     ):
         self.app.get_object_or_404(Object, id=id)
         # Get channel
@@ -311,7 +346,10 @@ class ChannelPlugin(InvPlugin):
         # Run controller
         ep = Endpoint.from_resource(endpoint)
         ctl = controller_loader[controller]()
-        ch, msg = ctl.sync_ad_hoc_channel(name=name, ep=ep, channel=channel, dry_run=dry_run)
+        params = params or {}
+        ch, msg = ctl.sync_ad_hoc_channel(
+            name=name, ep=ep, channel=channel, dry_run=dry_run, **params
+        )
         r = {"status": ch is not None, "msg": msg}  # @todo: Replace with message
         if ch:
             r["channel_id"] = str(ch.id)

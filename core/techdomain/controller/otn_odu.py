@@ -14,9 +14,26 @@ from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from noc.core.runner.models.jobreq import JobRequest
-from .base import BaseController, Endpoint, PathItem
+from .base import (
+    BaseController,
+    Endpoint,
+    PathItem,
+    ProtocolConstraint,
+    ConstraintSet,
+    Param,
+    ParamType,
+    Choice,
+)
 from .otn_otu import OTNOTUController
 from ..profile.channel import ProfileChannelController
+
+
+class ODUPrococolConstraint(ProtocolConstraint):
+    pass
+
+
+class ClientProtocolConstraint(ProtocolConstraint):
+    pass
 
 
 class OTNODUController(BaseController):
@@ -57,6 +74,18 @@ class OTNODUController(BaseController):
         return []
 
     def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
+        def get_client_protocols(ep: Endpoint) -> List[str]:
+            # @todo: Pass through profile controller
+            for c in ep.object.model.connections:
+                if c.name != ep.name or not c.protocols:
+                    continue
+                return [
+                    pvi.protocol.code
+                    for pvi in c.protocols
+                    if not pvi.protocol.code.startswith("ODU")
+                ]
+            return []
+
         self.logger.info("Tracing from %s", start)
         r = []
         # Starting cart
@@ -120,6 +149,13 @@ class OTNODUController(BaseController):
         if not self.is_connected(end.object, end.name):
             self.logger.info("Missing tranceiver on the end")
             return
+        # Client protocols
+        client_protocols = set(get_client_protocols(start)).intersection(
+            set(get_client_protocols(end))
+        )
+        if not client_protocols:
+            self.logger.info("No matched client protocols")
+            return
         r.append(
             PathItem(
                 object=otu_end.object,
@@ -129,6 +165,12 @@ class OTNODUController(BaseController):
                 input_discriminator=discriminator,
             )
         )
+        # ODU Protocol constraints
+        for proto in matched_protocols:
+            self.constraints.extend(ODUPrococolConstraint(proto))
+        # Client protocol constraints
+        for proto in client_protocols:
+            self.constraints.extend(ClientProtocolConstraint(proto))
         yield from r
 
     def sync_ad_hoc_channel(
@@ -137,8 +179,19 @@ class OTNODUController(BaseController):
         ep: Endpoint,
         channel: Channel | None = None,
         dry_run: bool = False,
+        client_protocol: str | None = None,
         **kwargs: Any,
     ) -> tuple[Channel | None, str]:
+        """
+        Create/update OTN ODU channel.
+
+        Args:
+            name: Channel name.
+            ep: Starting endpoint.
+            channel: Channel reference.
+            dry_run: Dry run mode.
+            client_protocol: Client protocol.
+        """
 
         def ensure_usage(ch: Channel, ep: Endpoint) -> str:
             e = DBEndpoint.objects.filter(resource=ep.as_resource()).first()
@@ -207,7 +260,7 @@ class OTNODUController(BaseController):
                 self.logger.info("Controller is not supported, skipping")
                 continue
             self.logger.info("Preparing setup")
-            job = ctl.setup(ep, dry_run=dry_run)
+            job = ctl.setup(ep, dry_run=dry_run, client_protocol=client_protocol)
             if job:
                 job.name = f"Set up {ep.resource_label}"
                 job.entity = f"ep:{ep.id}"
@@ -218,7 +271,35 @@ class OTNODUController(BaseController):
             job.submit()
         else:
             self.logger.info("Nothing to submit. skipping.")
+        # Update channels
+        channel.update_params(client_protocol=client_protocol)
         # Return
         if is_new:
             return channel, "Channel created"
         return channel, "Channel updated"
+
+    @classmethod
+    def to_params(cls, constraints: ConstraintSet) -> list[Param]:
+        def q_proto(s: str) -> str:
+            match s:
+                case "TransEth10G":
+                    return "10GE"
+                case _:
+                    return s
+
+        r: list[Param] = []
+        client_protocols = constraints.get(ClientProtocolConstraint)
+        if client_protocols:
+            r.append(
+                Param(
+                    name="client_protocol",
+                    type=ParamType.STRING,
+                    label="Client Protocol",
+                    value=None,
+                    choices=[
+                        Choice(id=proto.protocol, label=q_proto(proto.protocol))
+                        for proto in client_protocols
+                    ],
+                )
+            )
+        return r

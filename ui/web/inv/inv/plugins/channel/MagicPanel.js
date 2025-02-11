@@ -39,36 +39,36 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
             },
           ],
           defaultRenderer: function(v, meta, record, rowIdx, colIdx, store, view){
-            var me = this,
-              prefix = Ext.baseCSSPrefix,
-              scope = me.origScope || me,
-              item = me.items[0],
+            var prefix = Ext.baseCSSPrefix,
+              scope = this.origScope || this,
+              item = this.items[0],
               ret, disabled, tooltip,
-              glyph = record.get("channel_id") ? NOC.glyph.edit : NOC.glyph.plus,
+              glyph = Ext.isEmpty(record.get("channel_id")) ? NOC.glyph.plus : NOC.glyph.edit,
               glyphFontFamily = Ext._glyphFontFamily;
 
-            ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
+            item.tooltip = Ext.isEmpty(record.get("channel_id")) ? __("Create channel") : __("Update channel");
+            ret = Ext.isFunction(this.origRenderer) ? this.origRenderer.apply(scope, arguments) || "" : "";
 
-            meta.tdCls += ' ' + Ext.baseCSSPrefix + 'action-col-cell';
+            meta.tdCls += " " + Ext.baseCSSPrefix + "action-col-cell";
 
             disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
             tooltip = disabled ? null : (item.tooltip || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
 
             if(!item.hasActionConfiguration){
-              item.stopSelection = me.stopSelection;
-              item.disable = Ext.Function.bind(me.disableAction, me, [0], 0);
-              item.enable = Ext.Function.bind(me.enableAction, me, [0], 0);
+              item.stopSelection = this.stopSelection;
+              item.disable = Ext.Function.bind(this.disableAction, this, [0], 0);
+              item.enable = Ext.Function.bind(this.enableAction, this, [0], 0);
               item.hasActionConfiguration = true;
             }
-            ret += '<span role="button" unselectable="on" class="' +
-                    prefix + 'action-col-icon ' +
-                    prefix + 'icon-el ' +
-                    prefix + 'action-col-0' +
-                    ' ' + (disabled ? prefix + 'item-disabled' : ' ') + '" ' +
-                    'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
-                    (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
-                    (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
-                    '>&#' + glyph + ';</span>';
+            ret += "<span role='button' unselectable='on' class='" +
+                    prefix + "action-col-icon " +
+                    prefix + "icon-el " +
+                    prefix + "action-col-0" +
+                    " " + (disabled ? prefix + "item-disabled" : " ") + "' " +
+                    "style='font-family:" + glyphFontFamily + ";font-size:16px;padding-right:2px;line-height:normal" +
+                    (Ext.isFunction(item.getColor) ? ";color:" + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ";color:" + item.color : "")) + "'" +
+                    (tooltip ? " data-qtip='" + tooltip + "'" : "") +
+                    ">&#" + glyph + ";</span>";
             return ret;
           },
         },
