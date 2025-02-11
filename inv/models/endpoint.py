@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 # Endpoint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict
+from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -15,6 +15,7 @@ from mongoengine.fields import (
     BooleanField,
     IntField,
     EmbeddedDocumentListField,
+    ListField,
 )
 from mongoengine import signals
 
@@ -39,7 +40,7 @@ class UsageItem(EmbeddedDocument):
     discriminator = StringField(required=False)
     direction = IntField(required=False)
 
-    def to_json(self) -> Dict[str, str]:
+    def to_json(self) -> dict[str, str]:
         r = {
             "channel": str(self.channel.id),
             "channel__label": self.channel.name,
@@ -47,6 +48,17 @@ class UsageItem(EmbeddedDocument):
             "discriminator": self.discriminator or "",
         }
         return r
+
+
+class ConstraintItem(EmbeddedDocument):
+    name = StringField()
+    values = ListField(StringField())
+
+    def __str__(self) -> str:
+        return f"{self.name} = [{', '.join(v for v in self.values)}]"
+
+    def to_json(self) -> dict[str, Any]:
+        return {"name": self.name, "values": [x for x in self.values]}
 
 
 @on_delete
@@ -66,6 +78,7 @@ class Endpoint(Document):
         is_rool: Root for p2mp/up2mp topology.
         pair: Pair number for `bunch` topology.
         used_by: List of channels which uses this entrypoint.
+        constraints: Pair constraints.
     """
 
     meta = {
@@ -80,6 +93,7 @@ class Endpoint(Document):
     is_root = BooleanField()
     pair = IntField(required=False)
     used_by = EmbeddedDocumentListField(UsageItem)
+    constraints = EmbeddedDocumentListField(ConstraintItem, required=False)
 
     def __str__(self) -> str:
         return f"{self.channel.name}:{self.resource}"

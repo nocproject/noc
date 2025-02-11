@@ -16,8 +16,12 @@ from .base import ChannelMixin, SetValue, ADM_200
 class Controller(ChannelMixin, BaseOTUProfileController):
     label = "OTU"
 
+    ADM200_MODULATION_MAP = {"QPSK": "0", "8QAM": "1", "16QAM": "2"}
+
     @ChannelMixin.setup_for(ADM_200)
-    def iter_adm200_setup(self, name: str, **kwargs: dict[str, str]) -> Iterable[SetValue]:
+    def iter_adm200_setup(
+        self, name: str, /, modulation: str | None = None, **kwargs: dict[str, str]
+    ) -> Iterable[SetValue]:
         """
         ADM-200 initialization.
 
@@ -26,6 +30,16 @@ class Controller(ChannelMixin, BaseOTUProfileController):
         """
         prefix = self.get_port_prefix(name)
         xcvr = self.get_adm200_xcvr_suffix(name)
+        # Set modulation
+        if modulation:
+            if modulation not in self.ADM200_MODULATION_MAP:
+                msg = f"Invalid client protocol: {modulation}"
+                raise ValueError(msg)
+            yield SetValue(
+                name=f"{prefix}_SetModType",
+                value=self.ADM200_MODULATION_MAP[modulation],
+                description=f"Set modulation to {modulation}",
+            )
         # Bring port up
         yield SetValue(
             name=f"{prefix}_SetState", value="2", description="Bring port up. Set state to IS."

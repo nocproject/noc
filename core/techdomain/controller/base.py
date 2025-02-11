@@ -181,7 +181,7 @@ class LambdaConstraint(Constraint):
         width: Channel width in MHz.
     """
 
-    def __init__(self: "LambdaConstraint", freq: float, width: float) -> None:
+    def __init__(self: "LambdaConstraint", freq: int, width: int) -> None:
         self._freq = freq
         self._width = width
 
@@ -196,20 +196,25 @@ class LambdaConstraint(Constraint):
         )
 
     @property
-    def min_freq(self: "LambdaConstraint") -> float:
+    def min_freq(self: "LambdaConstraint") -> int:
         """Minimal frequency in GHz."""
-        return self._freq - self._width / 2
+        return self._freq - self._width // 2
 
     @property
-    def max_freq(self: "LambdaConstraint") -> float:
+    def max_freq(self: "LambdaConstraint") -> int:
         """Maximal frequency in GHz."""
-        return self._freq + self._width / 2
+        return self._freq + self._width // 2
 
     @classmethod
     def from_discriminator(cls: "type[LambdaConstraint]", v: str) -> "LambdaConstraint":
         """Create constraint from lambda discriminator."""
         freq, width = v[8:].split("-")
-        return LambdaConstraint(int(freq) * 1_000, float(width) * 1_000.0)
+        return LambdaConstraint(int(freq) * 1_000, int(width) * 1_000)
+
+    @property
+    def discriminator(self: "LambdaConstraint") -> str:
+        """Convert to discriminator."""
+        return f"lambda::{self._freq // 1_000}-{self._width // 1_000}"
 
 
 class ConstraintSet(object):

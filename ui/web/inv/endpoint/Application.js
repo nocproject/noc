@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.endpoint application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.endpoint.Application");
@@ -81,6 +81,26 @@ Ext.define("NOC.inv.endpoint.Application", {
               text: __("Direction"),
               dataIndex: "direction",
               width: 100,
+            },
+          ],
+        },
+        {
+          name: "constraints",
+          xtype: "gridfield",
+          fieldLabel: __("Constraints"),
+          columns: [
+            {
+              text: __("Name"),
+              dataIndex: "name",
+              width: 100,
+            },
+            {
+              text: __("Values"),
+              dataIndex: "values",
+              flex: 1,
+              renderer: function(v){
+                return v.join(", ");
+              },
             },
           ],
         },

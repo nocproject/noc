@@ -9,7 +9,7 @@
 from typing import List, Optional, Dict
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.inv.models.channel import Channel
-from noc.inv.models.endpoint import Endpoint, UsageItem
+from noc.inv.models.endpoint import Endpoint, UsageItem, ConstraintItem
 from noc.core.translation import ugettext as _
 from noc.services.web.base.docinline import DocInline
 from noc.core.resource import resource_label
@@ -22,9 +22,15 @@ def get_usage(v: Optional[List[UsageItem]]) -> List[Dict[str, str]]:
     return [i.to_json() for i in v]
 
 
+def get_constraints(v: list[ConstraintItem] | None) -> list[dict[str, list[str]]]:
+    if not v:
+        return []
+    return [i.to_json() for i in v]
+
+
 class EndpointDocInline(DocInline):
     field_labels = {"resource": resource_label}
-    render_fields = {"used_by": get_usage}
+    render_fields = {"used_by": get_usage, "constraints": get_constraints}
 
 
 class ChannelApplication(ExtDocApplication):

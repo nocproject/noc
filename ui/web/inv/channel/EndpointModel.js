@@ -41,5 +41,10 @@ Ext.define("NOC.inv.channel.EndpointModel", {
       type: "auto",
       persist: false,
     },
+    {
+      name: "constraints",
+      type: "auto",
+      persist: false,
+    },
   ],
 });

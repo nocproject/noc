@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.channel application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.channel.Application");
@@ -330,6 +330,16 @@ Ext.define("NOC.inv.channel.Application", {
                     return x.channel__label + " [" + x.discriminator + "]";
                   }
                 }).join(", ");
+              },
+            },
+            {
+              text: __("Constraints"),
+              dataIndex: "constraints",
+              flex: 1,
+              renderer: function(v){
+                return v.map(function(x){
+                  return x.name + " = [" + x.values.join(", ") + "]"
+                }).join("; ");
               },
             },
           ],
