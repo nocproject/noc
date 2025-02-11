@@ -869,7 +869,11 @@ Ext.define("NOC.core.ModelApplication", {
   newRecord: function(defaults){
     var fv = {};
     this.form.getFields().each(function(field){
-      field.setValue("");
+      if(["core.tagfield", "tagfield"].indexOf(field.xtype) !== -1){
+        field.setValue([]);
+      } else{
+        field.setValue("");
+      }
       field.resetOriginalValue();
     });
     this.form.reset();
