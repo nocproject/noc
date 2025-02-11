@@ -7,7 +7,7 @@
     "field_type": "UInt64",
     "description": "Multicast packets on input interface Delta",
     "measure": null,
-    "units__code": "1",
+    "units__code": "pkt",
     "scale__code": "1",
     "is_delta": true
 }
