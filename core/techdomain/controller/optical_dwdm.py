@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # OpticalDWDMControllerclass
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.runner.models.jobreq import JobRequest
 from ..profile.channel import ProfileChannelController
-from .base import BaseController, Endpoint, PathItem
+from .base import BaseController, Endpoint, PathItem, LambdaConstraint
 
 
 class OpticalDWDMController(BaseController):
@@ -60,7 +60,9 @@ class OpticalDWDMController(BaseController):
                 return False
             return False
 
-        def iter_candidates(ep: Endpoint) -> Iterable[tuple[Endpoint, PathItem]]:
+        def iter_candidates(
+            ep: Endpoint, discriminator: str
+        ) -> Iterable[tuple[Endpoint, PathItem]]:
             for cc in ep.object.iter_cross(ep.name, [discriminator]):
                 yield Endpoint(object=ep.object, name=cc.output), PathItem(
                     object=ep.object, input=ep.name, output=cc.output
@@ -82,12 +84,14 @@ class OpticalDWDMController(BaseController):
             self.logger.info("No discriminator")
             return None
         self.logger.debug("Discriminator: %s", discriminator)
+        if discriminator.startswith("lambda::"):
+            self.constraints.extend(LambdaConstraint.from_discriminator(discriminator))
 
         queue = [start]
         prev: dict[Endpoint, PathItem] = {}
         while queue:
             ep = queue.pop(0)
-            for oep, pi in iter_candidates(ep):
+            for oep, pi in iter_candidates(ep, discriminator=discriminator):
                 if is_exit(oep):
                     self.logger.debug("Traced to %s", oep)
                     yield from trace_path(ep)

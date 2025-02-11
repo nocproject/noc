@@ -22,29 +22,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
       defaultFocus: "name",
       defaults: {
         anchor: "100%",
-        labelWidth: 100,
+        labelWidth: 200,
+        listeners: {
+          specialkey: "onSpecialKey",
+        },
       },
       items: [
-        {
-          xtype: "hiddenfield",
-          name: "channel_id",
-        },
-        {
-          xtype: "textfield",
-          name: "name",
-          fieldLabel: __("Name"),
-          allowBlank: false,
-          listeners: {
-            specialkey: "onSpecialKey",
-          },
-        },
-        {
-          xtype: "checkbox",
-          name: "dry_run",
-          inputValue: true,
-          uncheckedValue: false,
-          fieldLabel: __("Dry Run"),
-        },
       ],
       buttons: [
         {
@@ -99,12 +82,27 @@ Ext.define("NOC.inv.inv.plugins.channel.ParamsForm", {
   onCreateChannel: function(field){
     var form = field.up("form").getForm();
     if(form.isValid()){
-      var values = form.getValues();
+      var values = this.extractData(form.getValues());
       if(Ext.isEmpty(values.channel_id)){
         delete values.channel_id;
       }
+      form.reset();
       this.fireEvent("complete", values);
       field.up("window").hide();
     }
+  },
+  extractData: function(data){
+    var result = {}, params = {};
+    Ext.Object.each(data, function(key, value){
+      if(key.indexOf("params.") === 0){
+        params[key.substr(7)] = value;
+      } else{
+        result[key] = value;
+      }
+    });
+    if(!Ext.Object.isEmpty(params)){
+      result.params = params;
+    }
+    return result;
   },
 });

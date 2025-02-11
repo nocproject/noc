@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # OTNOTUController class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,13 @@ from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
-from .base import BaseController, Endpoint, PathItem
+from noc.core.runner.models.jobreq import JobRequest
+from ..profile.channel import ProfileChannelController
+from .base import BaseController, Endpoint, PathItem, ProtocolConstraint, ConstraintSet, Param
+
+
+class OTUPrococolConstraint(ProtocolConstraint):
+    pass
 
 
 class OTNOTUController(BaseController):
@@ -103,7 +109,8 @@ class OTNOTUController(BaseController):
             if not other_protocols:
                 self.logger.info("Does not support OTU: %s, stopping", end)
                 return
-            if not (protocols.intersection(other_protocols)):
+            matched_protocols = protocols.intersection(other_protocols)
+            if not matched_protocols:
                 self.logger.info(
                     "Protocols mismatch. %s supports only %s. Stopping.",
                     end,
@@ -112,6 +119,9 @@ class OTNOTUController(BaseController):
                 return
             path.append(PathItem(object=end.object, input=end.name, output=None))
             self.logger.info("Traced. Full path: %s", path)
+            # Add OTU constraints
+            for proto in matched_protocols:
+                self.constraints.extend(OTUPrococolConstraint(proto))
             yield from path
             return
         self.logger.info("%s is not transceiver and not channel entrypoint. Stopping.", ep.label)
@@ -196,8 +206,11 @@ class OTNOTUController(BaseController):
             channel = self.create_ad_hoc_channel(name=name, discriminator=discriminator)
             is_new = True
             # Create endpoints
-            DBEndpoint(channel=channel, resource=start.as_resource()).save()
-            DBEndpoint(channel=channel, resource=end.as_resource()).save()
+            dbe = []
+            for x in (start, end):
+                ep = DBEndpoint(channel=channel, resource=x.as_resource())
+                ep.save()
+                dbe.append(ep)
         elif len(dbe) == 1:
             # Hanging endpoint
             return None, "Hanging endpoint"
@@ -223,7 +236,31 @@ class OTNOTUController(BaseController):
                     eep = Endpoint(object=pi.output_object, name=pi.output)
                     ensure_usage(channel, sep)
                     ensure_usage(channel, eep)
+        # Run provisioning
+        jobs = []
+        for db_ep, ep in zip(dbe, [start, end]):
+            self.logger.info("Getting profile controller for %s", ep.object)
+            ctl = ProfileChannelController.get_controller_for_object(ep.object, self.name)
+            if not ctl:
+                self.logger.info("Controller is not supported, skipping")
+                continue
+            self.logger.info("Preparing setup")
+            job = ctl.setup(db_ep, dry_run=dry_run)
+            if job:
+                job.name = f"Set up {db_ep.resource_label}"
+                job.entity = f"ep:{db_ep.id}"
+                jobs.append(job)
+        if jobs:
+            job = JobRequest(name="Setup ODU channel", jobs=jobs, entity=f"ch:{channel.id}")
+            self.logger.info("Submitting job %s", job.id)
+            job.submit()
+        else:
+            self.logger.info("Nothing to submit. skipping.")
         # Return
         if is_new:
             return channel, "Channel created"
         return channel, "Channel updated"
+
+    @classmethod
+    def to_params(cls, constraints: ConstraintSet) -> list[Param]:
+        return []
