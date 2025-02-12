@@ -30,6 +30,18 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTUC2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "8QAM"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "16QAM"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -53,6 +65,18 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODU4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "8QAM"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "16QAM"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -515,6 +539,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -557,6 +585,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -599,6 +631,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -641,6 +677,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -683,6 +723,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -725,6 +769,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -767,6 +815,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -809,6 +861,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -851,6 +907,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -893,6 +953,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "ODUflex"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"

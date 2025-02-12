@@ -41,5 +41,10 @@ Ext.define("NOC.inv.endpoint.Model", {
       type: "auto",
       persist: false,
     },
+    {
+      name: "constraints",
+      type: "auto",
+      persist: false,
+    },
   ],
 });

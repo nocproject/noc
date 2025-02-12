@@ -12,12 +12,10 @@ from typing import Iterable
 import pytest
 
 # NOC modules
-from noc.core.techdomain.controller.base import (
-    Constraint,
-    ConstraintSet,
-    ProtocolConstraint,
-    LambdaConstraint,
-)
+from noc.core.constraint.base import BaseConstraint
+from noc.core.constraint.constraintset import ConstraintSet
+from noc.core.constraint.protocol import ProtocolConstraint
+from noc.core.constraint.wave import LambdaConstraint
 
 
 @pytest.mark.parametrize(
@@ -29,7 +27,7 @@ from noc.core.techdomain.controller.base import (
         (LambdaConstraint(1000, 10), LambdaConstraint(1000, 10), True),
     ],
 )
-def test_constraint_satisfy(left: Constraint, right: Constraint, expected: bool) -> None:
+def test_constraint_satisfy(left: BaseConstraint, right: BaseConstraint, expected: bool) -> None:
     r = left.satisfy(right)
     assert r == expected
 
@@ -48,7 +46,9 @@ def test_constraint_satisfy(left: Constraint, right: Constraint, expected: bool)
     ],
 )
 def test_constraint_set_intersect(
-    left: Iterable[Constraint], right: Iterable[Constraint], expected: Iterable[Constraint] | None
+    left: Iterable[BaseConstraint],
+    right: Iterable[BaseConstraint],
+    expected: Iterable[BaseConstraint] | None,
 ) -> None:
     x = ConstraintSet.from_iter(left)
     y = ConstraintSet.from_iter(right)
@@ -58,3 +58,10 @@ def test_constraint_set_intersect(
     else:
         assert r is not None
         assert list(r) == list(expected)
+
+
+@pytest.mark.parametrize(("x", "expected"), [("lambda::192100-50", "C21 (50 GHz)")])
+def test_humanized(x: LambdaConstraint | str, expected: str) -> None:
+    if isinstance(x, str):
+        x = LambdaConstraint.from_discriminator(x)
+    assert x.humanized == expected

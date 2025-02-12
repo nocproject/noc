@@ -1,0 +1,10 @@
+{
+    "name": "QPSK",
+    "code": "QPSK",
+    "$collection": "inv.protocols",
+    "uuid": "9cef3bf9-37f9-4e58-a616-1fea5359dcbb",
+    "description": "Quadrature Phase Shift Keying",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Signal"
+}

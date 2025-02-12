@@ -1,0 +1,10 @@
+{
+    "name": "16QAM",
+    "code": "16QAM",
+    "$collection": "inv.protocols",
+    "uuid": "a586e365-2cb9-4510-8d09-4cda2324a510",
+    "description": "Quadrature amplitude modulation, 8",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Signal"
+}

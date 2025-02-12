@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, List, Any, Optional
+from typing import Iterable, Any, Optional
 
 # NOC modules
 from noc.inv.models.object import Object
@@ -14,11 +14,25 @@ from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from noc.core.runner.models.jobreq import JobRequest
+from noc.core.constraint.protocol import ProtocolConstraint
+from noc.core.constraint.wave import LambdaConstraint
 from ..profile.channel import ProfileChannelController
-from .base import BaseController, Endpoint, PathItem, ProtocolConstraint, ConstraintSet, Param
+from .base import (
+    BaseController,
+    Endpoint,
+    PathItem,
+    ConstraintSet,
+    Param,
+    ParamType,
+    Choice,
+)
 
 
 class OTUPrococolConstraint(ProtocolConstraint):
+    pass
+
+
+class OTUModulationConstraint(ProtocolConstraint):
     pass
 
 
@@ -43,11 +57,20 @@ class OTNOTUController(BaseController):
                     yield Endpoint(object=obj, name=c.name)
                     break
 
-    def get_supported_protocols(self, ep: Endpoint) -> List[str]:
+    def get_supported_protocols(self, ep: Endpoint) -> list[str]:
         for c in ep.object.model.connections:
             if c.name != ep.name or not c.protocols:
                 continue
             return [pvi.protocol.code for pvi in c.protocols if pvi.protocol.code.startswith("OTU")]
+        return []
+
+    def get_supported_modulations(self, ep: Endpoint) -> list[str]:
+        for c in ep.object.model.connections:
+            if c.name != ep.name or not c.protocols:
+                continue
+            return [
+                pvi.protocol.code for pvi in c.protocols if pvi.protocol.technology.name == "Signal"
+            ]
         return []
 
     def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
@@ -55,6 +78,9 @@ class OTNOTUController(BaseController):
         # Get supported OTU protocols
         protocols = set(self.get_supported_protocols(start))
         self.logger.info("Supported protocols: %s", ", ".join(protocols))
+        # Get supported modulations
+        modulations = set(self.get_supported_modulations(start))
+        self.logger.info("Supported modulations: %s", ", ".join(modulations))
         # Get transceiver
         self.logger.debug("Go down")
         xcvr = self.down(start.object, start.name)
@@ -105,6 +131,7 @@ class OTNOTUController(BaseController):
                 self.logger.info("%s is not connected, stopping.", ep.label)
                 return  # Not connected
             path.append(PathItem(object=ep.object, input=ep.name, output="in"))
+            # Check protocols
             other_protocols = self.get_supported_protocols(end)
             if not other_protocols:
                 self.logger.info("Does not support OTU: %s, stopping", end)
@@ -117,11 +144,27 @@ class OTNOTUController(BaseController):
                     ", ".join(other_protocols),
                 )
                 return
+            # Check modulations
+            other_modulations = self.get_supported_modulations(end)
+            if not other_modulations:
+                self.logger.info("Does not support OTU modulations: %s, stopping", end)
+                return
+            matched_modulations = modulations.intersection(other_modulations)
+            if modulations and not matched_modulations:
+                self.logger.info(
+                    "Modulations mismatch. %s supports only %s. Stopping.",
+                    end,
+                    ", ".join(other_modulations),
+                )
+                return
             path.append(PathItem(object=end.object, input=end.name, output=None))
             self.logger.info("Traced. Full path: %s", path)
             # Add OTU constraints
             for proto in matched_protocols:
                 self.constraints.extend(OTUPrococolConstraint(proto))
+            for proto in matched_modulations:
+                self.constraints.extend(OTUModulationConstraint(proto))
+            # @todo: add lambdas from transceiver
             yield from path
             return
         self.logger.info("%s is not transceiver and not channel entrypoint. Stopping.", ep.label)
@@ -133,16 +176,20 @@ class OTNOTUController(BaseController):
         ep: Endpoint,
         channel: Channel | None = None,
         dry_run: bool = False,
+        modulation: str | None = None,
+        freq: str | None = None,
         **kwargs: Any,
     ) -> tuple[Channel | None, str]:
         """
-        Create or update ad-hoc channel.
+        Create/update OTN OTU channel.
 
         Args:
-            ep: Starting endpoint
-
-        Returns:
-            Channel instance, message
+            name: Channel name.
+            ep: Starting endpoint.
+            channel: Channel reference.
+            dry_run: Dry run mode.
+            modulation: Optical modulation.
+            freq: Frequency and width in form of lambda discriminator.
         """
 
         def ensure_usage(ch: Channel, ep: Endpoint) -> str:
@@ -185,6 +232,14 @@ class OTNOTUController(BaseController):
                 return 10 * int(s[4:])
             return int(s[3:4])
 
+        # Calculate frequency and width
+        if freq:
+            ld = LambdaConstraint.from_discriminator(freq)
+            frequency = ld.frequency
+            width = ld.width
+        else:
+            frequency = None
+            width = None
         # Trace path forward
         end = self.trace_path(ep)
         if not end:
@@ -245,17 +300,21 @@ class OTNOTUController(BaseController):
                 self.logger.info("Controller is not supported, skipping")
                 continue
             self.logger.info("Preparing setup")
-            job = ctl.setup(db_ep, dry_run=dry_run)
+            job = ctl.setup(
+                db_ep, dry_run=dry_run, modulation=modulation, frequency=frequency, width=width
+            )
             if job:
                 job.name = f"Set up {db_ep.resource_label}"
                 job.entity = f"ep:{db_ep.id}"
                 jobs.append(job)
         if jobs:
-            job = JobRequest(name="Setup ODU channel", jobs=jobs, entity=f"ch:{channel.id}")
+            job = JobRequest(name="Setup OTU channel", jobs=jobs, entity=f"ch:{channel.id}")
             self.logger.info("Submitting job %s", job.id)
             job.submit()
         else:
             self.logger.info("Nothing to submit. skipping.")
+        # Update channels
+        channel.update_params(modulation=modulation, freq=freq)
         # Return
         if is_new:
             return channel, "Channel created"
@@ -263,4 +322,31 @@ class OTNOTUController(BaseController):
 
     @classmethod
     def to_params(cls, constraints: ConstraintSet) -> list[Param]:
-        return []
+        r: list[Param] = []
+        # Lambda
+        lambdas = constraints.get(LambdaConstraint)
+        if lambdas:
+            r.append(
+                Param(
+                    name="freq",
+                    type=ParamType.STRING,
+                    label="Frequency",
+                    value=None,
+                    choices=[Choice(id=lc.discriminator, label=lc.humanized) for lc in lambdas],
+                )
+            )
+        # Modulation
+        modulations = constraints.get(OTUModulationConstraint)
+        if modulations:
+            r.append(
+                Param(
+                    name="modulation",
+                    type=ParamType.STRING,
+                    label="Modulation",
+                    value=None,
+                    choices=[
+                        Choice(id=proto.protocol, label=proto.protocol) for proto in modulations
+                    ],
+                )
+            )
+        return r

@@ -13,10 +13,11 @@ from itertools import count
 from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
-from noc.inv.models.endpoint import Endpoint as DBEndpoint
+from noc.inv.models.endpoint import Endpoint as DBEndpoint, ConstraintItem
 from noc.core.runner.models.jobreq import JobRequest
+from noc.core.constraint.wave import LambdaConstraint
 from ..profile.channel import ProfileChannelController
-from .base import BaseController, Endpoint, PathItem, LambdaConstraint
+from .base import BaseController, Endpoint, PathItem
 
 
 class OpticalDWDMController(BaseController):
@@ -86,7 +87,6 @@ class OpticalDWDMController(BaseController):
         self.logger.debug("Discriminator: %s", discriminator)
         if discriminator.startswith("lambda::"):
             self.constraints.extend(LambdaConstraint.from_discriminator(discriminator))
-
         queue = [start]
         prev: dict[Endpoint, PathItem] = {}
         while queue:
@@ -168,6 +168,7 @@ class OpticalDWDMController(BaseController):
         # Trace paths
         pairs = []
         resources = set()
+        constraints = {}
         for sep in self.iter_endpoints(obj):
             eep = self.trace_path(sep)
             if not eep:
@@ -175,6 +176,13 @@ class OpticalDWDMController(BaseController):
             pairs.append((sep, eep))
             resources.add(sep.as_resource())
             resources.add(eep.as_resource())
+            # Add costraints
+            lambdas = self.constraints.get(LambdaConstraint)
+            if lambdas:
+                constraints[sep.as_resource()] = [
+                    ConstraintItem(name="lambda", values=[lc.discriminator for lc in lambdas])
+                ]
+        print(constraints)
         # Find existing endpoints
         current_endpoints = {
             e.resource: e for e in DBEndpoint.objects.filter(resource__in=list(resources))
@@ -203,24 +211,36 @@ class OpticalDWDMController(BaseController):
         pair_count = count(1)
         jobs = []
         for sep, eep in pairs:
+            # Get pair costraints
+            pair_constraints = constraints.get(sep.as_resource()) or []
+            # Sync start
             start = current_endpoints.get(sep.as_resource())
-            if not start:
+            if start:
+                start.constraints = pair_constraints
+                start.save()
+            else:
                 # Create start endpoint
                 start = DBEndpoint(
                     channel=channel,
                     resource=sep.as_resource(),
                     is_root=self.is_unidirectional,
                     pair=next_free_pair() if self.use_pairs else None,
+                    constraints=pair_constraints,
                 )
                 start.save()
             jobs.append(get_job(sep, start, destination=f"To {eep.label}"))
+            # Sync end
             end = current_endpoints.get(eep.as_resource())
-            if not end:
+            if end:
+                end.constraints = pair_constraints
+                end.save()
+            else:
                 end = DBEndpoint(
                     channel=channel,
                     resource=eep.as_resource(),
                     is_root=False,
                     pair=start.pair if self.use_pairs else None,
+                    constraints=pair_constraints,
                 )
                 end.save()
             jobs.append(get_job(eep, end, destination=f"From {sep.label}"))

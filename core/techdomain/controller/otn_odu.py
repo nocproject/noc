@@ -14,11 +14,11 @@ from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from noc.core.runner.models.jobreq import JobRequest
+from noc.core.constraint.protocol import ProtocolConstraint
 from .base import (
     BaseController,
     Endpoint,
     PathItem,
-    ProtocolConstraint,
     ConstraintSet,
     Param,
     ParamType,
@@ -83,6 +83,7 @@ class OTNODUController(BaseController):
                     pvi.protocol.code
                     for pvi in c.protocols
                     if not pvi.protocol.code.startswith("ODU")
+                    and pvi.protocol.technology.name != "Signal"
                 ]
             return []
 
