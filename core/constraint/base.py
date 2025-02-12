@@ -18,12 +18,12 @@ class BaseConstraint(object):
     Subclasses must implement `__eq__` and `__str__ methods.
     """
 
-    def __repr__(self: "Constraint") -> str:
+    def __repr__(self: "BaseConstraint") -> str:
         tn = self.__class__.__name__
         return f"<{tn} {str(self)}>"
 
-    def __eq__(self: "Constraint", value: object) -> bool: ...
-    def satisfy(self: "Constraint", item: "Constraint") -> bool:
+    def __eq__(self: "BaseConstraint", value: object) -> bool: ...
+    def satisfy(self: "BaseConstraint", item: "BaseConstraint") -> bool:
         """
         Check if constraint satisfies condition.
 
