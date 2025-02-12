@@ -132,8 +132,8 @@ Ext.define("NOC.main.desktop.LoginView", {
   onLoginSuccess: function(failureFunc, response){
     var result = Ext.decode(response.responseText);
     if(result.status === true){
+      this.close();
       if("must_change" in result && result.must_change === true){
-        this.close();
         Ext.create("NOC.main.desktop.ChangePassword", {
           listeners: {
             scope: this,

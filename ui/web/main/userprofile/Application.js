@@ -11,114 +11,78 @@ Ext.define("NOC.main.userprofile.Application", {
   requires: [
     "NOC.core.ComboBox",
     "NOC.main.timepattern.LookupField",
+    "NOC.main.userprofile.UserProfileContacts",
     "NOC.main.ref.unotificationmethod.LookupField",
     "NOC.main.ref.ulanguage.LookupField",
-    "Ext.ux.form.GridField",
   ],
   layout: "fit",
-  //
-  initComponent: function(){
-    // Contacts grid
-    this.contactsGrid = Ext.create({
-      xtype: "gridfield",
-      name: "contacts",
-      columns: [
+  items: [
+    {
+      xtype: "form",
+      defaults: {
+        padding: "0 0 0 4px",
+        xtype: "displayfield",
+      },
+      items: [
         {
-          text: __("Time Pattern"),
-          dataIndex: "time_pattern",
-          width: 150,
-          renderer: NOC.render.Lookup("time_pattern"),
-          editor: "main.timepattern.LookupField",
+          fieldLabel: __("Login"),
+          name: "username",
         },
         {
-          text: __("Method"),
-          dataIndex: "notification_method",
-          width: 120,
-          editor: "main.ref.unotificationmethod.LookupField",
+          fieldLabel: __("Groups"),
+          name: "groups",
         },
         {
-          text: __("Params"),
-          dataIndex: "params",
-          flex: 1,
-          editor: "textfield",
+          fieldLabel: __("Name"),
+          name: "name",
+        },
+        {
+          fieldLabel: __("Mail"),
+          name: "email",
+        },
+        {
+          xtype: "core.combo",
+          restUrl: "/main/ref/ulanguage/lookup/",
+          fieldLabel: __("Language"),
+          allowBlank: false,
+          typeAhead: false,
+          editable: false,
+          uiStyle: "medium-combo",
+          name: "preferred_language",
+        },
+        {
+          xtype: "fieldset",
+          title: __("Notification Contacts"),
+          defaults: {
+            padding: 4,
+          },
+          border: false,
+          items: [
+            {
+              xtype: "userprofile.contacts",
+              name: "contacts",
+            },
+          ],
         },
       ],
-      getValue: function(){
-        var records = [];
-        this.store.each(function(r){
-          var d = {};
-          Ext.each(this.fields, function(f){
-            // ToDo change Ext.ux.form.GridField
-            var field_name = f.name || f;
-            d[field_name] = r.get(field_name);
-          });
-          records.push(d);
-        });
-        return records;
-      },
-    });
-    this.items = [
-      {
-        xtype: "form",
-        defaults: {
-          padding: "0 0 0 4px",
-          xtype: "displayfield",
-        },
-        items: [
-          {
-            fieldLabel: __("Login"),
-            name: "username",
-          },
-          {
-            fieldLabel: __("Groups"),
-            name: "groups",
-          },
-          {
-            fieldLabel: __("Name"),
-            name: "name",
-          },
-          {
-            fieldLabel: __("Mail"),
-            name: "email",
-          },
-          {
-            xtype: "core.combo",
-            restUrl: "/main/ref/ulanguage/lookup/",
-            fieldLabel: __("Language"),
-            allowBlank: false,
-            typeAhead: false,
-            editable: false,
-            uiStyle: "medium-combo",
-            name: "preferred_language",
-          },
-          {
-            xtype: "fieldset",
-            title: __("Notification Contacts"),
-            defaults: {
-              padding: 4,
+      dockedItems: [
+        {
+          xtype: "toolbar",
+          dock: "top",
+          items: [
+            {
+              glyph: NOC.glyph.save,
+              text: __("Save"),
+              scope: this,
+              handler: this.onSave,
             },
-            border: false,
-            items: [
-              this.contactsGrid,
-            ],
-          },
-        ],
-        dockedItems: [
-          {
-            xtype: "toolbar",
-            dock: "top",
-            items: [
-              {
-                glyph: NOC.glyph.save,
-                text: __("Save"),
-                scope: this,
-                handler: this.onSave,
-              },
-            ],
-          },
-        ],
-      },
-    ];
+          ],
+        },
+      ],
+    },
+  ],
+  //
+  initComponent: function(){
     this.callParent();
     this.loadData();
     this.setHistoryHash();
@@ -143,11 +107,11 @@ Ext.define("NOC.main.userprofile.Application", {
   },
   //
   onSave: function(){
-    var
-      languageField = this.down("form field[name=preferred_language]"),
+    var languageField = this.down("form field[name=preferred_language]"),
+      contactsField = this.down("fieldset [name=contacts]"),
       data = {
         preferred_language: languageField.getValue(),
-        contacts: this.contactsGrid.getValue(),
+        contacts: contactsField.getValue(),
       };
     Ext.Ajax.request({
       url: "/main/userprofile/",
