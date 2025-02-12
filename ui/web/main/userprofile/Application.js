@@ -9,6 +9,7 @@ console.debug("Defining NOC.main.userprofile.Application");
 Ext.define("NOC.main.userprofile.Application", {
   extend: "NOC.core.Application",
   requires: [
+    "NOC.core.ComboBox",
     "NOC.main.timepattern.LookupField",
     "NOC.main.ref.unotificationmethod.LookupField",
     "NOC.main.ref.ulanguage.LookupField",
@@ -17,25 +18,10 @@ Ext.define("NOC.main.userprofile.Application", {
   layout: "fit",
   //
   initComponent: function(){
-    this.usernameField = Ext.create("Ext.form.field.Display", {
-      fieldLabel: __("Login"),
-    });
-    this.nameField = Ext.create("Ext.form.field.Display", {
-      fieldLabel: __("Name"),
-    });
-    this.emailField = Ext.create("Ext.form.field.Display", {
-      fieldLabel: __("Mail"),
-    });
-    this.languageField = Ext.create("NOC.main.ref.ulanguage.LookupField", {
-      fieldLabel: __("Language"),
-      allowBlank: false,
-    });
-    this.groupsField = Ext.create("Ext.form.field.Display", {
-      fieldLabel: __("Groups"),
-    });
     // Contacts grid
     this.contactsGrid = Ext.create({
       xtype: "gridfield",
+      name: "contacts",
       columns: [
         {
           text: __("Time Pattern"),
@@ -77,13 +63,33 @@ Ext.define("NOC.main.userprofile.Application", {
           xtype: "form",
           defaults: {
             padding: "0 0 0 4px",
+            xtype: "displayfield",
           },
           items: [
-            this.usernameField,
-            this.groupsField,
-            this.nameField,
-            this.emailField,
-            this.languageField,
+            {
+              fieldLabel: __("Login"),
+              name: "username",
+            },
+            {
+              fieldLabel: __("Groups"),
+              name: "groups",
+            },
+            {
+              fieldLabel: __("Name"),
+              name: "name",
+            },
+            {
+              fieldLabel: __("Mail"),
+              name: "email",
+            },
+            {
+              xtype: "core.combo",
+              restUrl: "/main/ref/ulanguage/lookup/",
+              fieldLabel: __("Language"),
+              allowBlank: false,
+              uiStyle: "medium-combo",
+              name: "preferred_language",
+            },
             {
               xtype: "fieldset",
               title: __("Notification Contacts"),
@@ -124,7 +130,11 @@ Ext.define("NOC.main.userprofile.Application", {
       method: "GET",
       scope: this,
       success: function(response){
-        this.setData(Ext.decode(response.responseText));
+        var data = Ext.decode(response.responseText);
+        data.group = (data.groups || []).join(", ");
+        this.down("form").getForm().setValues(data);
+        // save for later restart if language changed
+        this.preferred_language = data.preferred_language;
       },
       failure: function(){
         NOC.msg.failed(__("Failed to load data"))
@@ -132,21 +142,13 @@ Ext.define("NOC.main.userprofile.Application", {
     });
   },
   //
-  setData: function(data){
-    this.profileData = data;
-    this.usernameField.setValue(data.username);
-    this.nameField.setValue(data.name);
-    this.emailField.setValue(data.email);
-    this.languageField.setValue(data.preferred_language);
-    this.groupsField.setRawValue((data.groups || []).join(", "));
-    this.contactsGrid.setValue(data.contacts || []);
-  },
-  //
   onSave: function(){
-    var data = {
-      preferred_language: this.languageField.getValue(),
-      contacts: this.contactsGrid.getValue(),
-    };
+    var
+      languageField = this.down("form field[name=preferred_language]"),
+      data = {
+        preferred_language: languageField.getValue(),
+        contacts: this.contactsGrid.getValue(),
+      };
     Ext.Ajax.request({
       url: "/main/userprofile/",
       method: "POST",
@@ -154,12 +156,13 @@ Ext.define("NOC.main.userprofile.Application", {
       jsonData: data,
       success: function(){
         NOC.msg.complete(__("Profile saved"));
-        if(this.profileData.preferred_language !== data.preferred_language){
+        if(this.preferred_language !== data.preferred_language){
           NOC.app.app.restartApplication(__("Changing language"));
         }
       },
-      failure: function(){
-        NOC.msg.failed(__("Failed to save"))
+      failure: function(response){
+        var message = Ext.decode(response.responseText);
+        NOC.msg.failed(message.errors || __("Failed to save"));
       },
     });
   },
