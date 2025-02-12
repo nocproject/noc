@@ -57,68 +57,68 @@ Ext.define("NOC.main.userprofile.Application", {
         return records;
       },
     });
-    Ext.apply(this, {
-      items: [
-        {
-          xtype: "form",
-          defaults: {
-            padding: "0 0 0 4px",
-            xtype: "displayfield",
-          },
-          items: [
-            {
-              fieldLabel: __("Login"),
-              name: "username",
-            },
-            {
-              fieldLabel: __("Groups"),
-              name: "groups",
-            },
-            {
-              fieldLabel: __("Name"),
-              name: "name",
-            },
-            {
-              fieldLabel: __("Mail"),
-              name: "email",
-            },
-            {
-              xtype: "core.combo",
-              restUrl: "/main/ref/ulanguage/lookup/",
-              fieldLabel: __("Language"),
-              allowBlank: false,
-              uiStyle: "medium-combo",
-              name: "preferred_language",
-            },
-            {
-              xtype: "fieldset",
-              title: __("Notification Contacts"),
-              defaults: {
-                padding: 4,
-              },
-              border: false,
-              items: [
-                this.contactsGrid,
-              ],
-            },
-          ],
-          dockedItems: [
-            {
-              xtype: "toolbar",
-              dock: "top",
-              items: [
-                {
-                  glyph: NOC.glyph.save,
-                  text: __("Save"),
-                  scope: this,
-                  handler: this.onSave,
-                },
-              ],
-            },
-          ],
+    this.items = [
+      {
+        xtype: "form",
+        defaults: {
+          padding: "0 0 0 4px",
+          xtype: "displayfield",
         },
-      ],
-    });
+        items: [
+          {
+            fieldLabel: __("Login"),
+            name: "username",
+          },
+          {
+            fieldLabel: __("Groups"),
+            name: "groups",
+          },
+          {
+            fieldLabel: __("Name"),
+            name: "name",
+          },
+          {
+            fieldLabel: __("Mail"),
+            name: "email",
+          },
+          {
+            xtype: "core.combo",
+            restUrl: "/main/ref/ulanguage/lookup/",
+            fieldLabel: __("Language"),
+            allowBlank: false,
+            typeAhead: false,
+            editable: false,
+            uiStyle: "medium-combo",
+            name: "preferred_language",
+          },
+          {
+            xtype: "fieldset",
+            title: __("Notification Contacts"),
+            defaults: {
+              padding: 4,
+            },
+            border: false,
+            items: [
+              this.contactsGrid,
+            ],
+          },
+        ],
+        dockedItems: [
+          {
+            xtype: "toolbar",
+            dock: "top",
+            items: [
+              {
+                glyph: NOC.glyph.save,
+                text: __("Save"),
+                scope: this,
+                handler: this.onSave,
+              },
+            ],
+          },
+        ],
+      },
+    ];
     this.callParent();
     this.loadData();
     this.setHistoryHash();
