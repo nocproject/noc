@@ -10,7 +10,6 @@ from typing import Iterable, Any
 from dataclasses import dataclass
 import logging
 from enum import Enum
-from collections import defaultdict
 
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModelConnection
@@ -21,6 +20,8 @@ from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.resource import from_resource
+from noc.core.constraint.constraintset import ConstraintSet
+from noc.core.constraint.wave import LambdaConstraint
 
 
 @dataclass
@@ -95,211 +96,6 @@ class Param(object):
         if self.choices:
             r["choices"] = [c.to_json() for c in self.choices]
         return r
-
-
-class Constraint(object):
-    """
-    Channel costraint.
-
-    Represents a single restriction on channel.
-
-    Subclasses must implement `__eq__` and `__str__ methods.
-    """
-
-    def __repr__(self: "Constraint") -> str:
-        tn = self.__class__.__name__
-        return f"<{tn} {str(self)}>"
-
-    def __eq__(self: "Constraint", value: object) -> bool: ...
-    def satisfy(self: "Constraint", item: "Constraint") -> bool:
-        """
-        Check if constraint satisfies condition.
-
-        Args:
-            item: Constraint condition.
-
-        Returns:
-            True: if constraint satisfies condition.
-            False: Otherwise.
-        """
-        if type(self) != type(item):
-            msg = f"Cannot satisfy {type(self)} over {type(item)}"
-            raise ValueError(msg)
-        return self == item
-
-    @classmethod
-    def iter_optimize(
-        cls: "type[Constraint]", iter: "Iterable[Constraint]"
-    ) -> "Iterable[Constraint]":
-        """
-        Optimize sequence of constraint.
-
-        Merge adjanced when necessary.
-
-        Args:
-            iter: Iterable of constraints.
-
-        Returns:
-            Iterable of optimized constraints.
-        """
-        yield from iter
-
-
-class ProtocolConstraint(Constraint):
-    """
-    Protocol restrictions.
-
-    Represents single protocol.
-
-    Args:
-        proto: Protocol name.
-    """
-
-    def __init__(self: "ProtocolConstraint", proto: str) -> None:
-        super().__init__()
-        self._proto = proto
-
-    def __str__(self: "ProtocolConstraint") -> str:
-        return self._proto
-
-    def __eq__(self, value: object) -> bool:
-        return isinstance(value, ProtocolConstraint) and self._proto == value._proto
-
-    @property
-    def protocol(self: "ProtocolConstraint") -> str:
-        return self._proto
-
-
-class LambdaConstraint(Constraint):
-    """
-    Optical lambda.
-
-    Represented by central frequency and width.
-
-    Args:
-        freq: Central frequency in MHz.
-        width: Channel width in MHz.
-    """
-
-    def __init__(self: "LambdaConstraint", freq: int, width: int) -> None:
-        self._freq = freq
-        self._width = width
-
-    def __str__(self: "LambdaConstraint") -> str:
-        return f"{self._freq}-{self._width}"
-
-    def __eq__(self, value: object) -> bool:
-        return (
-            isinstance(value, LambdaConstraint)
-            and self._freq == value._freq
-            and self._width == value._width
-        )
-
-    @property
-    def min_freq(self: "LambdaConstraint") -> int:
-        """Minimal frequency in GHz."""
-        return self._freq - self._width // 2
-
-    @property
-    def max_freq(self: "LambdaConstraint") -> int:
-        """Maximal frequency in GHz."""
-        return self._freq + self._width // 2
-
-    @classmethod
-    def from_discriminator(cls: "type[LambdaConstraint]", v: str) -> "LambdaConstraint":
-        """Create constraint from lambda discriminator."""
-        freq, width = v[8:].split("-")
-        return LambdaConstraint(int(freq) * 1_000, int(width) * 1_000)
-
-    @property
-    def discriminator(self: "LambdaConstraint") -> str:
-        """Convert to discriminator."""
-        return f"lambda::{self._freq // 1_000}-{self._width // 1_000}"
-
-
-class ConstraintSet(object):
-    """
-    Set of restrictions.
-    """
-
-    def __init__(self: "ConstraintSet") -> None:
-        self._data: defaultdict[type[Constraint], list[Constraint]] = defaultdict(list)
-
-    def get(self: "ConstraintSet", item: type[Constraint]) -> list[Constraint] | None:
-        """
-        Get item.
-
-        Args:
-            item: Type of constraint.
-
-        Returns:
-            List of constraints: If found.
-            None: otherwise.
-        """
-        return self._data.get(item)
-
-    @classmethod
-    def from_iter(cls: "type[ConstraintSet]", iter: Iterable[Constraint]) -> "ConstraintSet":
-        r = cls()
-        for item in iter:
-            r.extend(item)
-        return r
-
-    def __iter__(self: "ConstraintSet") -> Iterable[Constraint]:
-        for items in self._data.values():
-            yield from items
-
-    def extend(self: "ConstraintSet", item: Constraint) -> None:
-        """
-        Add new possibility.
-
-        Loosen current restrictions if any, or add it if empty.
-
-        Args:
-            item: Additional restriction item.
-        """
-        self._data[type(item)].append(item)
-
-    def intersect(self: "ConstraintSet", other: "ConstraintSet") -> "ConstraintSet | None":
-        """
-        Intersect restrictions.
-
-        Args:
-            other: Restrictions to intersect.
-
-        Returns:
-            Resulting restrictions set, if possibile. `None` otherwise.
-        """
-
-        def iter_intersect(left: list[Constraint], right: list[Constraint]) -> Iterable[Constraint]:
-            for l_item in left:
-                for r_item in right:
-                    if l_item.satisfy(r_item):
-                        yield l_item
-                        break
-
-        if self.is_empty():
-            return other
-        if other.is_empty():
-            return self
-        r = ConstraintSet()
-        for key, left in self._data.items():
-            right = other._data[key]
-            if right:
-                items = list(key.iter_optimize(iter_intersect(left, right)))
-                if items:
-                    r._data[key] = items
-            else:
-                r._data[key] = left
-        # Copy new from other
-        for key in set(other._data) - set(self._data):
-            r._data[key] = other._data[key]
-        if r._data:
-            return r
-        return None
-
-    def is_empty(self: "ConstraintSet") -> bool:
-        return not self._data
 
 
 @dataclass
@@ -591,6 +387,10 @@ class BaseController(object):
         e = DBEndpoint.objects.filter(resource=ep.as_resource()).first()
         if not e:
             return None
+        # Check restrictions
+        if not self.can_pass_endpoint(e):
+            self.logger.info("Cannot pass through endpoint %s. Skipping", e)
+            return False
         ch = e.channel
         if ch.topology == ChannelTopology.P2P.value:
             endpoints = list(DBEndpoint.objects.filter(channel=ch.id))
@@ -610,6 +410,37 @@ class BaseController(object):
             return Endpoint(object=o, name=n, channel=ch)
         msg = f"Topology {ch.topology} is not supported"
         raise NotImplementedError(msg)
+
+    def can_pass_endpoint(self, ep: DBEndpoint) -> bool:
+        """
+        Check if channel endpoint is passable.
+
+        Apply new restrictions to constraints.
+
+        Args:
+            ep: Endpoint
+
+        Returns:
+            True: if endpoint is passable.
+            False: otherwise.
+        """
+        if not ep.constraints:
+            return True  # Unrestricted
+        new_constraints = ConstraintSet()
+        for ci in ep.constraints:
+            match ci.name:
+                case "lambda":
+                    for discriminator in ci.values:
+                        new_constraints.extend(LambdaConstraint.from_discriminator(discriminator))
+                case _:
+                    pass
+        if new_constraints.is_empty():
+            return True  # No additional constraints
+        r = self.constraints.intersect(new_constraints)
+        if r is None:
+            return False
+        self.constraints = r
+        return True
 
     @classmethod
     def update_name(cls, channel: Channel, name: str) -> None:

@@ -14,12 +14,13 @@ from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, UsageItem
 from noc.core.runner.models.jobreq import JobRequest
+from noc.core.constraint.protocol import ProtocolConstraint
+from noc.core.constraint.wave import LambdaConstraint
 from ..profile.channel import ProfileChannelController
 from .base import (
     BaseController,
     Endpoint,
     PathItem,
-    ProtocolConstraint,
     ConstraintSet,
     Param,
     ParamType,
@@ -163,6 +164,7 @@ class OTNOTUController(BaseController):
                 self.constraints.extend(OTUPrococolConstraint(proto))
             for proto in matched_modulations:
                 self.constraints.extend(OTUModulationConstraint(proto))
+            # @todo: add lambdas from transceiver
             yield from path
             return
         self.logger.info("%s is not transceiver and not channel entrypoint. Stopping.", ep.label)
@@ -175,6 +177,7 @@ class OTNOTUController(BaseController):
         channel: Channel | None = None,
         dry_run: bool = False,
         modulation: str | None = None,
+        freq: str | None = None,
         **kwargs: Any,
     ) -> tuple[Channel | None, str]:
         """
@@ -186,6 +189,7 @@ class OTNOTUController(BaseController):
             channel: Channel reference.
             dry_run: Dry run mode.
             modulation: Optical modulation.
+            freq: Frequency and width in form of lambda discriminator.
         """
 
         def ensure_usage(ch: Channel, ep: Endpoint) -> str:
@@ -228,6 +232,14 @@ class OTNOTUController(BaseController):
                 return 10 * int(s[4:])
             return int(s[3:4])
 
+        # Calculate frequency and width
+        if freq:
+            ld = LambdaConstraint.from_discriminator(freq)
+            frequency = ld.frequency
+            width = ld.width
+        else:
+            frequency = None
+            width = None
         # Trace path forward
         end = self.trace_path(ep)
         if not end:
@@ -288,19 +300,21 @@ class OTNOTUController(BaseController):
                 self.logger.info("Controller is not supported, skipping")
                 continue
             self.logger.info("Preparing setup")
-            job = ctl.setup(db_ep, dry_run=dry_run, modulation=modulation)
+            job = ctl.setup(
+                db_ep, dry_run=dry_run, modulation=modulation, frequency=frequency, width=width
+            )
             if job:
                 job.name = f"Set up {db_ep.resource_label}"
                 job.entity = f"ep:{db_ep.id}"
                 jobs.append(job)
         if jobs:
-            job = JobRequest(name="Setup ODU channel", jobs=jobs, entity=f"ch:{channel.id}")
+            job = JobRequest(name="Setup OTU channel", jobs=jobs, entity=f"ch:{channel.id}")
             self.logger.info("Submitting job %s", job.id)
             job.submit()
         else:
             self.logger.info("Nothing to submit. skipping.")
         # Update channels
-        channel.update_params(modulation=modulation)
+        channel.update_params(modulation=modulation, freq=freq)
         # Return
         if is_new:
             return channel, "Channel created"
@@ -308,7 +322,20 @@ class OTNOTUController(BaseController):
 
     @classmethod
     def to_params(cls, constraints: ConstraintSet) -> list[Param]:
-        r = []
+        r: list[Param] = []
+        # Lambda
+        lambdas = constraints.get(LambdaConstraint)
+        if lambdas:
+            r.append(
+                Param(
+                    name="freq",
+                    type=ParamType.STRING,
+                    label="Frequency",
+                    value=None,
+                    choices=[Choice(id=lc.discriminator, label=lc.humanized) for lc in lambdas],
+                )
+            )
+        # Modulation
         modulations = constraints.get(OTUModulationConstraint)
         if modulations:
             r.append(

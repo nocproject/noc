@@ -15,8 +15,9 @@ from noc.core.channel.types import ChannelKind, ChannelTopology
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint, ConstraintItem
 from noc.core.runner.models.jobreq import JobRequest
+from noc.core.constraint.wave import LambdaConstraint
 from ..profile.channel import ProfileChannelController
-from .base import BaseController, Endpoint, PathItem, LambdaConstraint
+from .base import BaseController, Endpoint, PathItem
 
 
 class OpticalDWDMController(BaseController):

@@ -20,7 +20,13 @@ class Controller(ChannelMixin, BaseOTUProfileController):
 
     @ChannelMixin.setup_for(ADM_200)
     def iter_adm200_setup(
-        self, name: str, /, modulation: str | None = None, **kwargs: dict[str, str]
+        self,
+        name: str,
+        /,
+        modulation: str | None = None,
+        frequency: int | None = None,
+        width: int | None = None,
+        **kwargs: dict[str, str],
     ) -> Iterable[SetValue]:
         """
         ADM-200 initialization.
@@ -44,6 +50,20 @@ class Controller(ChannelMixin, BaseOTUProfileController):
         yield SetValue(
             name=f"{prefix}_SetState", value="2", description="Bring port up. Set state to IS."
         )
+        # Set frequency
+        if frequency:
+            yield SetValue(
+                name=f"{prefix}_{xcvr}_SetTxFreq",
+                value=str(frequency),
+                description=f"Set frequency to {frequency} MHz",
+            )
+        # Set width
+        if width:
+            yield SetValue(
+                name=f"{prefix}_{xcvr}_SetTxFreqSp",
+                value=str(width),
+                description=f"Set width to {width} MHz",
+            )
         # Enable laser
         yield SetValue(name=f"{prefix}_{xcvr}_EnableTx", value="1", description="Enable laser.")
 
