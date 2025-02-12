@@ -41,8 +41,8 @@ class BaseConstraint(object):
 
     @classmethod
     def iter_optimize(
-        cls: "type[Constraint]", iter: "Iterable[Constraint]"
-    ) -> "Iterable[Constraint]":
+        cls: "type[BaseConstraint]", iter: "Iterable[BaseConstraint]"
+    ) -> "Iterable[BaseConstraint]":
         """
         Optimize sequence of constraint.
 
