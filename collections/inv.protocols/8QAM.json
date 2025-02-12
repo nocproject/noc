@@ -1,0 +1,10 @@
+{
+    "name": "8QAM",
+    "code": "8QAM",
+    "$collection": "inv.protocols",
+    "uuid": "e968de75-b65e-403e-af0f-f7ded2adc1d8",
+    "description": "Quadrature amplitude modulation, 8",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Signal"
+}
