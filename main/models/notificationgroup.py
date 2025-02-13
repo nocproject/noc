@@ -632,9 +632,7 @@ class NotificationGroupUserSubscription(NOCModel):
         TimePattern, verbose_name="Time Pattern", on_delete=CASCADE, null=True, blank=True
     )
     user: User = ForeignKey(User, verbose_name="User", on_delete=CASCADE)
-    method = CharField(
-        "Method", max_length=16, choices=USER_NOTIFICATION_METHOD_CHOICES
-    )
+    method = CharField("Method", max_length=16, choices=USER_NOTIFICATION_METHOD_CHOICES)
     policy = CharField(
         max_length=1,
         choices=[
