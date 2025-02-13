@@ -58,10 +58,10 @@ class UserProfileApplication(ExtApplication):
                 ss["time_pattern__label"] = uc.time_pattern.name
             ss.update(
                 {
-                    "user_policy": "A",
+                    "user_policy": uc.policy,
                     "supress": uc.suppress,
                     "expired_at": uc.expired_at,
-                    "title_tag": "",
+                    "title_tag": uc.title_tag,
                 }
             )
             subscription_settings.append(ss)

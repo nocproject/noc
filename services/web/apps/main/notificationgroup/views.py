@@ -72,7 +72,7 @@ class NotificationGroupApplication(ExtModelApplication):
         group_id,
         user_policy: Optional[str] = None,
         time_pattern: Optional[TimePattern] = None,
-        expired_at: Optional[datetime.datetime] = None,
+        expired_at: Optional[str] = None,
         title_tag: Optional[str] = None,
         preferred_method: Optional[str] = None,
     ):
@@ -81,12 +81,20 @@ class NotificationGroupApplication(ExtModelApplication):
         if not user:
             return self.response_not_found()
         us = o.get_subscription_by_user(user)
+        if expired_at:
+            expired_at = datetime.datetime.fromisoformat(expired_at)
         if not us:
             us = o.subscribe(user, expired_at=expired_at)
         if us.time_pattern != time_pattern:
             us.time_pattern = time_pattern
         if us.expired_at != expired_at:
             us.expired_at = expired_at
+        if us.policy != user_policy:
+            us.policy = user_policy
+        if us.title_tag != title_tag:
+            us.title_tag = title_tag
+        if us.method != preferred_method:
+            us.method = preferred_method
         us.save()
         return {"success": True}
 
