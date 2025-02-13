@@ -63,6 +63,9 @@ class ServiceApplication(ExtDocApplication):
     def field_label(self, o):
         return o.label
 
+    def field_instance_count(self, o):
+        return ServiceInstance.objects.filter(service=o).count()
+
     def bulk_field_instances(self, data):
         """
         Apply interface_count fields
