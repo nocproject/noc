@@ -275,7 +275,7 @@ class NotificationGroup(NOCModel):
         return NotificationGroupUserSubscription.objects.filter(
             notification_group=self,
             user=user,
-            watch="",
+            watch=None,
         ).first()
 
     @property
@@ -623,7 +623,7 @@ class NotificationGroupUserSubscription(NOCModel):
         verbose_name_plural = "Notification Group Users"
         app_label = "main"
         db_table = "main_notificationgroupusersubscription"
-        unique_together = [("notification_group", "user", "watch")]
+        unique_together = [("notification_group_id", "user_id", "watch")]
 
     notification_group: NotificationGroup = ForeignKey(
         NotificationGroup, verbose_name="Notification Group", on_delete=CASCADE
