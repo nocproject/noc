@@ -44,7 +44,7 @@ class UserProfileApplication(ExtApplication):
                 "user_policy": "A",
                 "time_pattern": None,
                 "supress": False,
-                "preferred_method": "",
+                "preferred_method": None,
                 "expired_at": None,
                 "title_tag": None,
                 "message_types": [t["message_type"] for t in g.message_types],
@@ -54,8 +54,12 @@ class UserProfileApplication(ExtApplication):
                 subscription_settings.append(ss)
                 continue
             if uc.time_pattern:
-                ss["time_pattern"] = uc.time_pattern.id
-                ss["time_pattern__label"] = uc.time_pattern.name
+                ss |= {
+                    "time_pattern": uc.time_pattern.id,
+                    "time_pattern__label": uc.time_pattern.name,
+                }
+            if uc.method:
+                ss |= {"preferred_method": uc.method, "preferred_method__label": uc.method}
             ss.update(
                 {
                     "user_policy": uc.policy,

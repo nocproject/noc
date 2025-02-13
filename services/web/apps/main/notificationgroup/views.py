@@ -11,9 +11,10 @@ from typing import Optional
 
 # NOC modules
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
+from noc.core.mx import NOTIFICATION_METHODS
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
-from noc.main.models.notificationgroup import NotificationGroup, NOTIFICATION_METHOD_CHOICES
+from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -54,13 +55,11 @@ class NotificationGroupApplication(ExtModelApplication):
     @view(
         url=r"^(?P<group_id>\d+)/change_user_subscription/$",
         validate={
-            "user_policy": StringParameter(choices=["D", "W", "A"]),
+            "user_policy": StringParameter(choices=["D", "W", "F", "A"]),
             "time_pattern": ModelParameter(TimePattern, required=False),
             "expired_at": DateTimeParameter(required=False),
             "title_tag": StringParameter(required=False),
-            "preferred_method": StringParameter(
-                choices=NOTIFICATION_METHOD_CHOICES, required=False
-            ),
+            "preferred_method": StringParameter(choices=list(NOTIFICATION_METHODS), required=False),
         },
         method=["POST"],
         access="update",
@@ -100,7 +99,7 @@ class NotificationGroupApplication(ExtModelApplication):
             "notification_group": str(o.id),
             "notification_group__label": o.name,
             "user_policy": us.policy,
-            "time_pattern": us.time_pattern,
+            "time_pattern": None,
             "supress": False,
             "preferred_method": us.method,
             "expired_at": us.expired_at,
@@ -108,8 +107,13 @@ class NotificationGroupApplication(ExtModelApplication):
             "message_types": [t["message_type"] for t in o.message_types],
         }
         if us.time_pattern:
-            data["time_pattern__label"] = us.time_pattern.name
-        return data
+            data |= {
+                "time_pattern": us.time_pattern.id,
+                "time_pattern__label": us.time_pattern.name,
+            }
+        if us.method:
+            data["preferred_method__label"] = us.method
+        return {"success": True, "data": data}
 
     def instance_to_dict(self, o, fields=None):
         r = super().instance_to_dict(o, fields=fields)

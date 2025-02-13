@@ -34,10 +34,10 @@ class Migration(BaseMigration):
         self.db.add_column(
             "main_notificationgroupusersubscription",
             "title_tag",
-            models.CharField(max_length=30),
+            models.CharField(max_length=30, null=True, blank=True),
         )
         self.db.add_column(
             "main_notificationgroupusersubscription",
             "method",
-            models.CharField(max_length=16),
+            models.CharField(max_length=16, null=True, blank=True),
         )
