@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.userprofile.UserProfileContacts");
 
 Ext.define("NOC.main.userprofile.UserProfileContacts", {
   extend: "Ext.ux.form.GridField",
-  alias: "widget.userprofile.contacts",
+  alias: "widget.userprofilecontacts",
   columns: [
     {
       text: __("Time Pattern"),

@@ -12,6 +12,7 @@ Ext.define("NOC.main.userprofile.Application", {
     "NOC.core.ComboBox",
     "NOC.main.timepattern.LookupField",
     "NOC.main.userprofile.UserProfileContacts",
+    "NOC.main.userprofile.UserProfileNotificationGroups",
     "NOC.main.ref.unotificationmethod.LookupField",
     "NOC.main.ref.ulanguage.LookupField",
   ],
@@ -19,6 +20,7 @@ Ext.define("NOC.main.userprofile.Application", {
   items: [
     {
       xtype: "form",
+      scrollable: "y",
       defaults: {
         padding: "0 0 0 4px",
         xtype: "displayfield",
@@ -53,14 +55,21 @@ Ext.define("NOC.main.userprofile.Application", {
         {
           xtype: "fieldset",
           title: __("Notification Contacts"),
-          defaults: {
-            padding: 4,
-          },
           border: false,
           items: [
             {
-              xtype: "userprofile.contacts",
+              xtype: "userprofilecontacts",
               name: "contacts",
+            },
+          ],
+        },
+        {
+          xtype: "fieldset",
+          title: __("Notification Group Settings"),
+          border: false,
+          items: [
+            {
+              xtype: "userprofilenotification",
             },
           ],
         },
@@ -97,6 +106,8 @@ Ext.define("NOC.main.userprofile.Application", {
         var data = Ext.decode(response.responseText);
         data.group = (data.groups || []).join(", ");
         this.down("form").getForm().setValues(data);
+        // load notification Group Settings grid
+        this.down("form userprofilenotification").getStore().loadData(data.subscription_settings);
         // save for later restart if language changed
         this.preferred_language = data.preferred_language;
       },
