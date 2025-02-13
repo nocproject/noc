@@ -83,8 +83,9 @@ Ext.define("NOC.main.userprofile.Application", {
             {
               glyph: NOC.glyph.save,
               text: __("Save"),
-              scope: this,
-              handler: this.onSave,
+              handler: function(){
+                this.up("[appId=main.userprofile]").onSave();
+              },
             },
           ],
         },
