@@ -36,8 +36,9 @@ Ext.define("NOC.main.userprofile.UserProfileNotificationGroups", {
               context.grid.getStore().rejectChanges();
             }
           },
-          failure: function(){
-            NOC.error(__("Failed to save changes"));
+          failure: function(response){
+            var text = Ext.decode(response.responseText); 
+            NOC.error(text.message || __("Failed to save changes"));
             context.grid.getStore().rejectChanges();
           },
         });
@@ -96,11 +97,13 @@ Ext.define("NOC.main.userprofile.UserProfileNotificationGroups", {
       text: __("Preferred Method"),
       dataIndex: "preferred_method",
       editor: "main.ref.unotificationmethod.LookupField",
+      renderer: NOC.render.Lookup("preferred_method"),
     },
     {
       text: __("Time Pattern"),
       dataIndex: "time_pattern",
       editor: "main.timepattern.LookupField",
+      renderer: NOC.render.Lookup("time_pattern"),
     },
     {
       text: __("title-tag"),
