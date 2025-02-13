@@ -13,9 +13,7 @@ Ext.define("NOC.main.userprofile.Application", {
     "NOC.main.timepattern.LookupField",
     "NOC.main.userprofile.UserProfileContacts",
     "NOC.main.userprofile.UserProfileNotificationGroups",
-    "NOC.main.ref.unotificationmethod.LookupField",
     "NOC.main.ref.ulanguage.LookupField",
-    "NOC.main.notificationgroup.LookupField",
   ],
   layout: "fit",
   items: [

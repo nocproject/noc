@@ -9,6 +9,10 @@ console.debug("Defining NOC.main.userprofile.UserProfileNotificationGroups");
 Ext.define("NOC.main.userprofile.UserProfileNotificationGroups", {
   extend: "Ext.grid.Panel",
   alias: "widget.userprofilenotification",
+  requires: [
+    "NOC.main.ref.unotificationmethod.LookupField",
+    "NOC.main.timepattern.LookupField",
+  ],
   selModel: "rowmodel",
   forceFit: true,
   plugins: {
@@ -16,30 +20,35 @@ Ext.define("NOC.main.userprofile.UserProfileNotificationGroups", {
     clicksToEdit: 1,
     listeners: {
       edit: function(editor, context){
-        var record = context.record;
+        var record = context.record,
+          store = context.store;
         Ext.Ajax.request({
           url: "/main/notificationgroup/" + record.get("notification_group") + "/change_user_subscription/",
           method: "POST",
           jsonData: {
             user_policy: record.get("user_policy"),
-            time_pattern: record.get("time_pattern"),
+            time_pattern: record.get("time_pattern") || null,
             expired_at: record.get("expired_at"),
-            title_tag: record.get("title_tag"),
-            preferred_method: record.get("preferred_method"),
+            title_tag: record.get("title_tag") || null,
+            preferred_method: record.get("preferred_method") || null,
           },
           success: function(response){
             var result = Ext.decode(response.responseText);
             if(result.success){
+              var data = store.getData().items;
+              record.commit();
+              // store.load({
+              // callback: function(){
               NOC.info(__("Changes saved successfully"));
+              // },
+            // });
             } else{
               NOC.error(result.message || __("Failed to save changes"));
-              context.grid.getStore().rejectChanges();
             }
           },
           failure: function(response){
             var text = Ext.decode(response.responseText); 
             NOC.error(text.message || __("Failed to save changes"));
-            context.grid.getStore().rejectChanges();
           },
         });
       },
@@ -47,21 +56,20 @@ Ext.define("NOC.main.userprofile.UserProfileNotificationGroups", {
   },
   store: {
     fields: [
-      "notification_group",
-      "user_policy",
-      "preferred_method",
-      "time_pattern",
-      "expired_at",
-      "title_tag",
-    ],   
-    data: [
+      {name: "notification_group", type: "string"},
+      {name: "user_policy", type: "string"},
+      {name: "preferred_method", type: "string"},
+      {name: "time_pattern", type: "number"},
+      {name: "expired_at", type: "date"},
+      {name: "title_tag", type: "string"},
+      {name: "tag", type: "auto"},
     ],
+    data: [],
   },
   columns: [
     {
       text: __("Notification Group"),
       dataIndex: "notification_group",
-      editor: "main.notificationgroup.LookupField",
       renderer: NOC.render.Lookup("notification_group"),
     },
     {
