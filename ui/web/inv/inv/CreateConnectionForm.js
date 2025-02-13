@@ -641,13 +641,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     return true;
   },
   itemsForConnectionParamsForm: function(fromDiscriminators, toDiscriminators, validateBtn, values){
-    var fromDiscriminator = values ? values.fromDiscriminator : '',
-      toDiscriminator = values ? values.toDiscriminator : '',
+    var fromDiscriminator = values ? values.fromDiscriminator : "",
+      toDiscriminator = values ? values.toDiscriminator : "",
       gainDb = values ? values.gainDb : 0,
       setTriggers = function(value){
         return {
           clear: {
-            cls: 'x-form-clear-trigger',
+            cls: "x-form-clear-trigger",
             hidden: Ext.isEmpty(value),
             weight: -1,
             handler: function(field){
@@ -753,6 +753,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             mainSurface.removeAll(true);
             me.getViewModel().set("isDirty", false);
             me.cableCombo.getStore().loadData(data.cable);
+            if(data.cable.length === 1){
+              me.getViewModel().set("cable", data.cable[0].name);
+            }
             // me.scaleCalculate();
             Ext.Array.each(["left", "right"], function(side){
               if(data[side].connections && data[side].connections.length){
@@ -1858,7 +1861,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   },
   wireSort: function(wire){
     return Ext.Array.sort(wire, function(a, b){
-      return a.side === 'left' ? -1 : (b.side === 'left' ? 1 : 0);
+      return a.side === "left" ? -1 : (b.side === "left" ? 1 : 0);
     });
   },
   xOffset: function(side, pins){
