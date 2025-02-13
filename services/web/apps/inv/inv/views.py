@@ -13,6 +13,7 @@ from collections import defaultdict
 
 # Third-party modules
 from mongoengine import ValidationError
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
@@ -765,3 +766,28 @@ class InvApplication(ExtApplication):
         if not i:
             return self.response_not_found()
         return i.to_json()
+
+    @view(
+        "^search/$",
+        method=["GET"],
+        access="read",
+        api=True,
+        validate = {"q": UnicodeParameter(required=True)},
+    )
+    def api_search(self, request, q: str):
+        def path(o: Object) -> List[Dict]:
+            result = []
+            for oid in o.get_path():
+                obj = Object.get_by_id(oid)
+                connection = obj.connections[0] if obj.connections else None
+                result += [
+                    {
+                        "id": str(oid),
+                        "label": obj.name,
+                        "connection": connection,
+                    }
+                ]
+            return result
+        query = Q(name__contains=q)
+        items = [{"path": path(o)} for o in Object.objects.filter(query)]
+        return {"status": True, "items": items}
