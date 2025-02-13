@@ -435,6 +435,7 @@ class NotificationGroup(NOCModel):
         if expired_at and s.expired_at != expired_at:
             s.expired_at = expired_at
         s.save()
+        return s
 
     def unsubscribe(
         self,
