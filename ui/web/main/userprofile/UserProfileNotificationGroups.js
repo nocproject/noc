@@ -20,8 +20,7 @@ Ext.define("NOC.main.userprofile.UserProfileNotificationGroups", {
     clicksToEdit: 1,
     listeners: {
       edit: function(editor, context){
-        var record = context.record,
-          store = context.store;
+        var record = context.record;
         Ext.Ajax.request({
           url: "/main/notificationgroup/" + record.get("notification_group") + "/change_user_subscription/",
           method: "POST",
@@ -35,13 +34,9 @@ Ext.define("NOC.main.userprofile.UserProfileNotificationGroups", {
           success: function(response){
             var result = Ext.decode(response.responseText);
             if(result.success){
-              var data = store.getData().items;
+              Ext.Object.each(result.data, function(key, value){record.set(key,value)});
               record.commit();
-              // store.load({
-              // callback: function(){
               NOC.info(__("Changes saved successfully"));
-              // },
-            // });
             } else{
               NOC.error(result.message || __("Failed to save changes"));
             }
