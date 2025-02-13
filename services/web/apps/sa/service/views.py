@@ -7,6 +7,7 @@
 
 # Python modules
 from collections import defaultdict
+from typing import Optional, List, Dict
 
 # Third-party modules
 from mongoengine.queryset import Q
@@ -14,11 +15,23 @@ from mongoengine.queryset import Q
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
+from noc.sa.interfaces.base import (
+    UnicodeParameter,
+    ModelParameter,
+    DictListParameter,
+    StringListParameter,
+    IPv4Parameter,
+)
 from noc.sa.models.service import Service
 from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 from noc.core.translation import ugettext as _
 from noc.core.validators import is_objectid, is_ipv4, is_mac
+from noc.core.models.serviceinstanceconfig import InstanceType
+from noc.core.models.inputsources import InputSource
 from noc.core.comp import smart_text
 
 
@@ -136,3 +149,146 @@ class ServiceApplication(ExtDocApplication):
                 for level, p in enumerate(path)
             ]
         }
+
+    @view("^(?P<sid>[0-9a-f]{24})/instance/", access="read", api=True)
+    def api_get_instance(self, request, sid: str):
+        o = self.get_object_or_404(Service, id=sid)
+        r = []
+        for si in ServiceInstance.objects.filter(service=o):
+            r.append(
+                {
+                    "sources": [
+                        {"discovery": "D", "etl": "E", "manual": "M"}[ss.value] for ss in si.sources
+                    ],
+                    "type": si.type,
+                    "fqdn": si.fqdn,
+                    "port": si.port,
+                    "managed_object": None,
+                    "addresses": [],
+                    "name": si.name,
+                    "resources": [],
+                    "allow_update": True,
+                }
+            )
+            if si.managed_object:
+                r[-1] |= {
+                    "managed_object": si.managed_object.id,
+                    "managed_object__label": si.managed_object.name,
+                }
+            for a in si.addresses:
+                if a.pool:
+                    r[-1]["addresses"] += [
+                        {"address": a.address, "pool": str(a.pool.id), "pool__label": a.pool.name}
+                    ]
+                else:
+                    r[-1]["addresses"] += [{"address": a.address, "pool": None}]
+            for r in si.resources:
+                r[-1]["resources"] += [{"resource": r, "resource_label": "Name1"}]
+        return r
+
+    @view(r"^(?P<sid>[0-9a-f]{24})/resource/(?P<r_type>\S+)/", access="read", api=True)
+    def api_get_instance_resources(self, request, sid: str, r_type: str):
+        # o = self.get_object_or_404(Service, id=sid)
+        q = self.parse_request_query(request)
+        if "managed_object" not in q:
+            return []
+        if r_type == "interface":
+            r_model = Interface.objects.filter(
+                managed_object=int(q["managed_object"]), type="physical"
+            )
+        elif r_type == "subinterface":
+            r_model = SubInterface.objects.filter(managed_object=int(q["managed_object"]))
+        else:
+            return self.response_not_found(f"{r_type} not found")
+        r = []
+        for res in r_model:
+            r.append(
+                {
+                    "resource": res.as_resource(),
+                    "resource__label": str(res),
+                }
+            )
+        return r
+
+    @view(
+        r"^(?P<sid>[0-9a-f]{24})/register_instance/(?P<i_type>\S+)/",
+        method=["POST"],
+        access="register_instance",
+        validate={
+            "name": UnicodeParameter(required=False),
+            "fqdn": UnicodeParameter(required=False),
+        },
+        api=True,
+    )
+    def api_register_instance(
+        self,
+        request,
+        sid: str,
+        i_type: str,
+        name: Optional[str] = None,
+        fqdn: Optional[str] = None,
+    ):
+        o = self.get_object_or_404(Service, id=sid)
+        try:
+            i_type = InstanceType(i_type)
+        except ValueError:
+            return {"success": True, "detail": f"Not supported type: {i_type}"}
+        o.register_instance(i_type, name=name, fqdn=fqdn)
+        return {"success": True}
+
+    @view(
+        r"^(?P<sid>[0-9a-f]{24})/instance/(?P<iid>[0-9a-f]{24})/bind/",
+        method=["PUT"],
+        access="update",
+        validate={
+            "managed_object": ModelParameter(model=ManagedObject, required=False),
+            "addresses": DictListParameter(
+                required=False,
+                attrs={
+                    "address": IPv4Parameter(required=True),
+                    "pool": UnicodeParameter(required=False),
+                },
+            ),
+            "resources": StringListParameter(required=False),
+        },
+        api=True,
+    )
+    def api_instance_bind(
+        self,
+        request,
+        sid: str,
+        iid: str,
+        managed_object: Optional[ManagedObject] = None,
+        resources: List[str] = None,
+        addresses: List[Dict[str, str]] = None,
+    ):
+        si = self.get_object_or_404(ServiceInstance, id=iid)
+        if addresses:
+            si.register_endpoint(InputSource.MANUAL, addresses=[a["address"] for a in addresses])
+        if managed_object:
+            si.refresh_managed_object(managed_object, source=InputSource.MANUAL)
+        if resources:
+            si.update_resources(resources, source=InputSource.MANUAL)
+        return {"success": True}
+
+    @view(
+        r"^(?P<sid>[0-9a-f]{24})/instance/(?P<iid>[0-9a-f]{24})/unbind/(?P<r_type>\S+)/",
+        method=["PUT"],
+        access="update",
+        api=True,
+    )
+    def api_instance_unbind(
+        self,
+        request,
+        sid: str,
+        iid: str,
+        r_type: str,
+    ):
+        # Check Permission
+        si = self.get_object_or_404(ServiceInstance, id=iid)
+        if r_type == "managed_object":
+            si.refresh_managed_object()
+        elif r_type == "addresses":
+            si.deregister_endpoint(InputSource.MANUAL)
+        elif r_type == "resources":
+            si.update_resources([], InputSource.MANUAL)
