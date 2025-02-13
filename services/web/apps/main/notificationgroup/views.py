@@ -96,7 +96,20 @@ class NotificationGroupApplication(ExtModelApplication):
         if us.method != preferred_method:
             us.method = preferred_method
         us.save()
-        return {"success": True}
+        data = {
+            "notification_group": str(o.id),
+            "notification_group__label": o.name,
+            "user_policy": us.policy,
+            "time_pattern": us.time_pattern,
+            "supress": False,
+            "preferred_method": us.method,
+            "expired_at": us.expired_at,
+            "title_tag": us.title_tag,
+            "message_types": [t["message_type"] for t in o.message_types],
+        }
+        if us.time_pattern:
+            data["time_pattern__label"] = us.time_pattern.name
+        return data
 
     def instance_to_dict(self, o, fields=None):
         r = super().instance_to_dict(o, fields=fields)
