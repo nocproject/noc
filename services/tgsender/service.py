@@ -123,7 +123,7 @@ class TgSenderService(FastAPIService):
                             caption = None
                         response = requests.post(
                             url,
-                            {"chat_id": data["address"], "caption": caption},
+                            {"chat_id": address, "caption": caption},
                             proxies=proxy,
                             files={"document": buf},
                         )
