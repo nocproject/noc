@@ -29,7 +29,10 @@ class MACDB(ViewModel):
         view_table_source = "raw_mac"
         engine = AggregatingMergeTree(
             None,
-            ("mac", "managed_object",),
+            (
+                "mac",
+                "managed_object",
+            ),
             primary_keys=("mac", "managed_object"),
         )
 
