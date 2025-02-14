@@ -11,13 +11,10 @@ from noc.core.clickhouse.functions import ArgMax
 from noc.core.clickhouse.fields import (
     UInt64Field,
     UInt16Field,
-    UInt32Field,
-    UInt8Field,
     StringField,
     ReferenceField,
     AggregatedField,
     DateTimeField,
-    MaterializedField,
 )
 from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.interfaceprofile import InterfaceProfile

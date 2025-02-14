@@ -68,11 +68,7 @@ Ext.define("NOC.inv.macdb.Application", {
                 {
                     flex: 1,
                     text: __("Interface"),
-                    renderer: function(v) {
-                        var array = v.split(":");
-                        return array[1];
-                    },
-                    dataIndex: "interface__label"
+                    dataIndex: "interface"
                 },
                 {
                     flex: 1,
