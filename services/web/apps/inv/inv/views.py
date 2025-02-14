@@ -13,7 +13,6 @@ from collections import defaultdict
 
 # Third-party modules
 from mongoengine import ValidationError
-from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
@@ -772,7 +771,7 @@ class InvApplication(ExtApplication):
         method=["GET"],
         access="read",
         api=True,
-        validate = {"q": UnicodeParameter(required=True)},
+        validate={"q": UnicodeParameter(required=True)},
     )
     def api_search(self, request, q: str):
         def path(o: Object) -> List[Dict]:
@@ -788,6 +787,17 @@ class InvApplication(ExtApplication):
                     }
                 ]
             return result
-        query = Q(name__contains=q)
-        items = [{"path": path(o)} for o in Object.objects.filter(query)]
+
+        query = {
+            "$or": [
+                {"name": {"$regex": q}},
+                {
+                    "data": {"$elemMatch": {"interface": {"$eq": "asset"}, "attr": {"$eq": "serial"}, "value": {"$regex": q}}},
+                },
+                {
+                    "data": {"$elemMatch": {"interface": {"$eq": "asset"}, "attr": {"$eq": "part_no"}, "value": {"$regex": q}}},
+                },
+            ]
+        }
+        items = [{"path": path(o)} for o in Object.objects.filter(__raw__=query)]
         return {"status": True, "items": items}
