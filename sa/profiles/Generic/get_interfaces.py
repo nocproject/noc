@@ -180,6 +180,9 @@ class Script(BaseScript):
         ):
             _, index = oid.split(mib["IP-MIB::ipAddressPrefix"])
             _, a_type, address = index.strip(".").split(".", 2)
+            if a_type != "4":
+                # IPv6 address
+                continue
             # address = oid.split(mib["IP-MIB::ipAddressPrefix"])[-1].strip(".")
             ip_mask[address] = [IPv4(f"{address}/{mask.rsplit('.', 1)[-1]}")]
         for oid, ifindex in self.snmp.getnext(
@@ -189,6 +192,9 @@ class Script(BaseScript):
         ):
             _, index = oid.split(mib["IP-MIB::ipAddressIfIndex"])
             _, a_type, address = index.strip(".").split(".", 2)
+            if a_type != "4":
+                # 16, 20 - IPv6 address
+                continue
             # address = oid.split(mib["IP-MIB::ipAddressIfIndex"])[-1].strip(".")
             r[ifindex] += ip_mask[address]
         return r
