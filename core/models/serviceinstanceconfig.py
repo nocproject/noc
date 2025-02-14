@@ -27,7 +27,7 @@ class InstanceType(enum.Enum):
 
     # OS_PROCESS = "process"  # OS Process: ManagedObject, Name (pid)
     NETWORK_HOST = "network_host"
-    NETWORK_CHANNEL = "network_channel"
+    NETWORK_CHANNEL = "network"
     SERVICE_ENDPOINT = "endpoint"
     OTHER = "other"
 

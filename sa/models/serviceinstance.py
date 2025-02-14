@@ -377,7 +377,7 @@ class ServiceInstance(Document):
                 o.fire_event("approved")
             rid = o.as_resource()
             c, _ = rid.split(":", 1)
-            if c not in cfg.allow_resources:
+            if c not in (cfg.allow_resources or []):  # has_resource
                 logger.info("Resource not allowed in service instance profile")
                 continue
             resources.append(rid)

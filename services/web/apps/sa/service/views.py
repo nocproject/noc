@@ -185,8 +185,8 @@ class ServiceApplication(ExtDocApplication):
                     ]
                 else:
                     r[-1]["addresses"] += [{"address": a.address, "pool": None}]
-            for r in si.resources:
-                r[-1]["resources"] += [{"resource": r, "resource_label": "Name1"}]
+            for rr in si.resources:
+                r[-1]["resources"] += [{"resource": rr, "resource_label": "Name1"}]
         return r
 
     @view(r"^(?P<sid>[0-9a-f]{24})/resource/(?P<r_type>\S+)/", access="read", api=True)
