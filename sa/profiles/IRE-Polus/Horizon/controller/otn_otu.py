@@ -58,12 +58,13 @@ class Controller(ChannelMixin, BaseOTUProfileController):
                 description=f"Set frequency to {frequency} MHz",
             )
         # Set width
-        if width:
-            yield SetValue(
-                name=f"{prefix}_{xcvr}_SetTxFreqSp",
-                value=str(width),
-                description=f"Set width to {width} MHz",
-            )
+        # Disabled as read-only parameter
+        # if width:
+        #     yield SetValue(
+        #         name=f"{prefix}_{xcvr}_SetTxFreqSp",
+        #         value=str(width),
+        #         description=f"Set width to {width} MHz",
+        #     )
         # Enable laser
         yield SetValue(name=f"{prefix}_{xcvr}_EnableTx", value="1", description="Enable laser.")
 
