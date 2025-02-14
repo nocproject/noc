@@ -275,7 +275,7 @@ class NotificationGroup(NOCModel):
         return NotificationGroupUserSubscription.objects.filter(
             notification_group=self,
             user=user,
-            watch="",
+            watch=None,
         ).first()
 
     @property
@@ -435,6 +435,7 @@ class NotificationGroup(NOCModel):
         if expired_at and s.expired_at != expired_at:
             s.expired_at = expired_at
         s.save()
+        return s
 
     def unsubscribe(
         self,
@@ -622,7 +623,7 @@ class NotificationGroupUserSubscription(NOCModel):
         verbose_name_plural = "Notification Group Users"
         app_label = "main"
         db_table = "main_notificationgroupusersubscription"
-        unique_together = [("notification_group", "user", "watch")]
+        unique_together = [("notification_group_id", "user_id", "watch")]
 
     notification_group: NotificationGroup = ForeignKey(
         NotificationGroup, verbose_name="Notification Group", on_delete=CASCADE
@@ -631,6 +632,20 @@ class NotificationGroupUserSubscription(NOCModel):
         TimePattern, verbose_name="Time Pattern", on_delete=CASCADE, null=True, blank=True
     )
     user: User = ForeignKey(User, verbose_name="User", on_delete=CASCADE)
+    method = CharField("Method", max_length=16, choices=USER_NOTIFICATION_METHOD_CHOICES)
+    policy = CharField(
+        max_length=1,
+        choices=[
+            ("D", "Disable"),  # Direct
+            ("A", "Any"),
+            ("W", "By Types"),
+            ("W", "By Types"),
+        ],
+        default="A",
+        null=False,
+        blank=False,
+    )
+    title_tag = CharField(max_length=30, blank=True)
     expired_at = DateTimeField("Expired Subscription After", auto_now_add=False)
     suppress = BooleanField("Deactivate Subscription", default=False)
     watch = CharField("Watch key", max_length=100, null=True, blank=True)
