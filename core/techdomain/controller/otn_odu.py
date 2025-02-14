@@ -83,7 +83,7 @@ class OTNODUController(BaseController):
                     pvi.protocol.code
                     for pvi in c.protocols
                     if not pvi.protocol.code.startswith("ODU")
-                    and pvi.protocol.technology.name != "Signal"
+                    and pvi.protocol.technology.name != "Modulation"
                 ]
             return []
 

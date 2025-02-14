@@ -1,8 +1,8 @@
 {
-    "name": "Signal",
+    "name": "Modulation",
     "$collection": "inv.technologies",
     "uuid": "cb057f93-50e5-4b32-b2a0-a4b3fbc3cbf6",
-    "description": "Signal encoding and modulation",
+    "description": "Signal modulation",
     "single_service": false,
     "single_client": false,
     "allow_children": false
