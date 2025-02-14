@@ -553,11 +553,12 @@ class DiscoveredObject(Document):
         X for duplicates on multiple ETL Systems need weight for merge data
         """
         origin, origin_ctx = self, self.get_ctx(is_new=is_new)
+        priority = [str(s.remote_system.id) for s in self.rule.sources if s.remote_system]
         for d in duplicates:
             if ETL_SOURCE not in d.sources:
                 continue
             elif self.is_preferred(d):
-                origin_ctx.merge_data(d.get_ctx(is_new=is_new))
+                origin_ctx.merge_data(d.get_ctx(is_new=is_new), systems_priority=priority)
             else:
                 origin = d
                 # origin_ctx = d.get_ctx()
@@ -734,6 +735,7 @@ class DiscoveredObject(Document):
         from noc.inv.models.discoveryid import DiscoveryID
 
         logger.debug("[%s] Sync Object", self)
+        force = bool(template)
         template = template or self.rule.default_template
         if not template:
             logger.warning("[%s] Unknown Template for sync: %s", self, template)
@@ -763,7 +765,7 @@ class DiscoveredObject(Document):
         else:
             origin, ctx = self.merge_duplicates(
                 list(DiscoveredObject.objects.filter(origin=self)),
-                is_new=bool(template),
+                is_new=force,
             )
         # Set origin
         if self.id != origin.id:

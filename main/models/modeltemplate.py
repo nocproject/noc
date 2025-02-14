@@ -87,18 +87,38 @@ class ResourceItem(BaseModel):
     mappings: Optional[Dict[str, str]] = None
     # Caps
     user: Optional[Any] = None  # User for changes
+    # Send workflow event
+    event: Optional[str] = None
 
-    def merge_data(self, ri: "ResourceItem"):
+    def merge_data(self, ri: "ResourceItem", systems_priority: List[str] = None):
         """Merge data over Multiple Resource Item"""
         if not self.mappings:
             self.mappings = {}
         for m in ri.mappings or {}:
             if m not in self.mappings:
                 self.mappings[m] = ri.mappings[m]
-        keys = {(d.name, d.remote_system) for d in self.data}
+        # keys = {(d.name, d.remote_system) for d in self.data}
+        data = {d.name: d for d in self.data}
         for d in ri.data:
-            if (d.name, d.remote_system) not in keys:
-                self.data.append(d)
+            if d.name not in data or (not data[d.name].remote_system and d.remote_system):
+                # Remote System priority over discovered data
+                data[d.name] = d
+                continue
+            elif (
+                not systems_priority
+                or not d.remote_system
+                or d.remote_system not in systems_priority
+            ):
+                continue
+            elif data[d.name].remote_system not in systems_priority:
+                data[d.name] = d
+                continue
+            i1, i2 = systems_priority.index(d.remote_system), systems_priority.index(
+                data[d.name].remote_system
+            )
+            if i1 > i2:
+                data[d.name] = d
+        self.data = list(data.values())
 
 
 class Result(BaseModel):
