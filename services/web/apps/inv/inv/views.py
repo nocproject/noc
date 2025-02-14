@@ -792,10 +792,22 @@ class InvApplication(ExtApplication):
             "$or": [
                 {"name": {"$regex": q}},
                 {
-                    "data": {"$elemMatch": {"interface": {"$eq": "asset"}, "attr": {"$eq": "serial"}, "value": {"$regex": q}}},
+                    "data": {
+                        "$elemMatch": {
+                            "interface": {"$eq": "asset"},
+                            "attr": {"$eq": "serial"},
+                            "value": {"$regex": q},
+                        }
+                    },
                 },
                 {
-                    "data": {"$elemMatch": {"interface": {"$eq": "asset"}, "attr": {"$eq": "part_no"}, "value": {"$regex": q}}},
+                    "data": {
+                        "$elemMatch": {
+                            "interface": {"$eq": "asset"},
+                            "attr": {"$eq": "part_no"},
+                            "value": {"$regex": q},
+                        }
+                    },
                 },
             ]
         }
