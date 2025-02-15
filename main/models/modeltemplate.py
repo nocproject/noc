@@ -120,6 +120,13 @@ class ResourceItem(BaseModel):
                 data[d.name] = d
         self.data = list(data.values())
 
+    def has_rs_data(self) -> bool:
+        """Check remote system data"""
+        for d in self.data:
+            if d.remote_system:
+                return True
+        return False
+
 
 class Result(BaseModel):
     id: Optional[str] = None
