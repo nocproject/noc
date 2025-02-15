@@ -812,7 +812,7 @@ class DiscoveredObject(Document):
         if ctx.event == "duplicate":
             self.fire_event("duplicate")
         elif not mo:
-            self.fire_event("remove")
+            self.fire_event("revoke")
         else:
             self.fire_event("synced")
 
@@ -973,9 +973,17 @@ class DiscoveredObject(Document):
             return
         if ctx.event == "duplicate":
             mo.fire_event("unmanaged")
-            logger.info("Sendind duplicate signal (managed_object)")
+            logger.info("Send duplicate signal (managed_object)")
         elif ctx.event:
             mo.fire_event(ctx.event or "managed")
+        elif (
+            not ctx.event
+            and ETL_SOURCE in self.sources
+            and not mo.remote_system
+            and not ctx.has_rs_data()
+        ):
+            logger.info("[%s] Unsync ManagedObject, by lost master", mo.name)
+            mo.fire_event("unmanaged")
         if changed:
             mo.save()
 
@@ -983,7 +991,17 @@ class DiscoveredObject(Document):
     def managed_object(self) -> Optional[ManagedObject]:
         if not self.managed_object_id:
             return None
-        return ManagedObject.get_by_id(self.managed_object_id)
+        o = ManagedObject.get_by_id(self.managed_object_id)
+        if not o:
+            logger.info(
+                "[%s] Not found ManagedObject by id '%s'. Unset attribute",
+                self.address,
+                self.managed_object_id,
+            )
+            DiscoveredObject.objects.filter(id=self.id).update(unset__managed_object_id=1)
+            self.fire_event("revoke")
+            o.save()
+        return o
 
 
 def sync_object():
