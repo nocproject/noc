@@ -194,14 +194,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       viewConfig: {
         listeners: {
           cellclick: "onCellClick",
-          beforecellclick: function(view, m, d, record){
-            var sm = view.getSelectionModel();
-            if(sm.isSelected(record)){
-              console.log("selected");
-              sm.deselectAll();
-              return false;
-            }
-          },
+          beforecellclick: "onBeforeCellClick",
         },
       },
       plugins: [
@@ -218,10 +211,22 @@ Ext.define("NOC.sa.service.InstancesPanel", {
   ],
   onCellClick: function(view, cell, cellIndex, record, row, rowIndex, e){
     if(e.target.tagName === "A"){
-      var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
-      if(header.onClick){
-        this["open_" + header.dataIndex + "Form"].apply(this, [record]);
+      var column = view.panel.headerCt.getHeaderAtIndex(cellIndex);
+      if(column.onClick){
+        this["open_" + column.dataIndex + "Form"].apply(this, [record]);
       }
+    }
+  },
+  onBeforeCellClick: function(view, td, cellIndex, record, row, rowIndex, e){
+    var sm = view.getSelectionModel(),
+      column = view.headerCt.getHeaderAtIndex(cellIndex);
+    if(sm.isSelected(record)){
+      if(e.target.tagName === "A"
+        && ["addresses", "resources", "managed_object"].includes(column.dataIndex)){
+        return true;
+      }
+      sm.deselectAll();
+      return false;
     }
   },
   renderLink: function(value, record){
