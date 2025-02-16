@@ -52,6 +52,8 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     data: {
       searchText: "",
       showOnClose: "ITEM_FORM",
+      enableRegisterBtn: false,
+      enableUnregisterBtn: false,
     },
   },
   tbar: [
@@ -88,9 +90,15 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     "|",
     {
       text: __("Register"),
+      bind: {
+        disabled: "{!enableRegisterBtn}",
+      },
     },
     {
       text: __("Unregister"),
+      bind: {
+        disabled: "{!enableUnregisterBtn}",
+      },
     },
   ],
   items: [
@@ -213,8 +221,11 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     app.showItem(app[showOnClose]);
   },
   load: function(record, showOnClose){
-    this.getViewModel().set("record", record);
-    this.getViewModel().set("showOnClose", showOnClose);
+    var vm = this.getViewModel();
+    vm.set("record", record);
+    vm.set("showOnClose", showOnClose);
+    vm.set("enableRegisterBtn", this.up().hasPermission("register_instance"));
+    vm.set("enableUnregisterBtn", this.up().hasPermission("unregister_instance"));
     this.mask(__("Loading instances..."));
     Ext.Ajax.request({
       url: "/sa/service/" + record.id + "/instance/",
