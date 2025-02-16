@@ -37,18 +37,17 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
             layout: {
               type: "vbox",
             },
-            items: this.getRowConfig("add"),
           },
         ],
         buttons: [
           {
             text: __("Bind"),
             formBind: true,
-            handler: this.bindHandler("bind"),
+            handler: this.buttonHandler("bind"),
           },
           {
             text: __("Reset"),
-            handler: this.bindHandler("unbind"), 
+            handler: this.buttonHandler("unbind"), 
           },
         ],
       }],
@@ -80,10 +79,10 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
       };
       
     if(type === "add"){
-      config.handler = this.addInput;
+      config.handler = this.addRowButtonHandler;
     } else{
       config.disabled = false;
-      config.handler = this.removeInput;
+      config.handler = this.removeRow;
     }
     return config;
   },
@@ -114,28 +113,45 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
       uiStyle: "medium-combo",
     };
   },
-  addInput: function(){
+  addRowButtonHandler: function(){
     var rowsContainer = this.up("form").down("[itemId=addresses-container]");
     rowsContainer.add(Ext.create(this.up("window").getRowConfig("remove")));
   },
-  removeInput: function(button){
+  removeRow: function(button){
     var row = button.up(),
       rowsContainer = row.up();
     rowsContainer.remove(row);
   },
-  restoreRows(values){
-    console.log(values);
+  restoreRows(rows){
+    var addressesContainer = this.down("[itemId=addresses-container]");
+    addressesContainer.removeAll();
+    rows = Ext.isArray(rows) ? rows : [rows];
+    if(Ext.isEmpty(rows)){ 
+      addressesContainer.add(this.getRowConfig("add"));
+      this.center();
+      return;
+    }
+    Ext.each(rows, function(row, index){ 
+      var rowComponent = addressesContainer.add(this.getRowConfig(index === 0 ? "add" : "remove"));
+      this.setRowValues(rowComponent, row);
+    }, this);
+    this.center();
   },
-  bindHandler: function(method){
+  setRowValues: function(rowComponent, values){
+    rowComponent.down("field[name=address]").setValue(values.address);
+    rowComponent.down("[name=pool]").setValue(values.pool);
+  },
+  buttonHandler: function(method){
     return function(){
       var data = this.up("form").getForm().getValues(),
         isAddressArray = Ext.isArray(data.address),
+        pools =isAddressArray ? data.pool : [data.pool], 
         addresses = Ext.Array.map(
           isAddressArray ? data.address : [data.address],
           function(address, index){
             return {
               address: address,
-              pool: data.pool[index] || "",
+              pool: pools[index] || "",
             };
           }),
         url = "/sa/service/" + data.service_id
