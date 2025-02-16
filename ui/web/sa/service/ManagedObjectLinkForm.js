@@ -17,6 +17,7 @@ Ext.define("NOC.sa.service.ManagedObjectLinkForm", {
   modal: true,
   scrollable: true,
   layout: "fit",
+  defaultListenerScope: true,
   items: [
     {
       xtype: "form",
@@ -45,20 +46,52 @@ Ext.define("NOC.sa.service.ManagedObjectLinkForm", {
         {
           text: __("Bind"),
           formBind: true,
-          handler: function(){
-            var data = this.up("form").getForm().getValues();
-            console.log("bind", data);
-          },
+          handler: "buttonBindHandler",
         },
         {
           text: __("Reset"),
-          formBind: true,
-          handler: function(){
-            var data = this.up("form").getForm().getValues();
-            console.log("reset", data);
-          },
+          handler: "buttonResetHandler",
         },
       ],
     },
   ],
+  buttonBindHandler: function(){
+    this.buttonHandler("bind")
+  },
+  buttonResetHandler: function(){
+    this.buttonHandler("unbind");
+  },
+  buttonHandler: function(method){
+    var data = this.down("form").getForm().getValues(),
+      url = "/sa/service/" + data.service_id + "/instance/" + data.instance_id + "/" + method,
+      params = {managed_object: data.managed_id};
+    if(method !== "bind"){
+      url += "/managed_object/";
+      params = undefined;
+    }
+    this.request(url, params, method);
+  },
+  request: function(url, params, method){
+    Ext.Ajax.request({
+      url: url,
+      method: "PUT",
+      jsonData: params,
+      success: function(response){
+        var result = Ext.decode(response.responseText);
+        if(result.success){
+          this.instanceRecord.set("managed_object", result.data.managed_object);
+          this.instanceRecord.set("managed_object__label", result.data.managed_object__label);
+          this.instanceRecord.commit();
+          NOC.info(__("Success Managed object") + " " + method + " " + __("successfully"));
+          this.close();
+        } else{
+          NOC.error(__("Error") + " : " + result.message || __("Operation failed"));
+        }
+      },
+      failure: function(){
+        NOC.error("Error : Server error occurred");
+      },
+      scope: this,
+    });
+  },
 });

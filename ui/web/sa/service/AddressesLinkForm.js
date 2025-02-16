@@ -64,7 +64,7 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
       items: [
         this.getButtonConfig(type),
         this.getAddressTextConfig(),
-        this.getPoolComboConfig(),
+        // this.getPoolComboConfig(),
       ],
     }    
   },
@@ -139,19 +139,20 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
   },
   setRowValues: function(rowComponent, values){
     rowComponent.down("field[name=address]").setValue(values.address);
-    rowComponent.down("[name=pool]").setValue(values.pool);
+    // rowComponent.down("[name=pool]").setValue(values.pool);
   },
   buttonHandler: function(method){
     return function(){
-      var data = this.up("form").getForm().getValues(),
+      var form = this.up("window"),
+        data = this.up("form").getForm().getValues(),
         isAddressArray = Ext.isArray(data.address),
-        pools =isAddressArray ? data.pool : [data.pool], 
+        // pools =isAddressArray ? data.pool : [data.pool], 
         addresses = Ext.Array.map(
           isAddressArray ? data.address : [data.address],
-          function(address, index){
+          function(address){
             return {
               address: address,
-              pool: pools[index] || "",
+              // pool: pools[index] || "",
             };
           }),
         url = "/sa/service/" + data.service_id
@@ -161,27 +162,29 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
         url += "addresses/";
         params = undefined;
       }
-      Ext.Ajax.request({
-        url: url,
-        method: "PUT",
-        jsonData: params,
-        success: function(response){
-          var result = Ext.decode(response.responseText);
-          if(result.success){
-            var form = this.up("window");
-            form.instanceRecord.set("addresses", result.data.addresses);
-            form.instanceRecord.commit();
-            NOC.info("Success", "Addresses " + method + " successfully");
-            form.close();
-          } else{
-            NOC.error("Error", result.message || "Operation failed");
-          }
-        },
-        failure: function(){
-          NOC.error("Error : Server error occurred");
-        },
-        scope: this,
-      });
+      form.request.call(form, url, params, method);
     };
+  },
+  request: function(url, params, method){
+    Ext.Ajax.request({
+      url: url,
+      method: "PUT",
+      jsonData: params,
+      success: function(response){
+        var result = Ext.decode(response.responseText);
+        if(result.success){
+          this.instanceRecord.set("addresses", result.data.addresses);
+          this.instanceRecord.commit();
+          NOC.info(__("Success Address") + " " + method + " " + __("successfully"));
+          this.close();
+        } else{
+          NOC.error(__("Error") + " " + result.message || __("Operation failed"));
+        }
+      },
+      failure: function(){
+        NOC.error("Error : Server error occurred");
+      },
+      scope: this,
+    });
   },
 });
