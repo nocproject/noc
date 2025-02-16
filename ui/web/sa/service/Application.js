@@ -747,7 +747,6 @@ Ext.define("NOC.sa.service.Application", {
       formToolbar: [
         {
           text: __("Instances"),
-          // hasAccess: NOC.hasPermission("read"),
           scope: this,
           handler: this.onInstances,
         },

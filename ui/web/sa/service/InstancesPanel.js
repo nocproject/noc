@@ -104,6 +104,17 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       },
       columns: [
         {
+          text: __("FQDN"),
+          dataIndex: "fqdn",
+          renderer: function(value, meta, record){
+            var icon = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Row read only") + "'></i>";
+            if(record.get("allow_update")){
+              return value;
+            }
+            return icon + value;
+          },
+        },
+        {
           text: __("Sources"),
           dataIndex: "sources",
           renderer: function(value){
@@ -125,14 +136,10 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           renderer: function(value, meta, record){
             var v = value ? record.get("managed_object__label") : "...",
               app = this.up("[reference=saInstancesPanel]");
-            return app.renderLink(v);
+            return app.renderLink(v, record);
           },
           // invoke open_managed_objectForm
           onClick: "openForm",
-        },
-        {
-          text: __("FQDN"),
-          dataIndex: "fqdn",
         },
         {
           text: __("Port"),
@@ -141,9 +148,9 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         {
           text: __("Addresses"),
           dataIndex: "addresses",
-          renderer: function(value){
+          renderer: function(value, meta, record){
             var app = this.up("[reference=saInstancesPanel]");
-            return app.renderLink(app.renderArrayValue(value, "address"));
+            return app.renderLink(app.renderArrayValue(value, "address"), record);
           },
           // invoke open_addressesForm
           onClick: "openForm",
@@ -155,17 +162,12 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         {
           text: __("Resources"),
           dataIndex: "resources",
-          renderer: function(value){
+          renderer: function(value, meta, record){
             var app = this.up("[reference=saInstancesPanel]");
-            return app.renderLink(app.renderArrayValue(value, "resource__label"));
+            return app.renderLink(app.renderArrayValue(value, "resource__label"), record);
           },
           // invoke open_resourcesForm
           onClick: "openForm",
-        },
-        {
-          text: __("Allow"),
-          dataIndex: "allow_update",
-          renderer: NOC.render.Bool,
         },
       ],
       viewConfig: {
@@ -183,11 +185,15 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       }
     }
   },
-  renderLink: function(value){
-    return "<a href='javascript:void(0);' class='noc-clickable-cell' title='Click to change...'>" + value + "</a>"; 
+  renderLink: function(value, record){
+    var allow_update = record.get("allow_update");
+    if(allow_update){
+      return "<a href='javascript:void(0);' class='noc-clickable-cell' title='Click to change...'>" + value + "</a>";
+    }
+    return value;
   },
   renderArrayValue: function(value, label){
-    if(Ext.isEmpty(value)) return "...";
+    if(Ext.isEmpty(value)) return "..."
     if(Ext.isArray(value)) return value.map(el => el[label]).join(", ");
     return value[label];
     
