@@ -168,8 +168,11 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
         success: function(response){
           var result = Ext.decode(response.responseText);
           if(result.success){
+            var form = this.up("window");
+            form.instanceRecord.set("addresses", result.data.addresses);
+            form.instanceRecord.commit();
             NOC.info("Success", "Addresses " + method + " successfully");
-            this.up("window").close();
+            form.close();
           } else{
             NOC.error("Error", result.message || "Operation failed");
           }

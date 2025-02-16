@@ -255,6 +255,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       instance_id: record.id,
     });
     form.restoreRows(record.get("addresses"));
+    form.instanceRecord = record;
   },
   open_resourcesForm: function(record){
     var service = this.getViewModel().get("record"),
