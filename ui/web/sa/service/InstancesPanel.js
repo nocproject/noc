@@ -143,7 +143,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           dataIndex: "addresses",
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
-            return app.renderLink(app.renderArrayValue(value, "resource_label"));
+            return app.renderLink(app.renderArrayValue(value, "address"));
           },
           // invoke open_addressesForm
           onClick: "openForm",

@@ -48,7 +48,6 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
           },
           {
             text: __("Reset"),
-            formBind: true,
             handler: this.bindHandler("unbind"), 
           },
         ],
@@ -124,6 +123,9 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
       rowsContainer = row.up();
     rowsContainer.remove(row);
   },
+  restoreRows(values){
+    console.log(values);
+  },
   bindHandler: function(method){
     return function(){
       var data = this.up("form").getForm().getValues(),
@@ -137,15 +139,16 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
             };
           }),
         url = "/sa/service/" + data.service_id
-          + "/instance/" + data.instance_id + "/" + method + "/";
+          + "/instance/" + data.instance_id + "/" + method + "/",
+        params = {addresses: addresses};
       if(method === "unbind"){
-        url += "/addresses/";
+        url += "addresses/";
+        params = undefined;
       }
-      console.log("bind", url, addresses);
       Ext.Ajax.request({
         url: url,
         method: "PUT",
-        jsonData: addresses,
+        jsonData: params,
         success: function(response){
           var result = Ext.decode(response.responseText);
           if(result.success){
@@ -155,7 +158,7 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
             NOC.error("Error", result.message || "Operation failed");
           }
         },
-        failure: function(response){
+        failure: function(){
           NOC.error("Error : Server error occurred");
         },
         scope: this,
