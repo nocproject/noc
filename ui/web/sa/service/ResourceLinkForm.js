@@ -132,7 +132,7 @@ Ext.define("NOC.sa.service.ResourceLinkForm", {
         if(result.success){
           this.instanceRecord.set("resources", result.data.resources);
           this.instanceRecord.commit();
-          NOC.info(__("Success Resource") + " " + method + " " + __("successfully"));
+          NOC.info(__("Resource") + " " + method + " " + __("successfully"));
           this.close();
         } else{
           NOC.error(__("Error") + " : " + result.message || __("Operation failed"));

@@ -175,10 +175,10 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
         if(result.success){
           this.instanceRecord.set("addresses", result.data.addresses);
           this.instanceRecord.commit();
-          NOC.info(__("Success Address") + " " + method + " " + __("successfully"));
+          NOC.info(__("Address") + " " + method + " " + __("successfully"));
           this.close();
         } else{
-          NOC.error(__("Error") + " " + result.message || __("Operation failed"));
+          NOC.error(__("Error") + " : " + result.message || __("Operation failed"));
         }
       },
       failure: function(){

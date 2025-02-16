@@ -82,7 +82,7 @@ Ext.define("NOC.sa.service.ManagedObjectLinkForm", {
           this.instanceRecord.set("managed_object", result.data.managed_object);
           this.instanceRecord.set("managed_object__label", result.data.managed_object__label);
           this.instanceRecord.commit();
-          NOC.info(__("Success Managed object") + " " + method + " " + __("successfully"));
+          NOC.info(__("Managed object") + " " + method + " " + __("successfully"));
           this.close();
         } else{
           NOC.error(__("Error") + " : " + result.message || __("Operation failed"));
