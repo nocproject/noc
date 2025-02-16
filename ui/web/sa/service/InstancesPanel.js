@@ -51,6 +51,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     },
     data: {
       searchText: "",
+      record: undefined,
       showOnClose: "ITEM_FORM",
       enableRegisterBtn: false,
       enableUnregisterBtn: false,
@@ -115,16 +116,24 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         {
           text: __("Name"),
           dataIndex: "name",
+          editor: "textfield",
           renderer: "lockIcon",
         },
         {
           text: __("FQDN"),
+          editor: "textfield",
           dataIndex: "fqdn",
+        },
+        {
+          text: __("Port"),
+          maxWidth: 100,
+          editor: "numberfield",
+          dataIndex: "port",
         },
         {
           text: __("Sources"),
           dataIndex: "sources",
-          width: 50,
+          maxWidth: 120,
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
             return app.renderStoreValue("sourceStore", value);
@@ -133,7 +142,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         {
           text: __("Type"),
           dataIndex: "type",
-          width: 50,
+          maxWidth: 120,
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
             return app.renderStoreValue("typeStore", value.split(","));
@@ -149,11 +158,6 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           },
           // invoke open_managed_objectForm
           onClick: "openForm",
-        },
-        {
-          text: __("Port"),
-          width: 25,
-          dataIndex: "port",
         },
         {
           text: __("Addresses"),
@@ -184,12 +188,10 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       plugins: [
         {
           ptype: "rowediting",
-          clicksToEdit: 2,
+          clicksToEdit: 1,
           listeners: {
-            beforeedit: function(editor, context){
-              context.cancel = true;
-            },
-            // canceledit: "onCancelEdit",
+            beforeedit: "checkEditing",
+            edit: "updateInstance",
           },
         },
       ],
@@ -318,5 +320,55 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       return value;
     }
     return icon + value;
+  },
+  checkEditing: function(editor, context){
+    if(!context.record.get("allow_update")){
+      context.cancel = true;
+      return;
+    }
+    if(["fqdn", "port", "name"].includes(context.column.dataIndex)){ 
+      context.cancel = false;
+      return;
+    }
+    context.cancel = true;
+  },
+  updateInstance: function(editor, context){
+    var params = {}, record = context.record,
+      serviceId = this.getViewModel().get("record").id,
+      url = "/sa/service/" + serviceId + "/instance/" + record.id + "/";
+    if(!Ext.isEmpty(record.get("name"))){
+      params["name"] = record.get("name"); 
+    }
+    if(!Ext.isEmpty(record.get("fqdn"))){
+      params["fqdn"] = record.get("fqdn"); 
+    }
+    if(!Ext.isEmpty(record.get("port"))){
+      params["port"] = record.get("port"); 
+    }
+    context.record.commit();
+    this.request(url, params, context.record);
+  },
+  request: function(url, params, record){
+    Ext.Ajax.request({
+      url: url,
+      method: "PUT",
+      scope: this,
+      jsonData: params,
+      success: function(response){
+        var result = Ext.decode(response.responseText);
+        if(result.success){
+          NOC.info(__("Instance updated successfully"));
+          record.set("name", result.data.name);
+          record.set("fqdn", result.data.fqdn);
+          record.set("port", result.data.port);
+        } else{
+          NOC.error(__("Error") + ": " + (result.message || __("Failed to update instance")));
+        }
+      },
+      failure: function(response){
+        var result = Ext.decode(response.responseText);
+        NOC.error(__("Error") + ": " + (result.errors || __("Server error occurred")));
+      },
+    });
   },
 });
