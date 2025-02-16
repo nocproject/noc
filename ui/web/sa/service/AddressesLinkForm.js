@@ -17,38 +17,149 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
   modal: true,
   scrollable: true,
   layout: "fit",
-  items: [
-    {
-      xtype: "form",
-      padding: 4,
+  initComponent: function(){
+    Ext.apply(this, {
+      items: [{
+        xtype: "form",
+        padding: 4,
+        items: [
+          {
+            xtype: "hidden",
+            name: "service_id",
+          },
+          {
+            xtype: "hidden",
+            name: "instance_id",
+          },
+          {
+            xtype: "container",
+            itemId: "addresses-container",
+            layout: {
+              type: "vbox",
+            },
+            items: this.getRowConfig("add"),
+          },
+        ],
+        buttons: [
+          {
+            text: __("Bind"),
+            formBind: true,
+            handler: this.bindHandler("bind"),
+          },
+          {
+            text: __("Reset"),
+            formBind: true,
+            handler: this.bindHandler("unbind"), 
+          },
+        ],
+      }],
+    });
+    this.callParent();
+  },
+  getRowConfig: function(type){
+    return {
+      xtype: "container",
+      layout: {
+        type: "hbox",
+        align: "end",
+      },
       items: [
-        {
-          xtype: "hidden",
-          name: "service_id",
-        },
-        {
-          xtype: "hidden",
-          name: "instance_id",
-        },
+        this.getButtonConfig(type),
+        this.getAddressTextConfig(),
+        this.getPoolComboConfig(),
       ],
-      buttons: [
-        {
-          text: __("Bind"),
-          formBind: true,
-          handler: function(){
-            var data = this.up("form").getForm().getValues();
-            console.log("bind", data);
-          },
+    }    
+  },
+  getButtonConfig: function(type){
+    var tooltip = type === "add" ? __("Add Input") : __("Remove Input"),
+      glyph = type === "add" ? NOC.glyph.plus : NOC.glyph.minus,
+      config = {
+        xtype: "button",
+        glyph: glyph,
+        tooltip: tooltip,
+        disabled: true,
+      };
+      
+    if(type === "add"){
+      config.handler = this.addInput;
+    } else{
+      config.disabled = false;
+      config.handler = this.removeInput;
+    }
+    return config;
+  },
+  getAddressTextConfig: function(){
+    var config = {
+      xtype: "textfield",
+      name: "address",
+      allowBlank: false,
+      emptyText: __("Address"),
+      labelWidth: 150,
+      regex: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+      regexText: __("Invalid IP address format"),
+      listeners: {
+        validitychange: function(field, isValid){
+          var removeBtn = field.up().down("button");
+          removeBtn.setDisabled(!isValid);
         },
-        {
-          text: __("Reset"),
-          formBind: true,
-          handler: function(){
-            var data = this.up("form").getForm().getValues();
-            console.log("reset", data);
-          },
+      },
+    };
+    return config;
+  },
+  getPoolComboConfig: function(){
+    return {
+      xtype: "core.combo",
+      name: "pool",
+      emptyText: __("Select Pool"),
+      restUrl: "/main/pool/lookup/",
+      uiStyle: "medium-combo",
+    };
+  },
+  addInput: function(){
+    var rowsContainer = this.up("form").down("[itemId=addresses-container]");
+    rowsContainer.add(Ext.create(this.up("window").getRowConfig("remove")));
+  },
+  removeInput: function(button){
+    var row = button.up(),
+      rowsContainer = row.up();
+    rowsContainer.remove(row);
+  },
+  bindHandler: function(method){
+    return function(){
+      var data = this.up("form").getForm().getValues(),
+        isAddressArray = Ext.isArray(data.address),
+        addresses = Ext.Array.map(
+          isAddressArray ? data.address : [data.address],
+          function(address, index){
+            return {
+              address: address,
+              pool: data.pool[index] || "",
+            };
+          }),
+        url = "/sa/service/" + data.service_id
+          + "/instance/" + data.instance_id + "/" + method + "/";
+      if(method === "unbind"){
+        url += "/addresses/";
+      }
+      console.log("bind", url, addresses);
+      Ext.Ajax.request({
+        url: url,
+        method: "PUT",
+        jsonData: addresses,
+        success: function(response){
+          var result = Ext.decode(response.responseText);
+          if(result.success){
+            NOC.info("Success", "Addresses " + method + " successfully");
+            this.up("window").close();
+          } else{
+            NOC.error("Error", result.message || "Operation failed");
+          }
         },
-      ],
-    },
-  ],
+        failure: function(response){
+          NOC.error("Error : Server error occurred");
+        },
+        scope: this,
+      });
+    };
+  },
 });

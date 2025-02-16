@@ -247,7 +247,9 @@ Ext.define("NOC.sa.service.InstancesPanel", {
   },
   open_addressesForm: function(record){
     var service = this.getViewModel().get("record"), 
-      form = Ext.create("NOC.sa.service.AddressesLinkForm");
+      form = Ext.create("NOC.sa.service.AddressesLinkForm", {
+        title: __("Bind Addresses"),
+      });
     form.down("form").getForm().setValues({
       service_id: service.id,
       instance_id: record.id,
