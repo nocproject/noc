@@ -15,6 +15,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     "NOC.sa.service.ManagedObjectLinkForm",
     "NOC.sa.service.ResourceLinkForm",
     "NOC.sa.service.AddressesLinkForm",
+    "NOC.sa.service.RegisterForm",
     "Ext.ux.form.SearchField",
   ],
   layout: "fit",
@@ -100,12 +101,14 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       bind: {
         disabled: "{!enableRegisterBtn}",
       },
+      handler: "open_registerForm",
     },
     {
       text: __("Unregister"),
       bind: {
         disabled: "{!canUnregister}",
       },
+      handler: "onUnregister",
     },
   ],
   items: [
@@ -338,6 +341,14 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     }
     form.instanceRecord = record;
   },
+  open_registerForm: function(){
+    var service = this.getViewModel().get("record"),
+      form = Ext.create("NOC.sa.service.RegisterForm");
+    form.down("form").getForm().setValues({
+      service_id: service.id,
+    });
+    form.down("form [name=type]").setStore(this.getViewModel().getStore("typeStore"));
+  },
   lockIcon: function(value, meta, record){
     var icon = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Row read only") + "'></i>";
     if(record.get("allow_update")){
@@ -394,5 +405,8 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         NOC.error(__("Error") + ": " + (result.errors || __("Server error occurred")));
       },
     });
+  },
+  onUnregister: function(){
+    console.log("Unregister");
   },
 });
