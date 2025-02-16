@@ -55,6 +55,12 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       showOnClose: "ITEM_FORM",
       enableRegisterBtn: false,
       enableUnregisterBtn: false,
+      selectedInstance: null,
+    },
+    formulas: {
+      canUnregister: function(get){
+        return get("enableUnregisterBtn") && get("selectedInstance") !== null;
+      },
     },
   },
   tbar: [
@@ -98,7 +104,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     {
       text: __("Unregister"),
       bind: {
-        disabled: "{!enableUnregisterBtn}",
+        disabled: "{!canUnregister}",
       },
     },
   ],
@@ -111,6 +117,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       sortableColumns: false,
       bind: {
         store: "{gridStore}",
+        selection: "{selectedInstance}",
       },
       columns: [
         {
@@ -187,6 +194,14 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       viewConfig: {
         listeners: {
           cellclick: "onCellClick",
+          beforecellclick: function(view, m, d, record){
+            var sm = view.getSelectionModel();
+            if(sm.isSelected(record)){
+              console.log("selected");
+              sm.deselectAll();
+              return false;
+            }
+          },
         },
       },
       plugins: [
