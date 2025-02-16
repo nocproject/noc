@@ -127,7 +127,11 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         {
           text: __("Port"),
           maxWidth: 100,
-          editor: "numberfield",
+          editor: {
+            xtype: "numberfield",
+            minValue: 1,
+            maxValue: 65535,
+          },
           dataIndex: "port",
         },
         {
