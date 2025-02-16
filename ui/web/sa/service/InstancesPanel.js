@@ -244,7 +244,6 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       service_id: service.id,
       instance_id: record.id,
     });
-    // form.restoreRows(record.get("addresses"));
     form.instanceRecord = record;
   },
   open_addressesForm: function(record){
@@ -277,5 +276,6 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         managed_object: record.get("managed_object"),
       });
     }
+    form.instanceRecord = record;
   },
 });
