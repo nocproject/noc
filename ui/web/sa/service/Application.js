@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.service application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.service.Application");
@@ -22,6 +22,7 @@ Ext.define("NOC.sa.service.Application", {
     "NOC.inv.resourcegroup.LookupField",
     "NOC.core.label.LabelField",
     "NOC.core.combotree.ComboTree",
+    "NOC.sa.service.InstancesPanel",
     "Ext.ux.form.GridField",
   ],
   model: "NOC.sa.service.Model",
@@ -29,6 +30,8 @@ Ext.define("NOC.sa.service.Application", {
   helpId: "reference-service",
 
   initComponent: function(){
+    this.instancesPanel = Ext.create("NOC.sa.service.InstancesPanel");
+    this.ITEM_INSTANCES = this.registerItem(this.instancesPanel);
     Ext.apply(this, {
       columns: [
         {
@@ -80,6 +83,14 @@ Ext.define("NOC.sa.service.Application", {
             }
 
             return "<div class='noc-object-oper-state' style='background: " + color + "'></div>";
+          },
+        },
+        {
+          text: __("Instances"),
+          dataIndex: "instance_count",
+          renderer: function(value, metaData){
+            metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
+            return value;
           },
         },
         {
@@ -743,6 +754,7 @@ Ext.define("NOC.sa.service.Application", {
       ],
     });
     this.callParent();
+    this.getRegisteredItem(this.ITEM_GRID).addListener("cellclick", this.onCellClick, this); 
   },
   //
   filters: [
@@ -800,6 +812,15 @@ Ext.define("NOC.sa.service.Application", {
   },
   //
   onInstances: function(){
-    console.log("not implemented");
+    this.getRegisteredItem(this.ITEM_INSTANCES).load(this.currentRecord, "ITEM_FORM");
+    this.showItem(this.ITEM_INSTANCES);
+  },
+  onCellClick: function(self, td, cellIndex, record, tr, rowIndex, e){
+    var cellName = e.position.column.dataIndex;
+    if(["instance_count"].includes(cellName)){
+      this.showItem(this.ITEM_INSTANCES);
+      Ext.History.setHash("sa.service/" + record.id);
+      this.getRegisteredItem(this.ITEM_INSTANCES).load(record, "ITEM_GRID");
+    }
   },
 });

@@ -92,6 +92,10 @@ Ext.define("NOC.core.Application", {
     return me._registeredItems;
   },
   //
+  getRegisteredItem: function(index){
+    return this._registeredItems[index];
+  },
+  //
   processCommands: function(){
     var me = this,
       cmd = me.getCmd();
