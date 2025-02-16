@@ -107,24 +107,24 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       reference: "instancesGrid",
       scrollable: true,
       forceFit: true,
+      sortableColumns: false,
       bind: {
         store: "{gridStore}",
       },
       columns: [
         {
+          text: __("Name"),
+          dataIndex: "name",
+          renderer: "lockIcon",
+        },
+        {
           text: __("FQDN"),
           dataIndex: "fqdn",
-          renderer: function(value, meta, record){
-            var icon = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Row read only") + "'></i>";
-            if(record.get("allow_update")){
-              return value;
-            }
-            return icon + value;
-          },
         },
         {
           text: __("Sources"),
           dataIndex: "sources",
+          width: 50,
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
             return app.renderStoreValue("sourceStore", value);
@@ -133,6 +133,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         {
           text: __("Type"),
           dataIndex: "type",
+          width: 50,
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
             return app.renderStoreValue("typeStore", value.split(","));
@@ -151,6 +152,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         },
         {
           text: __("Port"),
+          width: 25,
           dataIndex: "port",
         },
         {
@@ -162,10 +164,6 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           },
           // invoke open_addressesForm
           onClick: "openForm",
-        },
-        {
-          text: __("Name"),
-          dataIndex: "name",
         },
         {
           text: __("Resources"),
@@ -183,6 +181,18 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           cellclick: "onCellClick",
         },
       },
+      plugins: [
+        {
+          ptype: "rowediting",
+          clicksToEdit: 2,
+          listeners: {
+            beforeedit: function(editor, context){
+              context.cancel = true;
+            },
+            // canceledit: "onCancelEdit",
+          },
+        },
+      ],
     },
   ],
   onCellClick: function(view, cell, cellIndex, record, row, rowIndex, e){
@@ -301,5 +311,12 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       if(!Ext.isEmpty(resources)) resourceCombo.setValue({resource: resources[0].resource, resource__label: resources[0].resource__label});
     }
     form.instanceRecord = record;
+  },
+  lockIcon: function(value, meta, record){
+    var icon = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Row read only") + "'></i>";
+    if(record.get("allow_update")){
+      return value;
+    }
+    return icon + value;
   },
 });
