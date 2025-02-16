@@ -115,9 +115,9 @@ Ext.define("NOC.sa.service.ResourceLinkForm", {
   buttonHandler: function(method){
     var data = this.down("form").getForm().getValues(),
       url = "/sa/service/" + data.service_id + "/instance/" + data.instance_id + "/" + method,
-      params = {managed_object: data.managed_id};
+      params = {resources: [data.resources]};
     if(method !== "bind"){
-      url += "/resource/";
+      url += "/resources/";
       params = undefined;
     }
     this.request(url, params, method);
@@ -130,8 +130,7 @@ Ext.define("NOC.sa.service.ResourceLinkForm", {
       success: function(response){
         var result = Ext.decode(response.responseText);
         if(result.success){
-          this.instanceRecord.set("resource", result.data.resource);
-          this.instanceRecord.set("resource__label", result.data.resource__label);
+          this.instanceRecord.set("resources", result.data.resources);
           this.instanceRecord.commit();
           NOC.info(__("Success Resource") + " " + method + " " + __("successfully"));
           this.close();

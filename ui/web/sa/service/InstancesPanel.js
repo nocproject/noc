@@ -157,7 +157,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           dataIndex: "resources",
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
-            return app.renderLink(app.renderArrayValue(value, "resource_label"));
+            return app.renderLink(app.renderArrayValue(value, "resource__label"));
           },
           // invoke open_resourcesForm
           onClick: "openForm",
@@ -264,17 +264,25 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       form = Ext.create("NOC.sa.service.ResourceLinkForm", {
         title: __("Interface <Bind>"),
       }),
-      resourceComboProxy = form.down("[name=resources]").getStore().getProxy();
+      managed_id = record.get("managed_object"),
+      resources = record.get("resources"),
+      resourceCombo = form.down("[name=resources]"),
+      resourceComboProxy = resourceCombo.getStore().getProxy();
+    if(!Ext.isEmpty(resources)){
+      managed_id = resources[0].managed_object;
+    }
     form.down("form").getForm().setValues({
-      managed_id: record.get("managed_object"),
+      managed_id: managed_id,
       service_id: service.id,
       instance_id: record.id,
     });
     resourceComboProxy.setUrl(resourceUrl);
-    if(!Ext.isEmpty(record.get("managed_object"))){
+    resourceCombo.restUrl = resourceUrl;
+    if(!Ext.isEmpty(managed_id)){
       resourceComboProxy.setExtraParams({
-        managed_object: record.get("managed_object"),
+        managed_object: managed_id,
       });
+      resourceCombo.setValue({resource: resources[0].resource, resource__label: resources[0].resource__label});
     }
     form.instanceRecord = record;
   },
