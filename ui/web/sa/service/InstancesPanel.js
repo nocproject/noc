@@ -270,6 +270,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       resourceComboProxy = resourceCombo.getStore().getProxy();
     if(!Ext.isEmpty(resources)){
       managed_id = resources[0].managed_object;
+      resourceCombo.setValue({resource: resources[0].resource, resource__label: resources[0].resource__label});
     }
     form.down("form").getForm().setValues({
       managed_id: managed_id,
@@ -277,12 +278,10 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       instance_id: record.id,
     });
     resourceComboProxy.setUrl(resourceUrl);
-    resourceCombo.restUrl = resourceUrl;
     if(!Ext.isEmpty(managed_id)){
       resourceComboProxy.setExtraParams({
         managed_object: managed_id,
       });
-      resourceCombo.setValue({resource: resources[0].resource, resource__label: resources[0].resource__label});
     }
     form.instanceRecord = record;
   },
