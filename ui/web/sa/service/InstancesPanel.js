@@ -348,6 +348,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       service_id: service.id,
     });
     form.down("form [name=type]").setStore(this.getViewModel().getStore("typeStore"));
+    form.instanceStore = this.getViewModel().getStore("gridStore");
   },
   lockIcon: function(value, meta, record){
     var icon = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Row read only") + "'></i>";
@@ -407,6 +408,46 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     });
   },
   onUnregister: function(){
-    console.log("Unregister");
+    var vm = this.getViewModel(),
+      serviceId = vm.get("record").id,
+      instanceId = vm.get("selectedInstance").id,
+      url = "/sa/service/" + serviceId + "/unregister_instance/" + instanceId + "/";
+    
+    Ext.Ajax.request({
+      url: url,
+      method: "POST",
+      scope: this,
+      success: function(response){
+        var result = Ext.decode(response.responseText);
+        if(result.success){
+          NOC.info("Instance unregister successfully");
+          this.reloadInstanceStore(serviceId);
+        } else{
+          NOC.error("Error " + " : " + result.message || "Operation failed");
+        }
+      },
+      failure: function(response){
+        var result = Ext.decode(response.responseText);
+        NOC.error("Error " + " : " + result.message || "Server error occurred");
+      },
+    });
+  },
+  reloadInstanceStore: function(serviceId){
+    Ext.Ajax.request({
+      url: "/sa/service/" + serviceId + "/instance/",
+      method: "GET",
+      scope: this,
+      success: function(response){
+        let data = Ext.decode(response.responseText);
+        this.getViewModel().getStore("gridStore").loadData(data);
+      },
+      failure: function(response){
+        var text = Ext.decode(response.responseText);
+        NOC.error(text.message || __("Failed to load instances"));
+      },
+      callback: function(){
+        this.unmask();
+      },
+    });
   },
 });

@@ -25,7 +25,6 @@ Ext.define("NOC.sa.service.RegisterForm", {
       defaults: {
         labelAlign: "left",
         labelWidth: 150,
-        allowBlank: false,
       },
       items: [
         {
@@ -36,6 +35,7 @@ Ext.define("NOC.sa.service.RegisterForm", {
           xtype: "core.combo",
           fieldLabel: __("Type"),
           name: "type",
+          allowBlank: false,
           editable: false,
           typeAhead: false,
           uiStyle: "medium-combo",
@@ -48,7 +48,7 @@ Ext.define("NOC.sa.service.RegisterForm", {
         {
           xtype: "textfield",
           fieldLabel: __("FQDN"),
-          name: "FQDN",
+          name: "fqdn",
         },
       ],
       buttons: [
@@ -62,10 +62,10 @@ Ext.define("NOC.sa.service.RegisterForm", {
   ],
   buttonHandler: function(){
     var data = this.down("form").getForm().getValues(),
-      url = "/sal/service/" + data.service_id + "/register_instance/" + data.type + "/",
+      url = "/sa/service/" + data.service_id + "/register_instance/" + data.type + "/",
       params = {
-        name: data.name,
-        FQDN: data.FQDN,
+        name: Ext.isEmpty(data.name) ? undefined : data.name,
+        fqdn: Ext.isEmpty(data.fqdn) ? undefined : data.fqdn, 
       };
     this.request(url, params);
   },
@@ -74,11 +74,20 @@ Ext.define("NOC.sa.service.RegisterForm", {
       url: url,
       method: "POST",
       jsonData: params,
+      scope: this,
       success: function(response){
-        console.log(response);
+        var result = Ext.decode(response.responseText);
+        if(result.success){
+          NOC.info("Instance register successfully");
+          this.instanceStore.loadData(result.data, true);
+          this.close();
+        } else{
+          NOC.error("Error " + " : " + result.message || "Operation failed");
+        }
       },
-      failure: function(){
-        console.log("Failed");
+      failure: function(response){
+        var result = Ext.decode(response.responseText);
+        NOC.error("Error " + " : " + result.message || "Server error occurred");
       },
     });
   },
