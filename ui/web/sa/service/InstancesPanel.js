@@ -150,7 +150,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           maxWidth: 120,
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
-            return app.renderStoreValue("sourceStore", value);
+            return app.renderStoreValue("sourceStore", value.split(","));
           },
         },
         {
