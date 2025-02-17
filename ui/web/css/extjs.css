@@ -868,3 +868,23 @@ table {
         grid-column: 3 / span 2;
     }
 }
+
+.noc-inv-nav-label {
+    font: normal 16px 'PT Root UI VF';
+    line-height: 25px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.noc-inv-nav-label:hover {
+    color: #fff;
+    background: #34495e;
+    border-color: #34495e;
+}
+
+.noc-inv-nav-empty {
+    padding: 8px;
+    color: #999;
+    font-style: italic;
+    text-align: center;
+}
