@@ -69,7 +69,9 @@ class OTNOTUController(BaseController):
             if c.name != ep.name or not c.protocols:
                 continue
             return [
-                pvi.protocol.code for pvi in c.protocols if pvi.protocol.technology.name == "Signal"
+                pvi.protocol.code
+                for pvi in c.protocols
+                if pvi.protocol.technology.name == "Modulation"
             ]
         return []
 
