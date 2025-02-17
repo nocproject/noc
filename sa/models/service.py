@@ -330,7 +330,7 @@ class Service(Document):
         for si in ServiceInstance.objects.filter(
             service__in=path,
             managed_object__exists=True,
-        ).scalar("id", "managed_object"):
+        ).scalar("managed_object"):
             if si.managed_object:
                 return si.managed_object
 
@@ -765,7 +765,7 @@ class Service(Document):
     ):
         """Remove service info for source"""
         # Check multiple instances
-        instances = ServiceInstance.objects.filter(type=type, service=self)
+        instances = ServiceInstance.objects.filter(type=type, service=self, name=name)
         if not instances:
             logger.info("[%s] Instance not found: %s", self.id, type)
             return

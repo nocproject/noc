@@ -83,7 +83,7 @@ class ServiceInstance(Document):
             "type",
             "remote_id",
             ("addresses.address_bin", "port"),
-            {"fields": ["service", "managed_object", "remote_id", "port"], "unique": True},
+            {"fields": ["service", "managed_object", "remote_id", "name"], "unique": True},
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
@@ -360,7 +360,13 @@ class ServiceInstance(Document):
         if self.managed_object:
             ServiceSummary.refresh_object(self.managed_object)
 
-    def update_resources(self, res: List[Any], source: InputSource, bulk=None):
+    def update_resources(
+        self,
+        res: List[Any],
+        source: InputSource,
+        update_ts: Optional[datetime.datetime] = None,
+        bulk=None,
+    ):
         """
         Update resources for service instance
         Attrs:
@@ -370,6 +376,7 @@ class ServiceInstance(Document):
         """
         resources = []
         cfg = self.config
+        update_ts = datetime.datetime.now() or update_ts
         for o in res:
             if not hasattr(o, "as_resource"):
                 raise AttributeError("Model %s not Supported Resource Method" % get_model_id(o))
@@ -383,8 +390,14 @@ class ServiceInstance(Document):
             resources.append(rid)
             logger.info("Binding service %s to interface %s", self.service, o.name)
         self.resources = resources
+        self.last_seen = update_ts
         if bulk is not None:
-            bulk += [UpdateOne({"_id": self.id}, {"$set": {"resources": self.resources}})]
+            bulk += [
+                UpdateOne(
+                    {"_id": self.id},
+                    {"$set": {"resources": self.resources, "last_seen": self.last_seen}},
+                )
+            ]
         else:
             ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
             if self.managed_object:

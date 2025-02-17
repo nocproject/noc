@@ -35,6 +35,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         data: [
           {id: "network", label: __("Network")},
           {id: "endpoint", label: __("Endpoint")},
+          {id: "asset", label: __("Asset")},
           {id: "other", label: __("Other")},
         ],
       },

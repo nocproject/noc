@@ -56,7 +56,7 @@ class ServiceInstanceConfig:
     def get_config(cls, type: InstanceType, service) -> "ServiceInstanceConfig":
         """Return Config instance by type"""
         match type:
-            case InstanceType.NETWORK_HOST:
+            case InstanceType.ASSET:
                 cfg = NetworkHostInstance()
             case InstanceType.NETWORK_CHANNEL:
                 cfg = NetworkChannelInstance()
