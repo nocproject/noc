@@ -110,6 +110,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   preview: function(data){
     var me = this;
 
+    this.currentId = data.id;
     NOC.core.ResourceLoader.loadSet("leaflet", {
       yandex: NOC.settings.gis.yandex_supported,
     })
@@ -177,7 +178,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     if(me.map.hasLayer(layer)){
       Ext.Ajax.request({
         url: "/inv/inv/plugin/map/layers/" + me.getQuery(layer.options.nocCode),
-        method: 'GET',
+        method: "GET",
         scope: me,
         success: function(response){
           var data = Ext.decode(response.responseText);
@@ -187,7 +188,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           }
         },
         failure: function(){
-          NOC.error(__('Failed to get layer'));
+          NOC.error(__("Failed to get layer"));
         },
       });
     }
