@@ -79,7 +79,7 @@ Ext.define("NOC.sa.service.RegisterForm", {
         var result = Ext.decode(response.responseText);
         if(result.success){
           NOC.info("Instance register successfully");
-          this.instanceStore.loadData(result.data, true);
+          this.instanceStore.loadRawData(result.data, true);
           this.close();
         } else{
           NOC.error("Error " + " : " + result.message || "Operation failed");
