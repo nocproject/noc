@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # OTNODUMapper class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 from typing import Optional
 
 # NOC modules
+from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.inv.models.object import Object
 from ..controller.base import Endpoint
@@ -45,9 +46,25 @@ class DWDMOdUMapper(BaseMapper):
             except ValueError:
                 return d
 
+        def get_client_protocol(ch: Channel) -> str | None:
+            for p in ch.params:
+                if p.name == "client_protocol":
+                    v = p.value
+                    if v.startswith("TransEth"):
+                        v = v[8:] + "E"
+                    return v
+            return None
+
+        def q_uni(v: str) -> str:
+            if client_protocol:
+                return f"{v}\n({client_protocol})"
+            return v
+
         db_ep = DBEndpoint.objects.filter(channel=self.channel.id).first()
         controller = OTNODUController()
         path = list(controller.iter_path(Endpoint.from_resource(db_ep.resource)))
+        # Client protocol
+        client_protocol = get_client_protocol(self.channel)
         self.add_subgraph(
             {
                 "name": "cluster_start",
@@ -55,7 +72,7 @@ class DWDMOdUMapper(BaseMapper):
                 "nodes": [
                     {
                         "name": "start_odu",
-                        "attributes": {"label": path[0].input, "shape": "box"},
+                        "attributes": {"label": q_uni(path[0].input), "shape": "box"},
                     },
                     {
                         "name": "start_otu",
@@ -71,7 +88,7 @@ class DWDMOdUMapper(BaseMapper):
                 "nodes": [
                     {
                         "name": "end_odu",
-                        "attributes": {"label": path[1].output, "shape": "box"},
+                        "attributes": {"label": q_uni(path[1].output), "shape": "box"},
                     },
                     {
                         "name": "end_otu",
