@@ -78,7 +78,7 @@ class ServiceInstanceConfig:
 class NetworkHostInstance(ServiceInstanceConfig):
     """NetworkHost Instance, Describe Network host or CPE, defined by MAC Address"""
 
-    type = InstanceType.NETWORK_HOST
+    type = InstanceType.ASSET
     required_fields = ["mac"]
     only_one_object = True
 
