@@ -326,7 +326,7 @@ class ServiceInstance(Document):
         address = []
         for a in self.addresses:
             if source in a.sources:
-                a.sources.remove(source.value)
+                a.sources.remove(source)
             if not a.sources:
                 continue
             address.append(a)

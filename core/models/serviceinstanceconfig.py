@@ -26,7 +26,7 @@ class InstanceType(enum.Enum):
     """
 
     # OS_PROCESS = "process"  # OS Process: ManagedObject, Name (pid)
-    NETWORK_HOST = "network_host"
+    ASSET = "asset"
     NETWORK_CHANNEL = "network"
     SERVICE_ENDPOINT = "endpoint"
     OTHER = "other"
@@ -63,7 +63,7 @@ class ServiceInstanceConfig:
             case InstanceType.SERVICE_ENDPOINT:
                 cfg = ServiceEndPont()
             case _:
-                cfg = ServiceInstanceConfig()
+                cfg = ConfigInstance()
         if service.profile.instance_policy_settings:
             p = service.profile.instance_policy_settings
             if p.instance_type != type:
@@ -118,3 +118,7 @@ class ServiceEndPont(ServiceInstanceConfig):
     def get_queryset(self, service: str, name=None, **kwargs):
         # By Group and allow_one_object
         return Q(service=service, type=self.type, name=name)
+
+
+class ConfigInstance(ServiceInstanceConfig):
+    type = InstanceType.OTHER

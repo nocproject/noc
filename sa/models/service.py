@@ -767,16 +767,17 @@ class Service(Document):
         # Check multiple instances
         instances = ServiceInstance.objects.filter(type=type, service=self)
         if not instances:
+            logger.info("[%s] Instance not found: %s", self.id, type)
             return
         for si in instances:
             if source in si.sources:
                 si.sources.remove(source)
             if not si.sources:
                 # For empty source, clean sources
-                self._get_collection().delete_one({"_id": self.id})
+                ServiceInstance._get_collection().delete_one({"_id": si.id})
             else:
-                self._get_collection().update_one(
-                    {"_id": self.id}, {"$set": {"sources": si.sources}}
+                ServiceInstance._get_collection().update_one(
+                    {"_id": si.id}, {"$set": {"sources": si.sources}}
                 )
             # delete
 
