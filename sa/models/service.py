@@ -327,12 +327,12 @@ class Service(Document):
     def get_effective_managed_object(self) -> Optional[Any]:
         """Return ManagedObject to upper level"""
         path = self.get_path()
-        for si in ServiceInstance.objects.filter(
+        for mo in ServiceInstance.objects.filter(
             service__in=path,
             managed_object__exists=True,
         ).scalar("managed_object"):
-            if si.managed_object:
-                return si.managed_object
+            if mo:
+                return mo
 
     def on_save(self):
         # if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:

@@ -187,10 +187,6 @@ Ext.define("NOC.sa.service.Model", {
       type: "auto",
     },
     {
-      name: "instances",
-      type: "auto",
-    },
-    {
       name: "labels",
       type: "auto",
     },

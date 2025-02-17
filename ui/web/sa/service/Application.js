@@ -164,7 +164,7 @@ Ext.define("NOC.sa.service.Application", {
         {
           xtype: "fieldset",
           layout: "hbox",
-          title: __("Refenced"),
+          title: __("Referenced"),
           defaults: {
             padding: 4,
             labelAlign: "top",
@@ -668,44 +668,6 @@ Ext.define("NOC.sa.service.Application", {
               text: __("Port"),
               dataIndex: "port_range",
               width: 50,
-              editor: "textfield",
-            },
-          ],
-        },
-        {
-          name: "instances",
-          xtype: "gridfield",
-          fieldLabel: __("Instances"),
-          allowBlank: true,
-          columns: [
-            {
-              text: __("Name"),
-              dataIndex: "textfield",
-              width: 250,
-              editor: "textfield",
-            },
-            {
-              text: __("Address"),
-              dataIndex: "address",
-              width: 100,
-              editor: "textfield",
-            },
-            {
-              text: __("FQDN"),
-              dataIndex: "fqdn",
-              width: 100,
-              editor: "textfield",
-            },
-            {
-              text: __("Port"),
-              dataIndex: "port",
-              width: 50,
-              editor: "numberfield",
-            },
-            {
-              text: __("NRI Port"),
-              dataIndex: "nri_port",
-              width: 100,
               editor: "textfield",
             },
           ],
