@@ -228,6 +228,9 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         && ["addresses", "resources", "managed_object"].includes(column.dataIndex)){
         return true;
       }
+      if(["name", "fqdn", "port"].includes(column.dataIndex)){
+        return true;
+      }
       sm.deselectAll();
       return false;
     }
