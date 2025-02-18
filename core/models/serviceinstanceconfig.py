@@ -26,8 +26,8 @@ class InstanceType(enum.Enum):
     """
 
     # OS_PROCESS = "process"  # OS Process: ManagedObject, Name (pid)
-    NETWORK_HOST = "network_host"
-    NETWORK_CHANNEL = "network_channel"
+    ASSET = "asset"
+    NETWORK_CHANNEL = "network"
     SERVICE_ENDPOINT = "endpoint"
     OTHER = "other"
 
@@ -56,14 +56,14 @@ class ServiceInstanceConfig:
     def get_config(cls, type: InstanceType, service) -> "ServiceInstanceConfig":
         """Return Config instance by type"""
         match type:
-            case InstanceType.NETWORK_HOST:
+            case InstanceType.ASSET:
                 cfg = NetworkHostInstance()
             case InstanceType.NETWORK_CHANNEL:
                 cfg = NetworkChannelInstance()
             case InstanceType.SERVICE_ENDPOINT:
                 cfg = ServiceEndPont()
             case _:
-                cfg = ServiceInstanceConfig()
+                cfg = ConfigInstance()
         if service.profile.instance_policy_settings:
             p = service.profile.instance_policy_settings
             if p.instance_type != type:
@@ -78,7 +78,7 @@ class ServiceInstanceConfig:
 class NetworkHostInstance(ServiceInstanceConfig):
     """NetworkHost Instance, Describe Network host or CPE, defined by MAC Address"""
 
-    type = InstanceType.NETWORK_HOST
+    type = InstanceType.ASSET
     required_fields = ["mac"]
     only_one_object = True
 
@@ -118,3 +118,7 @@ class ServiceEndPont(ServiceInstanceConfig):
     def get_queryset(self, service: str, name=None, **kwargs):
         # By Group and allow_one_object
         return Q(service=service, type=self.type, name=name)
+
+
+class ConfigInstance(ServiceInstanceConfig):
+    type = InstanceType.OTHER
