@@ -482,6 +482,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       record = store.getById(channelId);
       if(record){
         grid.getSelectionModel().select(grid.getStore().indexOf(record));
+        this.onChangeSelection(grid.getSelectionModel(), [record]);
       }
     });
   },
