@@ -47,6 +47,7 @@ from noc.sa.interfaces.base import (
     DictListParameter,
     DictParameter,
     FloatParameter,
+    IntParameter,
 )
 from noc.core.translation import ugettext as _
 from noc.core.text import alnum_key
@@ -771,9 +772,13 @@ class InvApplication(ExtApplication):
         method=["GET"],
         access="read",
         api=True,
-        validate={"q": UnicodeParameter(required=True)},
+        validate={
+            "q": UnicodeParameter(required=True),
+            "start": IntParameter(required=False),
+            "limit": IntParameter(required=False),
+        },
     )
-    def api_search(self, request, q: str):
+    def api_search(self, request, q: str, start: Optional[int] = 0, limit: Optional[int] = 10):
         def path(o: Object) -> List[Dict]:
             result = []
             for oid in o.get_path():
@@ -811,5 +816,8 @@ class InvApplication(ExtApplication):
                 },
             ]
         }
-        items = [{"path": path(o)} for o in Object.objects.filter(__raw__=query)]
+        items = [
+            {"path": path(o)}
+            for o in Object.objects.filter(__raw__=query).order_by("name")[start : start + limit]
+        ]
         return {"status": True, "items": items}
