@@ -772,13 +772,9 @@ class InvApplication(ExtApplication):
         method=["GET"],
         access="read",
         api=True,
-        validate={
-            "q": UnicodeParameter(required=True),
-            "start": IntParameter(required=False),
-            "limit": IntParameter(required=False),
-        },
+        validate={"q": UnicodeParameter(required=True)},
     )
-    def api_search(self, request, q: str, start: Optional[int] = 0, limit: Optional[int] = 10):
+    def api_search(self, request, q: str, **kwargs):
         def path(o: Object) -> List[Dict]:
             result = []
             for oid in o.get_path():
@@ -816,6 +812,8 @@ class InvApplication(ExtApplication):
                 },
             ]
         }
+        start = int(kwargs.get("__start", 0))
+        limit = int(kwargs.get("__limit", 10))
         items = [
             {"path": path(o)}
             for o in Object.objects.filter(__raw__=query).order_by("name")[start : start + limit]
