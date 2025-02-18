@@ -87,6 +87,7 @@ Ext.define("NOC.inv.inv.NavSearch", {
     },
     keydown: function(field, e){
       if(e.getKey() === e.ESC){
+        field.collapse();
         field.clearValue();
       }
     },
