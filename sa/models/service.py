@@ -9,6 +9,7 @@
 import datetime
 import logging
 import operator
+from collections import defaultdict
 from threading import Lock
 from typing import Any, Dict, Optional, Iterable, List, Union, Tuple
 
@@ -523,24 +524,54 @@ class Service(Document):
 
         if self.profile.alarm_affected_policy == "D":
             return Status.UNKNOWN
-        statuses = {}
+        alarm_status = Status.UP
+        instance_status = defaultdict(lambda: Status.UP)
+        effective_clients = frozenset(str(x) for x in self.effective_client_groups)
+        # Matcher ?
+        instances: Optional[List["ServiceInstance"]] = None
         # Calculate Alarm status
         for aa in ActiveAlarm.objects.filter(affected_services=self.id):
-            status = self.profile.calculate_alarm_status(aa)
-            if status != Status.UNKNOWN:
-                statuses[aa] = status
-        if not statuses:
-            return Status.UP
-        logger.debug("[%s] Alarm statuses: %s", self.id, statuses)
-        r = [(s, 1) for s in statuses.values()]
+            # Match Rule
+            rule = self.profile.get_rule_by_alarm(aa)
+            if not rule:
+                continue
+            # Calculate Status
+            status = rule.status or ServiceProfile.get_status_by_severity(aa.severity)
+            logger.debug("[%s] Alarm status is: %s", aa, status)
+            if status == Status.UNKNOWN:
+                continue
+            if not rule.affected_instance:
+                alarm_status = max(status, alarm_status)
+                continue
+            if (
+                effective_clients
+                and aa.managed_object.effective_service_groups
+                and effective_clients.intersection(
+                    set(aa.aa.managed_object.effective_service_groups)
+                )
+            ):
+                instance_status[aa.managed_object.id] = max(
+                    instance_status[aa.managed_object.id], status
+                )
+            if instances is None:
+                instances = [si for si in ServiceInstance.objects.filter(service=self.id)]
+            for si in instances:
+                if si.is_match_alarm(aa):
+                    instance_status[si.id] = max(instance_status[si.id], status)
+            # alarm_statuses[aa] = status
+        if not instance_status:
+            # ? calculate by alarm count
+            return alarm_status
+        logger.info("[%s] Instance statuses: %s", self.id, instance_status)
         # Calculate Service Instance Status
-        for si in ServiceInstance.objects.filter(service=self.id):
-            si_statuses = [s for aa, s in statuses.items() if si.is_match_alarm(aa)]
-            (
-                r.append((max(si_statuses), si.weight))
-                if si_statuses
-                else r.append((Status.UP, si.weight))
-            )
+        # Request base summary
+        r = self.get_status_summary()
+        # max_weight !
+        for status in instance_status.values():
+            if status not in r:
+                r[status] = 1
+            else:
+                r[status] += 1
         # Calculate affected status
         return self.calculate_status(r)
 
@@ -554,17 +585,30 @@ class Service(Document):
             return self.profile.calculate_status_function
         return self.calculate_status_function
 
-    def calculate_status(self, statuses: List[Tuple[Status, int]]) -> Status:
+    def get_status_summary(self) -> Dict[Status, int]:
+        """Getting summary objects"""
+        r = {Status.UP: 1}
+        for r in ResourceGroup.objects.filter(id__in=self.effective_client_groups):
+            r[Status.UP] += r.resource_count
+        return r
+
+    def get_effective_calculate_rules(self) -> List["CalculatedStatusRule"]:
+        if self.calculate_status_function == "P":
+            return self.profile.calculate_status_rules
+        return self.calculate_status_rules
+
+    def calculate_status(self, statuses: Dict[Status, int]) -> Status:
         """Calculate status by Policy"""
         if not statuses:
             return Status.UNKNOWN
         f = self.get_calculate_status_function()
         if f == "MN":
-            return min(status for status, _ in statuses)
+            return min(statuses.keys())
         elif f == "MX":
-            return max(status for status, _ in statuses)
+            return max(statuses.keys())
+        logger.info("Calculate Status by Rules: %s", statuses)
         # Add Profile Rules
-        for r in self.calculate_status_rules:
+        for r in self.get_effective_calculate_rules():
             status = r.get_status(statuses)
             if status:
                 return status
@@ -572,13 +616,16 @@ class Service(Document):
 
     def get_affected_status(self) -> Status:
         """Getting operational status from dependencies services"""
-        r = []
+        r = {}
         if self.profile.calculate_status_function == "D":
             return Status.UNKNOWN
         for status, weight in self.iter_dependency_status():
             if status == Status.UNKNOWN:
                 continue
-            r.append((status, weight))
+            if status not in r:
+                r[status] = weight
+            else:
+                r[status] += weight
         if not r:
             return Status.UNKNOWN
         return self.calculate_status(r)
