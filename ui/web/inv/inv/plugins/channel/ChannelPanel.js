@@ -174,7 +174,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       return item.itemId === "detailsButton";
     }));
     tbarItems.splice(0, 0, closeBtn);
-    tbarItems.splice(tbarItems.length - 2, 0, searchField, magicBtn, createBtn);
+    tbarItems.splice(2, 0, searchField);
+    tbarItems.splice(tbarItems.length - 2, 0, magicBtn, createBtn);
     this.tbar = tbarItems;
     // Make items
     this.mainItems[0].items = parentItems;
@@ -360,7 +361,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   addParamFields: function(panel, params){
     Ext.Array.each(params, function(param){
-      console.log(param);
       var field = {
         xtype: "textfield", // default field type
         name: "params." + param.name,
@@ -534,6 +534,5 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     
       view.refresh();
     });
-    console.log("Search", query);
   },
 });
