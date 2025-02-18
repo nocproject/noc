@@ -146,13 +146,35 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         },
         hidden: true,
         handler: "onCreateBtn",
+      },
+      searchField = {
+        xtype: "searchfield",
+        itemId: "filter",
+        scope: this,
+        handler: "onSearch",
+        width: 300,
+        triggers: {
+          clear: {
+            cls: "x-form-clear-trigger",
+            hidden: true,
+            handler: function(field){
+              field.setValue("");
+              field.getTrigger("clear").hide();
+            },
+          },
+        },
+        listeners: {
+          change: function(field, value){
+            field.getTrigger("clear")[Ext.isEmpty(value) ? "hide" : "show"]();
+          },
+        },
       };
     // Make tbar
     Ext.Array.remove(tbarItems, Ext.Array.findBy(tbarItems, function(item){
       return item.itemId === "detailsButton";
     }));
     tbarItems.splice(0, 0, closeBtn);
-    tbarItems.splice(tbarItems.length - 2, 0, magicBtn, createBtn);
+    tbarItems.splice(tbarItems.length - 2, 0, searchField, magicBtn, createBtn);
     this.tbar = tbarItems;
     // Make items
     this.mainItems[0].items = parentItems;
@@ -473,5 +495,45 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     vm.set("panelTitle", __("Create new channel"));
     vm.set("createInvChannelBtnText", __("Create"));
     this.getLayout().setActiveItem(1);
+  },
+  //
+  onSearch: function(query){
+    Ext.each(this.query("grid"), function(grid){
+      var store = grid.getStore(),
+        view = grid.getView();
+
+      if(Ext.isEmpty(query)){
+        store.clearFilter();
+        view.emptyText = __("No records to display");
+        return;
+      }
+
+      view.emptyText = __("No records found matching: ") + query;
+    
+      if(grid.itemId === "invChannelMagicGrid"){
+        store.filterBy(function(record){
+          var channelName = record.get("channel_name") || "",
+            startEndpoint = record.get("start_endpoint") || "",
+            endEndpoint = record.get("end_endpoint") || "";
+        
+          return channelName.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               startEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               endEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        });
+      } else{
+        store.filterBy(function(record){
+          var name = record.get("name") || "",
+            fromEndpoint = record.get("from_endpoint") || "",
+            toEndpoint = record.get("to_endpoint") || "";
+            
+          return name.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               fromEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               toEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        });
+      }
+    
+      view.refresh();
+    });
+    console.log("Search", query);
   },
 });

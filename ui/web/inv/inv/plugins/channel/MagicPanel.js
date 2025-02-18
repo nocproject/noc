@@ -14,6 +14,7 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
   items: [
     {
       xtype: "grid",
+      itemId: "invChannelMagicGrid",
       scrollable: "y",
       height: 310,
       allowDeselect: true,
