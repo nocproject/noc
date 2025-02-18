@@ -17,7 +17,7 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
     modal: true,
     // width: 300,
     // height: 200,
-    autoScroll: true,
+    scrollable: true,
     layout: "fit",
 
     initComponent: function() {
@@ -49,6 +49,7 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
             items: [
                 {
                     xtype: "form",
+                    padding: 4,
                     items: [
                         {
                             xtype: "core.combo",

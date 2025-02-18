@@ -327,12 +327,12 @@ class Service(Document):
     def get_effective_managed_object(self) -> Optional[Any]:
         """Return ManagedObject to upper level"""
         path = self.get_path()
-        for si in ServiceInstance.objects.filter(
+        for mo in ServiceInstance.objects.filter(
             service__in=path,
             managed_object__exists=True,
-        ).scalar("id", "managed_object"):
-            if si.managed_object:
-                return si.managed_object
+        ).scalar("managed_object"):
+            if mo:
+                return mo
 
     def on_save(self):
         # if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
@@ -765,18 +765,19 @@ class Service(Document):
     ):
         """Remove service info for source"""
         # Check multiple instances
-        instances = ServiceInstance.objects.filter(type=type, service=self)
+        instances = ServiceInstance.objects.filter(type=type, service=self, name=name)
         if not instances:
+            logger.info("[%s] Instance not found: %s", self.id, type)
             return
         for si in instances:
             if source in si.sources:
                 si.sources.remove(source)
             if not si.sources:
                 # For empty source, clean sources
-                self._get_collection().delete_one({"_id": self.id})
+                ServiceInstance._get_collection().delete_one({"_id": si.id})
             else:
-                self._get_collection().update_one(
-                    {"_id": self.id}, {"$set": {"sources": si.sources}}
+                ServiceInstance._get_collection().update_one(
+                    {"_id": si.id}, {"$set": {"sources": si.sources}}
                 )
             # delete
 

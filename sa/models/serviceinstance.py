@@ -83,7 +83,7 @@ class ServiceInstance(Document):
             "type",
             "remote_id",
             ("addresses.address_bin", "port"),
-            {"fields": ["service", "managed_object", "remote_id", "port"], "unique": True},
+            {"fields": ["service", "managed_object", "remote_id", "name"], "unique": True},
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
@@ -157,7 +157,7 @@ class ServiceInstance(Document):
 
     def __str__(self) -> str:
         name = self.name or self.service.label
-        if self.type == InstanceType.NETWORK_HOST:
+        if self.type == InstanceType.ASSET:
             return f"[{self.type}|{','.join(self.macs)}] {name}"
         elif self.type == InstanceType.NETWORK_CHANNEL and self.managed_object:
             return f"[{self.type}|{self.managed_object}] {name}"
@@ -326,7 +326,7 @@ class ServiceInstance(Document):
         address = []
         for a in self.addresses:
             if source in a.sources:
-                a.sources.remove(source.value)
+                a.sources.remove(source)
             if not a.sources:
                 continue
             address.append(a)
@@ -360,7 +360,13 @@ class ServiceInstance(Document):
         if self.managed_object:
             ServiceSummary.refresh_object(self.managed_object)
 
-    def update_resources(self, res: List[Any], source: InputSource, bulk=None):
+    def update_resources(
+        self,
+        res: List[Any],
+        source: InputSource,
+        update_ts: Optional[datetime.datetime] = None,
+        bulk=None,
+    ):
         """
         Update resources for service instance
         Attrs:
@@ -370,6 +376,7 @@ class ServiceInstance(Document):
         """
         resources = []
         cfg = self.config
+        update_ts = datetime.datetime.now() or update_ts
         for o in res:
             if not hasattr(o, "as_resource"):
                 raise AttributeError("Model %s not Supported Resource Method" % get_model_id(o))
@@ -377,14 +384,20 @@ class ServiceInstance(Document):
                 o.fire_event("approved")
             rid = o.as_resource()
             c, _ = rid.split(":", 1)
-            if c not in cfg.allow_resources:
+            if c not in (cfg.allow_resources or []):  # has_resource
                 logger.info("Resource not allowed in service instance profile")
                 continue
             resources.append(rid)
             logger.info("Binding service %s to interface %s", self.service, o.name)
         self.resources = resources
+        self.last_seen = update_ts
         if bulk is not None:
-            bulk += [UpdateOne({"_id": self.id}, {"$set": {"resources": self.resources}})]
+            bulk += [
+                UpdateOne(
+                    {"_id": self.id},
+                    {"$set": {"resources": self.resources, "last_seen": self.last_seen}},
+                )
+            ]
         else:
             ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
             if self.managed_object:
