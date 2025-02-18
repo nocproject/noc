@@ -146,12 +146,36 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         },
         hidden: true,
         handler: "onCreateBtn",
+      },
+      searchField = {
+        xtype: "searchfield",
+        itemId: "filter",
+        scope: this,
+        handler: "onSearch",
+        width: 300,
+        minChars: 1,
+        triggers: {
+          clear: {
+            cls: "x-form-clear-trigger",
+            hidden: true,
+            handler: function(field){
+              field.setValue("");
+              field.getTrigger("clear").hide();
+            },
+          },
+        },
+        listeners: {
+          change: function(field, value){
+            field.getTrigger("clear")[Ext.isEmpty(value) ? "hide" : "show"]();
+          },
+        },
       };
     // Make tbar
     Ext.Array.remove(tbarItems, Ext.Array.findBy(tbarItems, function(item){
       return item.itemId === "detailsButton";
     }));
     tbarItems.splice(0, 0, closeBtn);
+    tbarItems.splice(2, 0, searchField);
     tbarItems.splice(tbarItems.length - 2, 0, magicBtn, createBtn);
     this.tbar = tbarItems;
     // Make items
@@ -338,7 +362,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   addParamFields: function(panel, params){
     Ext.Array.each(params, function(param){
-      console.log(param);
       var field = {
         xtype: "textfield", // default field type
         name: "params." + param.name,
@@ -459,6 +482,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       record = store.getById(channelId);
       if(record){
         grid.getSelectionModel().select(grid.getStore().indexOf(record));
+        this.onChangeSelection(grid.getSelectionModel(), [record]);
       }
     });
   },
@@ -473,5 +497,44 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     vm.set("panelTitle", __("Create new channel"));
     vm.set("createInvChannelBtnText", __("Create"));
     this.getLayout().setActiveItem(1);
+  },
+  //
+  onSearch: function(query){
+    Ext.each(this.query("grid"), function(grid){
+      var store = grid.getStore(),
+        view = grid.getView();
+
+      if(Ext.isEmpty(query)){
+        store.clearFilter();
+        view.emptyText = __("No records to display");
+        return;
+      }
+
+      view.emptyText = __("No records found matching: ") + query;
+    
+      if(grid.itemId === "invChannelMagicGrid"){
+        store.filterBy(function(record){
+          var channelName = record.get("channel_name") || "",
+            startEndpoint = record.get("start_endpoint") || "",
+            endEndpoint = record.get("end_endpoint") || "";
+        
+          return channelName.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               startEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               endEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        });
+      } else{
+        store.filterBy(function(record){
+          var name = record.get("name") || "",
+            fromEndpoint = record.get("from_endpoint") || "",
+            toEndpoint = record.get("to_endpoint") || "";
+            
+          return name.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               fromEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+               toEndpoint.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        });
+      }
+    
+      view.refresh();
+    });
   },
 });
