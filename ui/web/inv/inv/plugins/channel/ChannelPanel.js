@@ -153,6 +153,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         scope: this,
         handler: "onSearch",
         width: 300,
+        minChars: 1,
         triggers: {
           clear: {
             cls: "x-form-clear-trigger",
