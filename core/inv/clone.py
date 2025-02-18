@@ -16,13 +16,16 @@ from noc.inv.models.objectconnection import ObjectConnection, ObjectConnectionIt
 
 # interface, attr to clean from clone
 _SKIPPED_ATTRS = {
-    ("rackmount", "position"),
-    ("rackmount", "side"),
-    ("rackmount", "shift"),
     ("stack", "member"),
     ("asset", "serial"),
     ("asset", "asset_no"),
     ("management", "managed_object"),
+}
+
+_ROOT_SKIPPED_ATTRS = {
+    ("rackmount", "position"),
+    ("rackmount", "side"),
+    ("rackmount", "shift"),
 }
 
 # Fields to ignore during clone
@@ -47,17 +50,22 @@ def clone(root: Object, /, clone_connections: bool = False) -> Object:
         k = (d.interface, d.attr)
         return k in _SKIPPED_ATTRS
 
-    def clone_object(obj: Object, /, name: str | None = None) -> Object:
+    def to_skip_root(d: ObjectAttr) -> bool:
+        k = (d.interface, d.attr)
+        return k in _SKIPPED_ATTRS or k in _ROOT_SKIPPED_ATTRS
+
+    def clone_object(obj: Object, /, name: str | None = None, is_root: bool = False) -> Object:
         cloned = Object(**{k: v for k, v in obj._data.items() if k not in _IGNORED_FIELDS})
-        cloned.data = [d for d in cloned.data if not to_skip(d)]
+        skipper = to_skip_root if is_root else to_skip
+        cloned.data = [d for d in cloned.data if not skipper(d)]
         if name:
             cloned.name = name
         cloned.save()
         return cloned
 
-    def inner_clone(obj: Object, /, name: str | None = None) -> Object:
+    def inner_clone(obj: Object, /, name: str | None = None, is_root: bool = False) -> Object:
         # Clone
-        cloned = clone_object(obj, name=name)
+        cloned = clone_object(obj, name=name, is_root=is_root)
         c_map[obj] = cloned
         # Clone children
         for child in obj.iter_children():
@@ -108,7 +116,7 @@ def clone(root: Object, /, clone_connections: bool = False) -> Object:
 
     # old -> new object map
     c_map: dict[Object, Object] = {}
-    cloned_root = inner_clone(root, name=f"{root.name} (Clone)")
+    cloned_root = inner_clone(root, name=f"{root.name} (Clone)", is_root=True)
     if root.parent_connection:
         # Attach to nearest container
         cloned_root.parent = root.get_container()
