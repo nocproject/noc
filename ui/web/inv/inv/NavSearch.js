@@ -33,9 +33,9 @@ Ext.define("NOC.inv.inv.NavSearch", {
       limitParam: undefined,
       pageParam: undefined,
       startParam: undefined,
-    //   extraParams: {
-    //     limit: 5,
-    //   },
+      extraParams: {
+        limit: 50,
+      },
     },
   },
   listConfig: {
