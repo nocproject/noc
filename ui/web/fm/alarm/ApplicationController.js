@@ -496,4 +496,74 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
       },
     });
   },
+  acknowledgeDialog: function(alarmId, isAck, successFn){
+    var msg = new Ext.window.MessageBox().prompt(
+      __("Acknowledge"),
+      isAck ? __("Set alarm as unacknowledged") : __("Set alarm as acknowledged"),
+      function(btn, text){
+        var msg = __("Failed to set acknowledgedun/acknowledged"),
+          url = "/fm/alarm/" + alarmId + (isAck ? "/unacknowledge/" : "/acknowledge/");
+        if(btn === "ok"){
+          Ext.Ajax.request({
+            url: url,
+            method: "POST",
+            jsonData: {
+              msg: text,
+            },
+            scope: this,
+            success: function(response){
+              var data = Ext.decode(response.responseText);
+              if(!data.status){
+                Ext.MessageBox.show({
+                  title: "Error",
+                  message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+                  buttons: Ext.Msg.OK,
+                  icon: Ext.Msg.ERROR,
+                });
+                return;
+              }
+              successFn(data.status);
+            },
+            failure: function(){
+              NOC.error(msg);
+            },
+          })
+        }
+      },
+      this,
+    );
+    msg.setWidth(500);
+  },
+
+
+  //   successFn = function(response){
+  //   var data = Ext.decode(response.responseText),
+  //     msg = __("Failed to set acknowledgedun/acknowledged");
+  //   if(!data.status){
+  //     Ext.MessageBox.show({
+  //       title: "Error",
+  //       message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+  //       buttons: Ext.Msg.OK,
+  //       icon: Ext.Msg.ERROR,
+  //     });
+  //   }
+  //   view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+  // };
+
+  //   successFn = function(response){
+  //   var data = Ext.decode(response.responseText),
+  //     msg = __("Failed to set acknowledgedun/acknowledged");
+  //   if(data.status){
+  //     this.getViewModel().set("selected.ack_user", ackUser);
+  //   } else{
+  //     Ext.MessageBox.show({
+  //       title: "Error",
+  //       message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+  //       buttons: Ext.Msg.OK,
+  //       icon: Ext.Msg.ERROR,
+  //     });
+  //   }
+  //   this.fireViewEvent("fmAlarmRefreshForm");
+  // };
+
 });
