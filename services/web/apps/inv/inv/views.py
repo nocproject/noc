@@ -47,7 +47,6 @@ from noc.sa.interfaces.base import (
     DictListParameter,
     DictParameter,
     FloatParameter,
-    IntParameter,
 )
 from noc.core.translation import ugettext as _
 from noc.core.text import alnum_key
@@ -789,6 +788,8 @@ class InvApplication(ExtApplication):
                 ]
             return result
 
+        start = kwargs.get("__start")
+        limit = kwargs.get("__limit")
         query = {
             "$or": [
                 {"name": {"$regex": q}},
@@ -812,10 +813,8 @@ class InvApplication(ExtApplication):
                 },
             ]
         }
-        start = int(kwargs.get("__start", 0))
-        limit = int(kwargs.get("__limit", 10))
-        items = [
-            {"path": path(o)}
-            for o in Object.objects.filter(__raw__=query).order_by("name")[start : start + limit]
-        ]
+        objs = Object.objects.filter(__raw__=query).order_by("name")
+        if start is not None and limit is not None:
+            objs = objs[int(start) : int(start) + int(limit)]
+        items = [{"path": path(o)} for o in objs]
         return {"status": True, "items": items}
