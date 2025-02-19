@@ -7,11 +7,15 @@
 
 # Python modules
 import inspect
+import operator
 import os
+import threading
 from typing import Optional, Dict, List, Any, Tuple, Iterable
 from collections import defaultdict
 
+
 # Third-party modules
+import cachetools
 from mongoengine import ValidationError
 
 # NOC modules
@@ -52,6 +56,7 @@ from noc.core.translation import ugettext as _
 from noc.core.text import alnum_key
 from .pbuilder import CrossingProposalsBuilder
 
+id_lock = threading.Lock()
 translation_map = str.maketrans("<>", "><")
 
 
@@ -69,6 +74,7 @@ class InvApplication(ExtApplication):
         # Global Lost&Found
         "b0fae773-b214-4edf-be35-3468b53b03f2"
     }
+    _id_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -766,6 +772,23 @@ class InvApplication(ExtApplication):
             return self.response_not_found()
         return i.to_json()
 
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_cable_ids(self):
+        """
+        Get cable IDs from ObjectModel
+        """
+        ids = ObjectModel.objects.filter(
+            __raw__={
+                "data": {
+                    "$elemMatch": {
+                        "interface": {"$eq": "length"},
+                        "attr": {"$eq": "length"},
+                    }
+                },
+            }
+        ).values_list("id")
+        return [id for id in ids]
+
     @view(
         "^search/$",
         method=["GET"],
@@ -813,8 +836,9 @@ class InvApplication(ExtApplication):
                 },
             ]
         }
-        objs = Object.objects.filter(__raw__=query).order_by("name")
+        objs = Object.objects.filter(__raw__=query, model__nin=self.get_cable_ids()).order_by(
+            "name"
+        )
         if start is not None and limit is not None:
             objs = objs[int(start) : int(start) + int(limit)]
-        items = [{"path": path(o)} for o in objs]
-        return {"status": True, "items": items}
+        return {"status": True, "items": [{"path": path(o)} for o in objs]}
