@@ -7,7 +7,7 @@
 
 # Python modules
 import re
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 # Third-party modules
 import orjson
@@ -147,26 +147,79 @@ class MACApplication(ExtApplication):
             )
         return out, rows_count
 
+    @classmethod
+    def parse_output(cls, r: Dict[str, Any]):
+        mos = {
+            mo[1]: mo
+            for mo in ManagedObject.objects.filter(
+                bi_id__in=[int(x["managed_object"]) for x in r["data"]]
+            ).values_list("name", "bi_id", "id", "pool", "object_profile", "object_profile__name")
+        }
+        out = []
+        rows_count = r["rows_before_limit_at_least"]
+        for d in r["data"]:
+            if int(d["managed_object"]) not in mos:
+                rows_count -= 1
+                continue
+            mo_name, _, mo_id, pool, op, op_name = mos[int(d["managed_object"])]
+            pool = Pool.get_by_id(pool)
+            out.append(
+                {
+                    "last_changed": d["ts"],
+                    "mac": d["mac_s"],
+                    # "l2_domain": str(mo.l2_domain),
+                    "l2_domain": None,
+                    # "l2_domain__label": getattr(mo.l2_domain, "name", ""),
+                    "vlan": d["vlan"],
+                    "managed_object": str(mo_id),
+                    "managed_object__label": str(mo_name),
+                    "interface": str(d["interface"]),
+                    "description": d["description"],
+                    "pool": str(pool),
+                    "pool__label": pool.name,
+                    "object_profile": str(op),
+                    "object_profile__label": op_name or "",
+                }
+            )
+        return out, rows_count
+
     @view(method=["GET", "POST"], url="^$", access="read", api=True)
     def api_list(self, request):
         q = self.parse_request_query(request)
         query = q.get("__query")
-        start = q.get("__start")
-        limit = q.get("__limit")
+        start = q.get("__start") or 0
+        limit = q.get("__limit") or 50
+        to_history = q.get("source")
         try:
             mac_query = self.parse_mac_query(query)
         except ValueError as e:
             return self.response(
                 {"success": False, "data": [], "message": str(e)}, status=self.BAD_REQUEST
             )
-        out, total = self.macdb_query(
-            mac_query=mac_query,
-            managed_object=q.get("managed_object"),
-            interface_profile=q.get("interface_profile"),
-            segment=q.get("segment"),
-            offset=start,
-            limit=limit,
-        )
+        if to_history and not query:
+            return self.response(
+                {"success": False, "data": [], "message": "For history source, query is required"},
+                status=self.BAD_REQUEST,
+            )
+        elif to_history:
+            r = self.mac_history_query(
+                mac_query=mac_query,
+                managed_object=q.get("managed_object"),
+                interface_profile=q.get("interface_profile"),
+                segment=q.get("segment"),
+                offset=start,
+                limit=limit,
+            )
+            out, total = self.parse_output(r)
+        else:
+            out, total = self.macdb_query(
+                mac_query=mac_query,
+                managed_object=q.get("managed_object"),
+                interface_profile=q.get("interface_profile"),
+                segment=q.get("segment"),
+                offset=start,
+                limit=limit,
+            )
         return self.response({"total": total, "success": True, "data": out}, status=self.OK)
 
     @classmethod
@@ -232,43 +285,3 @@ class MACApplication(ExtApplication):
                 }
             ]
         return self.response(out, status=self.OK)
-
-    @view(url="^/history/(?P<mac>[0-9A-F:]+)/$", method=["GET"], access="view", api=True)
-    def api_get_maclog(self, request, mac):
-        """GET maclog"""
-
-        out = []
-        mac_query = self.parse_mac_query(mac)
-        r = self.mac_history_query(mac_query)
-        mos = {
-            mo[1]: mo
-            for mo in ManagedObject.objects.filter(
-                bi_id__in=[int(x["managed_object"]) for x in r["data"]]
-            ).values_list("name", "bi_id", "id", "pool", "object_profile", "object_profile__name")
-        }
-        rows_count = r["rows_before_limit_at_least"]
-        for d in r["data"]:
-            if int(d["managed_object"]) not in mos:
-                rows_count -= 1
-                continue
-            mo_name, _, mo_id, pool, op, op_name = mos[int(d["managed_object"])]
-            pool = Pool.get_by_id(pool)
-            out += [
-                {
-                    "last_changed": d["last_seen"],
-                    "mac": d["mac_s"],
-                    # "l2_domain": str(mo.l2_domain),
-                    "l2_domain": None,
-                    # "l2_domain__label": getattr(mo.l2_domain, "name", ""),
-                    "vlan": d["vlan"],
-                    "managed_object": str(mo_id),
-                    "managed_object__label": str(mo_name),
-                    "interface": str(d["interface"]),
-                    "description": d["description"],
-                    "pool": str(pool),
-                    "pool__label": pool.name,
-                    "object_profile": str(op),
-                    "object_profile__label": op_name or "",
-                }
-            ]
-        return self.response({"total": rows_count, "success": True, "data": out}, status=self.OK)
