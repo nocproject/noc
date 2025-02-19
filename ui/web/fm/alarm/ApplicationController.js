@@ -496,4 +496,30 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
       },
     });
   },
+  acknowledgeDialog: function(alarmId, isAck, successFn){
+    var msg = new Ext.window.MessageBox().prompt(
+      __("Acknowledge"),
+      isAck ? __("Set alarm as unacknowledged") : __("Set alarm as acknowledged"),
+      function(btn, text){
+        var msg = __("Failed to set acknowledgedun/acknowledged"),
+          url = "/fm/alarm/" + alarmId + (isAck ? "/unacknowledge/" : "/acknowledge/");
+        if(btn === "ok"){
+          Ext.Ajax.request({
+            url: url,
+            method: "POST",
+            jsonData: {
+              msg: text,
+            },
+            scope: this,
+            success: successFn,
+            failure: function(){
+              NOC.error(msg);
+            },
+          })
+        }
+      },
+      this,
+    );
+    msg.setWidth(500);
+  },
 });

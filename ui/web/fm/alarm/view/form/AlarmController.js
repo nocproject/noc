@@ -122,17 +122,12 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
     })
   },
   onAcknowledge: function(self){
-    var cmd = self.pressed ? "/acknowledge/" : "/unacknowledge/",
-      msg = __("Failed to set acknowledgedun/acknowledged"),
-      ackUser = self.pressed ? NOC.username : null;
-    // ToDo double code #acknowledge
-    Ext.Ajax.request({
-      url: this.getViewModel().get("alarmUrl") + cmd,
-      method: "POST",
-      headers: {"Content-Type": "application/json;"},
-      scope: this,
-      success: function(response){
-        var data = Ext.decode(response.responseText);
+    var ackUser = self.pressed ? NOC.username : null,
+      alarmId = this.getViewModel().get("selected").id,
+      appController = this.getView().up("[itemId=fm-alarm]").getController(),
+      successFn = function(response){
+        var data = Ext.decode(response.responseText),
+          msg = __("Failed to set acknowledgedun/acknowledged");
         if(data.status){
           this.getViewModel().set("selected.ack_user", ackUser);
         } else{
@@ -144,11 +139,8 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
           });
         }
         this.fireViewEvent("fmAlarmRefreshForm");
-      },
-      failure: function(){
-        NOC.error(msg);
-      },
-    })
+      };
+    appController.acknowledgeDialog(alarmId, !self.pressed, successFn);
   },
   onSetRoot: function(){
     Ext.MessageBox.prompt(

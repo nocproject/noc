@@ -185,43 +185,22 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
       items: [
         {
           handler: function(view, rowIndex, colIndex, item, e, record){
-            var isAck = !!record.get("ack_user"),
-              // ToDo double code #acknowledge
-              msg = new Ext.window.MessageBox().prompt(
-                __("Acknowledge"),
-                isAck ? __("Set alarm as unacknowledged") : __("Set alarm as acknowledged"),
-                function(btn, text){
-                  var msg = __("Failed to set acknowledgedun/acknowledged"),
-                    url = "/fm/alarm/" + record.id + (isAck ? "/unacknowledge/" : "/acknowledge/");
-                  if(btn === "ok"){
-                    Ext.Ajax.request({
-                      url: url,
-                      method: "POST",
-                      jsonData: {
-                        msg: text,
-                      },
-                      scope: this,
-                      success: function(response){
-                        var data = Ext.decode(response.responseText);
-                        if(!data.status){
-                          Ext.MessageBox.show({
-                            title: "Error",
-                            message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
-                            buttons: Ext.Msg.OK,
-                            icon: Ext.Msg.ERROR,
-                          });
-                        }
-                        view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
-                      },
-                      failure: function(){
-                        NOC.error(msg);
-                      },
-                    })
-                  }
-                },
-                this,
-              );
-            msg.setWidth(500);
+            var isUnAck = Ext.isEmpty(record.get("ack_user")),
+              appController = this.up("[itemId=fm-alarm]").getController(),
+              successFn = function(response){
+                var data = Ext.decode(response.responseText),
+                  msg = __("Failed to set acknowledgedun/acknowledged");
+                if(!data.status){
+                  Ext.MessageBox.show({
+                    title: "Error",
+                    message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+                    buttons: Ext.Msg.OK,
+                    icon: Ext.Msg.ERROR,
+                  });
+                }
+                view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+              };
+            appController.acknowledgeDialog(record.id, !isUnAck, successFn);
           },
           getClass: function(v, _, record){
             return "x-fa fa-" + (record.get("ack_user") ? "toggle-on" : "toggle-off");
