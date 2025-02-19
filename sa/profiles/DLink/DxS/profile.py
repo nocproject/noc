@@ -2,7 +2,7 @@
 # Vendor: D-Link
 # OS:     DxS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -54,6 +54,7 @@ class Profile(BaseProfile):
     snmp_display_hints = {mib["LLDP-MIB::lldpLocPortId"]: render_mac}
 
     matchers = {
+        "is_stack": {"caps": {"$in": ["Stack | Members"]}},
         # LLDP neighbor information should replace port_id to remote_port_description
         "is_lldp_convert_mac_to_name": {
             "platform": {
