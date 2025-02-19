@@ -537,7 +537,9 @@ class Service(Document):
                 continue
             # Calculate Status
             status = rule.status or ServiceProfile.get_status_by_severity(aa.severity)
-            logger.debug("[%s] Alarm status is: %s", aa, status)
+            logger.info(
+                "[%s] Alarm status is: %s. Instance flag %s", aa, status, rule.affected_instance
+            )
             if status == Status.UNKNOWN:
                 continue
             if not rule.affected_instance:
@@ -646,22 +648,24 @@ class Service(Document):
                     break
             else:
                 continue
-            spr[p] = not rule.affected_instance
+            spr[p] = rule.affected_instance
         if not q and not spr:
             return []
+        logger.info("Match Profiles: %s", spr)
         # Rules
-        rules = [x for x in spr if spr[x] is not None]
+        rules = [x for x in spr if not spr[x]]
         if rules:
             q |= m_q(profile__in=rules)
         services = set()
         # Instances
         for svc in ServiceInstance.get_services_by_alarm(alarm):
-            if svc.profile.id in spr and not spr[svc.profile.id]:
+            if svc.profile.id in spr and spr[svc.profile.id]:
                 services.add(svc.id)
         # Check dependency
         if alarm.managed_object.effective_service_groups:
             q |= m_q(
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
+                profile__in=rules,
             )
         #
         if q:
