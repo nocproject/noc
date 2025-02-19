@@ -511,7 +511,19 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
               msg: text,
             },
             scope: this,
-            success: successFn,
+            success: function(response){
+              var data = Ext.decode(response.responseText);
+              if(!data.status){
+                Ext.MessageBox.show({
+                  title: "Error",
+                  message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+                  buttons: Ext.Msg.OK,
+                  icon: Ext.Msg.ERROR,
+                });
+                return;
+              }
+              successFn(data.status);
+            },
             failure: function(){
               NOC.error(msg);
             },
@@ -522,4 +534,36 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     );
     msg.setWidth(500);
   },
+
+
+  //   successFn = function(response){
+  //   var data = Ext.decode(response.responseText),
+  //     msg = __("Failed to set acknowledgedun/acknowledged");
+  //   if(!data.status){
+  //     Ext.MessageBox.show({
+  //       title: "Error",
+  //       message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+  //       buttons: Ext.Msg.OK,
+  //       icon: Ext.Msg.ERROR,
+  //     });
+  //   }
+  //   view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+  // };
+
+  //   successFn = function(response){
+  //   var data = Ext.decode(response.responseText),
+  //     msg = __("Failed to set acknowledgedun/acknowledged");
+  //   if(data.status){
+  //     this.getViewModel().set("selected.ack_user", ackUser);
+  //   } else{
+  //     Ext.MessageBox.show({
+  //       title: "Error",
+  //       message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+  //       buttons: Ext.Msg.OK,
+  //       icon: Ext.Msg.ERROR,
+  //     });
+  //   }
+  //   this.fireViewEvent("fmAlarmRefreshForm");
+  // };
+
 });

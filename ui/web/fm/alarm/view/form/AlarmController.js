@@ -125,20 +125,12 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
     var ackUser = self.pressed ? NOC.username : null,
       alarmId = this.getViewModel().get("selected").id,
       appController = this.getView().up("[itemId=fm-alarm]").getController(),
-      successFn = function(response){
-        var data = Ext.decode(response.responseText),
-          msg = __("Failed to set acknowledgedun/acknowledged");
-        if(data.status){
+      // arrow function to keep the context
+      successFn = (status) =>{
+        if(status){
           this.getViewModel().set("selected.ack_user", ackUser);
-        } else{
-          Ext.MessageBox.show({
-            title: "Error",
-            message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
-            buttons: Ext.Msg.OK,
-            icon: Ext.Msg.ERROR,
-          });
+          this.fireViewEvent("fmAlarmRefreshForm");
         }
-        this.fireViewEvent("fmAlarmRefreshForm");
       };
     appController.acknowledgeDialog(alarmId, !self.pressed, successFn);
   },

@@ -187,18 +187,10 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
           handler: function(view, rowIndex, colIndex, item, e, record){
             var isUnAck = Ext.isEmpty(record.get("ack_user")),
               appController = this.up("[itemId=fm-alarm]").getController(),
-              successFn = function(response){
-                var data = Ext.decode(response.responseText),
-                  msg = __("Failed to set acknowledgedun/acknowledged");
-                if(!data.status){
-                  Ext.MessageBox.show({
-                    title: "Error",
-                    message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
-                    buttons: Ext.Msg.OK,
-                    icon: Ext.Msg.ERROR,
-                  });
+              successFn = function(status){
+                if(status){
+                  view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
                 }
-                view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
               };
             appController.acknowledgeDialog(record.id, !isUnAck, successFn);
           },
