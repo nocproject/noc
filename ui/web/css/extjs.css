@@ -873,6 +873,7 @@ table {
     font: normal 16px 'PT Root UI VF';
     line-height: 25px;
     text-decoration: underline;
+    padding: 2px 8px 2px 8px;
     cursor: pointer;
 }
 
@@ -880,6 +881,7 @@ table {
     color: #fff;
     background: #34495e;
     border-color: #34495e;
+    padding: 2px 8px 2px 8px;
 }
 
 .noc-inv-nav-empty {
