@@ -127,7 +127,9 @@ Ext.define("NOC.inv.macdb.Application", {
   //
   initComponent: function(){
     this.callParent();
+    var favFilter = this.down("[name=fav_status]");
     this.searchField.onChange = Ext.EmptyFunction;
+    favFilter.up().remove(favFilter);
   },
   //
   createForm: function(){
