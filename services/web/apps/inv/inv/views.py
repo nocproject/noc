@@ -839,8 +839,7 @@ class InvApplication(ExtApplication):
         objs = Object.objects.filter(__raw__=query, model__nin=self.get_cable_ids()).order_by(
             "name"
         )
-        if start is not None and limit is not None:
-            objs = objs[int(start) : int(start) + int(limit)]
-        else:
-            objs = objs[:50]
+        start = int(start) if start is not None else 0
+        limit = int(limit) if limit is not None else 1000
+        objs = objs[start : start + limit]
         return {"status": True, "items": [{"path": path(o)} for o in objs]}
