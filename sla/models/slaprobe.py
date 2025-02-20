@@ -138,7 +138,7 @@ class SLAProbe(Document):
         if not is_ipv4(address):
             return
         mo = ManagedObject.objects.filter(
-            SQL(f"cast_test_to_inet(address) <<= '{address}/32'")
+            SQL(f"address <<= '{address}/32'")
         ).first()
         if mo:
             return mo

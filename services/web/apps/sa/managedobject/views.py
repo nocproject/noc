@@ -93,8 +93,6 @@ class ManagedObjectApplication(ExtModelApplication):
     order_map = {
         "link_count": " cardinality(links) ",
         "-link_count": " cardinality(links) ",
-        "address": " cast_test_to_inet(address) ",
-        "-address": " cast_test_to_inet(address) ",
         "profile": "CASE %s END"
         % " ".join(
             [
@@ -403,7 +401,7 @@ class ManagedObjectApplication(ExtModelApplication):
             del r["addresses"]
         # Clean Caps
         for f in list(r):
-            if f.startswith("caps"):
+            if f and f.startswith("caps"):
                 r.pop(f)
         if "is_managed" in q:
             del q["is_managed"]

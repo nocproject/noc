@@ -721,7 +721,7 @@ class Label(Document):
                 ...
             else:
                 condition = c_map[rule.condition].join(
-                    [f"cast_test_to_inet({field}) <<= %s"] * len(prefixes)
+                    [f"{field} <<= %s"] * len(prefixes)
                 )
                 params = [[self.name]] + prefixes
                 sql = f"""
