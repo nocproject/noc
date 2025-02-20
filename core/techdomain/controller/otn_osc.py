@@ -24,6 +24,7 @@ class OTNOSCController(BaseController):
     """
 
     name = "otn_osc"
+    label = "OSC"
     kind = ChannelKind.L1
     topology = ChannelTopology.UP2P
     tech_domain = "otn_osc"

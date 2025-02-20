@@ -19,7 +19,7 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
       height: 310,
       allowDeselect: true,
       store: new Ext.data.Store({
-        fields: ["controller", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
+        fields: ["controller", "controller__label", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],
         data: [],
       }),
       columns: [
@@ -99,6 +99,7 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
         {
           text: __("Controller"),
           dataIndex: "controller",
+          renderer: NOC.render.Lookup("controller"),
           width: 150,
         },
         {

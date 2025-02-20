@@ -42,6 +42,7 @@ class OTNODUController(BaseController):
     """
 
     name = "otn_odu"
+    label = "ODU"
     kind = ChannelKind.L2
     topology = ChannelTopology.P2P
     tech_domain = "otn_odu"

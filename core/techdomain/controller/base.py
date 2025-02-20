@@ -110,6 +110,7 @@ class PathItem(object):
 
 class BaseController(object):
     name: str = "base"
+    label: str = "base"
     tech_domain: str
     kind: ChannelKind
     topology: ChannelTopology

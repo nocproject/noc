@@ -130,6 +130,16 @@ class DataPlugin(InvPlugin):
             choices=model_choices,
             item_id=str(o.model.id),
         )
+        # Mode
+        mode = o.get_mode()
+        if mode:
+            yield self.item(
+                interface=interface,
+                name="Mode",
+                value=mode,
+                description="Object mode",
+                is_const=True,
+            )
         # ID
         yield self.item(
             interface=interface,
