@@ -419,7 +419,8 @@ class ServiceInstance(Document):
             ]
         else:
             ServiceInstance.objects.filter(id=self.id).update(
-                resources=self.resources, last_seen=self.last_seen,
+                resources=self.resources,
+                last_seen=self.last_seen,
             )
             if self.managed_object:
                 ServiceSummary.refresh_object(self.managed_object)
