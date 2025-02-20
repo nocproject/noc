@@ -69,6 +69,8 @@ class InvApplication(ExtApplication):
     menu = _("Inventory")
     glyph = "archive"
 
+    MAX_SEARCH_LIMIT = 1000
+
     # Undeletable nodes
     UNDELETABLE = {
         # Global Lost&Found
@@ -811,8 +813,9 @@ class InvApplication(ExtApplication):
                 ]
             return result
 
-        start = kwargs.get("__start")
-        limit = kwargs.get("__limit")
+        start = int(kwargs.get("__start", 0))
+        limit = int(kwargs.get("__limit", self.MAX_SEARCH_LIMIT))
+        limit = min(limit, self.MAX_SEARCH_LIMIT)
         query = {
             "$or": [
                 {"name": {"$regex": q}},
@@ -838,8 +841,5 @@ class InvApplication(ExtApplication):
         }
         objs = Object.objects.filter(__raw__=query, model__nin=self.get_cable_ids()).order_by(
             "name"
-        )
-        start = int(start) if start is not None else 0
-        limit = int(limit) if limit is not None else 1000
-        objs = objs[start : start + limit]
+        )[start : start + limit]
         return {"status": True, "items": [{"path": path(o)} for o in objs]}
