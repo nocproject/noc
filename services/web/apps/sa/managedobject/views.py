@@ -908,7 +908,10 @@ class ManagedObjectApplication(ExtModelApplication):
             }
             if "tx_wavelength" in optical_data:
                 description = ["SMF"]
-                if optical_data["tx_wavelength"] != optical_data["rx_wavelength"]:
+                if (
+                    "rx_wavelength" in optical_data
+                    and optical_data["tx_wavelength"] != optical_data["rx_wavelength"]
+                ):
                     description += [
                         f'{optical_data["tx_wavelength"]}nmTx/{optical_data["rx_wavelength"]}nmRx'
                     ]
