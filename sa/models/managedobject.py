@@ -2576,11 +2576,9 @@ class ManagedObject(NOCModel):
         return r
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
-        """
-        Iterate over object diagnostics
-        :return:
-        """
-        yield from self.state.iter_diagnostic_configs(self)
+        """Iterate over object diagnostics"""
+        state = self.state or self.object_profile.workflow.get_default_state()
+        yield from state.iter_diagnostic_configs(self)
         yield from self.object_profile.iter_diagnostic_configs(self)
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
             yield dc
