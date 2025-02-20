@@ -791,6 +791,7 @@ class Service(Document):
                 remote_id=remote_id,
                 nri_port=nri_port,
             )
+            logger.info("[%s] Create new Instance: %s", self.id, cfg.type)
             changed |= True
         # Update data
         if source not in si.sources:

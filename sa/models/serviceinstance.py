@@ -403,8 +403,13 @@ class ServiceInstance(Document):
                 continue
             resources.append(rid)
             logger.info("Binding service %s to interface %s", self.service, o.name)
+            if rid not in self.resources:
+                logger.info("Binding service %s to interface %s", self.service, o.name)
+        if not set(self.resources) - set(resources):
+            self.last_seen = update_ts
+            ServiceInstance.objects.filter(id=self.id).update(last_seen=self.last_seen)
+            return
         self.resources = resources
-        self.last_seen = update_ts
         if bulk is not None:
             bulk += [
                 UpdateOne(
@@ -413,7 +418,9 @@ class ServiceInstance(Document):
                 )
             ]
         else:
-            ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+            ServiceInstance.objects.filter(id=self.id).update(
+                resources=self.resources, last_seen=self.last_seen,
+            )
             if self.managed_object:
                 ServiceSummary.refresh_object(self.managed_object)
 
