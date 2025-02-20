@@ -86,3 +86,11 @@ class PrefixDataStream(DataStream):
             "name": str(prefix.asn.as_name),
             "as": "AS%d" % prefix.asn.asn,
         }
+
+    @classmethod
+    def get_meta(cls, data):
+        return {"vrf": data["vrf"]["id"]}
+
+    @classmethod
+    def filter_vrf(cls, vid):
+        return {f"{cls.F_META}.vrf": int(vid)}
