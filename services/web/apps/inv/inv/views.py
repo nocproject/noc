@@ -818,13 +818,13 @@ class InvApplication(ExtApplication):
         limit = min(limit, self.MAX_SEARCH_LIMIT)
         query = {
             "$or": [
-                {"name": {"$regex": q}},
+                {"name": {"$regex": f"(?i){q}"}},
                 {
                     "data": {
                         "$elemMatch": {
                             "interface": {"$eq": "asset"},
                             "attr": {"$eq": "serial"},
-                            "value": {"$regex": q},
+                            "value": {"$regex": f"(?i){q}"},
                         }
                     },
                 },
@@ -833,7 +833,7 @@ class InvApplication(ExtApplication):
                         "$elemMatch": {
                             "interface": {"$eq": "asset"},
                             "attr": {"$eq": "part_no"},
-                            "value": {"$regex": q},
+                            "value": {"$regex": f"(?i){q}"},
                         }
                     },
                 },
