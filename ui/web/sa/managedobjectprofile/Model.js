@@ -420,7 +420,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "periodic_discovery_interval",
             type: "integer",
-            defaultValue: 0
+            defaultValue: 300
         },
         {
             name: "periodic_discovery_running_policy",
