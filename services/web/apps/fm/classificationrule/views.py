@@ -20,6 +20,7 @@ from noc.fm.models.eventclassificationrule import (
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.core.validators import is_objectid, is_oid
+from noc.core.fm.event import Event
 from noc.fm.models.utils import get_event
 from noc.core.translation import ugettext as _
 
@@ -206,28 +207,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
         :param event_id:
         :return:
         """
-        event = get_event(event_id)
+        event = Event.get_by_id(event_id)
         if not event:
             self.response_not_found()
-        event_name = " | ".join(event.managed_object.profile.name.split(".")) + " | <name> "
-        if event.source == "syslog":
-            event_name += "(SYSLOG)"
-        elif event.source == "SNMP Trap":
-            event_name += "(SNMP)"
-        data = {"name": event_name, "preference": 1000}
-        if event.source == "syslog":
-            data["description"] = event.raw_vars["message"]
-        elif event.source == "SNMP Trap" and "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars:
-            data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
-        patterns = {"source": event.source}
-        for k in event.raw_vars:
-            if k not in ("collector", "facility", "severity"):
-                patterns[k] = event.raw_vars[k]
-        if hasattr(event, "resolved_vars"):
-            for k in event.resolved_vars:
-                if k not in self.IGNORED_OIDS and not is_oid(k):
-                    patterns[k] = event.resolved_vars[k]
-        data["patterns"] = [
-            {"key_re": "^%s$" % k, "value_re": "^%s$" % patterns[k].strip()} for k in patterns
-        ]
-        return data
+        return event.get_rule()
