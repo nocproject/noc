@@ -1,16 +1,18 @@
 # ----------------------------------------------------------------------
 # Rotek.RTBSv1.get_metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.core.validators import is_ipv4
+from .oidrules.platform import PlatformRule
 
 
 class Script(GetMetricsScript):
+    OID_RULES = [PlatformRule]
     name = "Rotek.RTBSv1.get_metrics"
 
     @metrics(["Check | Result", "Check | RTT"], volatile=False, access="C")  # CLI version
@@ -108,11 +110,13 @@ class Script(GetMetricsScript):
     )  # SNMP version
     def get_radio_metrics(self, metrics):
 
-        oid_index_map, base_oid = {
+        oid_index_map = {
             "Radio | Frequency": 6,
             "Radio | Bandwidth": 8,
             "Radio | Quality": 12,
-        }, "1.3.6.1.4.1.41752.3.10.1.2.1.1"
+        }
+        ent_oid = self.capabilities.get("SNMP | OID | EnterpriseID", "41752")
+        base_oid = f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1"
 
         iface = self.snmp.get(f"{base_oid}.4.6")
         for key, value in oid_index_map.items():
