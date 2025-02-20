@@ -87,10 +87,6 @@ class ObjectModelApplication(ExtDocApplication):
             data["data"] = ModelInterface.clean_data(model_data)
         if "data" in data:
             data["data"] = ModelInterface.clean_data(data["data"])
-        if "plugins" in data and data["plugins"]:
-            data["plugins"] = [x.strip() for x in data["plugins"].split(",") if x.strip()]
-        else:
-            data["plugins"] = None
         if "connections" in data:
             for c in data["connections"]:
                 if connection_data and c["name"] in connection_data:

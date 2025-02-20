@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.objectmodel application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.objectmodel.Application");
@@ -246,7 +246,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         },
         {
           name: "plugins",
-          xtype: "textfield",
+          xtype: "tagsfield",
           fieldLabel: __("Plugins"),
           allowBlank: true,
         },
@@ -302,6 +302,32 @@ Ext.define("NOC.inv.objectmodel.Application", {
             {
               text: __("Protocol"),
               dataIndex: "protocol",
+              flex: 1,
+              editor: "textfield",
+            },
+          ],
+        },
+        {
+          name: "modes",
+          xtype: "gridfield",
+          fieldLabel: __("Modes"),
+          columns: [
+            {
+              text: __("Name"),
+              dataIndex: "name",
+              width: 200,
+              editor: "textfield",
+            },
+            {
+              text: __("Is Default"),
+              dataIndex: "is_default",
+              width: 50,
+              renderer: NOC.render.Bool,
+              editor: "checkboxfield",
+            },
+            {
+              text: __("Description"),
+              dataIndex: "description",
               flex: 1,
               editor: "textfield",
             },
@@ -507,6 +533,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                   text: __("Gain (dB)"),
                   dataIndex: "gain_db",
                   editor: "textfield",
+                  width: 100,
+                },
+                {
+                  text: __("Modes"),
+                  dataIndex: "modes",
+                  editor: "tagsfield",
+                  flex: 1,
                 },
               ],
               onBeforeEdit: function(editor, context){

@@ -114,5 +114,9 @@ Ext.define("NOC.inv.objectmodel.Model", {
       type: "string",
       persist: false,
     },
+    {
+      name: "modes",
+      type: "auto",
+    },
   ],
 });

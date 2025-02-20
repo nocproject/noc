@@ -221,6 +221,8 @@ class Object(Document):
     # Map
     layer: Optional["Layer"] = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
+    # Current mode
+    mode = StringField(required=False)
     # Additional connection data
     connections: List["ObjectConnectionData"] = ListField(
         EmbeddedDocumentField(ObjectConnectionData)
@@ -1551,7 +1553,14 @@ class Object(Document):
         """
         if self.cross:
             yield from self.cross
-        if self.model.cross:
+        if not self.model.cross:
+            return
+        mode = self.get_mode()
+        if mode:
+            for cross in self.model.cross:
+                if not cross.modes or mode in cross.modes:
+                    yield cross
+        else:
             yield from self.model.cross
 
     def iter_cross(
@@ -1728,6 +1737,36 @@ class Object(Document):
             if name:
                 r.append(obj.as_resource())
         return list(reversed(r))
+
+    def get_mode(self) -> str | None:
+        """Get current mode."""
+        if self.mode:
+            return self.mode
+        return self.model.get_default_mode()
+
+    def set_mode(self, mode: str, /, save=True) -> None:
+        """
+        Set object mode.
+
+        Args:
+            mode: Mode name.
+            save: Perform save after setting.
+
+        Raises:
+            ValueError: On invalid mode.
+        """
+        if self.mode and self.mode == mode:
+            return
+        if not self.model.modes:
+            raise ValueError("Cannot set mode for model")
+        for mi in self.model.modes:
+            if mi.name == mode:
+                self.mode = mode
+                if save:
+                    self.save()
+                return
+        msg = "Invalid mode: {mode}"
+        raise ValueError(msg)
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

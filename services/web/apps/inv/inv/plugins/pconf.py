@@ -14,13 +14,11 @@ from collections import defaultdict
 
 # Third-party modules
 import orjson
-from pymongo.collection import Collection
 
 # NOC modules
 from noc.inv.models.object import Object, Crossing
 from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.mongo.connection import get_db
 from noc.main.models.extstorage import ExtStorage
 from .base import InvPlugin
 
@@ -245,45 +243,6 @@ class PConfPlugin(InvPlugin):
             conf=[i for i in items if i.table == table and i.group == group],
         )
 
-    @staticmethod
-    def get_nvram_collection() -> Collection:
-        """
-        Get collection for NVRAM storage.
-
-        Returns:
-            Mongo collection instance.
-        """
-        return get_db()["pconf_nvram"]
-
-    def get_nvram(self, obj: Object, defaults: dict[str, Any]) -> dict[str, Any]:
-        """
-        Get headless NVRAM config.
-
-        Args:
-            obj: Object instance.
-            defailts: Map of defaults
-        """
-        coll = self.get_nvram_collection()
-        data = coll.find_one({"_id": obj.id})
-        cfg = defaults.copy()
-        if data:
-            d = data.get("config")
-            if d:
-                cfg.update(d)
-        return cfg
-
-    def set_nvram(self, obj: Object, name: str, value: Any) -> None:
-        """
-        Save config value to NVRAM.
-
-        Args:
-            obj: Object reference.
-            name: Parameter name.
-            value: Parameter value.
-        """
-        coll = self.get_nvram_collection()
-        coll.update_one({"_id": obj.id}, {"$set": {f"config.{name}": value}}, upsert=True)
-
     def parse_data(
         self,
         obj: Object,
@@ -406,7 +365,6 @@ class PConfPlugin(InvPlugin):
         """
         Generate headless config for ADM200
         """
-        nvram = self.get_nvram(obj, {"SetMode": "AGG-200"})
         # pId
         yield Item(
             name="pId",
@@ -419,7 +377,7 @@ class PConfPlugin(InvPlugin):
         # SetMode
         yield Item(
             name="SetMode",
-            value=nvram["SetMode"],
+            value=obj.get_mode(),
             description="Установка режима",
             type=Type.ENUM,
             table=Table.CONFIG,
@@ -487,23 +445,8 @@ class PConfPlugin(InvPlugin):
         mode_name = ADM200_VMAP.get(mode)
         if mode_name is None:
             return self.error_response(f"Unsupported mode: {mode}")
-        # Check crossings are available
-        crossings = ADM200_MAP.get(mode_name)
-        if crossings is None:
-            return self.error_response(f"Unsupported mode: {mode}")
         # Save to NVRAM
-        self.set_nvram(obj, "SetMode", mode_name)
-        # Set crossing
-        obj.cross = [
-            Crossing(
-                input=item["input"],
-                output=item["output"],
-                input_discriminator=item.get("input_discriminnator"),
-                output_discriminator=item.get("output_discriminator"),
-            )
-            for item in crossings
-        ]
-        obj.save()
+        obj.set_mode(mode_name)
         return self.success_response("Crossings has been set")
 
     def set_managed(self, obj: Object, mo: ManagedObject, name: str, value: Any) -> dict[str, Any]:
@@ -521,45 +464,13 @@ class PConfPlugin(InvPlugin):
         """
         # @todo: Wrap to catch errors
         mo.scripts.set_param(card=self._get_card(obj), name=name, value=value)
-        # Check if we must refetch crossings
-        if self._to_refresh_crossings(obj, name):
-            self._refresh_crossings(mo, obj)
+        model = self.get_model_name()
+        if name == "SetMode" and model == "ADM-200":
+            mode_name = ADM200_VMAP.get(value)
+            if mode_name is None:
+                return self.error_response(f"Unsupported mode: {mode_name}")
+            obj.mode = mode_name
         return {"status": True}
-
-    def _refresh_crossings(self, mo: ManagedObject, _obj: Object) -> None:
-        """
-        Refresh crossings.
-        """
-        # @todo: Run asset check
-        mo.run_discovery(delta=0)
-
-    def _to_refresh_crossings(self, obj: Object, cmd: str) -> bool:
-        """
-        Check if we need to refetch crossings after command.
-
-        Args:
-            obj: Object instance.
-            cmd: Issued commands.
-
-        Returns:
-            True: if the crossings needs to be refreshed.
-            False: if crossings are untouched.
-        """
-        match self.get_model_name(obj):
-            case "ADM-200":
-                return self._to_refresh_crossings_adm200(cmd)
-            case _:
-                return False
-
-    def _to_refresh_crossings_adm200(self, cmd: str) -> bool:
-        """
-        Check if ADM-200 command must refresh crossings.
-        """
-        match cmd:
-            case "SetMode":
-                return True
-            case _:
-                return False
 
     @classmethod
     def get_managed_object(cls, obj: Object) -> ManagedObject | None:
@@ -631,90 +542,11 @@ class PConfPlugin(InvPlugin):
         return {"status": False, "message": msg}
 
 
-# Crossing table for ADM-200
+# Mode mappings for ADM-200
 ADM200_VMAP = {
     "0": "AGG-2x100",
     "1": "AGG-100-BS",
     "2": "AGG-200",
     "3": "ADM-100",
     "4": "TP-100+TP-10x10",
-}
-
-ADM200_MAP = {
-    # AGG-100-BS
-    "AGG-200": [
-        {"input": "CLIENT1", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-1"},
-        {"input": "CLIENT2", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-2"},
-        {"input": "CLIENT3", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-3"},
-        {"input": "CLIENT4", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-4"},
-        {"input": "CLIENT5", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-5"},
-        {"input": "CLIENT6", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-6"},
-        {"input": "CLIENT7", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-7"},
-        {"input": "CLIENT8", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-8"},
-        {"input": "CLIENT9", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-9"},
-        {"input": "CLIENT10", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-10"},
-        {"input": "CLIENT11", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-11"},
-        {"input": "CLIENT12", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-12"},
-        {"input": "CLIENT13", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-13"},
-        {"input": "CLIENT14", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-14"},
-        {"input": "CLIENT15", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-15"},
-        {"input": "CLIENT16", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-16"},
-        {"input": "CLIENT17", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-17"},
-        {"input": "CLIENT18", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-18"},
-        {"input": "CLIENT19", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-19"},
-        {"input": "CLIENT20", "output": "LINE1", "output_discriminator": "odu::ODUC2::ODU2-20"},
-    ],
-    "ADM-10": [
-        {"input": "CLIENT1", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-1"},
-        {"input": "CLIENT2", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-2"},
-        {"input": "CLIENT3", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-3"},
-        {"input": "CLIENT4", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-4"},
-        {"input": "CLIENT5", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-5"},
-        {"input": "CLIENT6", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-6"},
-        {"input": "CLIENT7", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-7"},
-        {"input": "CLIENT8", "output": "LINE1", "output_discriminator": "odu::ODU2::ODU0-8"},
-        {"input": "CLIENT9", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-1"},
-        {"input": "CLIENT10", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-2"},
-        {"input": "CLIENT11", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-3"},
-        {"input": "CLIENT12", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-4"},
-        {"input": "CLIENT13", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-5"},
-        {"input": "CLIENT14", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-6"},
-        {"input": "CLIENT15", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-7"},
-        {"input": "CLIENT16", "output": "LINE2", "output_discriminator": "odu::ODU2::ODU0-8"},
-    ],
-    "AGG-2x100": [
-        {"input": "CLIENT1", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-1"},
-        {"input": "CLIENT2", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-2"},
-        {"input": "CLIENT3", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-3"},
-        {"input": "CLIENT4", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-4"},
-        {"input": "CLIENT5", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-5"},
-        {"input": "CLIENT6", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-6"},
-        {"input": "CLIENT7", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-7"},
-        {"input": "CLIENT8", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-8"},
-        {"input": "CLIENT9", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-9"},
-        {"input": "CLIENT10", "output": "LINE1", "output_discriminator": "odu::ODU4::ODU2-10"},
-        {"input": "CLIENT11", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-1"},
-        {"input": "CLIENT12", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-2"},
-        {"input": "CLIENT13", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-3"},
-        {"input": "CLIENT14", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-4"},
-        {"input": "CLIENT15", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-5"},
-        {"input": "CLIENT16", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-6"},
-        {"input": "CLIENT17", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-7"},
-        {"input": "CLIENT18", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-8"},
-        {"input": "CLIENT19", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-9"},
-        {"input": "CLIENT20", "output": "LINE2", "output_discriminator": "odu::ODU4::ODU2-10"},
-    ],
-    "TP-100+TP-10x10": [
-        {"input": "CLIENT1", "output": "CLIENT11", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT2", "output": "CLIENT12", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT3", "output": "CLIENT13", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT4", "output": "CLIENT14", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT5", "output": "CLIENT15", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT6", "output": "CLIENT16", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT7", "output": "CLIENT17", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT8", "output": "CLIENT18", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT9", "output": "CLIENT19", "output_discriminator": "odu::ODU2"},
-        {"input": "CLIENT10", "output": "CLIENT20", "output_discriminator": "odu::ODU2"},
-        {"input": "LINE2", "output": "LINE1", "output_discriminator": "odu::ODU4"},
-    ],
 }

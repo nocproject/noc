@@ -26,6 +26,7 @@ class OpticalDWDMController(BaseController):
     """
 
     name = "optical_dwdm"
+    label = "OCh"
     kind = ChannelKind.L1
     topology = ChannelTopology.UBUNCH
     tech_domain = "optical_sm"
