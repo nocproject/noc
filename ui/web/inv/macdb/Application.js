@@ -117,6 +117,9 @@ Ext.define("NOC.inv.macdb.Application", {
           if(newValue.source === "macdb"){
             searchField.clearInvalid();
             searchField.setEmptyText(app.searchPlaceholder);
+            if(Ext.isEmpty(query)){
+              app.onSearch(query);
+            }
           }
           if(newValue.source === "history"){
             searchField.markInvalid(__("Required field"));
@@ -132,15 +135,18 @@ Ext.define("NOC.inv.macdb.Application", {
   //
   initComponent: function(){
     this.callParent();
-    var favFilter = this.down("[name=fav_status]");
-    this.searchField.onChange = Ext.EmptyFunction;
+    var favFilter = this.down("[name=fav_status]"),
+      query = Ext.util.History.getToken().split("?")[1] || "",
+      queryObj = Ext.Object.fromQueryString(query);
+    this.searchField.onChange = Ext.emptyFn;
     this.searchField.setTriggers({
       clear: {
         cls: "x-form-clear-trigger",
         hidden: true,
         handler: function(field){
+          var app = field.up("[appId=inv.macdb]");
           field.setValue("");
-          field.up("[appId=inv.macdb]").onSearch("");
+          app.onSearch("");
         },
       },
     });
@@ -150,6 +156,18 @@ Ext.define("NOC.inv.macdb.Application", {
         trigger.setVisible(!!value);
       }
     });
+    if(Ext.isDefined(queryObj.source)){
+      this.down("radiogroup").setValue({source: queryObj.source});
+    }
+    if(Ext.isDefined(queryObj.__query)){
+      this.searchField.setValue(queryObj.__query);
+    }
+    Ext.each(this.filterSetters, function(set){
+      set(queryObj);
+    });
+    if(!Ext.isEmpty(queryObj)){
+      this.onFilter();
+    }
     favFilter.up().remove(favFilter);
   },
   //
@@ -169,6 +187,20 @@ Ext.define("NOC.inv.macdb.Application", {
     } else{
       delete this.currentQuery.__query;
     }
+    this.reloadStore();
+  },
+  onFilter: function(){
+    var fexp = {};
+    Ext.each(this.filterGetters, function(g){
+      fexp = Ext.Object.merge(fexp, g());
+    });
+    if(Ext.isDefined(this.currentQuery.__query)){
+      fexp.__query = this.currentQuery.__query;
+    }
+    if(Ext.isDefined(this.currentQuery.source)){
+      fexp.source = this.currentQuery.source;
+    }
+    this.currentQuery = fexp;
     this.reloadStore();
   },
 });
