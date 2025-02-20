@@ -47,7 +47,9 @@ Ext.define("NOC.inv.inv.NavSearch", {
       "<ul class='x-list-plain'><tpl for='.'>",
       "<li role='option'>",
       "<tpl for='path'>",
-      "{[xindex > 1 ? '<span class=\"noc-inv-nav-search-separator\">/</span>' : '']}",
+      "{[xindex > 1 ? '<span class=\"noc-inv-nav-search-separator\">" +
+      "<i class=\"fa fa-chevron-right\" aria-hidden=\"true\" style=\"font-size: 10px;padding: 0 6px 0 6px;\"></i>" +
+      "</span>' : '']}",
       "<span class='noc-inv-nav-label' data-id='{id}'>{label}</span>",
       "</tpl>",
       "</li>",
