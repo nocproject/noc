@@ -4,7 +4,7 @@
     "uuid": "c5415699-3fe1-419f-bba9-54afb57d0ce8",
     "scope__name": "Interface",
     "field_name": "voltage_v",
-    "field_type": "Int16",
+    "field_type": "Float32",
     "description": "Transceiver supply voltage",
     "measure": "V",
     "units__code": "VDC",

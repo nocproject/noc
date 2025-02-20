@@ -4,7 +4,7 @@
     "uuid": "aadebe67-08dd-4c30-bb4f-f1577683842f",
     "scope__name": "Interface",
     "field_name": "optical_tx_dbm",
-    "field_type": "Int16",
+    "field_type": "Float32",
     "description": "Signal Transmit Power on transmitter",
     "measure": "dBm",
     "units__code": "dBm",

@@ -4,7 +4,7 @@
     "uuid": "c80671f0-38bf-40d3-adf9-ad58ef52ecbc",
     "scope__name": "Interface",
     "field_name": "temp_c",
-    "field_type": "Int16",
+    "field_type": "Float32",
     "description": "Temparature, in Celsius",
     "measure": "C",
     "units__code": "C",
