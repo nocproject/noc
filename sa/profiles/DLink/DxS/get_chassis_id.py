@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -48,20 +48,21 @@ class Script(BaseScript):
                     macs += [mac]
         except self.CLISyntaxError:
             pass
-        try:
-            v = self.cli("show stack_information", cached=True)
-            for i in parse_table(v):
-                if not i[5] or not is_mac(i[5]):
-                    continue
-                found = False
-                for m in macs:
-                    if m == i[5]:
-                        found = True
-                        break
-                if not found:
-                    macs += [i[5]]
-        except self.CLISyntaxError:
-            pass
+        if self.is_stack:
+            try:
+                v = self.cli("show stack_information", cached=True)
+                for i in parse_table(v):
+                    if not i[5] or not is_mac(i[5]):
+                        continue
+                    found = False
+                    for m in macs:
+                        if m == i[5]:
+                            found = True
+                            break
+                    if not found:
+                        macs += [i[5]]
+            except self.CLISyntaxError:
+                pass
         if macs:
             macs.sort()
             return [

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_dev = re.compile(
-        r"Device Type\s+:\s*(?P<part_no>\S+).+" r"[Hh]ardware [Vv]ersion\s+:\s*(?P<revision>\S+)",
+        r"Device Type\s+:\s*(?P<part_no>\S+).+[Hh]ardware [Vv]ersion\s+:\s*(?P<revision>\S+)",
         re.MULTILINE | re.DOTALL,
     )
     rx_des = re.compile(r"Device Type\s+:\s*(?P<descr>.+?)\n")
@@ -59,12 +59,10 @@ class Script(BaseScript):
         if ser and ser.group("serial") != "System" and ser.group("serial") != "Power":
             p["serial"] = ser.group("serial")
         p["description"] = self.rx_des.search(s).group("descr")
-        try:
+        if self.is_stack:
             s = self.cli("show stack_device")
             for match in self.rx_stack.finditer(s):
                 stacks += [match.groupdict()]
-        except self.CLISyntaxError:
-            pass
         if not stacks:
             r += [p]
         box_id = "0"
