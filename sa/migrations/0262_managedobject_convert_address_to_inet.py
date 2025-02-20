@@ -13,7 +13,7 @@ from noc.core.validators import is_ipv4, is_ipv6
 class Migration(BaseMigration):
 
     def migrate(self):
-        self.db.execute(f"ALTER TABLE sa_managedobject ALTER address DROP NOT NULL")
+        self.db.execute("ALTER TABLE sa_managedobject ALTER address DROP NOT NULL")
         # drop index
         self.db.execute("DROP INDEX IF EXISTS x_managedobject_addressprefix")
         # Check Inet value
