@@ -841,4 +841,6 @@ class InvApplication(ExtApplication):
         )
         if start is not None and limit is not None:
             objs = objs[int(start) : int(start) + int(limit)]
+        else:
+            objs = objs[:50]
         return {"status": True, "items": [{"path": path(o)} for o in objs]}
