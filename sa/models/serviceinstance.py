@@ -8,7 +8,6 @@
 # Python modules
 import datetime
 import logging
-import re
 from typing import Optional, List, Iterable, Any
 
 # Third-party modules
