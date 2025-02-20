@@ -52,9 +52,9 @@ class MACApplication(ExtApplication):
         elif is_mac(query):
             mac_query = f"mac = {int(MAC(MACAddressParameter(accept_bin=False).clean(query)))}"
         elif cls.mac_search_re.match(query):
-            mac_query = f"MACNumToString(mac) like '{query}%'"
+            mac_query = f"MACNumToString(mac) like '{query.upper()}%'"
         elif cls.mac_search_re_inv.match(query):
-            mac_query = f"MACNumToString(mac) like '%{query}'"
+            mac_query = f"MACNumToString(mac) like '%{query.upper()}'"
         else:
             raise ValueError("Unknown query string")
         return mac_query
@@ -189,7 +189,7 @@ class MACApplication(ExtApplication):
         query = q.get("__query")
         start = q.get("__start") or 0
         limit = q.get("__limit") or 50
-        to_history = q.get("source")
+        to_history = q.get("source") == "history"
         try:
             mac_query = self.parse_mac_query(query)
         except ValueError as e:
