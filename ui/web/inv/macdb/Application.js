@@ -114,9 +114,11 @@ Ext.define("NOC.inv.macdb.Application", {
           var searchField = this.up("toolbar").down("[name=search_field]"),
             app = this.up("[appId=inv.macdb]");
           if(newValue.source === "macdb"){
+            searchField.clearInvalid();
             searchField.setEmptyText(app.searchPlaceholder);
           }
           if(newValue.source === "history"){
+            searchField.markInvalid(__("Required field"));
             searchField.setEmptyText(app.requirePlaceholder);
           }
           app.onSearch(searchField.getValue());
