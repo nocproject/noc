@@ -1900,7 +1900,7 @@ class ManagedObject(NOCModel):
             elif is_ipv4_prefix(query):
                 # Match by prefix
                 p = IP.prefix(query)
-                return SQL("cast_test_to_inet(address) <<= '%s'" % p)
+                return SQL("address <<= '%s'" % p)
             else:
                 try:
                     mac = MACAddressParameter().clean(query)
