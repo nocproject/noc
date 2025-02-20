@@ -112,7 +112,8 @@ Ext.define("NOC.inv.macdb.Application", {
       listeners: {
         change: function(field, newValue){
           var searchField = this.up("toolbar").down("[name=search_field]"),
-            app = this.up("[appId=inv.macdb]");
+            app = this.up("[appId=inv.macdb]"),
+            query = searchField.getValue();
           if(newValue.source === "macdb"){
             searchField.clearInvalid();
             searchField.setEmptyText(app.searchPlaceholder);
@@ -121,7 +122,9 @@ Ext.define("NOC.inv.macdb.Application", {
             searchField.markInvalid(__("Required field"));
             searchField.setEmptyText(app.requirePlaceholder);
           }
-          app.onSearch(searchField.getValue());
+          if(!Ext.isEmpty(query)){
+            app.onSearch(query);
+          }
         },
       },
     },
@@ -131,6 +134,22 @@ Ext.define("NOC.inv.macdb.Application", {
     this.callParent();
     var favFilter = this.down("[name=fav_status]");
     this.searchField.onChange = Ext.EmptyFunction;
+    this.searchField.setTriggers({
+      clear: {
+        cls: "x-form-clear-trigger",
+        hidden: true,
+        handler: function(field){
+          field.setValue("");
+          field.up("[appId=inv.macdb]").onSearch("");
+        },
+      },
+    });
+    this.searchField.on("change", function(field, value){
+      var trigger = field.getTrigger("clear");
+      if(trigger){
+        trigger.setVisible(!!value);
+      }
+    });
     favFilter.up().remove(favFilter);
   },
   //
