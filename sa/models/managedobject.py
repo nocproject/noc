@@ -401,7 +401,7 @@ class ManagedObject(NOCModel):
         AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=CASCADE
     )
     scheme = IntegerField("Scheme", choices=SCHEME_CHOICES)
-    address: str = CharField("Address", max_length=64)
+    address: str = INETField("Address", null=True, blank=True)
     port: int = IntegerField("Port", blank=True, null=True)
     user: Optional[str] = CharField("User", max_length=32, blank=True, null=True)
     password: Optional[str] = CharField("Password", max_length=32, blank=True, null=True)
