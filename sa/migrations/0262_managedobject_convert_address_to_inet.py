@@ -15,7 +15,7 @@ class Migration(BaseMigration):
     def migrate(self):
         self.db.execute(f"ALTER TABLE sa_managedobject ALTER address DROP NOT NULL")
         # drop index
-        self.db.execute("DROP IF EXISTS x_managedobject_addressprefix")
+        self.db.execute("DROP INDEX IF EXISTS x_managedobject_addressprefix")
         # Check Inet value
         bad_address = set()
         try:
