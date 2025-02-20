@@ -119,6 +119,7 @@ Ext.define("NOC.inv.macdb.Application", {
           if(newValue.source === "history"){
             searchField.setEmptyText(app.requirePlaceholder);
           }
+          app.onSearch(searchField.getValue());
         },
       },
     },
