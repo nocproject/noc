@@ -250,8 +250,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         if(Ext.isEmpty(obj)){
           NOC.info(__("No ad-hoc channels available"));
         } else{
-          this.showMagicPanel();
           this.down("[xtype=invchannelmagic] grid").getStore().loadData(obj);
+          this.showMagicPanel();
         }
       },
       failure: function(response){
@@ -488,7 +488,9 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   },
   //
   showMagicPanel: function(){
-    var vm = this.getViewModel();
+    var vm = this.getViewModel(),
+      channelGrid = this.down("grid"),
+      magicGrid = this.down("[xtype=invchannelmagic] grid");
     this.down("#adhocInvChannelBtn").hide();
     this.down("#zoomControl").hide();
     this.down("#downloadButton").hide();
@@ -497,6 +499,12 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     vm.set("panelTitle", __("Create new channel"));
     vm.set("createInvChannelBtnText", __("Create"));
     this.getLayout().setActiveItem(1);
+    if(!Ext.isEmpty(channelGrid.getSelection())){
+      var record = magicGrid.getStore().findRecord("channel_id", channelGrid.getSelection()[0].id);
+      if(record){
+        magicGrid.getSelectionModel().select(record);
+      }
+    }
   },
   //
   onSearch: function(query){
