@@ -22,6 +22,7 @@ rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
 ANY_VALUE = "*"
+safe_builtins = {"str": str, "int": int, "ord": ord}
 
 
 @dataclass(slots=True)
@@ -43,7 +44,7 @@ class VarTransformRule:
         elif self.f_type and self.var in v:
             v[self.name] = getattr(self, self.f_type)(v.pop(self.var))
         if self.function:
-            v[self.name] = eval(self.function, {"__builtins__": {}}, var_ctx)
+            v[self.name] = eval(self.function, {"__builtins__": safe_builtins}, var_ctx)
         elif self.name in var_ctx:
             v[self.name] = var_ctx[self.name]
         elif self.name not in v and self.default:

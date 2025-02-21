@@ -243,6 +243,12 @@ class Command(BaseCommand):
         for event_class_rule in event_class_rules:
             for event, v in event_class_rule.iter_cases():
                 rule, e_vars = ruleset.find_rule(event, v)
+                if "interface__ifindex" in e_vars and "interface_mock" in v:
+                    e_vars["interface"] = v.pop("interface_mock")
+                elif "interface__ifindex" in e_vars:
+                    assert (
+                        "interface__ifindex" in e_vars
+                    ), "interface_mock Required for ifindex transform test"
                 if rule is None:
                     self.print(
                         f"[{event_class_rule.name}] Testing with result: Cannot find matching rule"

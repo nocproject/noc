@@ -7,7 +7,7 @@
     "preference": 1000,
     "sources": ["syslog"],
     "vars": [{
-        "name": "name",
+        "name": "ip",
         "value": "0.0.0.0"
     }],
     "patterns": [],
