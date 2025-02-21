@@ -22,7 +22,7 @@ rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
 ANY_VALUE = "*"
-safe_builtins = {"str": str, "int": int, "ord": ord}
+safe_builtins = {"str": str, "int": int, "ord": ord, "float": float}
 
 
 @dataclass(slots=True)
