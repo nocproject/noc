@@ -13,6 +13,7 @@ Ext.define("NOC.inv.inv.Application", {
     "NOC.inv.inv.CreateConnectionForm",
     "NOC.inv.inv.MaskComponent",
     "NOC.inv.inv.NavModel",
+    "NOC.inv.inv.NavSearch",
   ],
   initComponent: function(){
     var me = this;
@@ -165,6 +166,17 @@ Ext.define("NOC.inv.inv.Application", {
         dock: "top",
         items: [
           me.navReloadButton,
+          {
+            xtype: "searchcombo",
+            width: 200,
+            listeners: {
+              scope: this,
+              invPathSelected: function(pathId){
+                console.log("Selected:", pathId);
+                this.showObject(pathId, false);
+              },
+            },
+          },
           "->",
           {
             glyph: NOC.glyph.plus,

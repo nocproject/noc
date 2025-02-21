@@ -161,8 +161,8 @@ class ObjectConfigurationData(EmbeddedDocument):
 class ObjectQuerySet(QuerySet):
     """Fix Object.container usage"""
 
-    def __call__(self, **kwargs):
-        legacy = [k for k in kwargs if k.startswith("container")]
+    def __call__(self, q_obj=None, **query):
+        legacy = [k for k in query if k.startswith("container")]
         if legacy:
             # Rewrite container queryes
             warnings.warn(
@@ -170,9 +170,9 @@ class ObjectQuerySet(QuerySet):
                 RemovedInNOC2501Warning,
             )
             for q in legacy:
-                kwargs[f"parent{q[9:]}"] = kwargs.pop(q)
-            kwargs["parent_connection__exists"] = False
-        return super().__call__(**kwargs)
+                query[f"parent{q[9:]}"] = query.pop(q)
+            query["parent_connection__exists"] = False
+        return super().__call__(q_obj, **query)
 
 
 @Label.model
