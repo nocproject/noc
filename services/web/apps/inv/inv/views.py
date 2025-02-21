@@ -822,26 +822,44 @@ class InvApplication(ExtApplication):
                 {
                     "data": {
                         "$elemMatch": {
-                            "interface": {"$eq": "asset"},
-                            "attr": {"$eq": "serial"},
+                            "interface": "asset",
+                            "attr": "serial",
                             "value": {"$regex": f"(?i){q}"},
                         }
                     },
                 },
                 {
-                    "data": {
+                    "model_": {
                         "$elemMatch": {
-                            "interface": {"$eq": "asset"},
-                            "attr": {"$eq": "part_no"},
-                            "value": {
-                                "$elemMatch": {"$regex": f"(?i){q}"},
+                            "data": {
+                                "$elemMatch": {
+                                    "interface": "asset",
+                                    "attr": "part_no",
+                                    "value": {
+                                        "$elemMatch": {"$regex": f"(?i){q}"},
+                                    },
+                                },
                             },
                         },
                     },
                 },
             ]
         }
-        objs = Object.objects.filter(__raw__=query, model__nin=self.get_cable_ids()).order_by(
-            "name"
-        )[start : start + limit]
-        return {"status": True, "items": [{"path": path(o)} for o in objs]}
+        objs = Object._get_collection().aggregate(
+            [
+                {"$match": {"model": {"$nin": self.get_cable_ids()}}},
+                {
+                    "$lookup": {
+                        "from": "noc.objectmodels",
+                        "localField": "model",
+                        "foreignField": "_id",
+                        "as": "model_",
+                    }
+                },
+                {"$match": query},
+                {"$sort": {"name": 1}},
+                {"$project": {"_id": "$_id"}},
+            ]
+        )
+        objs = list(objs)[start : start + limit]
+        return {"status": True, "items": [{"path": path(Object.get_by_id(o["_id"]))} for o in objs]}
