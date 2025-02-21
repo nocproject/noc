@@ -2,7 +2,7 @@
     "name": "Cisco | IOS | Network | OAM | Client Clear Remote Failure (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "e52ed5e2-6df9-458c-82cb-7a47c0ae548e",
-    "description": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface %s has received a clear of remote failure indication from its remote peer(failure reason = %s action = %s)",
+    "description": "",
     "event_class__name": "Network | OAM | Client Clear Remote Failure",
     "preference": 1000,
     "patterns": [],
@@ -12,7 +12,7 @@
     "sources": ["syslog"],
     "test_cases": [
         {
-            "message": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface %s has received a clear of remote failure indication from its remote peer(failure reason = %s action = %s)",
+            "message": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface Et0/0 has received a clear of remote failure indication from its remote peer(failure reason = %s action = %s)",
             "raw_vars": []
         }
     ]

@@ -7,7 +7,7 @@
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "%10SHELL/4/LOGINFAIL\\(l\\):\\s+\\S+ (?P<user>\\S+) failed to login from (?P<ip>\\S+)\\(\\S+\\) on \\S+\\.$",
+    "message_rx": "%10SHELL/4/LOGINFAIL\\(l\\):\\s+\\S+ (?P<user>\\S+) failed to login from (?P<ip>\\S+?)\\(\\S+\\) on \\S+\\.$",
     "profiles": ["HP.1910"],
     "sources": ["syslog"],
     "test_cases": [

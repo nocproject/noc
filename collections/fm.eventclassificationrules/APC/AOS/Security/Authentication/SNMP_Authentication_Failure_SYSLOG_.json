@@ -5,11 +5,15 @@
     "description": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",
     "preference": 1000,
+    "sources": ["syslog"],
+    "vars": [{
+        "name": "name",
+        "value": "0.0.0.0"
+    }],
     "patterns": [],
     "labels": [],
     "message_rx": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004",
     "profiles": ["APC.AOS"],
-    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004",

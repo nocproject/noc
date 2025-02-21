@@ -2,7 +2,7 @@
     "name": "Cisco | IOS | Network | MPLS | TDP Neighbor Up (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "e6e11e2f-59a6-4562-9129-150f5d9a45d2",
-    "description": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10:0 is UP (TCP connection closed by peer)",
+    "description": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10.10:0 is UP (TCP connection closed by peer)",
     "event_class__name": "Network | MPLS | TDP Neighbor Up",
     "preference": 1000,
     "patterns": [],
@@ -12,7 +12,7 @@
     "sources": ["syslog"],
     "test_cases": [
         {
-            "message": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10:0 is UP (TCP connection closed by peer)",
+            "message": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10.10:0 is UP (TCP connection closed by peer)",
             "raw_vars": []
         }
     ]
