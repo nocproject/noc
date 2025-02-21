@@ -340,8 +340,8 @@ class ExtModelApplication(ExtApplication):
             if lt == "referred":
                 # Unroll __referred
                 app, fn = v.split("__", 1)
-                model = self.site.apps[app].model
-                if not is_document(model):
+                model = getattr(self.site.apps[app], "model", None)
+                if model and not is_document(model):
                     extra_where = '%s."%s" IN (SELECT "%s" FROM %s)' % (
                         self.model._meta.db_table,
                         self.model._meta.pk.name,
