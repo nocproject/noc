@@ -7,11 +7,15 @@
 
 # Python modules
 import inspect
+import operator
 import os
+import threading
 from typing import Optional, Dict, List, Any, Tuple, Iterable
 from collections import defaultdict
 
+
 # Third-party modules
+import cachetools
 from mongoengine import ValidationError
 
 # NOC modules
@@ -52,6 +56,7 @@ from noc.core.translation import ugettext as _
 from noc.core.text import alnum_key
 from .pbuilder import CrossingProposalsBuilder
 
+id_lock = threading.Lock()
 translation_map = str.maketrans("<>", "><")
 
 
@@ -64,11 +69,14 @@ class InvApplication(ExtApplication):
     menu = _("Inventory")
     glyph = "archive"
 
+    MAX_SEARCH_LIMIT = 1000
+
     # Undeletable nodes
     UNDELETABLE = {
         # Global Lost&Found
         "b0fae773-b214-4edf-be35-3468b53b03f2"
     }
+    _id_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -765,3 +773,93 @@ class InvApplication(ExtApplication):
         if not i:
             return self.response_not_found()
         return i.to_json()
+
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_cable_ids(self):
+        """
+        Get cable IDs from ObjectModel
+        """
+        ids = ObjectModel.objects.filter(
+            __raw__={
+                "data": {
+                    "$elemMatch": {
+                        "interface": {"$eq": "length"},
+                        "attr": {"$eq": "length"},
+                    }
+                },
+            }
+        ).values_list("id")
+        return [id for id in ids]
+
+    @view(
+        "^search/$",
+        method=["GET"],
+        access="read",
+        api=True,
+        validate={"q": UnicodeParameter(required=True)},
+    )
+    def api_search(self, request, q: str, **kwargs):
+        def path(o: Object) -> List[Dict]:
+            result = []
+            for oid in o.get_path():
+                obj = Object.get_by_id(oid)
+                connection = obj.connections[0] if obj.connections else None
+                result += [
+                    {
+                        "id": str(oid),
+                        "label": obj.name,
+                        "connection": connection,
+                    }
+                ]
+            return result
+
+        start = int(kwargs.get("__start", 0))
+        limit = int(kwargs.get("__limit", self.MAX_SEARCH_LIMIT))
+        limit = min(limit, self.MAX_SEARCH_LIMIT)
+        query = {
+            "$or": [
+                {"name": {"$regex": f"(?i){q}"}},
+                {
+                    "data": {
+                        "$elemMatch": {
+                            "interface": "asset",
+                            "attr": "serial",
+                            "value": {"$regex": f"(?i){q}"},
+                        }
+                    },
+                },
+                {
+                    "model_": {
+                        "$elemMatch": {
+                            "data": {
+                                "$elemMatch": {
+                                    "interface": "asset",
+                                    "attr": "part_no",
+                                    "value": {
+                                        "$elemMatch": {"$regex": f"(?i){q}"},
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            ]
+        }
+        objs = Object._get_collection().aggregate(
+            [
+                {"$match": {"model": {"$nin": self.get_cable_ids()}}},
+                {
+                    "$lookup": {
+                        "from": "noc.objectmodels",
+                        "localField": "model",
+                        "foreignField": "_id",
+                        "as": "model_",
+                    }
+                },
+                {"$match": query},
+                {"$sort": {"name": 1}},
+                {"$project": {"_id": "$_id"}},
+            ]
+        )
+        objs = list(objs)[start : start + limit]
+        return {"status": True, "items": [{"path": path(Object.get_by_id(o["_id"]))} for o in objs]}
