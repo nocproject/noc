@@ -2053,14 +2053,12 @@ class ManagedObject(NOCModel):
     def get_event_processing_policy(self):
         if self.event_processing_policy == "P":
             return self.object_profile.event_processing_policy
-        else:
-            return self.event_processing_policy
+        return self.event_processing_policy
 
     def get_address_resolution_policy(self):
         if self.address_resolution_policy == "P":
             return self.object_profile.address_resolution_policy
-        else:
-            return self.address_resolution_policy
+        return self.address_resolution_policy
 
     def get_denied_firmware_policy(self):
         if self.denied_firmware_policy == "P":

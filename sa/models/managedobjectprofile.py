@@ -50,6 +50,7 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     DIAGNOCSTIC_LABEL_SCOPE,
     FIRST_AVAIL,
+    RESOLVER_DIAG,
     DiagnosticState,
     DiagnosticConfig,
     DiagnosticHub,
@@ -1121,6 +1122,20 @@ class ManagedObjectProfile(NOCModel):
             run_policy="D",
             workflow_event="avail",
             reason="Disable Ping check" if not self.enable_ping else None,
+        )
+        policy, reason = self.address_resolution_policy, ""
+        if o:
+            policy, reason = o.get_address_resolution_policy(), ""
+        if policy == "D":
+            reason = "Disabled by 'Resolution Policy Settings'"
+        yield DiagnosticConfig(
+            # Reset if change IP/Policy change
+            RESOLVER_DIAG,
+            display_description="Resolve Address by FQDN",
+            show_in_display=policy != "D",
+            blocked=policy == "D",
+            run_policy="D",
+            reason=reason,
         )
         if not o or Interaction.Event in o.interactions:
             fm_policy = o.get_event_processing_policy() if o else self.event_processing_policy
