@@ -8,14 +8,12 @@
 # Python modules
 import re
 import datetime
-import time
 import hashlib
+import argparse
 from html.entities import name2codepoint
 
 # Third-party modules
 from bson import ObjectId
-from pymongo import DeleteMany
-from pymongo.errors import DocumentTooLarge
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -24,8 +22,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.fm.models.activeevent import ActiveEvent
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.mib import MIB
@@ -75,15 +71,13 @@ class Command(BaseCommand):
         subparsers.add_parser("show")
         subparsers.add_parser("json")
         subparsers.add_parser("reclassify")
-        clean = subparsers.add_parser("clean")
-        clean.add_argument("--before", dest="before", help="Clear events before date")
-        clean.add_argument(
-            "--before-days", dest="before_days", type=int, help="Clear events older than N, days"
+        test_rule = subparsers.add_parser("test-rule")
+        test_rule.add_argument(
+            "rules",
+            help="Rules ids list",
+            # required=True,
+            nargs=argparse.REMAINDER,
         )
-        clean.add_argument(
-            "--force", default=False, action="store_true", help="Really events remove"
-        )
-        subparsers.add_parser("test-rule")
         # test_rule.add_argument("-S", "--syslog", dest="syslog", help="SYSLOG Message RE"),
         subparsers.add_parser("inject-event")
 
@@ -156,22 +150,18 @@ class Command(BaseCommand):
             else:
                 yield e
 
-    def handle(self, *args, **options):
-        try:
-            return self._handle(*args, **options)
-        except KeyboardInterrupt:
-            pass
-        except IOError as e:
-            self.stdout.write("IO Error: %s" % str(e))
-
-    def _handle(self, *args, **options):
+    def handle(self, cmd, *args, **options):
         connect()
-        try:
-            handler = getattr(self, "handle_%s" % options["cmd"].replace("-", "_"))
-            events = self.get_events(options)
-            handler(options, events)
-        except AttributeError:
-            self.die("Invalid action: %s" % options["action"])
+        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
+
+    # def _handle(self, *args, **options):
+    #     connect()
+    #     try:
+    #         handler = getattr(self, "handle_%s" % options["cmd"].replace("-", "_"))
+    #         events = self.get_events(options)
+    #         handler(options, events)
+    #     except AttributeError:
+    #         self.die("Invalid action: %s" % options["action"])
 
     def handle_show(self, options, events, show_json=False):
         limit = int(options["limit"])
@@ -246,68 +236,10 @@ class Command(BaseCommand):
                 if not limit:
                     break
 
-    def handle_clean(self, options, events):
-        before = options.get("before")
-        before_days = options.get("before_days")
-        if before:
-            before = datetime.datetime.strptime(before, "%Y-%m-%d")
-        elif before_days:
-            before = datetime.datetime.now() - datetime.timedelta(days=before_days)
-        else:
-            self.print("Before is not set, use default")
-            before = datetime.datetime.now() - DEFAULT_CLEAN
-        force = options.get("force")
-        aa = ActiveAlarm._get_collection()
-        ah = ArchivedAlarm._get_collection()
-        ae = ActiveEvent._get_collection()
-        event_ts = ae.find_one({"timestamp": {"$lte": before}}, limit=1, sort=[("timestamp", 1)])
-        event_ts = event_ts["timestamp"]
-        print("[%s] Cleaned before %s ... \n" % ("events", before), end="")
-        bulk = []
-        window = CLEAN_WINDOW
-        while event_ts < before:
-            refer_event_ids = []
-            for e in [aa, ah]:
-                for ee in e.find(
-                    {"timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW}},
-                    {"opening_event": 1, "closing_event": 1},
-                ):
-                    if "opening_event" in ee:
-                        refer_event_ids += [ee["opening_event"]]
-                    if "closing_event" in ee:
-                        refer_event_ids += [ee["closing_event"]]
-            try:
-                clear_qs = {
-                    "timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW},
-                    "_id": {"$nin": refer_event_ids},
-                }
-                self.print(
-                    "Interval: %s, %s; Count: %d"
-                    % (event_ts, event_ts + CLEAN_WINDOW, ae.count_documents(clear_qs))
-                )
-                bulk += [DeleteMany(clear_qs)]
-                event_ts += window
-                if window != CLEAN_WINDOW:
-                    window = CLEAN_WINDOW
-            except DocumentTooLarge:
-                window = window // 2
-                if window < datetime.timedelta(hours=1):
-                    self.die("Too many events for delete in interval %s" % window)
-                event_ts += window
-        if force:
-            self.print("All data before %s from active events will be Remove..\n" % before)
-            for i in reversed(range(1, 10)):
-                self.print("%d\n" % i)
-                time.sleep(1)
-            ae.bulk_write(bulk)
-
-    def handle_test_rule(self, options, events, **kwargs):
+    def handle_test_rule(self, rules, **kwargs):
         ruleset = RuleSet()
         ruleset.load()
-        # event_class_rules = EventClassificationRule.objects.filter(name="Application | Database | Default (Zabbix)")
-        event_class_rules = EventClassificationRule.objects.filter(
-            name="HP | 1910 | Unknown | Syslog #17 (SYSLOG)"
-        )
+        event_class_rules = EventClassificationRule.objects.filter(id__in=rules)
         for event_class_rule in event_class_rules:
             for event, v in event_class_rule.iter_cases():
                 rule, e_vars = ruleset.find_rule(event, v)
@@ -331,6 +263,7 @@ class Command(BaseCommand):
                     self.print("End variables: ", vv)
                 except Exception as e:
                     self.print(e)
+                    self.print("End variables: ", var_ctx)
 
 
 if __name__ == "__main__":

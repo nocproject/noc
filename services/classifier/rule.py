@@ -106,7 +106,7 @@ class Rule:
     @classmethod
     def from_rule(cls, rule, enumerations) -> "Rule":
         """Create from EventClassificationRule"""
-        matcher, message_rx = [], re.compile(rule.message_rx) if rule.message_rx else None
+        matcher, message_rx = [], rule.message_rx if rule.message_rx else None
         source = rule.sources[0] if rule.sources else EventSource.OTHER
         if rule.profiles:
             profile = rule.profiles[0].name
@@ -125,13 +125,16 @@ class Rule:
             elif key_s == "source":
                 continue
             elif key_s == "message":
-                message_rx = re.compile(x.value_re)
+                message_rx = x.value_re
             else:
                 # Process key pattern
                 m, rxs = cls.get_matcher(x.key_re, x.value_re)
                 matcher.append(m)
                 if rxs:
                     patterns += rxs
+        if message_rx:
+            patterns += [message_rx]
+            message_rx = re.compile(message_rx)
         # Transform
         for pattern in patterns:
             for match in rx_named_group.finditer(pattern):
