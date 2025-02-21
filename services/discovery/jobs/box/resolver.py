@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.wf.diagnostic import RESOLVER_DIAG, DiagnosticState
 
 
 class ResolverCheck(DiscoveryCheck):
@@ -23,11 +24,10 @@ class ResolverCheck(DiscoveryCheck):
         if not address:
             self.logger.info("Failed to resolve")
             self.set_problem(
-                alarm_class="Discovery | Error | Unhandled Exception",
-                message="Failed to resolve fqdn %s" % fqdn,
+                message=f"Failed to resolve fqdn {fqdn}",
                 fatal=True,
+                diagnostic=RESOLVER_DIAG,
             )
-            return
         if address == self.object.address:
             self.logger.info("Confirmed address %s", address)
             # If policy set once and address == self.object.address, check is not disabled
@@ -35,7 +35,7 @@ class ResolverCheck(DiscoveryCheck):
         policy = self.object.get_address_resolution_policy()
         self.logger.info("Changing address to %s", address)
         self.object.address = address
-        if policy == "O":  # Once
+        if address and policy == "O":  # Once
             self.object.address_resolution_policy = "D"  # Disable
         self.object.save()
 
@@ -45,4 +45,4 @@ class ResolverCheck(DiscoveryCheck):
         if not self.object.fqdn:
             self.logger.info("FQDN field is empty")
             return False
-        return self.object.get_address_resolution_policy() in ("E", "O")
+        return self.object.diagnostic[RESOLVER_DIAG] != DiagnosticState.blocked

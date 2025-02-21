@@ -353,7 +353,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                   xtype: "textfield",
                   fieldLabel: __("Address"),
                   tabIndex: 180,
-                  allowBlank: false,
+                  allowBlank: true,
                   groupEdit: true,
                   vtype: "IPv4Group",
                 },

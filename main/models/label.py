@@ -720,9 +720,7 @@ class Label(Document):
             if is_document(model):
                 ...
             else:
-                condition = c_map[rule.condition].join(
-                    [f"cast_test_to_inet({field}) <<= %s"] * len(prefixes)
-                )
+                condition = c_map[rule.condition].join([f"{field} <<= %s"] * len(prefixes))
                 params = [[self.name]] + prefixes
                 sql = f"""
                 UPDATE {model._meta.db_table}
