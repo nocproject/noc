@@ -401,7 +401,7 @@ class ManagedObject(NOCModel):
         AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=CASCADE
     )
     scheme = IntegerField("Scheme", choices=SCHEME_CHOICES)
-    address: str = CharField("Address", max_length=64)
+    address: str = INETField("Address", null=True, blank=True)
     port: int = IntegerField("Port", blank=True, null=True)
     user: Optional[str] = CharField("User", max_length=32, blank=True, null=True)
     password: Optional[str] = CharField("Password", max_length=32, blank=True, null=True)
@@ -1900,7 +1900,7 @@ class ManagedObject(NOCModel):
             elif is_ipv4_prefix(query):
                 # Match by prefix
                 p = IP.prefix(query)
-                return SQL("cast_test_to_inet(address) <<= '%s'" % p)
+                return SQL("address <<= '%s'" % p)
             else:
                 try:
                     mac = MACAddressParameter().clean(query)
@@ -2053,14 +2053,12 @@ class ManagedObject(NOCModel):
     def get_event_processing_policy(self):
         if self.event_processing_policy == "P":
             return self.object_profile.event_processing_policy
-        else:
-            return self.event_processing_policy
+        return self.event_processing_policy
 
     def get_address_resolution_policy(self):
         if self.address_resolution_policy == "P":
             return self.object_profile.address_resolution_policy
-        else:
-            return self.address_resolution_policy
+        return self.address_resolution_policy
 
     def get_denied_firmware_policy(self):
         if self.denied_firmware_policy == "P":

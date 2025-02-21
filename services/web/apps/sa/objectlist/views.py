@@ -160,10 +160,10 @@ class ObjectListApplication(ExtApplication):
     def extra_query(self, q, order):
         extra = {"select": {}}
         if "address" in order:
-            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
+            extra["select"]["ex_address"] = " address "
             extra["order_by"] = ["ex_address", "address"]
         elif "-address" in order:
-            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
+            extra["select"]["ex_address"] = " address "
             extra["order_by"] = ["-ex_address", "-address"]
 
         self.logger.info("Extra: %s" % extra)
