@@ -833,8 +833,10 @@ class InvApplication(ExtApplication):
                         "$elemMatch": {
                             "interface": {"$eq": "asset"},
                             "attr": {"$eq": "part_no"},
-                            "value": {"$regex": f"(?i){q}"},
-                        }
+                            "value": {
+                                "$elemMatch": {"$regex": f"(?i){q}"},
+                            },
+                        },
                     },
                 },
             ]
