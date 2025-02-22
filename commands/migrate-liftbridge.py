@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable
+from functools import partial
+from typing import Iterable, Optional
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -31,17 +32,15 @@ class Command(BaseCommand):
         )
 
     def handle(self, slots=None, *args, **options):
-        changed = False
         # Apply settings
-        for stream in self.iter_streams():
-            self.print("Ensuring stream %s" % stream)
-            changed |= self.apply_stream_settings(stream, partitions=slots)
+        changed = run_sync(partial(self.apply_stream_settings, slots))
         if changed:
             self.print("CHANGED")
         else:
             self.print("OK")
 
-    def iter_streams(self) -> Iterable[str]:
+    @staticmethod
+    def iter_streams() -> Iterable[str]:
         connect()
 
         # Configured streams
@@ -69,12 +68,13 @@ class Command(BaseCommand):
             if bi_dict_model:
                 yield f"ch.{bi_dict_model._meta.db_table}"
 
-    def apply_stream_settings(self, stream: str, partitions: int) -> bool:
-        async def ensure_stream() -> bool:
-            async with MessageStreamClient() as client:
-                return await client.ensure_stream(stream, partitions=partitions)
-
-        return run_sync(ensure_stream)
+    async def apply_stream_settings(self, slots: Optional[int] = None) -> bool:
+        changed = False
+        async with MessageStreamClient() as client:
+            for stream in self.iter_streams():
+                self.print("Ensuring stream %s" % stream)
+                changed |= await client.ensure_stream(stream, partitions=slots)
+        return changed
 
 
 if __name__ == "__main__":

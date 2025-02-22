@@ -17,8 +17,8 @@ from aiokafka.producer.producer import AIOKafkaProducer
 from aiokafka.consumer.consumer import AIOKafkaConsumer, TopicPartition
 from aiokafka.structs import OffsetAndTimestamp
 from aiokafka.client import AIOKafkaClient
-from kafka.admin import KafkaAdminClient, NewTopic
-from kafka.errors import (
+from aiokafka.admin import AIOKafkaAdminClient, NewTopic
+from aiokafka.errors import (
     KafkaError,
     KafkaTimeoutError,
     UnknownTopicOrPartitionError,
@@ -47,23 +47,29 @@ class RedPandaClient(object):
     SUBSCRIBE_BULK = True
 
     def __init__(self):
-        self.bootstrap = run_sync(self.resolve_broker)
+        self.bootstrap = None
         self.producer: Optional[AIOKafkaProducer] = None
         self.consumer: Optional[AIOKafkaConsumer] = None
         self.client: Optional[AIOKafkaClient] = None
-        self.admin_client: Optional[KafkaAdminClient] = None
+        self.admin_client: Optional[AIOKafkaAdminClient] = None
         self.loop = asyncio.get_running_loop()
         self.stub = None
         kafka_logger = logging.getLogger("kafka")
         kafka_logger.setLevel(logging.WARN)
 
-    async def resolve_broker(self) -> str:
+    @classmethod
+    async def resolve_broker(cls) -> str:
         # Getting addresses from config directly will block the loop on resolve() method.
         # So get parameter via .find_parameter() and resolve explicitly.
         addresses = await config.find_parameter("redpanda.addresses").async_get()
         # Use random broker from seed
         svc = random.choice(addresses)
         return f"{svc.host}:{svc.port}"
+
+    def get_bootstrap(self) -> str:
+        if not self.bootstrap:
+            self.bootstrap = run_sync(self.resolve_broker)
+        return self.bootstrap
 
     async def __aenter__(self) -> "RedPandaClient":
         return self
@@ -84,8 +90,9 @@ class RedPandaClient(object):
             await asyncio.sleep(0.1)
             await self.consumer.stop()
             self.consumer = None
-        # if self.admin_client:
-        #    self.admin_client.close()
+        if self.admin_client:
+            await self.admin_client.close()
+            self.admin_client = None
         # if self.client:
         #    await self.client.close()
 
@@ -152,11 +159,11 @@ class RedPandaClient(object):
         """
         if self.producer:
             return self.producer
-        # bootstrap = [x.strip() for x in config.kafkasender.bootstrap_servers.split(",")]
-        logger.info("Connecting to producer using bootstrap services %s", self.bootstrap)
+        bootstrap = self.get_bootstrap()
+        logger.info("Connecting to producer using bootstrap services %s", bootstrap)
         self.producer = AIOKafkaProducer(
             loop=self.loop,
-            bootstrap_servers=self.bootstrap,
+            bootstrap_servers=bootstrap,
             acks=1,
             max_batch_size=config.redpanda.max_batch_size,
             sasl_mechanism=config.redpanda.sasl_mechanism,
@@ -181,7 +188,7 @@ class RedPandaClient(object):
             return self.consumer
         self.consumer = AIOKafkaConsumer(
             loop=self.loop,
-            bootstrap_servers=self.bootstrap,
+            bootstrap_servers=self.get_bootstrap(),
             client_id=CLIENT_ID,
             enable_auto_commit=False,
             group_id=group_id,
@@ -203,19 +210,20 @@ class RedPandaClient(object):
         """
         if not self.client:
             self.client = AIOKafkaClient(
-                bootstrap_servers=self.bootstrap, client_id=CLIENT_ID
+                bootstrap_servers=self.get_bootstrap(), client_id=CLIENT_ID
             )  # config.client_id
         return self.client
 
-    def get_kafka_admin_client(self) -> KafkaAdminClient:
+    async def get_kafka_admin_client(self) -> AIOKafkaAdminClient:
         """
         Return Kafka Admin Client
         :return:
         """
         if not self.admin_client:
-            self.admin_client = KafkaAdminClient(
-                bootstrap_servers=self.bootstrap, client_id=CLIENT_ID
+            self.admin_client = AIOKafkaAdminClient(
+                bootstrap_servers=self.get_bootstrap(), client_id=CLIENT_ID
             )  # config.client_id
+            await self.admin_client.start()
         return self.admin_client
 
     @staticmethod
@@ -259,8 +267,8 @@ class RedPandaClient(object):
         :param replication_factor:
         :return:
         """
-        admin_client = self.get_kafka_admin_client()
-        admin_client.create_topics(
+        admin_client = await self.get_kafka_admin_client()
+        await admin_client.create_topics(
             new_topics=[
                 NewTopic(
                     name=name,
@@ -278,9 +286,9 @@ class RedPandaClient(object):
         :param name: Topic name
         :return:
         """
-        admin_client = self.get_kafka_admin_client()
+        admin_client = await self.get_kafka_admin_client()
         try:
-            admin_client.delete_topics([name])
+            await admin_client.delete_topics([name])
         except UnknownTopicOrPartitionError:
             pass
 
