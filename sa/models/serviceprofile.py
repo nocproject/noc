@@ -144,7 +144,7 @@ class CalculatedStatusRule(EmbeddedDocument):
             return None
         elif not self.weight:
             return self.set_status
-        weight = self.calculate_weight(weights)
+        weight = self.calculate_weight(weights, max_weight=sum(w for s, w in statuses.items()))
         if condition_map[self.op](weight, self.weight):
             return self.set_status
         return None
@@ -167,7 +167,7 @@ class CalculatedStatusRule(EmbeddedDocument):
             return condition_map[self.op](weight, self.weight)
         return True
 
-    def calculate_weight(self, weights: Tuple[int, ...]) -> float:
+    def calculate_weight(self, weights: Tuple[int, ...], max_weight=1) -> float:
         if self.weight_function == "C":
             return len(weights)
         elif self.weight_function == "MIN":
@@ -175,7 +175,7 @@ class CalculatedStatusRule(EmbeddedDocument):
         elif self.weight_function == "MAX":
             return max(weights)
         # filter by min/max status
-        return round(sum(weights) / len(weights) * 100, 2)
+        return round(sum(weights) / max_weight * 100, 2)
 
     # def get_status(
     #     self, severities: List[int], max_services: Optional[int] = None

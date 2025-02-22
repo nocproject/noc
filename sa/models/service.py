@@ -561,19 +561,28 @@ class Service(Document):
                 if si.is_match_alarm(aa):
                     instance_status[si.id] = max(instance_status[si.id], status)
             # alarm_statuses[aa] = status
-        if not instance_status:
-            # ? calculate by alarm count
-            return alarm_status
+        # if not instance_status:
+        # ? calculate by alarm count
+        # to
+        #    return alarm_status
         logger.info("[%s] Instance statuses: %s", self.id, instance_status)
         # Calculate Service Instance Status
-        # Request base summary
-        r = self.get_status_summary()
-        # max_weight !
+        # Request base summary. Max Weight. Instance count, if not - set 1
+        max_weight = len(instance_status)
+        if effective_clients:
+            max_weight += sum(
+                r.resource_count
+                for r in ResourceGroup.objects.filter(id__in=list(effective_clients))
+            )
+        r = {}
         for status in instance_status.values():
             if status not in r:
                 r[status] = 1
             else:
                 r[status] += 1
+        # self.weight
+        r[alarm_status] = (max_weight or 1) - sum(r.values())
+        logger.info("[%s] Affected statuses: %s", self.id, r)
         # Calculate affected status
         return self.calculate_status(r)
 
@@ -586,13 +595,6 @@ class Service(Document):
         if self.calculate_status_function == "P":
             return self.profile.calculate_status_function
         return self.calculate_status_function
-
-    def get_status_summary(self) -> Dict[Status, int]:
-        """Getting summary objects"""
-        r = {Status.UP: 1}
-        for r in ResourceGroup.objects.filter(id__in=self.effective_client_groups):
-            r[Status.UP] += r.resource_count
-        return r
 
     def get_effective_calculate_rules(self) -> List["CalculatedStatusRule"]:
         if self.calculate_status_function == "P":
