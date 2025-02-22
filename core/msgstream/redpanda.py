@@ -216,6 +216,7 @@ class RedPandaClient(object):
             self.admin_client = AIOKafkaAdminClient(
                 bootstrap_servers=self.bootstrap, client_id=CLIENT_ID
             )  # config.client_id
+            self.admin_client.start()
         return self.admin_client
 
     @staticmethod
