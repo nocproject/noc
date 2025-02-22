@@ -262,7 +262,7 @@ class Command(BaseCommand):
                     e_vars["interface"] = v.pop("interface_mock")
                 elif "interface__ifindex" in e_vars:
                     assert (
-                        "interface__ifindex" in e_vars
+                        "interface_mock" in e_vars
                     ), "interface_mock Required for ifindex transform test"
                 try:
                     vv = ruleset.eval_vars(event, rule.event_class, e_vars)

@@ -140,6 +140,6 @@ def test_rules_collection_cases(ruleset, event_class_rule):
             e_vars["interface"] = v.pop("interface_mock")
         elif "interface__ifindex" in e_vars:
             assert (
-                "interface__ifindex" in e_vars
+                "interface_mock" in e_vars
             ), "interface_mock Required for ifindex transform test"
         ruleset.eval_vars(e, rule.event_class, e_vars)

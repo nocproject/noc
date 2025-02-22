@@ -24,7 +24,7 @@
     "profiles": ["Cisco.IOS"],
     "test_cases": [
         {
-            "message": "",
+            "message": null,
             "raw_vars": [
                 {
                     "name": "1.3.6.1.2.1.1.3.0",
