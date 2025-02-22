@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # kafkasender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,8 +17,8 @@ from aiokafka.errors import (
     KafkaConnectionError,
     KafkaTimeoutError,
     RequestTimedOutError,
+    NodeNotReadyError,
 )
-from kafka.errors import NodeNotReadyError
 from atomicl import AtomicLong
 
 # NOC modules
