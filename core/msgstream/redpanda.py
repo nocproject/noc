@@ -17,8 +17,8 @@ from aiokafka.producer.producer import AIOKafkaProducer
 from aiokafka.consumer.consumer import AIOKafkaConsumer, TopicPartition
 from aiokafka.structs import OffsetAndTimestamp
 from aiokafka.client import AIOKafkaClient
-from kafka.admin import KafkaAdminClient, NewTopic
-from kafka.errors import (
+from aiokafka.admin.client import AIOKafkaAdminClient, NewTopic
+from aiokafka.errors import (
     KafkaError,
     KafkaTimeoutError,
     UnknownTopicOrPartitionError,
@@ -51,7 +51,7 @@ class RedPandaClient(object):
         self.producer: Optional[AIOKafkaProducer] = None
         self.consumer: Optional[AIOKafkaConsumer] = None
         self.client: Optional[AIOKafkaClient] = None
-        self.admin_client: Optional[KafkaAdminClient] = None
+        self.admin_client: Optional[AIOKafkaAdminClient] = None
         self.loop = asyncio.get_running_loop()
         self.stub = None
         kafka_logger = logging.getLogger("kafka")
@@ -207,13 +207,13 @@ class RedPandaClient(object):
             )  # config.client_id
         return self.client
 
-    def get_kafka_admin_client(self) -> KafkaAdminClient:
+    def get_kafka_admin_client(self) -> AIOKafkaAdminClient:
         """
         Return Kafka Admin Client
         :return:
         """
         if not self.admin_client:
-            self.admin_client = KafkaAdminClient(
+            self.admin_client = AIOKafkaAdminClient(
                 bootstrap_servers=self.bootstrap, client_id=CLIENT_ID
             )  # config.client_id
         return self.admin_client
@@ -260,7 +260,7 @@ class RedPandaClient(object):
         :return:
         """
         admin_client = self.get_kafka_admin_client()
-        admin_client.create_topics(
+        await admin_client.create_topics(
             new_topics=[
                 NewTopic(
                     name=name,
@@ -280,7 +280,7 @@ class RedPandaClient(object):
         """
         admin_client = self.get_kafka_admin_client()
         try:
-            admin_client.delete_topics([name])
+            await admin_client.delete_topics([name])
         except UnknownTopicOrPartitionError:
             pass
 
