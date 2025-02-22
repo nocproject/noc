@@ -75,7 +75,7 @@ class Command(BaseCommand):
             return exit_code
 
         # Run tests
-        args = ["--maxfail", "1"]
+        args = []
         if verbose:
             args += ["-" + ("v" * verbose)]
         if junit_report:
