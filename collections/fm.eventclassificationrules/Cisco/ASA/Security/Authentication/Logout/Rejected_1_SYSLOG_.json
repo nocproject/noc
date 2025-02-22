@@ -5,11 +5,11 @@
     "description": "Apr 05 2016 15:05:43: %ASA-6-113005: AAA user authentication Rejected : reason = \"\" : server = \"\" : user = \"\" : user IP = \"\"",
     "event_class__name": "Security | Authentication | Rejected",
     "preference": 1000,
+    "sources": ["syslog"],
     "patterns": [],
     "labels": [],
-    "message_rx": "%(?:ASA|PIX)-6-113005: AAA user authentication Rejected : reason = (?P<reason>\\D+) : server = (?P<server>\\S+) : user = (?P<user>.*) : user IP = (?P<src_ip>.*)",
+    "message_rx": "%(?:ASA|PIX)-6-113005: AAA user authentication Rejected : reason = \"(?P<reason>\\D+)\" : server = \"(?P<server>\\S+)\" : user = \"(?P<user>.*)\" : user IP = \"(?P<src_ip>.*)\"",
     "profiles": ["Cisco.ASA"],
-    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "Apr 05 2016 15:05:43: %ASA-6-113005: AAA user authentication Rejected : reason = \"\" : server = \"\" : user = \"\" : user IP = \"\"",
