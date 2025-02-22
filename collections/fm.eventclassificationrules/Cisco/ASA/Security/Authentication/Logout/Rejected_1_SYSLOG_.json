@@ -2,17 +2,17 @@
     "name": "Cisco | ASA | Security | Authentication | Logout | Rejected #1 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "2da9310e-562b-4436-a9a0-c99f87a053ea",
-    "description": "Apr 05 2016 15:05:43: %ASA-6-113005: AAA user authentication Rejected : reason = \"\" : server = \"\" : user = \"\" : user IP = \"\"",
+    "description": "",
     "event_class__name": "Security | Authentication | Rejected",
     "preference": 1000,
     "sources": ["syslog"],
     "patterns": [],
     "labels": [],
-    "message_rx": "%(?:ASA|PIX)-6-113005: AAA user authentication Rejected : reason = \"(?P<reason>\\D+)\" : server = \"(?P<server>\\S+)\" : user = \"(?P<user>.*)\" : user IP = \"(?P<src_ip>.*)\"",
+    "message_rx": "%(?:ASA|PIX)-6-113005: AAA user authentication Rejected : reason = (?P<reason>\\D+) : server = (?P<server>\\S+) : user = (?P<user>.*) : user IP = (?P<src_ip>.*)",
     "profiles": ["Cisco.ASA"],
     "test_cases": [
         {
-            "message": "Apr 05 2016 15:05:43: %ASA-6-113005: AAA user authentication Rejected : reason = \"\" : server = \"\" : user = \"\" : user IP = \"\"",
+            "message": "Apr 05 2016 15:05:43: %ASA-6-113005: AAA user authentication Rejected : reason = AAA : server = 10.10.10.1 : user = test : user IP = 10.10.10.200",
             "raw_vars": []
         }
     ]
