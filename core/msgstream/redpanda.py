@@ -30,7 +30,6 @@ from aiokafka.errors import (
 # NOC Modules
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.ioloop.util import run_sync
 from noc.core.timeout import retry_timeout
 from .config import get_stream
 from .metadata import Metadata, PartitionMetadata, Broker
@@ -46,8 +45,8 @@ class RedPandaClient(object):
     TIMESTAMP_MULTIPLIER = 1_000
     SUBSCRIBE_BULK = True
 
-    def __init__(self):
-        self.bootstrap = run_sync(self.resolve_broker)
+    def __init__(self, bootstrap: Optional[str] = None):
+        self.bootstrap: Optional[str] = bootstrap
         self.producer: Optional[AIOKafkaProducer] = None
         self.consumer: Optional[AIOKafkaConsumer] = None
         self.client: Optional[AIOKafkaClient] = None
@@ -64,6 +63,11 @@ class RedPandaClient(object):
         # Use random broker from seed
         svc = random.choice(addresses)
         return f"{svc.host}:{svc.port}"
+
+    async def get_bootstrap(self) -> str:
+        if not self.bootstrap:
+            self.bootstrap = await self.resolve_broker()
+        return self.bootstrap
 
     async def __aenter__(self) -> "RedPandaClient":
         return self
@@ -84,8 +88,9 @@ class RedPandaClient(object):
             await asyncio.sleep(0.1)
             await self.consumer.stop()
             self.consumer = None
-        # if self.admin_client:
-        #    self.admin_client.close()
+        if self.admin_client:
+            await self.admin_client.close()
+            self.admin_client = None
         # if self.client:
         #    await self.client.close()
 
@@ -105,7 +110,7 @@ class RedPandaClient(object):
         :param wait_for_stream: Wait for cluster init
         :return:
         """
-        client = self.get_kafka_client()
+        client = await self.get_kafka_client()
         await client.bootstrap()
         s_meta: Dict[str, Dict[int, PartitionMetadata]] = defaultdict(dict)
         req_parts = []
@@ -153,10 +158,11 @@ class RedPandaClient(object):
         if self.producer:
             return self.producer
         # bootstrap = [x.strip() for x in config.kafkasender.bootstrap_servers.split(",")]
-        logger.info("Connecting to producer using bootstrap services %s", self.bootstrap)
+        bootstrap = await self.get_bootstrap()
+        logger.info("Connecting to producer using bootstrap services %s", bootstrap)
         self.producer = AIOKafkaProducer(
             loop=self.loop,
-            bootstrap_servers=self.bootstrap,
+            bootstrap_servers=bootstrap,
             acks=1,
             max_batch_size=config.redpanda.max_batch_size,
             sasl_mechanism=config.redpanda.sasl_mechanism,
@@ -181,7 +187,7 @@ class RedPandaClient(object):
             return self.consumer
         self.consumer = AIOKafkaConsumer(
             loop=self.loop,
-            bootstrap_servers=self.bootstrap,
+            bootstrap_servers=await self.get_bootstrap(),
             client_id=CLIENT_ID,
             enable_auto_commit=False,
             group_id=group_id,
@@ -196,26 +202,21 @@ class RedPandaClient(object):
                 logger.error("Cannot connect to Kafka: %s", e)
                 await retry_timeout(1.0, name="kafka_consumer")
 
-    def get_kafka_client(self) -> AIOKafkaClient:
-        """
-        Return Async Kafka Client
-        :return:
-        """
+    async def get_kafka_client(self) -> AIOKafkaClient:
+        """Return Async Kafka Client"""
         if not self.client:
             self.client = AIOKafkaClient(
-                bootstrap_servers=self.bootstrap, client_id=CLIENT_ID
+                bootstrap_servers=await self.get_bootstrap(), client_id=CLIENT_ID
             )  # config.client_id
         return self.client
 
-    def get_kafka_admin_client(self) -> AIOKafkaAdminClient:
-        """
-        Return Kafka Admin Client
-        :return:
-        """
+    async def get_kafka_admin_client(self) -> AIOKafkaAdminClient:
+        """Return Kafka Admin Client"""
         if not self.admin_client:
             self.admin_client = AIOKafkaAdminClient(
-                bootstrap_servers=self.bootstrap, client_id=CLIENT_ID
+                bootstrap_servers=await self.get_bootstrap(), client_id=CLIENT_ID, loop=self.loop
             )  # config.client_id
+            await self.admin_client.start()
         return self.admin_client
 
     @staticmethod
@@ -259,7 +260,7 @@ class RedPandaClient(object):
         :param replication_factor:
         :return:
         """
-        admin_client = self.get_kafka_admin_client()
+        admin_client = await self.get_kafka_admin_client()
         await admin_client.create_topics(
             new_topics=[
                 NewTopic(
@@ -278,7 +279,7 @@ class RedPandaClient(object):
         :param name: Topic name
         :return:
         """
-        admin_client = self.get_kafka_admin_client()
+        admin_client = await self.get_kafka_admin_client()
         try:
             await admin_client.delete_topics([name])
         except UnknownTopicOrPartitionError:
