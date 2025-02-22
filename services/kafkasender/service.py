@@ -17,8 +17,8 @@ from aiokafka.errors import (
     KafkaConnectionError,
     KafkaTimeoutError,
     RequestTimedOutError,
+    NodeNotReadyError,
 )
-from kafka.errors import NodeNotReadyError
 from atomicl import AtomicLong
 
 # NOC modules
