@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test migrate-liftbridge
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,4 +17,7 @@ def test_migrate_lb(database):
     :return:
     """
     m = __import__("noc.commands.migrate-liftbridge", {}, {}, "Command")
-    assert m.Command().run_from_argv(["--slots", "1"]) == 0
+    try:
+        assert m.Command().run_from_argv(["--slots", "1"]) == 0
+    except Exception as e:
+        pytest.exit(f"Not migrated streams: {e}", returncode=3)
