@@ -33,7 +33,9 @@ class Command(BaseCommand):
         run_parser.add_argument("--junit-report", help="Write JUnit XML report to specified file")
         run_parser.add_argument("--idea-bookmarks", help="Dump warnings as IDEA bookmarks XML")
         run_parser.add_argument("--statistics", action="store_true", help="Dump statistics")
-        run_parser.add_argument("--local-db", action="store_true", help="Run test on Local Database")
+        run_parser.add_argument(
+            "--local-db", action="store_true", help="Run test on Local Database"
+        )
         run_parser.add_argument("tests", nargs=argparse.REMAINDER, help="Paths to tests")
 
     def handle(self, cmd, *args, **options):
