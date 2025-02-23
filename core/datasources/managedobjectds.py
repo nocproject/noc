@@ -468,7 +468,8 @@ class ManagedObjectDS(BaseDataSource):
                 .find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1, "chassis_mac": 1})
             ):
                 hostname_map[val["object"]] = val["hostname"]
-                mac_map[val["object"]] = ",".join(m["first_mac"] for m in val["chassis_mac"])
+                if "chassis_mac" in val:
+                    mac_map[val["object"]] = ",".join(m["first_mac"] for m in val["chassis_mac"])
         if not fields or "segment" in fields:
             segment_map = {
                 str(n["_id"]): n["name"]
