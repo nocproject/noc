@@ -508,6 +508,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 iface.name,
                 iface.aggregated_interface.name,
             )
+            iface.save()
             return
         elif iface.aggregated_interface:
             return
