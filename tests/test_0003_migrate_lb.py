@@ -8,6 +8,9 @@
 # Third-party modules
 import pytest
 
+# NOC modules
+from noc.core.debug import error_report
+
 
 @pytest.mark.usefixtures("database")
 def test_migrate_lb(database):
@@ -20,4 +23,5 @@ def test_migrate_lb(database):
     try:
         assert m.Command().run_from_argv(["--slots", "1"]) == 0
     except Exception as e:
+        error_report()
         pytest.exit(f"Not migrated streams: {e}", returncode=3)
