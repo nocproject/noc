@@ -20,9 +20,4 @@ def test_migrate_lb(database):
     :return:
     """
     m = __import__("noc.commands.migrate-liftbridge", {}, {}, "Command")
-    try:
-        r = m.Command().run_from_argv(["--slots", "1"])
-        assert r == 0
-    except Exception as e:
-        error_report()
-        pytest.exit(f"Not migrated streams: {e}", returncode=3)
+    assert m.Command().run_from_argv(["--slots", "1"]) == 0
