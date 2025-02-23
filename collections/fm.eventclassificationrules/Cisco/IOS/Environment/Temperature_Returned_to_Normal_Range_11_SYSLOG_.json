@@ -5,11 +5,15 @@
     "description": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit.",
     "event_class__name": "Environment | Temperature Returned to Normal Range",
     "preference": 1000,
+    "sources": ["syslog"],
+    "vars": [{
+        "name": "name",
+        "value": "inside"
+    }],
     "patterns": [],
     "labels": [],
     "message_rx": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit.",
     "profiles": ["Cisco.IOS"],
-    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit.",

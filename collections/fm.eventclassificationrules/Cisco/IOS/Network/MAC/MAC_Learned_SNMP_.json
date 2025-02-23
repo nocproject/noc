@@ -5,8 +5,9 @@
     "description": "CISCO-MAC-NOTIFICATION-MIB::cmnMacMoveNotification",
     "event_class__name": "Network | MAC | MAC Learned",
     "preference": 1000,
+    "sources": ["SNMP Trap"],
     "vars": [{
-        "name": "interface",
+        "name": "interface__ifindex",
         "value": "=str(ord(iface[1]))"
     }],
     "patterns": [
@@ -21,7 +22,6 @@
     ],
     "labels": [],
     "profiles": ["Cisco.IOS"],
-    "sources": ["SNMP Trap"],
     "test_cases": [
         {
             "message": null,
@@ -50,6 +50,10 @@
                     "name": "1.3.6.1.6.3.1.1.4.3.0",
                     "snmp_raw": true,
                     "value": "1.3.6.1.4.1.9.9.215.2"
+                },
+                {
+                    "name": "interface_mock",
+                    "value": "FastEthernet 0/2"
                 }
             ]
         }

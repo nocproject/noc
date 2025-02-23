@@ -22,6 +22,7 @@ rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
 ANY_VALUE = "*"
+safe_builtins = {"str": str, "int": int, "ord": ord, "float": float}
 
 
 @dataclass(slots=True)
@@ -43,7 +44,7 @@ class VarTransformRule:
         elif self.f_type and self.var in v:
             v[self.name] = getattr(self, self.f_type)(v.pop(self.var))
         if self.function:
-            v[self.name] = eval(self.function, {"__builtins__": {}}, var_ctx)
+            v[self.name] = eval(self.function, {"__builtins__": safe_builtins}, var_ctx)
         elif self.name in var_ctx:
             v[self.name] = var_ctx[self.name]
         elif self.name not in v and self.default:
@@ -106,7 +107,7 @@ class Rule:
     @classmethod
     def from_rule(cls, rule, enumerations) -> "Rule":
         """Create from EventClassificationRule"""
-        matcher, message_rx = [], re.compile(rule.message_rx) if rule.message_rx else None
+        matcher, message_rx = [], rule.message_rx if rule.message_rx else None
         source = rule.sources[0] if rule.sources else EventSource.OTHER
         if rule.profiles:
             profile = rule.profiles[0].name
@@ -125,13 +126,16 @@ class Rule:
             elif key_s == "source":
                 continue
             elif key_s == "message":
-                message_rx = re.compile(x.value_re)
+                message_rx = x.value_re
             else:
                 # Process key pattern
                 m, rxs = cls.get_matcher(x.key_re, x.value_re)
                 matcher.append(m)
                 if rxs:
                     patterns += rxs
+        if message_rx:
+            patterns += [message_rx]
+            message_rx = re.compile(message_rx)
         # Transform
         for pattern in patterns:
             for match in rx_named_group.finditer(pattern):

@@ -7,7 +7,7 @@
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "%EC-(STBY-)?5-UNBUNDLE: Interface (?P<interface>\\S+) left the port-channel (?P<lag_interface>\\S+)\\.?$",
+    "message_rx": "%EC-(STBY-)?5-UNBUNDLE: Interface (?P<interface>\\S+) left the port-channel (?P<lag_interface>\\S+\\d+)\\.?$",
     "profiles": ["Cisco.IOS"],
     "sources": ["syslog"],
     "test_cases": [
