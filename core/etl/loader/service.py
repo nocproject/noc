@@ -59,7 +59,7 @@ class ServiceLoader(BaseLoader):
             if etl_i.nri_port:
                 i_type = InstanceType.NETWORK_CHANNEL
             elif etl_i.mac_addresses:
-                i_type = InstanceType.NETWORK_HOST
+                i_type = InstanceType.ASSET
             else:
                 i_type = InstanceType.SERVICE_ENDPOINT
             si = o.register_instance(
