@@ -8,9 +8,6 @@
 # Third-party modules
 import pytest
 
-# NOC modules
-from noc.core.debug import error_report
-
 
 @pytest.mark.usefixtures("database")
 def test_migrate_lb(database):
