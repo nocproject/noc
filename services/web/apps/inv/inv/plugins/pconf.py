@@ -16,7 +16,7 @@ from collections import defaultdict
 import orjson
 
 # NOC modules
-from noc.inv.models.object import Object, Crossing
+from noc.inv.models.object import Object
 from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.extstorage import ExtStorage
