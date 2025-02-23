@@ -131,3 +131,13 @@ def test_rules_collection_cases(ruleset, event_class_rule):
         assert (
             rule.event_class == event_class_rule.event_class
         ), f"Mismatched event class '{rule.event_class.name}' vs '{event_class_rule.event_class.name}'"
+        var_ctx = {"message": e.message}
+        var_ctx |= v
+        var_ctx |= e_vars
+        for t in rule.vars_transform or []:
+            t.transform(e_vars, var_ctx)
+        if "interface__ifindex" in e_vars and "interface_mock" in v:
+            e_vars["interface"] = v.pop("interface_mock")
+        elif "interface__ifindex" in e_vars:
+            assert "interface_mock" in e_vars, "interface_mock Required for ifindex transform test"
+        ruleset.eval_vars(e, rule.event_class, e_vars)

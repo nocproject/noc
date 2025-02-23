@@ -5,11 +5,15 @@
     "description": "%HARDWARE-2-THERMAL_WARNING: Temperature has reached warning threshold",
     "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
+    "sources": ["syslog"],
+    "vars": [{
+        "name": "name",
+        "value": "inside"
+    }],
     "patterns": [],
     "labels": [],
     "message_rx": "HARDWARE-\\d+-THERMAL_(?:WARNING|CRITICAL).+[Tt]emperature has reached (?:warning|critical) threshold",
     "profiles": ["Cisco.IOS"],
-    "sources": ["syslog"],
     "test_cases": [
         {
             "message": "%HARDWARE-2-THERMAL_WARNING: Temperature has reached warning threshold",
