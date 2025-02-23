@@ -453,16 +453,16 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     editor: {
                                         xtype: "combobox",
                                         store: [
-                                            ["endpoint", "L3 Endpoint"],
-                                            ["network_channel", "Channel"],
-                                            ["network_host", "L2 Host"],
+                                            ["endpoint", "Endpoint"],
+                                            ["network", "Network"],
+                                            ["asset", "Asset"],
                                             ["other", "Other"]
                                         ]
                                     },
                                     renderer: NOC.render.Choices({
                                         "endpoint": "L3 Endpoint",
-                                        "network_channel": "Channel",
-                                        "network_host": "L2 Host",
+                                        "network": "Network",
+                                        "asset": "Asset",
                                         "other": "Other"
                                     })
                                 },
@@ -490,7 +490,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     renderer: NOC.render.Bool
                                 },
                                 {
-                                    text: __("Send Approve"),
+                                    text: __("Send Approve (To Res)"),
                                     dataIndex: "send_approve",
                                     width: 100,
                                     editor: "checkbox",
