@@ -54,7 +54,7 @@ class CfgMetricRuleDataStream(DataStream):
                 "graph_config": action.metric_action.get_config(
                     **action.metric_action_params,
                     rule_id=m_rule.id,
-                    thresholds=action.thresholds,
+                    thresholds=[t.get_config() for t in action.thresholds],
                 ).model_dump(),
                 "inputs": [],
             }

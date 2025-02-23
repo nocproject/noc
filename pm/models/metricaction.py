@@ -286,7 +286,7 @@ class MetricAction(Document):
                 name=f"{prefix}compose",
                 type="composeprobe",
                 description="",
-                config={"expression": self.compose_expression, "unit": 1},
+                config={"expression": self.compose_expression, "unit": "1"},
                 inputs=ci,
             )
             g_input = InputItem(name="x", node=f"{prefix}compose")
@@ -358,7 +358,7 @@ class MetricAction(Document):
                     name=f"{prefix}keycompose",
                     type="composeprobe",
                     description="",
-                    config={"expression": self.key_expression, "unit": 1},
+                    config={"expression": self.key_expression, "unit": "1"},
                     inputs=ci,
                 )
                 nodes["key"] = NodeItem(
