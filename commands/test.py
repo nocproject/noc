@@ -33,6 +33,7 @@ class Command(BaseCommand):
         run_parser.add_argument("--junit-report", help="Write JUnit XML report to specified file")
         run_parser.add_argument("--idea-bookmarks", help="Dump warnings as IDEA bookmarks XML")
         run_parser.add_argument("--statistics", action="store_true", help="Dump statistics")
+        run_parser.add_argument("--local-db", action="store_true", help="Run test on Local Database")
         run_parser.add_argument("tests", nargs=argparse.REMAINDER, help="Paths to tests")
 
     def handle(self, cmd, *args, **options):
@@ -50,6 +51,7 @@ class Command(BaseCommand):
         coverage_report=None,
         junit_report=None,
         idea_bookmarks=None,
+        local_db=False,
         *args,
         **options,
     ):
@@ -84,6 +86,10 @@ class Command(BaseCommand):
             args += tests
         else:
             args += ["tests"]
+        if local_db:
+            from noc.core.mongo.connection import connect
+
+            connect()
         if statistics or coverage_report:
             self.print("Collecting coverage")
             # Reset all loaded modules to return them to coverage
