@@ -208,6 +208,8 @@ class ServiceInstance(Document):
     @classmethod
     def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
         """Iterate over Object Instances"""
+        from noc.inv.models.subinterface import SubInterface
+
         q = Q()
         rds = {}
         if managed_object.remote_system and managed_object.remote_id:
@@ -216,8 +218,15 @@ class ServiceInstance(Document):
             rds[m["remote_id"]] = m["remote_system"]
         if rds:
             q |= Q(remote_id__in=list(rds))
+        addrs = set()
         if managed_object.address:
-            q |= Q(addresses__address=managed_object.address)
+            addrs.add(managed_object.address)
+        for ipv4_addrs in SubInterface.objects.filter(
+            managed_object=managed_object.id, ipv4_addresses__exists=True, enabled_afi="IPv4"
+        ).scalar("ipv4_addresses"):
+            addrs |= set(IP.prefix(x).address for x in ipv4_addrs)
+        if addrs:
+            q |= Q(addresses__address__in=addrs)
         for si in ServiceInstance.objects.filter(q):
             if rds and si.remote_id and str(si.service.remote_system.id) != rds.get(si.remote_id):
                 continue
@@ -229,7 +238,11 @@ class ServiceInstance(Document):
             return alarm.components.interface.as_resource() in self.resources
         elif self.managed_object and self.managed_object.id == alarm.managed_object.id:
             return True
-        elif self.addresses and "address" in alarm.vars and alarm.vars["address"] == self.address:
+        elif not self.address:
+            return False
+        elif "address" in alarm.vars and alarm.vars["address"] == self.address:
+            return True
+        elif "peer" in alarm.vars and alarm.vars["peer"] == self.address:
             return True
         return False
 
@@ -389,8 +402,13 @@ class ServiceInstance(Document):
                 continue
             resources.append(rid)
             logger.info("Binding service %s to interface %s", self.service, o.name)
+            if rid not in self.resources:
+                logger.info("Binding service %s to interface %s", self.service, o.name)
+        if not set(self.resources) - set(resources):
+            self.last_seen = update_ts
+            ServiceInstance.objects.filter(id=self.id).update(last_seen=self.last_seen)
+            return
         self.resources = resources
-        self.last_seen = update_ts
         if bulk is not None:
             bulk += [
                 UpdateOne(
@@ -399,7 +417,10 @@ class ServiceInstance(Document):
                 )
             ]
         else:
-            ServiceInstance.objects.filter(id=self.id).update(resources=self.resources)
+            ServiceInstance.objects.filter(id=self.id).update(
+                resources=self.resources,
+                last_seen=self.last_seen,
+            )
             if self.managed_object:
                 ServiceSummary.refresh_object(self.managed_object)
 

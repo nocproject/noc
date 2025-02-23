@@ -9,7 +9,7 @@
 import operator
 import re
 from threading import Lock
-from typing import Optional, Union, Tuple, List
+from typing import Optional, Union, Tuple, List, Dict
 from functools import partial
 
 # Third-party modules
@@ -129,9 +129,22 @@ class CalculatedStatusRule(EmbeddedDocument):
     # For instance ?
     set_status = EnumField(Status, required=True)
 
-    def get_status(self, statuses: List[Tuple[Status, int]]) -> Optional[Status]:
-        weights = (w for s, w in statuses if self.is_match_status(s))
-        weight = self.calculate_weight(weights)
+    def __str__(self):
+        if self.weight:
+            s = f" {self.op} {self.weight} -> {self.set_status.name}"
+        else:
+            s = f" {self.op} -> {self.set_status.name}"
+        if self.min_status or self.max_status:
+            return f"({self.min_status} <> {self.max_status}) {s}"
+        return s
+
+    def get_status(self, statuses: Dict[Status, int]) -> Optional[Status]:
+        weights = tuple(w for s, w in statuses.items() if self.is_match_status(s))
+        if not weights:
+            return None
+        elif not self.weight:
+            return self.set_status
+        weight = self.calculate_weight(weights, max_weight=sum(w for s, w in statuses.items()))
         if condition_map[self.op](weight, self.weight):
             return self.set_status
         return None
@@ -139,7 +152,7 @@ class CalculatedStatusRule(EmbeddedDocument):
     # calculate_status - statuses - List[(status, weight)]
 
     def is_match_status(self, status: Status) -> bool:
-        if not self.min_status and status < self.min_status:
+        if self.min_status and status < self.min_status:
             return False
         elif self.max_status and status >= self.max_status:
             return False
@@ -154,7 +167,7 @@ class CalculatedStatusRule(EmbeddedDocument):
             return condition_map[self.op](weight, self.weight)
         return True
 
-    def calculate_weight(self, weights: Tuple[int, ...]) -> float:
+    def calculate_weight(self, weights: Tuple[int, ...], max_weight=1) -> float:
         if self.weight_function == "C":
             return len(weights)
         elif self.weight_function == "MIN":
@@ -162,7 +175,7 @@ class CalculatedStatusRule(EmbeddedDocument):
         elif self.weight_function == "MAX":
             return max(weights)
         # filter by min/max status
-        return round(sum(weights) / len(weights) * 100, 2)
+        return round(sum(weights) / max_weight * 100, 2)
 
     # def get_status(
     #     self, severities: List[int], max_services: Optional[int] = None
@@ -385,6 +398,12 @@ class ServiceProfile(Document):
         Attrs:
             type: service, client
         """
+
+    def get_rule_by_alarm(self, aa) -> Optional["AlarmStatusRule"]:
+        for r in self.alarm_status_rules:
+            if r.is_match(aa):
+                return r
+        return None
 
     def calculate_alarm_status(self, aa) -> Status:
         """
