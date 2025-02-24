@@ -13,7 +13,7 @@ class PlatformRule(OIDRule):
     name = "platform"
 
     def iter_oids(self, script, cfg):
-        ent_oid = script.capabilities.get("SNMP | OID | EnterpriseID", "41752")
-        oid = mib[self.expand(self.oid, {"platform": ent_oid, "ifIndex": cfg.ifindex})]
+        ent_id = script.profile.get_ent_id(script)
+        oid = mib[self.expand(self.oid, {"platform": ent_id, "ifIndex": cfg.ifindex})]
         if oid:
             yield oid, self.type, self.scale, self.units, cfg.labels
