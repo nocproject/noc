@@ -329,7 +329,7 @@ class CfgTrapDataStream(DataStream):
                 "trap_source": False,
                 "ping_check": False,
             }
-        if target.enable_snmptrap_source("s") 
+        if target.enable_snmptrap_source("s"):
             if target.trap_source_ip not in addresses:
                 addresses[target.trap_source_ip] = {
                     "address": str(target.trap_source_ip),
