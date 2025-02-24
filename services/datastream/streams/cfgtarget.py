@@ -325,19 +325,23 @@ class CfgTrapDataStream(DataStream):
                 "address": str(target.syslog_source_ip),
                 "is_fatal": False,
                 "interface": None,
-                "syslog_source": False,
-                "trap_source": True,
+                "syslog_source": True,
+                "trap_source": False,
                 "ping_check": False,
             }
-        if target.enable_snmptrap_source("s") and target.trap_source_ip not in addresses:
-            addresses[target.trap_source_ip] = {
-                "address": str(target.trap_source_ip),
-                "is_fatal": False,
-                "interface": None,
-                "syslog_source": False,
-                "trap_source": True,
-                "ping_check": False,
-            }
+        if target.enable_snmptrap_source("s") 
+            if target.trap_source_ip not in addresses:
+                addresses[target.trap_source_ip] = {
+                    "address": str(target.trap_source_ip),
+                    "is_fatal": False,
+                    "interface": None,
+                    "syslog_source": False,
+                    "trap_source": True,
+                    "ping_check": False,
+                }
+            else:
+                addresses[target.trap_source_ip]["trap_source"] = True
+
         if not addresses:
             raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
         r["addresses"] = list(addresses.values())
