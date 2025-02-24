@@ -548,7 +548,6 @@ class Script(BaseScript):
 
         return crossings, card_mode
 
-
     def parse_cross_default(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
