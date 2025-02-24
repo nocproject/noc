@@ -329,7 +329,7 @@ class Script(BaseScript):
                 }
             )
 
-        return crossings
+        return crossings, None
 
     def parse_cross_roadm2(self, config) -> List[Dict[str, str]]:
         client_src: List[str] = []
@@ -407,7 +407,7 @@ class Script(BaseScript):
             }
         )
 
-        return crossings
+        return crossings, None
 
     def parse_cross_atp(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
@@ -473,7 +473,81 @@ class Script(BaseScript):
                     port_states[output],
                 )
 
-        return crossings
+        return crossings, None
+
+    def parse_cross_adm200(self, config) -> List[Dict[str, str]]:
+        src: Dict[str, str] = {}
+        dst: Dict[str, str] = {}
+        datatypes: Dict[str, str] = {}
+        port_states: Dict[str, str] = {}
+        mode: Optional[str] = None
+        enable_oduflex = set()
+        crossings = []
+        card_mode = None
+
+        # Find card mode for parametrized crossing
+        # For all ADM200 modes returns empty crossing except ADM-100
+        # ADM-100 is configurable mode
+        for oo in config:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
+            value = oo["val"]
+            if name == "SetMode":
+                card_mode = value
+                if card_mode != "ADM-100":
+                    return crossings, card_mode
+
+        # Parse crossings
+        for oo in config:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
+            value = oo["val"]
+            if name.endswith("_SetState"):
+                # IS - In Service
+                # OOS - Out Of Service
+                # MT - Maintenance
+                port_states[self.get_port(name[:-9])] = value in ["IS", "MT"]
+            if name.endswith("_SetSrc"):
+                if value != "None":
+                    src[name[:-7]] = value
+            elif name.endswith("_SetDst"):
+                if value != "None":
+                    dst[name[:-7]] = value
+            elif name == "SetMode":
+                mode = value
+            elif name.endswith("_SetDataType"):
+                if "GFC" in value:
+                    enable_oduflex.add(name[:-12])
+                datatypes[self.get_port(name[:-12])] = value
+
+        for cname in src:
+            if cname not in dst:
+                continue
+
+            input = self.get_port(self.get_raw_port(src[cname]))
+            output = self.get_port(self.get_raw_port(dst[cname]))
+            rest_dst = dst[cname].split("_", 2)[-1]
+
+            datatype = datatypes[output]
+            outer_odu = self.get_outer_odu(mode, output, datatype)
+
+            if cname in enable_oduflex and rest_dst != "ODUFlex":
+                continue
+            if cname not in enable_oduflex and rest_dst == "ODUFlex":
+                continue
+
+            crossings.append(
+                {
+                    "input": input,
+                    "output": output,
+                    "output_discriminator": self.get_discriminator(outer_odu, rest_dst),
+                }
+            )
+
+        return crossings, card_mode
+
 
     def parse_cross_default(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
@@ -530,27 +604,33 @@ class Script(BaseScript):
                 }
             )
 
-        return crossings
+        return crossings, None
 
     def get_crossings(
         self, config: Dict[str, Any], crate_num: int, slot: int
     ) -> List[Dict[str, str]]:
+        card_mode = None
         crossings = []
+
+        parser_mapping = {
+            "atp": self.parse_cross_atp,
+            "sroadm7": self.parse_cross_roadm2x9,
+            "sroadm5": self.parse_cross_roadm2,
+            "adm200": self.parse_cross_adm200,
+        }
 
         for o in config["RK"][crate_num]["DV"]:
             if o["slt"] != slot:
                 continue
-            # print("###CLS###|%s|" % (o["cls"]))
-            if "atp" in o["cls"]:
-                return self.parse_cross_atp(o["PM"])
-            elif "sroadm7" in o["cls"]:
-                return self.parse_cross_roadm2x9(o["PM"])
-            elif "sroadm5" in o["cls"]:
-                return self.parse_cross_roadm2(o["PM"])
-            else:
-                return self.parse_cross_default(o["PM"])
 
-        return crossings
+            # print("###CLS###|%s|" % (o["cls"]))
+            for cls_part in parser_mapping:
+                if cls_part in o["cls"]:
+                    return parser_mapping[cls_part](o["PM"])
+
+            return self.parse_cross_default(o["PM"])
+
+        return crossings, card_mode
 
     def execute_http(self, **kwargs):
         r = []
@@ -624,7 +704,7 @@ class Script(BaseScript):
                 ]
                 adapters.append(adapter)
 
-            crossings = self.get_crossings(config, d.crate_id - 1, slot)
+            crossings, card_mode = self.get_crossings(config, d.crate_id - 1, slot)
             self.logger.debug("==|CROSS|==\n%s\n", crossings)
 
             params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"]]
@@ -660,6 +740,8 @@ class Script(BaseScript):
                 "crossing": crossings,
                 # "param_data": self.get_cfg_param_data(common),
             }
+            if card_mode:
+                card["mode"] = card_mode
             if adapter:
                 card["type"] = "LINECARDH4"
             if common.crossing:
