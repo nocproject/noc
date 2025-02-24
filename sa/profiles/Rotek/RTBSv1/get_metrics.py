@@ -95,7 +95,8 @@ class Script(GetMetricsScript):
 
     @metrics(["Object | MAC | TotalUsed"], volatile=False, access="S")  # SNMP version
     def get_mac_count(self, metrics):
-        mac_count = len([mac for _, mac in self.snmp.getnext("1.3.6.1.4.1.41752.3.10.1.3.2.1.1")])
+        ent_oid = self.profile.get_ent_oid(self)
+        mac_count = len([mac for _, mac in self.snmp.getnext(f"{ent_oid}.3.10.1.3.2.1.1")])
         if mac_count:
             self.set_metric(
                 id=("Object | MAC | TotalUsed", None),
@@ -115,8 +116,8 @@ class Script(GetMetricsScript):
             "Radio | Bandwidth": 8,
             "Radio | Quality": 12,
         }
-        ent_oid = self.capabilities.get("SNMP | OID | EnterpriseID", "41752")
-        base_oid = f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1"
+        ent_oid = self.profile.get_ent_oid(self)
+        base_oid = f"{ent_oid}.3.10.1.2.1.1"
 
         iface = self.snmp.get(f"{base_oid}.4.6")
         for key, value in oid_index_map.items():

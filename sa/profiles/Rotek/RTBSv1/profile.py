@@ -31,6 +31,13 @@ class Profile(BaseProfile):
         "re": "physical",
     }
 
+    DEFAULT_ENT_ID = "41752"
+
+    @classmethod
+    def get_ent_oid(cls, script):
+        ent_id = script.capabilities.get("SNMP | OID | EnterpriseID", cls.DEFAULT_ENT_ID)
+        return f"1.3.6.1.4.1.{ent_id}"
+
     @classmethod
     def get_interface_type(cls, name):
         if name is None:
