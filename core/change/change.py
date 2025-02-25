@@ -42,7 +42,7 @@ def audit_change(changes: List[ChangeItem]) -> None:
                     "timestamp": dt_object.strftime("%Y-%m-%d %H:%M:%S"),
                     "user": user,
                     "model_name": item.model_id,
-                    "object_name": o.name,
+                    "object_name": str(o),
                     "object_id": item.item_id,
                     "op": item.op[0].upper(),
                     "changes": orjson.dumps(item.changed_fields).decode(),
