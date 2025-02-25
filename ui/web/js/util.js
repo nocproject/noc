@@ -24,6 +24,28 @@ Ext.apply(NOC.render, {
       null: "<i class='fa fa-circle-o'></i>",
     }[v];
   },
+  //
+  // NOC.render.Yes(v)
+  //    Grid field renderer for boolean values
+  //    Displays icon only for true
+  Yes: function(v){
+    return {
+      true: "<i class='fa fa-check' style='color:" + NOC.colors.yes + "'></i>",
+      false: "",
+      null: "",
+    }[v];
+  },
+  //
+  // NOC.render.No(v)
+  //    Grid field renderer for boolean values
+  //    Displays icon only for false
+  No: function(v){
+    return {
+      true: "",
+      false: "<i class='fa fa-times' style='color:" + NOC.colors.no + "'></i>",
+      null: "",
+    }[v];
+  },
 
   //
   // NOC.render.URL(v)
