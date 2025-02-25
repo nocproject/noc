@@ -148,6 +148,7 @@ class Crossing(EmbeddedDocument):
         modes: List of modes for which crossing is applicable.
     """
 
+    _meta = {"strict": False, "auto_create_index": False}
     input = StringField(required=True)
     input_discriminator = StringField(required=False)
     output = StringField(required=True)
