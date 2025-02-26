@@ -70,8 +70,6 @@ def get_svg_for_box(
         # Nested module
         # Always use front facades for nested modules
         mod_svg = get_svg_for_box(child, name="front", cache=cache)
-        if not mod_svg:
-            continue  # @todo: Generate placeholder
         # Embed module
         try:
             svg.embed(
