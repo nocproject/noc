@@ -210,14 +210,19 @@ Ext.define("Ext.ux.form.GridField", {
   },
   //
   onAddRecord: function(self, evt, toEnd){
-    var me = this,
-      rowEditing = me.grid.plugins[0],
+    var initialValue = {},
+      rowEditing = this.grid.plugins[0],
+      radioRow = this.getRadioRow(),
       position = 0;
     if(toEnd){
-      position = me.grid.store.data.length;
+      position = this.grid.store.data.length;
+    }
+    if(!Ext.isEmpty(radioRow)){
+      var isFirstRow = this.grid.getStore().getData().length === 0
+      initialValue[radioRow[0].dataIndex] = isFirstRow ? radioRow[0].radioRow : !radioRow[0].radioRow;
     }
     rowEditing.cancelEdit();
-    me.grid.store.insert(position, {});
+    this.grid.store.insert(position, initialValue);
     rowEditing.startEdit(position, 0);
   },
   //
@@ -241,12 +246,16 @@ Ext.define("Ext.ux.form.GridField", {
       sm = me.grid.getSelectionModel(),
       sel = sm.getLastSelected(),
       rowEditing = me.grid.plugins[0],
+      radioRow = this.getRadioRow(),
       newRecord;
     if(!sel){
       return;
     }
     rowEditing.cancelEdit();
     newRecord = sel.copy();
+    if(!Ext.isEmpty(radioRow)){
+      newRecord.set(radioRow[0].dataIndex, !radioRow[0].radioRow);
+    }
     delete newRecord.data.id;
     newRecord = me.store.createModel(newRecord.data);
     me.fireEvent("clone", newRecord);
@@ -264,9 +273,23 @@ Ext.define("Ext.ux.form.GridField", {
     if(field.xtype === "labelfield"){
       context.value = field.valueCollection.items;
     }
+    if(Ext.isDefined(this.columns[context.colIdx].radioRow)){
+      this.grid.store.each(function(record){
+        var val = this.columns[context.colIdx].radioRow; 
+        if(record !== context.record){
+          record.set(this.columns[context.colIdx].dataIndex, !val);
+        }
+      }, this);
+    }
   },
   //
   onBeforeEdit: function(editor, context){
     context.cancel = context.record.get("is_persist");
+  },
+  //
+  getRadioRow: function(){
+    return Ext.Array.filter(this.columns, function(col){
+      return Ext.isDefined(col.radioRow);
+    });
   },
 });
