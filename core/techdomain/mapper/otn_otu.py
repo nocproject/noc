@@ -27,6 +27,9 @@ class DWDMOTUMapper(BaseMapper):
             o_name = " > ".join(card.object.get_local_name_path(True))
             model = card.object.model.get_short_label()
             label = f"{o_name}\n{model}"
+            mode = card.object.get_mode()
+            if mode:
+                label = f"{label} [{mode}]"
             self.add_subgraph(
                 {
                     "name": f"cluster_{name}",

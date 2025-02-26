@@ -1,0 +1,1971 @@
+{
+    "name": "Generic | OTN | Alien Lambda (Single, C)",
+    "$collection": "inv.objectmodels",
+    "uuid": "0eff82a0-4e60-4273-b22d-36e40ad5b1f3",
+    "vendor__code": "NOC",
+    "description": "Alien lambda as single cloud (C14-C61)",
+    "connections": [
+        {
+            "name": "IN1",
+            "description": "1st direction input",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C14",
+                    "modes": ["C14"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C15",
+                    "modes": ["C15"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C16",
+                    "modes": ["C16"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C17",
+                    "modes": ["C17"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C18",
+                    "modes": ["C18"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C19",
+                    "modes": ["C19"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C20",
+                    "modes": ["C20"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C21",
+                    "modes": ["C21"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C22",
+                    "modes": ["C22"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C23",
+                    "modes": ["C23"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C24",
+                    "modes": ["C24"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C25",
+                    "modes": ["C25"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C26",
+                    "modes": ["C26"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C27",
+                    "modes": ["C27"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C28",
+                    "modes": ["C28"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C29",
+                    "modes": ["C29"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C30",
+                    "modes": ["C30"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C31",
+                    "modes": ["C31"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C32",
+                    "modes": ["C32"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C33",
+                    "modes": ["C33"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C34",
+                    "modes": ["C34"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C35",
+                    "modes": ["C35"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C36",
+                    "modes": ["C36"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C37",
+                    "modes": ["C37"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C38",
+                    "modes": ["C38"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C39",
+                    "modes": ["C39"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C40",
+                    "modes": ["C40"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C41",
+                    "modes": ["C41"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C42",
+                    "modes": ["C42"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C43",
+                    "modes": ["C43"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C44",
+                    "modes": ["C44"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C45",
+                    "modes": ["C45"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C46",
+                    "modes": ["C46"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C47",
+                    "modes": ["C47"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C48",
+                    "modes": ["C48"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C49",
+                    "modes": ["C49"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C50",
+                    "modes": ["C50"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C51",
+                    "modes": ["C51"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C52",
+                    "modes": ["C52"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C53",
+                    "modes": ["C53"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C54",
+                    "modes": ["C54"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C55",
+                    "modes": ["C55"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C56",
+                    "modes": ["C56"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C57",
+                    "modes": ["C57"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C58",
+                    "modes": ["C58"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C59",
+                    "modes": ["C59"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C60",
+                    "modes": ["C60"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C61",
+                    "modes": ["C61"],
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "IN2",
+            "description": "2nd direction input",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "C14",
+                    "modes": ["C14"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C15",
+                    "modes": ["C15"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C16",
+                    "modes": ["C16"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C17",
+                    "modes": ["C17"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C18",
+                    "modes": ["C18"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C19",
+                    "modes": ["C19"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C20",
+                    "modes": ["C20"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C21",
+                    "modes": ["C21"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C22",
+                    "modes": ["C22"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C23",
+                    "modes": ["C23"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C24",
+                    "modes": ["C24"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C25",
+                    "modes": ["C25"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C26",
+                    "modes": ["C26"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C27",
+                    "modes": ["C27"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C28",
+                    "modes": ["C28"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C29",
+                    "modes": ["C29"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C30",
+                    "modes": ["C30"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C31",
+                    "modes": ["C31"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C32",
+                    "modes": ["C32"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C33",
+                    "modes": ["C33"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C34",
+                    "modes": ["C34"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C35",
+                    "modes": ["C35"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C36",
+                    "modes": ["C36"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C37",
+                    "modes": ["C37"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C38",
+                    "modes": ["C38"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C39",
+                    "modes": ["C39"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C40",
+                    "modes": ["C40"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C41",
+                    "modes": ["C41"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C42",
+                    "modes": ["C42"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C43",
+                    "modes": ["C43"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C44",
+                    "modes": ["C44"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C45",
+                    "modes": ["C45"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C46",
+                    "modes": ["C46"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C47",
+                    "modes": ["C47"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C48",
+                    "modes": ["C48"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C49",
+                    "modes": ["C49"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C50",
+                    "modes": ["C50"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C51",
+                    "modes": ["C51"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C52",
+                    "modes": ["C52"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C53",
+                    "modes": ["C53"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C54",
+                    "modes": ["C54"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C55",
+                    "modes": ["C55"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C56",
+                    "modes": ["C56"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C57",
+                    "modes": ["C57"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C58",
+                    "modes": ["C58"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C59",
+                    "modes": ["C59"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C60",
+                    "modes": ["C60"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "C61",
+                    "modes": ["C61"],
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT1",
+            "description": "1st direction output",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C14",
+                    "modes": ["C14"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C15",
+                    "modes": ["C15"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C16",
+                    "modes": ["C16"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C17",
+                    "modes": ["C17"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C18",
+                    "modes": ["C18"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C19",
+                    "modes": ["C19"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C20",
+                    "modes": ["C20"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C21",
+                    "modes": ["C21"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C22",
+                    "modes": ["C22"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C23",
+                    "modes": ["C23"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C24",
+                    "modes": ["C24"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C25",
+                    "modes": ["C25"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C26",
+                    "modes": ["C26"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C27",
+                    "modes": ["C27"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C28",
+                    "modes": ["C28"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C29",
+                    "modes": ["C29"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C30",
+                    "modes": ["C30"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C31",
+                    "modes": ["C31"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C32",
+                    "modes": ["C32"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C33",
+                    "modes": ["C33"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C34",
+                    "modes": ["C34"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C35",
+                    "modes": ["C35"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C36",
+                    "modes": ["C36"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C37",
+                    "modes": ["C37"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C38",
+                    "modes": ["C38"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C39",
+                    "modes": ["C39"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C40",
+                    "modes": ["C40"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C41",
+                    "modes": ["C41"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C42",
+                    "modes": ["C42"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C43",
+                    "modes": ["C43"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C44",
+                    "modes": ["C44"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C45",
+                    "modes": ["C45"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C46",
+                    "modes": ["C46"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C47",
+                    "modes": ["C47"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C48",
+                    "modes": ["C48"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C49",
+                    "modes": ["C49"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C50",
+                    "modes": ["C50"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C51",
+                    "modes": ["C51"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C52",
+                    "modes": ["C52"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C53",
+                    "modes": ["C53"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C54",
+                    "modes": ["C54"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C55",
+                    "modes": ["C55"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C56",
+                    "modes": ["C56"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C57",
+                    "modes": ["C57"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C58",
+                    "modes": ["C58"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C59",
+                    "modes": ["C59"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C60",
+                    "modes": ["C60"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C61",
+                    "modes": ["C61"],
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OUT2",
+            "description": "2nd direction input",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "C14",
+                    "modes": ["C14"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C15",
+                    "modes": ["C15"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C16",
+                    "modes": ["C16"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C17",
+                    "modes": ["C17"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C18",
+                    "modes": ["C18"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C19",
+                    "modes": ["C19"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C20",
+                    "modes": ["C20"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C21",
+                    "modes": ["C21"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C22",
+                    "modes": ["C22"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C23",
+                    "modes": ["C23"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C24",
+                    "modes": ["C24"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C25",
+                    "modes": ["C25"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C26",
+                    "modes": ["C26"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C27",
+                    "modes": ["C27"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C28",
+                    "modes": ["C28"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C29",
+                    "modes": ["C29"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C30",
+                    "modes": ["C30"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C31",
+                    "modes": ["C31"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C32",
+                    "modes": ["C32"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C33",
+                    "modes": ["C33"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C34",
+                    "modes": ["C34"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C35",
+                    "modes": ["C35"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C36",
+                    "modes": ["C36"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C37",
+                    "modes": ["C37"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C38",
+                    "modes": ["C38"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C39",
+                    "modes": ["C39"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C40",
+                    "modes": ["C40"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C41",
+                    "modes": ["C41"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C42",
+                    "modes": ["C42"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C43",
+                    "modes": ["C43"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C44",
+                    "modes": ["C44"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C45",
+                    "modes": ["C45"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C46",
+                    "modes": ["C46"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C47",
+                    "modes": ["C47"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C48",
+                    "modes": ["C48"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C49",
+                    "modes": ["C49"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C50",
+                    "modes": ["C50"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C51",
+                    "modes": ["C51"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C52",
+                    "modes": ["C52"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C53",
+                    "modes": ["C53"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C54",
+                    "modes": ["C54"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C55",
+                    "modes": ["C55"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C56",
+                    "modes": ["C56"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C57",
+                    "modes": ["C57"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C58",
+                    "modes": ["C58"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C59",
+                    "modes": ["C59"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C60",
+                    "modes": ["C60"],
+                    "protocol__code": "DWDM"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "C61",
+                    "modes": ["C61"],
+                    "protocol__code": "DWDM"
+                }
+            ],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "cross": [
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::191400-50",
+            "modes": ["C14"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::191500-50",
+            "modes": ["C15"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::191600-50",
+            "modes": ["C16"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::191700-50",
+            "modes": ["C17"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::191800-50",
+            "modes": ["C18"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::191900-50",
+            "modes": ["C19"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192000-50",
+            "modes": ["C20"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192100-50",
+            "modes": ["C21"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192200-50",
+            "modes": ["C22"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192300-50",
+            "modes": ["C23"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192400-50",
+            "modes": ["C24"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192500-50",
+            "modes": ["C25"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192600-50",
+            "modes": ["C26"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192700-50",
+            "modes": ["C27"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192800-50",
+            "modes": ["C28"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::192900-50",
+            "modes": ["C29"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193000-50",
+            "modes": ["C30"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193100-50",
+            "modes": ["C31"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193200-50",
+            "modes": ["C32"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193300-50",
+            "modes": ["C33"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193400-50",
+            "modes": ["C34"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193500-50",
+            "modes": ["C35"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193600-50",
+            "modes": ["C36"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193700-50",
+            "modes": ["C37"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193800-50",
+            "modes": ["C38"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::193900-50",
+            "modes": ["C39"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194000-50",
+            "modes": ["C40"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194100-50",
+            "modes": ["C41"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194200-50",
+            "modes": ["C42"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194300-50",
+            "modes": ["C43"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194400-50",
+            "modes": ["C44"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194500-50",
+            "modes": ["C45"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194600-50",
+            "modes": ["C46"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194700-50",
+            "modes": ["C47"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194800-50",
+            "modes": ["C48"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::194900-50",
+            "modes": ["C49"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195000-50",
+            "modes": ["C50"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195100-50",
+            "modes": ["C51"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195200-50",
+            "modes": ["C52"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195300-50",
+            "modes": ["C53"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195400-50",
+            "modes": ["C54"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195500-50",
+            "modes": ["C55"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195600-50",
+            "modes": ["C56"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195700-50",
+            "modes": ["C57"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195800-50",
+            "modes": ["C58"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::195900-50",
+            "modes": ["C59"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::196000-50",
+            "modes": ["C60"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN1",
+            "input_discriminator": "lambda::196100-50",
+            "modes": ["C61"],
+            "output": "OUT2"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::191400-50",
+            "modes": ["C14"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::191500-50",
+            "modes": ["C15"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::191600-50",
+            "modes": ["C16"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::191700-50",
+            "modes": ["C17"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::191800-50",
+            "modes": ["C18"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::191900-50",
+            "modes": ["C19"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192000-50",
+            "modes": ["C20"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192100-50",
+            "modes": ["C21"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192200-50",
+            "modes": ["C22"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192300-50",
+            "modes": ["C23"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192400-50",
+            "modes": ["C24"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192500-50",
+            "modes": ["C25"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192600-50",
+            "modes": ["C26"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192700-50",
+            "modes": ["C27"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192800-50",
+            "modes": ["C28"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::192900-50",
+            "modes": ["C29"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193000-50",
+            "modes": ["C30"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193100-50",
+            "modes": ["C31"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193200-50",
+            "modes": ["C32"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193300-50",
+            "modes": ["C33"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193400-50",
+            "modes": ["C34"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193500-50",
+            "modes": ["C35"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193600-50",
+            "modes": ["C36"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193700-50",
+            "modes": ["C37"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193800-50",
+            "modes": ["C38"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::193900-50",
+            "modes": ["C39"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194000-50",
+            "modes": ["C40"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194100-50",
+            "modes": ["C41"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194200-50",
+            "modes": ["C42"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194300-50",
+            "modes": ["C43"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194400-50",
+            "modes": ["C44"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194500-50",
+            "modes": ["C45"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194600-50",
+            "modes": ["C46"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194700-50",
+            "modes": ["C47"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194800-50",
+            "modes": ["C48"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::194900-50",
+            "modes": ["C49"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195000-50",
+            "modes": ["C50"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195100-50",
+            "modes": ["C51"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195200-50",
+            "modes": ["C52"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195300-50",
+            "modes": ["C53"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195400-50",
+            "modes": ["C54"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195500-50",
+            "modes": ["C55"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195600-50",
+            "modes": ["C56"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195700-50",
+            "modes": ["C57"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195800-50",
+            "modes": ["C58"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::195900-50",
+            "modes": ["C59"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::196000-50",
+            "modes": ["C60"],
+            "output": "OUT1"
+        },
+        {
+            "input": "IN2",
+            "input_discriminator": "lambda::196100-50",
+            "modes": ["C61"],
+            "output": "OUT1"
+        }
+    ],
+    "data": [],
+    "modes": [
+        {
+            "name": "C14",
+            "description": "C14 band"
+        },
+        {
+            "name": "C15",
+            "description": "C15 band"
+        },
+        {
+            "name": "C16",
+            "description": "C16 band"
+        },
+        {
+            "name": "C17",
+            "description": "C17 band"
+        },
+        {
+            "name": "C18",
+            "description": "C18 band"
+        },
+        {
+            "name": "C19",
+            "description": "C19 band"
+        },
+        {
+            "name": "C20",
+            "description": "C20 band"
+        },
+        {
+            "name": "C21",
+            "description": "C21 band",
+            "is_default": true
+        },
+        {
+            "name": "C22",
+            "description": "C22 band"
+        },
+        {
+            "name": "C23",
+            "description": "C23 band"
+        },
+        {
+            "name": "C24",
+            "description": "C24 band"
+        },
+        {
+            "name": "C25",
+            "description": "C25 band"
+        },
+        {
+            "name": "C26",
+            "description": "C26 band"
+        },
+        {
+            "name": "C27",
+            "description": "C27 band"
+        },
+        {
+            "name": "C28",
+            "description": "C28 band"
+        },
+        {
+            "name": "C29",
+            "description": "C29 band"
+        },
+        {
+            "name": "C30",
+            "description": "C30 band"
+        },
+        {
+            "name": "C31",
+            "description": "C31 band"
+        },
+        {
+            "name": "C32",
+            "description": "C32 band"
+        },
+        {
+            "name": "C33",
+            "description": "C33 band"
+        },
+        {
+            "name": "C34",
+            "description": "C34 band"
+        },
+        {
+            "name": "C35",
+            "description": "C35 band"
+        },
+        {
+            "name": "C36",
+            "description": "C36 band"
+        },
+        {
+            "name": "C37",
+            "description": "C37 band"
+        },
+        {
+            "name": "C38",
+            "description": "C38 band"
+        },
+        {
+            "name": "C39",
+            "description": "C39 band"
+        },
+        {
+            "name": "C40",
+            "description": "C40 band"
+        },
+        {
+            "name": "C41",
+            "description": "C41 band"
+        },
+        {
+            "name": "C42",
+            "description": "C42 band"
+        },
+        {
+            "name": "C43",
+            "description": "C43 band"
+        },
+        {
+            "name": "C44",
+            "description": "C44 band"
+        },
+        {
+            "name": "C45",
+            "description": "C45 band"
+        },
+        {
+            "name": "C46",
+            "description": "C46 band"
+        },
+        {
+            "name": "C47",
+            "description": "C47 band"
+        },
+        {
+            "name": "C48",
+            "description": "C48 band"
+        },
+        {
+            "name": "C49",
+            "description": "C49 band"
+        },
+        {
+            "name": "C50",
+            "description": "C50 band"
+        },
+        {
+            "name": "C51",
+            "description": "C51 band"
+        },
+        {
+            "name": "C52",
+            "description": "C52 band"
+        },
+        {
+            "name": "C53",
+            "description": "C53 band"
+        },
+        {
+            "name": "C54",
+            "description": "C54 band"
+        },
+        {
+            "name": "C55",
+            "description": "C55 band"
+        },
+        {
+            "name": "C56",
+            "description": "C56 band"
+        },
+        {
+            "name": "C57",
+            "description": "C57 band"
+        },
+        {
+            "name": "C58",
+            "description": "C58 band"
+        },
+        {
+            "name": "C59",
+            "description": "C59 band"
+        },
+        {
+            "name": "C60",
+            "description": "C60 band"
+        },
+        {
+            "name": "C61",
+            "description": "C61 band"
+        }
+    ]
+}

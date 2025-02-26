@@ -84,8 +84,12 @@ class OpticalSMMapper(BaseMapper):
                 if not node:
                     name = " > ".join(pi.object.get_local_name_path(True))
                     model = pi.object.model.get_short_label()
+                    label = f"{name}\\n{model}"
+                    mode = pi.object.get_mode()
+                    if mode:
+                        label = f"{label} [{mode}]"
                     node = Node(
-                        label=f"{name}\\n{model}",
+                        label=label,
                         endpoints=[],
                         inputs=[],
                         outputs=[],
