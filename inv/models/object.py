@@ -1184,7 +1184,7 @@ class Object(Document):
         else:
             return [self.name]
 
-    def log(self, message, user=None, system=None, managed_object=None, op=None):
+    def log(self, message, user=None, system=None, managed_object=None, op=None) -> None:
         if not user:
             user = get_user()
         if hasattr(user, "username"):
