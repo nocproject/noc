@@ -188,14 +188,13 @@ Ext.define("Ext.ux.form.GridField", {
   },
   //
   setValue: function(v){
-    var me = this;
     if(v === undefined || v === ""){
       v = [];
     } else{
       v = v || [];
     }
-    me.store.loadData(v);
-    return me.mixins.field.setValue.call(me, v);
+    this.store.loadData(v);
+    return this.mixins.field.setValue.call(this, v);
   },
   //
   onSelect: function(grid, record, index){
@@ -212,14 +211,16 @@ Ext.define("Ext.ux.form.GridField", {
   onAddRecord: function(self, evt, toEnd){
     var initialValue = {},
       rowEditing = this.grid.plugins[0],
-      radioRow = this.getRadioRow(),
+      radioRowCols = this.getRadioRowCols(),
       position = 0;
     if(toEnd){
       position = this.grid.store.data.length;
     }
-    if(!Ext.isEmpty(radioRow)){
-      var isFirstRow = this.grid.getStore().getData().length === 0
-      initialValue[radioRow[0].dataIndex] = isFirstRow ? radioRow[0].radioRow : !radioRow[0].radioRow;
+    if(!Ext.isEmpty(radioRowCols)){
+      var isFirstRow = this.grid.getStore().getData().getCount() === 0
+      Ext.Array.each(radioRowCols, function(col){
+        initialValue[col.dataIndex] = isFirstRow ? col.radioRow : !col.radioRow;
+      });
     }
     rowEditing.cancelEdit();
     this.grid.store.insert(position, initialValue);
@@ -246,15 +247,17 @@ Ext.define("Ext.ux.form.GridField", {
       sm = me.grid.getSelectionModel(),
       sel = sm.getLastSelected(),
       rowEditing = me.grid.plugins[0],
-      radioRow = this.getRadioRow(),
+      radioRowCols = this.getRadioRowCols(),
       newRecord;
     if(!sel){
       return;
     }
     rowEditing.cancelEdit();
     newRecord = sel.copy();
-    if(!Ext.isEmpty(radioRow)){
-      newRecord.set(radioRow[0].dataIndex, !radioRow[0].radioRow);
+    if(!Ext.isEmpty(radioRowCols)){
+      Ext.Array.each(radioRowCols, function(col){
+        newRecord.set(col.dataIndex, !col.radioRow);
+      });
     }
     delete newRecord.data.id;
     newRecord = me.store.createModel(newRecord.data);
@@ -281,15 +284,27 @@ Ext.define("Ext.ux.form.GridField", {
         }
       }, this);
     }
+    this.setFirstRowRadio(this.columns[context.colIdx]);
   },
   //
   onBeforeEdit: function(editor, context){
     context.cancel = context.record.get("is_persist");
   },
   //
-  getRadioRow: function(){
+  getRadioRowCols: function(){
     return Ext.Array.filter(this.columns, function(col){
       return Ext.isDefined(col.radioRow);
     });
+  },
+  //
+  setFirstRowRadio: function(column){
+    var store = this.grid.getStore(),
+      isNoMark = store.find(column.dataIndex, column.radioRow) === -1;
+    if(store.getCount() === 0){
+      return;
+    }
+    if(isNoMark){
+      store.getAt(0).set(column.dataIndex, column.radioRow);
+    }
   },
 });
