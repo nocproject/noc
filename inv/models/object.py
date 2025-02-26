@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Object model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 from noc.inv.models.technology import Technology
 from noc.core.deprecations import RemovedInNOC2501Warning
-from .objectmodel import ObjectModel, Crossing
+from .objectmodel import ObjectModel, Crossing, ProtocolVariantItem
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
@@ -1767,6 +1767,37 @@ class Object(Document):
                 return
         msg = "Invalid mode: {mode}"
         raise ValueError(msg)
+
+    def iter_connection_effective_protocols(self, name: str) -> Iterable[ProtocolVariantItem]:
+        """
+        Iterate connection's protocol.
+
+        Iterate protocols for given connection available
+        in current mode.
+
+        Args:
+            name: Connection's name.
+
+        Returns:
+            Yield appropriate
+        """
+        cn = self.model.get_model_connection(name)
+        if not cn:
+            return
+        # Invariants
+        if not self.model.modes:
+            yield from cn.protocols
+            return
+        # Filter out
+        mode = self.get_mode()
+        if mode:
+            for p in cn.protocols:
+                if not p.modes or mode in p.modes:
+                    yield p
+        else:
+            for p in cn.protocols:
+                if not p.modes:
+                    yield p
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

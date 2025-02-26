@@ -34,9 +34,7 @@ class OTNOSCController(BaseController):
 
     def iter_endpoints(self, obj: Object) -> Iterable[Endpoint]:
         for c in obj.model.connections:
-            if not c.protocols:
-                continue
-            for pvi in c.protocols:
+            for pvi in obj.iter_connection_effective_protocols(c.name):
                 if pvi.protocol.code == "OSC" and pvi.direction == ">":
                     yield Endpoint(object=obj, name=c.name)
                     break

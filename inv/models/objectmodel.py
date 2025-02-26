@@ -97,6 +97,7 @@ class ProtocolVariantItem(EmbeddedDocument):
     discriminator = StringField(required=False)
     direction = StringField(choices=[">", "<", "*"], default="*")
     data: list["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    modes: list[str] | None = ListField(StringField(), required=False)
 
     def __str__(self):
         return self.code
@@ -106,20 +107,27 @@ class ProtocolVariantItem(EmbeddedDocument):
 
     @property
     def code(self) -> str:
-        if not self.discriminator and self.direction == "*":
-            return self.protocol.code
-        elif not self.discriminator:
-            return f"{self.direction}::{self.protocol.code}"
-        return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
+        r: list[str] = []
+        if self.direction != "*":
+            r.append(self.direction)
+        r.append(self.protocol.code)
+        if self.discriminator:
+            r.append(self.discriminator)
+        c = "::".join(r)
+        if self.modes:
+            c = f"{c} ({', '.join(self.modes)})"
+        return c
 
     @property
     def json_data(self) -> dict[str, Any]:
-        r = {
+        r: dict[str, Any] = {
             "protocol__code": self.protocol.code,
             "direction": self.direction,
         }
         if self.discriminator:
             r["discriminator"] = self.discriminator
+        if self.modes:
+            r["modes"] = self.modes
         return r
 
     def __eq__(self, other):
@@ -133,6 +141,27 @@ class ProtocolVariantItem(EmbeddedDocument):
         if not self.discriminator:
             return r
         return r and self.discriminator == item.discriminator
+
+    @property
+    def is_inbound(self) -> bool:
+        """
+        Check if protocol is inbound only.
+        """
+        return self.direction == ">"
+
+    @property
+    def is_outbound(self) -> bool:
+        """
+        Check if protocol is outbound only.
+        """
+        return self.direction == "<"
+
+    @property
+    def is_bidi(self) -> bool:
+        """
+        Check if protocol is bidirectional.
+        """
+        return self.direction == "*"
 
 
 class Crossing(EmbeddedDocument):

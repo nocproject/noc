@@ -25,22 +25,22 @@
             "protocols": [
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "OTU4"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "OTUC2"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "QPSK"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "8QAM"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "16QAM"
                 }
             ],
@@ -56,10 +56,12 @@
             "protocols": [
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "OTU4"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "OTUC2"
                 },
                 {
@@ -68,14 +70,12 @@
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "QPSK"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "8QAM"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "16QAM"
                 }
             ],

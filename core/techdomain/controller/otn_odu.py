@@ -58,31 +58,31 @@ class OTNODUController(BaseController):
         if not DBEndpoint.objects.filter(resource__in=otu_endpoints).first():
             return  # No OTU endpoints
         #
-        for c in obj.model.connections:
-            if not c.protocols:
-                continue
-            for pvi in c.protocols:
+        for cn in obj.model.connections:
+            for pvi in obj.iter_connection_effective_protocols(cn.name):
                 # @todo: Check for OTU trails from same card
-                if pvi.protocol.code.startswith("ODU") and self.is_connected(obj, c.name):
-                    yield Endpoint(object=obj, name=c.name)
+                if pvi.protocol.code.startswith("ODU") and self.is_connected(obj, cn.name):
+                    yield Endpoint(object=obj, name=cn.name)
                     break
 
     def get_supported_protocols(self, ep: Endpoint) -> List[str]:
-        for c in ep.object.model.connections:
-            if c.name != ep.name or not c.protocols:
-                continue
-            return [pvi.protocol.code for pvi in c.protocols if pvi.protocol.code.startswith("ODU")]
+        cn = ep.object.model.get_model_connection(ep.name)
+        if cn:
+            return [
+                pvi.protocol.code
+                for pvi in ep.object.iter_connection_effective_protocols(cn.name)
+                if pvi.protocol.code.startswith("ODU")
+            ]
         return []
 
     def iter_path(self, start: Endpoint) -> Iterable[PathItem]:
         def get_client_protocols(ep: Endpoint) -> List[str]:
             # @todo: Pass through profile controller
-            for c in ep.object.model.connections:
-                if c.name != ep.name or not c.protocols:
-                    continue
+            cn = ep.object.model.get_model_connection(ep.name)
+            if cn:
                 return [
                     pvi.protocol.code
-                    for pvi in c.protocols
+                    for pvi in ep.object.iter_connection_effective_protocols(cn.name)
                     if not pvi.protocol.code.startswith("ODU")
                     and pvi.protocol.technology.name != "Modulation"
                 ]
