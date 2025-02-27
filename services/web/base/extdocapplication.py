@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -595,9 +595,11 @@ class ExtDocApplication(ExtApplication):
         Overwrite json
         """
         o = self.get_object_or_404(self.model, id=id)
-        with open(
-            os.path.join("collections", self.model._meta["json_collection"], o.get_json_path()), "w"
-        ) as fp:
+        path = os.path.join("collections", self.model._meta["json_collection"], o.get_json_path())
+        dn = os.path.dirname(path)
+        if dn and not os.path.exists(dn):
+            os.makedirs(dn, exist_ok=True)
+        with open(path, "w") as fp:
             fp.write(o.to_json())
         return {"status": True}
 
