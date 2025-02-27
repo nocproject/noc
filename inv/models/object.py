@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Object model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 from noc.inv.models.technology import Technology
 from noc.core.deprecations import RemovedInNOC2501Warning
-from .objectmodel import ObjectModel, Crossing
+from .objectmodel import ObjectModel, Crossing, ProtocolVariantItem
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
@@ -221,6 +221,8 @@ class Object(Document):
     # Map
     layer: Optional["Layer"] = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
+    # Current mode
+    mode = StringField(required=False)
     # Additional connection data
     connections: List["ObjectConnectionData"] = ListField(
         EmbeddedDocumentField(ObjectConnectionData)
@@ -1182,7 +1184,7 @@ class Object(Document):
         else:
             return [self.name]
 
-    def log(self, message, user=None, system=None, managed_object=None, op=None):
+    def log(self, message, user=None, system=None, managed_object=None, op=None) -> None:
         if not user:
             user = get_user()
         if hasattr(user, "username"):
@@ -1551,7 +1553,14 @@ class Object(Document):
         """
         if self.cross:
             yield from self.cross
-        if self.model.cross:
+        if not self.model.cross:
+            return
+        mode = self.get_mode()
+        if mode:
+            for cross in self.model.cross:
+                if not cross.modes or mode in cross.modes:
+                    yield cross
+        else:
             yield from self.model.cross
 
     def iter_cross(
@@ -1728,6 +1737,67 @@ class Object(Document):
             if name:
                 r.append(obj.as_resource())
         return list(reversed(r))
+
+    def get_mode(self) -> str | None:
+        """Get current mode."""
+        if self.mode:
+            return self.mode
+        return self.model.get_default_mode()
+
+    def set_mode(self, mode: str, /, save=True) -> None:
+        """
+        Set object mode.
+
+        Args:
+            mode: Mode name.
+            save: Perform save after setting.
+
+        Raises:
+            ValueError: On invalid mode.
+        """
+        if self.mode and self.mode == mode:
+            return
+        if not self.model.modes:
+            raise ValueError("Cannot set mode for model")
+        for mi in self.model.modes:
+            if mi.name == mode:
+                self.mode = mode
+                if save:
+                    self.save()
+                return
+        msg = "Invalid mode: {mode}"
+        raise ValueError(msg)
+
+    def iter_connection_effective_protocols(self, name: str) -> Iterable[ProtocolVariantItem]:
+        """
+        Iterate connection's protocol.
+
+        Iterate protocols for given connection available
+        in current mode.
+
+        Args:
+            name: Connection's name.
+
+        Returns:
+            Yield appropriate
+        """
+        cn = self.model.get_model_connection(name)
+        if not cn:
+            return
+        # Invariants
+        if not self.model.modes:
+            yield from cn.protocols
+            return
+        # Filter out
+        mode = self.get_mode()
+        if mode:
+            for p in cn.protocols:
+                if not p.modes or mode in p.modes:
+                    yield p
+        else:
+            for p in cn.protocols:
+                if not p.modes:
+                    yield p
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

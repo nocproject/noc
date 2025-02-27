@@ -59,8 +59,9 @@ class ProtocolVariant(object):
 
     protocol: "Protocol"
     direction: str = "*"
-    discriminator: Optional[str] = None
-    data: Optional[Dict[str, str]] = None
+    discriminator: str | None = None
+    data: dict[str, str] | None = None
+    modes: list[str] | None = None
 
     def __str__(self) -> str:
         return self.code
@@ -72,10 +73,13 @@ class ProtocolVariant(object):
         return r and self.discriminator == other.discriminator
 
     def __contains__(self, item: "ProtocolVariant") -> bool:
-        r = self.protocol.id == item.protocol.id and self.direction != item.direction
-        if not self.discriminator:
-            return r
-        return r and self.discriminator == item.discriminator
+        if self.protocol.id != item.protocol.id or self.direction != item.direction:
+            return False
+        if (self.discriminator and not item.discriminator) or (
+            not self.discriminator and item.discriminator
+        ):
+            return False
+        return self.discriminator == item.discriminator
 
     def __hash__(self):
         return hash(self.code)

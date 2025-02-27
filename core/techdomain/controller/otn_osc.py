@@ -24,6 +24,7 @@ class OTNOSCController(BaseController):
     """
 
     name = "otn_osc"
+    label = "OSC"
     kind = ChannelKind.L1
     topology = ChannelTopology.UP2P
     tech_domain = "otn_osc"
@@ -33,9 +34,7 @@ class OTNOSCController(BaseController):
 
     def iter_endpoints(self, obj: Object) -> Iterable[Endpoint]:
         for c in obj.model.connections:
-            if not c.protocols:
-                continue
-            for pvi in c.protocols:
+            for pvi in obj.iter_connection_effective_protocols(c.name):
                 if pvi.protocol.code == "OSC" and pvi.direction == ">":
                     yield Endpoint(object=obj, name=c.name)
                     break

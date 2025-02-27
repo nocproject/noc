@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Tuple, List, Optional, Iterable, Any
+from typing import Tuple, List, Optional, Iterable, Any
 from collections import defaultdict
 import math
 
@@ -41,7 +41,7 @@ class DataPlugin(InvPlugin):
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
-            "api_plugin_%s_save_data" % self.name,
+            f"api_plugin_{self.name}_save_data",
             self.api_save_data,
             url="^(?P<id>[0-9a-f]{24})/plugin/data/$",
             method=["PUT"],
@@ -73,7 +73,7 @@ class DataPlugin(InvPlugin):
         scope: Optional[str] = None,
         choices: Optional[List[Tuple[str, str]]] = None,
         item_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate item.
         """
@@ -96,7 +96,7 @@ class DataPlugin(InvPlugin):
             r["item_id"] = item_id
         return r
 
-    def iter_common(self, o: Object) -> Iterable[Dict[str, Any]]:
+    def iter_common(self, o: Object) -> Iterable[dict[str, Any]]:
         interface = "Common"
         # Name
         yield self.item(
@@ -130,6 +130,20 @@ class DataPlugin(InvPlugin):
             choices=model_choices,
             item_id=str(o.model.id),
         )
+        # Mode
+        mode = o.get_mode()
+        if mode:
+            model_choices = None
+            if o.model.modes:
+                model_choices = [(x.name, x.name) for x in o.model.modes]
+            yield self.item(
+                interface=interface,
+                name="Mode",
+                value=mode,
+                description="Object mode",
+                is_const=model_choices is None,
+                choices=model_choices,
+            )
         # ID
         yield self.item(
             interface=interface,
@@ -168,12 +182,12 @@ class DataPlugin(InvPlugin):
                     item_id=mo_id,
                 )
 
-    def iter_summary(self, o: Object) -> Iterable[Dict[str, Any]]:
+    def iter_summary(self, o: Object) -> Iterable[dict[str, Any]]:
         """
         Summary information
         """
 
-        def get_summary(d: Dict[ObjectId, float]) -> float:
+        def get_summary(d: dict[ObjectId, float]) -> float:
             r = 0.0
             for obj_id in nested_ids:
                 om = obj_model.get(obj_id)
@@ -195,8 +209,8 @@ class DataPlugin(InvPlugin):
             )
         }
         # Get model data
-        model_weight: Dict[ObjectId, float] = {}
-        model_power: Dict[ObjectId, float] = {}
+        model_weight: dict[ObjectId, float] = {}
+        model_power: dict[ObjectId, float] = {}
         for doc in ObjectModel._get_collection().find(
             {"_id": {"$in": list(obj_model.values())}}, {"_id": 1, "data": 1}
         ):
@@ -260,9 +274,9 @@ class DataPlugin(InvPlugin):
                 is_const=True,
             )
 
-    def iter_effective_data(self, o: Object) -> Iterable[Dict[str, Any]]:
+    def iter_effective_data(self, o: Object) -> Iterable[dict[str, Any]]:
         # Group by model interfaces
-        mi_values: Dict[str, Dict[str, List[Tuple[Optional[str], str]]]] = {}
+        mi_values: dict[str, dict[str, List[Tuple[Optional[str], str]]]] = {}
         for item in o.get_effective_data():
             if item.interface not in mi_values:
                 mi_values[item.interface] = defaultdict(list)
@@ -287,20 +301,45 @@ class DataPlugin(InvPlugin):
                         is_const=a.is_const,
                     )
 
-    def api_save_data(self, request, id, interface=None, key=None, value=None):
+    def api_save_data(
+        self,
+        request,
+        id,
+        interface: str | None = None,
+        key: str | None = None,
+        value: str | None = None,
+    ):
         o = self.app.get_object_or_404(Object, id=id)
-        if interface == "Common":
-            # Fake interface
-            if key == "Name":
-                o.name = value.split("|")[-1].strip()
-            elif key == "Model":
-                m = self.app.get_object_or_404(ObjectModel, id=value)
-                o.model = m
-                o.log(message="Changing model to %s" % m.name, user=request.user, system="WEB")
-                o.save()
-        else:
-            if value is None or value == "":
-                o.reset_data(interface, key)
-            else:
-                o.set_data(interface, key, value)
+        match interface:
+            case "Common":
+                # Virtual interface
+                if value:
+                    match key:
+                        case "Name":
+                            o.name = value.split("|")[-1].strip()
+                            o.log(
+                                message=f"Changing name to {o.name}",
+                                user=request.user,
+                                system="WEB",
+                            )
+                            o.save()
+                        case "Model":
+                            m = self.app.get_object_or_404(ObjectModel, id=value)
+                            o.model = m
+                            o.log(
+                                message="Changing model to %s" % m.name,
+                                user=request.user,
+                                system="WEB",
+                            )
+                            o.save()
+                        case "Mode":
+                            o.set_mode(value)
+                        case _:
+                            pass
+            case _:
+                # Set data
+                if value is None or value == "":
+                    o.reset_data(interface, key)
+                else:
+                    o.set_data(interface, key, value)
         o.save()

@@ -87,10 +87,6 @@ class ObjectModelApplication(ExtDocApplication):
             data["data"] = ModelInterface.clean_data(model_data)
         if "data" in data:
             data["data"] = ModelInterface.clean_data(data["data"])
-        if "plugins" in data and data["plugins"]:
-            data["plugins"] = [x.strip() for x in data["plugins"].split(",") if x.strip()]
-        else:
-            data["plugins"] = None
         if "connections" in data:
             for c in data["connections"]:
                 if connection_data and c["name"] in connection_data:
@@ -100,9 +96,12 @@ class ObjectModelApplication(ExtDocApplication):
                 protocols = []
                 for p in c.get("protocols") or []:
                     p = ProtocolVariant.get_by_code(p)
-                    protocols += [{"protocol": p.protocol.id, "direction": p.direction}]
+                    pi = {"protocol": p.protocol.id, "direction": p.direction}
                     if p.discriminator:
-                        protocols[-1]["discriminator"] = p.discriminator
+                        pi["discriminator"] = p.discriminator
+                    if p.modes:
+                        pi["modes"] = p.modes
+                    protocols.append(pi)
                 c["protocols"] = protocols
                 # Remove facade
                 c.pop("facade", None)

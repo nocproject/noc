@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Asset check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -108,6 +108,7 @@ class AssetCheck(DiscoveryCheck):
                 sa_data=o.get("data"),
                 param_data=o.get("param_data"),
                 crossing=o.get("crossing"),
+                mode=o.get("mode"),
             )
             # cpe_objects
         # Assign stack members
@@ -145,11 +146,12 @@ class AssetCheck(DiscoveryCheck):
         serial: Optional[str] = None,
         mfg_date: Optional[str] = None,
         description: Optional[str] = None,
-        sensors: List[Dict[str, Any]] = None,
-        sa_data: List[Dict[str, Any]] = None,
-        param_data: List[Dict[str, Any]] = None,
+        sensors: List[Dict[str, Any]] | None = None,
+        sa_data: List[Dict[str, Any]] | None = None,
+        param_data: List[Dict[str, Any]] | None = None,
         cpe_id: Optional[str] = None,
         crossing: List[Dict[str, str]] | None = None,
+        mode: str | None = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -253,7 +255,7 @@ class AssetCheck(DiscoveryCheck):
                 if scope:
                     self.set_context(scope, number)
         # Find existing object or create new
-        o: Optional["Object"] = Object.objects.filter(
+        o: Object | None = Object.objects.filter(
             model__in=[m.id] + self.generic_models,
             data__match={"interface": "asset", "attr": "serial", "value": serial},
         ).first()
@@ -272,6 +274,7 @@ class AssetCheck(DiscoveryCheck):
                 model=m,
                 data=o_data,
                 parent=self.object.container if self.object.container else self.lost_and_found,
+                mode=mode,
             )
             o.save()
             o.log(
@@ -294,6 +297,16 @@ class AssetCheck(DiscoveryCheck):
         else:
             # Add all inner connection to disconnect list
             self.to_disconnect.update((o, c) for c in o.iter_children())
+        # Check mode
+        current_mode = o.get_mode()
+        if mode and current_mode and mode != current_mode:
+            o.set_mode(current_mode)
+            o.log(
+                f"Object mode changed: {mode} -> {current_mode}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
+            )
         # Check revision
         if o.get_data("asset", "revision") != revision:
             # Update revision
