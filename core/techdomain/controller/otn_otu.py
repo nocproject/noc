@@ -42,6 +42,7 @@ class OTNOTUController(BaseController):
     """
 
     name = "otn_otu"
+    label = "OTU"
     kind = ChannelKind.L1
     topology = ChannelTopology.P2P
     tech_domain = "otn_otu"
@@ -50,27 +51,27 @@ class OTNOTUController(BaseController):
 
     def iter_endpoints(self, obj: Object) -> Iterable[Endpoint]:
         for c in obj.model.connections:
-            if not c.protocols:
-                continue
-            for pvi in c.protocols:
+            for pvi in obj.iter_connection_effective_protocols(c.name):
                 if pvi.protocol.code.startswith("OTU") and self.is_connected(obj, c.name):
                     yield Endpoint(object=obj, name=c.name)
                     break
 
     def get_supported_protocols(self, ep: Endpoint) -> list[str]:
-        for c in ep.object.model.connections:
-            if c.name != ep.name or not c.protocols:
-                continue
-            return [pvi.protocol.code for pvi in c.protocols if pvi.protocol.code.startswith("OTU")]
+        cn = ep.object.model.get_model_connection(ep.name)
+        if cn:
+            return [
+                pvi.protocol.code
+                for pvi in ep.object.iter_connection_effective_protocols(cn.name)
+                if pvi.protocol.code.startswith("OTU")
+            ]
         return []
 
     def get_supported_modulations(self, ep: Endpoint) -> list[str]:
-        for c in ep.object.model.connections:
-            if c.name != ep.name or not c.protocols:
-                continue
+        cn = ep.object.model.get_model_connection(ep.name)
+        if cn:
             return [
                 pvi.protocol.code
-                for pvi in c.protocols
+                for pvi in ep.object.iter_connection_effective_protocols(cn.name)
                 if pvi.protocol.technology.name == "Modulation"
             ]
         return []

@@ -26,16 +26,15 @@ class OpticalDWDMController(BaseController):
     """
 
     name = "optical_dwdm"
+    label = "OCh"
     kind = ChannelKind.L1
     topology = ChannelTopology.UBUNCH
     tech_domain = "optical_sm"
 
     def iter_endpoints(self, obj: Object) -> Iterable[Endpoint]:
         for c in obj.model.connections:
-            if not c.protocols:
-                continue
-            for pvi in c.protocols:
-                if pvi.protocol.code == "DWDM" and pvi.direction == ">" and pvi.discriminator:
+            for pvi in obj.iter_connection_effective_protocols(c.name):
+                if pvi.protocol.code == "DWDM" and pvi.is_inbound and pvi.discriminator:
                     yield Endpoint(object=obj, name=c.name)
                     break
 
@@ -50,15 +49,9 @@ class OpticalDWDMController(BaseController):
             """
             Check if endpoint is an appropriate exit.
             """
-            for c in ep.object.model.connections:
-                if c.name != ep.name:
-                    continue
-                if not c.protocols:
-                    return False
-                for pvi in c.protocols:
-                    if pvi.protocol.code == "DWDM" and pvi.direction == "<" and pvi.discriminator:
-                        return True
-                return False
+            for pvi in ep.object.iter_connection_effective_protocols(ep.name):
+                if pvi.protocol.code == "DWDM" and pvi.is_outbound and pvi.discriminator:
+                    return True
             return False
 
         def iter_candidates(

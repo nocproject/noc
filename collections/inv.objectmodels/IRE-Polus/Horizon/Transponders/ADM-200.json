@@ -25,22 +25,22 @@
             "protocols": [
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "OTU4"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "OTUC2"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "QPSK"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "8QAM"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "16QAM"
                 }
             ],
@@ -56,10 +56,12 @@
             "protocols": [
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "OTU4"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "OTUC2"
                 },
                 {
@@ -68,14 +70,12 @@
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-2x100"],
                     "protocol__code": "QPSK"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "8QAM"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200"],
                     "protocol__code": "16QAM"
                 }
             ],
@@ -962,6 +962,314 @@
             "type__name": "Transceiver | SFP+"
         }
     ],
+    "cross": [
+        {
+            "input": "CLIENT1",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-1"
+        },
+        {
+            "input": "CLIENT2",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-2"
+        },
+        {
+            "input": "CLIENT3",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-3"
+        },
+        {
+            "input": "CLIENT4",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-4"
+        },
+        {
+            "input": "CLIENT5",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-5"
+        },
+        {
+            "input": "CLIENT6",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-6"
+        },
+        {
+            "input": "CLIENT7",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-7"
+        },
+        {
+            "input": "CLIENT8",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-8"
+        },
+        {
+            "input": "CLIENT9",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-9"
+        },
+        {
+            "input": "CLIENT10",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-10"
+        },
+        {
+            "input": "CLIENT11",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-11"
+        },
+        {
+            "input": "CLIENT12",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-12"
+        },
+        {
+            "input": "CLIENT13",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-13"
+        },
+        {
+            "input": "CLIENT14",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-14"
+        },
+        {
+            "input": "CLIENT15",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-15"
+        },
+        {
+            "input": "CLIENT16",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-16"
+        },
+        {
+            "input": "CLIENT17",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-17"
+        },
+        {
+            "input": "CLIENT18",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-18"
+        },
+        {
+            "input": "CLIENT19",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-19"
+        },
+        {
+            "input": "CLIENT20",
+            "modes": ["AGG-200"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODUC2::ODU2-20"
+        },
+        {
+            "input": "CLIENT1",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-1"
+        },
+        {
+            "input": "CLIENT2",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-2"
+        },
+        {
+            "input": "CLIENT3",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-3"
+        },
+        {
+            "input": "CLIENT4",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-4"
+        },
+        {
+            "input": "CLIENT5",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-5"
+        },
+        {
+            "input": "CLIENT6",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-6"
+        },
+        {
+            "input": "CLIENT7",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-7"
+        },
+        {
+            "input": "CLIENT8",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-8"
+        },
+        {
+            "input": "CLIENT9",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-9"
+        },
+        {
+            "input": "CLIENT10",
+            "modes": ["AGG-2x100"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4::ODU2-10"
+        },
+        {
+            "input": "CLIENT11",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-1"
+        },
+        {
+            "input": "CLIENT12",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-2"
+        },
+        {
+            "input": "CLIENT13",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-3"
+        },
+        {
+            "input": "CLIENT14",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-4"
+        },
+        {
+            "input": "CLIENT15",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-5"
+        },
+        {
+            "input": "CLIENT16",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-6"
+        },
+        {
+            "input": "CLIENT17",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-7"
+        },
+        {
+            "input": "CLIENT18",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-8"
+        },
+        {
+            "input": "CLIENT19",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-9"
+        },
+        {
+            "input": "CLIENT20",
+            "modes": ["AGG-2x100"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU4::ODU2-10"
+        },
+        {
+            "input": "CLIENT1",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT11",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT2",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT12",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT3",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT13",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT4",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT14",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT5",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT15",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT6",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT16",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT7",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT17",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT8",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT18",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT9",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT19",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "CLIENT10",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "CLIENT20",
+            "output_discriminator": "odu::ODU2"
+        },
+        {
+            "input": "LINE2",
+            "modes": ["TP-100+TP-10x10"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU4"
+        }
+    ],
     "data": [
         {
             "attr": "power",
@@ -995,5 +1303,25 @@
         }
     ],
     "front_facade__name": "RBS | iData | ADM-200 1438-1",
+    "modes": [
+        {
+            "name": "AGG-200",
+            "description": "20 OTU2 -> OTUC2",
+            "is_default": true
+        },
+        {
+            "name": "AGG-2x100",
+            "description": "2 x (10 OTU2 -> OTU4)"
+        },
+        {
+            "name": "TP-100+TP-10x10"
+        },
+        {
+            "name": "AGG-100-BS"
+        },
+        {
+            "name": "ADM-100"
+        }
+    ],
     "short_label": "ADM-200"
 }

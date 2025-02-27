@@ -10,18 +10,19 @@ import logging
 
 # NOC modules
 from noc.inv.models.object import Object
+from ..views import InvApplication
 
 
 class InvPlugin(object):
     name = None
     js = None
 
-    def __init__(self, app):
+    def __init__(self, app: InvApplication):
         self.app = app
         self.logger = logging.getLogger("%s.%s" % (__name__.rsplit(".", 1)[0], self.name))
         self.init_plugin()
 
-    def set_app(self, app):
+    def set_app(self, app: InvApplication):
         pass
 
     def add_view(self, name, func, url, method=["GET"], access="read", validate=None):

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import os
 from threading import Lock
 import operator
 import re
-from typing import Any, Dict, Optional, List, Tuple, Union, Iterable
+from typing import Any, Optional, List, Tuple, Union, Iterable
 
 # Third-party modules
 from bson import ObjectId
@@ -24,6 +24,7 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     ObjectIdField,
     FloatField,
+    BooleanField,
 )
 from mongoengine.errors import ValidationError
 from pymongo import InsertOne, DeleteOne
@@ -63,12 +64,30 @@ class ModelAttr(EmbeddedDocument):
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
     @property
-    def json_data(self) -> Dict[str, Any]:
-        r = {
+    def json_data(self) -> dict[str, Any]:
+        return {
             "interface": self.interface,
             "attr": self.attr,
             "value": self.value,
         }
+
+
+class ModeItem(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    name = StringField()
+    description = StringField(required=False)
+    is_default = BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.name
+
+    @property
+    def json_data(self) -> dict[str, Any]:
+        r = {"name": self.name}
+        if self.description:
+            r["description"] = self.description
+        if self.is_default:
+            r["is_default"] = self.is_default
         return r
 
 
@@ -77,7 +96,8 @@ class ProtocolVariantItem(EmbeddedDocument):
     protocol: "Protocol" = PlainReferenceField(Protocol, required=True)
     discriminator = StringField(required=False)
     direction = StringField(choices=[">", "<", "*"], default="*")
-    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    data: list["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    modes: list[str] | None = ListField(StringField(), required=False)
 
     def __str__(self):
         return self.code
@@ -87,20 +107,27 @@ class ProtocolVariantItem(EmbeddedDocument):
 
     @property
     def code(self) -> str:
-        if not self.discriminator and self.direction == "*":
-            return self.protocol.code
-        elif not self.discriminator:
-            return f"{self.direction}::{self.protocol.code}"
-        return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
+        r: list[str] = []
+        if self.direction != "*":
+            r.append(self.direction)
+        r.append(self.protocol.code)
+        if self.discriminator:
+            r.append(self.discriminator)
+        c = "::".join(r)
+        if self.modes:
+            c = f"{c} ({', '.join(self.modes)})"
+        return c
 
     @property
-    def json_data(self) -> Dict[str, Any]:
-        r = {
+    def json_data(self) -> dict[str, Any]:
+        r: dict[str, Any] = {
             "protocol__code": self.protocol.code,
             "direction": self.direction,
         }
         if self.discriminator:
             r["discriminator"] = self.discriminator
+        if self.modes:
+            r["modes"] = self.modes
         return r
 
     def __eq__(self, other):
@@ -115,6 +142,27 @@ class ProtocolVariantItem(EmbeddedDocument):
             return r
         return r and self.discriminator == item.discriminator
 
+    @property
+    def is_inbound(self) -> bool:
+        """
+        Check if protocol is inbound only.
+        """
+        return self.direction == ">"
+
+    @property
+    def is_outbound(self) -> bool:
+        """
+        Check if protocol is outbound only.
+        """
+        return self.direction == "<"
+
+    @property
+    def is_bidi(self) -> bool:
+        """
+        Check if protocol is bidirectional.
+        """
+        return self.direction == "*"
+
 
 class Crossing(EmbeddedDocument):
     """
@@ -126,13 +174,16 @@ class Crossing(EmbeddedDocument):
         output: Output slot name.
         output_discriminator: When not-empty, input to output mapping.
         gain_db: When non-empty, signal gain in dB.
+        modes: List of modes for which crossing is applicable.
     """
 
+    _meta = {"strict": False, "auto_create_index": False}
     input = StringField(required=True)
     input_discriminator = StringField(required=False)
     output = StringField(required=True)
     output_discriminator = StringField(required=False)
     gain_db = FloatField(required=False)
+    modes = ListField(StringField(), required=False)
 
     def __str__(self) -> str:
         r = [self.input]
@@ -141,6 +192,8 @@ class Crossing(EmbeddedDocument):
         r += [" -> ", self.output]
         if self.output_discriminator:
             r += [f": {self.output_discriminator}"]
+        if self.modes:
+            r += f" ({', '.join(m for m in self.modes)})"
         return "".join(r)
 
     def update_params(self, input_discriminator: str, output_discriminator: str, gain_db):
@@ -168,8 +221,8 @@ class Crossing(EmbeddedDocument):
         super().clean()
 
     @property
-    def json_data(self) -> Dict[str, Any]:
-        r: Dict[str, Any] = {
+    def json_data(self) -> dict[str, Any]:
+        r: dict[str, Any] = {
             "input": self.input,
             "output": self.output,
         }
@@ -179,6 +232,8 @@ class Crossing(EmbeddedDocument):
             r["output_discriminator"] = self.output_discriminator
         if self.gain_db:
             r["gain_db"] = self.gain_db
+        if self.modes:
+            r["modes"] = self.modes
         return r
 
 
@@ -195,12 +250,12 @@ class ObjectModelConnection(EmbeddedDocument):
     cross_direction: Optional[str] = StringField(
         choices=["i", "o", "s"], required=False
     )  # Inner  # Outer  # Any
-    protocols: List["ProtocolVariantItem"] = EmbeddedDocumentListField(ProtocolVariantItem)
+    protocols: list["ProtocolVariantItem"] = EmbeddedDocumentListField(ProtocolVariantItem)
     cfg_context: str = StringField()
     internal_name = StringField(required=False)
     composite = StringField(required=False)
     composite_pins = StringField(required=False)
-    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    data: list["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
 
     def __str__(self):
         return self.name
@@ -224,7 +279,7 @@ class ObjectModelConnection(EmbeddedDocument):
         )
 
     @property
-    def json_data(self) -> Dict[str, Any]:
+    def json_data(self) -> dict[str, Any]:
         r = {
             "name": self.name,
             "description": self.description,
@@ -261,7 +316,7 @@ class ObjectModelConnection(EmbeddedDocument):
             raise ValidationError("Composite pins not match format: N-N")
         super().clean()
 
-    def get_protocols(self, context: str) -> List["ProtocolVariantItem"]:
+    def get_protocols(self, context: str) -> list["ProtocolVariantItem"]:
         r = []
         for p in self.protocols:
             if context and p.cfg_context != context:
@@ -307,7 +362,7 @@ class ObjectModelSensor(EmbeddedDocument):
         return self.name
 
     @property
-    def json_data(self) -> Dict[str, Any]:
+    def json_data(self) -> dict[str, Any]:
         r = {"name": self.name}
         if self.description:
             r["description"] = self.description
@@ -354,13 +409,15 @@ class ObjectModel(Document):
     )
     # Connection rule context
     cr_context = StringField(required=False)
+    # Modes
+    modes = EmbeddedDocumentListField(ModeItem, required=False)
     # Configuration Context Param
     # cfg_context_param = PlainReferenceField(ConfigurationParam, required=False)
-    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
-    connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
+    data: list["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    connections: list["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
     # Static crossings
-    cross: List[Crossing] = EmbeddedDocumentListField(Crossing)
-    sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
+    cross: list[Crossing] = EmbeddedDocumentListField(Crossing)
+    sensors: list["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
     # Facades
     front_facade = PlainReferenceField(Facade, required=False)
@@ -589,7 +646,7 @@ class ObjectModel(Document):
         return None
 
     @property
-    def json_data(self) -> Dict[str, Any]:
+    def json_data(self) -> dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -613,6 +670,8 @@ class ObjectModel(Document):
             r["configuration_rule__name"] = self.configuration_rule.name
         if self.cr_context:
             r["cr_context"] = self.cr_context
+        if self.modes:
+            r["modes"] = [s.json_data for s in self.modes]
         if self.plugins:
             r["plugins"] = self.plugins
         if self.front_facade:
@@ -784,6 +843,19 @@ class ObjectModel(Document):
             ObjectConnection._get_collection().delete_many(
                 {"_id": {"$in": list(to_prune_connections)}}
             )
+
+    def get_default_mode(self) -> str | None:
+        """
+        Get default mode for model.
+
+        Returns:
+            Mode name if present, or None.
+        """
+        if self.modes:
+            for mi in self.modes:
+                if mi.is_default:
+                    return mi.name
+        return None
 
 
 class ModelConnectionsCache(Document):

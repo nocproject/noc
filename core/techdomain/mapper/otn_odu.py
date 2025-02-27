@@ -28,7 +28,11 @@ class DWDMOdUMapper(BaseMapper):
         def node_label(obj: Object) -> str:
             o_name = " > ".join(obj.get_local_name_path(True))
             model = obj.model.get_short_label()
-            return f"{o_name}\\n{model}"
+            label = f"{o_name}\\n{model}"
+            mode = obj.get_mode()
+            if mode:
+                label = f"{label} [{mode}]"
+            return label
 
         def q_disc_forward(d: str) -> str:
             try:

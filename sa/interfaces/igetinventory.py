@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # IGetInventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -46,6 +46,8 @@ class IGetInventory(BaseInterface):
             "mfg_date": REStringParameter(r"^\d{4}-\d{2}-\d{2}$", required=False),
             # Optional description
             "description": StringParameter(required=False),
+            # Optional mode
+            "mode": StringParameter(required=False),
             # Optional internal crossing
             "crossing": DictListParameter(
                 attrs={

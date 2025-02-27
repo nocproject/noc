@@ -11,6 +11,7 @@ from collections import defaultdict
 
 # Third-party modules
 from bson import ObjectId
+from mongoengine.errors import NotUniqueError
 
 # NOC modules
 from noc.inv.models.object import Object
@@ -264,6 +265,7 @@ class ChannelPlugin(InvPlugin):
                             "end_endpoint": eep.as_resource(),
                             "end_endpoint__label": self.get_endpoint_label(eep),
                             "controller": controller_name,
+                            "controller__label": controller.label,
                         }
                     )
             # Get endpoint to channel bindings
@@ -347,9 +349,13 @@ class ChannelPlugin(InvPlugin):
         ep = Endpoint.from_resource(endpoint)
         ctl = controller_loader[controller]()
         params = params or {}
-        ch, msg = ctl.sync_ad_hoc_channel(
-            name=name, ep=ep, channel=channel, dry_run=dry_run, **params
-        )
+        try:
+            ch, msg = ctl.sync_ad_hoc_channel(
+                name=name, ep=ep, channel=channel, dry_run=dry_run, **params
+            )
+        except NotUniqueError:
+            ch = None
+            msg = "Channel name is already used"
         r = {"status": ch is not None, "msg": msg}  # @todo: Replace with message
         if ch:
             r["channel_id"] = str(ch.id)
