@@ -309,8 +309,8 @@ Ext.define("Ext.ux.form.GridField", {
           rec.set(column.dataIndex, !val);
         }
       }, this);
+      this.setFirstRow(column);
     }
-    this.setFirstRow(column);
   },
   //
   setMultiColumnRow: function(store){
