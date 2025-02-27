@@ -57,6 +57,7 @@ class Facade(Document):
     slots = ListField(StringField(), required=False)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _name_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __str__(self) -> str:
         return self.name
@@ -65,6 +66,11 @@ class Facade(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Facade"]:
         return Facade.objects.filter(id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name: str) -> Optional["Facade"]:
+        return Facade.objects.filter(name=name).first()
 
     @property
     def json_data(self) -> Dict[str, Any]:
