@@ -18,6 +18,7 @@ Ext.define("NOC.inv.channel.Application", {
     "NOC.crm.subscriber.LookupField",
     "NOC.crm.supplier.LookupField",
     "NOC.main.remotesystem.LookupField",
+    "NOC.inv.techdomain.LookupField",
     "Ext.ux.form.GridField",
   ],
   model: "NOC.inv.channel.Model",
@@ -359,6 +360,12 @@ Ext.define("NOC.inv.channel.Application", {
     me.callParent();
   },
   filters: [
+    {
+      title: __("By Tech Domai"),
+      name: "tech_domain",
+      ftype: "lookup",
+      lookup: "inv.techdomain",
+    },
     {
       title: __("By Project"),
       name: "project",

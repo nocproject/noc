@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# Optical DWDM Controller for Horizon platform
+# OTN OMS for Horizon platform
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,14 +9,14 @@
 from typing import Iterable
 
 # NOC modules
-from noc.core.techdomain.profile.optical_dwdm import BaseOpticalDwdmProfileController
+from noc.core.techdomain.profile.otn_oms import BaseOMSProfileController
 from .base import ChannelMixin, SetValue, OM_40_V_C, OM_40_V_H, OM_96_H, OD_96_H, OD_40_C, OD_40_H
 
 DESTINATION_MODELS = (OM_40_V_C, OM_40_V_H, OD_40_C, OD_40_H, OM_96_H, OD_96_H)
 
 
-class Controller(ChannelMixin, BaseOpticalDwdmProfileController):
-    label = "Optical"
+class Controller(ChannelMixin, BaseOMSProfileController):
+    label = "OMS"
 
     @ChannelMixin.setup_for(*DESTINATION_MODELS)
     def iter_optical_setup(self, name: str, destination: str | None = None) -> Iterable[SetValue]:

@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# OpticalDWDMControllerclass
+# OTNOMSCotrollerclass
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
@@ -20,16 +20,16 @@ from ..profile.channel import ProfileChannelController
 from .base import BaseController, Endpoint, PathItem
 
 
-class OpticalDWDMController(BaseController):
+class OTNOMSCotroller(BaseController):
     """
     Unidirectional p2p/bunch controller considering lambda.
     """
 
     name = "optical_dwdm"
-    label = "OCh"
+    label = "OMS"
     kind = ChannelKind.L1
     topology = ChannelTopology.UBUNCH
-    tech_domain = "optical_sm"
+    tech_domain = "otn_oms"
 
     def iter_endpoints(self, obj: Object) -> Iterable[Endpoint]:
         for c in obj.model.connections:
