@@ -322,9 +322,8 @@ Ext.define("NOC.fm.event.Application", {
 
   },
   // Return Grid's row classes
-  getRowClass: function(record, index, params, store){
-    var me = this,
-      c = record.get("row_class");
+  getRowClass: function(record){
+    var c = record.get("row_class");
     if(c){
       return c;
     } else{
@@ -341,7 +340,7 @@ Ext.define("NOC.fm.event.Application", {
     me.setHistoryHash();
   },
   //
-  onSelectEvent: function(grid, record, item, index){
+  onSelectEvent: function(grid, record){
     var me = this;
     me.getController().stopPolling();
     me.getLayout().setActiveItem(1);
