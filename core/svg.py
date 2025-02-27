@@ -250,7 +250,7 @@ class SVG(object):
             msg = "Slot not found"
             raise ValueError(msg)
         if not source:
-            source = self.get_placeholder(el.attrib["width"], el.attrib["height"])
+            source = self.get_placeholder(el.attrib.get("width", 0), el.attrib.get("height", 0))
         source = source.clone()
         # Merge defs
         src_defs = source.get_defs()
