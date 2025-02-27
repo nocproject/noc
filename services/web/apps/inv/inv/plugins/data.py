@@ -313,22 +313,29 @@ class DataPlugin(InvPlugin):
         match interface:
             case "Common":
                 # Virtual interface
-                match key:
-                    case "Name":
-                        o.name = value.split("|")[-1].strip()
-                        o.log(message=f"Changing name to {o.name}", user=request.user, system="WEB")
-                        o.save()
-                    case "Model":
-                        m = self.app.get_object_or_404(ObjectModel, id=value)
-                        o.model = m
-                        o.log(
-                            message="Changing model to %s" % m.name, user=request.user, system="WEB"
-                        )
-                        o.save()
-                    case "Mode":
-                        o.set_mode(value)
-                    case _:
-                        pass
+                if value:
+                    match key:
+                        case "Name":
+                            o.name = value.split("|")[-1].strip()
+                            o.log(
+                                message=f"Changing name to {o.name}",
+                                user=request.user,
+                                system="WEB",
+                            )
+                            o.save()
+                        case "Model":
+                            m = self.app.get_object_or_404(ObjectModel, id=value)
+                            o.model = m
+                            o.log(
+                                message="Changing model to %s" % m.name,
+                                user=request.user,
+                                system="WEB",
+                            )
+                            o.save()
+                        case "Mode":
+                            o.set_mode(value)
+                        case _:
+                            pass
             case _:
                 # Set data
                 if value is None or value == "":
