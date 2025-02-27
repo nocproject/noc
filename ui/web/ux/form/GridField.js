@@ -228,18 +228,19 @@ Ext.define("Ext.ux.form.GridField", {
   },
   //
   onDeleteRecord: function(){
-    var me = this,
-      sm = me.grid.getSelectionModel(),
-      rowEditing = me.grid.plugins[0];
+    var sm = this.grid.getSelectionModel(),
+      store = this.grid.store,
+      rowEditing = this.grid.plugins[0];
     rowEditing.cancelEdit();
-    me.grid.store.remove(sm.getSelection());
-    if(me.grid.store.getCount() > 0){
+    store.remove(sm.getSelection());
+    if(store.getCount() > 0){
       sm.select(0);
+      this.setMultiColumnRow(store);
     } else{
-      me.deleteButton.setDisabled(true);
-      me.cloneButton.setDisabled(true);
+      this.deleteButton.setDisabled(true);
+      this.cloneButton.setDisabled(true);
     }
-    me.fireEvent("delete");
+    this.fireEvent("delete");
   },
   //
   onCloneRecord: function(){
@@ -276,15 +277,7 @@ Ext.define("Ext.ux.form.GridField", {
     if(field.xtype === "labelfield"){
       context.value = field.valueCollection.items;
     }
-    if(Ext.isDefined(this.columns[context.colIdx].radioRow)){
-      this.grid.store.each(function(record){
-        var val = this.columns[context.colIdx].radioRow; 
-        if(record !== context.record){
-          record.set(this.columns[context.colIdx].dataIndex, !val);
-        }
-      }, this);
-    }
-    this.setFirstRowRadio(this.columns[context.colIdx]);
+    this.setRadioRowValue(context.grid.columns[context.colIdx], context.record);
   },
   //
   onBeforeEdit: function(editor, context){
@@ -297,7 +290,7 @@ Ext.define("Ext.ux.form.GridField", {
     });
   },
   //
-  setFirstRowRadio: function(column){
+  setFirstRow: function(column){
     var store = this.grid.getStore(),
       isNoMark = store.find(column.dataIndex, column.radioRow) === -1;
     if(store.getCount() === 0){
@@ -306,5 +299,29 @@ Ext.define("Ext.ux.form.GridField", {
     if(isNoMark){
       store.getAt(0).set(column.dataIndex, column.radioRow);
     }
+  },
+  //
+  setRadioRowValue: function(column, record){
+    if(Ext.isDefined(column.radioRow)){
+      this.grid.store.each(function(rec){
+        var val = column.radioRow; 
+        if(rec !== record){
+          rec.set(column.dataIndex, !val);
+        }
+      }, this);
+    }
+    this.setFirstRow(column);
+  },
+  //
+  setMultiColumnRow: function(store){
+    var radioRowCols = this.getRadioRowCols();
+    if(Ext.isEmpty(radioRowCols)){
+      return;
+    }
+    Ext.Array.each(radioRowCols, function(column){
+      if(store.find(column.dataIndex, column.radioRow) === -1){
+        this.setFirstRow(column);
+      }
+    }, this);
   },
 });
