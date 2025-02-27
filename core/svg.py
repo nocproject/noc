@@ -75,6 +75,16 @@ class SVG(object):
         return cls.read(StringIO(data))
 
     @classmethod
+    def get_placeholder(cls: Type["SVG"], width: float, height: float) -> "SVG":
+        data = f"""<?xml version="1.0" encoding="utf-8"?>
+    <svg viewBox="0 0 {width} {height}" width="{width}mm" height="{height}mm" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="{width}" height="{height}" style="stroke: rgb(255, 0, 0); stroke-width: 0.5px; fill: rgb(255, 255, 255);"/>
+      <line x1="0" y1="0" x2="{width}" y2="{height}" style="stroke: red; stroke-width: 0.5px"/>
+      <line x1="0" y1="{height}" x2="{width}" y2="0" style="stroke: red; stroke-width: 0.5px"/>
+    </svg>"""
+        return cls.from_string(data)
+
+    @classmethod
     def from_file(cls: Type["SVG"], path: Union[str, Path]) -> "SVG":
         """
         Create SVG from file.
@@ -217,12 +227,13 @@ class SVG(object):
     def embed(
         self: "SVG",
         element_id: str,
-        source: "SVG",
+        source: Optional["SVG"],
         additional: Optional[Iterable[str]] = None,
         **kwargs,
     ) -> None:
         """
         Embed SVG in place of element.
+        If source is None embed placeholder instead.
 
         Args:
             element_id: Id of the element.
@@ -233,12 +244,14 @@ class SVG(object):
         Raises:
             ValueError: If element not found.
         """
-        source = source.clone()
         # Find node
         el = self._tree.find(f".//*[@id='{element_id}']")
         if el is None:
             msg = "Slot not found"
             raise ValueError(msg)
+        if not source:
+            source = self.get_placeholder(el.attrib.get("width", 0), el.attrib.get("height", 0))
+        source = source.clone()
         # Merge defs
         src_defs = source.get_defs()
         if src_defs:
