@@ -7,9 +7,9 @@
 console.debug("Defining NOC.fm.event.ApplicationModel");
 
 Ext.define("NOC.fm.event.ApplicationModel", {
-    extend: "Ext.app.ViewModel",
-    alias: "viewmodel.fm.event",
-    data: {
-        filter: {}
-    }
+  extend: "Ext.app.ViewModel",
+  alias: "viewmodel.fm.event",
+  data: {
+    filter: {},
+  },
 });
