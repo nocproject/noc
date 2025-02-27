@@ -286,7 +286,7 @@ Ext.define("Ext.ux.form.GridField", {
   //
   getRadioRowCols: function(){
     return Ext.Array.filter(this.columns, function(col){
-      return Ext.isDefined(col.radioRow);
+      return Ext.isDefined(col.radioRow) && col.radioRow;
     });
   },
   //
@@ -302,7 +302,7 @@ Ext.define("Ext.ux.form.GridField", {
   },
   //
   setRadioRowValue: function(column, record){
-    if(Ext.isDefined(column.radioRow)){
+    if(Ext.isDefined(column.radioRow) && column.radioRow){
       this.grid.store.each(function(rec){
         var val = column.radioRow; 
         if(rec !== record){
