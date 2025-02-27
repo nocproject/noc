@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # OpticalSMMapper class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,16 +10,15 @@ from collections import defaultdict
 from typing import Optional
 
 # Python modules
-from noc.core.channel.types import ChannelTopology
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.resource import from_resource
-from ..controller.base import BaseController, Endpoint, PathItem
+from ..controller.base import Endpoint, PathItem
 from .base import BaseMapper, Node
-from ..controller.optical_dwdm import OpticalDWDMController
+from ..controller.otn_oms import OTNOMSCotroller
 
 
-class OpticalSMMapper(BaseMapper):
-    name = "optical_sm"
+class OTNOMSMapper(BaseMapper):
+    name = "otn_oms"
 
     def render(
         self,
@@ -38,7 +37,7 @@ class OpticalSMMapper(BaseMapper):
                 parts.append("")
             return "|".join(parts)
 
-        controller = self.get_controller()
+        controller = OTNOMSCotroller()
         starting = []
         endpoints = set()
         nodes = {}
@@ -148,8 +147,3 @@ class OpticalSMMapper(BaseMapper):
                     {"name": k, "attributes": {"shape": "hexagon", "label": ch, "style": "dashed"}}
                 )
                 self.add_edge(start=k, end=node.get_ref(n), end_port=n)
-
-    def get_controller(self) -> BaseController:
-        if self.channel.topology == ChannelTopology.UBUNCH.value:
-            return OpticalDWDMController()
-        raise NotImplementedError()

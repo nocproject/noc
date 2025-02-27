@@ -2,7 +2,7 @@
     "name": "OTN ODU",
     "$collection": "inv.techdomains",
     "uuid": "16f91bee-6c52-4755-a7f9-f52782e923a5",
-    "description": "OTU level of the Optical Transport Network",
+    "description": "ODU level of the Optical Transport Network",
     "allow_bunch": false,
     "allow_children": false,
     "allow_p2mp": false,

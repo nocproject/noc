@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# BaseOpticalDwdmProfileController
+# BaseOMSProfileController
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,8 +11,8 @@ from noc.inv.models.endpoint import Endpoint
 from .channel import ProfileChannelController
 
 
-class BaseOpticalDwdmProfileController(ProfileChannelController):
-    name = "optical_dwdm"
+class BaseOMSProfileController(ProfileChannelController):
+    name = "otn_oms"
 
     def setup(
         self, ep: Endpoint, dry_run: bool = False, destination: str | None = None, **kwargs
