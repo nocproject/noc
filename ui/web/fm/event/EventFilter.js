@@ -40,26 +40,6 @@ Ext.define("NOC.fm.event.EventFilter", {
       },
       items: [
         {
-          xtype: "combo",
-          fieldLabel: __("State"),
-          editable: false,
-          queryMode: "local",
-          displayField: "name",
-          valueField: "id",
-          store: {
-            fields: ["id", "name"],
-            data: [
-              {id: "A", name: "Active"},
-              {id: "S", name: "Archived"},
-              {id: "F", name: "Failed"},
-            ],
-          },
-          name: "status",
-          bind: {
-            value: "{filter.status}",
-          },
-        },
-        {
           xtype: "core.combo",
           restUrl: "/sa/managedobject/lookup/",
           fieldLabel: __("Object"),

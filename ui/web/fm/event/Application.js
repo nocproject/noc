@@ -9,15 +9,14 @@ console.debug("Defining NOC.fm.event.Application");
 Ext.define("NOC.fm.event.Application", {
   extend: "NOC.core.Application",
   requires: [
-    "NOC.core.ModelStore",
+    "NOC.core.ComboBox",
+    "NOC.core.combotree.ComboTree",
     "NOC.core.JSONPreview",
+    "NOC.core.ModelStore",
     "NOC.sa.managedobject.LookupField",
     "NOC.inv.resourcegroup.Model",
     "NOC.sa.administrativedomain.LookupField",
     "NOC.fm.eventclass.LookupField",
-    "NOC.fm.event.EventPanel",
-    "NOC.core.combotree.ComboTree",
-    "NOC.core.ComboBox",
     "NOC.fm.event.ApplicationModel",
     "NOC.fm.event.ApplicationController",
     "NOC.fm.event.EventFilter",
@@ -224,15 +223,11 @@ Ext.define("NOC.fm.event.Application", {
   showGrid: function(){
     var me = this;
     me.getLayout().setActiveItem(0);
-    if(me.down("[itemId=reload-button]").pressed){
-      me.getController().startPolling();
-    }
     me.setHistoryHash();
   },
   //
   onSelectEvent: function(grid, record){
     var me = this;
-    me.getController().stopPolling();
     me.getLayout().setActiveItem(1);
     me.eventPanel.showEvent(record.get("id"));
   },
@@ -246,10 +241,5 @@ Ext.define("NOC.fm.event.Application", {
     var me = this,
       panel = me.showItem(me.ITEM_FORM);
     panel.showEvent(id);
-  },
-  //
-  onCloseApp: function(){
-    var me = this;
-    me.getController().stopPolling();
   },
 });

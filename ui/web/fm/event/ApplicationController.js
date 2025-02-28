@@ -18,7 +18,6 @@ Ext.define("NOC.fm.event.ApplicationController", {
     timestamp__gte: null,
     timestamp__lte: null,
   },
-  pollingInterval: 30000,
   filterBinding: undefined,
   init: function(view){
     var viewModel = view.getViewModel();
@@ -49,58 +48,11 @@ Ext.define("NOC.fm.event.ApplicationController", {
       },
     });
   },
-  onAutoReloadToggle: function(button, pressed){
-    button.setGlyph(pressed ? "xf021" : "xf05e");
-    if(pressed){
-      this.startPolling();
-    }
-    if(!pressed){
-      this.stopPolling();
-    }
-  },
   onResetFilter: function(){
     this.initFilter(this.getViewModel());
   },
   dateValidator: function(){
     return true;
-  },
-  // Returns true if polling is locked
-  isPollLocked: function(){
-    return this.getView().gridPanel.getView().getScrollable().getPosition().y !== 0;
-  },
-  pollingTask: function(){
-    var view = this.getView();
-    // Poll only application tab is visible
-    if(!view.isActiveApp()){
-      return;
-    }
-    // Poll only when in grid preview
-    if(view.getLayout().getActiveItem().itemId !== "fm-event-main"){
-      return;
-    }
-    // Poll only if polling is not locked
-    // comment by issue 896
-    // if(!this.isPollLocked()) {
-    view.store.reload();
-    // }
-  },
-  startPolling: function(){
-    if(this.pollingTaskId){
-      this.pollingTask();
-    } else{
-      this.pollingTaskId = Ext.TaskManager.start({
-        run: this.pollingTask,
-        interval: this.pollingInterval,
-        scope: this,
-      });
-    }
-  },
-  stopPolling: function(){
-    var me = this;
-    if(me.pollingTaskId){
-      Ext.TaskManager.stop(me.pollingTaskId);
-      me.pollingTaskId = null;
-    }
   },
   serialize: function(value){
     var filter = {"__format": "ext"},
