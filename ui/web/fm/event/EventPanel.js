@@ -154,7 +154,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         },
         {
           dataIndex: "status",
-          text: __("Alrm Status"),
+          text: __("Alarm Status"),
           renderer: NOC.render.Choices({
             A: "Active",
             C: "Closed",

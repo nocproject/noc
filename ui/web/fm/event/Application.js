@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.event application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.event.Application");
@@ -20,6 +20,8 @@ Ext.define("NOC.fm.event.Application", {
     "NOC.core.ComboBox",
     "NOC.fm.event.ApplicationModel",
     "NOC.fm.event.ApplicationController",
+    "NOC.fm.event.EventFilter",
+    "NOC.fm.event.EventInspector",
   ],
   layout: "card",
   controller: "fm.event",
@@ -61,6 +63,7 @@ Ext.define("NOC.fm.event.Application", {
       itemId: "fm-event-grid",
       stateful: true,
       stateId: "fm.event-grid",
+      allowDeselect: true,
       columns: [
         {
           text: __("ID"),
@@ -104,7 +107,7 @@ Ext.define("NOC.fm.event.Application", {
           flex: 1,
         },
         {
-          text: __("Alrm."),
+          text: __("Alarm"),
           dataIndex: "alarms",
           width: 30,
           align: "right",
@@ -123,9 +126,6 @@ Ext.define("NOC.fm.event.Application", {
           renderer: NOC.render.Duration,
         },
       ],
-      selModel: {
-        selType: "checkboxmodel",
-      },
       viewConfig: {
         enableTextSelection: true,
         getRowClass: Ext.bind(me.getRowClass, me),
@@ -135,167 +135,57 @@ Ext.define("NOC.fm.event.Application", {
           scope: me,
           fn: me.onSelectEvent,
         },
+        select: "expandInspector",
+        deselect: "collapseInspector",
       },
     });
 
-    me.filterPanel = Ext.create("Ext.form.Panel", {
+    me.filterPanel = Ext.create("NOC.fm.event.EventFilter", {
+      itemId: "filterPanel",
+    });
+
+    me.inspectorPanel = Ext.create("NOC.fm.event.EventInspector", {
+      itemId: "inspectorPanel",
+    });
+
+    me.eastContainer = Ext.create("Ext.panel.Panel", {
       region: "east",
-      width: 210,
+      width: "20%",
+      layout: "card",
+      header: false,
+      collapseMode: "mini",
+      collapsible: true,
       split: true,
-      titleAlign: "right",
-      minWidth: 210,
-      title: __("Filters"),
-      scrollable: {
-        indicators: false,
-        x: false,
-        y: true,
-      },
-      suspendLayout: true,
-      defaults: {
-        xtype: "fieldset",
-        margin: 5,
-        collapsible: true,
-      },
+      collapsed: true,
+      hideCollapseTool: true,
+      animCollapse: false,
       items: [
-        {
-          title: __("Control"),
-          width: "100%",
-          items: [
-            {
-              xtype: "fieldcontainer",
-              padding: "5 0 5",
-              layout: "column",
-              defaults: {
-                xtype: "button",
-                width: "50%",
-              },
-              items: [
-                {
-                  itemId: "reload-button",
-                  text: __("Reload"),
-                  iconAlign: "right",
-                  enableToggle: true,
-                  tooltip: __("Toggle auto reload"),
-                  pressed: false,
-                  glyph: NOC.glyph.ban, // or "NOC.glyph.refresh" when pressed is true
-                  listeners: {
-                    toggle: "onAutoReloadToggle",
-                  },
-                },
-                {
-                  text: __("Reset Filter"),
-                  enableToggle: false,
-                  listeners: {
-                    click: "onResetFilter",
-                  },
-                },
-              ],
-            },
-          ],
-        },
-        {
-          title: __("Filters"),
-          collapsed: false,
-          defaults: {
-            labelAlign: "top",
-            width: "100%",
-          },
-          items: [
-            {
-              xtype: "combo",
-              fieldLabel: __("State"),
-              editable: false,
-              queryMode: "local",
-              displayField: "name",
-              valueField: "id",
-              store: {
-                fields: ["id", "name"],
-                data: [
-                  {id: "A", name: "Active"},
-                  {id: "S", name: "Archived"},
-                  {id: "F", name: "Failed"},
-                ],
-              },
-              name: "status",
-              bind: {
-                value: "{filter.status}",
-              },
-            },
-            {
-              xtype: "core.combo",
-              restUrl: "/sa/managedobject/lookup/",
-              fieldLabel: __("Object"),
-              name: "managed_object",
-              bind: {
-                selection: "{filter.managed_object}",
-              },
-            },
-            {
-              xtype: "noc.core.combotree",
-              restUrl: "/sa/administrativedomain/",
-              fieldLabel: __("Adm. Domain"),
-              name: "administrative_domain",
-              bind: {
-                selection: "{filter.administrative_domain}",
-              },
-            },
-            {
-              name: "resource_group",
-              xtype: "noc.core.combotree",
-              restUrl: "/inv/resourcegroup/",
-              fieldLabel: __("By Resource Group (Selector)"),
-              listWidth: 1,
-              listAlign: "left",
-              labelAlign: "top",
-              allowBlank: true,
-              bind: {
-                selection: "{filter.resource_group}",
-              },
-            },
-            {
-              xtype: "core.combo",
-              restUrl: "/fm/eventclass/lookup/",
-              fieldLabel: __("Event Class"),
-              name: "event_class",
-              bind: {
-                selection: "{filter.event_class}",
-              },
-            },
-            {
-              xtype: "fieldcontainer",
-              fieldLabel: __("By Date"),
-              layout: "column",
-              padding: "5 0 5",
-              defaults: {
-                xtype: "datefield",
-                format: "d.m.Y",
-                submitFormat: "Y-m-d\\TH:i:s",
-                startDay: 1,
-                width: "50%",
-                hideLabel: true,
-              },
-              items: [ // format 2018-11-16T00:00:00
-                {
-                  name: "timestamp__gte",
-                  bind: {value: "{filter.timestamp__gte}"},
-                },
-                {
-                  name: "timestamp__lte",
-                  bind: {value: "{filter.timestamp__lte}"},
-                },
-              ],
-            },
-          ],
-        },
+        me.filterPanel,
+        me.inspectorPanel,
       ],
     });
 
     me.mainPanel = Ext.create("Ext.panel.Panel", {
       layout: "border",
       itemId: "fm-event-main",
+      tbar: [
+        {
+          glyph: NOC.glyph.refresh,
+          handler: "onRefresh",
+        },
+        {
+          text: __("Filtering List"),
+          glyph: NOC.glyph.filter,
+          tooltip: __("Show/Hide Filter"),
+          style: {
+            pointerEvents: "all",
+          },
+          handler: "toggleFilter",
+        },
+      ],
       items: [
         me.gridPanel,
-        me.filterPanel,
+        me.eastContainer,
       ],
     });
     //
