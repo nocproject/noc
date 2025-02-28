@@ -322,7 +322,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
               text: __("Is Default"),
               dataIndex: "is_default",
               width: 50,
-              renderer: NOC.render.Bool,
+              radioRow: true,
+              renderer: NOC.render.Yes,
               editor: "checkboxfield",
             },
             {
