@@ -138,4 +138,47 @@ Ext.define("NOC.fm.event.ApplicationController", {
     ], setParam);
     return filter;
   },
+  onRefresh: function(){
+    this.getView().store.reload();
+  },
+  togglePanel: function(targetPanel, forceExpand){
+    var view = this.getView(),
+      container = view.eastContainer,
+      currentPanel = container.getLayout().getActiveItem();
+
+    if(forceExpand === false){
+      container.collapse();
+      return;
+    }
+
+    if(container.collapsed){
+      container.expand();
+      container.getLayout().setActiveItem(targetPanel);
+      return;
+    }
+
+    if(currentPanel !== targetPanel){
+      container.getLayout().setActiveItem(targetPanel);
+    } else if(forceExpand !== true){
+      container.collapse();
+    }
+  },
+
+  toggleFilter: function(){
+    this.togglePanel(this.getView().filterPanel);
+  },
+
+  expandInspector: function(_, record){
+    var inspectorPanel = this.getView().inspectorPanel;
+    this.togglePanel(inspectorPanel, true);
+    inspectorPanel.setRecord(record);
+  },
+
+  collapseInspector: function(){
+    this.togglePanel(null, false);
+  },
+
+  toggleInspector: function(collapse){
+    this.togglePanel(this.getView().inspectorPanel, !collapse);
+  },
 });
