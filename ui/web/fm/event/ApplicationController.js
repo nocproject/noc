@@ -115,6 +115,7 @@ Ext.define("NOC.fm.event.ApplicationController", {
   },
 
   toggleFilter: function(){
+    this.getView().down("grid").getSelectionModel().deselectAll();
     this.togglePanel(this.getView().filterPanel);
   },
 
