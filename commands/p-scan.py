@@ -25,8 +25,8 @@ from noc.core.ip import IP
 from noc.config import config
 from noc.core.checkers.loader import loader
 from noc.core.checkers.base import Check, Checker, DataItem
-from noc.core.checkers.snmp import SUGGEST_CHECK
-from noc.core.checkers.tcp import TCP_DIAG
+from noc.services.activator.checkers.snmp import SUGGEST_CHECK
+from noc.core.checkers.base import TCP_CHECK
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, Protocol
 from noc.main.models.pool import Pool
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
@@ -92,7 +92,7 @@ class Command(BaseCommand):
                 p = int(p.strip())
             except ValueError:
                 continue
-            yield Check(name=TCP_DIAG, address=address, port=p)
+            yield Check(name=TCP_CHECK, address=address, port=p)
         if rule:
             for c in rule.checks:
                 yield Check(
