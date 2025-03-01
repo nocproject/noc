@@ -18,6 +18,7 @@ Ext.define("NOC.fm.event.EventInspector", {
       id: null,
       message: null,
       snmp_trap_oid: null,
+      labels: null,
       event_class: null,
       remote: null,
       target: null,
@@ -40,6 +41,11 @@ Ext.define("NOC.fm.event.EventInspector", {
       xtype: "displayfield",
       fieldLabel: __("TrapID"),
       bind: "{snmp_trap_oid}",
+    },
+    {
+      xtype: "displayfield",
+      fieldLabel: __("Labels"),
+      bind: "{labels}",
     },
     {
       xtype: "displayfield",
@@ -121,14 +127,17 @@ Ext.define("NOC.fm.event.EventInspector", {
       return;
     }
     var object = record.get("object") || {},
-      objectStr = Ext.Object.isEmpty(object) ? "-" : Ext.String.format("{0}({1})", object.name || "", object.address || "");
+      objectStr = Ext.Object.isEmpty(object) ? "-" : Ext.String.format("{0}({1})", object.name || "", object.address || ""),
+      remoteStr = Ext.isEmpty(record.get("remote_system")) ? "-" : Ext.String.format("{0}:{1}", record.get("remote_system"), record.get("remote_id")),
+      labels = Ext.isEmpty(record.get("labels")) ? "-" : NOC.render.LabelField(record.get("labels"));
     this.getViewModel().setData({
-      id: record.get("id") || "",
-      message: record.get("message") || "",
-      snmp_trap_oid: record.get("snmp_trap_oid") || "",
-      event_class: record.get("event_class") || "",
-      remote: Ext.String.format("{0}:{1}", record.get("remote_system") || "", record.get("remote_id") || ""),
-      target: Ext.String.format("{0}({1})", record.get("target") || "", record.get("address") || ""),
+      id: record.get("id") || "-",
+      message: record.get("message") || "-",
+      snmp_trap_oid: record.get("snmp_trap_oid") || "-",
+      labels: labels,
+      event_class: record.get("event_class") || "-",
+      remote: remoteStr,
+      target: Ext.String.format("{0}({1})", record.get("target") || "-", record.get("address") || "-"),
       object: objectStr,
       segment: record.get("segment") || "",
     });
