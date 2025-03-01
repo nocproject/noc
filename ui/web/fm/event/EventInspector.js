@@ -16,7 +16,7 @@ Ext.define("NOC.fm.event.EventInspector", {
   viewModel: {
     data: {
       id: null,
-      managed_object__label: null,
+      message: null,
     },
   },
   items: [
@@ -27,8 +27,8 @@ Ext.define("NOC.fm.event.EventInspector", {
     },
     {
       xtype: "displayfield",
-      fieldLabel: __("Managed Object"),
-      bind: "{managed_object__label}",
+      fieldLabel: __("Message"),
+      bind: "{message}",
     },
   ],
   
@@ -86,7 +86,7 @@ Ext.define("NOC.fm.event.EventInspector", {
     }
     this.getViewModel().setData({
       id: record.get("id"),
-      managed_object__label: record.get("managed_object__label"),
+      message: record.get("message"),
     });
   },
 });

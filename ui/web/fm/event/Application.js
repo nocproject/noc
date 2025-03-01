@@ -48,6 +48,9 @@ Ext.define("NOC.fm.event.Application", {
       ],
     });
 
+    me.store.on("load", function(store){
+      me.getViewModel().set("total", store.getTotalCount());
+    });
     me.gridPanel = Ext.create("Ext.grid.Panel", {
       region: "center",
       split: true,
@@ -163,6 +166,13 @@ Ext.define("NOC.fm.event.Application", {
             pointerEvents: "all",
           },
           handler: "toggleFilter",
+        },
+        "->",
+        {
+          xtype: "tbtext",
+          bind: {
+            html: "{eventsTotal}",
+          },
         },
       ],
       items: [

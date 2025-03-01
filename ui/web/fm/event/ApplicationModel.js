@@ -11,5 +11,11 @@ Ext.define("NOC.fm.event.ApplicationModel", {
   alias: "viewmodel.fm.event",
   data: {
     filter: {},
+    total: 0,
+  },
+  formulas: {
+    eventsTotal: function(get){
+      return __("Total: ") + get("total");
+    },
   },
 });
