@@ -154,11 +154,27 @@ Ext.define("NOC.fm.event.EventInspector", {
   },
   //
   onCreateRule: function(){
-    NOC.launch("fm.classificationrule", "from_event", this.getViewModel().get("record"));
+    var showGrid = function(){
+      this.up().close();
+    };
+    NOC.launch("fm.classificationrule", "from_event", {
+      "args": this.getViewModel().get("record"),
+      "override": [
+        {"showGrid": showGrid},
+      ],
+    });
   },
 
   onCreateIgnorePattern: function(){
-    NOC.launch("fm.ignorepattern", "from_event", this.getViewModel().get("record"));
+    var showGrid = function(){
+      this.up().close();
+    };
+    NOC.launch("fm.ignorepattern", "from_event", {
+      "args": this.getViewModel().get("record"),
+      "override": [
+        {"showGrid": showGrid},
+      ],
+    }); 
   },
   //
   setRecord: function(record){

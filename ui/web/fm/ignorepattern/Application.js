@@ -72,31 +72,39 @@ Ext.define("NOC.fm.ignorepattern.Application", {
     });
     me.callParent();
   },
-  onCmd_from_event: function(record){
-    var body = {
-      id: record.id,
-      source: record.get("source"),
-      target: record.get("target"),
-      target_id: record.get("target_id"),
-      managed_object_id: record.get("managed_object_id"),
-      address: record.get("address"),
-      event_class_id: record.get("event_class_id"),
-      message: record.get("message"),
-      snmp_trap_oid: record.get("snmp_trap_oid"),
-      labels: record.get("labels"),
-      raw_vars: record.get("raw_vars"),
-      data: record.get("data"),
-      remote_id: record.get("remote_id"),
-      remote_system: record.get("remote_system"),
-    };
+  onCmd_from_event: function(data){
+    var record = data.args,
+      body = {
+        id: record.id,
+        source: record.get("source"),
+        target: record.get("target"),
+        target_id: record.get("target_id"),
+        managed_object_id: record.get("managed_object_id"),
+        address: record.get("address"),
+        event_class_id: record.get("event_class_id"),
+        message: record.get("message"),
+        snmp_trap_oid: record.get("snmp_trap_oid"),
+        labels: record.get("labels"),
+        raw_vars: record.get("raw_vars"),
+        data: record.get("data"),
+        remote_id: record.get("remote_id"),
+        remote_system: record.get("remote_system"),
+      };
     Ext.Ajax.request({
       url: "/fm/ignorepattern/from_event/" + record.id + "/",
       method: "POST",
       jsonData: body,
       scope: this,
       success: function(response){
-        var data = Ext.decode(response.responseText);
-        this.newRecord(data);
+        var model = Ext.decode(response.responseText);
+        this.newRecord(model);
+        if(Ext.isDefined(data.override)){
+          Ext.each(data.override, function(over){
+            Ext.Object.each(over, function(key, value){
+              this[key] = value;
+            }, this);
+          }, this);
+        }
       },
       failure: function(){
         NOC.error(__("Failed to create ignore pattern from event"));
