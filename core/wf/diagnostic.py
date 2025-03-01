@@ -13,7 +13,7 @@ import itertools
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
-from typing import Optional, List, Dict, Any, Iterable, Tuple
+from typing import Optional, List, Dict, Any, Iterable, Tuple, Set
 
 # Third-party modules
 import orjson
@@ -45,6 +45,7 @@ SNMP_DIAG = "SNMP"
 PROFILE_DIAG = "Profile"
 CLI_DIAG = "CLI"
 HTTP_DIAG = "HTTP"
+HTTPS_DIAG = "HTTPS"
 SYSLOG_DIAG = "SYSLOG"
 SNMPTRAP_DIAG = "SNMPTRAP"
 #
@@ -91,6 +92,14 @@ class DiagnosticState(str, enum.Enum):
 
 
 @dataclass(frozen=True)
+class CtxItem:
+    name: str
+    capabilities: Optional[str] = None
+    alias: Optional[str] = None
+    set_method: Optional[str] = None
+
+
+@dataclass(frozen=True)
 class DiagnosticConfig(object):
     """
     Attributes:
@@ -100,6 +109,17 @@ class DiagnosticConfig(object):
         checks: Configured diagnostic checks
         diagnostic_handler: Diagnostic result handler
         dependent: Dependency diagnostic
+        include_credentials: Add credential to check context
+        state_policy: Calculate State on checks. ANY - Any check has OK, ALL - ALL checks has OK
+        reason: Reason current state. For blocked state
+        run_policy: A - Always, M - manual, F - Unknown or Failed, D - Disable
+        run_order: S - Before all discovery, E - After all discovery
+        discovery_box: Run on Discovery Box
+        discovery_periodic: Run on Periodic Discovery
+        show_in_display: Show diagnostic on UI
+        display_description: Description for show User
+        display_order: Order on displayed list
+        alarm_class: Default AlarmClass for raise alarm
     """
 
     diagnostic: str
@@ -109,22 +129,24 @@ class DiagnosticConfig(object):
     checks: Optional[List[Check]] = None
     diagnostic_handler: Optional[str] = None
     dependent: Optional[List[str]] = None
-    # ANY - Any check has OK, ALL - ALL checks has OK
-    state_policy: str = "ANY"  # Calculate State on checks.
-    reason: Optional[str] = None  # Reason current state
+    include_credentials: bool = False
+    diagnostic_ctx: Optional[List[CtxItem]] = None
+    # Calculate State on checks.
+    state_policy: str = "ANY"
+    reason: Optional[str] = None
     # Discovery Config
-    run_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
-    run_order: str = "S"  # S - Before all discovery, E - After all discovery
-    discovery_box: bool = False  # Run on periodic discovery
-    discovery_periodic: bool = False  # Run on box discovery
+    run_policy: str = "A"
+    run_order: str = "S"
+    discovery_box: bool = False
+    discovery_periodic: bool = False
     #
     save_history: bool = False
     # Display Config
-    show_in_display: bool = True  # Show diagnostic on UI
-    display_description: Optional[str] = None  # Description for show User
-    display_order: int = 0  # Order on displayed list
+    show_in_display: bool = True
+    display_description: Optional[str] = None
+    display_order: int = 0
     # FM Config
-    alarm_class: Optional[str] = None  # Default AlarmClass for raise alarm
+    alarm_class: Optional[str] = None
     alarm_labels: Optional[List[str]] = None
 
 
@@ -166,11 +188,17 @@ class DiagnosticHandler:
     Run diagnostic by config and check status
     """
 
-    def __init__(self, cfg: DiagnosticConfig, labels: Optional[List[str]] = None):
-        self.config = cfg
-        self.labels = labels
+    def __init__(self, config: DiagnosticConfig, logger=None):
+        self.config = config
+        self.logger = logger
 
-    def iter_checks(self) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(
+        self,
+        address: str,
+        labels: Optional[List[str]] = None,
+        groups: Optional[List[str]] = None,
+        **kwargs,
+    ) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
 
     def get_result(
@@ -191,7 +219,6 @@ class DiagnosticItem(BaseModel):
     changed: Optional[datetime.datetime] = None
     _config: Optional[DiagnosticConfig] = PrivateAttr()
     _handler: Optional[DiagnosticHandler] = PrivateAttr()
-    _active_checks: Optional[List[Tuple[Check, ...]]] = None
 
     def __init__(self, config: Optional[DiagnosticConfig] = None, **data):
         super().__init__(**data)
@@ -211,23 +238,26 @@ class DiagnosticItem(BaseModel):
         self.checks = []
         self.changed = datetime.datetime.now()
 
-    def get_handler(self, **kwargs) -> DiagnosticHandler:
+    def get_handler(self, logger=None) -> DiagnosticHandler:
         if not hasattr(self, "_handler"):
             h = get_handler(self.config.diagnostic_handler)
             if not h:
                 raise AttributeError("Unknown Diagnostic Handler")
-            self._handler = h(**kwargs)
+            try:
+                self._handler = h(config=self.config, logger=logger)
+            except TypeError as e:
+                raise AttributeError(str(e))
         return self._handler
 
-    def iter_checks(self, **kwargs) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(self, logger=None, **kwargs) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
         if not self.config.diagnostic_handler and not self.config.checks:
             return
         elif not self.config.diagnostic_handler:
             yield tuple(self.config.checks)
             return
-        h = self.get_handler(**kwargs)
-        yield from h.iter_checks()
+        h = self.get_handler(logger=logger)
+        yield from h.iter_checks(**kwargs)
 
     def get_check_status(
         self, checks: List[CheckResult]
@@ -286,7 +316,7 @@ class DiagnosticHub(object):
     ):
         self.logger = logger or logging.getLogger(__name__)
         self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None  # Actual diagnostic state
-        self.__checks: Dict[str, List[str]] = None
+        self.__checks: Dict[str, Set[str]] = None
         self.__depended: Dict[str, str] = {}  # Depended diagnostics
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
@@ -392,32 +422,28 @@ class DiagnosticHub(object):
         self.__diagnostics = r
 
     def __load_checks(self):
-        """"""
-        self.__checks = defaultdict(list)
-        for di in self.__diagnostics.values():
-            for checks in di.iter_checks(
-                cfg=di.config,
-                labels=self.__object.effective_labels,
-                logger=self.logger,
-                address=self.__object.address,
-                cred=(
-                    self.__object.credentials.get_snmp_credential()
-                    if self.__object.credentials
-                    else None
-                ),
-                profile=self.__object.profile.name if self.__object.profile else None,
-            ):
-                if di._active_checks is None:
-                    di._active_checks = []
-                di._active_checks.append(checks)
-                for c in itertools.chain(checks):
-                    self.__checks[c.key] += [di.diagnostic]
+        """Loading all diagnostic checks"""
+        for d in self.__diagnostics:
+            list(self.iter_checks(d))
 
-    def iter_active_checks(self, d: str) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(self, d: str) -> Iterable[Tuple[Check, ...]]:
         if self.__checks is None:
-            self.__load_checks()
-        di = self.get(d)
-        yield from di._active_checks
+            self.__checks = defaultdict(set)
+        di = self[d]
+        ctx = {
+            "labels": self.__object.effective_labels,
+            "address": self.__object.address,
+            "groups": self.__object.effective_service_groups,
+        }
+        if di.config.include_credentials and self.__object.credentials:
+            ctx["cred"] = self.__object.credentials.get_snmp_credential()
+        for ci in di.config.diagnostic_ctx or []:
+            if ci.name in self.__data:
+                ctx[ci.alias or ci.name] = self.__data[ci.name]
+        for checks in di.iter_checks(**ctx, logger=self.logger):
+            for c in itertools.chain(checks):
+                self.__checks[c.key].add(di.diagnostic)
+            yield checks
 
     def set_state(
         self,
@@ -437,6 +463,8 @@ class DiagnosticHub(object):
             data: Collected checks data
         """
         d = self[diagnostic]
+        if data:
+            self.apply_context_data(d, data)
         if d.state.is_blocked or d.state == state:
             self.logger.debug("[%s] State is same", d.diagnostic)
             return
@@ -853,6 +881,15 @@ class DiagnosticHub(object):
             r[mt.scope.table_name][key][mt.field_name] = m.value
         for table, data in r.items():
             svc.register_metrics(table, list(data.values()), key=self.__object.bi_id)
+
+    def apply_context_data(self, d: DiagnosticItem, data: Dict[str, Any]):
+        self.__data |= data
+        if not d.config.diagnostic_ctx:
+            return
+        for ctx in d.config.diagnostic_ctx:
+            if ctx.name in data and ctx.set_method:
+                h = getattr(self.__object, ctx.set_method)
+                h(data[ctx.name])
 
     def sync_diagnostic_data(self):
         """Synchronize object data with diagnostic"""

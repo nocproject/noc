@@ -17,6 +17,10 @@ from noc.core.ioloop.util import run_sync
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 
 
+TCP_CHECK = "TCP"
+CHECKS = []
+
+
 @dataclass(frozen=True)
 class MetricValue(object):
     metric_type: str
@@ -104,6 +108,16 @@ class Check(object):
         if isinstance(self.credential, SNMPCredential):
             return self.credential
         return None
+
+    def set_credential(self, cred) -> "Check":
+        return Check(
+            name=self.name,
+            args=self.args,
+            address=self.address,
+            port=self.port,
+            script=self.script,
+            credential=cred,
+        )
 
 
 @dataclass(frozen=True)

@@ -9,8 +9,8 @@
 from typing import List, Iterable, Dict, Tuple, Optional
 
 # NOC modules
-from .base import Checker, CheckResult, Check, CheckError
-from ..script.scheme import Protocol, CLICredential
+from noc.core.checkers.base import Checker, CheckResult, Check, CheckError
+from noc.core.script.scheme import Protocol, CLICredential
 from noc.core.script.loader import loader
 from noc.core.perf import metrics
 
