@@ -1058,7 +1058,7 @@ class ManagedObjectProfile(NOCModel):
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=checks,
                 diagnostic_handler="noc.core.script.diagnostic.CLISuggestsDiagnostic",
-                discovery_box=False,
+                discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
                 blocked=blocked,
