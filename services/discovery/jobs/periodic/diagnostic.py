@@ -19,6 +19,7 @@ from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, SNMP
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.pm.models.metrictype import MetricType
+from noc.core.checkers.loader import loader
 from noc.config import config
 
 
@@ -89,10 +90,10 @@ class DiagnosticCheck(DiscoveryCheck):
         script_checks, do_checks = [], []
         r = []
         for c in checks:
-            if not c.script:
-                do_checks.append(c)
-            else:
+            if c.script or loader.is_script(c.name):
                 script_checks.append(c)
+            else:
+                do_checks.append(c)
         if script_checks:
             try:
                 r += self.object.scripts.run_checks(script_checks)

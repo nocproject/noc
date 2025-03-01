@@ -201,16 +201,13 @@ class RefAppplication(ExtApplication):
         return [{"id": x, "label": x} for x in sorted(MESSAGE_HEADERS)]
 
     def build_check(self):
-        """
-        Checkers names
-        :return:
-        """
-        r = []
-        for name in checker_loader:
-            checker = checker_loader[name]
-            for check in checker.CHECKS:
-                r += [{"id": check, "label": check, "has_port": hasattr(checker, "SOCKET_TIMEOUT")}]
-        return r  # list(sorted(r))
+        """Checkers names"""
+        return list(
+            sorted(
+                ({"id": s[0], "label": s[1]} for s in checker_loader.choices()),
+                key=lambda x: x["label"],
+            )
+        )
 
     def build_topologygen(self):
         """
