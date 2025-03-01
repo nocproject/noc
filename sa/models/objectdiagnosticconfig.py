@@ -60,6 +60,7 @@ class Match(EmbeddedDocument):
 class DiagnosticCheck(EmbeddedDocument):
     check = StringField(required=True)
     script = StringField(required=False)
+    address = StringField(required=False)
     arg0 = StringField()
 
     def __str__(self):
@@ -70,6 +71,8 @@ class DiagnosticCheck(EmbeddedDocument):
         r = {"check": self.check}
         if self.arg0:
             r["arg0"] = self.arg0
+        if self.address:
+            r["address"] = self.address
         if self.script:
             r["script"] = self.script
         return r

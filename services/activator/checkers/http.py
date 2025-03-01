@@ -9,12 +9,12 @@
 from typing import List, Iterable
 
 # NOC modules
-from .base import Checker, CheckResult, Check, CheckError
+from noc.core.checkers.base import Checker, CheckResult, Check, CheckError
 from noc.core.http.async_client import HttpClient as ASyncHttpClient
 from noc.core.http.sync_client import HttpClient as SyncHttpClient
 
-HTTP_DIAG = "HTTP"
-HTTPS_DIAG = "HTTPS"
+HTTP_CHECK = "HTTP"
+HTTPS_CHECK = "HTTPS"
 
 
 class HTTPChecker(Checker):
@@ -23,7 +23,7 @@ class HTTPChecker(Checker):
     """
 
     name = "http"
-    CHECKS: List[str] = [HTTP_DIAG, HTTPS_DIAG]
+    CHECKS: List[str] = [HTTP_CHECK, HTTPS_CHECK]
     CONNECT_TIMEOUT = 2
     REQUEST_TIMEOUT = 3
 
@@ -47,7 +47,7 @@ class HTTPChecker(Checker):
                     code=str(code), message=f"HTTP Error {code}: {data}", is_available=True
                 )
             yield CheckResult(
-                check=HTTP_DIAG,
+                check=HTTP_CHECK,
                 port=c.port,
                 args=c.args,
                 status=not bool(error),
@@ -74,7 +74,7 @@ class HTTPChecker(Checker):
                     code=str(code), message=f"HTTP Error {code}: {data}", is_available=True
                 )
             yield CheckResult(
-                check=HTTP_DIAG,
+                check=HTTP_CHECK,
                 port=c.port,
                 args=c.args,
                 status=not bool(error),

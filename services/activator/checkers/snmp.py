@@ -17,8 +17,8 @@ from gufo.snmp._fast import SnmpAuthError
 from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 
 # NOC modules
-from .base import Checker, CheckResult, Check, CheckError, DataItem
-from ..script.scheme import Protocol, SNMPCredential, SNMPv3Credential
+from noc.core.checkers.base import Checker, CheckResult, Check, CheckError, DataItem
+from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential
 from noc.core.snmp.error import SNMPErrorCode
 from noc.core.mib import mib
 
