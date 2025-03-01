@@ -136,7 +136,7 @@ Ext.define("NOC.fm.event.EventInspector", {
     var app = this.up("[appId=fm.event]");
     app.showItem(app.ITEM_JSON);
     app.jsonPanel.preview({
-      data: this.getViewModel().data,
+      data: this.getViewModel().get("record"),
     });
   },
   //
