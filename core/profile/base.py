@@ -22,7 +22,6 @@ from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.deprecations import RemovedInNOC2003Warning
-from noc.core.snmp.get import _ResponseParser
 from noc.core.text import alnum_key
 
 
@@ -433,7 +432,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     Timeout for snmp GET request for get_interface_status_ex
     """
 
-    snmp_response_parser: Optional[_ResponseParser] = None
+    snmp_response_parser: Optional[Callable] = None
     """
     _ResponseParser for customized SNMP response processing.
     Broken SNMP implementations are urged to use `parse_get_response_strict`
@@ -1155,7 +1154,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         return cls.snmp_display_hints
 
     @classmethod
-    def get_snmp_response_parser(cls, script) -> Optional[_ResponseParser]:
+    def get_snmp_response_parser(cls, script) -> Optional[Callable]:
         return cls.snmp_response_parser
 
     @classmethod
