@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
+from collections import defaultdict
 
 # Third-party modules
 from fastapi import APIRouter
-
 
 # NOC modules
 from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api, executor
@@ -21,6 +21,9 @@ from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.core.http.async_client import HttpClient
 from noc.core.comp import DEFAULT_ENCODING, smart_text
 from noc.core.perf import metrics
+from noc.core.debug import error_report
+from noc.core.checkers.loader import loader as checker_loader
+from noc.core.checkers.base import Check, CheckResult
 from noc.config import config
 from noc.core.jsonutils import iter_chunks
 from ..models.streaming import StreamingConfig
@@ -136,12 +139,14 @@ class ActivatorAPI(JSONRPCAPI):
     ):
         """
         Perform SNMP v1 GET and return result
-        :param address: IP address
-        :param community: SNMP v2c community
-        :param oid: Resolved oid
-        :param timeout: Timeout request
-        :param return_error:
-        :returns: Result as a string, or None, when no response
+        Args:
+            address: IP address
+            community: SNMP v2c community
+            oid: Resolved oid
+            timeout: Timeout request
+            return_error:
+        Returns:
+            Result as a string, or None, when no response
         """
         self.logger.debug("SNMP v1 GET %s %s", address, oid)
         message = ""
@@ -182,12 +187,14 @@ class ActivatorAPI(JSONRPCAPI):
     ):
         """
         Perform SNMP v2c GET and return result
-        :param address: IP address
-        :param community: SNMP v2c community
-        :param oid: Resolved oid
-        :param timeout: Timeout request
-        :param return_error:
-        :returns: Result as a string, or None, when no response
+        Args:
+            address: IP address
+            community: SNMP v2c community
+            oid: Resolved oid
+            timeout: Timeout request
+            return_error:
+        Returns:
+            Result as a string, or None, when no response
         """
         self.logger.debug("SNMP v2c GET %s %s", address, oid)
         message = ""
@@ -231,17 +238,19 @@ class ActivatorAPI(JSONRPCAPI):
         return_error: bool = False,
     ):
         """
-        Perform SNMP v2c GET and return result
-        :param address: IP address
-        :param username: SNMP v3 username
-        :param oid: Resolved oid
-        :param auth_proto: SNMPv3 Authentication Protocol
-        :param auth_key: SNMPv3 Authentication Key
-        :param priv_key: SNMPv3 Private Key
-        :param priv_proto: SNMPv3 Private Protocol: DES/AES
-        :param timeout: Timeout request
-        :param return_error:
-        :returns: Result as a string, or None, when no response
+        Perform SNMP v3 GET and return result
+        Args:
+            address: IP address
+            username: SNMP v3 username
+            oid: Resolved oid
+            auth_proto: SNMPv3 Authentication Protocol
+            auth_key: SNMPv3 Authentication Key
+            priv_key: SNMPv3 Private Key
+            priv_proto: SNMPv3 Private Protocol: DES/AES
+            timeout: Timeout request
+            return_error:
+        Returns:
+            Result as a string, or None, when no response
         """
         from gufo.snmp import SnmpSession, SnmpVersion, SnmpError
         from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
@@ -295,9 +304,11 @@ class ActivatorAPI(JSONRPCAPI):
     async def http_get(self, url, ignore_errors=False):
         """
         Perform HTTP/HTTPS get and return result
-        :param url: Request URL
-        :param ignore_errors: Ignore response error and return header and body
-        :returns" Result as a string, or None in case of errors
+        Args:
+            url: Request URL
+            ignore_errors: Ignore response error and return header and body
+        Returns:
+            Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
         async with HttpClient(
@@ -317,6 +328,40 @@ class ActivatorAPI(JSONRPCAPI):
                 metrics["error", ("type", f"http_error_{code}")] += 1
                 self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
                 return None
+
+    @api
+    async def run_checks(self, checks, first_success: bool = False, **kwargs):
+        """
+        Run numbers of checks, and return result
+        Args:
+            checks: List of running checks
+            first_success: Return first success check
+            kwargs: Checker param
+        """
+        checks = [Check.from_dict(c) for c in checks]
+        r: List[CheckResult] = []
+        do_checks: Dict[str, List[Check]] = defaultdict(list)
+        for check in checks:
+            checker = checker_loader[check.name]
+            if not checker:
+                self.logger.warning("[%s] Unknown check. Skipping", check.name)
+                continue
+            do_checks[checker.name] += [check]
+        for checker, d_checks in do_checks.items():
+            # params = self.get_checker_param(checker)
+            checker = checker_loader[checker](**kwargs)
+            self.logger.debug("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
+            try:
+                for check in checker.iter_result(d_checks):
+                    r.append(check)
+                    if first_success and check.status:
+                        break
+            except Exception as e:
+                metrics["error", ("type", "checker_error"), ("check", checker.name)] += 1
+                # if self.logger.isEnabledFor(logging.DEBUG):
+                error_report()
+                self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
+        return r
 
     @staticmethod
     def http_get_get_label(url):
