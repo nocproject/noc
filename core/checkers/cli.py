@@ -11,9 +11,8 @@ from typing import List, Iterable, Dict, Tuple, Optional
 # NOC modules
 from .base import Checker, CheckResult, Check, CheckError
 from ..script.scheme import Protocol, CLICredential
-from noc.core.service.client import open_sync_rpc
-from noc.core.service.error import RPCError
-from noc.core.text import safe_shadow
+from noc.core.script.loader import loader
+from noc.core.perf import metrics
 
 
 class CLIProtocolChecker(Checker):
@@ -29,9 +28,6 @@ class CLIProtocolChecker(Checker):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.rules: List[Tuple[Tuple[Protocol, ...], CLICredential]] = self.load_suggests(
-            kwargs.get("rules")
-        )
         self.profile = kwargs.get("profile")
 
     @staticmethod
@@ -68,8 +64,6 @@ class CLIProtocolChecker(Checker):
         """
         if check.credential:
             yield self.PROTO_CHECK_MAP[check.name], check.credential
-        for proto, cred in self.rules:
-            yield proto[0] if proto else self.PROTO_CHECK_MAP[check.name], cred
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """ """
@@ -101,6 +95,7 @@ class CLIProtocolChecker(Checker):
                     check=c.name,
                     args=c.args,
                     status=status,
+                    address=c.address,
                     port=c.port,
                     error=error,
                     credential=cred if status else None,
@@ -112,6 +107,7 @@ class CLIProtocolChecker(Checker):
                     args=c.args,
                     status=False,
                     port=c.port,
+                    address=c.address,
                     error=CheckError(code="0", is_access=False, is_available=True),
                 )
 
@@ -126,55 +122,37 @@ class CLIProtocolChecker(Checker):
         profile: str,
         raise_privilege: bool = True,
     ) -> Tuple[bool, Optional[CheckError]]:
-        """
-        Check user, password for cli proto
-        :param address:
-        :param port:
-        :param user:
-        :param password:
-        :param super_password:
-        :param protocol:
-        :param profile:
-        :param raise_privilege:
-        :return:
-        """
-        if not self.pool:
-            raise NotImplementedError("Not supported local checks. Set pool")
-        self.logger.debug("Checking %s: %s/%s/%s", protocol, user, password, super_password)
-        self.logger.info(
-            "Checking %s: %s/%s/%s",
-            protocol,
-            safe_shadow(user),
-            safe_shadow(password),
-            safe_shadow(super_password),
+        script = f"{profile}.login"
+        script_class = loader.get_script(script)
+        if not script_class:
+            return False, CheckError(code="1", message="Unknown script")
+        script = script_class(
+            service="activator",
+            credentials={
+                "cli_protocol": protocol.config.alias,
+                "cli_port": port,
+                "address": address,
+                "user": user,
+                "password": password,
+                "super_password": super_password,
+                "path": None,
+                "raise_privileges": raise_privilege,
+                "access_preference": "C",
+            },
+            name=script,
+            timeout=60,
         )
         try:
-            r = open_sync_rpc(
-                "activator", pool=self.pool, calling_service=self.calling_service
-            ).script(
-                f"{profile}.login",
-                {
-                    "cli_protocol": protocol.config.alias,
-                    "cli_port": port,
-                    "address": address,
-                    "user": user,
-                    "password": password,
-                    "super_password": super_password,
-                    "path": None,
-                    "raise_privileges": raise_privilege,
-                    "access_preference": "C",
-                },
-            )
-            self.logger.info("Result: %s, %s", r, r["message"])
-            status = bool(r["result"])
-            if status:
-                return True, None
-            return status, CheckError(
-                code="0",
-                message=r["message"],
-                is_available=not status or not self.is_unsupported_error(r["message"]),
-                is_access=status,
-            )  # bool(False) == bool(None)
-        except RPCError as e:
-            self.logger.debug("RPC Error: %s", e)
-            return False, CheckError(code="0", message=str(e))
+            r = script.run()
+        except script.ScriptError as e:
+            metrics["error", ("type", "script_error")] += 1
+            return False, CheckError(code="0", message="Script error: %s" % e.__doc__)
+        status = bool(r["result"])
+        if status:
+            return status, None
+        return False, CheckError(
+            code="0",
+            message=r["message"],
+            is_available=not status or not self.is_unsupported_error(r["message"]),
+            is_access=status,
+        )
