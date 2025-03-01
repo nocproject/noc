@@ -135,7 +135,7 @@ Ext.define("NOC.fm.event.Application", {
 
     me.eastContainer = Ext.create("Ext.panel.Panel", {
       region: "east",
-      width: "20%",
+      width: "30%",
       layout: "card",
       header: false,
       collapseMode: "mini",
