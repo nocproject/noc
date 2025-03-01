@@ -27,17 +27,11 @@ Ext.define("NOC.fm.event.Application", {
   viewModel: {
     type: "fm.event",
   },
-  STATUS_MAP: {
-    A: "Active",
-    S: "Archived",
-    F: "Failed",
-  },
   //
   initComponent: function(){
     var me = this,
       bs = Math.max(50, Math.ceil(screen.height / 24) + 10);
 
-    me.currentQuery = {status: "A"};
     me.store = Ext.create("NOC.core.ModelStore", {
       model: "NOC.fm.event.Model",
       autoLoad: false,
@@ -68,13 +62,6 @@ Ext.define("NOC.fm.event.Application", {
           text: __("ID"),
           dataIndex: "id",
           width: 150,
-        },
-        {
-          text: __("Status"),
-          dataIndex: "status",
-          width: 50,
-          renderer: NOC.render.Choices(me.STATUS_MAP),
-          hidden: true,
         },
         {
           text: __("Time"),
@@ -130,10 +117,6 @@ Ext.define("NOC.fm.event.Application", {
         getRowClass: Ext.bind(me.getRowClass, me),
       },
       listeners: {
-        itemdblclick: {
-          scope: me,
-          fn: me.onSelectEvent,
-        },
         select: "expandInspector",
         deselect: "collapseInspector",
       },
@@ -188,27 +171,17 @@ Ext.define("NOC.fm.event.Application", {
       ],
     });
     //
-    me.eventPanel = Ext.create("NOC.fm.event.EventPanel", {
-      app: me,
-    });
-    //
     me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: new Ext.XTemplate("/fm/event/{id}/json/"),
       previewName: new Ext.XTemplate("Event: {id}"),
     });
     me.ITEM_GRID = me.registerItem(me.mainPanel);
-    me.ITEM_FORM = me.registerItem(me.eventPanel);
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
     Ext.apply(me, {
       items: me.getRegisteredItems(),
     });
     me.callParent();
-    //
-    if(me.getCmd() === "history"){
-      me.showEvent(me.noc.cmd.args[0]);
-    }
-
   },
   // Return Grid's row classes
   getRowClass: function(record){
@@ -221,25 +194,10 @@ Ext.define("NOC.fm.event.Application", {
   },
   //
   showGrid: function(){
-    var me = this;
-    me.getLayout().setActiveItem(0);
-    me.setHistoryHash();
+    this.showItem(this.ITEM_GRID);
+    this.setHistoryHash();
   },
-  //
-  onSelectEvent: function(grid, record){
-    var me = this;
-    me.getLayout().setActiveItem(1);
-    me.eventPanel.showEvent(record.get("id"));
-  },
-  //
   showForm: function(){
-    var me = this;
-    me.showItem(me.ITEM_FORM);
-  },
-  //
-  showEvent: function(id){
-    var me = this,
-      panel = me.showItem(me.ITEM_FORM);
-    panel.showEvent(id);
+    this.showGrid();
   },
 });

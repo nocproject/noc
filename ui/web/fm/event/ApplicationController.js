@@ -10,7 +10,6 @@ Ext.define("NOC.fm.event.ApplicationController", {
   extend: "Ext.app.ViewController",
   alias: "controller.fm.event",
   filtersInitValues: {
-    status: "A",
     managed_object: "",
     administrative_domain: "",
     resource_group: "",
@@ -78,7 +77,6 @@ Ext.define("NOC.fm.event.ApplicationController", {
       };
 
     Ext.each([
-      {key: "status"},
       // datetime
       {key: "timestamp__gte"},
       {key: "timestamp__lte"},
