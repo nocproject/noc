@@ -30,14 +30,6 @@ Ext.define("NOC.fm.event.EventInspector", {
         fields: ["name", "value", "type"],
         groupField: "type",
         sorters: ["type", "name"],
-        // data: [
-        // {type: "Var", name: "var1", value: "value1"},
-        // {type: "Var", name: "var2", value: "value2"},
-        // {type: "Var", name: "var3", value: "value3"},
-        // {type: "Raw", name: "var3", value: "value3"},
-        // {type: "Raw", name: "var1", value: "value1"},
-        // {type: "Raw", name: "var2", value: "value2"},
-        // ],
       },
     },
   },
@@ -162,11 +154,11 @@ Ext.define("NOC.fm.event.EventInspector", {
   },
   //
   onCreateRule: function(){
-    NOC.launch("fm.classificationrule", "from_event", {id: this.getViewModel().data.id});
+    NOC.launch("fm.classificationrule", "from_event", this.getViewModel().get("record"));
   },
 
   onCreateIgnorePattern: function(){
-    NOC.launch("fm.ignorepattern", "from_event", {id: this.getViewModel().data.id});
+    NOC.launch("fm.ignorepattern", "from_event", this.getViewModel().get("record"));
   },
   //
   setRecord: function(record){
@@ -179,7 +171,8 @@ Ext.define("NOC.fm.event.EventInspector", {
       labels = Ext.isEmpty(record.get("labels")) ? "-" : NOC.render.LabelField(record.get("labels")),
       varsData = [...this.makeVarsData(__("Raw vars"), record.get("raw_vars")),
                   ...this.makeVarsData(__("Vars"), record.get("vars"))];
-    
+   
+    this.getViewModel().set("record", record);
     this.getViewModel().setData({
       id: record.get("id") || "-",
       message: record.get("message") || "-",
