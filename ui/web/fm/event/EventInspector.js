@@ -12,25 +12,79 @@ Ext.define("NOC.fm.event.EventInspector", {
   layout: "form",
   scrollable: true,
   bodyPadding: 4,
-
+  defaultListenerScope: true,
+  viewModel: {
+    data: {
+      id: null,
+      managed_object__label: null,
+    },
+  },
   items: [
     {
       xtype: "displayfield",
       fieldLabel: __("ID"),
-      name: "id",
+      bind: "{id}",
     },
     {
       xtype: "displayfield",
       fieldLabel: __("Managed Object"),
-      name: "managed_object__label",
+      bind: "{managed_object__label}",
     },
   ],
+  
+  dockedItems: [
+    {
+      xtype: "toolbar",
+      dock: "top",
+      items: [
+        {xtype: "button", text: "JSON", flex: 1, handler: "onJSON"},
+        {xtype: "button", text: __("Reclassify"), flex: 1, handler: "onReclassify"},
+      ],
+    },
+    {
+      xtype: "toolbar",
+      dock: "top",
+      items: [
+        {xtype: "button", text: __("Create Rule"), flex: 1, handler: "onCreateRule"},
+        {xtype: "button", text: __("Create Ignore"), flex: 1, handler: "onCreateIgnorePattern"},
+      ],
+    },
+  ],
+  
+  onJSON: function(){
+    var app = this.up("[appId=fm.event]");
+    app.showItem(app.ITEM_JSON);
+    app.jsonPanel.preview({
+      data: this.getViewModel().data,
+    });
+  },
+  //
+  onReclassify: function(){
+    Ext.Ajax.request({
+      url: "/fm/event/" + this.getViewModel().data.id + "/reclassify/",
+      method: "POST",
+      success: function(){
+        NOC.info(__("Event reclassified"));
+      },
+      failure: function(){
+        NOC.error(__("Failed to reclassify"));
+      },
+    });
+  },
+  //
+  onCreateRule: function(){
+    NOC.launch("fm.classificationrule", "from_event", {id: this.getViewModel().data.id});
+  },
 
+  onCreateIgnorePattern: function(){
+    NOC.launch("fm.ignorepattern", "from_event", {id: this.getViewModel().data.id});
+  },
+  //
   setRecord: function(record){
-    if(!record){
+    if(Ext.Object.isEmpty(record)){
       return;
     }
-    this.getForm().setValues({
+    this.getViewModel().setData({
       id: record.get("id"),
       managed_object__label: record.get("managed_object__label"),
     });

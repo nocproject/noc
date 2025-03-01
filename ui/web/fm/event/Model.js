@@ -15,10 +15,6 @@ Ext.define("NOC.fm.event.Model", {
       type: "string",
     },
     {
-      name: "status",
-      type: "string",
-    },
-    {
       name: "managed_object",
       type: "int",
     },
