@@ -148,7 +148,7 @@ def test_lte(raw, config, expected):
         ),
     ],
 )
-def test_in(raw, config, expected):
+def test_in2(raw, config, expected):
     assert match(raw, config) is expected
 
 
