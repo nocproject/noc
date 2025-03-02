@@ -162,7 +162,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     if(record.get("is_const")){
       value = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + value;
     } else{
-      value = "<i class='fa fa-pencil-square-o' style='padding-right: 4px;'></i>" + (value || ""); 
+      value = "<i class='fa fa-pencil' style='padding-right: 4px;'></i>" + (value || ""); 
     }
     if(record.get("type") === "bool"){
       return NOC.render.Bool(value);
