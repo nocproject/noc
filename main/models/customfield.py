@@ -23,6 +23,7 @@ from noc.core.model.base import NOCModel
 from noc.core.validators import is_int
 from noc.core.comp import smart_text
 from .customfieldenumgroup import CustomFieldEnumGroup
+from .customfieldenumvalue import CustomFieldEnumValue
 
 logger = logging.getLogger(__name__)
 id_lock = threading.Lock()
@@ -101,7 +102,9 @@ class CustomField(NOCModel):
         :return:
         """
         if self.enum_group:
-            qs = self.enum_group.enumvalue_set.filter(is_active=True).order_by("value")
+            qs = CustomFieldEnumValue.objects.filter(
+                is_active=True, enum_group=self.enum_group
+            ).order_by("value")
             if self.type == "int":
                 return [(int(e.key), e.value) for e in qs]
             else:
