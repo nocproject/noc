@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------
 # fm.ignorepattern application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.fm.models.ignorepattern import IgnorePattern
-from noc.fm.models.utils import get_event
+from noc.core.fm.event import EventSource
 from noc.core.translation import ugettext as _
 
 
@@ -21,7 +21,9 @@ class IgnorePatternApplication(ExtDocApplication):
     menu = [_("Setup"), _("Ignore Patterns")]
     model = IgnorePattern
 
-    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["GET"], access="create", api=True)
+    @view(
+        url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["POST"], access="create", api=True
+    )
     def api_from_event(self, request, event_id):
         """
         Create ignore pattern rule from event
@@ -29,16 +31,15 @@ class IgnorePatternApplication(ExtDocApplication):
         :param event_id:
         :return:
         """
-        event = get_event(event_id)
-        if not event:
-            self.response_not_found()
+        req = self.parse_request_query(request)
+        source = EventSource(req["source"])
         data = {"is_active": True}
-        if event.source == "syslog":
-            data["description"] = event.raw_vars["message"]
-            data["source"] = "syslog"
-            data["pattern"] = event.raw_vars["message"]
-        elif event.source == "SNMP Trap" and "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars:
-            data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
-            data["source"] = "SNMP Trap"
-            data["pattern"] = event.raw_vars.get("1.3.6.1.6.3.1.1.4.1.0")
+        if source == EventSource.SYSLOG:
+            data["description"] = req["message"]
+            data["source"] = source.value
+            data["pattern"] = req["message"]
+        elif source == EventSource.SNMP_TRAP and "snmp_trap_oid" in req:
+            data["description"] = req["snmp_trap_oid"]
+            data["source"] = source.value
+            data["pattern"] = req["snmp_trap_oid"]
         return data

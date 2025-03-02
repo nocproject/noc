@@ -7,19 +7,18 @@
 
 # Python modules
 import datetime
-from typing import Dict, Any, Tuple, Optional, List
+from typing import Optional, List
 
 # Third-party modules
 import orjson
-from jinja2 import Template
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.fm.models.eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.networksegment import NetworkSegment
 from noc.core.fm.event import Event
 from noc.bi.models.events import Events
-from noc.core.escape import json_escape
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 from noc.core.translation import ugettext as _
@@ -93,7 +92,7 @@ class EventApplication(ExtApplication):
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,"
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,"
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.administrativedomain', ('id', 'name'), e.administrative_domain) as administrative_domain,"
-            f" e.source, e.vars, e.labels, e.message, e.data, e.remote_system, e.remote_id"
+            f" e.source, e.vars, e.labels, e.message, e.data, nullIf(e.remote_system, 0) as remote_system, e.remote_id"
             f" FROM {Events._get_db_table()} AS e",
         ]
         filter_x = cls.get_filter(
@@ -114,7 +113,9 @@ class EventApplication(ExtApplication):
         mos = {
             mo[1]: mo
             for mo in ManagedObject.objects.filter(
-                bi_id__in=[int(x["managed_object_bi_id"]) for x in r["data"]]
+                bi_id__in=[
+                    int(x["managed_object_bi_id"]) for x in r["data"] if x["managed_object_bi_id"]
+                ]
             ).values_list(
                 "name", "bi_id", "address", "id", "pool", "administrative_domain__name", "segment"
             )
@@ -146,15 +147,18 @@ class EventApplication(ExtApplication):
                 "dispose": False,
                 "object": None,
             }
-            if d["administrative_domain"]:
-                r |= {"administrative_domain": r["administrative_domain"]["name"]}
-            if d["managed_object_bi_id"] in mos:
-                mo_name, _, address, mo_id, pool, ad, ad_name, seg = mos[int(d["managed_object"])]
+            # if d["administrative_domain"]:
+            #    r |= {"administrative_domain": r["administrative_domain"]["name"]}
+            if d["managed_object_bi_id"] and int(d["managed_object_bi_id"]) in mos:
+                mo_name, _, address, mo_id, pool, ad_name, seg = mos[int(d["managed_object_bi_id"])]
+                seg = NetworkSegment.get_by_id(seg)
                 r |= {
                     "target": mo_name,
                     "address": address,
                     "managed_object_id": mo_id,
                     "object": {"name": mo_name, "address": address},
+                    "administrative_domain": ad_name,
+                    "segment": seg.name,
                 }
             if d["event_class_bi_id"]:
                 ec = EventClass.get_by_bi_id(d["event_class_bi_id"])
@@ -170,4 +174,5 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True, access="launch")
     def api_json(self, request, id):
-        return {"status": True}
+        e = Event.get_by_id(id)
+        return orjson.dumps(e.model_dump(), option=orjson.OPT_INDENT_2).decode()
