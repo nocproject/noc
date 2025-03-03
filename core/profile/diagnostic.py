@@ -142,7 +142,7 @@ class ProfileDiagnostic:
                 if param not in self.oids:
                     self.oids.append(param)
             elif rule.method == "http_get" or rule.method == "https_get":
-                if rule.param not in self.urls:
+                if (rule.method, rule.param) not in self.urls:
                     self.urls.append((rule.method, rule.param))
         return r
 
