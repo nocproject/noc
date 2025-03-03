@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Allocated Blocks Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ from noc.ip.models.prefix import Prefix
 from noc.main.models.customfield import CustomField
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+from noc.vc.models.vlan import VLAN
 
 
 class ReportForm(forms.Form):
@@ -53,7 +54,8 @@ class ReportAllocated(SimpleReport):
 
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_row(p):
-            r = [p.prefix, p.state.name, smart_text(p.vc) if p.vc else ""]
+            vlan = VLAN.get_by_id(p.vlan.id) if p.vlan else None
+            r = [p.prefix, p.state.name, smart_text(vlan) if vlan else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
@@ -63,7 +65,7 @@ class ReportAllocated(SimpleReport):
         cf = CustomField.table_fields("ip_prefix")
         cfn = {f.name: f for f in cf}
         # Prepare columns
-        columns = ["Prefix", "State", "VC"]
+        columns = ["Prefix", "State", "VLAN"]
         for f in cf:
             columns += [f.label]
         columns += ["Description", TableColumn(_("Tags"), format="tags")]
