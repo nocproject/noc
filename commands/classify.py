@@ -10,6 +10,7 @@ import argparse
 import os
 from pathlib import Path
 import time
+from typing import List
 
 # Third-party modules
 import orjson
@@ -41,12 +42,10 @@ class Command(BaseCommand):
         cmd = options.pop("cmd")
         return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
 
-    def process_file(self, profile, ruleset, output_dir, filepath):
-        with open(filepath, "r") as f:
+    def parse_syslog_text(self, path: Path) -> List[Event]:
+        with open(path, "r") as f:
             lines = f.read().splitlines()
-        mcnt, ccnt, ucnt = 0, 0, 0
-        time_start = time.perf_counter()
-        out_data = []
+        events = []
         for line in lines:
             line = line.strip()
             if not line:
@@ -62,7 +61,6 @@ class Command(BaseCommand):
                 except ValueError:
                     pass
                 line = line[idx + 1 :].strip()
-            mcnt += 1
             # Get timestamp
             ts = int(time.time())
             # Generate Event
@@ -72,8 +70,16 @@ class Command(BaseCommand):
                 data=[],
                 message=line,
             )
+            events += [event]
+        return events
+
+    def process_events(self, profile, ruleset, output_dir, filepath: Path, events: List[Event]):
+        mcnt, ccnt, ucnt = 0, 0, 0
+        time_start = time.perf_counter()
+        out_data = []
+        for event in events:
             # Go to classify event
-            # rule, r_vars = ruleset.find_rule(event, {})
+            rule, r_vars = ruleset.find_rule(event, {})
             # print("rule", rule, type(rule))
             # to be continued...
             out_record = {
@@ -82,6 +88,7 @@ class Command(BaseCommand):
                 "vars": [],
             }
             out_data += [out_record]
+            mcnt += 1
         out = {
             "$version": 1,
             "input": {
@@ -118,7 +125,9 @@ class Command(BaseCommand):
         for path in paths:
             for root, dirs, files in os.walk(path):
                 for file in files:
-                    self.process_file(profile, ruleset, output_dir, Path(root, file))
+                    filepath = Path(root, file)
+                    events = self.parse_syslog_text(filepath)
+                    self.process_events(profile, ruleset, output_dir, filepath, events)
 
 
 if __name__ == "__main__":
