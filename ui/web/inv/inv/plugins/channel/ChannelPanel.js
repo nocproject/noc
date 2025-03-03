@@ -180,6 +180,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     this.tbar = tbarItems;
     //
     parentItems[0].stateId = "inv.inv-channel-grid";
+    parentItems[0].itemId = "invChannelGrid";
     // Make items
     this.mainItems[0].items = parentItems;
     parentItems[0].listeners = {

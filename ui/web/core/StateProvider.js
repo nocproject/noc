@@ -8,13 +8,12 @@ console.debug("Defining NOC.core.StateProvider");
 
 Ext.define("NOC.core.StateProvider", {
   extend: "Ext.state.Provider",
-
   url: "/main/desktop/state/",
-
   constructor: function(){
     var me = this;
     me.callParent();
     me.state = {};
+    me.state = this.loadPreferences();
     me.loadPreferences().then(prefs => {
       me.state = prefs;
       console.log("User preferences state: ", me.state);
@@ -44,10 +43,7 @@ Ext.define("NOC.core.StateProvider", {
     me.callParent([name, value]);
     fetch(me.url + name + "/", {
       method: "POST",
-      body: JSON.stringify(me.encodeValue(value)),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      body: me.encodeValue(value),
     }).catch(error => console.error("Error saving state:", error));
   },
 

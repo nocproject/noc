@@ -3,9 +3,6 @@
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
-
-const {stat} = require("fs");
-
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.plugins.pconf.PConfPanel");
 
