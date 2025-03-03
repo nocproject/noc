@@ -39,6 +39,7 @@ class SNMPSuggestsDiagnostic:
         if self.config.checks:
             r += self.config.checks
         if not suggests_snmp:
+            yield tuple(x for x in r if x.credential)
             return
         for s in CredentialCheckRule.get_suggest_rules():
             if not s.is_match(labels):
