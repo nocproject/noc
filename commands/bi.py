@@ -209,8 +209,8 @@ class Command(BaseCommand):
         # Extract dictionaries
         for dcls_name in loader:
             if dictionaries and dcls_name not in dictionaries:
-                # self.print("Sk")
                 continue
+            self.print(f"Rebuild Dictionary: {dcls_name}")
             bi_dict_model: Optional["DictionaryModel"] = loader[dcls_name]
             if not bi_dict_model:
                 continue
