@@ -60,6 +60,7 @@ Ext.define("NOC.fm.event.Application", {
       stateful: true,
       stateId: "fm.event-grid",
       allowDeselect: true,
+      // * dispose (логическое)
       columns: [
         {
           text: __("ID"),
@@ -75,44 +76,27 @@ Ext.define("NOC.fm.event.Application", {
         {
           text: __("Administrative Domain"),
           dataIndex: "administrative_domain",
-          width: 200,
-          renderer: NOC.render.Lookup("administrative_domain"),
         },
         {
-          text: __("Object"),
-          dataIndex: "managed_object",
-          width: 200,
-          renderer: NOC.render.Lookup("managed_object"),
+          text: __("Target"),
+          dataIndex: "target",
         },
         {
           text: __("Class"),
           dataIndex: "event_class",
-          width: 300,
-          renderer: NOC.render.Lookup("event_class"),
         },
         {
-          text: __("Subject"),
-          dataIndex: "subject",
-          flex: 1,
+          text: __("Message"),
+          dataIndex: "message",
         },
         {
-          text: __("Alarm"),
-          dataIndex: "alarms",
-          width: 30,
-          align: "right",
+          text: __("Source"),
+          dataIndex: "source",
         },
         {
-          text: __("Rep."),
-          dataIndex: "repeats",
-          width: 30,
-          align: "right",
-        },
-        {
-          text: __("Dur."),
-          dataIndex: "duration",
-          width: 70,
-          align: "right",
-          renderer: NOC.render.Duration,
+          text: __("Dispose"),
+          dataIndex: "dispose",
+          renderer: NOC.render.Bool,
         },
       ],
       viewConfig: {
