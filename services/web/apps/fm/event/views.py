@@ -38,7 +38,6 @@ class EventApplication(ExtApplication):
     @view(method=["GET", "POST"], url="^$", access="read", api=True)
     def api_list(self, request):
         q = self.parse_request_query(request)
-        query = q.get("__query")
         start = q.get("__start") or 0
         limit = q.get("__limit") or 50
         if limit is None:
@@ -197,7 +196,7 @@ class EventApplication(ExtApplication):
             mo = ManagedObject.get_by_id(int(e.target.id))
             s, p = mo.events_stream_and_partition
         else:
-            s, p = f"events.default", 0
+            s, p = "events.default", 0
         self.service.publish(
             orjson.dumps(e),
             stream=s,

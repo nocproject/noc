@@ -280,6 +280,7 @@ class Event(BaseModel):
             "sources": [source.value],
             "message_rx": message or "",
             "description": description,
+            "profiles": profiles,
         }
         if source == EventSource.SYSLOG:
             r["description"] = message
