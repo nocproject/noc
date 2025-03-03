@@ -46,6 +46,7 @@ from .segmentation import SegmentationCheck
 from .ifdesc import IfDescCheck
 from .configparam import ConfigParamCheck
 from ..periodic.diagnostic import DiagnosticCheck
+from ..periodic.mac import MACCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -121,6 +122,11 @@ class BoxDiscoveryJob(MODiscoveryJob):
             PrefixCheck(self).run()
         if AddressCheck.is_enabled_for_object(self.object):
             AddressCheck(self).run()
+        if (
+            self.object.object_profile.enable_autosegmentation
+            or self.object.object_profile.enable_box_discovery_xmac
+        ):
+            MACCheck(self).run()
         if self.object.enable_autosegmentation:
             SegmentationCheck(self).run()
         # Topology discovery
