@@ -1,12 +1,13 @@
 # ----------------------------------------------------------------------
 # ReportObjectMetrics datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
+import orjson
 
 # NOC Modules
 from .base import CHTableReportDataSource, ReportField
@@ -70,24 +71,28 @@ class ReportObjectMetrics(CHTableReportDataSource):
             if field in key_fields:
                 continue
             self.fields = self.get_fields(key_fields + [field])
-            query = self.get_query_ch(f_date, to_date)
+            query = self.get_query_ch(f_date, to_date, r_format="JSONEachRow")
             # print("Query: %s", query)
             if self.allobjectids or not self.objectids:
                 for row in client.execute(query % ""):
-                    if row[0] not in result:
-                        result[row[0]] = row
+                    data = orjson.loads(row[0])
+                    mo_id = data.get("managed_object")
+                    if mo_id not in result:
+                        result[mo_id] = data
                     else:
-                        result[row[0]] += row[1:]
+                        result[mo_id].update(data)
             else:
                 # chunked query
                 ids = self.objectids
                 while ids:
                     chunk, ids = ids[: self.CHUNK_SIZE], ids[self.CHUNK_SIZE :]
                     for row in client.execute(query % f" AND {self.get_object_filter(chunk)}"):
-                        if row[0] not in result:
-                            result[row[0]] = row
+                        data = orjson.loads(row[0])
+                        mo_id = data.get("managed_object")
+                        if mo_id not in result:
+                            result[mo_id] = data
                         else:
-                            result[row[0]] += row[1:]
+                            result[mo_id].update(data)
         self.fields = self.get_fields(self.query_fields)
         for v in result.values():
             yield v
