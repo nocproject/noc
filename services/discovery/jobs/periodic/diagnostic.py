@@ -52,8 +52,14 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 if dc.run_order != self.run_order:
                     continue
-                if dc.blocked or not (dc.checks or dc.diagnostic_handler):
+                if dc.blocked:
+                    self.logger.info(
+                        "[%s] Diagnostic blocked by settings: %s", di.diagnostic, di.reason
+                    )
+                    continue
+                if not dc.checks and not dc.diagnostic_handler:
                     # Diagnostic without checks
+                    self.logger.debug("[%s] Diagnostic without checks", di.diagnostic)
                     continue
                 if dc.run_policy not in {"A", "F"}:
                     self.logger.info("[%s] Diagnostic for manual run. Skipping", di.diagnostic)
@@ -61,11 +67,13 @@ class DiagnosticCheck(DiscoveryCheck):
                 if dc.run_policy == "F" and di.state == DiagnosticState.enabled and di.checks:
                     self.logger.info("[%s] Diagnostic with enabled state. Skipping", di.diagnostic)
                     continue
+                self.logger.info("[%s] Run diagnostic checks", di.diagnostic)
                 # Get checker
                 credentials: List[
                     Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
                 ] = []
                 for do_checks in d_hub.iter_checks(di.diagnostic):
+                    # Do nothing check ?
                     checks: List[CheckResult] = []
                     for cr in self.run_checks(do_checks):
                         if cr.credential:
