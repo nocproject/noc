@@ -123,7 +123,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         if AddressCheck.is_enabled_for_object(self.object):
             AddressCheck(self).run()
         if (
-            self.object.object_profile.enable_autosegmentation
+            self.object.enable_autosegmentation
             or self.object.object_profile.enable_box_discovery_xmac
         ):
             MACCheck(self).run()
