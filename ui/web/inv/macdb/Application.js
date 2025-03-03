@@ -1,107 +1,206 @@
 //---------------------------------------------------------------------
 // inv.macdb application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.macdb.Application");
 
-// @todo: filtering macs based on managed objects
-
 Ext.define("NOC.inv.macdb.Application", {
-    extend: "NOC.core.ModelApplication",
-    requires: [
-        "NOC.inv.macdb.MACLogForm",
-        "NOC.inv.macdb.Model",
-        "NOC.main.style.LookupField",
-        "NOC.main.pool.LookupField",
-        "NOC.sa.managedobjectprofile.LookupField"
-    ],
-    model: "NOC.inv.macdb.Model",
-    search: true,
-    searchPlaceholder: "insert MAC address to search",
-    searchTooltip: __("Insert MAC address to this field one of format:<li>FULL: AA:AA:AA:AA:AA:AA</li><li>Left part: AA:AA:</li><li>Right part: :AA:AA</li>"),
-    canCreate: false,
-    rowClassField: "row_class",
-
-    filters: [
-    ],
-
-    //
-    initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            columns: [
-                {
-                    text: __("Mac Address"),
-                    dataIndex: "mac",
-                    width: 110
-                },
-                {
-                    text: __("L2 Domain"),
-                    dataIndex: "l2_domain",
-                    renderer: NOC.render.Lookup("l2_domain"),
-                    flex: 1
-                },
-                {
-                    text: __("Pool"),
-                    dataIndex: "pool",
-                    renderer: NOC.render.Lookup("pool"),
-                    flex: 1
-                },
-                {
-                    text: __("Object Profile"),
-                    dataIndex: "object_profile",
-                    renderer: NOC.render.Lookup("object_profile"),
-                    flex: 1
-                },
-                {
-                    text: __("Vlan"),
-                    dataIndex: "vlan",
-                    width: 40
-                },
-                {
-                    flex: 1,
-                    text: __("Managed Object"),
-                    renderer: NOC.render.Lookup("managed_object"),
-                    dataIndex: "managed_object"
-                },
-                {
-                    flex: 1,
-                    text: __("Interface"),
-                    renderer: function(v) {
-                        var array = v.split(":");
-                        return array[1];
-                    },
-                    dataIndex: "interface__label"
-                },
-                {
-                    flex: 1,
-                    text: __("Description"),
-                    dataIndex: "description"
-                },
-                {
-                    text: __("Last Changed"),
-                    dataIndex: "last_changed",
-                    width: 150
-                }
-            ],
-            fields: [
-            ]
-
-        });
-
-        me.callParent();
+  extend: "NOC.core.ModelApplication",
+  requires: [
+    "NOC.inv.macdb.MACLogForm",
+    "NOC.inv.macdb.Model",
+    "NOC.main.style.LookupField",
+    "NOC.main.pool.LookupField",
+    "NOC.inv.interfaceprofile.LookupField",
+    "NOC.sa.managedobject.LookupField",
+  ],
+  model: "NOC.inv.macdb.Model",
+  search: true,
+  searchPlaceholder: __("insert MAC address to search"),
+  requirePlaceholder: __("type MAC address to search"),
+  searchTooltip: __("Insert MAC address to this field one of format:<li>FULL: AA:AA:AA:AA:AA:AA</li><li>Left part: AA:AA:</li><li>Right part: :AA:AA</li>"),
+  canCreate: false,
+  rowClassField: "row_class",
+  //
+  columns: [
+    {
+      text: __("Mac Address"),
+      dataIndex: "mac",
+      width: 110,
     },
-
-    createForm: function() {
-        var me = this;
-        me.form = Ext.create("NOC.inv.macdb.MACLogForm", {app: me});
-        return me.form;
+    {
+      text: __("L2 Domain"),
+      dataIndex: "l2_domain",
+      renderer: NOC.render.Lookup("l2_domain"),
+      flex: 1,
     },
-
-    onEditRecord: function(record) {
-        var me = this;
-        me.showItem(me.ITEM_FORM).preview(record);
+    {
+      text: __("Pool"),
+      dataIndex: "pool",
+      renderer: NOC.render.Lookup("pool"),
+      flex: 1,
+    },
+    {
+      text: __("Object Profile"),
+      dataIndex: "object_profile",
+      renderer: NOC.render.Lookup("object_profile"),
+      flex: 1,
+    },
+    {
+      text: __("Vlan"),
+      dataIndex: "vlan",
+      width: 40,
+    },
+    {
+      flex: 1,
+      text: __("Managed Object"),
+      renderer: NOC.render.Lookup("managed_object"),
+      dataIndex: "managed_object",
+    },
+    {
+      flex: 1,
+      text: __("Interface"),
+      dataIndex: "interface",
+    },
+    {
+      flex: 1,
+      text: __("Description"),
+      dataIndex: "description",
+    },
+    {
+      text: __("Last Changed"),
+      dataIndex: "last_changed",
+      width: 150,
+    },
+  ],
+  //
+  filters: [
+    {
+      title: __("By Profile"),
+      name: "interface_profile",
+      ftype: "lookup",
+      lookup: "inv.interfaceprofile",
+    },
+    {
+      title: __("By Object"),
+      name: "managed_object",
+      ftype: "lookup",
+      lookup: "sa.managedobject",
+    },
+  ],
+  gridToolbar: [
+    {
+      xtype: "radiogroup",
+      width: 250,
+      items: [
+        {
+          checked: true,
+          xtype: "radio",
+          boxLabel: __("MAC DB"),
+          name: "source",
+          inputValue: "macdb",
+        },
+        {
+          xtype: "radio",
+          boxLabel: __("MAC History"),
+          name: "source",
+          inputValue: "history",
+        },
+      ],
+      listeners: {
+        change: function(field, newValue){
+          var searchField = this.up("toolbar").down("[name=search_field]"),
+            app = this.up("[appId=inv.macdb]"),
+            query = searchField.getValue();
+          if(newValue.source === "macdb"){
+            searchField.clearInvalid();
+            searchField.setEmptyText(app.searchPlaceholder);
+            if(Ext.isEmpty(query)){
+              app.onSearch(query);
+            }
+          }
+          if(newValue.source === "history"){
+            searchField.markInvalid(__("Required field"));
+            searchField.setEmptyText(app.requirePlaceholder);
+          }
+          if(!Ext.isEmpty(query)){
+            app.onSearch(query);
+          }
+        },
+      },
+    },
+  ],
+  //
+  initComponent: function(){
+    this.callParent();
+    var favFilter = this.down("[name=fav_status]"),
+      query = Ext.util.History.getToken().split("?")[1] || "",
+      queryObj = Ext.Object.fromQueryString(query);
+    this.searchField.onChange = Ext.emptyFn;
+    this.searchField.setTriggers({
+      clear: {
+        cls: "x-form-clear-trigger",
+        hidden: true,
+        handler: function(field){
+          var app = field.up("[appId=inv.macdb]");
+          field.setValue("");
+          app.onSearch("");
+        },
+      },
+    });
+    this.searchField.on("change", function(field, value){
+      var trigger = field.getTrigger("clear");
+      if(trigger){
+        trigger.setVisible(!!value);
+      }
+    });
+    if(Ext.isDefined(queryObj.source)){
+      this.down("radiogroup").setValue({source: queryObj.source});
     }
+    if(Ext.isDefined(queryObj.__query)){
+      this.searchField.setValue(queryObj.__query);
+    }
+    Ext.each(this.filterSetters, function(set){
+      set(queryObj);
+    });
+    if(!Ext.isEmpty(queryObj)){
+      this.onFilter();
+    }
+    favFilter.up().remove(favFilter);
+  },
+  //
+  createForm: function(){
+    this.form = Ext.create("NOC.inv.macdb.MACLogForm", {app: this});
+    return this.form;
+  },
+  //
+  onEditRecord: function(record){
+    this.showItem(this.ITEM_FORM).preview(record);
+  },
+  //
+  onSearch: function(query){
+    Ext.apply(this.currentQuery, this.down("radiogroup").getValue());
+    if(query && query.length > 0){
+      this.currentQuery.__query = query;
+    } else{
+      delete this.currentQuery.__query;
+    }
+    this.reloadStore();
+  },
+  onFilter: function(){
+    var fexp = {};
+    Ext.each(this.filterGetters, function(g){
+      fexp = Ext.Object.merge(fexp, g());
+    });
+    if(Ext.isDefined(this.currentQuery.__query)){
+      fexp.__query = this.currentQuery.__query;
+    }
+    if(Ext.isDefined(this.currentQuery.source)){
+      fexp.source = this.currentQuery.source;
+    }
+    this.currentQuery = fexp;
+    this.reloadStore();
+  },
 });
