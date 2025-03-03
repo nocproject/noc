@@ -67,7 +67,7 @@ class AlarmItem(BaseModel):
         if self.vars:
             r["vars"] = self.vars
         if self.labels:
-            r["lables"] = self.labels
+            r["labels"] = self.labels
         return r
 
 
