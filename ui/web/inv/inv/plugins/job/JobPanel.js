@@ -93,6 +93,7 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
       xtype: "gridpanel",
       border: false,
       stateful: true,
+      stateId: "inv.inv-job-grid",
       emptyText: __("No jobs"),
       bind: {
         store: "{gridStore}",
@@ -103,7 +104,7 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
       scrollable: "y",
       columns: [
         {
-          xtype: 'glyphactioncolumn',
+          xtype: "glyphactioncolumn",
           width: 25,
           items: [
             {

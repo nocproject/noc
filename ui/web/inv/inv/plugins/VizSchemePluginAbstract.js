@@ -93,6 +93,7 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   items: [
     {
       xtype: "grid",
+      stateful: true,
       scrollable: "y",
       flex: 1,
       bind: {

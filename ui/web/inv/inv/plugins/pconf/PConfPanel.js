@@ -3,6 +3,9 @@
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
+
+const {stat} = require("fs");
+
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.plugins.pconf.PConfPanel");
 
@@ -221,6 +224,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       border: false,
       autoScroll: true,
       stateful: true,
+      stateId: "inv.inv-pconf-grid",
       emptyText: __("No data"),
       bind: {
         store: "{gridStore}",

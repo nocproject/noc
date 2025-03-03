@@ -178,6 +178,8 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     tbarItems.splice(2, 0, searchField);
     tbarItems.splice(tbarItems.length - 2, 0, magicBtn, createBtn);
     this.tbar = tbarItems;
+    //
+    parentItems[0].stateId = "inv.inv-channel-grid";
     // Make items
     this.mainItems[0].items = parentItems;
     parentItems[0].listeners = {
@@ -202,7 +204,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   //
   handleEyeClick: function(recordId, rowIndex){
     var tableView = this.down("grid").getView(),
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
+       
       channelPanel = this,
       showGrid = function(){
         var panel = this.up();
@@ -395,7 +397,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   onEdit: function(tableView, rowIndex){
     var record = tableView.getStore().getAt(rowIndex),
       id = record.get("id"),
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
+       
       channelPanel = this,
       showGrid = function(){
         var panel = this.up();

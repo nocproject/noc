@@ -94,6 +94,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       xtype: "gridpanel",
       border: false,
       stateful: true,
+      stateId: "inv.inv-bom-grid",
       allowDeselect: true,
       bind: {
         store: "{gridStore}",
@@ -104,7 +105,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       scrollable: "y",
       columns: [
         {
-          xtype: 'glyphactioncolumn',
+          xtype: "glyphactioncolumn",
           width: 25,
           items: [
             {
@@ -128,9 +129,9 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
               glyph = record.id !== currentId ? NOC.glyph.eye : "",
               glyphFontFamily = Ext._glyphFontFamily;
 
-            ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
+            ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || "" : "";
 
-            meta.tdCls += ' ' + Ext.baseCSSPrefix + 'action-col-cell';
+            meta.tdCls += " " + Ext.baseCSSPrefix + "action-col-cell";
 
             disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
             tooltip = disabled ? null : (item.tooltip || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
@@ -143,14 +144,14 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
             }
             if(glyph){
               ret += '<span role="button" unselectable="on" class="' +
-                prefix + 'action-col-icon ' +
-                prefix + 'icon-el ' +
-                prefix + 'action-col-0' +
-                ' ' + (disabled ? prefix + 'item-disabled' : ' ') + '" ' +
-                'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
-                (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
-                (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
-                '>&#' + glyph + ';</span>';
+                prefix + "action-col-icon " +
+                prefix + "icon-el " +
+                prefix + "action-col-0" +
+                " " + (disabled ? prefix + "item-disabled" : " ") + '" ' +
+                'style="font-family:' + glyphFontFamily + ";font-size:16px;padding-right:2px;line-height:normal" +
+                (Ext.isFunction(item.getColor) ? ";color:" + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ";color:" + item.color : "")) + '"' +
+                (tooltip ? ' data-qtip="' + tooltip + '"' : "") +
+                ">&#" + glyph + ";</span>";
             }
             return ret;
           },
