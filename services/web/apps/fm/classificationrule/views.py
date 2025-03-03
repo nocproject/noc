@@ -19,8 +19,8 @@ from noc.fm.models.eventclassificationrule import (
 )
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
-from noc.core.validators import is_objectid, is_oid
-from noc.core.fm.event import Event
+from noc.core.validators import is_objectid
+from noc.core.fm.event import Event, EventSource
 from noc.fm.models.utils import get_event
 from noc.core.translation import ugettext as _
 
@@ -199,7 +199,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
 
     IGNORED_OIDS = {"RFC1213-MIB::sysUpTime.0", "SNMPv2-MIB::sysUpTime.0"}
 
-    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["GET"], access="create", api=True)
+    @view(
+        url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["POST"], access="create", api=True
+    )
     def api_from_event(self, request, event_id):
         """
         Create classification rule from event
@@ -207,7 +209,13 @@ class EventClassificationRuleApplication(ExtDocApplication):
         :param event_id:
         :return:
         """
-        event = Event.get_by_id(event_id)
-        if not event:
-            self.response_not_found()
-        return event.get_rule()
+        q = self.parse_request_query(request)
+        source = EventSource(q["source"])
+        rule = Event.get_rule(
+            source,
+            message=q.get("message"),
+            labels=q.get("labels"),
+            data=q.get("data"),
+            snmp_trap_oid=q.get("snmp_trap_oid"),
+        )
+        return rule

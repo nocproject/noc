@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,8 +17,9 @@ from noc.services.web.base.extapplication import ExtApplication, view
 from noc.fm.models.eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
-from noc.core.fm.event import Event
 from noc.bi.models.events import Events
+from noc.main.models.remotesystem import RemoteSystem
+from noc.core.fm.event import Event
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 from noc.core.translation import ugettext as _
@@ -53,6 +54,9 @@ class EventApplication(ExtApplication):
         out, total = self.event_query(
             managed_object=q.get("managed_object"),
             segment=q.get("segment"),
+            event_class=q.get("event_class"),
+            from_query=q.get("timestamp__gte"),
+            to_query=q.get("timestamp__lte"),
             offset=start,
             limit=limit,
         )
@@ -63,13 +67,28 @@ class EventApplication(ExtApplication):
         cls,
         managed_object: Optional[int] = None,
         segment: Optional[str] = None,
-        from_query: Optional[datetime.date] = None,
-        to_query: Optional[datetime.date] = None,
+        from_query: Optional[str] = None,
+        to_query: Optional[str] = None,
         groups: Optional[List[str]] = None,
         event_class: Optional[str] = None,
-    ) -> str:
+    ) -> List[str]:
         """"""
-        return ""
+        r = []
+        if managed_object:
+            mo = ManagedObject.get_by_id(managed_object)
+            r.append(f"managed_object = {mo.bi_id}")
+        if segment:
+            r.append(f"segment = {segment}")
+        if event_class:
+            p = EventClass.get_by_id(event_class)
+            r.append(f"event_class_bi_id = {p.bi_id}")
+        if from_query:
+            from_query = datetime.datetime.fromisoformat(from_query)
+            r.append(f"ts >= '{from_query.isoformat()}'")
+        if to_query:
+            to_query = datetime.datetime.fromisoformat(to_query)
+            r.append(f"ts <= '{to_query.isoformat()}'")
+        return r
 
     @classmethod
     def event_query(
@@ -142,8 +161,8 @@ class EventApplication(ExtApplication):
                 "vars": d["vars"],
                 "raw_vars": d["raw_vars"],
                 "data": [],
-                "remote_id": d["remote_id"] or None,
-                "remote_system": d["remote_system"] or None,
+                "remote_id": None,
+                "remote_system": None,
                 "dispose": False,
                 "object": None,
             }
@@ -160,6 +179,9 @@ class EventApplication(ExtApplication):
                     "administrative_domain": ad_name,
                     "segment": seg.name,
                 }
+            if d["remote_system"]:
+                rs = RemoteSystem.objects.filter(bi_id=d["remote_system"]).first()
+                r |= {"remote_id": d["remote_id"], "remote_system": rs.name}
             if d["event_class_bi_id"]:
                 ec = EventClass.get_by_bi_id(d["event_class_bi_id"])
                 r |= {"event_class": ec.name, "event_class_id": str(ec.id)}
@@ -170,6 +192,17 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="reclassify")
     def api_reclassify(self, request, id):
+        e = Event.get_by_id(id)
+        if e.target.id:
+            mo = ManagedObject.get_by_id(int(e.target.id))
+            s, p = mo.events_stream_and_partition
+        else:
+            s, p = f"events.default", 0
+        self.service.publish(
+            orjson.dumps(e),
+            stream=s,
+            partition=p,
+        )
         return {"status": True}
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True, access="launch")
