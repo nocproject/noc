@@ -179,7 +179,7 @@ class BioCollisionPolicy(EmbeddedDocument):
     check=[
         ("inv.NetworkSegment", "profile"),
         ("inv.NetworkSegmentProfile", "autocreated_profile"),
-        ("inv.NetworkSegmentProfile", "calcified_profile"),
+        ("inv.NetworkSegmentProfile", "bio_collision_policy__calcified_profile"),
     ]
 )
 @on_save
