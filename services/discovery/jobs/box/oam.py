@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # OAM check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,10 +21,6 @@ class OAMCheck(TopologyDiscoveryCheck):
     required_script = "get_oam_status"
     required_capabilities = ["Network | OAM"]
 
-    @staticmethod
-    def neighbor_pass(mo):
-        return mo
-
     def iter_neighbors(self, mo):
         result = mo.scripts.get_oam_status()
         # Build mac to interfaces map
@@ -40,6 +36,6 @@ class OAMCheck(TopologyDiscoveryCheck):
                 mo = self.get_neighbor_by_mac(rmac)
                 remote_interface = self.get_interface_by_mac(mac=rmac, mo=mo)
                 if remote_interface:
-                    yield local_interface, remote_interface.managed_object, remote_interface.name
+                    yield local_interface, remote_interface.managed_object.id, remote_interface.name
 
-    get_neighbor = neighbor_pass
+    get_neighbor = TopologyDiscoveryCheck.get_neighbor_by_id
