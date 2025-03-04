@@ -160,7 +160,7 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
             columnWidth: 1,
             allowBlank: true,
             query: {
-                "enable_vrf": true
+                "allow_models": ["ip.VRF"]
             },
             bind: {
                 value: "{vrf.labels}"

@@ -157,7 +157,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     allowBlank: true,
                     uiStyle: "large",
                     query: {
-                        "enable_firmwarepolicy": true
+                        "allow_models": ["inv.FirmwarePolicy"]
                     }
                 },
                 {
