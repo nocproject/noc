@@ -21,6 +21,7 @@ from mongoengine.queryset import Q as MQ
 # NOC modules
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.decorators.caps import capabilities_handler
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.useraccess import UserAccess
@@ -71,6 +72,7 @@ from noc.config import config
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
 
+@capabilities_handler
 @state_handler
 class ManagedObjectApplication(ExtModelApplication):
     """
@@ -1119,8 +1121,11 @@ class ManagedObjectApplication(ExtModelApplication):
                         "value": c["value"],
                         "source": c["source"],
                         "scope": c.get("scope", ""),
+                        "editor": None,
                     }
                 ]
+                if c["source"] == "manual":
+                    r[-1]["editor"] = {"type": capability.type, "multiple": False, "choices": []}
         return sorted(r, key=lambda x: x["capability"])
 
     @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)
