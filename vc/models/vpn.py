@@ -46,7 +46,7 @@ class RouteTargetItem(EmbeddedDocument):
 
 @Label.model
 @bi_sync
-@on_delete_check(check=[("vc.VPN", "parent"), ("vc.VLAN", "vpn")])
+@on_delete_check(check=[("vc.VPN", "parent")])
 @workflow
 class VPN(Document):
     meta = {

@@ -71,6 +71,12 @@ def test_on_delete_check(model, refs):
     for c in x_checks:
         assert isinstance(c, tuple), "@on_delete_check decorator must contain only tuples"
         assert len(c) == 2, "@on_delete_check decorator must contain only two-item tuples"
+        # Check Model exists
+        get_model(c[0])
+        if "__" not in c[1] and "." not in c[1]:
+            assert hasattr(
+                get_model(c[0]), c[1]
+            ), f"@on_delete_check reference to unknown model field {c[0]}:{c[1]}"
 
 
 @pytest.mark.parametrize("model,remote_model,remote_field", iter_references())
@@ -84,7 +90,4 @@ def test_on_delete_check_reference(model, remote_model, remote_field):
     assert (
         remote_model,
         remote_field,
-    ) in x_checks, '@on_delete_check decorator must refer to ("%s", "%s")' % (
-        remote_model,
-        remote_field,
-    )
+    ) in x_checks, f'@on_delete_check decorator must refer to ("{remote_model}", "{remote_field}")'
