@@ -150,7 +150,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                               fieldLabel: __("Labels"),
                               allowBlank: true,
                               query: {
-                                "enable_interface": true
+                                  "allow_models": ["inv.Interface"]
                               }
                             },
                             {
