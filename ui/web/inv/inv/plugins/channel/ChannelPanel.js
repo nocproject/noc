@@ -193,7 +193,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     };
     this.items = this.mainItems;
     this.callParent(arguments);
-    this.query("grid")[0].getState();
   },
   //
   afterRender: function(){
