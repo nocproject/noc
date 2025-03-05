@@ -20,11 +20,11 @@ Ext.define("NOC.core.StateProvider", {
     try{
       const response = await fetch(this.url);
       if(response.ok){
-        const prefs = await response.json();
-        for(var k in prefs){
-          prefs[k] = this.decodeValue(prefs[k])
+        const states = await response.json();
+        for(var k in states){
+          states[k] = this.decodeValue(states[k])
         }
-        this.state = prefs;
+        this.state = states;
       }
     } catch(error){
       console.error("Error loading preferences:", error);
