@@ -93,7 +93,6 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   items: [
     {
       xtype: "grid",
-      stateful: true,
       scrollable: "y",
       flex: 1,
       bind: {
@@ -109,13 +108,13 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
         select: function(grid, record){
           var element = document.querySelector("g#" + record.id + " path");
           if(element){
-            element.style.stroke="#f1c40f";
+            element.style.stroke = "#f1c40f";
           }
         },
         deselect: function(grid, record){
           var element = document.querySelector("g#" + record.id + " path");
           if(element){
-            element.style.stroke="black";
+            element.style.stroke = "black";
           }
         },
       },
@@ -138,14 +137,6 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       },
     },
   ],
-  listeners: {
-    added: function(){
-      var grid = this.down("gridpanel");
-      if(grid && this.gridColumns){
-        grid.reconfigure(null, this.gridColumns);
-      }
-    },
-  },
   //
   preview: function(response, objectId){
     var me = this,

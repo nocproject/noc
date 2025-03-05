@@ -123,6 +123,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
   ],
   initComponent: function(){
     var parentItems = Ext.clone(this.items),
+      grid = parentItems[0], 
       tbarItems = Ext.clone(this.tbar),
       closeBtn = {
         text: __("Close"),
@@ -179,17 +180,20 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     tbarItems.splice(tbarItems.length - 2, 0, magicBtn, createBtn);
     this.tbar = tbarItems;
     //
-    parentItems[0].stateId = "inv.inv-channel-grid";
-    parentItems[0].itemId = "invChannelGrid";
+    grid.stateful = true; 
+    grid.stateId = "inv.inv-channel-grid";
+    grid.itemId = "invChannelGrid";
+    grid.columns = this.gridColumns;
     // Make items
     this.mainItems[0].items = parentItems;
-    parentItems[0].listeners = {
+    grid.listeners = {
       afterlayout: "afterGridRender",
       selectionchange: "onChangeSelection",
       deselect: "onDeselect",
     };
     this.items = this.mainItems;
     this.callParent(arguments);
+    this.query("grid")[0].getState();
   },
   //
   afterRender: function(){

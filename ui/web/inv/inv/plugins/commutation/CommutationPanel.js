@@ -40,7 +40,8 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
     },
   ],
   initComponent: function(){
-    var tbarItems = Ext.clone(this.tbar),
+    var grid = this.items[0],
+      tbarItems = Ext.clone(this.tbar),
       filterCombo = {
         xtype: "combobox",
         itemId: "filterCombo",
@@ -95,6 +96,11 @@ Ext.define("NOC.inv.inv.plugins.commutation.CommutationPanel", {
       };
     tbarItems.splice(tbarItems.length - 2, 0, filterCombo);
     this.tbar = tbarItems;
+    //
+    grid.stateful = true; 
+    grid.stateId = "inv.inv-commutation-grid";
+    grid.itemId = "invCommutationGrid";
+    grid.columns = this.gridColumns;
     this.callParent(arguments);
   },
   // Override

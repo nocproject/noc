@@ -79,9 +79,9 @@ Ext.define("NOC.main.desktop.Application", {
   //
   afterRender: function(){
     this.callParent();
-    console.log("NOC application ready");
     this.onLogin();
     this.fireEvent("applicationReady");
+    console.log("NOC application ready");
   },
   // Launch applications from URL or home
   launchApps: function(){
