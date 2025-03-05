@@ -295,6 +295,17 @@ class DesktopApplication(ExtApplication):
         r = {r.key: r.value for r in UserState.objects.filter(user_id=uid)}
         return r
 
+    @view(method=["GET"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
+    def api_get_state_by_name(self, request, name):
+        """
+        Get user state
+        :param request:
+        :return:
+        """
+        uid = request.user.id
+        r = {r.key: r.value for r in UserState.objects.filter(user_id=uid, key=name)}
+        return r
+
     @view(method=["DELETE"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
     def api_clear_state(self, request, name):
         """
@@ -316,7 +327,10 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        value = smart_text(request.body)
+        if isinstance(request.body, bytes):
+            value = request.body.decode()
+        else:
+            value = request.body
         if value:
             # Save
             s = UserState.objects.filter(user_id=uid, key=name).first()
@@ -362,3 +376,4 @@ class DesktopApplication(ExtApplication):
             cp = CPClient()
             data["system_id"] = cp.system_uuid
         return data
+

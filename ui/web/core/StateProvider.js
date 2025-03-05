@@ -9,35 +9,55 @@ console.debug("Defining NOC.core.StateProvider");
 Ext.define("NOC.core.StateProvider", {
   extend: "Ext.state.Provider",
   url: "/main/desktop/state/",
+
   constructor: function(){
     var me = this;
     me.callParent();
     me.state = {};
-    me.state = this.loadPreferences();
-    me.loadPreferences().then(prefs => {
-      me.state = prefs;
-      console.log("User preferences state: ", me.state);
-    });
+    // me.loadPreferences().then(prefs => {
+    // me.state = prefs;
+    // console.log("User preferences state: ", me.state);
+    // });
   },
 
-  loadPreferences: async function(){
-    var me = this;
+  loadState: async function(){
     try{
-      const response = await fetch(me.url);
+      const response = await fetch(this.url);
       if(response.ok){
         const prefs = await response.json();
         for(var k in prefs){
-          prefs[k] = me.decodeValue(prefs[k])
+          prefs[k] = this.decodeValue(prefs[k])
         }
-        return prefs;
+        this.state = prefs;
       }
-      return {};
     } catch(error){
       console.error("Error loading preferences:", error);
-      return {};
     }
   },
 
+  // loadPreferences: function(){
+  //   var me = this;
+  //   try{
+  //     const response = fetch(me.url);
+  //     if(response.ok){
+  //       const prefs = response.json();
+  //       for(var k in prefs){
+  //         prefs[k] = me.decodeValue(prefs[k])
+  //       }
+  //       return prefs;
+  //     }
+  //     return {};
+  //   } catch(error){
+  //     console.error("Error loading preferences:", error);
+  //     return {};
+  //   }
+  // },
+
+  get: function(name, defaultValue){
+    var ret = this.state[name];
+    return ret === undefined ? defaultValue : ret;
+  },
+  
   set: function(name, value){
     var me = this;
     me.callParent([name, value]);
