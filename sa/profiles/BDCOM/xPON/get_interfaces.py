@@ -1,12 +1,13 @@
 # ---------------------------------------------------------------------
 # BDCOM_xPON.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+import time
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -97,12 +98,11 @@ class Script(BaseScript):
                         iface["subinterfaces"] += [sub]
                         break
                 continue
+
             if i["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
-                # Do not remove this!
-                # Some BDCOM OLT closing connection without empty line
-                self.cli("")
-                c = self.cli("show vlan interface %s" % match.group("ifname"))
+                time.sleep(2)  # Do not remove this!
+                c = self.cli("show vlan interface %s" % ifname)
                 for r in parse_table(c, allow_wrap=True, n_row_delim=","):
                     if not is_int(r[2]):
                         continue
@@ -116,9 +116,9 @@ class Script(BaseScript):
             if i["type"] == "SVI":
                 sub["vlan_ids"] = ifname[4:]
             if ifname.startswith("GigaEthernet") or ifname.startswith("TGigaEthernet"):
-                cmd1 = "show lldp interface %s" % ifname
-                cmd2 = self.cli(cmd1)
-                for match1 in self.rx_lldp.finditer(cmd2):
+                time.sleep(1)  # Do not remove this!
+                c = self.cli("show lldp interface %s" % ifname)
+                for match1 in self.rx_lldp.finditer(c):
                     if (
                         match1.group("lldp_rx") == "enabled"
                         or match1.groups("lldp_tx") == "enabled"

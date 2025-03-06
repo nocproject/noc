@@ -38,9 +38,9 @@ class Script(BaseScript):
             "platform": match.group("platform"),
             "version": match.group("version"),
             "attributes": {
-                "build": match.group("build"),
-                "boot": match.group("boot"),
-                "serial": match.group("serial"),
+                "Build": match.group("build"),
+                "Boot PROM": match.group("boot"),
+                "Serial Number": match.group("serial"),
             },
         }
 
@@ -53,9 +53,9 @@ class Script(BaseScript):
                 "platform": match.group("platform"),
                 "version": match.group("version"),
                 "attributes": {
-                    "build": match.group("build"),
-                    "boot": match.group("boot"),
-                    "serial": match.group("serial"),
+                    "Build": match.group("build"),
+                    "Boot PROM": match.group("boot"),
+                    "Serial Number": match.group("serial"),
                 },
             }
         else:
