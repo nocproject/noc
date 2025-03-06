@@ -341,9 +341,9 @@ Ext.define("Override.grid.header.Container", {
   },
 
   onClearSortClick: function(){
-    var grid = this.up("gridpanel"),
+    var grid = this.up("gridpanel, treepanel"),
       store = grid.getStore(),
-      state = grid.getState(),
+      state = Ext.clone(grid.getState()),
       columns = grid.getHeaderContainer().getVisibleGridColumns();
     
     store.sorters.clear();
@@ -352,6 +352,9 @@ Ext.define("Override.grid.header.Container", {
         column.setSortState(null);
       }
     });
+    if(Ext.isDefined(state.storeState)){
+      delete state.storeState.sorters;
+    }
     grid.saveState(state);
   },
 });
