@@ -803,6 +803,10 @@ Ext.define("NOC.core.ModelApplication", {
         me.form.reset();
         me.unmask();
         me.showGrid();
+        if(!Ext.Object.isEmpty(this.currentQuery)){ // Apply updated filter and fix url
+          this.store.setFilterParams(this.currentQuery);
+          this.saveFilterToUrl(this.currentQuery);
+        }
         NOC.msg.complete(__("Saved"));
       },
       failure: function(response){
@@ -976,6 +980,10 @@ Ext.define("NOC.core.ModelApplication", {
           me.reloadStore();
           me.unmask();
           me.showGrid();
+          if(!Ext.Object.isEmpty(this.currentQuery)){ // Apply updated filter and fix url
+            this.store.setFilterParams(this.currentQuery);
+            this.saveFilterToUrl(this.currentQuery);
+          }
         }
       },
       onFailure = function(response){
@@ -983,7 +991,8 @@ Ext.define("NOC.core.ModelApplication", {
         try{
           message = Ext.decode(response.responseText).message;
         } catch(err){
-          message = "Internal error";
+          console.error(err, response.responseText);
+          message = __("Internal error");
         }
         NOC.error(message);
         me.unmask();
@@ -1226,9 +1235,11 @@ Ext.define("NOC.core.ModelApplication", {
       delete me.currentQuery[me.idField];
     }
     me.clearNavTabTooltip();
-    // Apply updated filter
-    me.store.setFilterParams(me.currentQuery);
     me.showGrid();
+    if(!Ext.Object.isEmpty(this.currentQuery)){ // Apply updated filter and fix url
+      this.store.setFilterParams(this.currentQuery);
+      this.saveFilterToUrl(this.currentQuery);
+    }
     if(toReload){
       me.reloadStore();
     }
