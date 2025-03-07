@@ -323,6 +323,10 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             (9, "avg_load_in", "avg_load_in"): "divide(avg(load_in),1048576)",
             (10, "avg_load_out", "avg_load_out"): "divide(avg(load_out),1048576)",
         }
+        report_metric.CUSTOM_FILTER["having"] = [
+            "isNotNull(load_in_max)",
+            "isNotNull(load_out_max)",
+        ]
         ifaces_metrics = defaultdict(dict)
 
         for row in report_metric.do_query():
