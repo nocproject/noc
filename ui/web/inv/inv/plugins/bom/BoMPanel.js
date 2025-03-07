@@ -18,17 +18,6 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
   controller: "bom",
   layout: "fit",
   viewModel: {
-    stores: {
-      gridStore: {
-        model: "NOC.inv.inv.plugins.bom.BoMModel",
-        sorters: [
-          {property: "model", direction: "ASC"},
-        ],
-        listeners: {
-          datachanged: "onDataChanged",
-        },
-      },
-    },
     data: {
       searchText: "",
       totalCount: 0,
@@ -96,8 +85,11 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       stateful: true,
       stateId: "inv.inv-bom-grid",
       allowDeselect: true,
-      bind: {
-        store: "{gridStore}",
+      store: {   
+        model: "NOC.inv.inv.plugins.bom.BoMModel",
+        // sorters: [
+        //   {property: "model", direction: "ASC"},
+        // ],
       },
       features: [{
         ftype: "grouping",
@@ -201,9 +193,10 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
     var me = this;
     me.callParent();
 
-    var store = me.getViewModel().getStore("gridStore"),
+    var store = this.down("grid").getStore(),
       filters = store.getFilters();
 
+    store.on("datachanged", this.getController().onDataChanged, this);
     store.setGroupField("vendor");
     me.getViewModel().bind({
       bindTo: {
@@ -243,6 +236,6 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
       return
     }
     vm.set("currentId", objectId);
-    vm.get("gridStore").loadData(data.data);
+    this.down("grid").getStore().loadData(data.data);
   },
 });

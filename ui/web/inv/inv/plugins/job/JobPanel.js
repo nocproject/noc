@@ -17,22 +17,6 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
   layout: "fit",
   controller: "job",
   viewModel: {
-    stores: {
-      gridStore: {
-        model: "NOC.inv.inv.plugins.job.JobModel",
-        listeners: {
-          datachanged: "onDataChanged",
-        },
-        filters: [
-          {
-            property: "name",
-            value: "{searchText}",
-            anyMatch: true,
-            caseSensitive: false,
-          },
-        ],
-      },
-    },
     data: {
       searchText: "",
       totalCount: 0,
@@ -55,10 +39,19 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
       },
       listeners: {
         change: function(field, newValue){
-          var trigger = field.getTrigger("clear");
+          var grid = field.up("panel").down("gridpanel"),
+            store = grid.getStore(),
+            trigger = field.getTrigger("clear");
           if(newValue){
+            store.filter({
+              property: "name",
+              value: newValue,
+              anyMatch: true,
+              caseSensitive: false,
+            });
             trigger.show();
           } else{
+            store.clearFilter();
             trigger.hide();
           }
         },
@@ -95,8 +88,9 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
       stateful: true,
       stateId: "inv.inv-job-grid",
       emptyText: __("No jobs"),
-      bind: {
-        store: "{gridStore}",
+      store: {
+        model: "NOC.inv.inv.plugins.job.JobModel",
+        data: [],
       },
       features: [{
         ftype: "grouping",
@@ -149,14 +143,25 @@ Ext.define("NOC.inv.inv.plugins.job.JobPanel", {
       },
     },
   ],
+  //
+  initComponent: function(){
+    this.callParent();
+    let store = this.down("grid").getStore();
+    store.on("datachanged", this.getController().onDataChanged, this);
+  },
+  //
   preview: function(data, objectId){
     var me = this,
       vm = me.getViewModel(),
       records = data.data || [],
       maskComponent = me.up("[appId=inv.inv]").maskComponent,
-      messageId = maskComponent.show("processing", "jobs");
+      messageId = maskComponent.show("processing", "jobs"),
+      store = this.down("grid").getStore();
     vm.set("currentId", objectId);
-    vm.get("gridStore").loadData(records);
+    if(!Ext.isEmpty(store)){
+      store.removeAll();
+      store.loadData(records);
+    }
     maskComponent.hide(messageId);
   },
 });
