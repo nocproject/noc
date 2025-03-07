@@ -5,11 +5,11 @@
 
 const defaultColumns = [
   {
-    xtype: 'glyphactioncolumn',
+    xtype: "glyphactioncolumn",
     width: 25,
     items: [{
       glyph: NOC.glyph.cart_plus,
-      handler: 'onAddObject',
+      handler: "onAddObject",
     }],
   },
   {
@@ -36,13 +36,13 @@ const defaultColumns = [
     },
   },
   {
-    text: __('Name'),
-    dataIndex: 'name',
+    text: __("Name"),
+    dataIndex: "name",
     width: 200,
   },
   {
-    text: __('Managed'),
-    dataIndex: 'is_managed',
+    text: __("Managed"),
+    dataIndex: "is_managed",
     width: 30,
     renderer: NOC.render.Bool,
   },
@@ -51,58 +51,58 @@ const defaultColumns = [
     dataIndex: "state",
   },
   {
-    text: __('Address'),
-    dataIndex: 'address',
+    text: __("Address"),
+    dataIndex: "address",
     width: 100,
   },
   {
-    text: __('Profile'),
-    dataIndex: 'profile',
+    text: __("Profile"),
+    dataIndex: "profile",
     width: 100,
   },
   {
-    text: __('Platform'),
-    dataIndex: 'platform',
+    text: __("Platform"),
+    dataIndex: "platform",
     flex: 1,
   },
   {
-    text: __('Version'),
-    dataIndex: 'version',
+    text: __("Version"),
+    dataIndex: "version",
     flex: 1,
   },
   {
-    text: __('Obj. Profile'),
-    dataIndex: 'object_profile',
+    text: __("Obj. Profile"),
+    dataIndex: "object_profile",
     flex: 1,
   },
   {
-    text: __('Adm. Domain'),
-    dataIndex: 'administrative_domain',
+    text: __("Adm. Domain"),
+    dataIndex: "administrative_domain",
     flex: 1,
   },
   {
-    text: __('Auth Profile'),
-    dataIndex: 'auth_profile',
+    text: __("Auth Profile"),
+    dataIndex: "auth_profile",
     flex: 1,
   },
   {
-    text: __('VRF'),
-    dataIndex: 'vrf',
+    text: __("VRF"),
+    dataIndex: "vrf",
     flex: 1,
   },
   {
-    text: __('Pool'),
-    dataIndex: 'pool',
+    text: __("Pool"),
+    dataIndex: "pool",
     flex: 1,
   },
   {
-    text: __('Description'),
-    dataIndex: 'description',
+    text: __("Description"),
+    dataIndex: "description",
     flex: 1,
   },
   {
-    text: __('Interfaces'),
-    dataIndex: 'interface_count',
+    text: __("Interfaces"),
+    dataIndex: "interface_count",
     width: 50,
     sortable: false,
     align: "right",
@@ -112,8 +112,8 @@ const defaultColumns = [
     },
   },
   {
-    text: __('Links'),
-    dataIndex: 'link_count',
+    text: __("Links"),
+    dataIndex: "link_count",
     width: 50,
     sortable: true,
     align: "right",
@@ -123,200 +123,200 @@ const defaultColumns = [
     },
   },
   {
-    text: __('Labels'),
-    dataIndex: 'labels',
+    text: __("Labels"),
+    dataIndex: "labels",
     renderer: NOC.render.LabelField,
     align: "right",
     width: 100,
   },
 ];
 //
-console.debug('Defining NOC.sa.managedobject.Application');
-Ext.define('NOC.sa.managedobject.Application', {
+console.debug("Defining NOC.sa.managedobject.Application");
+Ext.define("NOC.sa.managedobject.Application", {
   itemId: "sa-managedobject",
-  extend: 'NOC.core.Application',
-  layout: 'card',
-  alias: 'widget.managedobject',
-  viewModel: 'managedobject',
-  controller: 'managedobject',
+  extend: "NOC.core.Application",
+  layout: "card",
+  alias: "widget.managedobject",
+  viewModel: "managedobject",
+  controller: "managedobject",
   requires: [
-    'Ext.layout.container.Card',
-    'Ext.form.field.ComboBox',
-    'NOC.sa.managedobject.ViewModel',
-    'NOC.sa.managedobject.Controller',
-    'NOC.core.filter.Filter',
-    'NOC.sa.managedobject.form.View',
+    "Ext.layout.container.Card",
+    "Ext.form.field.ComboBox",
+    "NOC.sa.managedobject.ViewModel",
+    "NOC.sa.managedobject.Controller",
+    "NOC.core.filter.Filter",
+    "NOC.sa.managedobject.form.View",
   ],
   stateMap: {
-    w: __('Waiting'),
-    r: __('Running'),
-    s: __('Success'),
-    f: __('Failed'),
+    w: __("Waiting"),
+    r: __("Running"),
+    s: __("Success"),
+    f: __("Failed"),
   },
   defaults: {
-    xtype: 'panel',
-    layout: 'border',
+    xtype: "panel",
+    layout: "border",
     border: false,
     scrollable: false,
   },
   items: [
     {
-      itemId: 'managedobject-select',
+      itemId: "managedobject-select",
       activeItem: 0,
       items: [
         { // device panel
-          xtype: 'panel',
-          layout: 'border',
-          region: 'center',
+          xtype: "panel",
+          layout: "border",
+          region: "center",
           border: false,
           scrollable: false,
           items: [
             {
-              xtype: 'grid', // selection grid
+              xtype: "grid", // selection grid
               stateful: true,
               stateId: "sa.managedobject-selection-grid",
-              reference: 'saManagedobjectSelectionGrid',
-              region: 'center',
-              width: '50%',
+              reference: "saManagedobjectSelectionGrid",
+              region: "center",
+              width: "50%",
               resizable: true,
               pageSize: 0,
               border: false,
               scrollable: true,
-              emptyText: __('Not Found'),
+              emptyText: __("Not Found"),
               columns: [{
-                xtype: 'glyphactioncolumn',
+                xtype: "glyphactioncolumn",
                 width: 50,
                 items: [
                   {
                     glyph: NOC.glyph.star,
-                    tooltip: __('Mark/Unmark'),
+                    tooltip: __("Mark/Unmark"),
                     getColor: function(cls, meta, r){
                       return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
                     },
-                    handler: 'onFavItem',
+                    handler: "onFavItem",
                   },
                   {
                     glyph: NOC.glyph.edit,
-                    tooltip: __('Edit'),
-                    handler: 'onEdit',
+                    tooltip: __("Edit"),
+                    handler: "onEdit",
                   },
                 ],
               }].concat(defaultColumns),
               bind: {
-                store: '{selectionStore}',
-                selection: '{selectionRow}',
+                store: "{selectionStore}",
+                selection: "{selectionRow}",
               },
               selModel: {
-                mode: 'MULTI',
-                selType: 'checkboxmodel',
+                mode: "MULTI",
+                selType: "checkboxmodel",
               },
               listeners: {
-                selectionchange: 'onSelectionChange',
-                itemdblclick: 'onSelectionDblClick',
-                afterrender: 'setRowClass',
-                cellclick: 'onCellClick',
+                selectionchange: "onSelectionChange",
+                itemdblclick: "onSelectionDblClick",
+                afterrender: "setRowClass",
+                cellclick: "onCellClick",
               },
               dockedItems: [{
                 tbar: {
                   items: [
                     { // @todo: Search
                       glyph: NOC.glyph.refresh,
-                      tooltip: __('Refresh data'),
+                      tooltip: __("Refresh data"),
                       style: {
-                        pointerEvents: 'all',
+                        pointerEvents: "all",
                       },
-                      handler: 'onSelectionRefresh',
+                      handler: "onSelectionRefresh",
                     },
                     {
-                      xtype: 'combo',
+                      xtype: "combo",
                       editable: false,
                       minWidth: 225,
-                      emptyText: __('Group select'),
+                      emptyText: __("Group select"),
                       store: {
-                        fields: ['cmd', 'title'],
+                        fields: ["cmd", "title"],
                         data: [
-                          {'cmd': 'SCREEN', 'title': __('All devices on screen')},
-                          {'cmd': 'FIRST_50', 'title': __('First 50')},
-                          {'cmd': 'FIRST_100', 'title': __('First 100')},
-                          {'cmd': 'N_ROWS', 'title': __('First N')},
-                          {'cmd': 'PERIOD', 'title': __('Period start,qty')},
+                          {"cmd": "SCREEN", "title": __("All devices on screen")},
+                          {"cmd": "FIRST_50", "title": __("First 50")},
+                          {"cmd": "FIRST_100", "title": __("First 100")},
+                          {"cmd": "N_ROWS", "title": __("First N")},
+                          {"cmd": "PERIOD", "title": __("Period start,qty")},
                         ],
                       },
-                      queryMode: 'local',
-                      displayField: 'title',
-                      valueField: 'cmd',
+                      queryMode: "local",
+                      displayField: "title",
+                      valueField: "cmd",
                       listeners: {
-                        select: 'onSelectionSelectAll',
+                        select: "onSelectionSelectAll",
                       },
                     },
                     {
-                      text: __('Unselect All'),
+                      text: __("Unselect All"),
                       glyph: NOC.glyph.minus_circle,
-                      tooltip: __('Unselect all devices'),
+                      tooltip: __("Unselect all devices"),
                       style: {
-                        pointerEvents: 'all',
+                        pointerEvents: "all",
                       },
                       bind: {
-                        disabled: '{!selectionGridHasSel}',
+                        disabled: "{!selectionGridHasSel}",
                       },
-                      handler: 'onSelectionUnselectAll',
+                      handler: "onSelectionUnselectAll",
                     },
-                    '->',
+                    "->",
                     {
-                      text: __('Add'),
+                      text: __("Add"),
                       glyph: NOC.glyph.cart_plus,
-                      tooltip: __('Move all selected devices to the basket'),
+                      tooltip: __("Move all selected devices to the basket"),
                       style: {
-                        pointerEvents: 'all',
+                        pointerEvents: "all",
                       },
                       bind: {
-                        disabled: '{!selectionGridHasSel}',
+                        disabled: "{!selectionGridHasSel}",
                       },
-                      handler: 'onSelectionAddChecked',
+                      handler: "onSelectionAddChecked",
                     },
-                    '|',
+                    "|",
                     {
                       glyph: NOC.glyph.shopping_cart,
-                      tooltip: __('Show/Hide Basket'),
+                      tooltip: __("Show/Hide Basket"),
                       style: {
-                        pointerEvents: 'all',
+                        pointerEvents: "all",
                       },
                       bind: {
-                        disabled: '{!hasRecords}',
-                        text: '{total.selected}',
+                        disabled: "{!hasRecords}",
+                        text: "{total.selected}",
                         style: {
-                          cursor: '{cursorIcon}',
+                          cursor: "{cursorIcon}",
                         },
                       },
-                      handler: 'toggleBasket',
+                      handler: "toggleBasket",
                     },
-                    '|',
+                    "|",
                     {
                       glyph: NOC.glyph.trash_o,
-                      tooltip: __('Clean Basket'),
+                      tooltip: __("Clean Basket"),
                       style: {
-                        pointerEvents: 'all',
+                        pointerEvents: "all",
                       },
                       bind: {
-                        disabled: '{!hasRecords}',
+                        disabled: "{!hasRecords}",
                         style: {
-                          cursor: '{cursorIcon}',
+                          cursor: "{cursorIcon}",
                         },
                       },
-                      handler: 'onSelectedRemoveAll',
+                      handler: "onSelectedRemoveAll",
                     },
-                    '|',
+                    "|",
                     {
-                      xtype: 'box',
+                      xtype: "box",
                       bind: {
-                        html: '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Selected : {total.selection}') + '</span',
+                        html: '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __("Selected : {total.selection}") + "</span",
                       },
                     },
-                    '|',
+                    "|",
                     {
-                      xtype: 'box',
+                      xtype: "box",
                       bind: {
-                        html: '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Total : {total.all}') + '</span>',
+                        html: '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __("Total : {total.all}") + "</span>",
                       },
                     }],
                 },
@@ -326,305 +326,302 @@ Ext.define('NOC.sa.managedobject.Application', {
               },
             },
             {
-              xtype: 'grid', // selected grid
+              xtype: "grid", // selected grid
               stateful: true,
               stateId: "sa.managedobject-selected1-grid",
-              reference: 'saManagedobjectSelectedGrid1',
-              region: 'east',
-              width: '50%',
+              reference: "saManagedobjectSelectedGrid1",
+              region: "east",
+              width: "50%",
               collapsed: true,
               animCollapse: false,
-              collapseMode: 'mini',
+              collapseMode: "mini",
               hideCollapseTool: true,
               resizable: true,
               pageSize: 0,
               border: false,
               scrollable: true,
-              emptyText: __('nothing checked'),
+              emptyText: __("nothing checked"),
               columns: [{
-                xtype: 'glyphactioncolumn',
+                xtype: "glyphactioncolumn",
                 width: 25,
                 items: [{
                   glyph: NOC.glyph.minus_circle,
-                  handler: 'onRemoveObject',
+                  handler: "onRemoveObject",
                 }],
               }].concat(defaultColumns),
               split: {
-                xtype: 'splitter',
+                xtype: "splitter",
               },
               bind: {
-                store: '{selectedStore}',
-                selection: '{selectedRow}',
+                store: "{selectedStore}",
+                selection: "{selectedRow}",
               },
               listeners: {
-                itemdblclick: 'onSelectedDblClick',
-                afterrender: 'setRowClass',
+                itemdblclick: "onSelectedDblClick",
+                afterrender: "setRowClass",
               },
               dockedItems: [{
                 tbar: {
                   items: [{
-                    text: __('Remove All'),
+                    text: __("Remove All"),
                     glyph: NOC.glyph.minus_circle,
-                    tooltip: __('Remove all devices from right panel'),
+                    tooltip: __("Remove all devices from right panel"),
                     style: {
-                      pointerEvents: 'all',
+                      pointerEvents: "all",
                     },
                     bind: {
-                      disabled: '{!hasRecords}',
+                      disabled: "{!hasRecords}",
                       style: {
-                        cursor: '{cursorIcon}',
+                        cursor: "{cursorIcon}",
                       },
                     },
-                    handler: 'onSelectedRemoveAll',
+                    handler: "onSelectedRemoveAll",
                   },
                           {
-                            text: __('Export'),
+                            text: __("Export"),
                             glyph: NOC.glyph.arrow_down,
                             tooltip: __("Save all from basket"),
-                            handler: 'onExportBasket',
+                            handler: "onExportBasket",
 
                           },
-                          '->',
+                          "->",
                           {
-                            xtype: 'container',
+                            xtype: "container",
                             glyph: NOC.glyph.shopping_cart,
                             bind: {
                               html: '<span class="x-btn-button x-btn-button-default-toolbar-small x-btn-text x-btn-icon x-btn-icon-left x-btn-button-center">'
                                                 + '<span class="x-btn-icon-el x-btn-icon-el-default-toolbar-small x-btn-glyph" style="font-family:FontAwesome;">&#xf07a;</span>'
-                                                + '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Total : {total.selected}') + '</span>'
-                                                + '</span>',
+                                                + '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __("Total : {total.selected}") + "</span>"
+                                                + "</span>",
                             },
                           }],
                 },
               }],
-              title: __('Basket'),
+              title: __("Basket"),
               tools: [
                 {
-                  type: 'right',
-                  tooltip: __('Hide basket'),
-                  callback: 'toggleBasket',
+                  type: "right",
+                  tooltip: __("Hide basket"),
+                  callback: "toggleBasket",
                 },
               ],
             },
           ],
         },
         {
-          xtype: 'NOC.Filter',
-          reference: 'filterPanel',
-          region: 'east',
+          xtype: "NOC.Filter",
+          reference: "filterPanel",
+          region: "east",
           width: 300,
           collapsed: true,
           border: false,
           animCollapse: false,
-          collapseMode: 'mini',
+          collapseMode: "mini",
           hideCollapseTool: true,
           split: {
-            xtype: 'splitter',
+            xtype: "splitter",
           },
-          treeAlign: 'left',
+          treeAlign: "left",
           resizable: true,
-          selectionStore: 'managedobject.selectionStore',
-          listeners: {
-            changeSearchField: function(){
-              console.log('changeSearchField');
-            },
+          selectionStore: "managedobject.selectionStore",
+        },
+      ],
+      dockedItems: [
+        {
+          tbar: {
+            items: [
+              {
+                xtype: "searchfield",
+                itemId: "__query", // name of http request query param
+                width: 400,
+                emptyText: __("Search ..."),
+                triggers: {
+                  clear: {
+                    cls: "x-form-clear-trigger",
+                    handler: "cleanSearchField",
+                  },
+                },
+                listeners: {
+                  specialkey: "onSearchFieldChange",
+                },
+              }, "|", {
+                text: __("Filtering List"),
+                glyph: NOC.glyph.filter,
+                tooltip: __("Show/Hide Filter"),
+                style: {
+                  pointerEvents: "all",
+                },
+                handler: "collapseFilter",
+              }, {
+                xtype: "splitbutton",
+                text: __("Group Operation"),
+                tooltip: __("Select Action"),
+                bind: {
+                  disabled: "{!hasRecords}",
+                },
+                menu: {
+                  items: [
+                    {
+                      text: __("Group Edit"),
+                      glyph: NOC.glyph.edit,
+                      bind: {
+                        disabled: "{!hasUpdatePerm}",
+                      },
+                      handler: "onGroupEdit",
+                    },
+                    {
+                      text: __("Run discovery now"),
+                      glyph: NOC.glyph.play,
+                      handler: "onRunDiscovery",
+                    },
+                    {
+                      text: __("Set managed"),
+                      glyph: NOC.glyph.check,
+                      handler: "onSetManaged",
+                    },
+                    {
+                      text: __("Set unmanaged"),
+                      glyph: NOC.glyph.times,
+                      handler: "onSetUnmanaged",
+                    },
+                    {
+                      text: __("New Maintenance"),
+                      glyph: NOC.glyph.wrench,
+                      handler: "onNewMaintenance",
+                    },
+                    {
+                      text: __("Add to Maintenance"),
+                      glyph: NOC.glyph.plus,
+                      handler: "onAddToMaintenance",
+                    },
+                    {
+                      itemId: "runCmdBtn",
+                      text: __("Run Commands"),
+                      glyph: NOC.glyph.play,
+                      bind: {
+                        disabled: "{!hasRunCmdPerm}",
+                      },
+                      handler: "toNext",
+                    },
+                  ],
+                },
+              }, {
+                itemId: "createBtn",
+                text: __("Add"),
+                glyph: NOC.glyph.plus,
+                tooltip: __("Add new record"),
+                bind: {
+                  disabled: "{!hasCreatePerm}",
+                },
+                handler: "onNewRecord",
+              },
+            ],
           },
         },
       ],
-      dockedItems: [{
-        tbar: {
-          items: [
-            {
-              xtype: 'searchfield',
-              itemId: '__query', // name of http request query param
-              width: 400,
-              emptyText: __('Search ...'),
-              triggers: {
-                clear: {
-                  cls: 'x-form-clear-trigger',
-                  handler: 'cleanSearchField',
-                },
-              },
-              listeners: {
-                specialkey: 'onSearchFieldChange',
-              },
-            }, '|', {
-              text: __('Filtering List'),
-              glyph: NOC.glyph.filter,
-              tooltip: __('Show/Hide Filter'),
-              style: {
-                pointerEvents: 'all',
-              },
-              handler: 'collapseFilter',
-            }, {
-              xtype: 'splitbutton',
-              text: __('Group Operation'),
-              tooltip: __('Select Action'),
-              bind: {
-                disabled: '{!hasRecords}',
-              },
-              menu: {
-                items: [
-                  {
-                    text: __("Group Edit"),
-                    glyph: NOC.glyph.edit,
-                    bind: {
-                      disabled: '{!hasUpdatePerm}',
-                    },
-                    handler: 'onGroupEdit',
-                  },
-                  {
-                    text: __("Run discovery now"),
-                    glyph: NOC.glyph.play,
-                    handler: "onRunDiscovery",
-                  },
-                  {
-                    text: __("Set managed"),
-                    glyph: NOC.glyph.check,
-                    handler: "onSetManaged",
-                  },
-                  {
-                    text: __("Set unmanaged"),
-                    glyph: NOC.glyph.times,
-                    handler: "onSetUnmanaged",
-                  },
-                  {
-                    text: __("New Maintaince"),
-                    glyph: NOC.glyph.wrench,
-                    handler: "onNewMaintaince",
-                  },
-                  {
-                    text: __("Add to Maintaince"),
-                    glyph: NOC.glyph.plus,
-                    handler: "onAddToMaintaince",
-                  },
-                  {
-                    itemId: "runCmdBtn",
-                    text: __("Run Commands"),
-                    glyph: NOC.glyph.play,
-                    bind: {
-                      disabled: '{!hasRunCmdPerm}',
-                    },
-                    handler: "toNext",
-                  },
-                ],
-              },
-            }, {
-              itemId: "createBtn",
-              text: __("Add"),
-              glyph: NOC.glyph.plus,
-              tooltip: __("Add new record"),
-              bind: {
-                disabled: '{!hasCreatePerm}',
-              },
-              handler: "onNewRecord",
-            },
-          ],
-        },
-      }],
     },
     {
-      itemId: 'managedobject-config',
+      itemId: "managedobject-config",
       activeItem: 1,
       items: [
         {
-          xtype: 'grid',
-          reference: 'saManagedobjectSelectedGrid2',
-          region: 'center',
-          width: '50%',
+          xtype: "grid",
+          reference: "saManagedobjectSelectedGrid2",
+          region: "center",
+          width: "50%",
           border: false,
           scrollable: true,
-          bind: '{selectedStore}',
+          bind: "{selectedStore}",
           columns: defaultColumns.concat([{
-            xtype: 'glyphactioncolumn',
+            xtype: "glyphactioncolumn",
             width: 25,
             items: [{
               glyph: NOC.glyph.minus_circle,
-              handler: 'onRemoveObject',
+              handler: "onRemoveObject",
             }],
           }]),
           listeners: {
-            afterrender: 'setRowClass',
+            afterrender: "setRowClass",
           },
         },
         {
-          xtype: 'panel',
-          region: 'east',
-          width: '50%',
+          xtype: "panel",
+          region: "east",
+          width: "50%",
           border: false,
           defaults: {
             padding: 4,
-            width: '80%',
+            width: "80%",
           },
           items: [
             {
-              xtype: 'panel',
+              xtype: "panel",
               border: false,
               defaults: {
                 padding: 10,
               },
               layout: {
-                type: 'hbox',
-                align: 'middle',
+                type: "hbox",
+                align: "middle",
               },
               items: [
                 {
-                  xtype: 'checkboxfield',
-                  reference: 'ignoreCliErrors',
-                  boxLabel: __('Ignore CLI errors'),
+                  xtype: "checkboxfield",
+                  reference: "ignoreCliErrors",
+                  boxLabel: __("Ignore CLI errors"),
                   checked: true,
                 },
                 {
-                  xtype: 'combo',
-                  reference: 'saManagedobjectMode',
-                  fieldLabel: __('Mode'),
+                  xtype: "combo",
+                  reference: "saManagedobjectMode",
+                  fieldLabel: __("Mode"),
                   labelWidth: 50,
-                  queryMode: 'local',
-                  displayField: 'name',
-                  valueField: 'value',
+                  queryMode: "local",
+                  displayField: "name",
+                  valueField: "value",
                   editable: false,
                   store: {
                     data: [
-                      {value: 'commands', name: __('Run Commands')},
-                      {value: 'snippet', name: __('Run Snippet')},
-                      {value: 'action', name: __('Run Action')},
+                      {value: "commands", name: __("Run Commands")},
+                      {value: "snippet", name: __("Run Snippet")},
+                      {value: "action", name: __("Run Action")},
                     ],
                   },
                   listeners: {
-                    change: 'onConfigModeChange',
+                    change: "onConfigModeChange",
                     afterrender: function(field){
-                      field.setValue('commands');
+                      field.setValue("commands");
                     },
                   },
                 },
               ],
             },
             {
-              xtype: 'form',
-              reference: 'saManagedobjectCommandForm',
-              width: '100%',
+              xtype: "form",
+              reference: "saManagedobjectCommandForm",
+              width: "100%",
               border: false,
               defaults: {
                 margin: 10,
                 padding: 20,
-                width: '80%',
+                width: "80%",
               },
               bind: {
-                disabled: '{!hasRecords}',
+                disabled: "{!hasRecords}",
               },
               dockedItems: [{
-                xtype: 'toolbar',
-                dock: 'top',
-                ui: 'header',
+                xtype: "toolbar",
+                dock: "top",
+                ui: "header",
                 defaults: {minWidth: '<a href="#cfg-minButtonWidth">minButtonWidth</a>'},
                 items: [
-                  {xtype: 'component', flex: 1},
+                  {xtype: "component", flex: 1},
                   {
-                    xtype: 'button', text: __('Run'),
+                    xtype: "button", text: __("Run"),
                     glyph: NOC.glyph.play,
                     disabled: true,
                     formBind: true,
-                    handler: 'onRun',
+                    handler: "onRun",
                   },
                 ],
               }],
@@ -637,52 +634,52 @@ Ext.define('NOC.sa.managedobject.Application', {
           items: [
             {
               glyph: NOC.glyph.arrow_left,
-              tooltip: __('Back'),
+              tooltip: __("Back"),
               style: {
-                pointerEvents: 'all',
+                pointerEvents: "all",
               },
-              handler: 'toPrev',
+              handler: "toPrev",
             },
           ],
         },
       }],
     },
     {
-      itemId: 'run-command-progress',
+      itemId: "run-command-progress",
       activeItem: 2,
       items: [
         {
-          xtype: 'grid',
-          reference: 'saManagedobjectSelectedGrid3',
-          region: 'center',
-          width: '50%',
+          xtype: "grid",
+          reference: "saManagedobjectSelectedGrid3",
+          region: "center",
+          width: "50%",
           border: false,
           scrollable: true,
-          bind: '{selectedStore}',
+          bind: "{selectedStore}",
           columns: defaultColumns.concat({
-            text: __('Status'),
-            dataIndex: 'status',
+            text: __("Status"),
+            dataIndex: "status",
             width: 70,
             renderer: NOC.render.Choices({
-              w: __('Waiting'),
-              r: __('Running'),
-              f: __('Failed'),
-              s: __('Success'),
+              w: __("Waiting"),
+              r: __("Running"),
+              f: __("Failed"),
+              s: __("Success"),
             }),
           }),
           selModel: {
-            mode: 'SINGLE',
-            selType: 'checkboxmodel',
+            mode: "SINGLE",
+            selType: "checkboxmodel",
           },
           listeners: {
-            afterrender: 'setStatusClass',
-            select: 'onShowResult',
+            afterrender: "setStatusClass",
+            select: "onShowResult",
           },
           dockedItems: [{
-            xtype: 'toolbar',
-            dock: 'top',
+            xtype: "toolbar",
+            dock: "top",
             items: {
-              xtype: 'segmentedbutton',
+              xtype: "segmentedbutton",
               height: 25,
               columns: 4,
               frame: false,
@@ -690,54 +687,54 @@ Ext.define('NOC.sa.managedobject.Application', {
               items: [
                 {
                   pressed: true,
-                  value: 'w',
+                  value: "w",
                   bind: {
-                    text: '<span>' + __('Waiting') + '&nbsp;<span class="noc-badge noc-badge-waiting">{progressState.w}</span></span>',
+                    text: "<span>" + __("Waiting") + '&nbsp;<span class="noc-badge noc-badge-waiting">{progressState.w}</span></span>',
                   },
                 },
                 {
                   pressed: true,
-                  value: 'r',
+                  value: "r",
                   bind: {
-                    text: '<span>' + __('Running') + '&nbsp;<span class="noc-badge noc-badge-running">{progressState.r}</span></span>',
+                    text: "<span>" + __("Running") + '&nbsp;<span class="noc-badge noc-badge-running">{progressState.r}</span></span>',
                   },
                 },
                 {
                   pressed: true,
-                  value: 'f',
+                  value: "f",
                   bind: {
-                    text: '<span>' + __('Failed') + '&nbsp;<span class="noc-badge noc-badge-failed">{progressState.f}</span></span>',
+                    text: "<span>" + __("Failed") + '&nbsp;<span class="noc-badge noc-badge-failed">{progressState.f}</span></span>',
                   },
                 },
                 {
                   pressed: true,
-                  value: 's',
+                  value: "s",
                   bind: {
-                    text: '<span>' + __('Success') + '&nbsp;<span class="noc-badge noc-badge-success">{progressState.s}</span></span>',
+                    text: "<span>" + __("Success") + '&nbsp;<span class="noc-badge noc-badge-success">{progressState.s}</span></span>',
                   },
                 },
               ],
               listeners: {
-                toggle: 'onStatusToggle',
+                toggle: "onStatusToggle",
               },
             },
           }],
         },
         {
-          xtype: 'panel',
-          region: 'east',
-          width: '50%',
+          xtype: "panel",
+          region: "east",
+          width: "50%",
           scrollable: true,
           padding: 4,
           items: {
-            xtype: 'container',
-            layout: 'fit',
+            xtype: "container",
+            layout: "fit",
             fieldStyle: {
-              'fontFamily': 'courier new',
-              'fontSize': '12px',
+              "fontFamily": "courier new",
+              "fontSize": "12px",
             },
             bind: {
-              html: '{resultOutput}',
+              html: "{resultOutput}",
             },
           },
         },
@@ -747,66 +744,66 @@ Ext.define('NOC.sa.managedobject.Application', {
           items: [
             {
               glyph: NOC.glyph.arrow_left,
-              tooltip: __('Back'),
+              tooltip: __("Back"),
               style: {
-                pointerEvents: 'all',
+                pointerEvents: "all",
               },
-              handler: 'toPrev',
+              handler: "toPrev",
               bind: {
-                disabled: '{isRunning}',
+                disabled: "{isRunning}",
               },
             }, {
               glyph: NOC.glyph.print,
-              tooltip: __('Report'),
+              tooltip: __("Report"),
               style: {
-                pointerEvents: 'all',
+                pointerEvents: "all",
               },
               bind: {
-                disabled: '{isRunning}',
+                disabled: "{isRunning}",
               },
-              handler: 'onReportClick',
+              handler: "onReportClick",
             },
           ],
         },
       }],
     },
     {
-      itemId: 'run-command-report',
+      itemId: "run-command-report",
       activeItem: 3,
-      xtype: 'panel',
-      reference: 'saRunCommandReportPanel',
-      html: '',
+      xtype: "panel",
+      reference: "saRunCommandReportPanel",
+      html: "",
       scrollable: true,
       bodyPadding: 4,
       dockedItems: [{
-        xtype: 'toolbar',
-        dock: 'top',
+        xtype: "toolbar",
+        dock: "top",
         items: [
           {
             glyph: NOC.glyph.arrow_left,
-            tooltip: __('Back'),
+            tooltip: __("Back"),
             style: {
-              pointerEvents: 'all',
+              pointerEvents: "all",
             },
-            handler: 'toPrev',
+            handler: "toPrev",
           },
           {
             glyph: NOC.glyph.download,
-            tooltip: __('Download results'),
+            tooltip: __("Download results"),
             style: {
-              pointerEvents: 'all',
+              pointerEvents: "all",
             },
-            handler: 'onDownload',
+            handler: "onDownload",
           },
         ],
       }],
     },
     {
       activeItem: 4,
-      itemId: 'managedobject-form',
+      itemId: "managedobject-form",
       items: [
         {
-          xtype: 'managedobject.form',
+          xtype: "managedobject.form",
         },
       ],
     },
