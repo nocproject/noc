@@ -30,6 +30,7 @@ from bson import ObjectId
 from .eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.enumeration import Enumeration
+from noc.fm.models.eventcategory import EventCategory
 from noc.sa.models.profile import GENERIC_PROFILE, Profile
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.fm.event import Event, MessageType, EventSource, Target
@@ -166,6 +167,9 @@ class EventClassificationRule(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     event_class: EventClass = PlainReferenceField(EventClass, required=True)
+    level1: EventCategory = PlainReferenceField(EventCategory, required=False)
+    level2: EventCategory = PlainReferenceField(EventCategory, required=False)
+    level3: EventCategory = PlainReferenceField(EventCategory, required=False)
     preference = IntField(required=True, default=1000)
     patterns: List[EventClassificationPattern] = EmbeddedDocumentListField(
         EventClassificationPattern
@@ -187,6 +191,8 @@ class EventClassificationRule(Document):
     category = ObjectIdField()
 
     def __str__(self):
+        if self.level1:
+            return f"{self.level1.name}.{self.level2.name if self.level2 else ''}.{self.level3.name if self.level3 else ''}"
         return self.name
 
     @classmethod
