@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # FM Event Loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from .base import BaseLoader
 from ..models.fmevent import FMEventObject
 from noc.core.fm.event import Event, EventSeverity, MessageType, Var
 from noc.core.service.loader import get_service
+from noc.core.bi.decorator import bi_hash
 
 
 class FMEventLoader(BaseLoader):
@@ -36,18 +37,22 @@ class FMEventLoader(BaseLoader):
         if not e.data and not e.message:
             raise AttributeError("Unknown message data. Set data or message")
         severity = EventSeverity(int(e.severity)) if e.severity else EventSeverity.INDETERMINATE
+        tp = MessageType(
+                severity=severity if not e.is_cleared else EventSeverity.CLEARED,
+                event_class=e.event_class,
+            )
+        if e.category:
+            l1, l2, l3 = e.category.split(".")
+            tp.level1, tp.level2, tp.level3 = l1 or None, l2 or None, l3 or None
         event = Event(
             ts=e.ts,
             remote_id=e.id,
             remote_system=self.system.remote_system.name,
             target=e.object.get_target(),
-            type=MessageType(
-                severity=severity if not e.is_cleared else EventSeverity.CLEARED,
-                event_class=e.event_class,
-            ),
+            type=tp,
             data=[Var(name=d.name, value=d.value) for d in e.data],
             message=e.message,
-            labels=e.labels,
+            labels=["remote_system::zabbix"] + e.labels,
         )
         event.target.pool = e.object.pool or "default"
         return event
@@ -69,7 +74,11 @@ class FMEventLoader(BaseLoader):
         for num, event in enumerate(new_state):
             event = self.get_fm_event(event)
             max_ts = max(max_ts, event.ts)
-            svc.publish(orjson.dumps(event.model_dump()), f"events.{event.target.pool}")
+            svc.publish(
+                orjson.dumps(event.model_dump()),
+                f"events.{event.target.pool}",
+                partition=bi_hash(event.target.remote_id) % 2
+            )
         if max_ts:
             self.system.remote_system.last_extract_event = datetime.datetime.fromtimestamp(max_ts)
             return
@@ -84,3 +93,4 @@ class FMEventLoader(BaseLoader):
 
     def check(self, chain):
         return 0
+

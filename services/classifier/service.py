@@ -44,6 +44,7 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX
+from noc.fm.models.eventcategory import EventCategory, Category
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
@@ -365,7 +366,7 @@ class ClassifierService(FastAPIService):
         self,
         event: Event,
         raw_vars: Dict[str, Any],
-    ) -> Tuple[EventAction, Optional["EventConfig"], Optional[Dict[str, Any]]]:
+    ) -> Tuple[EventAction, Optional["EventConfig"], Optional[Dict[str, Any]], Optional[Category]]:
         """
         Perform event classification.
         Classification steps are:
@@ -393,20 +394,24 @@ class ClassifierService(FastAPIService):
                     event.type.event_class,
                 )
                 metrics[EventMetrics.CR_FAILED] += 1
-                return EventAction.DROP, None, None  # Drop malformed message
+                return EventAction.DROP, None, None, None  # Drop malformed message
             metrics[EventMetrics.CR_PREPROCESSED] += 1
+            category = None
+            if event.type.category:
+                category = EventCategory.from_string(event.type.category)
             if not event.vars:
-                return EventAction.LOG, self.get_event_config(event_class.id), raw_vars
-            return EventAction.LOG, self.get_event_config(event_class.id), event.vars
+                return EventAction.LOG, self.get_event_config(event_class.id), raw_vars, category
+            return EventAction.LOG, self.get_event_config(event_class.id), event.vars, category
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
-            return EventAction.DROP, None, None
+            return EventAction.DROP, None, None, None
         rule, r_vars = self.ruleset.find_rule(event, raw_vars)
         if rule is None:
             # Something goes wrong.
             # No default rule found. Exit immediately
             self.logger.error("No default rule found. Exiting")
             os._exit(1)
+        category = Category(level1=rule.level1, level2=rule.level2, level3=rule.level3)
         if rule.to_drop:
             # Silently drop event if declared by action
             event.type.severity = EventSeverity.IGNORED
@@ -417,7 +422,7 @@ class ClassifierService(FastAPIService):
                 event.target.address,
             )
             metrics[EventMetrics.CR_DELETED] += 1
-            return EventAction.DROP, self.get_event_config(rule.event_class_id), r_vars
+            return EventAction.DROP, self.get_event_config(rule.event_class_id), r_vars, category
         # Apply transform
         for t in rule.vars_transform or []:
             t.transform(r_vars, raw_vars)
@@ -449,7 +454,7 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_UNKNOWN] += 1
         else:
             metrics[EventMetrics.CR_CLASSIFIED] += 1
-        return EventAction.LOG, event_config, r_vars
+        return EventAction.LOG, event_config, r_vars, category
 
     async def dispose_event(self, event: Event, mo: ManagedObject):
         """
@@ -640,7 +645,7 @@ class ClassifierService(FastAPIService):
         # Process event
         resolved_vars = self.resolve_vars(event)
         try:
-            e_action, e_cfg, resolved_vars = await self.classify_event(event, resolved_vars)
+            e_action, e_cfg, resolved_vars, category = await self.classify_event(event, resolved_vars)
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s",
@@ -693,6 +698,11 @@ class ClassifierService(FastAPIService):
         # Suppress repeats
         if event.vars and self.suppress_repeats(event, e_cfg):
             return
+        self.register_event(event, e_cfg, resolved_vars, mo, category)
+        # Fill deduplication filter
+        self.dedup_filter.register(event, e_cfg, duplicate_vars)
+        if config.message.enable_event:
+            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
@@ -793,6 +803,7 @@ class ClassifierService(FastAPIService):
         resolved_vars: Dict[str, Any],
         mo: Optional[ManagedObject] = None,
         error: Optional[str] = None,
+        category: Optional[Category] = None,
     ):
         """
         Send Event to Clickhouse (Archive)
@@ -803,6 +814,7 @@ class ClassifierService(FastAPIService):
             resolved_vars: Processed event data
             mo: Managed Object mapping
             error: Error text on processed message
+            category: Event category
         """
         timestamp = event.timestamp
         data = {
@@ -812,6 +824,9 @@ class ClassifierService(FastAPIService):
             #
             "event_id": str(event.id),
             "event_class": event_config.bi_id,
+            "level1": category.level1.bi_id if category and category.level1 else None,
+            "level2": category.level2.bi_id if category and category.level2 else None,
+            "level3": category.level3.bi_id if category and category.level3 else None,
             "source": event.type.source.value,
             #
             "labels": event.labels or [],
