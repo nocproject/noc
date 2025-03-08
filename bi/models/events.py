@@ -28,6 +28,7 @@ from noc.core.bi.dictionaries.profile import Profile
 from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.eventclass import EventClass
 from noc.core.bi.dictionaries.pool import Pool
+from noc.core.bi.dictionaries.eventcategory import EventCategory
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
@@ -51,6 +52,10 @@ class Events(Model):
     event_id = StringField(description=_("Id"))  #
     source = StringField(description=_("Event Source"), low_cardinality=True)
     event_class = ReferenceField(EventClass, description=_("Event Class"))
+    level1 = ReferenceField(EventCategory, description=_("Event Category Process (L1)"))
+    level2 = ReferenceField(EventCategory, description=_("Event Category Object (L2)"))
+    level3 = ReferenceField(EventCategory, description=_("Event Category Action (L3)"))
+    categories = ArrayField(StringField(), description=_("Categories List"))
     # Data
     labels = ArrayField(StringField(), description=_("Labels"))
     data = StringField(description="All data on JSON")
