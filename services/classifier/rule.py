@@ -99,6 +99,9 @@ class Rule:
     matcher: Optional[Tuple[Callable, ...]] = None
     label_matchers: Optional[Tuple[Callable, ...]] = None
     set_labels: Optional[Tuple[str, ...]] = None
+    level1: Optional[str] = None
+    level2: Optional[str] = None
+    level3: Optional[str] = None
     is_transparent_labels: bool = False
     is_unknown: bool = False
     is_unknown_syslog: bool = False
@@ -177,6 +180,9 @@ class Rule:
             name=rule.name,
             event_class=rule.event_class,
             event_class_name=rule.event_class.name,
+            level1=rule.level1,
+            level2=rule.level2,
+            level3=rule.level3,
             source=source,
             profile=profile,
             preference=rule.preference,
