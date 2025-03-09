@@ -244,6 +244,7 @@ _MODELS = {
     "fm.Enumeration": "noc.fm.models.enumeration.Enumeration",
     "fm.Escalation": "noc.fm.models.escalation.Escalation",
     "fm.EscalationProfile": "noc.fm.models.escalationprofile.EscalationProfile",
+    "fm.EventCategory": "noc.fm.models.eventcategory.EventCategory",
     "fm.EventClass": "noc.fm.models.eventclass.EventClass",
     "fm.EventClassCategory": "noc.fm.models.eventclass.EventClassCategory",
     "fm.EventClassificationRule": "noc.fm.models.eventclassificationrule.EventClassificationRule",
