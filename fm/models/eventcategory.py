@@ -91,6 +91,8 @@ class EventCategory(Document):
         "collection": "noc.eventcategories",
         "strict": False,
         "auto_create_index": False,
+        "json_collection": "fm.eventcategories",
+        "json_unique_fields": ["name"],
     }
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
