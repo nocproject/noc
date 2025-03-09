@@ -8,8 +8,9 @@
 # Python modules
 import operator
 import cachetools
+import os
 from threading import Lock
-from typing import Optional, Union, NamedTuple
+from typing import Optional, Union, NamedTuple, Dict, Any, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -29,6 +30,8 @@ from noc.core.fm.enum import EventCategoryLevel
 from noc.core.model.decorator import on_delete_check, tree
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.text import quote_safe_path
+from noc.core.prettyjson import to_json
 
 id_lock = Lock()
 
@@ -93,8 +96,9 @@ class EventCategory(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     parent = ReferenceField("self", required=False)
-    level = EnumField(EventCategoryLevel, required=True)
-    vars = EmbeddedDocumentListField(EventCategoryVar)
+    level: "EventCategoryLevel" = EnumField(EventCategoryLevel, required=True)
+    vars: List["EventCategoryVar"] = EmbeddedDocumentListField(EventCategoryVar)
+    # resources
     classified = BooleanField(default=False)
     # Object id in BI
     bi_id = LongField(unique=True)
@@ -132,6 +136,33 @@ class EventCategory(Document):
         if l3:
             l3 = EventCategory.get_by_name(l2)
         return Category(level1=l1, level2=l2, level3=l3)
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "$collection": self._meta["json_collection"],
+            "uuid": self.uuid,
+            "description": self.description,
+            "level": self.level.value,
+        }
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "level",
+                "description",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"
 
     # def save(self, *args, **kwargs):
     #     if " | " in self.name:
