@@ -81,6 +81,16 @@ class EventCategoryVar(EmbeddedDocument):
             and self.match_suppress == other.match_suppress
         )
 
+    @property
+    def json_data(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "type": self.type,
+            "required": self.required,
+            "match_suppress": self.match_suppress,
+        }
+
 
 @tree(field="parent")
 @bi_sync
@@ -147,6 +157,7 @@ class EventCategory(Document):
             "uuid": self.uuid,
             "description": self.description,
             "level": self.level.value,
+            "vars": [vv.json_data for vv in self.vars],
         }
         return r
 
