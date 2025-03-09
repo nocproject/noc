@@ -72,6 +72,13 @@ Ext.define("NOC.fm.eventcategory.Application", {
                     fieldLabel: __("UUID")
                 },
                 {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: __("Description"),
+                    uiStyle: "extra",
+                    allowBlank: true
+                },
+                {
                   name: "parent",
                   xtype: "fm.eventcategory.LookupField",
                   fieldLabel: __("Parent"),
