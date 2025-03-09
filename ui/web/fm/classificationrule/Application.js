@@ -17,6 +17,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
         "NOC.fm.classificationrule.Model",
         "NOC.fm.classificationrule.TestForm",
         "NOC.fm.eventclass.LookupField",
+        "NOC.fm.eventcategory.LookupField",
         "NOC.main.label.LookupField",
         "NOC.sa.profile.LookupField",
         'Ext.ux.form.JSONField',
@@ -144,6 +145,39 @@ Ext.define("NOC.fm.classificationrule.Application", {
                                     fn: me.onSelectEventClass
                                 }
                             }
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Category"),
+                    labelAlign: "right",
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "top"
+                    },
+                    items: [
+                        {
+                            xtype: "fm.eventcategory.LookupField",
+                            name: "level1",
+                            fieldLabel: __("Process (Lvl. 1)"),
+                            allowBlank: false,
+                            uiStyle: "medium",
+                        },
+                        {
+                            xtype: "fm.eventcategory.LookupField",
+                            name: "level2",
+                            fieldLabel: __("Object(Lvl. 2)"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                        },
+                        {
+                            xtype: "fm.eventcategory.LookupField",
+                            name: "level3",
+                            fieldLabel: __("Disposition (Lvl. 3)"),
+                            allowBlank: true,
+                            uiStyle: "medium",
                         }
                     ]
                 },
