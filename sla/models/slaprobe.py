@@ -115,6 +115,12 @@ class SLAProbe(Document):
     def get_by_bi_id(cls, bi_id: int) -> Optional["SLAProbe"]:
         return SLAProbe.objects.filter(bi_id=bi_id).first()
 
+    @property
+    def service(self):
+        from sa.models.service import Service
+
+        return Service.objects.filter(sla_probe=self).first()
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:
             yield "cfgmetricsources", f"sla.SLAProbe::{self.bi_id}"
@@ -214,13 +220,14 @@ class SLAProbe(Document):
             if sla.group:
                 labels += [f"noc::sla::group::{sla.group}"]
                 hints += [f"sla_group::{sla.group}"]
+            svc = sla.service
             yield MetricCollectorConfig(
                 collector="sla",
                 metrics=tuple(metrics),
                 labels=tuple(labels),
                 hints=hints,
                 sla_probe=sla.bi_id,
-                service=sla.service.bi_id if sla.service else None,
+                service=svc.bi_id if svc else None,
             )
 
     @classmethod

@@ -462,21 +462,27 @@ class Interface(Document):
                         self.profile.default_notification_group.id
                     ).encode()
                 headers[MX_PROFILE_ID] = str(self.profile.id).encode()
+                msg = self.get_message_context()
+                msg["managed_object"] = self.managed_object.get_message_context()
+                msg["status"] = status
                 send_message(
-                    data={
-                        "name": self.name,
-                        "description": self.description,
-                        "is_uni": self.profile.is_uni,
-                        "profile": {"id": str(self.profile.id), "name": self.profile.name},
-                        "status": status,
-                        "full_duplex": self.full_duplex,
-                        "in_speed": self.in_speed,
-                        "bandwidth": self.bandwidth,
-                        "managed_object": self.managed_object.get_message_context(),
-                    },
+                    data=msg,
                     message_type=MessageType.INTERFACE_STATUS_CHANGE,
                     headers=headers,
                 )
+
+    def get_message_context(self) -> Dict[str, Any]:
+        """Interface Message Ctx"""
+        return {
+            "name": self.name,
+            "description": self.description,
+            "is_uni": self.profile.is_uni,
+            "profile": {"id": str(self.profile.id), "name": self.profile.name},
+            "status": self.status,
+            "full_duplex": self.full_duplex,
+            "in_speed": self.in_speed,
+            "bandwidth": self.bandwidth,
+        }
 
     @property
     def parent(self) -> "Interface":
@@ -613,14 +619,14 @@ class Interface(Document):
                 continue
             ifindex = i.get("ifindex")
             service = None
-            if i["_id"] in s_map:
-                service = Service.get_bi_id_by_id(str(s_map[i["_id"]]))
+            if str(i["_id"]) in s_map:
+                service = Service.get_by_id(str(s_map[i["_id"]]))
             yield MetricCollectorConfig(
                 collector="managed_object",
                 metrics=tuple(metrics),
                 labels=(f"noc::interface::{i['name']}",),
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                service=service,
+                service=service.bi_id if service else None,
             )
             if not i_profile.subinterface_apply_policy != "I":
                 continue
@@ -631,8 +637,8 @@ class Interface(Document):
             ):
                 ifindex = si.get("ifindex")
                 service = None
-                if si["_id"] in s_map:
-                    service = Service.get_bi_id_by_id(str(s_map[si["_id"]]))
+                if str(si["_id"]) in s_map:
+                    service = Service.get_by_id(s_map[si["_id"]])
                 yield MetricCollectorConfig(
                     collector="managed_object",
                     metrics=tuple(metrics),
@@ -641,7 +647,7 @@ class Interface(Document):
                         f"noc::subinterface::{si['name']}",
                     ),
                     hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                    service=service,
+                    service=service.bi_id if service else None,
                 )
 
     @classmethod
