@@ -149,8 +149,8 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   fieldLabel: __("Mappings"),
                   allowBlank: true,
                   renderer: function(values){
-                    if(values === undefined || values === null){
-                      return "";
+                    if(values === undefined || values === null || Ext.isEmpty(values)){
+                      return "-";
                     }
                     var isArray = Array.isArray(values),
                       v = isArray ? values : [values];
