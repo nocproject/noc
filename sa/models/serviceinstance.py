@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, List, Iterable, Any
+from typing import Optional, List, Iterable, Any, Dict
 
 # Third-party modules
 from pymongo import UpdateOne
@@ -446,6 +446,18 @@ class ServiceInstance(Document):
         return si
 
     @classmethod
-    def get_object_resources(cls, o):
+    def get_object_resources(cls, o) -> Dict[str, str]:
         """Return all resources used by object"""
-        return {}
+        r = {}
+        for row in (
+            ServiceInstance.objects.filter(
+                managed_object=o,
+                resources__exists=True,
+            )
+            .scalar("resources", "service")
+            .as_pymongo()
+        ):
+            for rid in row["resources"]:
+                _, rid = rid.split(":")
+                r[rid] = row["service"]
+        return r
