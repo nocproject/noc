@@ -653,15 +653,15 @@ class Service(Document):
             spr[p] = rule.affected_instance
         if not q and not spr:
             return []
-        logger.info("Match Profiles: %s", spr)
+        logger.debug("Match Profiles: %s", spr)
         # Rules
-        rules = [x for x in spr if not spr[x]]
+        rules = [x for x in spr if spr[x]]
         if rules:
             q |= m_q(profile__in=rules)
         services = set()
         # Instances
         for svc in ServiceInstance.get_services_by_alarm(alarm):
-            if svc.profile.id in spr and spr[svc.profile.id]:
+            if svc.profile.id in spr and not spr[svc.profile.id]:
                 services.add(svc.id)
         # Check dependency
         if alarm.managed_object.effective_service_groups:
@@ -670,6 +670,7 @@ class Service(Document):
                 profile__in=rules,
             )
         #
+        logger.debug("Requested services by query: %s", q)
         if q:
             services |= set(Service.objects.filter(q).scalar("id"))
         return list(services)
