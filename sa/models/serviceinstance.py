@@ -8,7 +8,6 @@
 # Python modules
 import datetime
 import logging
-from itertools import chain
 from typing import Optional, List, Iterable, Any, Dict
 
 # Third-party modules
