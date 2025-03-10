@@ -122,9 +122,27 @@ Ext.define("NOC.core.Application", {
   },
   //
   setHistoryHash: function(){
-    var me = this;
-    me.currentHistoryHash = [me.appId].concat([].slice.call(arguments, 0)).join("/");
-    Ext.History.setHash(me.currentHistoryHash);
+    this.currentHistoryHash = [this.appId].concat([].slice.call(arguments, 0)).join("/");
+    Ext.History.setHash(this.currentHistoryHash);
+    if(arguments.length === 0){
+      this.setQueryParam();
+    }
+  },
+  //
+  setQueryParam: function(){
+    let filterPanel = this.lookup("filterPanel");
+    if(Ext.isEmpty(filterPanel)){
+      return;
+    }
+    let filterVm = filterPanel.getViewModel();
+    if(Ext.isEmpty(filterVm)){
+      return;
+    }
+    let filter = filterVm.get("filterObject");
+    if(Ext.Object.isEmpty(filter)){
+      return
+    }
+    this.getController().saveFilterToUrl(filter);
   },
   //
   onCloseApp: function(){},
