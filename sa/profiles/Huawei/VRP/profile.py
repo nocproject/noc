@@ -202,6 +202,7 @@ class Profile(BaseProfile):
         "Serial": None,
         "Pos": None,
         "Vbdif": "other",
+        "Global-VE": "SVI",
     }
 
     rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
