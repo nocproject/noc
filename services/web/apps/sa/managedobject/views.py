@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,6 +47,8 @@ from noc.sa.interfaces.base import (
     StringParameter,
     BooleanParameter,
     IntParameter,
+    DictListParameter,
+    DocumentParameter,
 )
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
@@ -295,14 +297,28 @@ class ManagedObjectApplication(ExtModelApplication):
             )
         for m in data["mappings"]:
             rs = RemoteSystem.get_by_id(m["remote_system"])
-            m["remote_system__label"] = rs.name
-            m["is_master"] = False
+            m |= {
+                "remote_system__label": rs.name,
+                "is_master": False,
+                "url": None,
+            }
+            if rs.object_url_template:
+                tpl = Jinja2Template(rs.object_url_template)
+                m["url"] = tpl.render(
+                    {
+                        "remote_system": rs,
+                        "remote_id": m["remote_id"],
+                        "object": o,
+                        "config": rs.config,
+                    },
+                )
         if o.remote_system:
             data["mappings"].append(
                 {
                     "remote_system": str(o.remote_system.id),
                     "remote_system__label": o.remote_system.name,
                     "remote_id": o.remote_id,
+                    "url": None,
                     "is_master": False,
                 }
             )
@@ -1122,6 +1138,47 @@ class ManagedObjectApplication(ExtModelApplication):
         else:
             args = {}
         return self.submit_slow_op(request, execute, o, a, args)
+
+    @view(
+        url=r"(?P<id>\d+)/mappings/$",
+        method=["POST"],
+        access="change_mappings",
+        api=True,
+        validate={
+            "mappings": DictListParameter(
+                attrs={
+                    "remote_system": DocumentParameter(RemoteSystem, required=True),
+                    "remote_id": StringParameter(required=True),
+                }
+            )
+        },
+    )
+    def api_update_mappings(self, request, id, mappings):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        mappings = {m["remote_system"]: m["remote_id"] for m in mappings}
+        o.update_object_mappings(mappings)
+        o.save()
+        r = []
+        for m in o.mappings:
+            rs = RemoteSystem.get_by_id(m["remote_system"])
+            s = {
+                "remote_system__label": rs.name,
+                "is_master": False,
+                "url": None,
+            }
+            if rs.object_url_template:
+                tpl = Jinja2Template(rs.object_url_template)
+                s["url"] = tpl.render(
+                    {
+                        "remote_system": rs,
+                        "remote_id": m["remote_id"],
+                        "object": o,
+                        "config": rs.config,
+                    },
+                )
+            s |= m
+            r.append(s)
+        return {"status": True, "data": r}
 
     @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$", method=["POST"], access="change_link")
     def api_fix_links(self, request, link_id):

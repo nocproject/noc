@@ -717,10 +717,10 @@ Ext.define("NOC.sa.managedobject.Controller", {
             formView,
             standardMode = ["closeBtn", "saveBtn", "resetBtn", "deleteBtn", "createBtn", "cloneBtn", "showMapBtn",
                             "configBtn", "confDBBtn", "cardBtn", "dashboardBtn", "consoleBtn", "scriptsBtn", "interfacesBtn",
-                            "sensorsBtn", "linksBtn", "discoverBtn", "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"],
+                            "sensorsBtn", "linksBtn", "discoverBtn", "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn", "mappingBtn"],
             embeddedMode = ["saveBtn", "showMapBtn", "configBtn", "confDBBtn", "cardBtn", "dashboardBtn",
                             "consoleBtn", "scriptsBtn", "interfacesBtn", "sensorsBtn", "linksBtn", "discoverBtn",
-                            "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"],
+                            "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn", "mappingBtn"],
             r = {},
             data = Ext.decode(response.responseText),
             record = Ext.create("NOC.sa.managedobject.Model", data);
