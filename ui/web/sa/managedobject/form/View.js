@@ -1770,12 +1770,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
         ],
       },
       {
-        itemId: "mappingBtn",
-        text: __("Mapping"),
-        glyph: NOC.glyph.file,
-        handler: "onMapping",
-      },
-      {
         itemId: "configBtn",
         text: __("Config"),
         glyph: NOC.glyph.file,
@@ -1863,6 +1857,12 @@ Ext.define("NOC.sa.managedobject.form.View", {
         text: __("Command Log"),
         glyph: NOC.glyph.film,
         handler: "onInteractions",
+      },
+      {
+        itemId: "mappingBtn",
+        text: __("Mapping"),
+        glyph: NOC.glyph.file,
+        handler: "onMapping",
       },
       // {
       //     text: __("Validation"),

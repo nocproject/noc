@@ -51,6 +51,12 @@ Ext.define("NOC.core.RemoteMappingForm", {
             handler: this.removeAllMappingsHandler,
           },
           {
+            text: __("Reset"),
+            formBind: true,
+            scope: this,
+            handler: this.resetFormHandler,
+          },
+          {
             text: __("Close"),
             handler: function(){
               this.up("window").close();
@@ -150,6 +156,13 @@ Ext.define("NOC.core.RemoteMappingForm", {
     var data = this.down("form").getForm().getValues(),
       url = "/sa/managedobject/" + data.managedobject_id + "/mappings/";
     this.request(url, {mappings: []});
+  },
+  resetFormHandler: function(){
+    var mappingContainer = this.down("[itemId=mapping-container]");
+    this.down("form").getForm().reset();
+    mappingContainer.removeAll();
+    mappingContainer.add(this.getRowConfig("add", true));
+    this.center();
   },
   request: function(url, params){
     Ext.Ajax.request({
