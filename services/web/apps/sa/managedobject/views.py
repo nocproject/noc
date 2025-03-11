@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -303,7 +303,15 @@ class ManagedObjectApplication(ExtModelApplication):
                 "url": None,
             }
             if rs.object_url_template:
-                m["url"] = rs.object_url_template
+                tpl = Jinja2Template(rs.object_url_template)
+                m["url"] = tpl.render(
+                    {
+                        "remote_system": rs,
+                        "remote_id": m["remote_id"],
+                        "object": o,
+                        "config": rs.config,
+                    },
+                )
         if o.remote_system:
             data["mappings"].append(
                 {
@@ -1159,9 +1167,17 @@ class ManagedObjectApplication(ExtModelApplication):
                 "url": None,
             }
             if rs.object_url_template:
-                s["url"] = rs.object_url_template
+                tpl = Jinja2Template(rs.object_url_template)
+                s["url"] = tpl.render(
+                    {
+                        "remote_system": rs,
+                        "remote_id": m["remote_id"],
+                        "object": o,
+                        "config": rs.config,
+                    },
+                )
             s |= m
-            r.append(m)
+            r.append(s)
         return {"status": True, "data": r}
 
     @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$", method=["POST"], access="change_link")
