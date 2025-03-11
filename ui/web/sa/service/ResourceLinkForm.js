@@ -100,8 +100,18 @@ Ext.define("NOC.sa.service.ResourceLinkForm", {
           handler: "buttonBindHandler",
         },
         {
-          text: __("Reset"),
+          text: __("Unbind"),
           handler: "buttonResetHandler",
+        },
+        {
+          text: __("Reset"),
+          handler: "resetFormHandler",
+        },
+        {
+          text: __("Close"),
+          handler: function(){
+            this.up("window").close();
+          }, 
         },
       ],
     },
@@ -143,5 +153,9 @@ Ext.define("NOC.sa.service.ResourceLinkForm", {
       },
       scope: this,
     });
+  },
+  resetFormHandler: function(){
+    this.down("form").getForm().reset();
+    this.center();
   },
 });

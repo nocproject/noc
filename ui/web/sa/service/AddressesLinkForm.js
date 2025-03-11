@@ -22,14 +22,17 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
       items: [{
         xtype: "form",
         padding: 4,
+        width: 400,
         items: [
           {
             xtype: "hidden",
             name: "service_id",
+            value: this.service_id,
           },
           {
             xtype: "hidden",
             name: "instance_id",
+            value: this.instance_id,
           },
           {
             xtype: "container",
@@ -46,13 +49,25 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
             handler: this.buttonHandler("bind"),
           },
           {
-            text: __("Reset"),
+            text: __("Unbind"),
             handler: this.buttonHandler("unbind"), 
+          },
+          {
+            text: __("Reset"),
+            scope: this,
+            handler: this.resetFormHandler,
+          },
+          {
+            text: __("Close"),
+            handler: function(){
+              this.up("window").close();
+            }, 
           },
         ],
       }],
     });
     this.callParent();
+    this.restoreRows(this.addresses);
   },
   getRowConfig: function(type){
     return {
@@ -87,7 +102,7 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
     return config;
   },
   getAddressTextConfig: function(){
-    var config = {
+    return {
       xtype: "textfield",
       name: "address",
       allowBlank: false,
@@ -102,7 +117,6 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
         },
       },
     };
-    return config;
   },
   getPoolComboConfig: function(){
     return {
@@ -186,5 +200,12 @@ Ext.define("NOC.sa.service.AddressesLinkForm", {
       },
       scope: this,
     });
+  },
+  resetFormHandler: function(){
+    var mappingContainer = this.down("[itemId=addresses-container]");
+    mappingContainer.removeAll();
+    mappingContainer.add(this.getRowConfig("add", true));
+    this.down("form").getForm().reset();
+    this.center();
   },
 });

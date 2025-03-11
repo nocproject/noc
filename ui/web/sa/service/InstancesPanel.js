@@ -298,8 +298,6 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     }
     var form = Ext.create("NOC.sa.service.ManagedObjectLinkForm", {
       title: title,
-    });
-    form.down("form").getForm().setValues({
       managed_id: record.get("managed_object"),
       service_id: service.id,
       instance_id: record.id,
@@ -310,12 +308,15 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     var service = this.getViewModel().get("record"), 
       form = Ext.create("NOC.sa.service.AddressesLinkForm", {
         title: __("Bind Addresses"),
+        service_id: service.id,
+        instance_id: record.id,
+        addresses: record.get("addresses"),
       });
-    form.down("form").getForm().setValues({
-      service_id: service.id,
-      instance_id: record.id,
-    });
-    form.restoreRows(record.get("addresses"));
+    // form.down("form").getForm().setValues({
+    //   service_id: service.id,
+    //   instance_id: record.id,
+    // });
+    // form.restoreRows(record.get("addresses"));
     form.instanceRecord = record;
   },
   open_resourcesForm: function(record){
