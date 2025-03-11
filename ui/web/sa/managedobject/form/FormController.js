@@ -10,6 +10,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
     "Ext.ux.grid.column.GlyphAction",
     "NOC.sa.managedobject.Model",
     "NOC.sa.managedobject.Proxy",
+    "NOC.core.RemoteMappingForm",
   ],
   alias: "controller.managedobject.form",
   url: "/sa/managedobject/",
@@ -20,6 +21,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
       deleteBtn = app.down("[itemId=deleteBtn]"),
       cmdBtn = app.down("[itemId=cmdBtn]"),
       scriptsBtn = app.down("[itemId=scriptsBtn]"),
+      mappingBtn = app.down("[itemId=mappingBtn]"),
       configBtn = app.down("[itemId=configBtn]"),
       confDBBtn = app.down("[itemId=confDBBtn]"),
       saveBtn = app.down("[itemId=saveBtn]"),
@@ -34,6 +36,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
     deleteBtn.setDisabled(!view.hasPermission("delete"));
     cmdBtn.setDisabled(!view.hasPermission("interactions"));
     scriptsBtn.setDisabled(!view.hasPermission("script"));
+    mappingBtn.setDisabled(!view.hasPermission("change_mappings"));
     configBtn.setDisabled(!view.hasPermission("config"));
     confDBBtn.setDisabled(!view.hasPermission("config"));
     saveBtn.setDisabled(!view.hasPermission("update"));
@@ -357,6 +360,14 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
     this.getView().down("[name=snmp_auth_key]").setHidden(["Community", "noAuthNoPriv"].includes(value));
     this.getView().down("[itemId=snmp_priv_proto]").setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
     this.getView().down("[name=snmp_priv_key]").setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+  },
+  onMapping: function(){
+    var formPanel = this.getView().down("[itemId=managedobject-form-panel]");
+    Ext.create("NOC.core.RemoteMappingForm", {
+      managedObjectId: formPanel.recordId,
+      mappings: formPanel.currentRecord.get("mappings"),
+      parentForm: formPanel,
+    });
   },
   // Workaround labelField
   onChange: Ext.emptyFn,

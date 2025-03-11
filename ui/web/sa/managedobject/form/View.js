@@ -143,6 +143,27 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   allowBlank: true,
                   renderer: NOC.clipboard,
                 },
+                {
+                  name: "mappings",
+                  xtype: "displayfield",
+                  fieldLabel: __("Mappings"),
+                  allowBlank: true,
+                  renderer: function(values){
+                    if(values === undefined || values === null || Ext.isEmpty(values)){
+                      return "-";
+                    }
+                    var isArray = Array.isArray(values),
+                      v = isArray ? values : [values];
+                    return v.map(function(value){
+                      var mappingString = value.remote_system__label + ": " + value.remote_id; 
+                      if(Ext.isEmpty(value.url)){
+                        return mappingString + NOC.clipboardIcon(value.remote_id);
+                      }
+                      return "<a href='" + value.url + "' target='_blank'>" + mappingString + "</a>"
+                         + NOC.clipboardIcon(value.remote_id);
+                    }).join("<br/>");
+                  },
+                },
               ],
             },
           ],
@@ -1279,37 +1300,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
         },
         {
           xtype: "fieldset",
-          title: __("Integration"),
-          layout: "column",
-          defaults: this.fieldSetDefaults,
-          collapsible: true,
-          collapsed: true,
-          items: [
-            {
-              items: [
-                {
-                  name: "remote_system",
-                  xtype: "core.combo",
-                  restUrl: "/main/remotesystem/lookup/",
-                  uiStyle: "medium-combo",
-                  fieldLabel: __("Remote System"),
-                  tabIndex: 640,
-                  allowBlank: true,
-                },
-                {
-                  name: "remote_id",
-                  xtype: "textfield",
-                  fieldLabel: __("Remote ID"),
-                  tabIndex: 650,
-                  allowBlank: true,
-                }],
-            }, {
-              items: [],
-            },
-          ],
-        },
-        {
-          xtype: "fieldset",
           title: __("Escalation"),
           layout: "column",
           defaults: this.fieldSetDefaults,
@@ -1836,6 +1826,12 @@ Ext.define("NOC.sa.managedobject.form.View", {
         text: __("Command Log"),
         glyph: NOC.glyph.film,
         handler: "onInteractions",
+      },
+      {
+        itemId: "mappingBtn",
+        text: __("Mapping"),
+        glyph: NOC.glyph.file,
+        handler: "onMapping",
       },
       // {
       //     text: __("Validation"),
