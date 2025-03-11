@@ -1300,37 +1300,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
         },
         {
           xtype: "fieldset",
-          title: __("Integration"),
-          layout: "column",
-          defaults: this.fieldSetDefaults,
-          collapsible: true,
-          collapsed: true,
-          items: [
-            {
-              items: [
-                {
-                  name: "remote_system",
-                  xtype: "core.combo",
-                  restUrl: "/main/remotesystem/lookup/",
-                  uiStyle: "medium-combo",
-                  fieldLabel: __("Remote System"),
-                  tabIndex: 640,
-                  allowBlank: true,
-                },
-                {
-                  name: "remote_id",
-                  xtype: "textfield",
-                  fieldLabel: __("Remote ID"),
-                  tabIndex: 650,
-                  allowBlank: true,
-                }],
-            }, {
-              items: [],
-            },
-          ],
-        },
-        {
-          xtype: "fieldset",
           title: __("Escalation"),
           layout: "column",
           defaults: this.fieldSetDefaults,
