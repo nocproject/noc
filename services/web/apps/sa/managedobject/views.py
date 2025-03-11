@@ -1149,7 +1149,20 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         mappings = {m["remote_system"]: m["remote_id"] for m in mappings}
         o.update_object_mappings(mappings)
-        return {"status": True}
+        o.save()
+        r = []
+        for m in o.mappings:
+            rs = RemoteSystem.get_by_id(m["remote_system"])
+            s = {
+                "remote_system__label": rs.name,
+                "is_master": False,
+                "url": None,
+            }
+            if rs.object_url_template:
+                s["url"] = rs.object_url_template
+            s |= m
+            r.append(m)
+        return {"status": True, "data": r}
 
     @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$", method=["POST"], access="change_link")
     def api_fix_links(self, request, link_id):
