@@ -40,15 +40,10 @@ Ext.define("NOC.core.RemoteMappingForm", {
         buttons: [
           {
             text: __("Map"),
-            formBind: true,
+            itemId: "mapButton",
+            disabled: false,
             scope: this,
             handler: this.mappingHandler,
-          },
-          {
-            text: __("Remove all mappings"),
-            formBind: true,
-            scope: this,
-            handler: this.removeAllMappingsHandler,
           },
           {
             text: __("Reset"),
@@ -63,6 +58,10 @@ Ext.define("NOC.core.RemoteMappingForm", {
             }, 
           },
         ],
+        listeners: {
+          dirtychange: this.updateMapButtonState,
+          scope: this,
+        },
       }],
     });
     this.callParent();
@@ -83,13 +82,22 @@ Ext.define("NOC.core.RemoteMappingForm", {
           name: "remote_system",
           allowBlank: false,
           uiStyle: "medium-combo",
+          listeners: {
+            scope: this,
+            change: this.updateMapButtonState,
+          },
         },
         {
           xtype: "textfield",
           name: "remote_id",
           allowBlank: false,
           uiStyle: "medium",
-        }],
+          listeners: {
+            scope: this,
+            change: this.updateMapButtonState,
+          },
+        },
+      ],
     }    
   },
   getButtonConfig: function(type){
@@ -150,18 +158,18 @@ Ext.define("NOC.core.RemoteMappingForm", {
             remote_id: remote_ids[index],
           };
         });
+    if(mappings.length === 1
+      && Ext.isEmpty(mappings[0].remote_system)
+      && Ext.isEmpty(mappings[0].remote_id)){
+      mappings = [];
+    }
     this.request(url, {mappings: mappings});
-  },
-  removeAllMappingsHandler: function(){
-    var data = this.down("form").getForm().getValues(),
-      url = "/sa/managedobject/" + data.managedobject_id + "/mappings/";
-    this.request(url, {mappings: []});
   },
   resetFormHandler: function(){
     var mappingContainer = this.down("[itemId=mapping-container]");
-    this.down("form").getForm().reset();
     mappingContainer.removeAll();
     mappingContainer.add(this.getRowConfig("add", true));
+    this.down("form").getForm().reset();
     this.center();
   },
   request: function(url, params){
@@ -185,5 +193,24 @@ Ext.define("NOC.core.RemoteMappingForm", {
       },
       scope: this,
     });
+  },
+  updateMapButtonState: function(){
+    var form = this.down("form"),
+      mapButton = this.down("button[itemId=mapButton]"),
+      mappingContainer = form.down("[itemId=mapping-container]"),
+      isValid = form.getForm().isValid();
+    
+    if(mappingContainer.items.length === 1){
+      var row = mappingContainer.items.getAt(0),
+        systemField = row.down("field[name=remote_system]"),
+        idField = row.down("field[name=remote_id]");
+      
+      if(systemField && idField && 
+          (Ext.isEmpty(systemField.getValue()) && Ext.isEmpty(idField.getValue()))){
+        mapButton.setDisabled(false);
+        return;
+      }
+    }
+    mapButton.setDisabled(!isValid);
   },
 });
