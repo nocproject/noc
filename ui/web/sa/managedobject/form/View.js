@@ -222,10 +222,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
                     render: "addTooltip",
                   },
                 },
-              ],
-            },
-            {
-              items: [
                 {
                   name: "shape",
                   xtype: "core.combo",
@@ -245,6 +241,10 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   tabIndex: 80,
                   allowBlank: true,
                 },
+              ],
+            },
+            {
+              items: [
                 {
                   name: "shape_overlay_position",
                   xtype: "core.combo",
@@ -458,6 +458,10 @@ Ext.define("NOC.sa.managedobject.form.View", {
                     render: "addTooltip",
                   },
                 },
+              ],
+            },
+            {
+              items: [
                 {
                   name: "remote_path",
                   xtype: "textfield",
@@ -466,10 +470,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   allowBlank: true,
                   groupEdit: true,
                 },
-              ],
-            },
-            {
-              items: [
                 {
                   name: "auth_profile",
                   xtype: "core.combo",
@@ -524,23 +524,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   minValue: 0,
                   maxValue: 99,
                   groupEdit: true,
-                },
-                {
-                  name: "snmp_rate_limit",
-                  xtype: "numberfield",
-                  fieldLabel: __("SNMP Rate limit"),
-                  tabIndex: 290,
-                  tooltip: __(
-                    "Limit SNMP (Query per second).",
-                  ),
-                  allowBlank: true,
-                  hideTrigger: true,
-                  minValue: 0,
-                  maxValue: 99,
-                  groupEdit: true,
-                  listeners: {
-                    render: "addTooltip",
-                  },
                 },
                 {
                   name: "time_pattern",
@@ -629,6 +612,23 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   readOnlyCls: "x-item-disabled",
                   allowBlank: true,
                   groupEdit: true,
+                },
+                {
+                  name: "snmp_rate_limit",
+                  xtype: "numberfield",
+                  fieldLabel: __("Rate limit"),
+                  tabIndex: 325,
+                  tooltip: __(
+                    "Limit SNMP (Query per second).",
+                  ),
+                  allowBlank: true,
+                  hideTrigger: true,
+                  minValue: 0,
+                  maxValue: 99,
+                  groupEdit: true,
+                  listeners: {
+                    render: "addTooltip",
+                  },
                 },
                 {
                   xtype: "fieldcontainer",
@@ -868,7 +868,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
         },
         {
           xtype: "fieldset",
-          title: __("Discovery"),
+          title: __("Discovery Policy"),
           layout: "column",
           defaults: this.fieldSetDefaults,
           collapsible: true,
@@ -877,7 +877,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
               name: "config_policy",
               xtype: "combobox",
               reference: "configPolicy",
-              fieldLabel: __("Config Policy"),
+              fieldLabel: __("Config"),
               tabIndex: 430,
               allowBlank: false,
               tooltip: __("Select method of config gathering"),
@@ -897,7 +897,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
             {
               name: "config_fetch_policy",
               xtype: "combobox",
-              fieldLabel: __("Config fetch Policy"),
+              fieldLabel: __("Config fetch"),
               tabIndex: 440,
               allowBlank: false,
               tooltip: __("Select method of config fetching"),
@@ -915,7 +915,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
             {
               name: "caps_discovery_policy",
               xtype: "combobox",
-              fieldLabel: __("Caps Policy"),
+              fieldLabel: __("Caps"),
               tabIndex: 450,
               store: [
                 ["P", __("Profile")],
@@ -930,7 +930,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
             {
               name: "interface_discovery_policy",
               xtype: "combobox",
-              fieldLabel: __("Interface Policy"),
+              fieldLabel: __("Interface"),
               tabIndex: 460,
               store: [
                 ["P", __("Profile")],
@@ -945,7 +945,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
             {
               name: "vlan_discovery_policy",
               xtype: "combobox",
-              fieldLabel: __("VLAN Policy"),
+              fieldLabel: __("VLAN"),
               tabIndex: 470,
               store: [
                 ["P", __("Profile")],
