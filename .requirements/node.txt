@@ -27,7 +27,7 @@ lz4==4.4.3
 manhole==1.8.1
 markerlib==0.6.0
 mongoengine==0.27.0
-motor==3.6.1
+motor==3.3.2
 networkx==3.2.1
 numpy==1.26.2
 orjson==3.10.15
