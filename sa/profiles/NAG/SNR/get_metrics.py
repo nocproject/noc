@@ -115,7 +115,12 @@ class Script(GetMetricsScript):
     def get_temperature(self, metrics):
         value = self.snmp.get(mib["NAG-MIB::switchTemperature", 0])
         if value:
-            self.set_metric(id=("Environment | Temperature", None), value=int(value), units="C")
+            self.set_metric(
+                id=("Environment | Temperature", None),
+                labels=["noc::sensor::Temperature Sensor"],
+                value=int(value),
+                units="C",
+            )
 
     @metrics(["CPU | Usage"], volatile=False, access="S")
     def get_cpu_metrics(self, metrics):
