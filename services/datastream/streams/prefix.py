@@ -41,6 +41,8 @@ class PrefixDataStream(DataStream):
             r["labels"] = [qs(x) for x in prefix.labels]
             # Alias for compat
             r["tags"] = [qs(x) for x in prefix.labels]
+        if prefix.tt:
+            r["tt"] = prefix.tt
         cls._apply_state(prefix, r)
         cls._apply_profile(prefix, r)
         cls._apply_vrf(prefix, r)
