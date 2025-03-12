@@ -535,7 +535,7 @@ class TableSection(ReportSection):
         if include_buttons:
             s = [
                 "<script type='text/javascript' src='/ui/pkg/jquery.table2csv/jquery.table2csv.js'></script>",
-                "<form id='report' action='/main/desktop/dlproxy/' method='POST'>",
+                "<form id='report'>",
                 "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
                 "<input type='hidden' name='filename' value='report.csv'>",
                 "<input type='hidden' name='data' id='csv_data'>",
