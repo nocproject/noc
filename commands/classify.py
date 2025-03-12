@@ -38,6 +38,13 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             default=None,
         )
+        refresh = subparsers.add_parser("refresh", help="Repeat classify of resulted JSON files")
+        refresh.add_argument(
+            "paths",
+            help="Paths for source JSON-files (directories or files)",
+            nargs=argparse.REMAINDER,
+            default=None,
+        )
 
     def handle(self, *args, **options):
         connect()
@@ -123,6 +130,32 @@ class Command(BaseCommand):
             f"{filepath} messages={msg_cnt} classified={cls_cnt} unknown={msg_cnt - cls_cnt} () {msg_sec} msg/sec"
         )
 
+    def refresh_events(self, ruleset, filepath: Path):
+        """
+        Repeat classify events for JSON-file located on the path 'filepath'
+        """
+        with open(filepath) as f:
+            data = orjson.loads(f.read())
+        old_cls_cnt = data["stats"]["classified"]
+        old_unk_cnt = data["stats"]["unknown"]
+        msg_cnt, cls_cnt = 0, 0
+        time_start = time.perf_counter()
+        for d_event in data["data"]:
+            event = Event(**d_event["event"])
+            rule, r_vars = ruleset.find_rule(event, {})
+            if not rule.name.startswith("Unknown |"):  # EventClass
+                cls_cnt += 1
+            msg_cnt += 1
+        time_delta = time.perf_counter() - time_start
+        msg_sec = round(msg_cnt / time_delta) if time_delta else "--"
+        cls_delta = cls_cnt - old_cls_cnt
+        unk_delta = msg_cnt - cls_cnt - old_unk_cnt
+        cls_delta = f"+{cls_delta}" if cls_delta >= 0 else f"-{cls_delta}"
+        unk_delta = f"+{unk_delta}" if unk_delta >= 0 else f"-{unk_delta}"
+        self.print(
+            f"{filepath} messages={msg_cnt} classified={cls_cnt} ({cls_delta}) unknown={msg_cnt - cls_cnt} ({unk_delta}) {msg_sec} msg/sec"
+        )
+
     def handle_parse(
         self,
         paths,
@@ -140,6 +173,25 @@ class Command(BaseCommand):
                     filepath = Path(root, file)
                     events = self.parse_syslog_text(profile, filepath)
                     self.process_events(profile, ruleset, output_dir, filepath, events)
+
+    def handle_refresh(
+        self,
+        paths,
+        **options,
+    ):
+        ruleset = RuleSet()
+        ruleset.load()
+        for path in paths:
+            path = Path(path)
+            filepaths = []
+            if path.is_dir():
+                for fp in sorted(path.iterdir()):
+                    if fp.is_file():
+                        filepaths += [fp]
+            if path.is_file():
+                filepaths = [path]
+            for filepath in filepaths:
+                self.refresh_events(ruleset, filepath)
 
 
 if __name__ == "__main__":
