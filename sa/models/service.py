@@ -808,6 +808,9 @@ class Service(Document):
             changed |= True
         if si.managed_object:
             si.refresh_managed_object(managed_object)
+        if source == InputSource.ETL and si.remote_id != remote_id:
+            si.remote_id = remote_id
+            changed |= True
         if changed:
             si.save()
         return si

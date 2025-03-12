@@ -213,7 +213,7 @@ class ServiceInstance(Document):
         q = Q()
         rds = {}
         if managed_object.remote_system and managed_object.remote_id:
-            rds[managed_object.remote_id] = str(managed_object.remote_system)
+            rds[managed_object.remote_id] = str(managed_object.remote_system.id)
         for m in managed_object.mappings or []:
             rds[m["remote_id"]] = m["remote_system"]
         if rds:
@@ -402,9 +402,9 @@ class ServiceInstance(Document):
                 continue
             resources.append(rid)
             logger.info("Binding service %s to interface %s", self.service, o.name)
-            if rid not in self.resources:
-                logger.info("Binding service %s to interface %s", self.service, o.name)
-        if not set(self.resources) - set(resources):
+            # if rid not in self.resources:
+            #    logger.info("Binding service %s to interface %s", self.service, o.name)
+        if self.resources and not set(self.resources) - set(resources):
             self.last_seen = update_ts
             ServiceInstance.objects.filter(id=self.id).update(last_seen=self.last_seen)
             return

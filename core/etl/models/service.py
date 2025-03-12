@@ -17,6 +17,7 @@ from .base import BaseModel, _BaseModel
 from .typing import Reference
 from .serviceprofile import ServiceProfile
 from .subscriber import Subscriber
+from noc.core.models.serviceinstanceconfig import InstanceType
 
 
 class CapsItem(_BaseModel):
@@ -25,6 +26,7 @@ class CapsItem(_BaseModel):
 
 
 class Instance(_BaseModel):
+    type: InstanceType = InstanceType.NETWORK_CHANNEL
     name: Optional[str] = None
     addresses: Optional[List[str]] = None
     fqdn: Optional[str] = None

@@ -125,7 +125,7 @@ class ServiceSummary(Document):
                     "subscriber": si.service.subscriber.id if si.service.subscriber else None,
                 }
             ):
-                if s["subscriber"]:
+                if "subscriber" in s:
                     subscribers.add(s["subscriber"])
                 svc_profiles[s["profile"]] += 1
             # Get subscriber profiles count
