@@ -125,9 +125,11 @@ class Command(BaseCommand):
         outfile = Path(output_dir, outfile)
         with open(outfile, "wb") as f:
             f.write(orjson.dumps(out, option=orjson.OPT_INDENT_2))
+        cls_percent = round((cls_cnt / msg_cnt) * 100, 1) if msg_cnt else "--"
         msg_sec = round(msg_cnt / time_delta) if time_delta else "--"
         self.print(
-            f"{filepath} messages={msg_cnt} classified={cls_cnt} unknown={msg_cnt - cls_cnt} () {msg_sec} msg/sec"
+            f"{filepath} messages={msg_cnt} classified={cls_cnt} unknown={msg_cnt - cls_cnt} "
+            f"(classified {cls_percent}%) {msg_sec} msg/sec"
         )
 
     def refresh_events(self, ruleset, filepath: Path):
@@ -147,13 +149,21 @@ class Command(BaseCommand):
                 cls_cnt += 1
             msg_cnt += 1
         time_delta = time.perf_counter() - time_start
+        cls_percent = round((cls_cnt / msg_cnt) * 100, 1) if msg_cnt else "--"
         msg_sec = round(msg_cnt / time_delta) if time_delta else "--"
         cls_delta = cls_cnt - old_cls_cnt
         unk_delta = msg_cnt - cls_cnt - old_unk_cnt
+        cls_percent_delta = round((cls_delta / msg_cnt) * 100, 1) if msg_cnt else "--"
         cls_delta = f"+{cls_delta}" if cls_delta >= 0 else f"-{cls_delta}"
         unk_delta = f"+{unk_delta}" if unk_delta >= 0 else f"-{unk_delta}"
+        if isinstance(cls_percent_delta, float):
+            cls_percent_delta = (
+                f"+{cls_percent_delta}" if cls_percent_delta >= 0 else f"-{cls_percent_delta}"
+            )
         self.print(
-            f"{filepath} messages={msg_cnt} classified={cls_cnt} ({cls_delta}) unknown={msg_cnt - cls_cnt} ({unk_delta}) {msg_sec} msg/sec"
+            f"{filepath} messages={msg_cnt} classified={cls_cnt} ({cls_delta}) "
+            f"unknown={msg_cnt - cls_cnt} ({unk_delta}) (classified {cls_percent}% "
+            f"({cls_percent_delta}%)) {msg_sec} msg/sec"
         )
 
     def handle_parse(
