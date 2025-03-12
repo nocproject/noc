@@ -101,9 +101,7 @@ class Rule:
     matcher: Optional[Tuple[Callable, ...]] = None
     label_matchers: Optional[Tuple[Callable, ...]] = None
     set_labels: Optional[Tuple[str, ...]] = None
-    level1: Optional[str] = None
-    level2: Optional[str] = None
-    level3: Optional[str] = None
+    categories: Optional[List[Any]] = None
     is_transparent_labels: bool = False
     is_unknown: bool = False
     is_unknown_syslog: bool = False
@@ -184,9 +182,7 @@ class Rule:
             name=data["name"],
             event_class=event_class,
             event_class_name=data["event_class"],
-            level1=rule.level1,
-            level2=rule.level2,
-            level3=rule.level3,
+            categories=[rule.level1, rule.level2, rule.level3],
             source=source,
             profiles=frozenset(profiles),
             preference=int(data["preference"]),
