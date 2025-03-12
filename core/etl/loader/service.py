@@ -14,7 +14,6 @@ from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.core.models.inputsources import InputSource
-from noc.core.models.serviceinstanceconfig import InstanceType
 from .base import BaseLoader
 from ..models.service import Service, Instance
 
@@ -56,14 +55,8 @@ class ServiceLoader(BaseLoader):
         for etl_i in fields:
             etl_i = Instance(**etl_i)
             # Detect type to internal method
-            if etl_i.nri_port:
-                i_type = InstanceType.NETWORK_CHANNEL
-            elif etl_i.mac_addresses:
-                i_type = InstanceType.ASSET
-            else:
-                i_type = InstanceType.SERVICE_ENDPOINT
             si = o.register_instance(
-                type=i_type,
+                type=etl_i.type,
                 source=InputSource.ETL,
                 fqdn=etl_i.fqdn,
                 remote_id=etl_i.remote_id or o.remote_id,
