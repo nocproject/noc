@@ -563,7 +563,7 @@ class Interface(Document):
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
-                {"managed_object": mo.id, "type": {"$in": ["physical", "aggregated"]}},
+                {"managed_object": mo.id, "type": {"$in": ["physical", "aggregated", "tunnel"]}},
                 {
                     "_id": 1,
                     "name": 1,
@@ -620,7 +620,7 @@ class Interface(Document):
             ifindex = i.get("ifindex")
             service = None
             if str(i["_id"]) in s_map:
-                service = Service.get_by_id(str(s_map[i["_id"]]))
+                service = Service.get_by_id(s_map[str(i["_id"])])
             yield MetricCollectorConfig(
                 collector="managed_object",
                 metrics=tuple(metrics),
@@ -628,7 +628,7 @@ class Interface(Document):
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
                 service=service.bi_id if service else None,
             )
-            if not i_profile.subinterface_apply_policy != "I":
+            if i_profile.subinterface_apply_policy != "I":
                 continue
             for si in (
                 SubInterface._get_collection()
@@ -638,7 +638,7 @@ class Interface(Document):
                 ifindex = si.get("ifindex")
                 service = None
                 if str(si["_id"]) in s_map:
-                    service = Service.get_by_id(s_map[si["_id"]])
+                    service = Service.get_by_id(s_map[str(si["_id"])])
                 yield MetricCollectorConfig(
                     collector="managed_object",
                     metrics=tuple(metrics),
