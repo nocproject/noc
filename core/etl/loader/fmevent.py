@@ -37,19 +37,16 @@ class FMEventLoader(BaseLoader):
         if not e.data and not e.message:
             raise AttributeError("Unknown message data. Set data or message")
         severity = EventSeverity(int(e.severity)) if e.severity else EventSeverity.INDETERMINATE
-        tp = MessageType(
-                severity=severity if not e.is_cleared else EventSeverity.CLEARED,
-                event_class=e.event_class,
-            )
-        if e.category:
-            l1, l2, l3 = e.category.split(".")
-            tp.level1, tp.level2, tp.level3 = l1 or None, l2 or None, l3 or None
         event = Event(
             ts=e.ts,
             remote_id=e.id,
             remote_system=self.system.remote_system.name,
             target=e.object.get_target(),
-            type=tp,
+            type=MessageType(
+                severity=severity if not e.is_cleared else EventSeverity.CLEARED,
+                event_class=e.event_class,
+                categories=e.categories or None,
+            ),
             data=[Var(name=d.name, value=d.value) for d in e.data],
             message=e.message,
             labels=["remote_system::zabbix"] + e.labels,

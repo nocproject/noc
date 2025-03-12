@@ -44,7 +44,7 @@ class FMEventObject(BaseModel):
     data: List[Var]  # Message Vars
     severity: str
     event_class: Optional[str] = None
-    category: Optional[str] = None
+    categories: Optional[List[str]] = None
     is_cleared: bool = False  # Set flag for cleared severity
     labels: Optional[List[str]] = None  # Event labels
     message: Optional[str] = None  # Event message string

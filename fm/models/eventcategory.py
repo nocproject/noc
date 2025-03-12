@@ -110,6 +110,8 @@ class EventCategory(Document):
     parent = ReferenceField("self", required=False)
     level: "EventCategoryLevel" = EnumField(EventCategoryLevel, required=True)
     vars: List["EventCategoryVar"] = EmbeddedDocumentListField(EventCategoryVar)
+    # enum
+    # severity
     # resources
     classified = BooleanField(default=False)
     # Object id in BI

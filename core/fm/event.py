@@ -99,9 +99,7 @@ class MessageType(BaseModel):
     facility: Optional[int] = None  # Event facility (for syslog)
     profile: Optional[str] = None  # Link to SA Profile for classification
     event_class: Optional[str] = None  # For PreClassified message
-    level1: Optional[str] = None
-    level2: Optional[str] = None
-    level3: Optional[str] = None
+    categories: Optional[List[str]] = None
     # category: Optional[str] = None  # For event category - dot notation
     # AlarmClass ? PreClassify alarm
     # EventClass ? Pre Classify event
