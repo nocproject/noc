@@ -56,8 +56,8 @@ class Command(BaseCommand):
             help="SNMPv3 credentials: <user>:<auth_proto>:<auth_key>:<priv_proto>:<prive_key>",
         )
         getnext.add_argument("--address", help="Object address")
-        getnext.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
-        getnext.add_argument("oid", nargs=argparse.REMAINDER, help="SNMP GET OID")
+        getnext.add_argument("--timeout", type=int, default=5, help="SNMP GETNEXT timeout")
+        getnext.add_argument("oid", nargs=argparse.REMAINDER, help="SNMP GETNEXT OID")
         getbulk = subparsers.add_parser("getbulk")
         getbulk.add_argument("--community", help="SNMP community")
         getbulk.add_argument(
