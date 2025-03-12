@@ -27,7 +27,7 @@ lz4==4.4.3
 manhole==1.8.1
 markerlib==0.6.0
 mongoengine==0.29.0
-motor==3.6.1
+motor==3.5.1
 networkx==3.4.2
 numpy==1.26.2
 orjson==3.10.15
@@ -35,7 +35,7 @@ progressbar2==4.5.0
 psycopg2-binary==2.9.10
 polars-lts-cpu==1.24.0
 pydantic==2.6.4
-pymongo==4.9.2
+pymongo==4.8.0
 pyproj==3.7.1
 python-consul==1.1.0
 python-creole==1.4.10
