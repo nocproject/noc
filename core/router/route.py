@@ -138,7 +138,7 @@ class MatchItem(object):
             elif h.op == "!=":
                 continue
             else:
-                r[h.header.encode()] = h.value.encode(DEFAULT_ENCODING)
+                r[h.header] = h.value.encode(DEFAULT_ENCODING)
         return r
 
 
