@@ -49,6 +49,24 @@ class Command(BaseCommand):
         get.add_argument("--address", help="Object address")
         get.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
         get.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP GET OID")
+        getnext = subparsers.add_parser("getnext")
+        getnext.add_argument("--community", help="SNMP community")
+        getnext.add_argument(
+            "--username",
+            help="SNMPv3 credentials: <user>:<auth_proto>:<auth_key>:<priv_proto>:<prive_key>",
+        )
+        getnext.add_argument("--address", help="Object address")
+        getnext.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
+        getnext.add_argument("oid", nargs=argparse.REMAINDER, help="SNMP GET OID")
+        getbulk = subparsers.add_parser("getbulk")
+        getbulk.add_argument("--community", help="SNMP community")
+        getbulk.add_argument(
+            "--username",
+            help="SNMPv3 credentials: <user>:<auth_proto>:<auth_key>:<priv_proto>:<prive_key>",
+        )
+        getbulk.add_argument("--address", help="Object address")
+        getbulk.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
+        getbulk.add_argument("oid", nargs=argparse.REMAINDER, help="SNMP GET OID")
         poll = subparsers.add_parser("poll")
         poll.add_argument("--in", action="append", dest="input", help="File with addresses")
         poll.add_argument(
@@ -98,6 +116,48 @@ class Command(BaseCommand):
                 version=SnmpVersion.v3 if username else SnmpVersion.v2c,
             ) as session:
                 r = await session.get_many(oids)
+            return r
+
+        if username:
+            username = self.parse_credentials(username)
+        x = run_sync(main)
+        self.print(f"Result {x}")
+
+    def handle_getnext(self, address, community, timeout, oid, username, *args, **options):
+        """ """
+
+        async def main():
+            r = []
+            async with SnmpSession(
+                addr=address,
+                community=community,
+                user=username,
+                timeout=timeout,
+                version=SnmpVersion.v3 if username else SnmpVersion.v2c,
+            ) as session:
+                async for oid_, v in session.getnext(oid[0]):
+                    r.append((oid_, v))
+            return r
+
+        if username:
+            username = self.parse_credentials(username)
+        x = run_sync(main)
+        self.print(f"Result {x}")
+
+    def handle_getbulk(self, address, community, timeout, oid, username, *args, **options):
+        """ """
+
+        async def main():
+            r = []
+            async with SnmpSession(
+                addr=address,
+                community=community,
+                user=username,
+                timeout=timeout,
+                version=SnmpVersion.v3 if username else SnmpVersion.v2c,
+            ) as session:
+                async for oid_, v in session.getbulk(oid[0]):
+                    r.append((oid_, v))
             return r
 
         if username:
