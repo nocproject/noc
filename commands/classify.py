@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # classify
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -44,8 +44,11 @@ class Command(BaseCommand):
         cmd = options.pop("cmd")
         return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
 
-    def parse_syslog_text(self, profile: str, path: Path) -> List[Event]:
-        with open(path, "r") as f:
+    def parse_syslog_text(self, profile: str, filepath: Path) -> List[Event]:
+        """
+        Parse events from syslog-format file located on the path 'filepath'
+        """
+        with open(filepath, "r") as f:
             lines = f.read().splitlines()
         events = []
         for line in lines:
@@ -79,25 +82,24 @@ class Command(BaseCommand):
 
     def process_events(self, profile, ruleset, output_dir, filepath: Path, events: List[Event]):
         """
-        Classify events
+        Classify events for file located on the path 'filepath'
         """
-        mcnt, ccnt, ucnt = 0, 0, 0
+        msg_cnt, cls_cnt = 0, 0
         time_start = time.perf_counter()
         out_data = []
         for event in events:
             raw_vars = {"profile": event.type.profile, "message": event.message}
             rule, r_vars = ruleset.find_rule(event, raw_vars)
-            if rule.name in ("Unknown | Syslog", "Unknown | Default"):  # EventClass
-                ucnt += 1
-            else:
-                ccnt += 1
+            if not rule.name.startswith("Unknown |"):  # EventClass
+                cls_cnt += 1
             out_record = {
                 "event": event.model_dump(),
                 "event_class__name": rule.event_class.name,
                 "vars": r_vars,
             }
             out_data += [out_record]
-            mcnt += 1
+            msg_cnt += 1
+        time_delta = time.perf_counter() - time_start
         out = {
             "$version": 1,
             "input": {
@@ -105,10 +107,10 @@ class Command(BaseCommand):
                 "profile": profile,
             },
             "stats": {
-                "duration": 0,
-                "messages": mcnt,
-                "classified": 0,
-                "unknown": 0,
+                "duration": time_delta,
+                "messages": msg_cnt,
+                "classified": cls_cnt,
+                "unknown": msg_cnt - cls_cnt,
             },
             "data": out_data,
         }
@@ -116,10 +118,9 @@ class Command(BaseCommand):
         outfile = Path(output_dir, outfile)
         with open(outfile, "wb") as f:
             f.write(orjson.dumps(out, option=orjson.OPT_INDENT_2))
-        time_delta = time.perf_counter() - time_start
-        msg_sec = round(mcnt / time_delta) if time_delta else "--"
+        msg_sec = round(msg_cnt / time_delta) if time_delta else "--"
         self.print(
-            f"{filepath} messages={mcnt} classified={ccnt} unknown={ucnt} () {msg_sec} msg/sec"
+            f"{filepath} messages={msg_cnt} classified={cls_cnt} unknown={msg_cnt - cls_cnt} () {msg_sec} msg/sec"
         )
 
     def handle_parse(
