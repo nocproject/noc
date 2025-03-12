@@ -35,7 +35,7 @@ progressbar2==4.5.0
 psycopg2-binary==2.9.10
 polars-lts-cpu==1.24.0
 pydantic==2.6.4
-pymongo==4.8.0
+pymongo==4.9.2
 pyproj==3.7.1
 python-consul==1.1.0
 python-creole==1.4.10
