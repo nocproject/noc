@@ -110,10 +110,7 @@ class EventCategory(Document):
     parent = ReferenceField("self", required=False)
     level: "EventCategoryLevel" = EnumField(EventCategoryLevel, required=True)
     vars: List["EventCategoryVar"] = EmbeddedDocumentListField(EventCategoryVar)
-    # enum
-    # severity
     # resources
-    classified = BooleanField(default=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
@@ -138,18 +135,6 @@ class EventCategory(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["EventCategory"]:
         return EventCategory.objects.filter(bi_id=bi_id).first()
-
-    @classmethod
-    def from_string(cls, category: str) -> Category:
-        """Convert dot-notation to category"""
-        l1, l2, l3 = category.split(".")
-        if l1:
-            l1 = EventCategory.get_by_name(l1)
-        if l2:
-            l2 = EventCategory.get_by_name(l2)
-        if l3:
-            l3 = EventCategory.get_by_name(l2)
-        return Category(level1=l1, level2=l2, level3=l3)
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -178,15 +163,3 @@ class EventCategory(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
-
-    # def save(self, *args, **kwargs):
-    #     if " | " in self.name:
-    #         p_name = " | ".join(self.name.split(" | ")[:-1])
-    #         p = AlarmClassCategory.objects.filter(name=p_name).first()
-    #         if not p:
-    #             p = AlarmClassCategory(name=p_name)
-    #             p.save()
-    #         self.parent = p.id
-    #     else:
-    #         self.parent = None
-    #     super().save(*args, **kwargs)
