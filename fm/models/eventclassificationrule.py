@@ -167,9 +167,7 @@ class EventClassificationRule(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     event_class: EventClass = PlainReferenceField(EventClass, required=True)
-    level1: EventCategory = PlainReferenceField(EventCategory, required=False)
-    level2: EventCategory = PlainReferenceField(EventCategory, required=False)
-    level3: EventCategory = PlainReferenceField(EventCategory, required=False)
+    categories: List[EventCategory] = ListField(ReferenceField(EventCategory, required=True))
     preference = IntField(required=True, default=1000)
     patterns: List[EventClassificationPattern] = EmbeddedDocumentListField(
         EventClassificationPattern
@@ -191,8 +189,8 @@ class EventClassificationRule(Document):
     category = ObjectIdField()
 
     def __str__(self):
-        if self.level1:
-            return f"{self.level1.name}.{self.level2.name if self.level2 else ''}.{self.level3.name if self.level3 else ''}"
+        if self.categories:
+            return ".".join(c.name for c in self.categories)
         return self.name
 
     @classmethod
@@ -228,6 +226,8 @@ class EventClassificationRule(Document):
             "patterns": [p.json_data for p in self.patterns],
             "labels": [ll.json_data for ll in self.labels],
         }
+        if self.categories:
+            r["categories__name"] = [c.name for c in self.categories]
         if self.message_rx:
             r["message_rx"] = self.message_rx
         if self.profiles:
