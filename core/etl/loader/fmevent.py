@@ -49,7 +49,7 @@ class FMEventLoader(BaseLoader):
             ),
             data=[Var(name=d.name, value=d.value) for d in e.data],
             message=e.message,
-            labels=["remote_system::zabbix"] + e.labels,
+            labels=e.labels,
         )
         event.target.pool = e.object.pool or "default"
         return event
@@ -74,7 +74,7 @@ class FMEventLoader(BaseLoader):
             svc.publish(
                 orjson.dumps(event.model_dump()),
                 f"events.{event.target.pool}",
-                partition=bi_hash(event.target.remote_id) % 2
+                partition=bi_hash(event.target.remote_id) % 2,
             )
         if max_ts:
             self.system.remote_system.last_extract_event = datetime.datetime.fromtimestamp(max_ts)
@@ -90,4 +90,3 @@ class FMEventLoader(BaseLoader):
 
     def check(self, chain):
         return 0
-
