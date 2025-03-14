@@ -68,6 +68,9 @@ class Script(BaseScript):
         try:
             v = self.cli("show configuration services rpm | display json")
             r = self.parse_json_out(v)
+        except orjson.JSONDecodeError as e:
+            self.logger.info("Error while decoding JSON |%s|", e)
+            return r
         except self.CLISyntaxError:
             r = []
             v = self.cli("show services rpm probe-results")
