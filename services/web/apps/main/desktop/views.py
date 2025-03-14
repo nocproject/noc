@@ -376,4 +376,3 @@ class DesktopApplication(ExtApplication):
             cp = CPClient()
             data["system_id"] = cp.system_uuid
         return data
-
