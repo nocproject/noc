@@ -13,13 +13,12 @@ from typing import Optional
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
-
 class Profile(BaseProfile):
     name = "Juniper.JUNOS"
     # Ignore this line: 'Last login: Tue Sep 18 09:17:21 2018 from 10.10.0.1'
     pattern_username = rb"((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
     pattern_prompt = (
-        rb"^(({master(?::\d+)}\n)?\S+>)\s*$|(({master(?::\d+)})?"
+        rb"^(({master(?::\d+)}\n)?(?P<hostname>\S+)>)\s*$|(({master(?::\d+)})?"
         rb"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     )
     pattern_more = [(rb"^---\(more.*?\)---", b" "), (rb"\? \[yes,no\] .*?", b"y\n")]
@@ -173,7 +172,7 @@ class Profile(BaseProfile):
         )
         return ("show " + cmd in c) and ("error: nothing matches" not in c)
 
-    def clear_json(self, v) -> dict:
+    def clear_json(self, v, logger=None) -> dict:
         """
         Clear Juniper "display json" output
         :param v: Juniper display json
@@ -199,7 +198,8 @@ class Profile(BaseProfile):
         try:
             res = orjson.loads(v)
         except orjson.JSONDecodeError as e:
-            self.logger.info("Error occured while parsing JSON: |%s|", e)
+            if logger:
+                logger.info("Error occured while parsing JSON: |%s|", e)
 
         return res
 

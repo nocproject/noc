@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+from xml.etree import ElementTree
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -114,35 +115,54 @@ class Script(BaseScript):
                     rev = match.group("revision")
                     yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
+
+    '''
+    <rpc-reply xmlns:junos="http://xml.juniper.net/junos/21.4R0/junos">
+        <environment-information xmlns="http://xml.juniper.net/junos/21.4R0/junos-chassis">
+            <environment-item>
+                <name>FPC 0 Power Supply 0</name>
+                <class>Power</class>
+                <status>Check</status>
+            </environment-item>
+            <environment-item>
+                <name>FPC 0 Power Supply 1</name>
+                <class>Power</class>
+                <status>Check</status>
+            </environment-item>
+            ...
+            ...
+        </environment-information>
+        <cli>
+            <banner>{master:0}</banner>
+        </cli>
+    </rpc-reply>
+    '''
     def parse_chassis_environment(self, response):
-        data = self.profile.clear_json(response)
+        # Cut the unnecessary namespaces
+        xmlstring = re.sub(' xmlns="[^"]+"', '', response)
+        root = ElementTree.fromstring(xmlstring)
 
-        env_info = data.get("environment-information")
-        if not env_info:
+        env_info = root.find("environment-information")
+        if env_info is None:
             self.logger.info("environment-information is empty")
+            return
 
-        env_items = env_info[0].get("environment-item")
-        if not env_items:
-            self.logger.info("environment-item is empty")
-
-        for item in env_items:
-            item_name = item["name"][0]["data"]
-            item_status = item["status"][0]["data"]
-
-            if item.get("class"):
-                item_class = item["class"][0]["data"]
-            else:
-                continue
+        for el in env_info.iterfind("environment-item"):
+            item_name = el.find("name").text
+            item_status = el.find("status").text
+            item_class = el.find("class").text
 
             yield item_class, item_name, item_status
 
     def get_sensors_cli(self):
         res = {}
         chassis_environment_response = self.cli(
-            "show chassis environment | display json", cached=True
+            "show chassis environment | display xml", cached=True
         )
 
         p_chassis_environment = self.parse_chassis_environment(chassis_environment_response)
+        if not p_chassis_environment:
+            return res
 
         for env_type, env_name, env_status in p_chassis_environment:
             if env_type:
