@@ -36,12 +36,6 @@ from noc.core.prettyjson import to_json
 id_lock = Lock()
 
 
-class Category(NamedTuple):
-    level1: Optional["EventCategory"] = None
-    level2: Optional["EventCategory"] = None
-    level3: Optional["EventCategory"] = None
-
-
 class EventCategoryVar(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField(required=True)

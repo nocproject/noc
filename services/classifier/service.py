@@ -44,7 +44,7 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX
-from noc.fm.models.eventcategory import EventCategory, Category
+from noc.fm.models.eventcategory import EventCategory
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
