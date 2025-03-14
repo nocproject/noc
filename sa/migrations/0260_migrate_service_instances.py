@@ -20,43 +20,48 @@ class Migration(BaseMigration):
         si_db = mdb["serviceinstances"]
         bulk = []
         mos_rid = {}
-        for o_id, rid in self.db.execute(
-            "SELECT id, remote_id FROM sa_managedobject where remote_id != ''"
-        ):
-            mos_rid[o_id] = rid
+        for o_id, rid in self.db.execute("SELECT id, remote_id FROM sa_managedobject"):
+            mos_rid[o_id] = rid or None
         iface_svc = {}  # service -> iface map
         for iface in mdb["noc.interfaces"].find(
-            {"service": {"$exists": True}}, {"_id": 1, "service": 1}
+            {"service": {"$exists": True}}, {"_id": 1, "managed_object": 1, "service": 1}
         ):
-            iface_svc[iface["service"]] = f"if:{iface['_id']}"
+            iface_svc[iface["service"]] = (f"if:{iface['_id']}", iface["managed_object"])
         siface_svc = {}
         for si in mdb["noc.subinterfaces"].find(
-            {"service": {"$exists": True}}, {"_id": 1, "service": 1}
+            {"service": {"$exists": True}}, {"_id": 1, "managed_object": 1, "service": 1}
         ):
-            siface_svc[si["service"]] = f"si:{si['_id']}"
-        for svc in self.mongo_db["noc.services"].find(
-            {"nri_port": {"$exists": True}, "managed_object": {"$exists": True}}
-        ):
-            if svc["managed_object"] not in mos_rid:
-                continue
+            siface_svc[si["service"]] = (f"si:{si['_id']}", si["managed_object"])
+        for svc in self.mongo_db["noc.services"].find():
             sid = svc["_id"]
             si = {
+                "type": "network",
                 "service": sid,
-                "managed_object": svc["managed_object"],
-                "nri_port": svc["nri_port"],
                 "port": 0,
                 "addresses": [],
-                "sources": ["etl", "discovery"],
-                "remote_id": mos_rid[svc["managed_object"]],
+                "sources": ["discovery"],
                 "resources": [],
             }
+            if svc.get("managed_object") in mos_rid:
+                si["managed_object"] = svc["managed_object"]
+                if mos_rid[svc["managed_object"]]:
+                    si["remote_id"] = mos_rid[svc["managed_object"]]
             if sid in iface_svc:
-                si["resources"].append(iface_svc[sid])
+                si["resources"].append(iface_svc[sid][0])
+                si["managed_object"] = iface_svc[sid][1]
             if sid in siface_svc:
-                si["resources"].append(siface_svc[sid])
+                si["resources"].append(siface_svc[sid][0])
+                si["managed_object"] = siface_svc[sid][1]
+            if "managed_object" not in si:
+                continue
+            if svc.get("nri_port"):
+                si["nri_port"] = svc["nri_port"]
+                si["sources"].append("etl")
             bulk.append(InsertOne(si))
             if len(bulk) > BULK:
                 si_db.bulk_write(bulk)
                 bulk = []
         if bulk:
             si_db.bulk_write(bulk)
+        self.mongo_db["noc.interfaces"].update_many({}, {"$unset": {"service": 1}})
+        self.mongo_db["noc.subinterfaces"].update_many({}, {"$unset": {"service": 1}})
