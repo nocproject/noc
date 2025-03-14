@@ -13,6 +13,7 @@ from typing import Optional
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Juniper.JUNOS"
     # Ignore this line: 'Last login: Tue Sep 18 09:17:21 2018 from 10.10.0.1'

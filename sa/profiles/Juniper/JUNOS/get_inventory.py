@@ -115,8 +115,7 @@ class Script(BaseScript):
                     rev = match.group("revision")
                     yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
-
-    '''
+    """
     <rpc-reply xmlns:junos="http://xml.juniper.net/junos/21.4R0/junos">
         <environment-information xmlns="http://xml.juniper.net/junos/21.4R0/junos-chassis">
             <environment-item>
@@ -136,10 +135,11 @@ class Script(BaseScript):
             <banner>{master:0}</banner>
         </cli>
     </rpc-reply>
-    '''
+    """
+
     def parse_chassis_environment(self, response):
         # Cut the unnecessary namespaces
-        xmlstring = re.sub(' xmlns="[^"]+"', '', response)
+        xmlstring = re.sub(' xmlns="[^"]+"', "", response)
         root = ElementTree.fromstring(xmlstring)
 
         env_info = root.find("environment-information")
