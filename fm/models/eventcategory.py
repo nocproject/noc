@@ -89,7 +89,9 @@ class EventCategoryVar(EmbeddedDocument):
 @tree(field="parent")
 @bi_sync
 @change
-@on_delete_check(check=[("fm.EventClassificationRule", "categories")])
+@on_delete_check(
+    check=[("fm.EventClassificationRule", "categories"), ("fm.EventClassificationRule", "parent")]
+)
 class EventCategory(Document):
     meta = {
         "collection": "noc.eventcategories",
