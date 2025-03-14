@@ -52,6 +52,10 @@ Ext.define("NOC.fm.classificationrule.Model", {
             type: "auto"
         },
         {
+            name: "categories",
+            type: "auto"
+        },
+        {
             name: "preference",
             type: "int",
             defaultValue: 1000
