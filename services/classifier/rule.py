@@ -178,7 +178,7 @@ class Rule:
             name=rule.name,
             event_class=rule.event_class,
             event_class_name=rule.event_class.name,
-            categories=[rule.level1, rule.level2, rule.level3],
+            categories=rule.categories or [],
             source=source,
             profile=profile,
             preference=rule.preference,
