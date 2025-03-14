@@ -24,7 +24,6 @@ from noc.aaa.models.permission import Permission
 from noc.support.cp import CPClient
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
-from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
