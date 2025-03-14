@@ -182,7 +182,7 @@ class Rule:
             name=data["name"],
             event_class=event_class,
             event_class_name=data["event_class"],
-            categories=[rule.level1, rule.level2, rule.level3],
+            categories=data.get("categories") or [],
             source=source,
             profiles=frozenset(profiles),
             preference=int(data["preference"]),
