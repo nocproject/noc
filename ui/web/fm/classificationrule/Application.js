@@ -158,26 +158,16 @@ Ext.define("NOC.fm.classificationrule.Application", {
                         labelAlign: "top"
                     },
                     items: [
-                        {
-                            xtype: "fm.eventcategory.LookupField",
-                            name: "level1",
-                            fieldLabel: __("Process (Lvl. 1)"),
-                            allowBlank: false,
-                            uiStyle: "medium",
-                        },
-                        {
-                            xtype: "fm.eventcategory.LookupField",
-                            name: "level2",
-                            fieldLabel: __("Object(Lvl. 2)"),
-                            allowBlank: true,
-                            uiStyle: "medium",
-                        },
-                        {
-                            xtype: "fm.eventcategory.LookupField",
-                            name: "level3",
-                            fieldLabel: __("Disposition (Lvl. 3)"),
-                            allowBlank: true,
-                            uiStyle: "medium",
+                         {
+                            xtype: "core.tagfield",
+                            url: "/fm/eventcategory/lookup/",
+                            fieldLabel: __("Categories"),
+                            tooltip: __("Event Categories"),
+                            name: "categories",
+                            uiStyle: "large",
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         }
                     ]
                 },
