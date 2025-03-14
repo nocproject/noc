@@ -90,7 +90,7 @@ class EventCategoryVar(EmbeddedDocument):
 @bi_sync
 @change
 @on_delete_check(
-    check=[("fm.EventClassificationRule", "categories"), ("fm.EventClassificationRule", "parent")]
+    check=[("fm.EventClassificationRule", "categories"), ("fm.EventCategory", "parent")]
 )
 class EventCategory(Document):
     meta = {
