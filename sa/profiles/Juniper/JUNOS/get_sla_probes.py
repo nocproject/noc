@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+import orjson
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -44,6 +45,7 @@ class Script(BaseScript):
         v = self.profile.clear_json(v)
         if not v:
             return r
+        v = orjson.loads(v)
         if "probe" in v["configuration"]["services"]["rpm"]:
             for p in v["configuration"]["services"]["rpm"]["probe"]:
                 for t in p["test"]:
