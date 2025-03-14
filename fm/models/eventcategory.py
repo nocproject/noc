@@ -10,7 +10,7 @@ import operator
 import cachetools
 import os
 from threading import Lock
-from typing import Optional, Union, NamedTuple, Dict, Any, List
+from typing import Optional, Union, Dict, Any, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
