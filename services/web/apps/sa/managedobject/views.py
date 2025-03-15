@@ -1109,23 +1109,23 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
+        if not o.caps:
+            return []
         r = []
-        if o.caps:
-            for c in o.caps:
-                capability = Capability.get_by_id(c["capability"])
-                r += [
-                    {
-                        "capability": capability.name,
-                        "description": capability.description,
-                        "type": capability.type,
-                        "value": c["value"],
-                        "source": c["source"],
-                        "scope": c.get("scope", ""),
-                        "editor": None,
-                    }
-                ]
-                if c["source"] == "manual":
-                    r[-1]["editor"] = {"type": capability.type, "multiple": False, "choices": []}
+        for c in o.caps:
+            capability = Capability.get_by_id(c["capability"])
+            r += [
+                {
+                    "capability": capability.name,
+                    "id": str(capability.id),
+                    "description": capability.description,
+                    "type": capability.type,
+                    "value": c["value"],
+                    "source": c["source"],
+                    "scope": c.get("scope", ""),
+                    "editor": capability.get_editor(),
+                }
+            ]
         return sorted(r, key=lambda x: x["capability"])
 
     @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)
