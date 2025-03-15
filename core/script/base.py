@@ -1149,6 +1149,9 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         """
         return self.has_capability("SNMP | Bulk")
 
+    def get_snmp_bulk_repetition(self):
+        return None
+
     def has_capability(self, capability, allow_zero=False):
         """
         Check whether equipment supports capability

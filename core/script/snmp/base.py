@@ -36,7 +36,7 @@ GUFO_SNMP_VERSION_MAP = {
     SNMP_v2c: SnmpVersion.v2c,
     SNMP_v3: SnmpVersion.v3,
 }
-BULK_MAX_REPETITIONS_LIMIT = config.activator.snmp_bulk_max_repetitions_limit
+BULK_MAX_REPETITIONS = 20
 
 AUTH_PROTO_MAP = {
     "MD5": Md5Key,
@@ -304,7 +304,7 @@ class SNMP(object):
             result = 0
             oids_iter = session.getnext(oid)
             if self.script.has_snmp_bulk():
-                oids_iter = session.getbulk(oid, max_repetitions=20)
+                oids_iter = session.getbulk(oid, max_repetitions=self.get_max_repetitions())
             try:
                 async for oid_, v in oids_iter:
                     if filter(oid_, v):
@@ -319,13 +319,13 @@ class SNMP(object):
 
         return run_sync(partial(run, filter or (lambda x, y: True)), close_all=False)
 
-    @classmethod
-    def get_max_repetitions(cls, max_repetitions: Optional[int] = None) -> Optional[int]:
-        if not BULK_MAX_REPETITIONS_LIMIT:
-            return max_repetitions
-        elif max_repetitions:
-            return min(max_repetitions, BULK_MAX_REPETITIONS_LIMIT)
-        return BULK_MAX_REPETITIONS_LIMIT
+    def get_max_repetitions(self, max_repetitions: Optional[int] = None) -> Optional[int]:
+        """Return max_repetition on SNMP Bulk Request"""
+        max_repetitions = max_repetitions or BULK_MAX_REPETITIONS
+        caps_limit = self.script.get_snmp_bulk_repetition()
+        if caps_limit:
+            max_repetitions = min(max_repetitions, caps_limit)
+        return max_repetitions
 
     def getnext(
         self,
