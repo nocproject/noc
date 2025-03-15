@@ -18,12 +18,7 @@ class Script(BaseScript):
     name = "Rotek.RTBSv1.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    def get_remote_ports_data(
-        self,
-        ports: dict = None,
-        base_oid_start: str = "1.3.6.1.4.1.41752.3.10.1.3.2.1",
-        base_oid_end: str = "6.236.76.77.86",
-    ) -> List[str]:
+    def get_remote_ports_data(self, ports: dict = None) -> List[str]:
         """
         Get port description: Tx-packets, Rx-packets, signal and noise levels
 
@@ -33,6 +28,10 @@ class Script(BaseScript):
             between start and end needs oid index
         :returns: a list of port description
         """
+
+        ent_oid = self.profile.get_ent_oid(self)
+        base_oid_start = f"{ent_oid}.3.10.1.3.2.1"
+        base_oid_end = "6.236.76.77.86"
 
         if ports is None:
             ports = {}
@@ -59,15 +58,16 @@ class Script(BaseScript):
 
         return ports_description
 
-    def get_remote_devices_info(
-        self, base_oid: str = "1.3.6.1.4.1.41752.3.10.1.3.2.1"
-    ) -> Tuple[List[str]]:
+    def get_remote_devices_info(self) -> Tuple[List[str]]:
         """
         Get remote devices information: MAC-addresses and ports
 
         :param base_oid: - the parent OID for the data request
         :returns: a tuple containing lists of MAC addresses and ports
         """
+        ent_oid = self.profile.get_ent_oid(self)
+        base_oid = f"{ent_oid}.3.10.1.3.2.1"
+
         for index in range(1, 3):
             if index == 1:
                 macs = [
@@ -88,12 +88,12 @@ class Script(BaseScript):
         return macs, list(ports.values()), port_description
 
     def execute_snmp(self):
-
+        ent_oid = self.profile.get_ent_oid(self)
         result, neighbors = {
             "local_interface": "ath0",
             "local_interface_id": self.snmp.get(
-                "1.3.6.1.4.1.41752.3.10.1.2.1.1.1.6",
-                display_hints={"1.3.6.1.4.1.41752.3.10.1.2.1.1.1.6": render_mac},
+                f"{ent_oid}.3.10.1.2.1.1.1.6",
+                display_hints={f"{ent_oid}.3.10.1.2.1.1.1.6": render_mac},
             ),
         }, []
 

@@ -37,12 +37,12 @@ class Script(BaseScript):
     def execute_snmp(self):
         interfaces = {}
         ss = {}
-        ent_oid = self.capabilities.get("SNMP | OID | EnterpriseID", "41752")
-        for soid, sname in self.snmp.getnext(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.4"):
+        ent_oid = self.profile.get_ent_oid(self)
+        for soid, sname in self.snmp.getnext(f"{ent_oid}.3.10.1.2.1.1.4"):
             sifindex = int(soid.split(".")[-1])
-            ieee_mode = self.snmp.get(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.2.{sifindex}")
-            freq = self.snmp.get(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.6.{sifindex}")
-            channel = self.snmp.get(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.7.{sifindex}")
+            ieee_mode = self.snmp.get(f"{ent_oid}.3.10.1.2.1.1.2.{sifindex}")
+            freq = self.snmp.get(f"{ent_oid}.3.10.1.2.1.1.6.{sifindex}")
+            channel = self.snmp.get(f"{ent_oid}.3.10.1.2.1.1.7.{sifindex}")
             broadcast = self.snmp.get(f"1.2.840.10036.1.1.1.7.{sifindex}")
             ss[sifindex] = {
                 "ssid": sname,
