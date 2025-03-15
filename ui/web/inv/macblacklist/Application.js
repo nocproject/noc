@@ -105,6 +105,11 @@ Ext.define("NOC.inv.macblacklist.Application", {
                             name: "is_duplicated",
                             xtype: "checkbox",
                             boxLabel: __("Duplicated")
+                        },
+                        {
+                            name: "is_ignored",
+                            xtype: "checkbox",
+                            boxLabel: __("Ignored")
                         }
                     ]
                 },

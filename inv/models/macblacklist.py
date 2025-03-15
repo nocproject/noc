@@ -67,6 +67,7 @@ class MACBlacklist(Document):
     description = StringField()
     affected = ListField(EmbeddedDocumentField(MACBlacklistAffected))
     is_duplicated = BooleanField(default=False)
+    is_ignored = BooleanField(default=False)
 
     _list_cache = cachetools.TTLCache(100, ttl=60)
 
@@ -89,6 +90,7 @@ class MACBlacklist(Document):
             "to_mac": self.to_mac,
             "affected": [a.to_json() for a in self.affected],
             "is_duplicated": self.is_duplicated,
+            "is_ignored": self.is_ignored,
         }
         if self.description:
             r["description"] = self.description
@@ -117,16 +119,19 @@ class MACBlacklist(Document):
         ]
 
     @classmethod
-    def is_banned_mac(cls, mac: str, is_duplicated: bool = False) -> bool:
+    def is_banned_mac(cls, mac: str, is_duplicated: bool = False, is_ignored: bool = False) -> bool:
         """
         Check if mac is banned for specified reason
-        :param mac:
-        :param is_duplicated:
-        :return:
+        Args:
+            mac:
+            is_duplicated: Check MAC is duplicated flag
+            is_ignored: Check MAC is ignored flag
         """
         m = MAC(mac)
         for item in cls._get_blacklist():
             if item.from_mac <= m <= item.to_mac:
                 if is_duplicated and item.is_duplicated:
+                    return True
+                if is_ignored and item.is_duplicated:
                     return True
         return False

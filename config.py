@@ -265,18 +265,6 @@ class Config(BaseConfig):
             default=True,
             help="Add service field to metric request",
         )
-        ignored_chassis_macs = ListParameter(
-            item=StringParameter(),
-            default=[
-                "00:00:00:00:00:00",  # Empty MAC
-                "01:01:01:01:01:01",
-                "00:01:02:03:04:00",  # Very Smart programmer
-                "00:01:02:03:04:05",  # Very Smart+ programmer
-                "05:04:03:02:01:00",
-                "00:02:03:04:05:06",  # Ubiquity Programmers
-                "FF:FF:FF:FF:FF:FF",
-            ],
-        )
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")
