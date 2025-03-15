@@ -28,7 +28,6 @@ from noc.core.error import (
 )
 from noc.core.ioloop.util import run_sync
 from noc.core.mib import mib
-from noc.config import config
 
 
 GUFO_SNMP_VERSION_MAP = {
@@ -341,6 +340,7 @@ class SNMP(object):
         timeout: int = 10,
         raw_varbinds: bool = False,
         display_hints: Optional[Dict[str, Callable]] = None,
+        max_records: Optional[int] = None,
     ) -> List[Tuple[str, Any]]:
         """
         Perform SNMP GETNEXT request by gufo_snmp library
@@ -356,6 +356,7 @@ class SNMP(object):
         :param timeout: Timeout for SNMP Response
         :param raw_varbinds: Return value in BER encoding
         :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
+        :param max_records: Return only set record count
         :returns: result in list of tuples (name, value)
         """
 
@@ -383,6 +384,8 @@ class SNMP(object):
                             v = mib.render(oid_, v, display_hints)
                         result += [(oid_, v)]
                         if only_first:
+                            break
+                        if max_records and len(result) >= max_records:
                             break
                     self.logger.debug("[%s] GETNEXT result: %s", address, result)
                     return result
