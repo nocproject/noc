@@ -9,10 +9,10 @@
 from .base import BaseAppDecorator
 from noc.inv.models.capability import Capability
 from noc.sa.interfaces.base import (
-    ListOfParameter,
     StringParameter,
     BooleanParameter,
     IntParameter,
+    StringListParameter,
 )
 
 
@@ -21,11 +21,16 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
         self.add_view(
             "api_set_capabilities",
             self.api_set_capabilities,
-            method=["POST"],
+            method=["PUT"],
             url=r"^(?P<object_id>[^/]+)/capabilities/(?P<capabilities_id>[0-9a-f]{24})/$",
             access="write",
             api=True,
-            validate={"value": StringParameter() | IntParameter() | BooleanParameter()}
+            validate={
+                "value": StringListParameter()
+                | StringParameter()
+                | IntParameter()
+                | BooleanParameter()
+            },
         )
         self.add_view(
             "api_reset_capabilities",
@@ -41,16 +46,43 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
             o = self.app.queryset(request).get(**{self.app.pk: object_id})
         except self.app.model.DoesNotExist:
             return self.app.response_not_found()
-        c = self.app.get_object_or_404(Capability, id=capabilities_id)
-        o.set_caps(c.name, value)
-        return {"status": True}
+        capability = self.app.get_object_or_404(Capability, id=capabilities_id)
+        if not capability.allow_manual:
+            return self.app.render_json(
+                {"status": False, "message": "Not allowed manual edit"}, status=403
+            )
+        try:
+            o.set_caps(capability.name, value)
+        except ValueError as e:
+            return self.app.render_json(
+                {"status": False, "message": str(e)}, status=self.app.BAD_REQUEST
+            )
+        return {
+            "status": True,
+            "data": {
+                "capability": capability.name,
+                "id": str(capability.id),
+                "object": str(o.id),
+                "description": capability.description,
+                "type": capability.type,
+                "value": value,
+                "source": "manual",
+                "scope": "",
+                "editor": capability.get_editor(),
+            },
+        }
 
     def api_reset_capabilities(self, request, object_id, capabilities_id):
         try:
             o = self.app.queryset(request).get(**{self.app.pk: object_id})
         except self.app.model.DoesNotExist:
             return self.app.response_not_found()
-        c = self.app.get_object_or_404(Capability, id=capabilities_id)
+        capability = self.app.get_object_or_404(Capability, id=capabilities_id)
+        if not capability.allow_manual:
+            return self.app.render_json(
+                {"status": False, "message": "Not allowed manual edit"}, status=403
+            )
+        o.set_caps(capability.name, "")
         return {"status": True}
 
 
