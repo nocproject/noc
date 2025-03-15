@@ -1,7 +1,7 @@
 {
   "$metric": "Radio | Level | Noise",
-  "$type": "ifindex",
-  "oid": "1.3.6.1.4.1.41752.3.10.1.2.1.1.15.{{ ifIndex }}",
+  "$type": "platform",
+  "oid": "1.3.6.1.4.1.{{ platform }}.3.10.1.2.1.1.15.{{ ifIndex }}",
   "type": "gauge",
   "units": "dBm"
 }
