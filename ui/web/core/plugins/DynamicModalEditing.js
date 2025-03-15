@@ -23,9 +23,8 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
     }, this);
   },
     
-  showEditor: function(record, column){
-    var dataIndex = column.dataIndex,
-      formType = this.getFormType(record);
+  showEditor: function(record){
+    var formType = this.getFormType(record);
     
     if(Ext.isEmpty(formType)) return;
         
@@ -66,26 +65,36 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
         text: __("Save"),
         scope: this,
         handler: function(button){
-          var values = this.formPanel.getForm().getValues(),
-            result = this.formatResult(values);
-          record.set(dataIndex, result);
-          this.request("/sa/managed_object/<id>/capabilities/<caps_id>/", result, button.up("window").close);
+          this.request("PUT", button);
         },
       }],
     });
   },
   
-  request: function(url, data, success){
+  request: function(method, button){
+    var record = this.record,
+      url = Ext.String.format("/sa/managedobject/{0}/capabilities/{1}/", record.get("object"), record.get("id")),
+      data = this.formatResult(this.formPanel.getForm().getValues());
     Ext.Ajax.request({
       url: url,
-      method: "PUT",
-      jsonData: data,
+      method: method,
+      jsonData: method === "PUT" ? {value: data} : undefined,
+      scope: this,
       success: function(response){
         var result = Ext.decode(response.responseText);
-        success();
+        if(result.status){
+          var value = Ext.isDefined(result.data) ? result.data.value : "";
+          record.set("value", this.formatResult({value: value}));
+          button.up("window").close();
+          NOC.info(method === "PUT" ? __("Value saved.") : __("Value deleted."));
+        } else{
+          NOC.error(result.message);
+        }
       },
       failure: function(response){
-        var error = Ext.decode(response.responseText);
+        var result = Ext.decode(response.responseText),
+          message = Ext.isDefined(result.errors) ? result.errors : __("Request failure");
+        NOC.error(message);
       },
     });
   },
@@ -236,10 +245,22 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
     }, 100, this);
   },
 
-  resetForm: function(){
-    this.formPanel.removeAll();
-    this.record.set("value", "");
-    this.formPanel.add(this.getFormItems(this.record, this.formType));
+  resetForm: function(button){
+    Ext.Msg.show({
+      title: __("Confirm Reset"),
+      message: __("Are you sure you want to reset all values?"),
+      buttons: Ext.Msg.YESNO,
+      icon: Ext.Msg.QUESTION,
+      scope: this,
+      fn: function(btn){
+        if(btn === "yes"){
+          this.formPanel.removeAll();
+          this.record.set("value", "");
+          this.formPanel.add(this.getFormItems(this.record, this.formType));
+          this.request("DELETE", button);
+        }
+      },
+    });
   },
 
   formatResult: function(values){
