@@ -9,7 +9,7 @@
 import operator
 import bisect
 from threading import Lock
-from typing import Optional, Union, Set
+from typing import Optional, Union
 
 # Third-party modules
 import bson

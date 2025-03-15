@@ -30,7 +30,7 @@ from noc.core.prettyjson import to_json
 from noc.core.mac import MAC
 
 _list_lock = Lock()
-ListItem = namedtuple("ListItem", ["from_mac", "to_mac", "is_duplicated"])
+ListItem = namedtuple("ListItem", ["from_mac", "to_mac", "is_duplicated", "is_ignored"])
 
 
 class MACBlacklistAffected(EmbeddedDocument):
@@ -98,11 +98,13 @@ class MACBlacklist(Document):
             r,
             order=[
                 "name",
+                "$collection",
                 "uuid",
                 "from_mac",
                 "to_mac",
                 "description",
                 "is_duplicated",
+                "is_ignored",
                 "affected",
             ],
         )
@@ -114,7 +116,12 @@ class MACBlacklist(Document):
     @cachetools.cachedmethod(operator.attrgetter("_list_cache"), lock=lambda _: _list_lock)
     def _get_blacklist(cls) -> List[ListItem]:
         return [
-            ListItem(from_mac=MAC(d.from_mac), to_mac=MAC(d.to_mac), is_duplicated=d.is_duplicated)
+            ListItem(
+                from_mac=MAC(d.from_mac),
+                to_mac=MAC(d.to_mac),
+                is_duplicated=d.is_duplicated,
+                is_ignored=d.is_ignored,
+            )
             for d in cls.objects.all()
         ]
 
@@ -132,6 +139,6 @@ class MACBlacklist(Document):
             if item.from_mac <= m <= item.to_mac:
                 if is_duplicated and item.is_duplicated:
                     return True
-                if is_ignored and item.is_duplicated:
+                if is_ignored and item.is_ignored:
                     return True
         return False

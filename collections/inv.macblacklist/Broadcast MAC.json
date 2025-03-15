@@ -1,0 +1,10 @@
+{
+    "name": "Broadcast MAC",
+    "$collection": "inv.macblacklist",
+    "uuid": "81f2b09b-3056-402a-a658-615fd4fd0f77",
+    "from_mac": "FF:FF:FF:FF:FF:FF",
+    "to_mac": "FF:FF:FF:FF:FF:FF",
+    "is_duplicated": false,
+    "is_ignored": true,
+    "affected": []
+}
