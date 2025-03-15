@@ -25,6 +25,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
     "NOC.core.InlineModelStore",
     "NOC.core.PasswordField",
     "NOC.core.StateField",
+    "NOC.core.plugins.DynamicModalEditing",
     "NOC.sa.managedobject.AttributesModel",
     "NOC.sa.managedobject.CapabilitiesModel",
     "NOC.sa.managedobject.form.FormController",
@@ -1514,7 +1515,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
               plugins: [
                 {
                   ptype: "dynamicmodalediting",
-                  clicksToEdit: 2,
                   listeners: {
                     canceledit: "onCancelEdit",
                   },
