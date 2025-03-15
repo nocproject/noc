@@ -82,8 +82,8 @@ class Script(BaseScript):
         ss = {}
         r = {}  # ifindex -> data
         unknown_interfaces = []
-        ent_oid = self.capabilities.get("SNMP | OID | EnterpriseID", "41752")
-        for soid, sname in self.snmp.getnext(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.4"):
+        ent_oid = self.profile.get_ent_oid(self)
+        for soid, sname in self.snmp.getnext(f"{ent_oid}.3.10.1.2.1.1.4"):
             sifindex = int(soid.split(".")[-1])
             ss[sifindex] = sname
         for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
