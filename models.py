@@ -401,6 +401,7 @@ COLLECTIONS = [
     "fm.AlarmSeverity",
     "sa.ActionCommands",
     "inv.ObjectModel",
+    "fm.EventCategory",
     "fm.AlarmClass",
     "fm.EventClass",
     "fm.EventClassificationRule",
