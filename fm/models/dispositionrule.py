@@ -153,7 +153,7 @@ class DispositionRule(Document):
     #
     actions: List[Action] = EmbeddedDocumentListField(Action)
     # RCA
-    disposition = PlainReferenceField(AlarmClass, required=True)
+    alarm_disposition = PlainReferenceField(AlarmClass, required=True)
     root_cause = EmbeddedDocumentListField(AlarmRootCauseCondition)
     #
     severity_policy = StringField(
