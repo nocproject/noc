@@ -41,6 +41,8 @@ class PrefixDataStream(DataStream):
             r["labels"] = [qs(x) for x in prefix.labels]
             # Alias for compat
             r["tags"] = [qs(x) for x in prefix.labels]
+        if prefix.tt:
+            r["tt"] = prefix.tt
         cls._apply_state(prefix, r)
         cls._apply_profile(prefix, r)
         cls._apply_vrf(prefix, r)
@@ -86,3 +88,11 @@ class PrefixDataStream(DataStream):
             "name": str(prefix.asn.as_name),
             "as": "AS%d" % prefix.asn.asn,
         }
+
+    @classmethod
+    def get_meta(cls, data):
+        return {"vrf": data["vrf"]["id"]}
+
+    @classmethod
+    def filter_vrf(cls, vid):
+        return {f"{cls.F_META}.vrf": int(vid)}
