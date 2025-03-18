@@ -15,7 +15,14 @@ from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.base import IPv4Parameter
 from noc.core.mac import MAC
 from noc.core.comp import smart_text
+from noc.core.snmp.render import render_utf8
 from noc.core.snmp.render import render_bin
+from noc.core.snmp.render import render_mac
+from noc.core.lldp import (
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_LOCAL,
+)
 
 
 class Script(BaseScript):
@@ -43,6 +50,61 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
+    rx_ifname_valid = re.compile(r"^\d+((/\d+)|(\:\d+))?$")
+
+    def is_valid_ifname(self, name):
+        m = self.rx_ifname_valid.search(name)
+        return m is not None
+
+    def get_local_iface(self):
+        r = {}
+        # Get LocalPort Table
+        for port_num, port_subtype, port_id, port_desc in self.snmp.get_tables(
+            [
+                "1.0.8802.1.1.2.1.3.7.1.2",  # LLDP-MIB::lldpLocPortIdSubtype
+                "1.0.8802.1.1.2.1.3.7.1.3",  # LLDP-MIB::lldpLocPortId
+                "1.0.8802.1.1.2.1.3.7.1.4",  # LLDP-MIB::lldpLocPortDesc
+            ],
+            display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_bin},
+        ):
+            if port_subtype == LLDP_PORT_SUBTYPE_MAC:
+                port_id = render_mac("", port_id)
+            else:
+                port_id = render_utf8("", port_id)
+
+            local_interface = ""
+            ifname_desc = self.profile.convert_interface_name(port_desc)
+
+            # Old behavior
+            if self.is_valid_ifname(ifname_desc):
+                local_interface = ifname_desc
+            elif port_subtype == LLDP_PORT_SUBTYPE_LOCAL:
+                # DGS-3120-24SC   - 1/24
+                # DGS-3000-28SC   - 1/24
+                # DGS1210-12TS/ME - 12
+                local_interface = port_id
+            elif port_subtype == LLDP_PORT_SUBTYPE_NAME:
+                local_interface = port_id
+            elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
+                # Some old switches or switches with old firmware
+                self.logger.debug(
+                    "'%s' We cannot match local interface by MAC. Use '%s' as local ifname",
+                    port_num,
+                )
+                local_interface = port_num
+            else:
+                self.logger.debug(
+                    "Unknown PortIdSubtype '%s'. Set ifname to PortId '%s'", port_subtype, port_id
+                )
+                local_interface = port_id
+
+            r[port_num] = {
+                "local_interface": local_interface,
+                "local_interface_subtype": port_subtype,
+            }
+
+        return r
+
     def execute_snmp(self):
         neighb = (
             "remote_chassis_id_subtype",
@@ -55,18 +117,8 @@ class Script(BaseScript):
             "remote_capabilities",
         )
         r = []
-        local_ports = {}
-        # Get LocalPort Table
-        for v in self.snmp.get_tables(
-            [
-                "1.0.8802.1.1.2.1.3.7.1.2",  # LLDP-MIB::lldpLocPortIdSubtype
-                "1.0.8802.1.1.2.1.3.7.1.4",  # LLDP-MIB::lldpLocPortDesc
-            ]
-        ):
-            local_ports[v[0]] = {
-                "local_interface": self.profile.convert_interface_name(v[2]),
-                "local_interface_subtype": v[1],
-            }
+        local_ports = self.get_local_iface()
+
         for v in self.snmp.get_tables(
             [
                 "1.0.8802.1.1.2.1.4.1.1.4",  # LLDP-MIB::lldpRemChassisIdSubtype
