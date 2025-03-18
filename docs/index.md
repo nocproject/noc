@@ -105,4 +105,4 @@ Documentation is organized into into four major parts:
 Getting involved in the NOC community offers you a direct path to establish connections with other skilled and like-minded engineers. It's an opportunity to raise awareness about the fascinating work you're engaged in and hone your skills. Discover more about how you can participate in our community by referring to our [Community Guide](community-guide/index.md).
 
 ## License
-NOC is open-source software and licensed under the terms of [BSD 3-clause License](license.md).
+NOC is open-source software and licensed under the terms of [permissive open-source license](license.md).
