@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+import orjson
 from typing import Optional
 
 # NOC modules
@@ -18,7 +19,7 @@ class Profile(BaseProfile):
     # Ignore this line: 'Last login: Tue Sep 18 09:17:21 2018 from 10.10.0.1'
     pattern_username = rb"((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
     pattern_prompt = (
-        rb"^(({master(?::\d+)}\n)?\S+>)\s*$|(({master(?::\d+)})?"
+        rb"^(({master(?::\d+)}\n)?(?P<hostname>\S+)>)\s*$|(({master(?::\d+)})?"
         rb"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     )
     pattern_more = [(rb"^---\(more.*?\)---", b" "), (rb"\? \[yes,no\] .*?", b"y\n")]
@@ -27,7 +28,7 @@ class Profile(BaseProfile):
     )
     pattern_operation_error = rb"error: abnormal communication termination with|permission denied\."
     send_on_syntax_error = b"\n"
-    command_disable_pager = "set cli screen-length 0"
+    command_disable_pager = ["set cli screen-length 0", "set cli screen-width 0"]
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
     command_exit = "exit"
@@ -171,6 +172,37 @@ class Profile(BaseProfile):
             f'help apropos "{cmd}" | match "^show {cmd}" ', cached=True, ignore_errors=True
         )
         return ("show " + cmd in c) and ("error: nothing matches" not in c)
+
+    def clear_json(self, v, logger=None) -> dict:
+        """
+        Clear Juniper "display json" output
+        :param v: Juniper display json
+        :return: dict with converted data or empty if error or data is not present
+        """
+        res = {}
+        v = "\n".join(v.strip().split("\n"))
+
+        # Cut first line with "show XXX..."
+        if v.startswith("show"):
+            v = "\n".join(v.split("\n")[1:])
+
+        if not v:
+            return res
+
+        # Cut line "{master:0}" or "{master}"
+        if v.split("\n")[-1].startswith("{master"):
+            v = "\n".join(v.split("\n")[:-1])
+
+        if not v:
+            return res
+
+        try:
+            res = orjson.loads(v)
+        except orjson.JSONDecodeError as e:
+            if logger:
+                logger.info("Error occured while parsing JSON: |%s|", e)
+
+        return res
 
     @classmethod
     def get_interface_type(cls, name):

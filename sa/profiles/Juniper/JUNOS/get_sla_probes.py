@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_sla_probes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,10 +42,9 @@ class Script(BaseScript):
         "http-metadata-get": "http-get",
     }
 
-    @classmethod
-    def parse_json_out(cls, v):
+    def parse_json_out(self, v):
         r = []
-        v = v.strip()
+        v = self.profile.clear_json(v)
         if not v:
             return r
         v = orjson.loads(v)
@@ -56,7 +55,7 @@ class Script(BaseScript):
                         {
                             "group": p["name"],
                             "name": t["name"],
-                            "type": cls.TEST_TYPES[t["probe-type"]],
+                            "type": self.TEST_TYPES[t["probe-type"]],
                             "target": t["target"]["address"],
                         }
                     ]
@@ -73,6 +72,7 @@ class Script(BaseScript):
             self.logger.info("Error while decoding JSON |%s|", e)
             return r
         except self.CLISyntaxError:
+            r = []
             v = self.cli("show services rpm probe-results")
             for match in self.rx_res.finditer(v):
                 r += [
