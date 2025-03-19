@@ -1,0 +1,10 @@
+{
+    "name": "Ubiquity Programmers",
+    "$collection": "inv.macblacklist",
+    "uuid": "c2a777b3-6cc4-41a6-81b0-a4e991c2908e",
+    "from_mac": "00:02:03:04:05:06",
+    "to_mac": "00:02:03:04:05:06",
+    "is_duplicated": false,
+    "is_ignored": true,
+    "affected": []
+}
