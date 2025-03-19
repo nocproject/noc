@@ -148,6 +148,29 @@ Ext.define("NOC.fm.classificationrule.Application", {
           ],
         },
         {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("Category"),
+          labelAlign: "right",
+          defaults: {
+            padding: 4,
+            labelAlign: "top"
+          },
+          items: [
+            {
+             xtype: "core.tagfield",
+             url: "/fm/eventcategory/lookup/",
+             fieldLabel: __("Categories"),
+             tooltip: __("Event Categories"),
+             name: "categories",
+             uiStyle: "large",
+             listeners: {
+                 render: me.addTooltip
+             }
+           }
+          ]
+        },
+        {
           xtype: "core.tagfield",
           url: "/sa/profile/lookup/",
           fieldLabel: __("Profiles"),
