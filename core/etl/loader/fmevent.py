@@ -71,11 +71,7 @@ class FMEventLoader(BaseLoader):
         for num, event in enumerate(new_state):
             event = self.get_fm_event(event)
             max_ts = max(max_ts, event.ts)
-            svc.publish(
-                orjson.dumps(event.model_dump()),
-                f"events.{event.target.pool}",
-                partition=bi_hash(event.target.remote_id) % 2,
-            )
+            svc.publish(orjson.dumps(event.model_dump()), f"events.{event.target.pool}")
         if max_ts:
             self.system.remote_system.last_extract_event = datetime.datetime.fromtimestamp(max_ts)
             return
