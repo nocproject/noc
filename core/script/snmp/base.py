@@ -303,7 +303,7 @@ class SNMP(object):
             result = 0
             oids_iter = session.getnext(oid)
             if self.script.has_snmp_bulk():
-                oids_iter = session.getbulk(oid, max_repetitions=BULK_MAX_REPETITIONS)
+                oids_iter = session.getbulk(oid, max_repetitions=self.get_max_repetitions())
             try:
                 async for oid_, v in oids_iter:
                     if filter(oid_, v):
@@ -317,6 +317,14 @@ class SNMP(object):
             return result
 
         return run_sync(partial(run, filter or (lambda x, y: True)), close_all=False)
+
+    def get_max_repetitions(self, max_repetitions: Optional[int] = None) -> Optional[int]:
+        """Return max_repetition on SNMP Bulk Request"""
+        max_repetitions = max_repetitions or BULK_MAX_REPETITIONS
+        caps_limit = self.script.get_snmp_bulk_repetition()
+        if caps_limit:
+            max_repetitions = min(max_repetitions, caps_limit)
+        return max_repetitions
 
     def getnext(
         self,
@@ -332,6 +340,7 @@ class SNMP(object):
         timeout: int = 10,
         raw_varbinds: bool = False,
         display_hints: Optional[Dict[str, Callable]] = None,
+        max_records: Optional[int] = None,
     ) -> List[Tuple[str, Any]]:
         """
         Perform SNMP GETNEXT request by gufo_snmp library
@@ -347,6 +356,7 @@ class SNMP(object):
         :param timeout: Timeout for SNMP Response
         :param raw_varbinds: Return value in BER encoding
         :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
+        :param max_records: Return only set record count
         :returns: result in list of tuples (name, value)
         """
 
@@ -362,7 +372,7 @@ class SNMP(object):
             oids_iter = session.getnext(oid)
             if bulk:
                 oids_iter = session.getbulk(
-                    oid, max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
+                    oid, max_repetitions=self.get_max_repetitions(max_repetitions)
                 )
             result = []
             while True:
@@ -374,6 +384,8 @@ class SNMP(object):
                             v = mib.render(oid_, v, display_hints)
                         result += [(oid_, v)]
                         if only_first:
+                            break
+                        if max_records and len(result) >= max_records:
                             break
                     self.logger.debug("[%s] GETNEXT result: %s", address, result)
                     return result

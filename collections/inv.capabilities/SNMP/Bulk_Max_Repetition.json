@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | Bulk | Max Repetition",
+    "$collection": "inv.capabilities",
+    "uuid": "b2ee2822-d43f-4840-b612-68219c634ae6",
+    "description": "SNMP GETBULKREQUEST Max Repetition count",
+    "type": "int",
+    "card_template": null
+}
