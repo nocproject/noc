@@ -8,8 +8,9 @@
 # Python modules
 import os
 import operator
+import re
 from threading import Lock
-from typing import Optional, List, Union, Dict, Any
+from typing import Optional, List, Union, Dict, Any, Callable
 
 # Third-party modules
 from bson import ObjectId
@@ -33,6 +34,8 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
+from noc.fm.models.eventclass import EventClass
+from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.model.decorator import tree
@@ -65,6 +68,24 @@ class Match(EmbeddedDocument):
         if self.event_class_re:
             return {"event_class_re": self.event_class_re}
         return {}
+
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        if self.groups:
+            r["service_groups"] = {"$all": [str(x) for x in self.groups]}
+        if self.remote_system:
+            r["remote_system"] = str(self.remote_system.id)
+        # if self.untagged_vlan_filter:
+        #     r["untagged_vlan"] = {"$in": self.untagged_vlan_filter.include_vlans}
+        # if self.tagged_vlan_filter:
+        #     r["tagged_vlans"] = {"$any": self.tagged_vlan_filter.include_vlans}
+        # if self.name_patter:
+        #     r["name"] = {"$regex": self.name_patter}
+        # if self.description_patter:
+        #     r["description"] = {"$regex": self.description_patter}
+        return r
 
 
 class AlarmRootCauseCondition(EmbeddedDocument):
@@ -264,6 +285,29 @@ class DispositionRule(Document):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
+    def get_event_classes(self):
+        r = []
+        for rr in self.match:
+            if not rr.event_class_re:
+                continue
+            ec = EventClass.objects.get(name=rr.event_class_re)
+            if ec:
+                r.append(ec)
+            else:
+                r += list(EventClass.objects.filter(name=re.compile(rr.event_class_re)))
+        return r
+
+    def get_matcher(self) -> Callable:
+        """Getting matcher for rule"""
+        expr = []
+        if not self.match:
+            return lambda x: True
+        for r in self.match:
+            expr.append(r.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
     @classmethod
     def get_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
         """Generate Datastream Config"""
@@ -274,8 +318,10 @@ class DispositionRule(Document):
             "name": rule.name,
             "is_active": rule.is_active,
             "preference": rule.preference,
-            "alarm_class": rule.alarm_disposition.name,
+            "alarm_class": rule.alarm_disposition.name if rule.alarm_disposition else None,
             "stop_processing": rule.stop_processing,
+            "match_expr": [],
+            "event_classes": [],
             "action": "processed",
         }
         if rule.notification_group:
@@ -291,4 +337,11 @@ class DispositionRule(Document):
             }
         if rule.handlers:
             r["handlers"] = [str(h.id) for h in rule.handlers]
+        if not rule.match:
+            return r
+        elif len(rule.match) == 1:
+            r["match_expr"] = rule.match[0].get_match_expr()
+        else:
+            r["match_expr"] = {"$or": [x.get_match_expr() for x in rule.match]}
+        r["event_classes"] = [str(x.id) for x in rule.get_event_classes()]
         return r
