@@ -123,6 +123,8 @@ class KafkaSenderService(FastAPIService):
             security_protocol=config.kafkasender.security_protocol,
             sasl_plain_username=config.kafkasender.username,
             sasl_plain_password=config.kafkasender.password,
+            max_request_size=config.kafkasender.max_request_size,
+            compression_type=config.kafkasender.compression_type,
             retry_backoff_ms=10000,
         )
         while True:
