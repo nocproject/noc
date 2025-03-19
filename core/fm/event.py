@@ -33,7 +33,7 @@ EVENT_QUERY = f"""
         IPv4NumToString(e.ip) as address,
         dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,
         dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
-        dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.profile', 'name', e.profile) as sa_profile,
         e.start_ts as start_timestamp,
         e.source,
         e.raw_vars,
@@ -49,6 +49,8 @@ EVENT_QUERY = f"""
         AND date BETWEEN %s AND %s
     FORMAT JSON
 """
+
+IGNORED_OIDS = {"RFC1213-MIB::sysUpTime.0", "SNMPv2-MIB::sysUpTime.0"}
 
 
 class Target(BaseModel):
@@ -92,7 +94,7 @@ class MessageType(BaseModel):
     id: Optional[str] = None  # Event type, purpose for format.
     # trap_id for SNMP, event_id for external, code for internal
     severity: EventSeverity = EventSeverity.INDETERMINATE  # Event severity level
-    facility: Optional[str] = None  # Event facility (for syslog)
+    facility: Optional[int] = None  # Event facility (for syslog)
     profile: Optional[str] = None  # Link to SA Profile for classification
     event_class: Optional[str] = None  # For PreClassified message
     # AlarmClass ? PreClassify alarm
@@ -179,6 +181,7 @@ class Event(BaseModel):
                 "source": data["source"],
                 "id": data.get("snmp_trap_oid"),
                 "event_class": data["event_class"]["name"],
+                "profile": data.get("sa_profile", "Generic.Host"),
             },
         }
         if "target" not in data or not data["target"]:
@@ -244,3 +247,62 @@ class Event(BaseModel):
         if not res.get("data"):
             return None
         return Event.from_json(res["data"][0])
+
+    @classmethod
+    def get_rule(
+        cls,
+        source: EventSource,
+        message: Optional[str] = None,
+        labels: Optional[List[str]] = None,
+        data: Optional[List[Dict[str, str]]] = None,
+        description: Optional[str] = None,
+        profile: Optional[str] = None,
+        snmp_trap_oid: Optional[str] = None,
+    ):
+        """
+        Create Event Rule by
+        Args:
+            source:
+            message:
+            labels:
+            data:
+            description:
+            profile:
+        """
+        profiles = []
+        if profile:
+            event_name = " | ".join(profile.split(".")) + f" | <name> ({source.name})"
+        else:
+            event_name = f"Generic ({source.name})"
+        r = {
+            "name": event_name,
+            "preference": 1000,
+            "sources": [source.value],
+            "message_rx": message or "",
+            "description": description,
+            "profiles": profiles,
+        }
+        if source == EventSource.SYSLOG:
+            r["description"] = message
+            r["test_cases"] = [{"message": message}]
+        elif source == EventSource.SNMP_TRAP and snmp_trap_oid:
+            r["description"] = snmp_trap_oid
+        patterns = {}
+        for k in data:
+            if k["name"] in IGNORED_OIDS:
+                continue
+            if k["name"] not in (
+                "collector",
+                "facility",
+                "severity",
+                "syslog_message",
+                "message_id",
+            ):
+                patterns[k["name"]] = k["value"]
+        r["patterns"] = [
+            {"key_re": "^%s$" % k, "value_re": "^%s$" % patterns[k].strip()} for k in patterns
+        ]
+        r["labels"] = []
+        for ll in labels or []:
+            r["labels"].append({"wildcard": ll, "is_required": True})
+        return r
