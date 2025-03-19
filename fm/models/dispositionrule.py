@@ -34,7 +34,7 @@ from noc.main.models.handler import Handler
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.core.bi.decorator import bi_sync
-from noc.core.change.change import on_change
+from noc.core.change.decorator import change
 from noc.core.model.decorator import tree
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
@@ -100,7 +100,7 @@ class HandlerItem(EmbeddedDocument):
 
 
 @tree(field="replace_rule")
-@on_change
+@change
 @bi_sync
 class DispositionRule(Document):
     meta = {
