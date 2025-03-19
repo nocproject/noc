@@ -7,9 +7,15 @@
 console.debug("Defining NOC.fm.event.ApplicationModel");
 
 Ext.define("NOC.fm.event.ApplicationModel", {
-    extend: "Ext.app.ViewModel",
-    alias: "viewmodel.fm.event",
-    data: {
-        filter: {}
-    }
+  extend: "Ext.app.ViewModel",
+  alias: "viewmodel.fm.event",
+  data: {
+    filter: {},
+    total: 0,
+  },
+  formulas: {
+    eventsTotal: function(get){
+      return __("Total: ") + get("total");
+    },
+  },
 });

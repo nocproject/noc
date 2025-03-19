@@ -1,11 +1,11 @@
 site_name: NOC
 site_description: NOC, the open-source network management system
-site_author: The NOC Project
+site_author: Gufo Labs
 site_url: https://getnoc.com/
 repo_url: https://code.getnoc.com/noc/noc/
 repo_name: Gitlab
 edit_uri: -/edit/master/docs/
-copyright: 2007-2023, The NOC Project
+copyright: 2007-2025, Gufo Labs
 nav:
   - Home: index.md
   - Installation:
@@ -1093,6 +1093,7 @@ nav:
           - NOC 0.1.9: releases/0_1_9.md
   - Glossary: glossary/index.md
   - License: license.md
+  - Thanks: thanks.md
 # Russian translations
 # nav:
 #   - User's Guide:

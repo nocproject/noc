@@ -899,3 +899,7 @@ table {
 .x-hmenu-sort-cancel:before {
     content: "\f05e";
 }
+
+.noc-white-space {
+    word-break: break-word;
+}

@@ -94,11 +94,6 @@ Ext.define("NOC.sa.service.Application", {
           },
         },
         {
-          text: __("ID"),
-          dataIndex: "id",
-          width: 160,
-        },
-        {
           text: __("Profile"),
           dataIndex: "profile",
           width: 200,
@@ -334,7 +329,7 @@ Ext.define("NOC.sa.service.Application", {
               name: "status_transfer_policy",
               xtype: "combobox",
               fieldLabel: __("Status Transfer Policy"),
-              tooltip: __("Transfer Oper Statuses to Adjacent Servies <br/>" +
+              tooltip: __("Transfer Oper Statuses to Adjacent Services <br/>" +
                   "D - Disable Status Transfer<br/>" +
                   "T - Transfer to All Adjacent<br/>" +
                   "R - Transfer By Rule<br/>" +

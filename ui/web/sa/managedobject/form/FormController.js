@@ -10,6 +10,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
     "Ext.ux.grid.column.GlyphAction",
     "NOC.sa.managedobject.Model",
     "NOC.sa.managedobject.Proxy",
+    "NOC.core.RemoteMappingForm",
   ],
   alias: "controller.managedobject.form",
   url: "/sa/managedobject/",
@@ -20,6 +21,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
       deleteBtn = app.down("[itemId=deleteBtn]"),
       cmdBtn = app.down("[itemId=cmdBtn]"),
       scriptsBtn = app.down("[itemId=scriptsBtn]"),
+      mappingBtn = app.down("[itemId=mappingBtn]"),
       configBtn = app.down("[itemId=configBtn]"),
       confDBBtn = app.down("[itemId=confDBBtn]"),
       saveBtn = app.down("[itemId=saveBtn]"),
@@ -34,6 +36,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
     deleteBtn.setDisabled(!view.hasPermission("delete"));
     cmdBtn.setDisabled(!view.hasPermission("interactions"));
     scriptsBtn.setDisabled(!view.hasPermission("script"));
+    mappingBtn.setDisabled(!view.hasPermission("change_mappings"));
     configBtn.setDisabled(!view.hasPermission("config"));
     confDBBtn.setDisabled(!view.hasPermission("config"));
     saveBtn.setDisabled(!view.hasPermission("update"));
@@ -256,7 +259,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
                                Ext.Array.map(this.getView().query("[itemId$=-inline]"), function(grid){return grid.getStore()}));
     Ext.Object.each(data, function(key, value){if(!Ext.isEmpty(value)) record.set(key, value)});
     record.save({
-      success: function(record, operation){
+      success: function(){
         me.getView().unmask();
         me.getView().setHistoryHash();
         me.reloadSelectionGrids();
@@ -301,7 +304,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
         url: "/sa/managedobject/" + formPanel.recordId + "/",
         method: "DELETE",
         scope: this,
-        success: function(response){
+        success: function(){
           var basketStore = this.getView().up("[itemId=sa-managedobject]").down("[reference=saManagedobjectSelectedGrid1]").getStore();
           basketStore.remove(this.getView().down("[itemId=managedobject-form-panel]").currentRecord)
           this.reloadSelectionGrids();
@@ -313,6 +316,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
           try{
             message = Ext.decode(response.responseText).message;
           } catch(err){
+            console.error(err);
             message = "Internal error";
           }
           NOC.error(message);
@@ -356,6 +360,14 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
     this.getView().down("[name=snmp_auth_key]").setHidden(["Community", "noAuthNoPriv"].includes(value));
     this.getView().down("[itemId=snmp_priv_proto]").setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
     this.getView().down("[name=snmp_priv_key]").setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+  },
+  onMapping: function(){
+    var formPanel = this.getView().down("[itemId=managedobject-form-panel]");
+    Ext.create("NOC.core.RemoteMappingForm", {
+      managedObjectId: formPanel.recordId,
+      mappings: formPanel.currentRecord.get("mappings"),
+      parentForm: formPanel,
+    });
   },
   // Workaround labelField
   onChange: Ext.emptyFn,

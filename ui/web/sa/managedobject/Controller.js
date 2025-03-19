@@ -632,7 +632,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
   onSetUnmanaged: function(){
     this.runAction("set_unmanaged");
   },
-  onNewMaintaince: function(){
+  onNewMaintenance: function(){
     var basketStore = this.lookupReference("saManagedobjectSelectedGrid1").getStore(),
       objects = Ext.Array.map(basketStore.getData().items, function(record){return {object: record.id, object__label: record.get("name")}}),
       args = {
@@ -660,7 +660,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
               },
             });
   },
-  onAddToMaintaince: function(){
+  onAddToMaintenance: function(){
     var basketStore = this.lookupReference("saManagedobjectSelectedGrid1").getStore();
     NOC.run(
       "NOC.inv.map.Maintenance",
@@ -717,10 +717,10 @@ Ext.define("NOC.sa.managedobject.Controller", {
             formView,
             standardMode = ["closeBtn", "saveBtn", "resetBtn", "deleteBtn", "createBtn", "cloneBtn", "showMapBtn",
                             "configBtn", "confDBBtn", "cardBtn", "dashboardBtn", "consoleBtn", "scriptsBtn", "interfacesBtn",
-                            "sensorsBtn", "linksBtn", "discoverBtn", "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"],
+                            "sensorsBtn", "linksBtn", "discoverBtn", "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn", "mappingBtn"],
             embeddedMode = ["saveBtn", "showMapBtn", "configBtn", "confDBBtn", "cardBtn", "dashboardBtn",
                             "consoleBtn", "scriptsBtn", "interfacesBtn", "sensorsBtn", "linksBtn", "discoverBtn",
-                            "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"],
+                            "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn", "mappingBtn"],
             r = {},
             data = Ext.decode(response.responseText),
             record = Ext.create("NOC.sa.managedobject.Model", data);
@@ -977,5 +977,21 @@ Ext.define("NOC.sa.managedobject.Controller", {
     Ext.each(form.getFields().items, function(field){
       field.setValue(null);
     });
+  },
+  saveFilterToUrl: function(filter){
+    var params = Ext.Object.toQueryString(filter, true)
+      , currentHash = Ext.History.getHash()
+      , index = currentHash.indexOf("?")
+      , app;
+    if(index === -1){
+      app = currentHash;
+    } else{
+      app = currentHash.substr(0, index);
+    }
+    if(params){
+      Ext.History.add(app + "?" + params);
+    } else{
+      Ext.History.add(app);
+    }
   },
 });

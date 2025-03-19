@@ -18,43 +18,51 @@ Ext.define("NOC.sa.service.ManagedObjectLinkForm", {
   scrollable: true,
   layout: "fit",
   defaultListenerScope: true,
-  items: [
-    {
-      xtype: "form",
-      padding: 4,
+  initComponent: function(){
+    Ext.apply(this, {
       items: [
         {
-          xtype: "hidden",
-          name: "service_id",
-        },
-        {
-          xtype: "hidden",
-          name: "instance_id",
-        },
-        {
-          fieldLabel: __("Managed Object"),
-          labelAlign: "left",
-          labelWidth: 150,
-          name: "managed_id",
-          allowBlank: false,
-          xtype: "core.combo",
-          restUrl: "/sa/managedobject/lookup/",
-          uiStyle: "medium-combo",
+          xtype: "form",
+          padding: 4,
+          items: [
+            {
+              xtype: "hidden",
+              name: "service_id",
+              value: this.service_id,
+            },
+            {
+              xtype: "hidden",
+              name: "instance_id",
+              value: this.instance_id,
+            },
+            {
+              fieldLabel: __("Managed Object"),
+              labelAlign: "left",
+              labelWidth: 150,
+              name: "managed_id",
+              value: this.managed_id,
+              allowBlank: false,
+              xtype: "core.combo",
+              restUrl: "/sa/managedobject/lookup/",
+              uiStyle: "medium-combo",
+            },
+          ],
+          buttons: [
+            {
+              text: __("Bind"),
+              formBind: true,
+              handler: "buttonBindHandler",
+            },
+            {
+              text: __("Unbind"),
+              handler: "buttonResetHandler",
+            },
+          ],
         },
       ],
-      buttons: [
-        {
-          text: __("Bind"),
-          formBind: true,
-          handler: "buttonBindHandler",
-        },
-        {
-          text: __("Reset"),
-          handler: "buttonResetHandler",
-        },
-      ],
-    },
-  ],
+    });
+    this.callParent();
+  },
   buttonBindHandler: function(){
     this.buttonHandler("bind")
   },

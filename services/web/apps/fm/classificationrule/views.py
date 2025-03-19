@@ -19,7 +19,8 @@ from noc.fm.models.eventclassificationrule import (
 )
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
-from noc.core.validators import is_objectid, is_oid
+from noc.core.validators import is_objectid
+from noc.core.fm.event import Event, EventSource
 from noc.fm.models.utils import get_event
 from noc.core.translation import ugettext as _
 
@@ -198,7 +199,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
 
     IGNORED_OIDS = {"RFC1213-MIB::sysUpTime.0", "SNMPv2-MIB::sysUpTime.0"}
 
-    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["GET"], access="create", api=True)
+    @view(
+        url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["POST"], access="create", api=True
+    )
     def api_from_event(self, request, event_id):
         """
         Create classification rule from event
@@ -206,28 +209,13 @@ class EventClassificationRuleApplication(ExtDocApplication):
         :param event_id:
         :return:
         """
-        event = get_event(event_id)
-        if not event:
-            self.response_not_found()
-        event_name = " | ".join(event.managed_object.profile.name.split(".")) + " | <name> "
-        if event.source == "syslog":
-            event_name += "(SYSLOG)"
-        elif event.source == "SNMP Trap":
-            event_name += "(SNMP)"
-        data = {"name": event_name, "preference": 1000}
-        if event.source == "syslog":
-            data["description"] = event.raw_vars["message"]
-        elif event.source == "SNMP Trap" and "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars:
-            data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
-        patterns = {"source": event.source}
-        for k in event.raw_vars:
-            if k not in ("collector", "facility", "severity"):
-                patterns[k] = event.raw_vars[k]
-        if hasattr(event, "resolved_vars"):
-            for k in event.resolved_vars:
-                if k not in self.IGNORED_OIDS and not is_oid(k):
-                    patterns[k] = event.resolved_vars[k]
-        data["patterns"] = [
-            {"key_re": "^%s$" % k, "value_re": "^%s$" % patterns[k].strip()} for k in patterns
-        ]
-        return data
+        q = self.parse_request_query(request)
+        source = EventSource(q["source"])
+        rule = Event.get_rule(
+            source,
+            message=q.get("message"),
+            labels=q.get("labels"),
+            data=q.get("data"),
+            snmp_trap_oid=q.get("snmp_trap_oid"),
+        )
+        return rule
