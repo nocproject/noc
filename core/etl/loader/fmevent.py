@@ -16,7 +16,6 @@ from .base import BaseLoader
 from ..models.fmevent import FMEventObject
 from noc.core.fm.event import Event, EventSeverity, MessageType, Var
 from noc.core.service.loader import get_service
-from noc.core.bi.decorator import bi_hash
 
 
 class FMEventLoader(BaseLoader):
