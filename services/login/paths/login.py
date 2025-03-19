@@ -36,6 +36,8 @@ async def login(request: Request, creds: LoginRequest):
     user = User.objects.filter(username=user_name).first()
     if not user:
         return StatusResponse(status=False, message="Authentication failed")
+    if not user.is_active:
+        return StatusResponse(status=False, message="Authentication failed. User is not active")
     # Check password expiration
     if user.change_at:
         now = datetime.datetime.now()
