@@ -16,7 +16,6 @@ from fastapi.responses import Response
 
 # NOC modules
 from noc.config import config
-from noc.aaa.models.user import User
 from noc.core.perf import metrics
 from noc.core.comp import smart_text
 from noc.core.error import NOCError, ERR_AUTH_CRED_CHANGE
