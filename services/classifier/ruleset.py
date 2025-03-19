@@ -51,6 +51,16 @@ class RuleSet(object):
         # metric block
         # processed: int = 0
 
+    def update_rule(self, data):
+        """"""
+        rule = Rule.from_config(
+            EventClassificationRule.get_rule_config(data),
+            self.enumerations,
+        )
+
+    def delete_rule(self, rid: str):
+        """"""
+
     def load(self):
         """
         Load rules from database
@@ -112,8 +122,10 @@ class RuleSet(object):
                 n += 1
         if cn:
             logger.info("%d rules are cloned", cn)
-        self.default_rule = Rule.from_rule(
-            EventClassificationRule.objects.filter(name=config.classifier.default_rule).first(),
+        self.default_rule = Rule.from_config(
+            EventClassificationRule.get_rule_config(
+                EventClassificationRule.objects.filter(name=config.classifier.default_rule).first()
+            ),
             self.enumerations,
         )
         # Apply lookup solution

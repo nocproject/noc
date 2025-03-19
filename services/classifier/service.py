@@ -1021,10 +1021,12 @@ class ClassifierService(FastAPIService):
         self.logger.info("%d Event Classification Rules has been loaded", len(self.ruleset.rules))
 
     async def update_rules(self, data: Dict[str, Any]) -> None:
-        """Apply Metric Rules change"""
+        """Apply Classification Rules changes"""
+        self.ruleset.update_rule(data)
 
     async def delete_rules(self, r_id: str) -> None:
         """Remove rules for ID"""
+        self.ruleset.delete_rule(r_id)
 
 
 if __name__ == "__main__":

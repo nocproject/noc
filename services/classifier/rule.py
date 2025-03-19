@@ -88,6 +88,7 @@ class VarTransformRule:
 
 @dataclass(frozen=True, slots=True)
 class Rule:
+    id: str
     name: str
     event_class: Any
     event_class_name: str
@@ -176,6 +177,7 @@ class Rule:
                 transform[name] = VarTransformRule(name=name, default=value)
         event_class = EventClass.get_by_name(data["event_class"])
         return Rule(
+            id=data["id"],
             name=data["name"],
             event_class=event_class,
             event_class_name=data["event_class"],
