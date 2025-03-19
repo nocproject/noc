@@ -221,7 +221,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                             xtype: "core.tagfield",
                             url: "/inv/resourcegroup/lookup/",
                             fieldLabel: __("Object Groups"),
-                            name: "resource_groups",
+                            name: "groups",
                             allowBlank: true,
                             uiStyle: "extra"
                         },
