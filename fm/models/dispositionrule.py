@@ -77,13 +77,16 @@ class AlarmRootCauseCondition(EmbeddedDocument):
     # affected_resource = BooleanField(default=False)
 
 
-class ActionItem(EmbeddedDocument):
+class ObjectActionItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     # Action API ? by object, move to instance ?
-    # Run Diagnostic
     action_command: "Action" = ReferenceField(Action, required=True)
+    # resource as context
+    # Set Diagnostic
+    # affected_service ?
     # run_discovery = BooleanField()
-    # Update Resource State
+    # run_discovery = StringField() all -
+    # Update Resource State (workflow)
     # TTL
 
 
@@ -166,21 +169,21 @@ class DispositionRule(Document):
     )
     subject_template = StringField()
     handlers: List[Handler] = EmbeddedDocumentListField(HandlerItem)
-    script_actions: List[ActionItem] = EmbeddedDocumentListField(ActionItem)
+    object_actions: List[ObjectActionItem] = EmbeddedDocumentListField(ObjectActionItem)
     #
     # RCA
     alarm_disposition: Optional["AlarmClass"] = PlainReferenceField(AlarmClass, required=False)
     root_cause = EmbeddedDocumentListField(AlarmRootCauseCondition)
     #
-    severity_policy = StringField(
-        choices=[
-            ("CB", "Class Based Policy"),
-            ("AB", "Affected Based Severity Preferred"),
-            ("AL", "Affected Limit"),
-            ("ST", "By Tokens"),
-        ],
-        default="AL",
-    )
+    # severity_policy = StringField(
+    #     choices=[
+    #         ("CB", "Class Based Policy"),
+    #         ("AB", "Affected Based Severity Preferred"),
+    #         ("AL", "Affected Limit"),
+    #         ("ST", "By Tokens"),
+    #     ],
+    #     default="AL",
+    # )
     stop_processing = BooleanField(default=False)
     # TTL ?
     # BI ID

@@ -81,7 +81,7 @@ Ext.define("NOC.fm.dispositionrule.Model", {
             type: "string"
         },
         {
-            name: "actions",
+            name: "object_actions",
             type: "auto"
         },
         {

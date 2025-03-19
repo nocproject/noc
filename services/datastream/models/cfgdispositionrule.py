@@ -17,6 +17,7 @@ from noc.core.fm.enum import EventSource
 
 class Condition(BaseModel):
     event_class: str
+    labels: Optional[List[str]] = None
     groups: Optional[List[str]] = None
 
 
