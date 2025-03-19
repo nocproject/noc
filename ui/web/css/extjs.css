@@ -890,3 +890,7 @@ table {
     font-style: italic;
     text-align: center;
 }
+
+.noc-white-space {
+    word-break: break-word;
+}
