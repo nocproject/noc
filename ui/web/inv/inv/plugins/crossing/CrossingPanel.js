@@ -42,4 +42,13 @@ Ext.define("NOC.inv.inv.plugins.crossing.CrossingPanel", {
       width: 75,
     },
   ],
+  initComponent: function(){
+    var grid = this.items[0];
+    //
+    grid.stateful = true; 
+    grid.stateId = "inv.inv-crossing-grid";
+    grid.itemId = "invCrossingGrid";
+    grid.columns = this.gridColumns;
+    this.callParent(arguments);
+  },
 });

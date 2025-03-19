@@ -79,25 +79,24 @@ Ext.define("NOC.main.desktop.Application", {
   //
   afterRender: function(){
     this.callParent();
-    console.log("NOC application ready");
-    this.checkLogged();
-    this.launchAppsFromHistory();
+    this.onLogin();
     this.fireEvent("applicationReady");
+    console.log("NOC application ready");
   },
-  // Launch applications from URL
-  launchAppsFromHistory: function(){
-    var h = Ext.History.getHash();
-
-    if(h){
-      // Open application tab
-      var p = h.split("/"),
-        app = p[0],
-        args = p.slice(1);
+  // Launch applications from URL or home
+  launchApps: function(){
+    var hash = Ext.History.getHash();
+    if(hash){ // Open application tab
+      var paths = hash.split("/"),
+        app = paths[0],
+        args = paths.slice(1);
       if(args.length > 0){
         NOC.launch(app, "history", {args: args});
       } else{
         NOC.launch(app);
       }
+    } else{ // Launch home application
+      this.launchTab("NOC.main.home.Application", "Home", {});
     }
   },
   // Show About screen
@@ -121,8 +120,7 @@ Ext.define("NOC.main.desktop.Application", {
   },
   // Launch application from navigation record
   launchRecord: function(record, reuse){
-    var me = this,
-      li;
+    var li;
     if(!record.isLeaf()){
       return;
     }
@@ -130,28 +128,27 @@ Ext.define("NOC.main.desktop.Application", {
     if(li.params && li.params.link){
       window.open(li.params.link);
     } else{
-      me.launchTab(
+      this.launchTab(
         li.class, li.title, li.params, record.get("id"), reuse,
       );
     }
   },
   // Launch application in tab
   launchTab: function(panel_class, title, params, node, reuse){
-    var me = this,
-      p;
-    if(reuse && node && me.launchedTabs[node]){
+    var paths;
+    if(reuse && node && this.launchedTabs[node]){
       // Open tab
-      me.workplacePanel.setActiveTab(me.launchedTabs[node]);
+      this.workplacePanel.setActiveTab(this.launchedTabs[node]);
     } else{
       if(title !== "Home"){
         NOC.msg.started(__("Starting \"{0}\""), title);
       }
       // Launch new tab
       if(!params.app_id){
-        p = panel_class.split(".");
-        params.app_id = [p[1], p[2]].join(".");
+        paths = panel_class.split(".");
+        params.app_id = [paths[1], paths[2]].join(".");
       }
-      me.workplacePanel.launchTab(panel_class, title, params, node);
+      this.workplacePanel.launchTab(panel_class, title, params, node);
     }
   },
   launchApp: function(app, cmd, data){
@@ -167,9 +164,9 @@ Ext.define("NOC.main.desktop.Application", {
     }
     //
     // skip saved hash
-    var index = app.indexOf("?")
-      , _app = index === -1 ? app : app.substr(0, index)
-      , url = "/" + _app.replace(".", "/") + "/launch_info/";
+    var index = app.indexOf("?"),
+      _app = index === -1 ? app : app.substr(0, index),
+      url = "/" + _app.replace(".", "/") + "/launch_info/";
     Ext.Ajax.request({
       url: url,
       method: "GET",
@@ -263,37 +260,20 @@ Ext.define("NOC.main.desktop.Application", {
       ],
     });
   },
-  // Check session is authenticated
-  checkLogged: function(){
-    var me = this;
-    Ext.Ajax.request({
-      method: "GET",
-      url: "/main/desktop/is_logged/",
-      scope: me,
-      success: function(response){
-        var status = Ext.decode(response.responseText);
-        if(status){
-          me.onLogin();
-        } else{
-          NOC.error(__("Login failed"));
-        }
-      },
-      failure: function(){
-        NOC.error(__("Login failed"));
-      },
-    });
-  },
   // Called when session is authenticated or user logged in
-  onLogin: function(){
-    var me = this;
+  onLogin: async function(){
     // Initialize state provider
-    Ext.state.Manager.setProvider(Ext.create("NOC.core.StateProvider"));
+    const provider = new NOC.core.StateProvider();
+    await provider.loadState();
+    Ext.state.Manager.setProvider(provider);
+    console.log("User preferences state: ", provider.state);
+    this.launchApps();
     // Apply user settings
     Ext.Ajax.request({
       method: "GET",
       url: "/main/desktop/user_settings/",
       async: true, // make one request, when reload with open tab
-      scope: me,
+      scope: this,
       success: function(response){
         var settings = Ext.decode(response.responseText),
           displayName = [];
@@ -310,28 +290,24 @@ Ext.define("NOC.main.desktop.Application", {
         if(displayName.length === 0){
           displayName.push(settings.username);
         }
-        me.headerPanel.setUserName(displayName.join(" "));
+        this.headerPanel.setUserName(displayName.join(" "));
         // Display username button
-        me.headerPanel.showUserMenu(settings.can_change_credentials);
+        this.headerPanel.showUserMenu(settings.can_change_credentials);
         // Reset opened tabs
-        me.launchedTabs = {};
+        this.launchedTabs = {};
         // Set menu
-        me.navStore.setRoot(settings.navigation);
-        me.breadcrumbs.updateSelection("root");
+        this.navStore.setRoot(settings.navigation);
+        this.breadcrumbs.updateSelection("root");
         // Setup idle timer
-        me.setIdleTimeout(settings.idle_timeout);
+        this.setIdleTimeout(settings.idle_timeout);
         // permissions cache
-        NOC.permissions$.next(me.getPermissions(settings.navigation.children));
+        NOC.permissions$.next(this.getPermissions(settings.navigation.children));
         NOC.info_icon("fa-sign-in", __("Logged in as ") + settings.username);
       },
       failure: function(){
         NOC.error(__("Failed to get user settings"));
       },
     });
-    // Launch home application
-    if(!Ext.History.getHash()){
-      me.launchTab("NOC.main.home.Application", "Home", {});
-    }
   },
   //
   getPermissions: function(tree){

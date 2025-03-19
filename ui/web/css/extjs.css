@@ -891,6 +891,15 @@ table {
     text-align: center;
 }
 
+.x-hmenu-sort-cancel {
+    font: 16px/24px FontAwesome;
+    top: 4.5px;
+}
+
+.x-hmenu-sort-cancel:before {
+    content: "\f05e";
+}
+
 .noc-white-space {
     word-break: break-word;
 }

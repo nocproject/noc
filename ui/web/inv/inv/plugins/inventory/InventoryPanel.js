@@ -37,7 +37,7 @@ Ext.define("NOC.inv.inv.plugins.inventory.InventoryPanel", {
             rootVisible: false,
             useArrows: true,
             stateful: true,
-            stateId: "inv.inv.plugins.inventory-inventory",
+            stateId: "inv.inv-inventory-inventory",
             columns: [
                 {
                     xtype: "treecolumn",
