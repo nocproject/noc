@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RedPanda client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -170,6 +170,8 @@ class RedPandaClient(object):
             security_protocol=config.redpanda.security_protocol,
             sasl_plain_username=config.redpanda.username,
             sasl_plain_password=config.redpanda.password,
+            max_request_size=config.redpanda.max_request_size,
+            compression_type=config.redpanda.compression_type,
         )
         while True:
             try:
