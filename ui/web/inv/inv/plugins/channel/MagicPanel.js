@@ -17,6 +17,8 @@ Ext.define("NOC.inv.inv.plugins.channel.MagicPanel", {
       itemId: "invChannelMagicGrid",
       scrollable: "y",
       height: 310,
+      stateful: true,
+      stateId: "inv.inv-channel-magic-grid",
       allowDeselect: true,
       store: new Ext.data.Store({
         fields: ["controller", "controller__label", "start_endpoint", "start_endpoint__label", "end_endpoint", "end_endpoint__label"],

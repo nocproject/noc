@@ -24,7 +24,6 @@ from noc.aaa.models.permission import Permission
 from noc.support.cp import CPClient
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
-from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -295,6 +294,17 @@ class DesktopApplication(ExtApplication):
         r = {r.key: r.value for r in UserState.objects.filter(user_id=uid)}
         return r
 
+    @view(method=["GET"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
+    def api_get_state_by_name(self, request, name):
+        """
+        Get user state
+        :param request:
+        :return:
+        """
+        uid = request.user.id
+        r = {r.key: r.value for r in UserState.objects.filter(user_id=uid, key=name)}
+        return r
+
     @view(method=["DELETE"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
     def api_clear_state(self, request, name):
         """
@@ -316,7 +326,10 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        value = smart_text(request.body)
+        if isinstance(request.body, bytes):
+            value = request.body.decode()
+        else:
+            value = request.body
         if value:
             # Save
             s = UserState.objects.filter(user_id=uid, key=name).first()

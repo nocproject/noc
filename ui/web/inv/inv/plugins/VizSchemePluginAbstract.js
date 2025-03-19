@@ -24,14 +24,6 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
   defaultListenerScope: true,
   scrollable: false,
   viewModel: {
-    stores: {
-      gridStore: {
-        data: [],
-        listeners: {
-          datachanged: "onDataChanged",
-        },
-      },
-    },
     data: {
       currentId: null,
       showDetails: true,
@@ -95,9 +87,11 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       xtype: "grid",
       scrollable: "y",
       flex: 1,
+      store: {
+        data: [],
+      },
       bind: {
         hidden: "{!showDetails}",
-        store: "{gridStore}",
       },
       emptyText: __("No data"),
       allowDeselect: true,
@@ -108,13 +102,13 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
         select: function(grid, record){
           var element = document.querySelector("g#" + record.id + " path");
           if(element){
-            element.style.stroke="#f1c40f";
+            element.style.stroke = "#f1c40f";
           }
         },
         deselect: function(grid, record){
           var element = document.querySelector("g#" + record.id + " path");
           if(element){
-            element.style.stroke="black";
+            element.style.stroke = "black";
           }
         },
       },
@@ -137,23 +131,24 @@ Ext.define("NOC.inv.inv.plugins.VizSchemePluginAbstract", {
       },
     },
   ],
-  listeners: {
-    added: function(){
-      var grid = this.down("gridpanel");
-      if(grid && this.gridColumns){
-        grid.reconfigure(null, this.gridColumns);
-      }
-    },
+
+  initComponent: function(){
+    this.callParent();
+    this.down("grid").getStore().on("datachanged", this.onDataChanged, this);
   },
+
   //
   preview: function(response, objectId){
     var me = this,
       vm = me.getViewModel(),
+      store = this.down("grid").getStore(),
       records = response.data || response.records || [];
     vm.set("currentId", objectId);
-    vm.getStore("gridStore").removeAll();
-    vm.getStore("gridStore").loadData(records);
-    if(Object.prototype.hasOwnProperty.call(response, "viz")){
+    if(!Ext.isEmpty(store)){
+      store.removeAll();
+      store.loadData(records);
+    }
+    if(Ext.isDefined(response.viz)){
       me.renderScheme(response.viz);
     }
   },
