@@ -42,6 +42,10 @@ Ext.define("NOC.inv.macblacklist.Model", {
         {
             name: "is_duplicated",
             type: "boolean"
+        },
+        {
+            name: "is_ignored",
+            type: "boolean"
         }
     ]
 });

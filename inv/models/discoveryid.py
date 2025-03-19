@@ -25,6 +25,7 @@ from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.macblacklist import MACBlacklist
 from noc.core.perf import metrics
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
@@ -113,6 +114,8 @@ class DiscoveryID(Document):
         """
         ranges = []
         for mi in macs:
+            if MACBlacklist.is_banned_mac(mi, is_ignored=True):
+                continue
             if ranges and mi - ranges[-1][1] == 1:
                 # Extend last range
                 ranges[-1][1] = mi

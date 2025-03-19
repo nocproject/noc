@@ -30,7 +30,7 @@ from noc.core.prettyjson import to_json
 from noc.core.mac import MAC
 
 _list_lock = Lock()
-ListItem = namedtuple("ListItem", ["from_mac", "to_mac", "is_duplicated"])
+ListItem = namedtuple("ListItem", ["from_mac", "to_mac", "is_duplicated", "is_ignored"])
 
 
 class MACBlacklistAffected(EmbeddedDocument):
@@ -67,6 +67,7 @@ class MACBlacklist(Document):
     description = StringField()
     affected = ListField(EmbeddedDocumentField(MACBlacklistAffected))
     is_duplicated = BooleanField(default=False)
+    is_ignored = BooleanField(default=False)
 
     _list_cache = cachetools.TTLCache(100, ttl=60)
 
@@ -89,6 +90,7 @@ class MACBlacklist(Document):
             "to_mac": self.to_mac,
             "affected": [a.to_json() for a in self.affected],
             "is_duplicated": self.is_duplicated,
+            "is_ignored": self.is_ignored,
         }
         if self.description:
             r["description"] = self.description
@@ -96,11 +98,13 @@ class MACBlacklist(Document):
             r,
             order=[
                 "name",
+                "$collection",
                 "uuid",
                 "from_mac",
                 "to_mac",
                 "description",
                 "is_duplicated",
+                "is_ignored",
                 "affected",
             ],
         )
@@ -112,21 +116,29 @@ class MACBlacklist(Document):
     @cachetools.cachedmethod(operator.attrgetter("_list_cache"), lock=lambda _: _list_lock)
     def _get_blacklist(cls) -> List[ListItem]:
         return [
-            ListItem(from_mac=MAC(d.from_mac), to_mac=MAC(d.to_mac), is_duplicated=d.is_duplicated)
+            ListItem(
+                from_mac=MAC(d.from_mac),
+                to_mac=MAC(d.to_mac),
+                is_duplicated=d.is_duplicated,
+                is_ignored=d.is_ignored,
+            )
             for d in cls.objects.all()
         ]
 
     @classmethod
-    def is_banned_mac(cls, mac: str, is_duplicated: bool = False) -> bool:
+    def is_banned_mac(cls, mac: str, is_duplicated: bool = False, is_ignored: bool = False) -> bool:
         """
         Check if mac is banned for specified reason
-        :param mac:
-        :param is_duplicated:
-        :return:
+        Args:
+            mac:
+            is_duplicated: Check MAC is duplicated flag
+            is_ignored: Check MAC is ignored flag
         """
         m = MAC(mac)
         for item in cls._get_blacklist():
             if item.from_mac <= m <= item.to_mac:
                 if is_duplicated and item.is_duplicated:
+                    return True
+                if is_ignored and item.is_ignored:
                     return True
         return False

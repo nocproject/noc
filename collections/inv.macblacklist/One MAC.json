@@ -1,0 +1,11 @@
+{
+    "name": "One MAC",
+    "$collection": "inv.macblacklist",
+    "uuid": "bfa5506a-4b77-4e9f-800b-08f4b0209833",
+    "from_mac": "01:01:01:01:01:01",
+    "to_mac": "01:01:01:01:01:01",
+    "description": "",
+    "is_duplicated": false,
+    "is_ignored": true,
+    "affected": []
+}

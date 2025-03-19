@@ -1,0 +1,10 @@
+{
+    "name": "Very Smart2 programmer",
+    "$collection": "inv.macblacklist",
+    "uuid": "079b66c9-b520-4066-8f35-10bb2c149bd3",
+    "from_mac": "05:04:03:02:01:00",
+    "to_mac": "05:04:03:02:01:00",
+    "is_duplicated": false,
+    "is_ignored": true,
+    "affected": []
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Empty (Network) MAC",
+    "$collection": "inv.macblacklist",
+    "uuid": "891a4ffe-b90e-440f-abeb-6f5f85b0d2c3",
+    "from_mac": "00:00:00:00:00:00",
+    "to_mac": "00:00:00:00:00:00",
+    "is_duplicated": false,
+    "is_ignored": true,
+    "affected": []
+}
