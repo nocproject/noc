@@ -21,6 +21,6 @@ class CfgDispositionRulesDataStream(DataStream):
         rule = DispositionRule.get_by_id(oid)
         if not rule:
             raise KeyError()
-        r = DispositionRule.get_rule_config()
+        r = DispositionRule.get_rule_config(rule)
         r["id"] = str(rule.id)
         return r
