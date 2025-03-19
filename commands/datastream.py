@@ -46,6 +46,7 @@ class Command(BaseCommand):
         "address": "ip.Address",
         "cfgmxroute": "main.MessageRoute",
         "cfgmetricrules": "pm.MetricRule",
+        "cfgeventrules": "fm.EventClassificationRule",
     }
     OLD_MAP = {
         "cfgsyslog": "cfgtarget",

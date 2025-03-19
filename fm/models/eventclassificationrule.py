@@ -7,7 +7,7 @@
 
 # Python modules
 import os
-from typing import Iterable, List, Dict, Any, Tuple
+from typing import Iterable, List, Dict, Any, Tuple, Union, Optional
 
 # Third-party modules
 from mongoengine.fields import (
@@ -23,6 +23,7 @@ from mongoengine.fields import (
     BooleanField,
 )
 from mongoengine.document import EmbeddedDocument, Document
+from bson import ObjectId
 
 # NOC modules
 from .eventclass import EventClass
@@ -31,9 +32,11 @@ from noc.fm.models.enumeration import Enumeration
 from noc.sa.models.profile import GENERIC_PROFILE, Profile
 from noc.core.fm.event import Event, MessageType, EventSource, Target
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.change.decorator import change
 from noc.core.escape import fm_unescape
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
+from noc.config import config
 
 
 class EventClassificationRuleVar(EmbeddedDocument):
@@ -143,6 +146,7 @@ class EventClassificationTestCase(EmbeddedDocument):
         return r
 
 
+@change
 class EventClassificationRule(Document):
     """
     Classification rules
@@ -182,6 +186,14 @@ class EventClassificationRule(Document):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["EventClassificationRule"]:
+        return EventClassificationRule.objects.filter(id=oid).first()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgeventrules:
+            yield "cfgeventrules", self.id
 
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
@@ -272,3 +284,20 @@ class EventClassificationRule(Document):
                 message=tc.message,
                 labels=tc.input_labels if tc.input_labels else None,
             ), self.resolve_vars(tc.raw_vars)
+
+    @classmethod
+    def get_rule_config(cls, rule: "EventClassificationRule"):
+        """Return MetricConfig for Metrics service"""
+        r = {
+            "name": rule.name,
+            "event_class": rule.event_class.name,
+            "sources": [s.value for s in rule.sources],
+            "profiles": [p.name for p in rule.profiles],
+            "preference": rule.preference,
+            "message_rx": rule.message_rx,
+            "patterns": [{"key_re": p.key_re, "value_re": p.value_re} for p in rule.patterns],
+            "vars": [{"name": v.name, "value": v.value} for v in rule.vars],
+            "labels": [],
+            "to_dispose": False,
+        }
+        return r

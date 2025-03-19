@@ -76,7 +76,10 @@ class RuleSet(object):
         # Initialize rules
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
-                rule = Rule.from_rule(r, self.enumerations)
+                rule = Rule.from_config(
+                    EventClassificationRule.get_rule_config(r),
+                    self.enumerations,
+                )
             except InvalidPatternException as e:
                 logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, e)
                 continue
@@ -85,7 +88,12 @@ class RuleSet(object):
             for cr in cloning_rules:
                 if cr.match(rule):
                     try:
-                        rs += [Rule.from_rule(r, self.enumerations)]
+                        rs += [
+                            Rule.from_config(
+                                EventClassificationRule.get_rule_config(cr),
+                                self.enumerations,
+                            ),
+                        ]
                         cn += 1
                     except InvalidPatternException as e:
                         logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, e)

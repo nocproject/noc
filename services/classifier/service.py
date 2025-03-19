@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Classifier service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ import operator
 import re
 import socket
 import struct
+import asyncio
 from collections import defaultdict
 from time import perf_counter
 from typing import Optional, Dict, List, Callable, Tuple, Any
@@ -29,6 +30,7 @@ import bson
 from noc.config import config
 from noc.core.service.fastapi import FastAPIService
 from noc.core.perf import metrics
+from noc.core.error import NOCError
 from noc.core.version import version
 from noc.core.debug import error_report
 from noc.core.escape import fm_unescape
@@ -54,6 +56,7 @@ from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
+from noc.services.classifier.datastream import EventRuleDataStreamClient
 
 
 class EventMetrics(enum.Enum):
@@ -125,6 +128,8 @@ class ClassifierService(FastAPIService):
         self.abduct_detector: AbductDetector = AbductDetector()
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
+        # Sync primitives
+        self.event_rules_ready_event = asyncio.Event()  # Load Metric Sources
         # Reporting
         self.last_ts: Optional[float] = None
         self.stats: Dict[EventMetrics, int] = {}
@@ -165,7 +170,8 @@ class ClassifierService(FastAPIService):
         Load rules from database after loading config
         """
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
-        self.ruleset.load()
+        if not config.datastream.enable_cfgeventrules:
+            self.ruleset.load()
         self.pattern_set.load()
         self.load_triggers()
         self.load_link_action()
@@ -173,6 +179,10 @@ class ClassifierService(FastAPIService):
         # Heat up MIB cache
         MIBData.preload()
         self.slot_number, self.total_slots = await self.acquire_slot()
+        # Start tracking changes
+        if config.datastream.enable_cfgeventrules:
+            asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
+            await self.event_rules_ready_event.wait()
         await self.subscribe_stream(
             "events.%s" % config.pool,
             self.slot_number,
@@ -181,6 +191,23 @@ class ClassifierService(FastAPIService):
         )
         report_callback = PeriodicCallback(self.report, 1000)
         report_callback.start()
+
+    async def get_event_rules_mappings(self):
+        """Subscribe and track datastream changes"""
+        # Register RPC aliases
+        client = EventRuleDataStreamClient("cfgeventrules", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track event classification rules")
+            try:
+                await client.query(
+                    limit=config.classifier.ds_limit,
+                    block=True,
+                    filter_policy="delete",
+                )
+            except NOCError as e:
+                self.logger.info("Failed to get Event Classification Rules: %s", e)
+                await asyncio.sleep(1)
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -985,6 +1012,19 @@ class ClassifierService(FastAPIService):
             data["remote_system"] = rs.bi_id
             data["remote_id"] = event.remote_id
         self.register_metrics("events", [data])
+
+    async def on_rules_ready(self) -> None:
+        """
+        Called when all mappings are ready.
+        """
+        self.event_rules_ready_event.set()
+        self.logger.info("%d Event Classification Rules has been loaded", len(self.ruleset.rules))
+
+    async def update_rules(self, data: Dict[str, Any]) -> None:
+        """Apply Metric Rules change"""
+
+    async def delete_rules(self, r_id: str) -> None:
+        """Remove rules for ID"""
 
 
 if __name__ == "__main__":
