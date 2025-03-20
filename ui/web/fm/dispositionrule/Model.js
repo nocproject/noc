@@ -28,6 +28,10 @@ Ext.define("NOC.fm.dispositionrule.Model", {
             type: "string"
         },
         {
+            name: "is_active",
+            type: "boolean"
+        },
+        {
             name: "is_builtin",
             type: "boolean",
             persist: false
@@ -74,6 +78,10 @@ Ext.define("NOC.fm.dispositionrule.Model", {
         },
         {
             name: "conditions",
+            type: "auto"
+        },
+        {
+            name: "handlers",
             type: "auto"
         },
         {
