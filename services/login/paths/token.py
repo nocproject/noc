@@ -17,6 +17,7 @@ from pydantic import ValidationError, TypeAdapter
 
 # NOC modules
 from noc.config import config
+from noc.aaa.models.user import User
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.service.deps.service import get_service
 from ..models.token import TokenRequest, TokenResponse
@@ -116,6 +117,11 @@ async def token(
     if auth_req:
         user = authenticate(auth_req)
         if user:
+            # Register last login
+            if config.login.register_last_login:
+                u = User.get_by_username(user)
+                if u:
+                    u.register_login()
             return get_token_response(user)
     return JSONResponse(
         content={
