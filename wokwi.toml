@@ -1,0 +1,5 @@
+[wokwi]
+version = 1
+gdbServerPort = 3333
+elf = "target/riscv32imac-unknown-none-elf/debug/smart-led"
+firmware = "target/riscv32imac-unknown-none-elf/debug/smart-led"

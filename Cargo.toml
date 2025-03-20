@@ -1,0 +1,33 @@
+[package]
+edition = "2021"
+name    = "smart-led"
+version = "0.1.0"
+
+[[bin]]
+name = "smart-led"
+path = "./src/bin/main.rs"
+
+[dependencies]
+critical-section = "1.2.0"
+defmt = "0.3.10"
+esp-alloc = "0.7.0"
+esp-hal = { version = "1.0.0-beta.0", features = [
+  "defmt",
+  "esp32h2",
+  "unstable",
+] }
+rtt-target = { version = "0.6.1", features = ["defmt"] }
+
+[profile.dev]
+# Rust debug is too slow.
+# For debug builds always builds with some optimization
+opt-level = "s"
+
+[profile.release]
+codegen-units    = 1     # LLVM can perform better optimizations using a single thread
+debug            = 2
+debug-assertions = false
+incremental      = false
+lto              = 'fat'
+opt-level        = 's'
+overflow-checks  = false
