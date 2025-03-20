@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # BDCOM.xPON.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,9 +14,10 @@ class Script(BaseScript):
     name = "BDCOM.xPON.get_config"
     interface = IGetConfig
 
-    def execute_cli(self, **kwargs):
-        try:
+    def execute_cli(self, policy="r"):
+        assert policy in ("r", "s")
+        if policy == "s":
+            config = self.cli("show configuration")
+        else:
             config = self.cli("show running-config")
-        except self.CLISyntaxError:
-            raise self.NotSupportedError()
         return self.cleaned_config(config)
