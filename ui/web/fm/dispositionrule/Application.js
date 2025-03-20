@@ -229,14 +229,18 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                                     ["regex", __("Regex")],
                                     ["contains", __("Contains")],
                                     ["eq", __("Equal")],
-                                    ["gte", __("Greater Equal")]
+                                    ["ne", __("Not Equal")],
+                                    ["gte", __("Greater Equal")],
+                                    ["lte", __("Less Equal")]
                                 ]
                             },
                             renderer: NOC.render.Choices({
                                 "regex": __("Regex"),
                                 "contains": __("Contains"),
                                 "eq": __("Equal"),
-                                "gte": __("Greater Equal")
+                                "ne": __("Not Equal"),
+                                "gte": __("Greater Equal"),
+                                "lte": __("Less Equal")
                             })
                         },
                         {
@@ -248,7 +252,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                     ]
                 },
                 {
-                    name: "match",
+                    name: "conditions",
                     xtype: "listform",
                     fieldLabel: __("Match Rules"),
                     rows: 5,
