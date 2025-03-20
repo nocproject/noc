@@ -185,6 +185,22 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                     ]
                 },
                 {
+                    name: "handlers",
+                    xtype: "gridfield",
+                    fieldLabel: __("Handlers"),
+                    columns: [
+                        {
+                            text: __("Handler"),
+                            dataIndex: "handler",
+                            width: 200,
+                            editor: {
+                                xtype: "main.handler.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("handler")
+                        }
+                    ]
+                },
+                {
                     name: "alarm_disposition",
                     xtype: "fm.alarmclass.LookupField",
                     fieldLabel: __("Dispose Alarm"),
