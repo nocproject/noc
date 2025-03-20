@@ -53,7 +53,7 @@ class MatchData(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     field = StringField(required=True)
-    op = StringField(choices=["regex", "contains", "==", "!=", "gte", "lte"], default="eq")
+    op = StringField(choices=["regex", "contains", "eq", "ne", "gte", "lte"], default="eq")
     value = StringField(required=True)
 
     def __str__(self):
@@ -319,7 +319,7 @@ class DispositionRule(Document):
 
     def get_event_classes(self):
         r = []
-        for rr in self.match:
+        for rr in self.conditions:
             if not rr.event_class_re:
                 continue
             ec = EventClass.objects.get(name=rr.event_class_re)

@@ -33,10 +33,6 @@ Ext.define("NOC.fm.dispositionrule.Model", {
             persist: false
         },
         {
-            name: "match",
-            type: "auto"
-        },
-        {
             name: "combo_condition",
             type: "string"
         },
@@ -75,6 +71,10 @@ Ext.define("NOC.fm.dispositionrule.Model", {
         {
             name: "subject_template",
             type: "string"
+        },
+        {
+            name: "conditions",
+            type: "auto"
         },
         {
             name: "vars_conditions",
