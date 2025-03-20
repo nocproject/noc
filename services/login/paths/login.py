@@ -18,7 +18,7 @@ from noc.aaa.models.user import User
 from noc.config import config
 from ..models.login import LoginRequest
 from ..models.status import StatusResponse
-from ..auth import authenticate, set_jwt_cookie
+from ..auth import authenticate, register_last_login, set_jwt_cookie
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +54,7 @@ async def login(request: Request, creds: LoginRequest):
                 last_login,
             )
             return StatusResponse(status=False, message="User is blocked for long inactivity time")
-    # Register last login
-    if config.login.register_last_login:
-        user.register_login()
+    register_last_login(user_name)
     # Check password expiration
     if user.change_at:
         now = datetime.datetime.now()

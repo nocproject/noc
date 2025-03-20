@@ -18,9 +18,8 @@ import cachetools
 # NOC modules
 from noc.config import config
 from noc.aaa.models.apikey import APIKey
-from noc.aaa.models.user import User
 from noc.core.comp import smart_text, smart_bytes
-from ..auth import authenticate, set_jwt_cookie, get_user_from_jwt
+from ..auth import authenticate, register_last_login, set_jwt_cookie, get_user_from_jwt
 from noc.core.service.deps.service import get_service
 from noc.services.login.service import LoginService
 
@@ -160,11 +159,7 @@ async def auth_authorization_basic(request: Request, data: str) -> ORJSONRespons
     credentials = {"user": user, "password": password, "ip": remote_ip}
     user = authenticate(credentials)
     if user:
-        # Register last login
-        if config.login.register_last_login:
-            u = User.get_by_username(user)
-            if u:
-                u.register_login()
+        register_last_login(user)
         response = ORJSONResponse({"status": True}, status_code=200, headers={"Remote-User": user})
         set_jwt_cookie(response, user)
         return response

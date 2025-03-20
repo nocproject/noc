@@ -17,11 +17,10 @@ from pydantic import ValidationError, TypeAdapter
 
 # NOC modules
 from noc.config import config
-from noc.aaa.models.user import User
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.service.deps.service import get_service
 from ..models.token import TokenRequest, TokenResponse
-from ..auth import authenticate, get_jwt_token, get_user_from_jwt
+from ..auth import authenticate, register_last_login, get_jwt_token, get_user_from_jwt
 from ..service import LoginService
 
 router = APIRouter()
@@ -117,11 +116,7 @@ async def token(
     if auth_req:
         user = authenticate(auth_req)
         if user:
-            # Register last login
-            if config.login.register_last_login:
-                u = User.get_by_username(user)
-                if u:
-                    u.register_login()
+            register_last_login(user)
             return get_token_response(user)
     return JSONResponse(
         content={
