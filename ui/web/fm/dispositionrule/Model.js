@@ -77,8 +77,8 @@ Ext.define("NOC.fm.dispositionrule.Model", {
             type: "string"
         },
         {
-            name: "severity_policy",
-            type: "string"
+            name: "vars_conditions",
+            type: "auto"
         },
         {
             name: "object_actions",
@@ -99,6 +99,10 @@ Ext.define("NOC.fm.dispositionrule.Model", {
         },
         {
             name: "alarm_disposition",
+            type: "string"
+        },
+        {
+            name: "default_action",
             type: "string"
         },
         {

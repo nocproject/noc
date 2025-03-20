@@ -49,6 +49,25 @@ from noc.fm.models.alarmclass import AlarmClass
 id_lock = Lock()
 
 
+class MatchData(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    field = StringField(required=True)
+    op = StringField(choices=["regex", "contains", "==", "!=", "gte", "lte"], default="eq")
+    value = StringField(required=True)
+
+    def __str__(self):
+        return f"{self.field} {self.op} {self.value}"
+
+    def get_match_expr(self) -> Dict[str, Any]:
+        """"""
+        return {self.field: self.value}
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        return {"field": self.field, "op": self.op, "value": self.value}
+
+
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
@@ -142,7 +161,9 @@ class DispositionRule(Document):
     is_active = BooleanField(default=True)
     preference = IntField(required=True, default=1000)
     #
-    match: List[Match] = EmbeddedDocumentListField(Match)
+    conditions: List[Match] = EmbeddedDocumentListField(Match)
+    #
+    vars_conditions: List[MatchData] = EmbeddedDocumentListField(MatchData)
     # time_pattern
     # Combo Condition
     combo_condition = StringField(
@@ -192,8 +213,17 @@ class DispositionRule(Document):
     handlers: List[Handler] = EmbeddedDocumentListField(HandlerItem)
     object_actions: List[ObjectActionItem] = EmbeddedDocumentListField(ObjectActionItem)
     #
-    # RCA
+    default_action = StringField(
+        choices=[
+            ("R", "Raise Disposition Alarm"),
+            ("C", "Clear Disposition Alarm"),
+            ("I", "Ignore Disposition Alarm"),
+        ],
+        required=False,
+    )
+    # allow_update
     alarm_disposition: Optional["AlarmClass"] = PlainReferenceField(AlarmClass, required=False)
+    # RCA
     root_cause = EmbeddedDocumentListField(AlarmRootCauseCondition)
     #
     # severity_policy = StringField(
@@ -248,8 +278,10 @@ class DispositionRule(Document):
             "match": [],
             "stop_processing": self.stop_processing,
         }
-        if self.match:
-            r["match"] = [m.json_data for m in self.match]
+        if self.conditions:
+            r["conditions"] = [m.json_data for m in self.conditions]
+        if self.vars_conditions:
+            r["vars_conditions"] = [m.json_data for m in self.vars_conditions]
         if self.replace_rule:
             r["replace_rule__name"] = self.replace_rule.name
             r["replace_rule_policy"] = self.replace_rule_policy
@@ -300,9 +332,9 @@ class DispositionRule(Document):
     def get_matcher(self) -> Callable:
         """Getting matcher for rule"""
         expr = []
-        if not self.match:
+        if not self.conditions:
             return lambda x: True
-        for r in self.match:
+        for r in self.conditions:
             expr.append(r.get_match_expr())
         if len(expr) == 1:
             return build_matcher(expr[0])
@@ -337,11 +369,13 @@ class DispositionRule(Document):
             }
         if rule.handlers:
             r["handlers"] = [str(h.id) for h in rule.handlers]
-        if not rule.match:
+        if rule.vars_conditions:
+            r["vars_match_expr"] = rule.vars_conditions[0].get_match_expr()
+        if not rule.conditions:
             return r
-        elif len(rule.match) == 1:
-            r["match_expr"] = rule.match[0].get_match_expr()
+        elif len(rule.conditions) == 1:
+            r["match_expr"] = rule.conditions[0].get_match_expr()
         else:
-            r["match_expr"] = {"$or": [x.get_match_expr() for x in rule.match]}
+            r["match_expr"] = {"$or": [x.get_match_expr() for x in rule.conditions]}
         r["event_classes"] = [str(x.id) for x in rule.get_event_classes()]
         return r
