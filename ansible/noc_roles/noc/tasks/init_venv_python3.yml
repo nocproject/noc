@@ -4,7 +4,7 @@
     ansible_python_interpreter: /usr/bin/python3
   setup:
     gather_subset:
-      - 'min'
+      - "min"
 
 - name: Check if we have python in NOC/bin/ folder
   stat:
@@ -55,10 +55,8 @@
   when:
     - noc_init_python_path is not defined
 
-
 # Archive whole directory with old python2.* version and then delete folder's content
 - block:
-
     - name:
       include_tasks: "clean_dir.yml"
 
@@ -75,8 +73,7 @@
 
 # When existing python is 3.* version
 - block:
-
-    - block:  # When target version equals system
+    - block: # When target version equals system
         - name: Recreate noc dirs
           include_tasks: "clean_dir.yml"
           when:
@@ -91,7 +88,7 @@
         - system_python3_existing_family_version is defined
         - system_python3_existing_family_version == noc_py3_ver
 
-    - block:  # When Target version not equals system and installed python not equals needed
+    - block: # When Target version not equals system and installed python not equals needed
         - name: Recreate noc dirs
           include_tasks: "clean_dir.yml"
           when:
@@ -112,10 +109,8 @@
     - noc_python_existing_family_version is defined
     - noc_python_existing_family_version[:1] == '3'
 
-
 # Install python in all other cases
 - block:
-
     - name: Bring Python of {{ noc_py3_ver }} version when no good python on node
       include_tasks: "bring_python.yml"
 
@@ -140,7 +135,7 @@
       file:
         path: "/opt/openssl"
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: "Python{{ noc_py3_ver }} | Uncompress openssl"
       unarchive:
@@ -355,18 +350,6 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
-  tags:
-    - requirements
-
-- name: Install -cython- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/cython.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 

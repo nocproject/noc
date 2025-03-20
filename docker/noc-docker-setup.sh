@@ -50,7 +50,6 @@ CREATEDIR() {
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-noc/etc
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-noc/etlimport
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-noc/biimport
-  mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-noc/speedup
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-postgres
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-postgresrestore
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-promgrafana/db
