@@ -15,7 +15,7 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.core.perf import metrics
-from noc.core.mx import MX_METRICS_TYPE, MX_METRICS_SCOPE, MX_LABELS
+from noc.core.mx import MX_METRICS_SCOPE, MX_LABELS, MessageType
 from .base import BaseCDAGNode, ValueType, Category
 from noc.config import config
 
@@ -110,7 +110,7 @@ class MetricsNode(BaseCDAGNode):
         svc = get_service()
         svc.register_message(
             r,
-            MX_METRICS_TYPE,
+            MessageType.METRICS,
             {
                 MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
                 MX_LABELS: self.config.message_labels or b"",
