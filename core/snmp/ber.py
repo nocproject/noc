@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ASN.1 BER utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from typing import Tuple, Any, List, Optional
 
 # NOC modules
 from noc.core.comp import smart_bytes, smart_text
-from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int, encode_oid
+from gufo.noc.speedup import parse_tlv_header, parse_p_oid, encode_int, encode_oid
 from noc.core.mib import mib
 
 

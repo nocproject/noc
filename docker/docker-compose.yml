@@ -92,12 +92,6 @@ volumes:
       device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/biimport
       o: bind
       type: bind
-  noc_speedup:
-    driver: local
-    driver_opts:
-      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/speedup
-      o: bind
-      type: bind
   noc_code:
     driver: local
     driver_opts:
@@ -134,7 +128,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
       - noc_beef:/var/lib/noc/beef
@@ -162,7 +155,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
       - noc_biimport:/var/lib/noc/bi
@@ -191,7 +183,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
       - noc_beef:/var/lib/noc/beef:ro
@@ -219,7 +210,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -248,7 +238,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -277,7 +266,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -304,7 +292,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -333,7 +320,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -362,7 +348,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -391,7 +376,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -420,7 +404,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -447,7 +430,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -480,7 +462,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -510,7 +491,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -537,7 +517,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -587,7 +566,6 @@ services:
       - .env.proxy
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -614,7 +592,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -645,7 +622,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -674,7 +650,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -705,37 +680,8 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
-    logging:
-      driver: ${COMPOSE_LOG_DRIVER}
-      options:
-        max-size: ${COMPOSE_LOG_MAX_SIZE}
-        max-file: ${COMPOSE_LOG_MAX_FILE}
-    labels:
-      traefik.enable: false
-
-  noc-code-cythonize:
-    image: registry.getnoc.com/noc/noc/dev:${NOC_VERSION_TAG}
-    restart: "no"
-    hostname: noc-code-cythonize
-    command: >
-      sh -c "set -xe
-        ls /opt/noc/speedup/*.so || apk add --no-cache --virtual .build-deps  \
-        cython \
-        musl-dev \
-        cython-dev \
-        python3-dev \
-        gcc \
-        && /usr/bin/cythonize -i speedup/*.pyx" \
-        && cp /opt/noc/speedup/*.so /opt/nocspeedup \
-    working_dir: /opt/noc
-    env_file:
-      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
-      - .env.proxy
-    volumes:
-      - noc_speedup:/opt/nocspeedup:rw
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:
@@ -760,7 +706,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -785,7 +730,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -814,7 +758,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -843,7 +786,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -872,7 +814,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -896,7 +837,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     ports:
@@ -920,7 +860,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:
@@ -944,7 +883,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     ports:
@@ -977,7 +915,6 @@ services:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
     volumes:
       - noc_custom:/opt/noc_custom:ro
-      - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     logging:

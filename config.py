@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -519,7 +519,6 @@ class Config(BaseConfig):
         collection_fm_mibs = StringParameter(default="collections/fm.mibs/")
         supervisor_cfg = StringParameter(default="etc/noc_services.conf")
         legacy_config = StringParameter(default="etc/noc.yml")
-        cythonize = StringParameter(default="./bin/cythonize")
         npkg_root = StringParameter(default="/var/lib/noc/var/pkg")
         card_template_path = StringParameter(default="services/card/templates/card.html.j2")
         pm_templates = StringParameter(default="templates/ddash/")

@@ -1,20 +1,6 @@
 # Basic Python image
 FROM python:3.11-slim-bookworm AS python
 
-# Build speedups
-FROM python AS build
-COPY .requirements/ /build/.requirements
-COPY speedup/ /build/speedup/
-WORKDIR /build
-RUN \
-    set -x\
-    && apt-get update\
-    && apt-get install -y --no-install-recommends \
-    build-essential \
-    && pip install --upgrade pip \
-    && pip install -r .requirements/cython.txt \
-    && cythonize -i speedup/*.pyx
-
 # Base layer containing system packages and requirements
 FROM python AS code
 ENV\
@@ -23,10 +9,8 @@ ENV\
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
     PYTHONPATH=/opt \
-    PROJ_DIR=/usr \
-    NOC_SPEEDUP_PATH=/opt/nocspeedup
+    PROJ_DIR=/usr
 COPY . /opt/noc/
-COPY --from=build /build/speedup/*.so /opt/nocspeedup/
 WORKDIR /opt/noc/
 
 RUN \
