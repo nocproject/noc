@@ -49,6 +49,11 @@ Ext.define("NOC.fm.dispositionrule.Application", {
             text: __("Pref"),
             dataIndex: "preference",
             width: 50
+        },
+        {
+            text: __("Action"),
+            dataIndex: "default_action",
+            width: 50
         }
     ],
     filters: [
@@ -187,9 +192,60 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "default_action",
+                    xtype: "combobox",
+                    fieldLabel: __("Default Action"),
+                    store: [
+                        ["R", __("Raise Alarm")],
+                        ["I", __("Ignore Disposition")],
+                        ["C", __("Clear Alarm")],
+                    ],
+                    value: "new",
+                    uiStyle: "medium"
+                },
+                {
                     name: "stop_processing",
                     xtype: "checkbox",
                     boxLabel: __("Stop Processing Rules")
+                },
+                {
+                    name: "vars_conditions",
+                    xtype: "gridfield",
+                    fieldLabel: __("Vars Conditions"),
+                    columns: [
+                        {
+                            text: __("Field"),
+                            dataIndex: "field",
+                            editor: "textfield",
+                            width: 250
+                        },
+                        {
+                            text: __("Op"),
+                            dataIndex: "op",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["regex", __("Regex")],
+                                    ["contains", __("Contains")],
+                                    ["eq", __("Equal")],
+                                    ["gte", __("Greater Equal")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "regex": __("Regex"),
+                                "contains": __("Contains"),
+                                "eq": __("Equal"),
+                                "gte": __("Greater Equal")
+                            })
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
                 },
                 {
                     name: "match",
