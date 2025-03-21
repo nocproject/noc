@@ -1,16 +1,13 @@
 # ---------------------------------------------------------------------
 # main.desktop application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 import datetime
 import os
-
-# Third-party modules
-from django.http import HttpResponse
 
 # NOC modules
 from noc.config import config
@@ -269,19 +266,6 @@ class DesktopApplication(ExtApplication):
             return self.render_json({"status": True})
         else:
             return self.render_json({"status": False, "error": _("Failed to change credentials")})
-
-    # @todo: Fix simplereport and remove endpoint
-    @view(method=["POST"], url="^dlproxy/$", access=True, api=True)
-    def api_dlproxy(self, request):
-        """
-        Get POST request and return as downloadable file
-        """
-        ct = request.POST.get("content_type", "text/plain")
-        fn = request.POST.get("filename", "file")
-        data = request.POST.get("data", "")
-        r = HttpResponse(data, content_type=ct)
-        r["Content-Disposition"] = "attachment; filename=%s" % fn
-        return r
 
     @view(method=["GET"], url="^state/", access=PermitLogged(), api=True)
     def api_get_state(self, request):
