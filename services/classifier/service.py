@@ -170,8 +170,7 @@ class ClassifierService(FastAPIService):
         Load rules from database after loading config
         """
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
-        if not config.datastream.enable_cfgeventrules:
-            self.ruleset.load()
+        self.ruleset.load(skip_load_rules=config.datastream.enable_cfgeventrules)
         self.pattern_set.load()
         self.load_triggers()
         self.load_link_action()

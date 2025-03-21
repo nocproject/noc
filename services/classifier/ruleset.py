@@ -65,7 +65,7 @@ class RuleSet(object):
         else:
             keys = [(p, rule.source.value) for p in rule.profiles]
         for key in keys:
-            if key in self.rules:
+            if key not in self.rules:
                 self.rules[key] = self.lookup_cls([rule])
             else:
                 self.rules[key].add_rule(rule)
@@ -80,7 +80,7 @@ class RuleSet(object):
         else:
             logger.info("[%s] Rule with id not found", rid)
 
-    def load(self):
+    def load(self, skip_load_rules: bool = False):
         """
         Load rules from database
         """
@@ -89,6 +89,18 @@ class RuleSet(object):
         logger.info("Loading rules")
         n = 0
         rules = defaultdict(list)
+        self.default_rule = EventClassificationRule.objects.filter(
+            name=config.classifier.default_rule
+        ).first()
+        if self.default_rule:
+            self.default_rule = Rule.from_config(
+                EventClassificationRule.get_rule_config(self.default_rule),
+                self.enumerations,
+            )
+        #
+        self.load_enumerations()
+        if skip_load_rules:
+            return
         # Initialize rules
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
@@ -107,18 +119,6 @@ class RuleSet(object):
             for p in rule.profiles:
                 rules[p, rule.source.value] += [rule]
             n += 1
-        self.default_rule = EventClassificationRule.objects.filter(
-            name=config.classifier.default_rule
-        ).first()
-        if self.default_rule:
-            self.default_rule = Rule.from_config(
-                EventClassificationRule.get_rule_config(self.default_rule),
-                self.enumerations,
-            )
-        #
-        self.load_enumerations()
-        if not rules:
-            return
         # Apply lookup solution
         self.rules = {k: self.lookup_cls(rules[k]) for k in rules}
         logger.info("%d rules are loaded in the %d chains", n, len(self.rules))

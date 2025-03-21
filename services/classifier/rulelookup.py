@@ -14,9 +14,7 @@ class RuleLookup(object):
         self.rules = rules
 
     def lookup_rules(self, msg, vars):
-        """
-        Returns a list of events to lookup
-        """
+        """Returns a list of events to lookup"""
         return self.rules
 
     def delete_rule(self, rid: str):
@@ -27,7 +25,7 @@ class RuleLookup(object):
                 continue
             rules.append(r)
         if len(rules) != len(rules):
-            self.rules = rules
+            self.rules = sorted(self.rules, key=operator.attrgetter("preference"))
 
     def update_rule(self, rule):
         """Replace Rules on chain"""
