@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+
 
 class RuleLookup(object):
     def __init__(self, rules):
@@ -38,3 +41,7 @@ class RuleLookup(object):
         if changed:
             self.rules = rules
         return changed
+
+    def add_rule(self, rule):
+        """Add Rule to Chain"""
+        self.rules = sorted(self.rules + [rule], key=operator.attrgetter("preference"))

@@ -9,7 +9,7 @@
 import logging
 from itertools import chain
 from collections import defaultdict
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional, Callable
 
 # NOC modules
 from .rule import Rule
@@ -40,9 +40,11 @@ logger = logging.getLogger(__name__)
 class RuleSet(object):
 
     def __init__(self):
-        self.rules: Dict[Tuple[str, str], RuleLookup] = {}  # (profile, chain) -> [rule, ..., rule]
+        self.rules: Dict[Tuple[Optional[str], str], RuleLookup] = (
+            {}
+        )  # (profile, chain) -> [rule, ..., rule]
         self.enumerations: Dict[str, Dict[str, str]] = {}  # name -> value -> enumerated
-        self.lookup_cls: Optional[RuleLookup] = None
+        self.lookup_cls: Optional[Callable] = None
         self.default_rule: Optional[Rule] = None
         #
         # is_failed: bool = False
@@ -57,6 +59,16 @@ class RuleSet(object):
             if changed:
                 logger.info("[%s|%s] Rule updated", rule.id, rule.name)
                 break
+        # Add New Rule
+        if not rule.profiles:
+            keys = [(None, rule.source)]
+        else:
+            keys = [(p, rule.source.value) for p in rule.profiles]
+        for key in keys:
+            if key in self.rules:
+                self.rules[key] = self.lookup_cls([rule])
+            else:
+                self.rules[key].add_rule(rule)
 
     def delete_rule(self, rid: str):
         """Remove rule from lookup"""

@@ -1013,14 +1013,14 @@ class ClassifierService(FastAPIService):
             data["remote_id"] = event.remote_id
         self.register_metrics("events", [data])
 
-    async def on_rules_ready(self) -> None:
+    async def on_event_rules_ready(self) -> None:
         """
         Called when all mappings are ready.
         """
         self.event_rules_ready_event.set()
         self.logger.info("%d Event Classification Rules has been loaded", len(self.ruleset.rules))
 
-    async def update_rules(self, data: Dict[str, Any]) -> None:
+    async def update_rule(self, data: Dict[str, Any]) -> None:
         """Apply Classification Rules changes"""
         self.ruleset.update_rule(data)
 
