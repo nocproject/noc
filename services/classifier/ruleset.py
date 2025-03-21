@@ -7,6 +7,7 @@
 
 # Python modules
 import logging
+from itertools import chain
 from collections import defaultdict
 from typing import Dict, Any, Tuple, Optional
 
@@ -94,10 +95,13 @@ class RuleSet(object):
             for p in rule.profiles:
                 rules[p, rule.source.value] += [rule]
             n += 1
-        self.default_rule = EventClassificationRule.objects.filter(name=config.classifier.default_rule).first()
+        self.default_rule = EventClassificationRule.objects.filter(
+            name=config.classifier.default_rule
+        ).first()
         if self.default_rule:
             self.default_rule = Rule.from_config(
-                EventClassificationRule.get_rule_config(self.default_rule), self.enumerations,
+                EventClassificationRule.get_rule_config(self.default_rule),
+                self.enumerations,
             )
         #
         self.load_enumerations()
@@ -140,33 +144,23 @@ class RuleSet(object):
         # Find rules lookup
         lookup = self.rules.get((event.type.profile, event.type.source.value))
         if lookup:
-            for r in lookup.lookup_rules(event, vars):
-                # Try to match rule
-                metrics["rules_checked"] += 1
-                v = r.match(event.message, vars, event.labels)
-                if v is not None:
-                    logger.debug(
-                        "[%s] Matching class for event %s found: %s (Rule: %s)",
-                        event.target.name,
-                        event.id,
-                        r.event_class_name,
-                        r.name,
-                    )
-                    return r, v
+            lookup = lookup.lookup_rules(event, vars)
         gen_lookup = self.rules.get((None, event.type.source.value))
         if gen_lookup:
-            for r in lookup.lookup_rules(event, vars):
-                metrics["rules_checked"] += 1
-                v = r.match(event.message, vars, event.labels)
-                if v is not None:
-                    logger.debug(
-                        "[%s] Matching class for event %s found: %s (Rule: %s)",
-                        event.target.name,
-                        event.id,
-                        r.event_class_name,
-                        r.name,
-                    )
-                    return r, v
+            gen_lookup = gen_lookup.lookup_rules(event, vars)
+        for r in chain.from_iterable([lookup or [], gen_lookup or []]):
+            # Try to match rule
+            metrics["rules_checked"] += 1
+            v = r.match(event.message, vars, event.labels)
+            if v is not None:
+                logger.debug(
+                    "[%s] Matching class for event %s found: %s (Rule: %s)",
+                    event.target.name,
+                    event.id,
+                    r.event_class_name,
+                    r.name,
+                )
+                return r, v
         if self.default_rule:
             return self.default_rule, {}
         return None, None

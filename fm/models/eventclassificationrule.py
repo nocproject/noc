@@ -299,6 +299,7 @@ class EventClassificationRule(Document):
             profiles = list(profile_loader.iter_profiles())
             rule_profiles |= {p for p in profiles if rx.search(p)}
         r = {
+            "id": str(rule.id),
             "name": rule.name,
             "event_class": rule.event_class.name,
             "sources": [s.value for s in rule.sources],
