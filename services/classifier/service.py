@@ -1017,7 +1017,7 @@ class ClassifierService(FastAPIService):
         Called when all mappings are ready.
         """
         self.event_rules_ready_event.set()
-        self.logger.info("%d Event Classification Rules has been loaded", len(self.ruleset.rules))
+        self.logger.info("%d Event Classification Rules has been loaded", self.ruleset.add_rules)
 
     async def update_rule(self, data: Dict[str, Any]) -> None:
         """Apply Classification Rules changes"""

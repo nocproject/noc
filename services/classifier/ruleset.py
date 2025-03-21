@@ -18,6 +18,7 @@ from .rulelookup import RuleLookup
 from noc.config import config
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.enumeration import Enumeration
+from noc.sa.models.profile import GENERIC_PROFILE
 from noc.core.handler import get_handler
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.perf import metrics
@@ -49,16 +50,18 @@ class RuleSet(object):
         #
         # is_failed: bool = False
         # metric block
+        self.add_rules: int = 0
         # processed: int = 0
 
     def update_rule(self, data):
         """Update rule from lookup"""
         rule = Rule.from_config(data, self.enumerations)
+        changed = False
         for rl in self.rules.values():
-            changed = rl.update_rule(rule)
-            if changed:
-                logger.info("[%s|%s] Rule updated", rule.id, rule.name)
-                break
+            changed |= rl.update_rule(rule)
+        if changed:
+            logger.info("[%s|%s] Rule updated", rule.id, rule.name)
+            return changed
         # Add New Rule
         if not rule.profiles:
             keys = [(None, rule.source)]
@@ -69,6 +72,7 @@ class RuleSet(object):
                 self.rules[key] = self.lookup_cls([rule])
             else:
                 self.rules[key].add_rule(rule)
+            self.add_rules += 1
 
     def delete_rule(self, rid: str):
         """Remove rule from lookup"""
@@ -113,7 +117,7 @@ class RuleSet(object):
                 continue
             # Find profile restrictions
             if not rule.profiles:
-                rules[None, rule.source.value] += [rule]
+                rules[GENERIC_PROFILE, rule.source.value] += [rule]
                 continue
             # Apply rules to appropriative chains
             for p in rule.profiles:
@@ -157,7 +161,7 @@ class RuleSet(object):
         lookup = self.rules.get((event.type.profile, event.type.source.value))
         if lookup:
             lookup = lookup.lookup_rules(event, vars)
-        gen_lookup = self.rules.get((None, event.type.source.value))
+        gen_lookup = self.rules.get((GENERIC_PROFILE, event.type.source.value))
         if gen_lookup:
             gen_lookup = gen_lookup.lookup_rules(event, vars)
         for r in chain.from_iterable([lookup or [], gen_lookup or []]):
