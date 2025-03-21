@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Any, Dict, Tuple, Callable
+from typing import Optional, List
 
 # Third-party modules
 from pydantic import BaseModel
@@ -26,12 +26,14 @@ class RuleVar(BaseModel):
 
 
 class ClassificationRule(BaseModel):
+    id: str
     name: str
     event_class: str
     source: Optional[List[EventSource]] = None
     profiles: Optional[List[str]] = None
-    preference: int = 100
+    preference: int = 1000
     message_rx: Optional[str] = None
     patterns: Optional[List[ClassificationPattern]] = None
     vars: Optional[List[RuleVar]] = None
+    labels: Optional[List[str]]
     to_dispose: bool = False

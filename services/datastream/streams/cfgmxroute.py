@@ -8,9 +8,6 @@
 # Python modules
 from typing import Any, Dict
 
-# Third-party modules
-from bson import ObjectId
-
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.main.models.messageroute import MessageRoute
@@ -22,8 +19,6 @@ class CfgMetricsCollectorDataStream(DataStream):
 
     @classmethod
     def get_object(cls, oid: str) -> Dict[str, Any]:
-        if isinstance(oid, ObjectId):
-            oid = str(oid)
         if oid.startswith("ng:"):
             route = NotificationGroup.get_by_id(int(oid[3:]))
         else:
