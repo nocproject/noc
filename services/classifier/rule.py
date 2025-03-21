@@ -183,7 +183,7 @@ class Rule:
             name=data["name"],
             event_class=event_class,
             event_class_name=data["event_class"],
-            categories=[c for c in EventCategory.objects.filter(id__id=data["categories"])],
+            categories=data["categories"],
             source=source,
             profiles=frozenset(profiles),
             preference=int(data["preference"]),

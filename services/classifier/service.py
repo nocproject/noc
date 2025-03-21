@@ -860,7 +860,7 @@ class ClassifierService(FastAPIService):
             #
             "event_id": str(event.id),
             "event_class": event_class.bi_id if event_class else None,
-            "categories": [c.bi_id for c in categories or []],
+            "categories": [int(bi_id) for bi_id in categories or []],
             "source": event.type.source.value,
             #
             "labels": event.labels or [],
