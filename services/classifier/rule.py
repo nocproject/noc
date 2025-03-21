@@ -9,7 +9,7 @@
 import re
 from functools import partial
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Callable, Any, Tuple
+from typing import List, Optional, Dict, Callable, Any, Tuple, FrozenSet
 from types import CodeType
 
 # NOC modules
@@ -93,7 +93,7 @@ class Rule:
     event_class: Any
     event_class_name: str
     source: EventSource
-    profile: Optional[str] = None
+    profiles: Optional[FrozenSet[str]] = None
     preference: int = 100
     message_rx: Optional[re.Pattern] = None
     vars: Optional[Dict[str, str]] = None
@@ -111,16 +111,14 @@ class Rule:
         """Create from EventClassification rule config"""
         matcher, message_rx = [], data["message_rx"] if data["message_rx"] else None
         source = EventSource(data["sources"][0]) if data["sources"] else EventSource.OTHER
-        if data.get("profiles"):
-            profile = data["profiles"][0]
-        else:
-            profile = r"^.*$"
+        profiles = data.get("profiles") or []
         patterns, transform = [], {}
         for x in data["patterns"]:
             key_s, value_s = x["key_re"].strip("^$"), x["value_re"].strip("^$")
             # Store profile
             if key_s == "profile":
-                profile = value_s.replace("\\", "")
+                # profile = value_s.replace("\\", "")
+                continue
             elif key_s == "source" and value_s == "SNMP Trap":
                 source = EventSource.SNMP_TRAP
             elif key_s == "source" and value_s == "syslog":
@@ -182,7 +180,7 @@ class Rule:
             event_class=event_class,
             event_class_name=data["event_class"],
             source=source,
-            profile=profile,
+            profiles=frozenset(profiles),
             preference=int(data["preference"]),
             message_rx=message_rx,
             matcher=tuple(matcher) if matcher else None,

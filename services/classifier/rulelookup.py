@@ -15,3 +15,26 @@ class RuleLookup(object):
         Returns a list of events to lookup
         """
         return self.rules
+
+    def delete_rule(self, rid: str):
+        """Remove Rules from Chain"""
+        rules = []
+        for r in self.rules:
+            if r.id == rid:
+                continue
+            rules.append(r)
+        if len(rules) != len(rules):
+            self.rules = rules
+
+    def update_rule(self, rule):
+        """Replace Rules on chain"""
+        changed, rules = False, []
+        for r in self.rules:
+            if r.id == rule.id:
+                rules.append(rule)
+                changed |= True
+                continue
+            rules.append(r)
+        if changed:
+            self.rules = rules
+        return changed

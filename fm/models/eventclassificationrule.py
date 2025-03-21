@@ -1,12 +1,13 @@
 # ---------------------------------------------------------------------
 # EventClassificationRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
+import re
 from typing import Iterable, List, Dict, Any, Tuple, Union, Optional
 
 # Third-party modules
@@ -30,6 +31,7 @@ from .eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.enumeration import Enumeration
 from noc.sa.models.profile import GENERIC_PROFILE, Profile
+from noc.core.profile.loader import loader as profile_loader
 from noc.core.fm.event import Event, MessageType, EventSource, Target
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
@@ -288,11 +290,19 @@ class EventClassificationRule(Document):
     @classmethod
     def get_rule_config(cls, rule: "EventClassificationRule"):
         """Return MetricConfig for Metrics service"""
+        rule_profiles = set(p.name for p in rule.profiles)
+        for x in rule.patterns:
+            # Store profile
+            if x.key_re.strip("^$") != "profile":
+                continue
+            rx = re.compile(x.value_re)
+            profiles = list(profile_loader.iter_profiles())
+            rule_profiles |= {p for p in profiles if rx.search(p)}
         r = {
             "name": rule.name,
             "event_class": rule.event_class.name,
             "sources": [s.value for s in rule.sources],
-            "profiles": [p.name for p in rule.profiles],
+            "profiles": list(rule_profiles),
             "preference": rule.preference,
             "message_rx": rule.message_rx,
             "patterns": [{"key_re": p.key_re, "value_re": p.value_re} for p in rule.patterns],

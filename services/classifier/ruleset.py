@@ -7,17 +7,14 @@
 
 # Python modules
 import logging
-import re
 from collections import defaultdict
 from typing import Dict, Any, Tuple, Optional
 
 # NOC modules
 from .rule import Rule
 from .exception import InvalidPatternException, EventProcessingFailed
-from .cloningrule import CloningRule
 from .rulelookup import RuleLookup
 from noc.config import config
-from noc.fm.models.cloneclassificationrule import CloneClassificationRule
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.enumeration import Enumeration
 from noc.core.handler import get_handler
@@ -52,14 +49,23 @@ class RuleSet(object):
         # processed: int = 0
 
     def update_rule(self, data):
-        """"""
-        rule = Rule.from_config(
-            EventClassificationRule.get_rule_config(data),
-            self.enumerations,
-        )
+        """Update rule from lookup"""
+        rule = Rule.from_config(data, self.enumerations)
+        for rl in self.rules.values():
+            changed = rl.update_rule(rule)
+            if changed:
+                logger.info("[%s|%s] Rule updated", rule.id, rule.name)
+                break
 
     def delete_rule(self, rid: str):
-        """"""
+        """Remove rule from lookup"""
+        rule = None
+        for rl in self.rules.values():
+            rule = rl.delete_rule(rid)
+        if rule:
+            logger.info("[%s] Rule removed: %s", rule.id, rule.name)
+        else:
+            logger.info("[%s] Rule with id not found", rid)
 
     def load(self):
         """
@@ -69,20 +75,7 @@ class RuleSet(object):
         self.rules = {}
         logger.info("Loading rules")
         n = 0
-        cn = 0
-        profiles = list(profile_loader.iter_profiles())
         rules = defaultdict(list)
-        # Load cloning rules
-        cloning_rules = []
-        for cr in CloneClassificationRule.objects.all():
-            try:
-                cloning_rules += [CloningRule(cr)]
-            except InvalidPatternException as why:
-                logger.error("Failed to load cloning rule '%s': Invalid pattern: %s", cr.name, why)
-                continue
-        logger.info("%d cloning rules found", len(cloning_rules))
-        # profiles re cache
-        rx_profiles = {}
         # Initialize rules
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
@@ -93,46 +86,26 @@ class RuleSet(object):
             except InvalidPatternException as e:
                 logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, e)
                 continue
-            # Apply cloning rules
-            rs = [rule]
-            for cr in cloning_rules:
-                if cr.match(rule):
-                    try:
-                        rs += [
-                            Rule.from_config(
-                                EventClassificationRule.get_rule_config(cr),
-                                self.enumerations,
-                            ),
-                        ]
-                        cn += 1
-                    except InvalidPatternException as e:
-                        logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, e)
-                        continue
-            # Build chain
-            for rule in rs:
-                # Find profile restrictions
-                rule_profiles = rx_profiles.get(rule.profile)
-                if not rule_profiles:
-                    rx = re.compile(rule.profile)
-                    rule_profiles = [p for p in profiles if rx.search(p)]
-                    rx_profiles[rule.profile] = rule_profiles
-                # Apply rules to appropriative chains
-                for p in rule_profiles:
-                    rules[p, rule.source.value] += [rule]
-                n += 1
-        if cn:
-            logger.info("%d rules are cloned", cn)
-        self.default_rule = Rule.from_config(
-            EventClassificationRule.get_rule_config(
-                EventClassificationRule.objects.filter(name=config.classifier.default_rule).first()
-            ),
-            self.enumerations,
-        )
+            # Find profile restrictions
+            if not rule.profiles:
+                rules[None, rule.source.value] += [rule]
+                continue
+            # Apply rules to appropriative chains
+            for p in rule.profiles:
+                rules[p, rule.source.value] += [rule]
+            n += 1
+        self.default_rule = EventClassificationRule.objects.filter(name=config.classifier.default_rule).first()
+        if self.default_rule:
+            self.default_rule = Rule.from_config(
+                EventClassificationRule.get_rule_config(self.default_rule), self.enumerations,
+            )
+        #
+        self.load_enumerations()
+        if not rules:
+            return
         # Apply lookup solution
         self.rules = {k: self.lookup_cls(rules[k]) for k in rules}
         logger.info("%d rules are loaded in the %d chains", n, len(self.rules))
-        #
-        self.load_enumerations()
 
     def load_enumerations(self):
         logger.info("Loading enumerations")
@@ -169,6 +142,20 @@ class RuleSet(object):
         if lookup:
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
+                metrics["rules_checked"] += 1
+                v = r.match(event.message, vars, event.labels)
+                if v is not None:
+                    logger.debug(
+                        "[%s] Matching class for event %s found: %s (Rule: %s)",
+                        event.target.name,
+                        event.id,
+                        r.event_class_name,
+                        r.name,
+                    )
+                    return r, v
+        gen_lookup = self.rules.get((None, event.type.source.value))
+        if gen_lookup:
+            for r in lookup.lookup_rules(event, vars):
                 metrics["rules_checked"] += 1
                 v = r.match(event.message, vars, event.labels)
                 if v is not None:
