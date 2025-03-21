@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Authentication handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,8 +15,8 @@ from jose import jwt, jwk
 from fastapi.responses import Response
 
 # NOC modules
-from noc.config import config
 from noc.aaa.models.user import User
+from noc.config import config
 from noc.core.perf import metrics
 from noc.core.comp import smart_text
 from noc.core.error import NOCError, ERR_AUTH_CRED_CHANGE
@@ -66,14 +66,16 @@ def authenticate(credentials: dict[str, Any]) -> str | None:
             continue
         logger.info("Authorized credentials %s as user %s", c, user)
         metrics["auth_success", ("method", method)] += 1
-        # Register last login
-        if config.login.register_last_login:
-            u = User.get_by_username(user)
-            if u:
-                u.register_login()
         return user
     logger.error("Login failed for %s: %s", c, le)
     return None
+
+
+def register_last_login(user: str):
+    if config.login.register_last_login:
+        u = User.get_by_username(user)
+        if u:
+            u.register_login()
 
 
 def get_jwt_token(user: str, expire: Optional[int] = None, audience: Optional[str] = None) -> str:
