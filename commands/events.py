@@ -82,7 +82,6 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
         )
         # test_rule.add_argument("-S", "--syslog", dest="syslog", help="SYSLOG Message RE"),
-        subparsers.add_parser("inject-event")
 
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
     rx_float = re.compile(r"\d+\.\d+")

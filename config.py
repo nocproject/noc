@@ -142,6 +142,7 @@ class Config(BaseConfig):
         batch_delay_ms = IntParameter(default=10000, help="Send every period time")
 
     class classifier(ConfigSection):
+        ds_limit = IntParameter(default=1000)
         lookup_handler = HandlerParameter(default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
         default_rule = StringParameter(default="Unknown | Default")
@@ -875,6 +876,12 @@ class Config(BaseConfig):
         enable_cfgtarget = BooleanParameter(default=True)
         enable_cfgtarget_wait = BooleanParameter(default=True)
         cfgtarget_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream cfgtarget records older days",
+        )
+        enable_cfgeventrules = BooleanParameter(default=True)
+        enable_cfgeventrules_wait = BooleanParameter(default=True)
+        cfgeventrules_ttl = SecondsParameter(
             default="0",
             help="Removing datastream cfgtarget records older days",
         )
