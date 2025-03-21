@@ -144,25 +144,30 @@ Ext.application({
           link.href = setup.favicon_url;
           document.head.appendChild(link);
         }
-        Ext.Loader.loadScript({
-          url: "/ui/web/js/override.js",
-          onLoad: function(){
-            // Create viewport after overrides loaded
-            this.app = Ext.create("NOC.main.desktop.Application", {
-              listeners: {
-                scope: this,
-                applicationReady: this.hideSplashScreen,
-              },
-            });
-          },
-          onError: function(){
-            NOC.error(__("Failed to load override.js"));
-          },
-          scope: this,
-        });
+        if(!Ext.isPatched){
+          Ext.Loader.loadScript({
+            url: "/ui/web/js/override.js",
+            onLoad: this.createApplication,
+            onError: function(){
+              NOC.error(__("Failed to load override.js"));
+            },
+            scope: this,
+          });
+        } else{
+          this.createApplication();
+        }
       },
       failure: function(response){
         console.error("Request failed:", response.status);
+      },
+    });
+  },
+  createApplication: function(){
+    // Create viewport after overrides loaded
+    this.app = Ext.create("NOC.main.desktop.Application", {
+      listeners: {
+        scope: this,
+        applicationReady: this.hideSplashScreen,
       },
     });
   },

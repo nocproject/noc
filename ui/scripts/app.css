@@ -1,0 +1,13 @@
+/* noc is variable */
+@import "@cssPkg/extjs/classic/theme-noc/resources/theme-noc-all.css";
+@import "@cssPkg/extjs/packages/charts/classic/classic/resources/charts-all.css";
+@import "@cssWeb/extjs.css";
+/* noc is variable */
+@import "@cssWeb/theme-patch-noc.css";
+@import "@cssWeb/ux.css";
+@import "@cssWeb/colors.css";
+@import "@cssPkg/fontawesome/css/font-awesome.min.css";
+@import "@cssPkg/codemirror/lib/codemirror.css";
+@import "@cssPkg/codemirror/addon/dialog/dialog.css";
+@import "@cssWeb/codemirror.css";
+@import "@cssPkg/joint/joint.min.css";
