@@ -191,6 +191,68 @@ class Credentials(object):
             raise_privilege=True,
         )
 
+    def __eq__(self, other):
+        """Compare credentail"""
+        if isinstance(other, SNMPCredential):
+            return self.get_snmp_credential() == other
+        elif isinstance(other, SNMPv3Credential):
+            return self.get_snmp_credential() == other
+        elif isinstance(other, CLICredential):
+            return self.get_cli_credential() == other
+        super().__eq__(other)
+
+    def update_credential(
+        self,
+        credential: Union[SNMPCredential, SNMPv3Credential, CLICredential],
+    ):
+        """Update Credential"""
+        if isinstance(credential, SNMPCredential):
+            self.snmp_security_level = "Community"
+            self.snmp_ro = credential.snmp_ro
+            self.snmp_rw = credential.snmp_rw
+            # snmp_v1_only
+        elif isinstance(credential, SNMPv3Credential):
+            self.snmp_security_level = credential.security_level
+            self.snmp_auth_proto = credential.auth_proto
+            self.snmp_auth_key = credential.auth_key
+            self.snmp_priv_proto = credential.private_proto
+            self.snmp_priv_key = credential.private_key
+        elif isinstance(credential, CLICredential):
+            self.user = credential.user
+            self.password = credential.password
+            self.super_password = credential.super_password
+        else:
+            raise ValueError("Unknown Credential")
+
+    def iter_credential(
+        self,
+        cli_only: bool = False,
+        snmp_only: bool = False,
+    ) -> Iterable[Tuple[str, str]]:
+        """Iterate over credentail"""
+        # CLI
+        if not snmp_only:
+            for f, v in [
+                ("user", self.user),
+                ("password", self.password),
+                ("super_password", self.super_password),
+            ]:
+                yield f, v
+        if cli_only:
+            return
+        # SNMP
+        for f, v in [("snmp_ro", self.snmp_ro), ("snmp_rw", self.snmp_rw)]:
+            yield f, v
+        # SNMPv3
+        for f, v in [
+            ("snmp_username", self.snmp_username),
+            ("auth_proto", self.auth_proto),
+            ("snmp_auth_key", self.snmp_auth_key),
+            ("private_proto", self.private_proto),
+            ("private_key", self.private_key),
+        ]:
+            yield f, v
+
 
 class MaintenanceItem(BaseModel):
     start: datetime.datetime
@@ -3100,6 +3162,62 @@ class ManagedObject(NOCModel):
             "user": self.controller.credentials.user,
             "password": self.controller.credentials.password,
         }
+
+    def apply_credential(self, credential: Credentials, dirty: bool = False):
+        """Apply configured credential"""
+        # Try getting auth profile
+        if self.auth_profile:
+            return
+        changed = False
+        for f, value in credential.iter_values():
+            if getattr(self, f) != value:
+                setattr(self, f, value)
+                changed |= True
+        if credential.scheme != self.scheme:
+            self.scheme = credential.scheme
+            changed |= True
+        if credential.snmp_security_level != self.snmp_security_level:
+            self.snmp_security_level == credential.snmp_security_level
+            chaned |= True
+        # Change scheme
+        # Changed SNMP level
+        # Change AccessPreference
+        return changed
+
+    def update_credentials(
+        self,
+        credential: Union[CLICredential, SNMPCredential, SNMPv3Credential],
+        is_suggests: True,
+        preferred_profile: bool = True,
+    ):
+        """
+            Update credential for object:
+            * user/password/supper_password
+            * effective protocol: CLI/HTTP
+            * SNMP
+        1. Get effective credentials
+        2. If not equal
+        3. Profile preferred
+        4. ?
+        """
+        # Effective credential
+        if credential == self.credentials:
+            # Credential is same
+            return
+        if is_suggests and not self.auth_profile.enable_suggest:
+            return
+        cred = self.credentials
+        cred.update_credential(credential)
+        ap = AuthProfile.get_by_credential(cred)
+        if ap:
+            self.auth_profile = ap
+        else:
+            self.apply_credential(cred)
+        # getting auth_profile
+
+    def reset_credential(self, snmp: bool = True, cli: bool = False):
+        """Reset credentail on object"""
+        # Autho profile
 
 
 @on_save
