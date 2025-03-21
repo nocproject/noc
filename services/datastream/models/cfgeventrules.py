@@ -30,6 +30,7 @@ class ClassificationRule(BaseModel):
     name: str
     event_class: str
     event_class_id: str
+    categories: Optional[List[str]] = None
     source: Optional[List[EventSource]] = None
     profiles: Optional[List[str]] = None
     preference: int = 1000
