@@ -14,7 +14,6 @@ from types import CodeType
 
 # NOC modules
 from noc.core.fm.enum import EventSource
-from noc.fm.models.eventcategory import EventCategory
 from noc.services.classifier.exception import InvalidPatternException
 
 rx_escape = re.compile(r"\\(.)")
