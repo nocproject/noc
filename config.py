@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -434,6 +434,7 @@ class Config(BaseConfig):
         radius_secret = SecretParameter(default="noc")
         radius_server = StringParameter()
         register_last_login = BooleanParameter(default=True)
+        max_inactivity = IntParameter(default=0)
         jwt_cookie_name = StringParameter(default="noc_jwt")
         jwt_algorithm = StringParameter(default="HS256", choices=["HS256", "HS384", "HS512"])
         min_password_len = IntParameter(default=0)
