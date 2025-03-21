@@ -9,12 +9,13 @@
 import re
 from functools import partial
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Callable, Any, Tuple
+from typing import List, Optional, Dict, Callable, Any, Tuple, FrozenSet
 from types import CodeType
 
 # NOC modules
 from noc.core.fm.enum import EventSource
 from noc.services.classifier.exception import InvalidPatternException
+from noc.fm.models.eventclass import EventClass
 
 rx_escape = re.compile(r"\\(.)")
 rx_exact = re.compile(r"^\^?[a-zA-Z0-9%: \-_]+\$?$")
@@ -87,11 +88,12 @@ class VarTransformRule:
 
 @dataclass(frozen=True, slots=True)
 class Rule:
+    id: str
     name: str
     event_class: Any
     event_class_name: str
     source: EventSource
-    profile: Optional[str] = None
+    profiles: Optional[FrozenSet[str]] = None
     preference: int = 100
     message_rx: Optional[re.Pattern] = None
     vars: Optional[Dict[str, str]] = None
@@ -105,20 +107,18 @@ class Rule:
     to_drop: bool = False
 
     @classmethod
-    def from_rule(cls, rule, enumerations) -> "Rule":
-        """Create from EventClassificationRule"""
-        matcher, message_rx = [], rule.message_rx if rule.message_rx else None
-        source = rule.sources[0] if rule.sources else EventSource.OTHER
-        if rule.profiles:
-            profile = rule.profiles[0].name
-        else:
-            profile = r"^.*$"
+    def from_config(cls, data: Dict[str, Any], enumerations):
+        """Create from EventClassification rule config"""
+        matcher, message_rx = [], data["message_rx"] if data["message_rx"] else None
+        source = EventSource(data["sources"][0]) if data["sources"] else EventSource.OTHER
+        profiles = data.get("profiles") or []
         patterns, transform = [], {}
-        for x in rule.patterns:
-            key_s, value_s = x.key_re.strip("^$"), x.value_re.strip("^$")
+        for x in data["patterns"]:
+            key_s, value_s = x["key_re"].strip("^$"), x["value_re"].strip("^$")
             # Store profile
             if key_s == "profile":
-                profile = value_s.replace("\\", "")
+                # profile = value_s.replace("\\", "")
+                continue
             elif key_s == "source" and value_s == "SNMP Trap":
                 source = EventSource.SNMP_TRAP
             elif key_s == "source" and value_s == "syslog":
@@ -126,10 +126,10 @@ class Rule:
             elif key_s == "source":
                 continue
             elif key_s == "message":
-                message_rx = x.value_re
+                message_rx = x["value_re"]
             else:
                 # Process key pattern
-                m, rxs = cls.get_matcher(x.key_re, x.value_re)
+                m, rxs = cls.get_matcher(x["key_re"], x["value_re"])
                 matcher.append(m)
                 if rxs:
                     patterns += rxs
@@ -155,13 +155,15 @@ class Rule:
                     print(f"Unknown fixup: {fixup}")
         label_matchers = []
         # Parse Labels
-        for x in rule.labels:
-            m = cls.get_label_matcher(x.wildcard, set_var=x.set_var, is_required=x.is_required)
+        for x in data["labels"]:
+            m = cls.get_label_matcher(
+                x["wildcard"], set_var=x.get("set_var"), is_required=x["is_required"]
+            )
             if not m:
                 continue
             label_matchers.append(m)
         # Parse vars
-        for v in rule.vars:
+        for v in data["vars"]:
             value, name = v["value"], v["name"]
             if value.startswith("=") and name not in transform:
                 transform[name] = VarTransformRule(
@@ -173,19 +175,21 @@ class Rule:
                 transform[name].default = value
             else:
                 transform[name] = VarTransformRule(name=name, default=value)
+        event_class = EventClass.get_by_name(data["event_class"])
         return Rule(
-            name=rule.name,
-            event_class=rule.event_class,
-            event_class_name=rule.event_class.name,
+            id=data["id"],
+            name=data["name"],
+            event_class=event_class,
+            event_class_name=data["event_class"],
             source=source,
-            profile=profile,
-            preference=rule.preference,
+            profiles=frozenset(profiles),
+            preference=int(data["preference"]),
             message_rx=message_rx,
             matcher=tuple(matcher) if matcher else None,
             vars_transform=tuple(transform.values()),
             label_matchers=tuple(label_matchers) if label_matchers else None,
             # vars=rule_vars,
-            to_drop=rule.event_class.action == "D",
+            to_drop=event_class.action == "D",
         )
 
     def match(

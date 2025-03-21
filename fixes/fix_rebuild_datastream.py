@@ -14,6 +14,7 @@ def fix():
         "managedobject",
         "administrativedomain",
         "cfgtarget",
+        "cfgeventrules",
         "dnszone",
         "address",
         "prefix",
