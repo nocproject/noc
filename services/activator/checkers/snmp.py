@@ -141,7 +141,7 @@ class SNMPProtocolChecker(Checker):
                         args=c.args,
                         status=not error,
                         data=[DataItem(name=k, value=v) for k, v in data.items()] if data else None,
-                        credential=cred if data else None,
+                        credential=cred,
                         error=error,
                     )
         # Process checks
@@ -170,6 +170,8 @@ class SNMPProtocolChecker(Checker):
                 for c in ccs:
                     if c in result:
                         continue
+                    if not c.address:
+                        continue
                     # skipped, data, message = run_sync(partial(self.do_snmp_check, c, cred))
                     data, error = self.check_oids_sync(c.address, self.get_oids(c), cred)
                     result[c] = CheckResult(
@@ -179,7 +181,7 @@ class SNMPProtocolChecker(Checker):
                         args=c.args,
                         status=not error,
                         data=[DataItem(name=k, value=v) for k, v in data.items()] if data else None,
-                        credential=cred if data else None,
+                        credential=cred,
                         error=error,
                     )
         for check in checks:
@@ -204,7 +206,7 @@ class SNMPProtocolChecker(Checker):
     @staticmethod
     def get_snmpv3_user(cred: SNMPv3Credential) -> User:
         """Build SNMPv3 user credential"""
-        if cred.private_proto:
+        if cred.private_proto and cred.private_key:
             return User(
                 name=cred.username,
                 auth_key=AUTH_PROTO_MAP[cred.auth_proto](
@@ -214,7 +216,7 @@ class SNMPProtocolChecker(Checker):
                     cred.private_key.encode(), key_type=KeyType.Password
                 ),
             )
-        elif cred.auth_proto:
+        elif cred.auth_proto and cred.auth_key:
             return User(
                 name=cred.username,
                 auth_key=AUTH_PROTO_MAP[cred.auth_proto](

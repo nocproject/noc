@@ -172,19 +172,23 @@ class AuthProfile(NOCModel):
     @classmethod
     def get_by_credential(cls, credential) -> Optional["AuthProfile"]:
         """Find Auth Profile by credential"""
-        q = Q()
         if credential.snmp_security_level == "Community" and credential.snmp_ro:
-            q = Q(snmp_security_level="Community", snmp_ro=credential.snmp_ro)
+            q = Q(
+                snmp_security_level="Community",
+                snmp_ro=credential.snmp_ro,
+                dynamic_classification_policy="U",
+            )
         elif credential.snmp_security_level != "Community" and credential.snmp_username:
             q = Q(
                 snmp_security_level=credential.snmp_security_level,
                 snmp_ro=credential.snmp_ro,
+                dynamic_classification_policy="U",
             )
-        if not q:
+        else:
             return
         ap = AuthProfile.objects.filter(q).first()
         if not ap:
             return
-        q |= Q(user=credential.user, password=credential.password)
+        q &= Q(user=credential.user, password=credential.password)
         c_ap = AuthProfile.objects.filter(q).first()
         return c_ap or ap

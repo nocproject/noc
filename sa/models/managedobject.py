@@ -207,20 +207,54 @@ class Credentials(object):
     ):
         """Update Credential"""
         if isinstance(credential, SNMPCredential):
-            self.snmp_security_level = "Community"
-            self.snmp_ro = credential.snmp_ro
-            self.snmp_rw = credential.snmp_rw
+            return Credentials(
+                snmp_security_level="Community",
+                snmp_ro=credential.snmp_ro,
+                snmp_rw=credential.snmp_rw,
+                snmp_username=self.snmp_username,
+                snmp_auth_proto=self.snmp_auth_proto,
+                snmp_auth_key=self.snmp_auth_key,
+                snmp_priv_proto=self.snmp_priv_proto,
+                snmp_priv_key=self.snmp_priv_key,
+                snmp_ctx_name=self.snmp_ctx_name,
+                snmp_rate_limit=self.snmp_rate_limit,
+                user=self.user,
+                password=self.password,
+                super_password=self.super_password,
+            )
             # snmp_v1_only
         elif isinstance(credential, SNMPv3Credential):
-            self.snmp_security_level = credential.security_level
-            self.snmp_auth_proto = credential.auth_proto
-            self.snmp_auth_key = credential.auth_key
-            self.snmp_priv_proto = credential.private_proto
-            self.snmp_priv_key = credential.private_key
+            return Credentials(
+                snmp_ro=self.snmp_ro,
+                snmp_rw=self.snmp_rw,
+                snmp_security_level=credential.security_level,
+                snmp_username=credential.username,
+                snmp_auth_proto=credential.auth_proto,
+                snmp_auth_key=credential.auth_key,
+                snmp_priv_proto=credential.private_proto,
+                snmp_priv_key=credential.private_key,
+                snmp_ctx_name=self.snmp_ctx_name,
+                snmp_rate_limit=self.snmp_rate_limit,
+                user=self.user,
+                password=self.password,
+                super_password=self.super_password,
+            )
         elif isinstance(credential, CLICredential):
-            self.user = credential.user
-            self.password = credential.password
-            self.super_password = credential.super_password
+            return Credentials(
+                snmp_ro=self.snmp_ro,
+                snmp_rw=self.snmp_rw,
+                snmp_security_level=self.security_level,
+                snmp_username=self.snmp_username,
+                snmp_auth_proto=self.snmp_auth_proto,
+                snmp_auth_key=self.snmp_auth_key,
+                snmp_priv_proto=self.snmp_priv_proto,
+                snmp_priv_key=self.snmp_priv_key,
+                snmp_ctx_name=self.snmp_ctx_name,
+                snmp_rate_limit=self.snmp_rate_limit,
+                user=credential.user,
+                password=credential.password,
+                super_password=credential.super_password,
+            )
         else:
             raise ValueError("Unknown Credential")
 
@@ -246,10 +280,10 @@ class Credentials(object):
         # SNMPv3
         for f, v in [
             ("snmp_username", self.snmp_username),
-            ("auth_proto", self.auth_proto),
+            ("snmp_auth_proto", self.snmp_auth_proto),
             ("snmp_auth_key", self.snmp_auth_key),
-            ("private_proto", self.private_proto),
-            ("private_key", self.private_key),
+            ("snmp_priv_proto", self.snmp_priv_proto),
+            ("snmp_priv_key", self.snmp_priv_key),
         ]:
             yield f, v
 
@@ -2883,114 +2917,6 @@ class ManagedObject(NOCModel):
             MessageMeta.LABELS: list(self.effective_labels),
         }
 
-    def set_profile(self, profile: str) -> bool:
-        """Set SA Profile"""
-        profile = Profile.get_by_name(profile)
-        if self.profile.id == profile.id:
-            return False
-        logger.info("Changed profile: %s -> %s", self.profile.name, profile.name)
-        # self.invalidate_neighbor_cache()
-        self.profile = profile
-        self.vendor = None
-        self.platform = None
-        self.version = None
-        self.save()
-        return True
-
-    def get_cli_credential(self) -> Optional[CLICredential]:
-        """Return CLI credential for ManagedObject"""
-        if self.scheme != TELNET or self.scheme != SSH:
-            return
-        return CLICredential(
-            username=self.user,
-            password=self.password,
-            super_password=self.super_password,
-            raise_privilege=self.to_raise_privileges,
-        )
-
-    def get_snmp_credential(self) -> Optional[Union[SNMPCredential, SNMPv3Credential]]:
-        """Return SNMP Credential for object"""
-        if self.snmp_security_level == "Community" and self.snmp_ro:
-            return SNMPCredential(snmp_ro=self.snmp_ro, snmp_rw=self.snmp_rw)
-        elif self.snmp_security_level != "Community" and not self.snmp_username:
-            return
-        elif self.snmp_security_level == "noAuthNoPriv":
-            return SNMPv3Credential(username=self.snmp_username)
-        elif self.snmp_security_level == "authNoPriv":
-            return SNMPv3Credential(
-                username=self.snmp_username,
-                auth_proto=self.snmp_auth_proto,
-                auth_key=self.snmp_auth_key,
-            )
-        elif self.snmp_security_level == "authPriv":
-            return SNMPv3Credential(
-                username=self.snmp_username,
-                auth_proto=self.snmp_auth_proto,
-                auth_key=self.snmp_auth_key,
-                private_proto=self.snmp_priv_proto,
-                private_key=self.snmp_priv_key,
-            )
-        return
-
-    def set_credential(
-        self, cred: Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]
-    ):
-        """Update Managed Object Credential"""
-        if self.auth_profile and not self.auth_profile.enable_suggest:
-            return
-        changed = {}
-        if isinstance(cred, SNMPCredential) and self.get_snmp_credential() != cred:
-            changed |= {
-                "snmp_security_level": cred.security_level,
-                "snmp_ro": cred.snmp_ro,
-                "snmp_rw": cred.snmp_rw,
-            }
-            self.reset_credential(snmp=False, cli=False)
-        elif isinstance(cred, SNMPv3Credential) and self.get_snmp_credential() != cred:
-            changed |= {
-                "snmp_security_level": cred.security_level,
-                "snmp_username": cred.username,
-                "snmp_auth_proto": cred.auth_proto,
-                "snmp_auth_key": cred.auth_key,
-                "snmp_priv_proto": cred.private_proto,
-                "snmp_priv_key": cred.private_key,
-            }
-            self.reset_credential(snmp_v3=False, cli=False)
-        elif isinstance(cred, CLICredential) and self.get_cli_credential() != cred:
-            changed |= {
-                "user": cred.user,
-                "password": cred.password,
-                "super_password": cred.super_password,
-            }
-            if self.to_raise_privileges != cred.raise_privilege:
-                changed["raise_privilege"] = cred.raise_privilege
-            if self.scheme != cred.protocol:
-                changed["scheme"] = cred.protocol.value
-        if not changed:
-            logger.info("Nothing credential changed")
-            return
-        if self.auth_profile:
-            self.auth_profile = None
-            changed["auth_profile"] = None
-        for f, v in changed.items():
-            logger.info("Update field: %s", f)
-            setattr(self, f, v)
-        ManagedObject.objects.filter(id=self.id).update(**changed)
-
-    def reset_credential(self, snmp=True, snmp_v3=True, cli=True):
-        """Reset credential"""
-        if snmp:
-            self.snmp_ro = None
-            self.snmp_rw = None
-        if snmp_v3:
-            self.snmp_username = None
-            self.snmp_auth_key = None
-            self.snmp_priv_key = None
-        if cli:
-            self.user = None
-            self.password = None
-            self.super_password = None
-
     def set_mapping(self, remote_system: RemoteSystem, remote_id: str):
         """
         Set Object mapping
@@ -3166,30 +3092,23 @@ class ManagedObject(NOCModel):
     def apply_credential(self, credential: Credentials, dirty: bool = False):
         """Apply configured credential"""
         # Try getting auth profile
-        if self.auth_profile:
-            return
         changed = False
-        for f, value in credential.iter_values():
+        for f, value in credential.iter_credential():
             if getattr(self, f) != value:
                 setattr(self, f, value)
                 changed |= True
-        if credential.scheme != self.scheme:
-            self.scheme = credential.scheme
-            changed |= True
         if credential.snmp_security_level != self.snmp_security_level:
-            self.snmp_security_level == credential.snmp_security_level
-            chaned |= True
-        # Change scheme
+            self.snmp_security_level = credential.snmp_security_level
+            changed |= True
         # Changed SNMP level
-        # Change AccessPreference
         return changed
 
     def update_credentials(
         self,
         credential: Union[CLICredential, SNMPCredential, SNMPv3Credential],
-        is_suggests: True,
+        is_suggests: bool = True,
         preferred_profile: bool = True,
-    ):
+    ) -> bool:
         """
             Update credential for object:
             * user/password/supper_password
@@ -3203,21 +3122,50 @@ class ManagedObject(NOCModel):
         # Effective credential
         if credential == self.credentials:
             # Credential is same
-            return
-        if is_suggests and not self.auth_profile.enable_suggest:
-            return
-        cred = self.credentials
-        cred.update_credential(credential)
+            return False
+        if is_suggests and self.auth_profile and not self.auth_profile.enable_suggest:
+            return False
+        changed = False
+        cred = self.credentials.update_credential(credential)
+        # Change scheme
+        if isinstance(credential, CLICredential) and self.scheme != credential.protocol:
+            self.scheme = credential.protocol
+            changed |= True
+        # Change AccessPreference
+        if cred != credential:
+            return changed
         ap = AuthProfile.get_by_credential(cred)
         if ap:
             self.auth_profile = ap
+            self.reset_credential()
+            changed |= True
+            # Reset Credential
         else:
-            self.apply_credential(cred)
+            self.auth_profile = None
+            changed |= self.apply_credential(cred)
         # getting auth_profile
+        # ManagedObject.objects.filter(id=self.object.id).update(**changed)
+        # self.object._reset_caches(self.object.id, credential=True)
+        # self.object.update_init()
 
-    def reset_credential(self, snmp: bool = True, cli: bool = False):
-        """Reset credentail on object"""
-        # Autho profile
+    def reset_credential(self, snmp_only=False, cli_only=False):
+        """Reset credential"""
+        for f, _ in self.credentials.iter_credential(snmp_only=snmp_only, cli_only=cli_only):
+            setattr(self, f, None)
+
+    def set_profile(self, profile: str) -> bool:
+        """Set SA Profile"""
+        profile = Profile.get_by_name(profile)
+        if self.profile.id == profile.id:
+            return False
+        logger.info("Changed profile: %s -> %s", self.profile.name, profile.name)
+        # self.invalidate_neighbor_cache()
+        self.profile = profile
+        self.vendor = None
+        self.platform = None
+        self.version = None
+        self.save()
+        return True
 
 
 @on_save
