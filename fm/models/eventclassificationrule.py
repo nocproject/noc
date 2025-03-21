@@ -309,7 +309,7 @@ class EventClassificationRule(Document):
             "name": rule.name,
             "event_class_id": str(rule.event_class.id),
             "event_class": rule.event_class.name,
-            "categories": [str(c.id) for c in rule.categories],
+            "categories": [str(c.bi_id) for c in rule.categories],
             "sources": [s.value for s in rule.sources],
             "profiles": list(rule_profiles),
             "preference": rule.preference,
