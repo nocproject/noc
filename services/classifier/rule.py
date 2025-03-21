@@ -156,7 +156,9 @@ class Rule:
         label_matchers = []
         # Parse Labels
         for x in data["labels"]:
-            m = cls.get_label_matcher(x.wildcard, set_var=x.set_var, is_required=x.is_required)
+            m = cls.get_label_matcher(
+                x["wildcard"], set_var=x.get("set_var"), is_required=x["is_required"]
+            )
             if not m:
                 continue
             label_matchers.append(m)

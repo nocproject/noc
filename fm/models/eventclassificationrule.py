@@ -308,7 +308,14 @@ class EventClassificationRule(Document):
             "message_rx": rule.message_rx,
             "patterns": [{"key_re": p.key_re, "value_re": p.value_re} for p in rule.patterns],
             "vars": [{"name": v.name, "value": v.value} for v in rule.vars],
-            "labels": [],
+            "labels": [
+                {
+                    "wildcard": ll.wildcard,
+                    "is_required": ll.is_required,
+                    "set_var": ll.set_var or None,
+                }
+                for ll in rule.labels
+            ],
             "to_dispose": False,
         }
         return r

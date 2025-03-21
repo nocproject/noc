@@ -24,7 +24,7 @@ class RuleLookup(object):
             if r.id == rid:
                 continue
             rules.append(r)
-        if len(rules) != len(rules):
+        if len(self.rules) != len(rules):
             self.rules = sorted(self.rules, key=operator.attrgetter("preference"))
 
     def update_rule(self, rule):
