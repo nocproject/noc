@@ -14,6 +14,7 @@ from types import CodeType
 
 # NOC modules
 from noc.core.fm.enum import EventSource
+from noc.fm.models.eventcategory import EventCategory
 from noc.services.classifier.exception import InvalidPatternException
 
 rx_escape = re.compile(r"\\(.)")
@@ -180,7 +181,7 @@ class Rule:
             name=data["name"],
             event_class_id=data["event_class_id"],
             event_class_name=data["event_class"],
-            categories=data.get("categories") or [],
+            categories=[c for c in EventCategory.objects.filter(id__id=data["categories"])],
             source=source,
             profiles=frozenset(profiles),
             preference=int(data["preference"]),
