@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -119,9 +119,7 @@ from noc.core.script.scheme import (
     SNMPCredential,
     SNMPv3Credential,
     CLICredential,
-    HTTPCredential,
     TELNET,
-    SSH,
 )
 from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams

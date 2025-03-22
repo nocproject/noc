@@ -127,7 +127,7 @@ class SNMPProtocolChecker(Checker):
         for cc in processed.values():
             for cred, ccs in cc.items():
                 for c in ccs:
-                    if c in result:
+                    if c in result and result[c].status:
                         continue
                     if not c.address:
                         continue
@@ -141,7 +141,7 @@ class SNMPProtocolChecker(Checker):
                         args=c.args,
                         status=not error,
                         data=[DataItem(name=k, value=v) for k, v in data.items()] if data else None,
-                        credential=cred,
+                        credential=cred if data else None,
                         error=error,
                     )
         # Process checks
@@ -168,7 +168,7 @@ class SNMPProtocolChecker(Checker):
         for cc in processed.values():
             for cred, ccs in cc.items():
                 for c in ccs:
-                    if c in result:
+                    if c in result and result[c].status:
                         continue
                     if not c.address:
                         continue
@@ -184,6 +184,7 @@ class SNMPProtocolChecker(Checker):
                         credential=cred,
                         error=error,
                     )
+        self.logger.info("[XXXX] Processed checks result: %s", result)
         for check in checks:
             for c in self.iter_suggest_check(check):
                 if c in result:
