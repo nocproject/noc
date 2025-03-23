@@ -76,9 +76,9 @@
         src: "{{ noc_root }}/etc/settings.yml"
         state: present
         edits:
-          - key: noc.msgstream.client_class
+          - key: msgstream.client_class
             value: "noc.core.msgstream.redpanda.RedPandaClient"
-          - key: noc.redpanda.addresses
+          - key: redpanda.addresses
             value: "kafka"
 
   when:
