@@ -135,6 +135,7 @@ class DiagnosticConfig(object):
     diagnostic_handler: Optional[str] = None
     dependent: Optional[List[str]] = None
     include_credentials: bool = False
+    allow_set_credentials: bool = False
     diagnostic_ctx: Optional[List[CtxItem]] = None
     # Calculate State on checks.
     state_policy: str = "ANY"

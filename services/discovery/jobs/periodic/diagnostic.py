@@ -15,8 +15,7 @@ from noc.core.checkers.base import Check, CheckResult, MetricValue
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
-from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, SNMPv3Credential
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.script.scheme import SNMPCredential, CLICredential, SNMPv3Credential
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.pm.models.metrictype import MetricType
 from noc.core.checkers.loader import loader
@@ -69,24 +68,29 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 self.logger.info("[%s] Run diagnostic checks", di.diagnostic)
                 # Get checker
-                credentials: List[
-                    Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
-                ] = []
+                credential: Union[SNMPCredential, CLICredential, SNMPv3Credential] = None
                 for do_checks in d_hub.iter_checks(di.diagnostic):
                     # Do nothing check ?
                     checks: List[CheckResult] = []
                     for cr in self.run_checks(do_checks):
-                        if cr.credential:
-                            credentials += [(Protocol[cr.check], cr.credential)]
+                        if (
+                            di.config.allow_set_credentials
+                            and not cr.skipped
+                            and cr.status
+                            and cr.credential
+                            and not credential
+                        ):
+                            credential = cr.credential
                         checks.append(cr)
                     # Update diagnostics
                     d_hub.update_checks(checks)
+                    self.logger.debug("[%s] Collected check Result: %s", di.diagnostic, checks)
                 # Apply credentials
-                if credentials and (
+                if credential and (
                     not self.object.auth_profile or self.object.auth_profile.enable_suggest
                 ):
-                    self.logger.debug("Apply credentials: %s", credentials)
-                    self.apply_credentials(credentials)
+                    self.logger.debug("Apply credentials: %s", credential)
+                    self.object.update_credentials(credential)
                 # Update diagnostics
                 # d_hub.update_checks(checks)
         # self.object.diagnostic.refresh_diagnostics()
@@ -115,42 +119,6 @@ class DiagnosticCheck(DiscoveryCheck):
             except RPCError as e:
                 self.logger.error("RPC Error: %s", e)
         return [CheckResult.from_dict(c) for c in r]
-
-    def apply_credentials(
-        self,
-        credentials: List[Tuple[Protocol, Union[CLICredential, SNMPCredential, SNMPv3Credential]]],
-    ):
-        changed = {}
-        object_credentials = self.object.credentials
-        for protocol, cred in credentials:
-            if (
-                isinstance(cred, (SNMPCredential, SNMPv3Credential))
-                and object_credentials.snmp_security_level != cred.security_level
-            ):
-                self.object.snmp_security_level = cred.security_level
-                changed["snmp_security_level"] = cred.security_level
-            elif isinstance(cred, CLICredential) and self.object.scheme != protocol.value:
-                changed["scheme"] = protocol.value
-                self.logger.info("Update Scheme: %s -> %s", self.object.scheme, protocol.value)
-            for f in object_credentials.__dataclass_fields__:
-                if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
-                    continue
-                changed[f] = getattr(cred, f)
-        if not changed:
-            self.logger.info("Nothing credential changed")
-            return
-        if self.object.auth_profile:
-            self.object.auth_profile = None
-            changed["auth_profile"] = None
-        for f, v in changed.items():
-            self.logger.info("Update field: %s", f)
-            setattr(self.object, f, v)
-        ManagedObject.objects.filter(id=self.object.id).update(**changed)
-        if "auth_profile" in changed:
-            self.apply_credentials(credentials)
-            return
-        self.object._reset_caches(self.object.id, credential=True)
-        self.object.update_init()
 
     def register_diagnostic_metrics(self, metrics: List[MetricValue]):
         """
