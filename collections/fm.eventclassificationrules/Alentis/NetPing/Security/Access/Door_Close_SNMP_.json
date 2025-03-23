@@ -5,6 +5,7 @@
     "description": "Sensor Closed Door",
     "event_class__name": "Security | Access | Door Close",
     "preference": 1000,
+    "sources": ["SNMP Trap"],
     "patterns": [
         {
             "key_re": "^DKSF-50-8-1-A-X::npIoLevelIn\\.1$",
@@ -24,5 +25,5 @@
         }
     ],
     "labels": [],
-    "sources": ["SNMP Trap"]
+    "profiles": ["Alentis.NetPing"]
 }

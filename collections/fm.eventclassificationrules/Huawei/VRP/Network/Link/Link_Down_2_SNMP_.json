@@ -5,6 +5,7 @@
     "description": "IF-MIB::linkDown %%01IFNET/4/IF_STATE(l)[0]:Interface Ethernet0/0/4 has turned into DOWN state.",
     "event_class__name": "Network | Link | Link Down",
     "preference": 1000,
+    "sources": ["SNMP Trap"],
     "patterns": [
         {
             "key_re": "^ENTITY-MIB::entPhysicalName\\.\\d+$",
@@ -16,5 +17,5 @@
         }
     ],
     "labels": [],
-    "sources": ["SNMP Trap"]
+    "profiles": ["Huawei.VRP", "Huawei.MA5600T"]
 }
