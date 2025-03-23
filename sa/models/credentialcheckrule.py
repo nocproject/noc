@@ -122,7 +122,9 @@ class CredentialCheckRule(Document):
         for ss in self.suggest_snmp:
             r.append(
                 SNMPCredential(
-                    snmp_ro=ss.snmp_ro, snmp_rw=ss.snmp_rw, oids=list(self.suggest_snmp_oids)
+                    snmp_ro=ss.snmp_ro,
+                    snmp_rw=ss.snmp_rw,
+                    oids=list(self.suggest_snmp_oids) or None,
                 )
             )
         for au in self.suggest_auth_profile:
