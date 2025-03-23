@@ -127,7 +127,7 @@ class SNMPProtocolChecker(Checker):
         for cc in processed.values():
             for cred, ccs in cc.items():
                 for c in ccs:
-                    if c in result:
+                    if c in result and result[c].status:
                         continue
                     if not c.address:
                         continue
@@ -168,7 +168,9 @@ class SNMPProtocolChecker(Checker):
         for cc in processed.values():
             for cred, ccs in cc.items():
                 for c in ccs:
-                    if c in result:
+                    if c in result and result[c].status:
+                        continue
+                    if not c.address:
                         continue
                     # skipped, data, message = run_sync(partial(self.do_snmp_check, c, cred))
                     data, error = self.check_oids_sync(c.address, self.get_oids(c), cred)
@@ -179,9 +181,10 @@ class SNMPProtocolChecker(Checker):
                         args=c.args,
                         status=not error,
                         data=[DataItem(name=k, value=v) for k, v in data.items()] if data else None,
-                        credential=cred if data else None,
+                        credential=cred,
                         error=error,
                     )
+        self.logger.info("[XXXX] Processed checks result: %s", result)
         for check in checks:
             for c in self.iter_suggest_check(check):
                 if c in result:
@@ -204,7 +207,7 @@ class SNMPProtocolChecker(Checker):
     @staticmethod
     def get_snmpv3_user(cred: SNMPv3Credential) -> User:
         """Build SNMPv3 user credential"""
-        if cred.private_proto:
+        if cred.private_proto and cred.private_key:
             return User(
                 name=cred.username,
                 auth_key=AUTH_PROTO_MAP[cred.auth_proto](
@@ -214,7 +217,7 @@ class SNMPProtocolChecker(Checker):
                     cred.private_key.encode(), key_type=KeyType.Password
                 ),
             )
-        elif cred.auth_proto:
+        elif cred.auth_proto and cred.auth_key:
             return User(
                 name=cred.username,
                 auth_key=AUTH_PROTO_MAP[cred.auth_proto](
