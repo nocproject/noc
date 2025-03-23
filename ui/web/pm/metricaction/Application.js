@@ -641,7 +641,7 @@ Ext.define("NOC.pm.metricaction.Application", {
       };
 
     Ext.Object.each(data, function(key, value){
-      if(key.indexOf("__label") === -1 && !Ext.isEmpty(value)){
+      if(key.indexOf("__label") === -1){
         set(save, key, value);
       }
     });
