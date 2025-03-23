@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generate model interfaces reference
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ def main():
         with open(path, "w") as fp:
             fp.write(data)
     # Write navigation
-    summary_path = BOOK / "__SUMMARY__"
+    summary_path = BOOK / "SUMMARY.md"
     with open(DOCS / summary_path, "w") as fp:
         fp.writelines(nav.build_literate_nav())
 
