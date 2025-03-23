@@ -162,7 +162,9 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         nv = getattr(instance, field_name)
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
-        if str(ov or None) == str(nv or None):
+        if field_name == "effective_labels" and nv and ov and set(nv).difference(set(ov)):
+            return None
+        elif str(ov or None) == str(nv or None):
             return None
         return ChangeField(field=field_name, old=ov, new=nv)
 
