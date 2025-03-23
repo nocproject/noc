@@ -41,6 +41,7 @@ EVENT_QUERY = f"""
         e.vars,
         e.labels,
         e.message,
+        e.snmp_trap_oid,
         e.data
     FROM events e
     WHERE
