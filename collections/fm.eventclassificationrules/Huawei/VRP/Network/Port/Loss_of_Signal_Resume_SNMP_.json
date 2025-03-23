@@ -5,6 +5,7 @@
     "description": "HUAWEI-PORT-MIB::hwLosAlarmResume - Port Loss of Signal Alarm Resume",
     "event_class__name": "Network | Port | Loss of Signal Resume",
     "preference": 1000,
+    "sources": ["SNMP Trap"],
     "patterns": [
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
@@ -24,5 +25,5 @@
         }
     ],
     "labels": [],
-    "sources": ["SNMP Trap"]
+    "profiles": ["Huawei.VRP", "Huawei.MA5600T"]
 }

@@ -5,6 +5,7 @@
     "description": "Juniper-System-MIB::juniSystemModuleOperStatusChange",
     "event_class__name": "Chassis | Hardware | Module | Module Offline",
     "preference": 1000,
+    "sources": ["SNMP Trap"],
     "patterns": [
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
@@ -28,5 +29,5 @@
         }
     ],
     "labels": [],
-    "sources": ["SNMP Trap"]
+    "profiles": ["Juniper.JUNOS", "Juniper.JUNOSe"]
 }

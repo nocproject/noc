@@ -64,7 +64,7 @@ class RuleSet(object):
             return changed
         # Add New Rule
         if not rule.profiles:
-            keys = [(None, rule.source)]
+            keys = [(GENERIC_PROFILE, rule.source.value)]
         else:
             keys = [(p, rule.source.value) for p in rule.profiles]
         for key in keys:
@@ -154,9 +154,8 @@ class RuleSet(object):
         Returns: Event class and extracted variables
         """
         # Get chain
-        if event.type.source == EventSource.SYSLOG:
-            if not event.message:
-                return None, None
+        if event.type.source == EventSource.SYSLOG and not event.message:
+            return None, None
         # Find rules lookup
         lookup = self.rules.get((event.type.profile, event.type.source.value))
         if lookup:
