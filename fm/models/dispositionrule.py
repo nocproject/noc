@@ -96,10 +96,6 @@ class Match(EmbeddedDocument):
             r["service_groups"] = {"$all": [str(x) for x in self.groups]}
         if self.remote_system:
             r["remote_system"] = str(self.remote_system.id)
-        # if self.untagged_vlan_filter:
-        #     r["untagged_vlan"] = {"$in": self.untagged_vlan_filter.include_vlans}
-        # if self.tagged_vlan_filter:
-        #     r["tagged_vlans"] = {"$any": self.tagged_vlan_filter.include_vlans}
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:
@@ -210,7 +206,7 @@ class DispositionRule(Document):
         NotificationGroup, required=False
     )
     subject_template = StringField()
-    handlers: List[Handler] = EmbeddedDocumentListField(HandlerItem)
+    handlers: List[HandlerItem] = EmbeddedDocumentListField(HandlerItem)
     object_actions: List[ObjectActionItem] = EmbeddedDocumentListField(ObjectActionItem)
     #
     default_action = StringField(
