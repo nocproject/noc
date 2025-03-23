@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Minify docs
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -77,9 +77,9 @@ def compress() -> None:
 
 def clean_summary():
     """
-    Remove __SUMMARY__ files
+    Remove SUMMARY.md files
     """
-    for path in DOCS.rglob("__SUMMARY__"):
+    for path in DOCS.rglob("SUMMARY.md"):
         os.unlink(path)
 
 

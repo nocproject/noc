@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generate connection-types-reference
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -222,7 +222,7 @@ def main():
         with open(DOCS / out, "w") as fp:
             fp.write(tpl.render(scope=scope))
     # Write navigation
-    summary_path = BOOK / "__SUMMARY__"
+    summary_path = BOOK / "SUMMARY.md"
     # with mkdocs_gen_files.open(summary_path, "w") as fp:
     with open(DOCS / summary_path, "w") as fp:
         fp.writelines(nav.build_literate_nav())

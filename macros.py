@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Documentation macroses
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -143,6 +143,8 @@ def define_env(env):
             if fn.startswith("."):
                 continue
             if fn.startswith("index."):
+                continue
+            if fn == "SUMMARY.md":
                 continue
             r += [fn[:-3]]
         if not r:
