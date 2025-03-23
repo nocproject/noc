@@ -982,39 +982,28 @@ class ManagedObjectProfile(NOCModel):
         :return:
         """
         if o:
-            ac = o.get_access_preference()
-            cred = o.credentials.get_snmp_credential()
-            snmp_cred, snmp_v3_cred = None, None
+            ac, cred = o.get_access_preference(), o.credentials.get_snmp_credential()
             if isinstance(cred, SNMPCredential):
-                snmp_cred = cred
+                s_checks = [
+                    Check(name="SNMPv1", address=o.address, credential=cred),
+                    Check(name="SNMPv2c", address=o.address, credential=cred),
+                ]
             else:
-                snmp_v3_cred = cred
+                s_checks = [Check(name="SNMPv3", address=o.address, credential=cred)]
         else:
-            ac = self.access_preference
-            snmp_cred, snmp_v3_cred = None, None
+            ac, s_checks = self.access_preference, []
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
-                checks=[
-                    Check(name="SNMPv1", address=o.address if o else None, credential=snmp_cred),
-                    Check(
-                        name="SNMPv2c",
-                        address=o.address if o else None,
-                        credential=snmp_cred,
-                    ),
-                    Check(
-                        name="SNMPv3",
-                        address=o.address if o else None,
-                        credential=snmp_v3_cred,
-                    ),
-                ],
+                checks=s_checks,
                 diagnostic_handler="noc.core.script.diagnostic.SNMPSuggestsDiagnostic",
                 blocked=ac == "C",
                 run_policy="F",
                 run_order="S",
                 discovery_box=True,
+                allow_set_credentials=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::SNMP"],
                 reason="Blocked by AccessPreference" if ac == "C" else None,
@@ -1038,30 +1027,31 @@ class ManagedObjectProfile(NOCModel):
             if o:
                 blocked |= o.scheme not in {1, 2}
                 cli_cred = o.credentials.get_cli_credential()
+                checks = [
+                    Check(
+                        name="TELNET",
+                        address=o.address,
+                        port=o.port,
+                        credential=cli_cred,
+                    ),
+                    Check(
+                        name="SSH",
+                        address=o.address,
+                        port=o.port,
+                        credential=cli_cred,
+                    ),
+                ]
+                if o.scheme == SSH:
+                    checks.reverse()
             else:
-                cli_cred = None
-            checks = [
-                Check(
-                    name="TELNET",
-                    address=o.address if o else None,
-                    port=o.port if o else None,
-                    credential=cli_cred,
-                ),
-                Check(
-                    name="SSH",
-                    address=o.address if o else None,
-                    port=o.port if o else None,
-                    credential=cli_cred,
-                ),
-            ]
-            if o and o.scheme == SSH:
-                checks.reverse()
+                checks = []
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=checks,
                 diagnostic_handler="noc.core.script.diagnostic.CLISuggestsDiagnostic",
                 diagnostic_ctx=[CtxItem(name="profile")],
+                allow_set_credentials=True,
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
