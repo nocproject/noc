@@ -5,6 +5,7 @@
     "description": "HUAWEI-ENTITY-TRAP-MIB::hwBoardFailResume\ntype:\n* mpu\n* lpu\n* sfu\n* pic\n* cfcard\n* ofc\n",
     "event_class__name": "Chassis | Linecard | LC Error Recover",
     "preference": 100,
+    "sources": ["SNMP Trap"],
     "patterns": [
         {
             "key_re": "^ENTITY-MIB::entPhysicalName(?:\\.\\d+)*$",
@@ -28,5 +29,5 @@
         }
     ],
     "labels": [],
-    "sources": ["SNMP Trap"]
+    "profiles": ["Huawei.VRP", "Huawei.MA5600T"]
 }
