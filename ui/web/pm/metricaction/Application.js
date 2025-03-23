@@ -737,7 +737,8 @@ Ext.define("NOC.pm.metricaction.Application", {
 
     Ext.each(map.fields, function(item){
       var disable = false,
-        query = "[itemId=" + itemId + "-" + item.name + "]",
+        itemName = item.name ? item.name.replace(/\./g, "-") : "",
+        query = "[itemId=" + itemId + "-" + itemName + "]",
         element = field.up().down(query);
       if(value !== item.value){
         disable = true;
