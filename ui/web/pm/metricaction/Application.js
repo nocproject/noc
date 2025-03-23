@@ -45,10 +45,10 @@ Ext.define("NOC.pm.metricaction.Application", {
               scope: me,
               change: Ext.pass(me._setFieldsDisabled, {
                 fields: [
-                  {value: "sumstep", name: "window_config_direction"},
-                  {value: "expdecay", name: "window_config_factor"},
-                  {value: "nth", name: "window_config_step_num"},
-                  {value: "percentile", name: "window_config_percentile"},
+                  {value: "sumstep", name: "window_config.direction"},
+                  {value: "expdecay", name: "window_config.factor"},
+                  {value: "nth", name: "window_config.step_num"},
+                  {value: "percentile", name: "window_config.percentile"},
                 ],
               }),
             },
@@ -61,28 +61,28 @@ Ext.define("NOC.pm.metricaction.Application", {
             items: [
               {
                 xtype: "radiogroup",
-                itemId: itemId + "_window_type",
+                itemId: itemId + "-window_type",
                 columns: 1,
                 vertical: true,
                 margin: "0 20 0 0",
                 items: [
                   {
                     boxLabel: "Tick",
-                    name: itemId + "_window_type",
+                    name: itemId + ".window_type",
                     inputValue: "tick",
                     checked: true,
                   },
                   {
                     boxLabel: "Seconds",
-                    name: itemId + "_window_type",
+                    name: itemId + ".window_type",
                     inputValue: "seconds",
                   },
                 ],
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_min_window",
-                name: itemId + "_min_window",
+                itemId: itemId + "-min_window",
+                name: itemId + ".min_window",
                 minValue: 1,
                 maxValue: 86400,
                 forcePrecision: true,
@@ -93,8 +93,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_max_window",
-                name: itemId + "_max_window",
+                itemId: itemId + "-max_window",
+                name: itemId + ".max_window",
                 minValue: 1,
                 maxValue: 86400,
                 forcePrecision: true,
@@ -105,7 +105,7 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "radiogroup",
-                itemId: itemId + "_window_config_direction",
+                itemId: itemId + "-window_config-direction",
                 columns: 1,
                 vertical: true,
                 margin: "0 20 0 0",
@@ -113,17 +113,17 @@ Ext.define("NOC.pm.metricaction.Application", {
                 items: [
                   {
                     boxLabel: "Inc",
-                    name: itemId + "_window_config_direction",
+                    name: itemId + ".window_config.direction",
                     inputValue: "inc",
                   },
                   {
                     boxLabel: "Desc",
-                    name: itemId + "_window_config_direction",
+                    name: itemId + ".window_config.direction",
                     inputValue: "dec",
                   },
                   {
                     boxLabel: "Abs",
-                    name: itemId + "_window_config_direction",
+                    name: itemId + ".window_config.direction",
                     inputValue: "abs",
                     checked: true,
                   },
@@ -131,8 +131,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_window_config_factor",
-                name: itemId + "_window_config_factor",
+                itemId: itemId + "-window_config-factor",
+                name: itemId + ".window_config.factor",
                 minValue: -100,
                 maxValue: 100,
                 emptyText: 2.0,
@@ -144,8 +144,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_window_config_percentile",
-                name: itemId + "_window_config_percentile",
+                itemId: itemId + "-window_config-percentile",
+                name: itemId + ".window_config.percentile",
                 labelAlign: "top",
                 minValue: 0,
                 maxValue: 100,
@@ -155,8 +155,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_window_config_step_num",
-                name: itemId + "_window_config_step_num",
+                itemId: itemId + "-window_config-step_num",
+                name: itemId + ".window_config.step_num",
                 minValue: 1,
                 emptyText: 1,
                 labelAlign: "top",
@@ -188,11 +188,11 @@ Ext.define("NOC.pm.metricaction.Application", {
               scope: me,
               change: Ext.pass(me._setFieldsDisabled, {
                 fields: [
-                  {value: "softplus", name: "activation_config_factor"},
-                  {value: "indicator", name: "activation_config_true_level"},
-                  {value: "indicator", name: "activation_config_false_level"},
-                  {value: "logistic", name: "activation_config_lying"},
-                  {value: "logistic", name: "activation_config_stepness"},
+                  {value: "softplus", name: "activation_config.factor"},
+                  {value: "indicator", name: "activation_config.true_level"},
+                  {value: "indicator", name: "activation_config.false_level"},
+                  {value: "logistic", name: "activation_config.lying"},
+                  {value: "logistic", name: "activation_config.stepness"},
                 ],
               }),
             },
@@ -205,8 +205,8 @@ Ext.define("NOC.pm.metricaction.Application", {
             items: [
               {
                 xtype: "numberfield",
-                itemId: itemId + "_activation_config_factor",
-                name: itemId + "_activation_config_factor",
+                itemId: itemId + "-activation_config-factor",
+                name: itemId + ".activation_config.factor",
                 labelAlign: "top",
                 emptyText: 1,
                 fieldLabel: __("Factor"),
@@ -214,8 +214,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_activation_config_true_level",
-                name: itemId + "_activation_config_true_level",
+                itemId: itemId + "-activation_config-true_level",
+                name: itemId + ".activation_config.true_level",
                 emptyText: 1.0,
                 labelAlign: "top",
                 fieldLabel: __("True Level"),
@@ -223,8 +223,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_activation_config_false_level",
-                name: itemId + "_activation_config_false_level",
+                itemId: itemId + "-activation_config-false_level",
+                name: itemId + ".activation_config.false_level",
                 emptyText: 1.0,
                 labelAlign: "top",
                 fieldLabel: __("False Level"),
@@ -232,8 +232,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_activation_config_lying",
-                name: itemId + "_activation_config_lying",
+                itemId: itemId + "-activation_config-lying",
+                name: itemId + ".activation_config.lying",
                 minValue: 0,
                 maxValue: 100,
                 emptyText: 1.0,
@@ -245,8 +245,8 @@ Ext.define("NOC.pm.metricaction.Application", {
               },
               {
                 xtype: "numberfield",
-                itemId: itemId + "_activation_config_stepness",
-                name: itemId + "_activation_config_stepness",
+                itemId: itemId + "-activation_config-stepness",
+                name: itemId + ".activation_config.stepness",
                 emptyText: 1.0,
                 forcePrecision: true,
                 decimalPrecision: 2,
@@ -737,7 +737,7 @@ Ext.define("NOC.pm.metricaction.Application", {
 
     Ext.each(map.fields, function(item){
       var disable = false,
-        query = "[itemId=" + itemId + "_" + item.name + "]",
+        query = "[itemId=" + itemId + "-" + item.name + "]",
         element = field.up().down(query);
       if(value !== item.value){
         disable = true;
