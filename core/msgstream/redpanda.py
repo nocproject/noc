@@ -93,8 +93,8 @@ class RedPandaClient(object):
         if self.admin_client:
             await self.admin_client.close()
             self.admin_client = None
-        # if self.client:
-        #    await self.client.close()
+        if self.client:
+            await self.client.close()
 
     @classmethod
     def get_replication_factor(cls, meta) -> int:
