@@ -29,7 +29,6 @@ discovery_funcs = {"on_system_start", "on_config_change", "schedule_discovery"}
 
 
 class Migration(BaseMigration):
-
     def migrate(self):
         bulk = []
         for ec in self.mongo_db["noc.eventclasses"].find():
@@ -60,6 +59,28 @@ class Migration(BaseMigration):
                         "run_discovery": discovery,
                     }
                 bulk += [InsertOne(r)]
+            if ec["disposition"]:
+                continue
+            r = {
+                "name": f"{ec['name']} - {d['name']}",
+                "uuid": uuid.uuid4(),
+                "is_active": True,
+                "handlers": [],
+                "conditions": [{"event_class_re": ec["name"]}],
+            }
+            interaction, discovery = None, False
+            for h in ec.get("handlers") or []:
+                _, function = h.rsplit(".", 1)
+                if function in interaction_map:
+                    interaction = interaction_map[function]
+                if function in discovery_funcs:
+                    discovery = True
+            if interaction is not None or discovery:
+                r["object_actions"] = {
+                    "interaction_audit": interaction,
+                    "run_discovery": discovery,
+                }
+            bulk += [InsertOne(r)]
         coll = self.mongo_db["dispositionrules"]
         if bulk:
             coll.bulk_write(bulk)

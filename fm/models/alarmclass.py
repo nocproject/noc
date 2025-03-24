@@ -118,6 +118,8 @@ class AlarmClassVar(EmbeddedDocument):
         ("fm.AlarmRule", "groups.alarm_class"),
         ("fm.AlarmRule", "match.alarm_class"),
         ("fm.AlarmRule", "actions.alarm_class"),
+        ("fm.DispositionRule", "alarm_disposition"),
+        ("fm.DispositionRule", "root_cause.alarm_class"),
     ]
 )
 class AlarmClass(Document):
