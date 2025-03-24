@@ -33,15 +33,19 @@ discovery_funcs = {"on_system_start", "on_config_change", "schedule_discovery"}
 class Migration(BaseMigration):
     def migrate(self):
         bulk = []
-        names, count = set(), 1
+        names = set()
+        ac_map = {}
+        for ac in self.mongo_db["noc.alarmclasses"].find({}, {"name": 1}):
+            ac_map[ac["_id"]] = ac["name"]
         for ec in self.mongo_db["noc.eventclasses"].find():
             if not ec.get("disposition") and not ec.get("handlers"):
                 continue
             for d in ec["disposition"] or []:
-                name = f"{ec['name']} - {d['name']}"
-                if name in names:
-                    name = f"{name} - {count}"
-                    count += 1
+                ac = d.get("alarm_class")
+                if ac:
+                    name = f"{ec['name']} ({ac_map.get(ac)},{d['name']})"
+                else:
+                    continue
                 r = {
                     "name": name,
                     "uuid": uuid.uuid4(),
@@ -71,7 +75,7 @@ class Migration(BaseMigration):
             if ec["disposition"]:
                 continue
             r = {
-                "name": f"{ec['name']} - {d['name']}",
+                "name": f"{ec['name']} (handlers)",
                 "uuid": uuid.uuid4(),
                 "is_active": True,
                 "handlers": [],

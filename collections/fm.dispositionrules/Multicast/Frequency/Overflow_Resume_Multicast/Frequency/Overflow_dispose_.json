@@ -1,0 +1,17 @@
+{
+    "name": "Multicast | Frequency | Overflow Resume (Multicast | Frequency | Overflow,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "20d3714f-1138-43e4-804d-7854804076a9",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Multicast | Frequency | Overflow",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Multicast | Frequency | Overflow Resume"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Security | Attack | Ping Of Death (Security | Attack | Ping Of Death,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "435494a2-710a-43e5-bde0-9f9ee16e42ea",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Security | Attack | Ping Of Death",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Attack | Ping Of Death"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

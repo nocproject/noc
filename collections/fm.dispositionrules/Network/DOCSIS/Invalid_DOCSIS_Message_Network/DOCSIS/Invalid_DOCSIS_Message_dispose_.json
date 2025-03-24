@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | Invalid DOCSIS Message (Network | DOCSIS | Invalid DOCSIS Message,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ac6fe5b7-5c58-46f7-89e0-cee16e1e9d45",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | DOCSIS | Invalid DOCSIS Message",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | Invalid DOCSIS Message"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

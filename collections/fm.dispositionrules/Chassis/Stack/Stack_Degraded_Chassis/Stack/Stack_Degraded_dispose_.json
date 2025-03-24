@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Stack | Stack Degraded (Chassis | Stack | Stack Degraded,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "6ba1e242-c7e7-4f20-9d05-e55c5e1ad5e0",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Stack | Stack Degraded",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Stack | Stack Degraded"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

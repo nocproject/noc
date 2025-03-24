@@ -1,0 +1,17 @@
+{
+    "name": "OTN | OTU | SM | Signal Fail Clear (OTN | OTU | SM | Signal Fail,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "3e22700a-6614-4447-8196-33fcb2c0d831",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "OTN | OTU | SM | Signal Fail",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "OTN | OTU | SM | Signal Fail Clear"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

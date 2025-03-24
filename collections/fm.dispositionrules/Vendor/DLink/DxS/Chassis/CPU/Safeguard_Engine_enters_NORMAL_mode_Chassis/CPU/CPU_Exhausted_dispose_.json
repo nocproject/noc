@@ -1,0 +1,19 @@
+{
+    "name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode (Chassis | CPU | CPU Exhausted,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "57795d69-655d-4ef2-9c23-00e3c9adb535",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | CPU | CPU Exhausted",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate (Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "af9e35ff-f9b8-4296-9550-8b703aaf8594",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

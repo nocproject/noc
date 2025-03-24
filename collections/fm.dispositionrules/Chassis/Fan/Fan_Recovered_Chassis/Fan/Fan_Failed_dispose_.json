@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Fan | Fan Recovered (Chassis | Fan | Fan Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ee04762f-dd03-4abd-929a-68dc8e515848",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Fan | Fan Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Fan | Fan Recovered"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

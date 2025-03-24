@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Hardware | Module | Module Offline (Chassis | Hardware | Module | Module Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "0a5919d7-fed3-4b2a-a8ac-883cb7e26e83",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Hardware | Module | Module Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Hardware | Module | Module Offline"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

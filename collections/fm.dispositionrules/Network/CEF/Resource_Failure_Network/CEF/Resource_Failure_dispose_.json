@@ -1,0 +1,17 @@
+{
+    "name": "Network | CEF | Resource Failure (Network | CEF | Resource Failure,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "d0e42f61-ba2f-4cdb-aa7c-7dcbc05e3ed6",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | CEF | Resource Failure",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | CEF | Resource Failure"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

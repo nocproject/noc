@@ -1,0 +1,17 @@
+{
+    "name": "Network | IMPB | Unauthenticated IP-MAC (Network | IMPB | Unauthenticated IP-MAC,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5c888c5d-6775-420f-b970-fc00ad643af7",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | IMPB | Unauthenticated IP-MAC",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | IMPB | Unauthenticated IP-MAC"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

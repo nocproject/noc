@@ -1,0 +1,17 @@
+{
+    "name": "Security | Attack | Attack (Security | Attack | Attack,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "6ba4d38c-80c0-4aa6-a6af-88eaeec170aa",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Security | Attack | Attack",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Attack | Attack"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

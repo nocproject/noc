@@ -1,0 +1,17 @@
+{
+    "name": "Network | MAC | MAC Flap (Network | MAC | MAC Flap,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "aff8972f-91be-4c93-9092-e86df7e65d3e",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | MAC | MAC Flap",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MAC | MAC Flap"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

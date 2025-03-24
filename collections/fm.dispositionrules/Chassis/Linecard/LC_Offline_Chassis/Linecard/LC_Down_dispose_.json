@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Linecard | LC Offline (Chassis | Linecard | LC Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "678a725b-aa94-42a9-aa3c-7408c1802158",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Linecard | LC Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Linecard | LC Offline"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

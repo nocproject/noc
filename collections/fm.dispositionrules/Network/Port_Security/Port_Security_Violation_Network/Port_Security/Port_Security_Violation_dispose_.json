@@ -1,0 +1,19 @@
+{
+    "name": "Network | Port Security | Port Security Violation (Network | Port Security | Port Security Violation,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5148ee1b-2a41-4472-afa2-caf21ae508dd",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | Port Security | Port Security Violation",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Network | Port Security | Port Security Violation"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

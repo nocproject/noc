@@ -1,0 +1,17 @@
+{
+    "name": "Environment | Humidity Out of Range (Environment | Humidity Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ff9205c7-c7b0-4207-a31a-f5b03b6057b8",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Environment | Humidity Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | Humidity Out of Range"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

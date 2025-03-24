@@ -1,0 +1,19 @@
+{
+    "name": "Chassis | TCAM | TCAM Entry Capacity Exceeded (Chassis | TCAM | TCAM Entry Capacity Exceeded,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "2cb4d30d-9fb2-4962-86d2-c2e47cdc5746",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Chassis | TCAM | TCAM Entry Capacity Exceeded"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

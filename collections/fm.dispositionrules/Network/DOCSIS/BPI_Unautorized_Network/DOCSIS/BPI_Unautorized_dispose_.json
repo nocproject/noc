@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | BPI Unautorized (Network | DOCSIS | BPI Unautorized,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ba276de0-0908-4e50-afa8-1c7a45d4f742",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | DOCSIS | BPI Unautorized",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | BPI Unautorized"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Network | MPLS | LDP Neighbor Up (Network | MPLS | LDP Neighbor Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "2ed5190e-b44d-46e9-9f89-a77831a0608c",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | MPLS | LDP Neighbor Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MPLS | LDP Neighbor Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

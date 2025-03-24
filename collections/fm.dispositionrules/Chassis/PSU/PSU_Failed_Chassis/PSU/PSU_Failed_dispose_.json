@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | PSU | PSU Failed (Chassis | PSU | PSU Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "672ab0e1-aa84-4b0a-9b33-4bbc641392fd",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | PSU | PSU Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | PSU | PSU Failed"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

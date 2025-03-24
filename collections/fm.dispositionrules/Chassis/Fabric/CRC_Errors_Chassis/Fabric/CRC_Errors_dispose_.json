@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Fabric | CRC Errors (Chassis | Fabric | CRC Errors,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "1e8b4910-a06a-4192-a338-b20b5d0df7e8",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Fabric | CRC Errors",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Fabric | CRC Errors"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

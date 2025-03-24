@@ -1,0 +1,19 @@
+{
+    "name": "Environment | DC Voltage Returned to Normal Range (Environment | DC Voltage Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5173f1ce-5038-4992-a37d-3c4d93c21112",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Environment | DC Voltage Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Environment | DC Voltage Returned to Normal Range"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

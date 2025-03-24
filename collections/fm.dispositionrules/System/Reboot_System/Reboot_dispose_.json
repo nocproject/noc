@@ -1,0 +1,21 @@
+{
+    "name": "System | Reboot (System | Reboot,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "c57cfbbd-b97c-4f37-b29c-9ad540faf346",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "System | Reboot",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "System | Reboot"
+    }],
+    "default_action": "R",
+    "match": [],
+    "object_actions": {
+        "interaction_audit": 4,
+        "run_discovery": true
+    },
+    "stop_processing": false
+}

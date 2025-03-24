@@ -283,8 +283,15 @@ class DispositionRule(Document):
         if self.vars_conditions:
             r["vars_conditions"] = [m.json_data for m in self.vars_conditions]
         if self.replace_rule:
-            r["replace_rule__name"] = self.replace_rule.name
-            r["replace_rule_policy"] = self.replace_rule_policy
+            r |= {
+                "replace_rule__name": self.replace_rule.name,
+                "replace_rule_policy": self.replace_rule_policy,
+            }
+        if self.object_actions:
+            r["object_actions"] = {
+                "interaction_audit": self.object_actions.interaction_audit.value,
+                "run_discovery": self.object_actions.run_discovery,
+            }
         if self.combo_condition:
             r |= {
                 "combo_condition": self.combo_condition,
@@ -292,7 +299,10 @@ class DispositionRule(Document):
                 "combo_count": self.combo_count,
             }
         if self.alarm_disposition:
-            r["disposition__name"] = self.alarm_disposition.name
+            r |= {
+                "disposition__name": self.alarm_disposition.name,
+                "default_action": self.default_action,
+            }
         if self.handlers:
             r["handlers"] = [h.json_data for h in self.handlers]
         return r

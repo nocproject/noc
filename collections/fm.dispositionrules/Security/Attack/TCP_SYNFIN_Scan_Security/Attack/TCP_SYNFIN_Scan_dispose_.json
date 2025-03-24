@@ -1,0 +1,17 @@
+{
+    "name": "Security | Attack | TCP SYNFIN Scan (Security | Attack | TCP SYNFIN Scan,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "c42baa41-93f4-40c2-b6d0-8689aa63c317",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Security | Attack | TCP SYNFIN Scan",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Attack | TCP SYNFIN Scan"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

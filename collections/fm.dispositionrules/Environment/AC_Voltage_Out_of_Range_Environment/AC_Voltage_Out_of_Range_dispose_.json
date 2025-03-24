@@ -1,0 +1,17 @@
+{
+    "name": "Environment | AC Voltage Out of Range (Environment | AC Voltage Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "d36caec3-57a8-4d9d-b3b2-9eea8390fdd3",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Environment | AC Voltage Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | AC Voltage Out of Range"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

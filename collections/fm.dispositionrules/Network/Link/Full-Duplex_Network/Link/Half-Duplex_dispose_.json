@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Full-Duplex (Network | Link | Half-Duplex,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "0e479f79-a726-4527-9e3b-b0f7bc724f22",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | Link | Half-Duplex",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Full-Duplex"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

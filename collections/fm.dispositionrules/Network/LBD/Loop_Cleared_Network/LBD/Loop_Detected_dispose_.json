@@ -1,0 +1,17 @@
+{
+    "name": "Network | LBD | Loop Cleared (Network | LBD | Loop Detected,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "89614dca-3306-4b89-947d-a904195bf400",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | LBD | Loop Detected",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | LBD | Loop Cleared"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | Max CPE Reached (Network | DOCSIS | Max CPE Reached,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "6ec748a4-82f8-4edc-ae0f-90563c1911b4",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | DOCSIS | Max CPE Reached",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | Max CPE Reached"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

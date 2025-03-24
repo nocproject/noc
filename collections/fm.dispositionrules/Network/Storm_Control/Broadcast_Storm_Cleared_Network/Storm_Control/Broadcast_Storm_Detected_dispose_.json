@@ -1,0 +1,19 @@
+{
+    "name": "Network | Storm Control | Broadcast Storm Cleared (Network | Storm Control | Broadcast Storm Detected,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "1615953f-84ef-4bcc-9082-aab7def73c8c",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | Storm Control | Broadcast Storm Detected",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Network | Storm Control | Broadcast Storm Cleared"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

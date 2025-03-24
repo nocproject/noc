@@ -1,0 +1,17 @@
+{
+    "name": "OTN | ODU | LOFLOM Clear (OTN | ODU | LOFLOM,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "23007d24-63fd-4f91-be08-2c1fcbf8e60a",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "OTN | ODU | LOFLOM",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "OTN | ODU | LOFLOM Clear"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

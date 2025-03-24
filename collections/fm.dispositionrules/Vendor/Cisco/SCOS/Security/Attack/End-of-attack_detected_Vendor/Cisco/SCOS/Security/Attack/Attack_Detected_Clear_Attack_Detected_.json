@@ -1,0 +1,19 @@
+{
+    "name": "Vendor | Cisco | SCOS | Security | Attack | End-of-attack detected (Vendor | Cisco | SCOS | Security | Attack | Attack Detected,Clear Attack Detected)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "7ec29f45-e72d-42de-bc89-e5a5440a24b6",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Vendor | Cisco | SCOS | Security | Attack | End-of-attack detected"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

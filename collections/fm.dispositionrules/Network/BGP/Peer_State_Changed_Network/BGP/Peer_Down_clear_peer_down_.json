@@ -1,0 +1,17 @@
+{
+    "name": "Network | BGP | Peer State Changed (Network | BGP | Peer Down,clear_peer_down)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "119fdb91-c8ca-4112-9953-653dbd62f9ce",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | BGP | Peer Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | BGP | Peer State Changed"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

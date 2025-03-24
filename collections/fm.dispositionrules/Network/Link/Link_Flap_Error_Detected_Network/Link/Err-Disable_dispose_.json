@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Link Flap Error Detected (Network | Link | Err-Disable,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "3e7b7f80-ddd8-452f-b2e5-2622e52b0faf",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | Link | Err-Disable",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Link Flap Error Detected"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

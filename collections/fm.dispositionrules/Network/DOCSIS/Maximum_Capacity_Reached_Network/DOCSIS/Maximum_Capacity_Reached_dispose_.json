@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | Maximum Capacity Reached (Network | DOCSIS | Maximum Capacity Reached,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "522f2cb2-a2e8-4e35-a70d-528c93729158",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | DOCSIS | Maximum Capacity Reached",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | Maximum Capacity Reached"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

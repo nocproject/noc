@@ -1,0 +1,19 @@
+{
+    "name": "Chassis | Hardware | Hardware Port Error Recover (Chassis | Hardware | Hardware Port Error,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ae3dd044-a237-4c4f-9a8d-99afc2b91b26",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Hardware | Hardware Port Error",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Chassis | Hardware | Hardware Port Error Recover"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

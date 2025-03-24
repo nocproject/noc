@@ -1,0 +1,17 @@
+{
+    "name": "Environment | UPS | Input Power OK (Environment | UPS | Input Power Low,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "aa84e6d2-b3d0-4b7d-ab57-7da3d529fcc5",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Environment | UPS | Input Power Low",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | UPS | Input Power OK"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

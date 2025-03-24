@@ -1,0 +1,17 @@
+{
+    "name": "Network | LBD | Vlan Loop Detected (Network | LBD | Vlan Loop Detected,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "9c16bb7f-d236-40b6-a45f-5c410fb04e3c",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | LBD | Vlan Loop Detected",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | LBD | Vlan Loop Detected"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

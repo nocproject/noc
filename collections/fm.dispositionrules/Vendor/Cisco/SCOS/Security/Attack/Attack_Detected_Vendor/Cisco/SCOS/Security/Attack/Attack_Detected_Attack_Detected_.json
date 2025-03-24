@@ -1,0 +1,19 @@
+{
+    "name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected (Vendor | Cisco | SCOS | Security | Attack | Attack Detected,Attack Detected)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "bcde3347-4337-454b-9d78-47e8837c1819",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

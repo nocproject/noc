@@ -1,0 +1,17 @@
+{
+    "name": "Network | STP | STP Loop Detected (Network | STP | STP Loop Detected,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "e8984f04-2393-4164-975c-1e3b09d9d736",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | STP | STP Loop Detected",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | STP | STP Loop Detected"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

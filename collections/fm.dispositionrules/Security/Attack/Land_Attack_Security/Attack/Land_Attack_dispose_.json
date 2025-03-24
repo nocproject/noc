@@ -1,0 +1,17 @@
+{
+    "name": "Security | Attack | Land Attack (Security | Attack | Land Attack,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "81474ada-4686-4520-a4d2-df69579d5627",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Security | Attack | Land Attack",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Attack | Land Attack"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

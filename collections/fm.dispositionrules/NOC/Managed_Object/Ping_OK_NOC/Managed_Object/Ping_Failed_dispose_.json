@@ -1,0 +1,17 @@
+{
+    "name": "NOC | Managed Object | Ping OK (NOC | Managed Object | Ping Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "cd908e53-5f21-4ecc-a60e-6d42a10e7851",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "NOC | Managed Object | Ping Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "NOC | Managed Object | Ping OK"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

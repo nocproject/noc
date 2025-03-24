@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | RAM | RAM Failed (Chassis | RAM | RAM Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "1e1e9aef-189f-48c2-9bf6-cebb6d897709",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | RAM | RAM Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | RAM | RAM Failed"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Network | MPLS | Path Down (Network | MPLS | Path Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "a3a5c9fa-ffc2-4947-b222-a1371e51b59d",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | MPLS | Path Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MPLS | Path Down"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

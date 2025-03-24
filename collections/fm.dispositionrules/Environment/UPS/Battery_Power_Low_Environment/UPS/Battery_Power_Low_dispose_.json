@@ -1,0 +1,17 @@
+{
+    "name": "Environment | UPS | Battery Power Low (Environment | UPS | Battery Power Low,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5cea5606-6e86-4753-bb26-c499d07aeb27",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Environment | UPS | Battery Power Low",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | UPS | Battery Power Low"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

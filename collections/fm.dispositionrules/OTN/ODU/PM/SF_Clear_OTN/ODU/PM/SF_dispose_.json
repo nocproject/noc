@@ -1,0 +1,17 @@
+{
+    "name": "OTN | ODU | PM | SF Clear (OTN | ODU | PM | SF,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "3a82241a-51e3-4af9-826f-e6ae5af31475",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "OTN | ODU | PM | SF",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "OTN | ODU | PM | SF Clear"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

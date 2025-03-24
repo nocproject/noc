@@ -1,0 +1,17 @@
+{
+    "name": "NOC | Managed Object | Ping OK (Chassis | PSU | Power Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "bf41abae-2e57-4864-8cc7-08f9f6cd841b",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | PSU | Power Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "NOC | Managed Object | Ping OK"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

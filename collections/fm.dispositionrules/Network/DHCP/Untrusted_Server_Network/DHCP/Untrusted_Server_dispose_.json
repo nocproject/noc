@@ -1,0 +1,17 @@
+{
+    "name": "Network | DHCP | Untrusted Server (Network | DHCP | Untrusted Server,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "1a540e95-abf6-4799-9dc1-0cc4365d1f64",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | DHCP | Untrusted Server",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DHCP | Untrusted Server"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

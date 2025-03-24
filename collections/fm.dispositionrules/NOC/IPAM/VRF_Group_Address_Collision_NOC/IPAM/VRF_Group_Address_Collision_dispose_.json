@@ -1,0 +1,17 @@
+{
+    "name": "NOC | IPAM | VRF Group Address Collision (NOC | IPAM | VRF Group Address Collision,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "11b7c434-fe2b-48a5-981f-db8220d48208",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "NOC | IPAM | VRF Group Address Collision",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "NOC | IPAM | VRF Group Address Collision"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

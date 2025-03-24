@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Clock | Clock Recovered (Chassis | Clock | Clock Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "a89633de-b25d-4fbb-81c4-625b4feb76dd",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Clock | Clock Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Clock | Clock Recovered"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

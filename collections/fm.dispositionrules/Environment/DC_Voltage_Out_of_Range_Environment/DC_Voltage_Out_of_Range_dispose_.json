@@ -1,0 +1,17 @@
+{
+    "name": "Environment | DC Voltage Out of Range (Environment | DC Voltage Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "fe0b3dc9-164d-4db4-9ab0-9ef365e2e839",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Environment | DC Voltage Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | DC Voltage Out of Range"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

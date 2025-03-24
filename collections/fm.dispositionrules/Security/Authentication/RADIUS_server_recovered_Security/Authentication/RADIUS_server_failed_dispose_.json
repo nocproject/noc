@@ -1,0 +1,19 @@
+{
+    "name": "Security | Authentication | RADIUS server recovered (Security | Authentication | RADIUS server failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "d5cfe240-95b2-457e-b661-cca5ef41fef5",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Security | Authentication | RADIUS server failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Security | Authentication | RADIUS server recovered"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Security | Abduct | Cable Abduct (Security | Abduct | Cable Abduct,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "02392e42-b316-40fc-a4ab-65a31d4bf8cd",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Security | Abduct | Cable Abduct",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Abduct | Cable Abduct"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

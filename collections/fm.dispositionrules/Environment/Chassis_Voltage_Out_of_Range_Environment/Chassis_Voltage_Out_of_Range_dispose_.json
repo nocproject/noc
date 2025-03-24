@@ -1,0 +1,17 @@
+{
+    "name": "Environment | Chassis Voltage Out of Range (Environment | Chassis Voltage Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "a4e0ed0c-feb6-4beb-9dc3-9829b4d9b8c0",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Environment | Chassis Voltage Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | Chassis Voltage Out of Range"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

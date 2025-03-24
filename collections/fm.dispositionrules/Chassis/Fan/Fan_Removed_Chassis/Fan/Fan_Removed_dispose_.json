@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Fan | Fan Removed (Chassis | Fan | Fan Removed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "af7e481c-f0fb-4a16-8b7e-0664b4a1ff2c",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Fan | Fan Removed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Fan | Fan Removed"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

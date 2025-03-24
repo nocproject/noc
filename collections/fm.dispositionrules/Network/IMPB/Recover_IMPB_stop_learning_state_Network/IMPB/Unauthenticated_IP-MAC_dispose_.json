@@ -1,0 +1,19 @@
+{
+    "name": "Network | IMPB | Recover IMPB stop learning state (Network | IMPB | Unauthenticated IP-MAC,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "b9916579-75fd-4a22-87c7-1ff38179e36a",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | IMPB | Unauthenticated IP-MAC",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Network | IMPB | Recover IMPB stop learning state"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

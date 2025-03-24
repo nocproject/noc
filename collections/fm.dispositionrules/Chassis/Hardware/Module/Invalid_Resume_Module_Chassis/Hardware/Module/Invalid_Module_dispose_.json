@@ -1,0 +1,19 @@
+{
+    "name": "Chassis | Hardware | Module | Invalid Resume Module (Chassis | Hardware | Module | Invalid Module,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "8c0b6d42-bdf4-4ba7-87ff-ae71899d9b06",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Chassis | Hardware | Module | Invalid Module",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Chassis | Hardware | Module | Invalid Resume Module"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

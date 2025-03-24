@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Link Up (Network | STP | Root Guard Violation,Clear Root Guard Violation)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "525463d7-0fb9-4208-ab85-2f81aa44fcfd",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | STP | Root Guard Violation",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Link Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

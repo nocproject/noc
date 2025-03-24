@@ -1,0 +1,17 @@
+{
+    "name": "Network | STP | Root Guard Recovery (Network | STP | Root Guard Violation,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "b3700850-f053-4ce5-9ec9-5731988f246b",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | STP | Root Guard Violation",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | STP | Root Guard Recovery"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

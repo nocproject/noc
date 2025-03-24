@@ -1,0 +1,17 @@
+{
+    "name": "Network | BGP | Established (Network | BGP | Prefix Limit Exceeded,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "4e3be317-40d0-4fc7-a596-be6c53c00dfa",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | BGP | Prefix Limit Exceeded",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | BGP | Established"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

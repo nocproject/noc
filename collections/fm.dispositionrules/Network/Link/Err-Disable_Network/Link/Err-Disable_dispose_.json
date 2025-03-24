@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Err-Disable (Network | Link | Err-Disable,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "8e65fac7-145c-40b2-bdbd-b607c69085db",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Network | Link | Err-Disable",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Err-Disable"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

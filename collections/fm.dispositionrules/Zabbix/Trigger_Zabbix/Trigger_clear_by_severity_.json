@@ -1,0 +1,17 @@
+{
+    "name": "Zabbix | Trigger (Zabbix | Trigger,clear_by_severity)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "d61eab38-2d9c-45f0-8104-841b36dfe6c5",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Zabbix | Trigger",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Zabbix | Trigger"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

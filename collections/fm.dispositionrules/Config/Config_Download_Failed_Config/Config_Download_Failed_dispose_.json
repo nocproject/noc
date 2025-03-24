@@ -1,0 +1,17 @@
+{
+    "name": "Config | Config Download Failed (Config | Config Download Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "01444a66-e7c1-414a-938a-505b26eee638",
+    "description": null,
+    "preference": 1000,
+    "disposition__name": "Config | Config Download Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Config | Config Download Failed"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}
