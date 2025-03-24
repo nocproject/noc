@@ -3093,16 +3093,16 @@ class ManagedObject(NOCModel):
     def apply_credential(self, credential: Credentials, dirty: bool = False):
         """Apply configured credential"""
         # Try getting auth profile
-        changed = False
+        r = {}
         for f, value in credential.iter_credential():
             if getattr(self, f) != value:
                 setattr(self, f, value)
-                changed |= True
+                r[f] = value
         if credential.snmp_security_level != self.snmp_security_level:
             self.snmp_security_level = credential.snmp_security_level
-            changed |= True
+            r[self.snmp_security_level] = credential.snmp_security_level
         # Changed SNMP level
-        return changed
+        return r
 
     def update_credentials(
         self,
@@ -3126,33 +3126,40 @@ class ManagedObject(NOCModel):
             return False
         if is_suggests and self.auth_profile and not self.auth_profile.enable_suggest:
             return False
-        changed = False
+        changed = {}
         cred = self.credentials.update_credential(credential)
         # Change scheme
         if isinstance(credential, CLICredential) and self.scheme != credential.protocol:
             self.scheme = credential.protocol
-            changed |= True
+            changed["scheme"] = credential.protocol.value
         # Change AccessPreference
-        if cred != credential:
-            return changed
+        if cred == credential:
+            return bool(changed)
         ap = AuthProfile.get_by_credential(cred)
         if ap:
             self.auth_profile = ap
-            self.reset_credential()
-            changed |= True
+            changed["auth_profile"] = ap
+            changed |= self.reset_credential()
             # Reset Credential
         else:
             self.auth_profile = None
+            changed["auth_profile"] = None
             changed |= self.apply_credential(cred)
         # getting auth_profile
-        # ManagedObject.objects.filter(id=self.object.id).update(**changed)
-        # self.object._reset_caches(self.object.id, credential=True)
-        # self.object.update_init()
+        if changed:
+            logger.info("[%s] Changed credential: %s", self.name, changed)
+            ManagedObject.objects.filter(id=self.id).update(
+                **changed,
+            )
+            self._reset_caches(self.id, credential=True)
+            self.update_init()
 
-    def reset_credential(self, snmp_only=False, cli_only=False):
+    def reset_credential(self, snmp_only=False, cli_only=False) -> Dict[str, Any]:
         """Reset credential"""
+        r = {}
         for f, _ in self.credentials.iter_credential(snmp_only=snmp_only, cli_only=cli_only):
             setattr(self, f, None)
+            r[f] = None
 
     def set_profile(self, profile: str) -> bool:
         """Set SA Profile"""
