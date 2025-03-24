@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.fm.models.dispositionrule import DispositionRule, ObjectActionItem
+from noc.fm.models.dispositionrule import DispositionRule
 from noc.core.translation import ugettext as _
 
 
