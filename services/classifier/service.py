@@ -34,7 +34,6 @@ from noc.core.error import NOCError
 from noc.core.version import version
 from noc.core.debug import error_report
 from noc.core.escape import fm_unescape
-from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.msgstream.message import Message
@@ -46,7 +45,6 @@ from noc.main.models.pool import Pool
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
-from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
@@ -57,6 +55,7 @@ from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
 from noc.services.classifier.datastream import EventRuleDataStreamClient
+from noc.services.classifier.actionset import ActionSet, EventAction
 
 
 class EventMetrics(enum.Enum):
@@ -116,6 +115,7 @@ class ClassifierService(FastAPIService):
         self.version: str = version.version
         self.ruleset: RuleSet = RuleSet()
         self.pattern_set: PatternSet = PatternSet()
+        self.actionset: ActionSet = ActionSet()
         self.triggers: Dict[str, List[Trigger]] = defaultdict(
             list
         )  # event_class_id -> [trigger1, ..., triggerN]
@@ -172,9 +172,8 @@ class ClassifierService(FastAPIService):
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load(skip_load_rules=config.datastream.enable_cfgeventrules)
         self.pattern_set.load()
-        self.load_triggers()
+        self.actionset.load()
         self.load_link_action()
-        self.load_handlers()
         # Heat up MIB cache
         MIBData.preload()
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -208,45 +207,6 @@ class ClassifierService(FastAPIService):
                 self.logger.info("Failed to get Event Classification Rules: %s", e)
                 await asyncio.sleep(1)
 
-    def load_triggers(self):
-        self.logger.info("Loading triggers")
-        self.triggers = {}
-        n = 0
-        cn = 0
-        self.alter_handlers = []
-        ec = [(c.name, c.id) for c in EventClass.objects.all()]
-        for t in EventTrigger.objects.all():
-            self.logger.debug("Trigger '%s' for classes:", t.name)
-            for c_name, c_id in ec:
-                if re.search(t.event_class_re, c_name, re.IGNORECASE):
-                    if (
-                        t.handler
-                        and t.condition == "True"
-                        and t.resource_group is None
-                        and t.time_pattern is None
-                        and t.template is None
-                        and t.notification_group is None
-                    ):
-                        # Alter handlers
-                        self.alter_handlers += [(c_id, t.is_enabled, t.handler)]
-                    elif t.is_enabled:
-                        # Register trigger
-                        h = t.handler
-                        if h:
-                            try:
-                                h = get_handler(h)
-                            except ImportError:
-                                self.logger.error("Failed to load handler '%s'. Ignoring", h)
-                                h = None
-                        if c_id in self.triggers:
-                            self.triggers[c_id] += [Trigger(t, handler=h)]
-                        else:
-                            self.triggers[c_id] = [Trigger(t, handler=h)]
-                        cn += 1
-                        self.logger.debug("    %s", c_name)
-            n += 1
-        self.logger.info("%d triggers has been loaded to %d classes", n, cn)
-
     def load_link_action(self):
         self.default_link_action = None
         if config.classifier.default_interface_profile:
@@ -256,45 +216,6 @@ class ClassifierService(FastAPIService):
             if p:
                 self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events
-
-    def load_handlers(self):
-        self.logger.info("Loading handlers")
-        self.handlers = {}
-        # Process altered handlers
-        enabled = defaultdict(list)  # event class id -> [handlers]
-        disabled = defaultdict(list)  # event class id -> [handlers]
-        for ec_id, status, handler in self.alter_handlers:
-            if status:
-                if handler in disabled[ec_id]:
-                    disabled[ec_id].remove(handler)
-                if handler not in enabled[ec_id]:
-                    enabled[ec_id] += [handler]
-            else:
-                if handler not in disabled[ec_id]:
-                    disabled[ec_id] += [handler]
-                if handler in enabled[ec_id]:
-                    enabled[ec_id].remove(handler)
-        self.alter_handlers = []
-        # Load handlers
-        for ec in EventClass.objects.filter():
-            handlers = (ec.handlers or []) + enabled[ec.id]
-            if not handlers:
-                continue
-            self.logger.debug("    <%s>: %s", ec.name, ", ".join(handlers))
-            hl = []
-            for h in handlers:
-                if h in disabled[ec.id]:
-                    self.logger.debug("        disabling handler %s", h)
-                    continue
-                # Resolve handler
-                try:
-                    hh = get_handler(h)
-                    hl += [hh]
-                except ImportError:
-                    self.logger.error("Failed to load handler '%s'. Ignoring", h)
-            if hl:
-                self.handlers[ec.id] = hl
-        self.logger.info("Handlers are loaded")
 
     async def register_mx_message(
         self,
@@ -342,8 +263,8 @@ class ClassifierService(FastAPIService):
         await self.send_message(
             message_type=MessageType.EVENT,
             data=orjson.dumps(msg),
-            sharding_key=int(event.managed_object.id),
-            headers=event.managed_object.get_mx_message_headers(),
+            sharding_key=int(mo.id),
+            headers=mo.get_mx_message_headers(),
         )
 
     def register_log(
@@ -543,70 +464,6 @@ class ClassifierService(FastAPIService):
         # Delete suppressed event
         metrics[EventMetrics.CR_SUPPRESSED] += 1
         return True
-
-    def call_event_handlers(
-        self,
-        event: Event,
-        event_class: EventClass,
-        managed_object: Optional[ManagedObject] = None,
-    ) -> bool:
-        """
-        Call handlers associated with event class
-        :param event:
-        :param event_class: Event Class
-        :param managed_object: Managed Object event
-        :return:
-        """
-        if event_class.id not in self.handlers:
-            return False
-        event_id = event.id  # Temporary store id
-        for h in self.handlers[event_class.id]:
-            try:
-                h(event, managed_object)
-            except Exception:
-                error_report()
-            if event.id is None:
-                self.logger.info(
-                    "[%s|%s|%s] Dropped by handler",
-                    event.id,
-                    event.target.name,
-                    event.target.address,
-                )
-                event.id = event_id  # Restore event id
-                # event.delete()
-                metrics[EventMetrics.CR_DELETED] += 1
-                return False
-        return False
-
-    def call_event_triggers(self, event: Event, event_class: EventClass) -> bool:
-        """
-        Call triggers associated with event class
-        :param event:
-        :param event_class:
-        :return:
-        """
-        if event_class.id not in self.triggers:
-            return False
-        event_id = event.id
-        for t in self.triggers[event_class.id]:
-            try:
-                t.call(event)
-            except Exception:
-                error_report()
-            if event.to_drop:
-                # Delete event and stop processing
-                self.logger.info(
-                    "[%s|%s|%s] Dropped by trigger %s",
-                    event_id,
-                    event.target.name,
-                    event.target.address,
-                    t.name,
-                )
-                event.id = event_id  # Restore event id
-                event.delete()
-                metrics[EventMetrics.CR_DELETED] += 1
-                return True
-        return False
 
     def check_unclassified_syslog_flood(self, event: Event) -> bool:
         """Check if incoming messages is in unclassified codebook"""
@@ -858,14 +715,38 @@ class ClassifierService(FastAPIService):
         self.dedup_filter.register(event, event_class, duplicate_vars)
         if config.message.enable_event:
             await self.register_mx_message(event, event_class, resolved_vars, mo)
+        action = None
+        # action Log | Drop | Dispose
         if event_class:
             # Fill suppress filter
             self.suppress_filter.register(event, event_class)
-            # Call handlers
-            if self.call_event_handlers(event, event_class, mo):
-                return
-            # Call triggers
-            if self.call_event_triggers(event, event_class):
+            # Call Actions
+            for a in self.actionset.iter_actions(
+                event_class.id,
+                {
+                    "labels": frozenset(event.labels or []),
+                    "service_group": frozenset(mo.effective_service_groups or []),
+                    "remote_system": event.remote_system,
+                },
+            ):
+                r = a(event, mo)
+                if not r:
+                    continue
+                elif r == EventAction.DROP:
+                    action = r
+                    break
+                elif not action:
+                    action = r
+                elif action != EventAction.DISPOSITION:
+                    action = r
+            if action and action == EventAction.DROP:
+                self.logger.info(
+                    "[%s|%s|%s] Dropped by handler",
+                    event.id,
+                    event.target.name,
+                    event.target.address,
+                )
+                metrics[EventMetrics.CR_DELETED] += 1
                 return
         if event.type.severity == EventSeverity.IGNORED:
             # Severity ignored
@@ -874,7 +755,7 @@ class ClassifierService(FastAPIService):
             # Dispose only of detect ManagedObject
             return
         # Finally dispose event to further processing by correlator
-        if len(event_class.disposition) > 0:
+        if action and action == EventAction.DISPOSITION:
             await self.dispose_event(event, mo)
 
     async def report(self):

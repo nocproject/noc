@@ -307,3 +307,18 @@ class Event(BaseModel):
         for ll in labels or []:
             r["labels"].append({"wildcard": ll, "is_required": True})
         return r
+
+    def get_message_context(self, managed_object: Any) -> Dict[str, Any]:
+        """"""
+        r = {
+            "ts": self.timestamp,
+            "id": self.id,
+            "event_class": self.type.event_class,
+            "labels": self.labels,
+            "message": self.message,
+            "snmp_trap_oid": self.type.id,
+            "vars": self.vars,
+            "raw_vars": {d.name: d.value for d in self.data},
+            "managed_object": managed_object.get_message_context(),
+        }
+        return r
