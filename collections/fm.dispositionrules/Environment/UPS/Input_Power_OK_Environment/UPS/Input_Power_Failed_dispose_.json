@@ -4,7 +4,7 @@
     "uuid": "b13e8b49-33a0-42af-8a4d-2b3c9a62dd05",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | UPS | Input Power Failed",
+    "alarm_disposition__name": "Environment | UPS | Input Power Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "dfe7bb5a-400d-4ef2-a18d-f27dc30f54dd",
     "description": null,
     "preference": 1000,
-    "disposition__name": "OTN | ODU | AIS",
+    "alarm_disposition__name": "OTN | ODU | AIS",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

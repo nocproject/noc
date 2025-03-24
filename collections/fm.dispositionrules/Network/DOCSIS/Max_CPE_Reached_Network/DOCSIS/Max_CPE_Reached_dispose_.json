@@ -4,7 +4,7 @@
     "uuid": "6ec748a4-82f8-4edc-ae0f-90563c1911b4",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | DOCSIS | Max CPE Reached",
+    "alarm_disposition__name": "Network | DOCSIS | Max CPE Reached",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

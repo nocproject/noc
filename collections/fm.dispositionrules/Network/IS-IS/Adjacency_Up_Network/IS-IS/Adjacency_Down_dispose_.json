@@ -4,7 +4,7 @@
     "uuid": "6a75a044-246b-4f9d-9026-3212eafb105d",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | IS-IS | Adjacency Down",
+    "alarm_disposition__name": "Network | IS-IS | Adjacency Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

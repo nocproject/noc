@@ -4,7 +4,7 @@
     "uuid": "4ab490d4-9348-48e7-bb32-0fcebf059b1f",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | DOCSIS | Invalid CoS",
+    "alarm_disposition__name": "Network | DOCSIS | Invalid CoS",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

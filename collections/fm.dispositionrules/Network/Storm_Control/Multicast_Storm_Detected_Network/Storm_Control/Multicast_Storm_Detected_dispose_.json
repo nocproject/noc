@@ -4,7 +4,7 @@
     "uuid": "644be8fd-0b76-42b6-8e40-6aaa7a251c7c",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Storm Control | Multicast Storm Detected",
+    "alarm_disposition__name": "Network | Storm Control | Multicast Storm Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

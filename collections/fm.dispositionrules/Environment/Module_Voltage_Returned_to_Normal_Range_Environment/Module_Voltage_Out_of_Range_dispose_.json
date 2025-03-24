@@ -4,7 +4,7 @@
     "uuid": "bb90a3b1-a648-4e14-9895-2b4d9122f68a",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | Module Voltage Out of Range",
+    "alarm_disposition__name": "Environment | Module Voltage Out of Range",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

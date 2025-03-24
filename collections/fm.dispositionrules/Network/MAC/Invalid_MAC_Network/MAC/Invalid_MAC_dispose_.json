@@ -4,7 +4,7 @@
     "uuid": "07bab8d9-81cb-41c9-a91f-464e55de5ed2",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MAC | Invalid MAC",
+    "alarm_disposition__name": "Network | MAC | Invalid MAC",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

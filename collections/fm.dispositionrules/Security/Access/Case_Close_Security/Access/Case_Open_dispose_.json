@@ -4,7 +4,7 @@
     "uuid": "b3104d14-ebb9-49ac-bdb1-8bf4a50ec09e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Access | Case Open",
+    "alarm_disposition__name": "Security | Access | Case Open",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "bcde3347-4337-454b-9d78-47e8837c1819",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",
+    "alarm_disposition__name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

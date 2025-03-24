@@ -4,7 +4,7 @@
     "uuid": "5fcee7a4-f46e-4c31-aaee-ffe080ca81f6",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | UPS | Self-Test Failed",
+    "alarm_disposition__name": "Environment | UPS | Self-Test Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "746e5fd5-fca0-41e7-b6db-4ad00d1c1529",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | TCAM | TCAM Error",
+    "alarm_disposition__name": "Chassis | TCAM | TCAM Error",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

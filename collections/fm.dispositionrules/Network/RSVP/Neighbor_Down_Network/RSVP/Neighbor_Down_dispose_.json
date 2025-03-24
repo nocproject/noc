@@ -4,7 +4,7 @@
     "uuid": "2a3b54d0-1b15-4cb0-9c74-4fbb63ac8aba",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | RSVP | Neighbor Down",
+    "alarm_disposition__name": "Network | RSVP | Neighbor Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

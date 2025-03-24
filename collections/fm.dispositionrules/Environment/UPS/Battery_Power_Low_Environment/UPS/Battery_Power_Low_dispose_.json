@@ -4,7 +4,7 @@
     "uuid": "5cea5606-6e86-4753-bb26-c499d07aeb27",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | UPS | Battery Power Low",
+    "alarm_disposition__name": "Environment | UPS | Battery Power Low",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

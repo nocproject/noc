@@ -300,7 +300,7 @@ class DispositionRule(Document):
             }
         if self.alarm_disposition:
             r |= {
-                "disposition__name": self.alarm_disposition.name,
+                "alarm_disposition__name": self.alarm_disposition.name,
                 "default_action": self.default_action,
             }
         if self.handlers:

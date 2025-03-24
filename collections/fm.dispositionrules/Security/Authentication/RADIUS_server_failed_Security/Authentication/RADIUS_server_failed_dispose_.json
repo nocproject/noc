@@ -4,7 +4,7 @@
     "uuid": "38e9e8c6-240a-4a37-99e1-1576292e8bc5",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Authentication | RADIUS server failed",
+    "alarm_disposition__name": "Security | Authentication | RADIUS server failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

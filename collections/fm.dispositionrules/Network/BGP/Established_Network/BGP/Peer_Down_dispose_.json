@@ -4,7 +4,7 @@
     "uuid": "2322a3bc-9ab9-4de2-8a9e-02bafa6d0ec0",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | BGP | Peer Down",
+    "alarm_disposition__name": "Network | BGP | Peer Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

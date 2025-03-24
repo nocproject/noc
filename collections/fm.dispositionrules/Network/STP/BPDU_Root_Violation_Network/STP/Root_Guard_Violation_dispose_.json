@@ -4,7 +4,7 @@
     "uuid": "aab6fedc-abff-41c5-83c0-079ca702cffd",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | STP | Root Guard Violation",
+    "alarm_disposition__name": "Network | STP | Root Guard Violation",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

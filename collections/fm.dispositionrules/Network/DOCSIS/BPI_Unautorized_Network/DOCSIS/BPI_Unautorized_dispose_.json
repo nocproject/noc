@@ -4,7 +4,7 @@
     "uuid": "ba276de0-0908-4e50-afa8-1c7a45d4f742",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | DOCSIS | BPI Unautorized",
+    "alarm_disposition__name": "Network | DOCSIS | BPI Unautorized",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

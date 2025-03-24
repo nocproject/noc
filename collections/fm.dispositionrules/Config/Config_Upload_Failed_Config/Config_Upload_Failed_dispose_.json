@@ -4,7 +4,7 @@
     "uuid": "1fe4d4a3-4230-4f29-a106-b338e83d2e45",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Config | Config Upload Failed",
+    "alarm_disposition__name": "Config | Config Upload Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

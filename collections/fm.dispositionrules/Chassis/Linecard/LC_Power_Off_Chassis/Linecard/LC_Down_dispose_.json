@@ -4,7 +4,7 @@
     "uuid": "455438e1-6a27-4bcb-8791-2d42ede77c40",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Linecard | LC Down",
+    "alarm_disposition__name": "Chassis | Linecard | LC Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

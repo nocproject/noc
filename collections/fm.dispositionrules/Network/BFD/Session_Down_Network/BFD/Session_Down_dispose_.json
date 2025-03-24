@@ -4,7 +4,7 @@
     "uuid": "f660a36f-1e28-4851-a87f-00b33a94e6d7",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | BFD | Session Down",
+    "alarm_disposition__name": "Network | BFD | Session Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

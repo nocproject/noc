@@ -4,7 +4,7 @@
     "uuid": "01444a66-e7c1-414a-938a-505b26eee638",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Config | Config Download Failed",
+    "alarm_disposition__name": "Config | Config Download Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "172d2756-a04c-4057-947f-f53403a5609c",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Multicast | Frequency | Overflow",
+    "alarm_disposition__name": "Multicast | Frequency | Overflow",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

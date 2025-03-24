@@ -4,7 +4,7 @@
     "uuid": "7a485d16-fdb7-469c-810e-df64c4b8ae08",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | STP | BPDU Guard Violation",
+    "alarm_disposition__name": "Network | STP | BPDU Guard Violation",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

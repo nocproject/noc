@@ -4,7 +4,7 @@
     "uuid": "c0457ac6-9a1c-4543-928f-9a061dad051e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Hardware | Hardware Warning",
+    "alarm_disposition__name": "Chassis | Hardware | Hardware Warning",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

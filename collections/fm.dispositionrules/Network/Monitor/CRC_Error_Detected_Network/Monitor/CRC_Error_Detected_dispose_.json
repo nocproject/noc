@@ -4,7 +4,7 @@
     "uuid": "979d1260-4dd8-42a5-b714-219195e3c605",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Monitor | CRC Error Detected",
+    "alarm_disposition__name": "Network | Monitor | CRC Error Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

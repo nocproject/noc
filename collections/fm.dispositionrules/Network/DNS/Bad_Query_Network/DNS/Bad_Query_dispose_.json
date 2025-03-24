@@ -4,7 +4,7 @@
     "uuid": "0c5fcb75-43c7-4917-a771-1d4883cc068f",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | DNS | Bad Query",
+    "alarm_disposition__name": "Network | DNS | Bad Query",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

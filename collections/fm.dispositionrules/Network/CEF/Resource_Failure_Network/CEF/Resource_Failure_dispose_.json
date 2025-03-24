@@ -4,7 +4,7 @@
     "uuid": "d0e42f61-ba2f-4cdb-aa7c-7dcbc05e3ed6",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | CEF | Resource Failure",
+    "alarm_disposition__name": "Network | CEF | Resource Failure",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

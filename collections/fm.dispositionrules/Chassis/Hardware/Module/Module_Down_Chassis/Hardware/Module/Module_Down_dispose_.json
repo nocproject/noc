@@ -4,7 +4,7 @@
     "uuid": "64fb3d2f-dcfe-4bf8-bf14-02752655bc67",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Hardware | Module | Module Down",
+    "alarm_disposition__name": "Chassis | Hardware | Module | Module Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

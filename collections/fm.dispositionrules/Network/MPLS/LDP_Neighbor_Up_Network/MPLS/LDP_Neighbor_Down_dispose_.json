@@ -4,7 +4,7 @@
     "uuid": "2ed5190e-b44d-46e9-9f89-a77831a0608c",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MPLS | LDP Neighbor Down",
+    "alarm_disposition__name": "Network | MPLS | LDP Neighbor Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

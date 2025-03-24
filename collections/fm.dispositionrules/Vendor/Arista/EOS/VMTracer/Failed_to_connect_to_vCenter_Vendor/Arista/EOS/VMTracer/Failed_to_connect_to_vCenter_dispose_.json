@@ -4,7 +4,7 @@
     "uuid": "4e974ecf-5100-4053-bec3-e066ebd34039",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
+    "alarm_disposition__name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

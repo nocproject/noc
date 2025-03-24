@@ -4,7 +4,7 @@
     "uuid": "d5386b50-d638-4ff7-a1d4-cb7d7aa785f8",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Link | DOM | Alarm: Out of Threshold",
+    "alarm_disposition__name": "Network | Link | DOM | Alarm: Out of Threshold",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

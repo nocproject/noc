@@ -4,7 +4,7 @@
     "uuid": "57c1962b-1c9d-4f47-be82-974300ef4873",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Hardware | Hardware Error",
+    "alarm_disposition__name": "Chassis | Hardware | Hardware Error",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

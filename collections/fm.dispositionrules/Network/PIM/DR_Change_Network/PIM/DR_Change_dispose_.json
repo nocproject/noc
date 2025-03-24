@@ -4,7 +4,7 @@
     "uuid": "19fc463e-baf0-4645-9a28-142dd0402389",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | PIM | DR Change",
+    "alarm_disposition__name": "Network | PIM | DR Change",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "a9aa6d00-1bb6-4b1f-80fb-ecae5ff43f70",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Port | Loss of Signal",
+    "alarm_disposition__name": "Network | Port | Loss of Signal",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

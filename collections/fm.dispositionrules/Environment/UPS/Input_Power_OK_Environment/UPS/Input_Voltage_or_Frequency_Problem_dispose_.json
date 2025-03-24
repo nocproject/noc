@@ -4,7 +4,7 @@
     "uuid": "7374f01b-78fe-46ff-9a28-b6e6980884b6",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | UPS | Input Voltage or Frequency Problem",
+    "alarm_disposition__name": "Environment | UPS | Input Voltage or Frequency Problem",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

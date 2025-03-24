@@ -4,7 +4,7 @@
     "uuid": "aa455a53-c055-4583-a968-26727a239510",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Config | Invalid Config",
+    "alarm_disposition__name": "Config | Invalid Config",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

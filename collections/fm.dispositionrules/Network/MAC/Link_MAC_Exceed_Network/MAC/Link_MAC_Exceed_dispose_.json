@@ -4,7 +4,7 @@
     "uuid": "236c4e0b-eed7-4e2c-a114-bc3f7eaa4580",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MAC | Link MAC Exceed",
+    "alarm_disposition__name": "Network | MAC | Link MAC Exceed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

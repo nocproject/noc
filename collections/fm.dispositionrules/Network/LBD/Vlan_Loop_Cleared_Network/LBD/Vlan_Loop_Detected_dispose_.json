@@ -4,7 +4,7 @@
     "uuid": "5f65aac1-d943-4e42-867b-00f3f943043b",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | LBD | Vlan Loop Detected",
+    "alarm_disposition__name": "Network | LBD | Vlan Loop Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

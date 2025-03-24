@@ -4,7 +4,7 @@
     "uuid": "672ab0e1-aa84-4b0a-9b33-4bbc641392fd",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | PSU | PSU Failed",
+    "alarm_disposition__name": "Chassis | PSU | PSU Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

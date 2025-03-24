@@ -4,7 +4,7 @@
     "uuid": "081b8789-30e8-4de9-94f2-560087c28176",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Stack | Stack Degraded",
+    "alarm_disposition__name": "Chassis | Stack | Stack Degraded",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

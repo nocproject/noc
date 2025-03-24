@@ -4,7 +4,7 @@
     "uuid": "ea83bcf2-6082-48fc-85b5-90a12b9bde1e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | EIGRP | Neighbor Down",
+    "alarm_disposition__name": "Network | EIGRP | Neighbor Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

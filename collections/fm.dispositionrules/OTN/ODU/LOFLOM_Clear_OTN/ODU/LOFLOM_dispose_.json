@@ -4,7 +4,7 @@
     "uuid": "23007d24-63fd-4f91-be08-2c1fcbf8e60a",
     "description": null,
     "preference": 1000,
-    "disposition__name": "OTN | ODU | LOFLOM",
+    "alarm_disposition__name": "OTN | ODU | LOFLOM",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

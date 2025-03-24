@@ -4,7 +4,7 @@
     "uuid": "3fd52131-9a17-4fb3-8b10-8ab5514fd9f8",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | UDLD | UDLD Protocol Error Detected",
+    "alarm_disposition__name": "Network | UDLD | UDLD Protocol Error Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

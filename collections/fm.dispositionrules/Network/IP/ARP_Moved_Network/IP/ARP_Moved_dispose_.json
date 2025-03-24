@@ -4,7 +4,7 @@
     "uuid": "55da1331-0a36-43e5-aa30-d906c87ee534",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | IP | ARP Moved",
+    "alarm_disposition__name": "Network | IP | ARP Moved",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

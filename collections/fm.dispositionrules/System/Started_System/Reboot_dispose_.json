@@ -4,7 +4,7 @@
     "uuid": "f2047caa-ee43-4d10-aa98-f7a1b02c298e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "System | Reboot",
+    "alarm_disposition__name": "System | Reboot",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

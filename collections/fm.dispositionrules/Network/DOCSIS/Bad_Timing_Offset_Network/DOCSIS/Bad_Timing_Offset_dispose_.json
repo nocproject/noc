@@ -4,7 +4,7 @@
     "uuid": "8a97526c-6156-4dea-be81-bb10742eaf7f",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | DOCSIS | Bad Timing Offset",
+    "alarm_disposition__name": "Network | DOCSIS | Bad Timing Offset",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

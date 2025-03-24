@@ -4,7 +4,7 @@
     "uuid": "3efbd6cc-ae57-40ed-ba08-e5b26b4e441b",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Hardware | Hardware Port Warning",
+    "alarm_disposition__name": "Chassis | Hardware | Hardware Port Warning",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

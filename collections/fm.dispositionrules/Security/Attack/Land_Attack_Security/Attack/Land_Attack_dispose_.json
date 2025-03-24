@@ -4,7 +4,7 @@
     "uuid": "81474ada-4686-4520-a4d2-df69579d5627",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Attack | Land Attack",
+    "alarm_disposition__name": "Security | Attack | Land Attack",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

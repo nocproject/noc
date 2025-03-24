@@ -4,7 +4,7 @@
     "uuid": "5235eba3-bbc3-47cb-9157-157d40fcbc80",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Hardware | Hardware Port Error",
+    "alarm_disposition__name": "Chassis | Hardware | Hardware Port Error",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

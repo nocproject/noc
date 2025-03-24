@@ -4,7 +4,7 @@
     "uuid": "c248de37-3ea5-48a9-9635-91a5528b5af7",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Access | Door Open",
+    "alarm_disposition__name": "Security | Access | Door Open",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "b8b35d1a-9b6b-4299-898f-86bcef634c15",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | Temperature Out of Range",
+    "alarm_disposition__name": "Environment | Temperature Out of Range",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

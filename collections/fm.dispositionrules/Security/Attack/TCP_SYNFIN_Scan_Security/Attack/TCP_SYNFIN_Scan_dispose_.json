@@ -4,7 +4,7 @@
     "uuid": "c42baa41-93f4-40c2-b6d0-8689aa63c317",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Attack | TCP SYNFIN Scan",
+    "alarm_disposition__name": "Security | Attack | TCP SYNFIN Scan",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

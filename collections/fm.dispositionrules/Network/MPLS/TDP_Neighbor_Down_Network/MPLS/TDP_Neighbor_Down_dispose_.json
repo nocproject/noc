@@ -4,7 +4,7 @@
     "uuid": "5736eb8e-443f-4959-8fd9-68f8f09adc91",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MPLS | TDP Neighbor Down",
+    "alarm_disposition__name": "Network | MPLS | TDP Neighbor Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

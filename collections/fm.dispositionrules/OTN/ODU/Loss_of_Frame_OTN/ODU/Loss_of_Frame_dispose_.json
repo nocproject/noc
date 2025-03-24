@@ -4,7 +4,7 @@
     "uuid": "bdde0be2-8063-45ca-ac0a-f2d4bdb1e7f7",
     "description": null,
     "preference": 1000,
-    "disposition__name": "OTN | ODU | Loss of Frame",
+    "alarm_disposition__name": "OTN | ODU | Loss of Frame",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

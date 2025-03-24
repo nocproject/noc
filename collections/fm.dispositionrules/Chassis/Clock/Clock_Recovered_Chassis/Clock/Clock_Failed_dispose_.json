@@ -4,7 +4,7 @@
     "uuid": "a89633de-b25d-4fbb-81c4-625b4feb76dd",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Clock | Clock Failed",
+    "alarm_disposition__name": "Chassis | Clock | Clock Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

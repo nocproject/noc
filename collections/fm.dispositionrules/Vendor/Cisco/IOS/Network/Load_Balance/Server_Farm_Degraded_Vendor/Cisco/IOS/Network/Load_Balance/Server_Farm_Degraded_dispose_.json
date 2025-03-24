@@ -4,7 +4,7 @@
     "uuid": "06213039-d849-4e43-b617-f429fa29651b",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",
+    "alarm_disposition__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

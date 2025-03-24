@@ -4,7 +4,7 @@
     "uuid": "17ee2d39-1713-4394-bb26-9ec1723bf84e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Link | Err-Disable",
+    "alarm_disposition__name": "Network | Link | Err-Disable",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

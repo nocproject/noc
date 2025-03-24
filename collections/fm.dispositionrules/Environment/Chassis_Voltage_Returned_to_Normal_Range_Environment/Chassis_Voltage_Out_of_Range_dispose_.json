@@ -4,7 +4,7 @@
     "uuid": "2885ff33-c6e7-4ead-bcd6-f2c57bf8eb54",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | Chassis Voltage Out of Range",
+    "alarm_disposition__name": "Environment | Chassis Voltage Out of Range",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

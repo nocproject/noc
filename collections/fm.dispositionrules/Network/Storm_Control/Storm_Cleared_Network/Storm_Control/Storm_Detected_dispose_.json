@@ -4,7 +4,7 @@
     "uuid": "31a9b0bb-74fc-4b47-902d-d9ff763ad586",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Storm Control | Storm Detected",
+    "alarm_disposition__name": "Network | Storm Control | Storm Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

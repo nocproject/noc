@@ -4,7 +4,7 @@
     "uuid": "5173f1ce-5038-4992-a37d-3c4d93c21112",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | DC Voltage Out of Range",
+    "alarm_disposition__name": "Environment | DC Voltage Out of Range",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

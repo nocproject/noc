@@ -4,7 +4,7 @@
     "uuid": "bc3222e5-87ed-417a-9c49-ad116f270c3a",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MAC | MAC Flood",
+    "alarm_disposition__name": "Network | MAC | MAC Flood",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

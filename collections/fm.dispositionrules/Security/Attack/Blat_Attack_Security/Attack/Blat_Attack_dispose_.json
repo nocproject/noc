@@ -4,7 +4,7 @@
     "uuid": "90af08fd-24a2-4572-8545-2f95f91d712d",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Attack | Blat Attack",
+    "alarm_disposition__name": "Security | Attack | Blat Attack",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

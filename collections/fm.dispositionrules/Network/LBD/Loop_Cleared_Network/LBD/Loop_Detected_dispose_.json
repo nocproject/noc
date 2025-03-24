@@ -4,7 +4,7 @@
     "uuid": "89614dca-3306-4b89-947d-a904195bf400",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | LBD | Loop Detected",
+    "alarm_disposition__name": "Network | LBD | Loop Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

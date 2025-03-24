@@ -4,7 +4,7 @@
     "uuid": "aff8972f-91be-4c93-9092-e86df7e65d3e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MAC | MAC Flap",
+    "alarm_disposition__name": "Network | MAC | MAC Flap",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

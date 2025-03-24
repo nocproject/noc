@@ -4,7 +4,7 @@
     "uuid": "effe1f80-01a8-416c-807b-27b3e3a9c157",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | Humidity Out of Range",
+    "alarm_disposition__name": "Environment | Humidity Out of Range",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

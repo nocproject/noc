@@ -4,7 +4,7 @@
     "uuid": "56460225-6c6e-4ca8-baa0-83817445af97",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | STP | STP Vlan Loop Detected",
+    "alarm_disposition__name": "Network | STP | STP Vlan Loop Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

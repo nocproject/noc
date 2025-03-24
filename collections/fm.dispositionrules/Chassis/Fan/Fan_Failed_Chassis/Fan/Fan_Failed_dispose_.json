@@ -4,7 +4,7 @@
     "uuid": "6e86074d-5a95-4edf-9a46-9099c42e1f68",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Fan | Fan Failed",
+    "alarm_disposition__name": "Chassis | Fan | Fan Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

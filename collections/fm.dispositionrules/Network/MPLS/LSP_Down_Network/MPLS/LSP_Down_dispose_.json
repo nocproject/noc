@@ -4,7 +4,7 @@
     "uuid": "e4f9b137-216c-4b13-b92d-4f2dd55064a2",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MPLS | LSP Down",
+    "alarm_disposition__name": "Network | MPLS | LSP Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

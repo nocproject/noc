@@ -4,7 +4,7 @@
     "uuid": "51953351-573b-46b5-a95b-1b1b83ef247d",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | STP | STP Loop Detected",
+    "alarm_disposition__name": "Network | STP | STP Loop Detected",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

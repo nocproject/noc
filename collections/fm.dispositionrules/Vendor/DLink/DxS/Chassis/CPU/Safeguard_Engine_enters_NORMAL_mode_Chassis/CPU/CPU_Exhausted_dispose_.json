@@ -4,7 +4,7 @@
     "uuid": "57795d69-655d-4ef2-9c23-00e3c9adb535",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | CPU | CPU Exhausted",
+    "alarm_disposition__name": "Chassis | CPU | CPU Exhausted",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

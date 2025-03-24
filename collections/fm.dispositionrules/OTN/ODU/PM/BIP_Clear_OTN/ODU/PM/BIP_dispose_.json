@@ -4,7 +4,7 @@
     "uuid": "65c7dc1d-f75c-4e06-835e-37e2b76f899e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "OTN | ODU | PM | BIP",
+    "alarm_disposition__name": "OTN | ODU | PM | BIP",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "9aaa5cd2-9b0a-493f-bc61-aa9c7c2df235",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Attack | Smurf Attack",
+    "alarm_disposition__name": "Security | Attack | Smurf Attack",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

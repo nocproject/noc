@@ -4,7 +4,7 @@
     "uuid": "39fe614e-b7c0-4925-a174-c2f294ea3fbf",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Attack | IP Spoofing",
+    "alarm_disposition__name": "Security | Attack | IP Spoofing",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

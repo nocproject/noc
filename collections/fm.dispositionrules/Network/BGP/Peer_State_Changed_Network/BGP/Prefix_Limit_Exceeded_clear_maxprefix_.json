@@ -4,7 +4,7 @@
     "uuid": "9a7331c7-c1f9-4eab-8054-98399955987e",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | BGP | Prefix Limit Exceeded",
+    "alarm_disposition__name": "Network | BGP | Prefix Limit Exceeded",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

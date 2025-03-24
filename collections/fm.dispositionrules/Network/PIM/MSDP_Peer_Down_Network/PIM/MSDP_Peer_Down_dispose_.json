@@ -4,7 +4,7 @@
     "uuid": "6ba9a0be-f9a7-4f0a-b1ac-19ad715cc937",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | PIM | MSDP Peer Down",
+    "alarm_disposition__name": "Network | PIM | MSDP Peer Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

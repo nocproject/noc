@@ -4,7 +4,7 @@
     "uuid": "92d4f2b8-5f35-4ae7-bf79-241e679400f1",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | RAM | Insufficient Memory",
+    "alarm_disposition__name": "Chassis | RAM | Insufficient Memory",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

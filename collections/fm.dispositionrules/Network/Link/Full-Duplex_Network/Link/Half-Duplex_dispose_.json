@@ -4,7 +4,7 @@
     "uuid": "0e479f79-a726-4527-9e3b-b0f7bc724f22",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Link | Half-Duplex",
+    "alarm_disposition__name": "Network | Link | Half-Duplex",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

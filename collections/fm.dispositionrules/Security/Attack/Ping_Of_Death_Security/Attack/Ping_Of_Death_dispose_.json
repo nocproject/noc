@@ -4,7 +4,7 @@
     "uuid": "435494a2-710a-43e5-bde0-9f9ee16e42ea",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Attack | Ping Of Death",
+    "alarm_disposition__name": "Security | Attack | Ping Of Death",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

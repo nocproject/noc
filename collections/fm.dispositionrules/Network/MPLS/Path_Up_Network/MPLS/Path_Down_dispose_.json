@@ -4,7 +4,7 @@
     "uuid": "84a0c5d6-4f88-422e-a139-aea8250b3e66",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MPLS | Path Down",
+    "alarm_disposition__name": "Network | MPLS | Path Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

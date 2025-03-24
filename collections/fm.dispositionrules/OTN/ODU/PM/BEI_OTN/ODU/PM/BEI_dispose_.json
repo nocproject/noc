@@ -4,7 +4,7 @@
     "uuid": "9ff56375-e930-4acc-8a42-921103a03320",
     "description": null,
     "preference": 1000,
-    "disposition__name": "OTN | ODU | PM | BEI",
+    "alarm_disposition__name": "OTN | ODU | PM | BEI",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

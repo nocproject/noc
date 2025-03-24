@@ -4,7 +4,7 @@
     "uuid": "0ad20a1e-29a1-4863-ae3e-e7aa311935f9",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | MPLS | LDP Session Down",
+    "alarm_disposition__name": "Network | MPLS | LDP Session Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

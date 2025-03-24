@@ -4,7 +4,7 @@
     "uuid": "ace85ffd-89cb-4521-a440-e5b9b0deb14c",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | IP | Address Conflict",
+    "alarm_disposition__name": "Network | IP | Address Conflict",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

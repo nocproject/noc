@@ -4,7 +4,7 @@
     "uuid": "5c794dfe-32f1-4f17-8864-8042e0e642e7",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Linecard | LC Error",
+    "alarm_disposition__name": "Chassis | Linecard | LC Error",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

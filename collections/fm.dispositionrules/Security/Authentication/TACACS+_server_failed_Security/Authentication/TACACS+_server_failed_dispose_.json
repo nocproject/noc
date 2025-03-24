@@ -4,7 +4,7 @@
     "uuid": "e1c1d9e3-9880-48ed-9c75-c8bff36b3ea9",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Security | Authentication | TACACS+ server failed",
+    "alarm_disposition__name": "Security | Authentication | TACACS+ server failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

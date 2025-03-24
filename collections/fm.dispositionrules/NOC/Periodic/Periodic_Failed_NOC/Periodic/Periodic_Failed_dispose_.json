@@ -4,7 +4,7 @@
     "uuid": "088980a6-7411-48f8-abb7-898445e481de",
     "description": null,
     "preference": 1000,
-    "disposition__name": "NOC | Periodic | Periodic Failed",
+    "alarm_disposition__name": "NOC | Periodic | Periodic Failed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "408b374b-1dd8-4ded-8a20-93414d8a7ffc",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Environment | AC Voltage Out of Range",
+    "alarm_disposition__name": "Environment | AC Voltage Out of Range",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

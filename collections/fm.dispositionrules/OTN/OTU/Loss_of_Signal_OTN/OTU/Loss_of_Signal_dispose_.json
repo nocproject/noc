@@ -4,7 +4,7 @@
     "uuid": "59145de9-08ae-46d9-9c43-e8b4f841d1df",
     "description": null,
     "preference": 1000,
-    "disposition__name": "OTN | OTU | Loss of Signal",
+    "alarm_disposition__name": "OTN | OTU | Loss of Signal",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

@@ -4,7 +4,7 @@
     "uuid": "ec907921-2477-4d29-940e-267dfbe1150f",
     "description": null,
     "preference": 1000,
-    "disposition__name": "NOC | SA | Activator Pool Degraded",
+    "alarm_disposition__name": "NOC | SA | Activator Pool Degraded",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

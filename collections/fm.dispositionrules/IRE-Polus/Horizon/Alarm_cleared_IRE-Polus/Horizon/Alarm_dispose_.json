@@ -4,7 +4,7 @@
     "uuid": "5a8000e1-127a-40df-88ff-40b1414c427f",
     "description": null,
     "preference": 1000,
-    "disposition__name": "IRE-Polus | Horizon | Alarm",
+    "alarm_disposition__name": "IRE-Polus | Horizon | Alarm",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

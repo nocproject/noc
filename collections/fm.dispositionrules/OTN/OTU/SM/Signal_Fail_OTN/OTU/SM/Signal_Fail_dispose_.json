@@ -4,7 +4,7 @@
     "uuid": "3e4834e1-b38d-4d0a-82fe-35c99405ded4",
     "description": null,
     "preference": 1000,
-    "disposition__name": "OTN | OTU | SM | Signal Fail",
+    "alarm_disposition__name": "OTN | OTU | SM | Signal Fail",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

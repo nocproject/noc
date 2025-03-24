@@ -4,7 +4,7 @@
     "uuid": "f9087528-c5b7-4beb-be2c-6f8ef7ece3b7",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "alarm_disposition__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

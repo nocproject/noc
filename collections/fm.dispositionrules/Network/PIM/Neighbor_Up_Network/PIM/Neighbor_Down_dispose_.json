@@ -4,7 +4,7 @@
     "uuid": "d9ae73b7-9aa8-4cb0-8b61-56ce10243586",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | PIM | Neighbor Down",
+    "alarm_disposition__name": "Network | PIM | Neighbor Down",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

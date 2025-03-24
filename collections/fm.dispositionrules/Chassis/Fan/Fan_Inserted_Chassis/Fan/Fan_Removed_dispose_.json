@@ -4,7 +4,7 @@
     "uuid": "cffa25e3-71bd-445a-bedd-dfd65ed16fa7",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Fan | Fan Removed",
+    "alarm_disposition__name": "Chassis | Fan | Fan Removed",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

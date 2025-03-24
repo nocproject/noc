@@ -4,7 +4,7 @@
     "uuid": "fb0099bd-35c6-4e88-9f58-32b313f6a0fe",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | Link | Duplex Mismatch",
+    "alarm_disposition__name": "Network | Link | Duplex Mismatch",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

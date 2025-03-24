@@ -4,7 +4,7 @@
     "uuid": "9040d764-ab23-4452-b6a1-15ed3b44dbc0",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Network | IP | IP Flap",
+    "alarm_disposition__name": "Network | IP | IP Flap",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,

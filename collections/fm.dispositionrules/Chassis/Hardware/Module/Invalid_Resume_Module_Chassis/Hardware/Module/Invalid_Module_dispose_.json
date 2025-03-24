@@ -4,7 +4,7 @@
     "uuid": "8c0b6d42-bdf4-4ba7-87ff-ae71899d9b06",
     "description": null,
     "preference": 1000,
-    "disposition__name": "Chassis | Hardware | Module | Invalid Module",
+    "alarm_disposition__name": "Chassis | Hardware | Module | Invalid Module",
     "combo_condition": "none",
     "combo_window": 0,
     "combo_count": 0,
