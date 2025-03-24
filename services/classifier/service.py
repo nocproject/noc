@@ -729,6 +729,7 @@ class ClassifierService(FastAPIService):
                     "remote_system": event.remote_system,
                 },
             ):
+                self.logger.info("[%s] Run action: %s", event.id, a)
                 r = a(event, mo)
                 if not r:
                     continue

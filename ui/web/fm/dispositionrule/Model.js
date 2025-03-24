@@ -102,6 +102,14 @@ Ext.define("NOC.fm.dispositionrule.Model", {
             defaultValue: 1000
         },
         {
+            name: "run_discovery",
+            type: "boolean"
+        },
+        {
+            name: "interaction_audit",
+            type: "int"
+        },
+        {
             name: "stop_processing",
             type: "boolean"
         },

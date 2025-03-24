@@ -329,11 +329,11 @@ class DispositionRule(Document):
                 r += list(EventClass.objects.filter(name=re.compile(rr.event_class_re)))
         return r
 
-    def get_matcher(self) -> Callable:
+    def get_matcher(self) -> Optional[Callable]:
         """Getting matcher for rule"""
         expr = []
         if not self.conditions:
-            return lambda x: True
+            return None
         for r in self.conditions:
             expr.append(r.get_match_expr())
         if len(expr) == 1:
