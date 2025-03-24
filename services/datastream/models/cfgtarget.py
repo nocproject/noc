@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cfgtarget datastream model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -69,17 +69,24 @@ class Dependency(BaseModel):
     settings: PingSettings
 
 
+class RemoteMapping(BaseModel):
+    remote_system: RemoteSystem
+    remote_id: str
+
+
 class CfgTarget(BaseModel):
     id: str  # Record id
     name: str
     addresses: List[TargetAddress]
-    opaque_data: Optional[ManagedObject]  # Kafka message data
-    effective_labels: List[str]
     bi_id: int
     pool: str
+    effective_labels: List[str]
+    opaque_data: Optional[ManagedObject] = None  # Kafka message data
+    sa_profile: Optional[str] = None
     fm_pool: Optional[str] = None
     process_events: bool = True
     ping: Optional[PingSettings] = None
     syslog: Optional[SyslogSettings] = None
     trap: Optional[TrapSettings] = None
     dependencies: Optional[List[Dependency]] = None
+    mappings: Optional[List[RemoteMapping]] = None
