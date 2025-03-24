@@ -163,6 +163,7 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("fm.AlarmTrigger", "notification_group"),
         ("fm.EventTrigger", "notification_group"),
         ("fm.AlarmRule", "actions.notification_group"),
+        ("fm.DispositionRule", "notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
         ("main.NotificationGroupUserSubscription", "notification_group"),

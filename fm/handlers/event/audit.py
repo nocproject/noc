@@ -9,7 +9,7 @@
 import datetime
 
 # NOC modules
-from noc.sa.models.interactionlog import InteractionLog
+from noc.sa.models.interactionlog import InteractionLog, Interaction
 from noc.config import config
 
 
@@ -54,7 +54,7 @@ def log_cmd(event, managed_object):
         expire=event.timestamp + datetime.timedelta(seconds=TTL_COMMAND),
         object=managed_object.id,
         user=event.vars.get("user"),
-        op=InteractionLog.OP_COMMAND,
+        op=Interaction.OP_COMMAND,
         text=event.vars.get("command"),
     ).save()
 
@@ -68,7 +68,7 @@ def log_login(event, managed_object):
         expire=event.timestamp + datetime.timedelta(seconds=TTL_LOGIN),
         object=managed_object.id,
         user=event.vars.get("user"),
-        op=InteractionLog.OP_LOGIN,
+        op=Interaction.OP_LOGIN,
         text="User logged in",
     ).save()
 
@@ -82,7 +82,7 @@ def log_logout(event, managed_object):
         expire=event.timestamp + datetime.timedelta(seconds=TTL_LOGIN),
         object=managed_object.id,
         user=event.vars.get("user"),
-        op=InteractionLog.OP_LOGOUT,
+        op=Interaction.OP_LOGOUT,
         text="User logged out",
     ).save()
 
@@ -96,7 +96,7 @@ def log_reboot(event, managed_object):
         expire=event.timestamp + datetime.timedelta(seconds=TTL_REBOOT),
         object=managed_object.id,
         user=event.vars.get("user"),
-        op=InteractionLog.OP_REBOOT,
+        op=Interaction.OP_REBOOT,
         text="System rebooted",
     ).save()
 
@@ -110,7 +110,7 @@ def log_started(event, managed_object):
         expire=event.timestamp + datetime.timedelta(seconds=TTL_REBOOT),
         object=managed_object.id,
         user=None,
-        op=InteractionLog.OP_STARTED,
+        op=Interaction.OP_STARTED,
         text="System started",
     ).save()
 
@@ -124,7 +124,7 @@ def log_halted(event, managed_object):
         expire=event.timestamp + datetime.timedelta(seconds=TTL_REBOOT),
         object=managed_object.id,
         user=event.vars.get("user"),
-        op=InteractionLog.OP_HALTED,
+        op=Interaction.OP_HALTED,
         text="System halted",
     ).save()
 
@@ -138,6 +138,6 @@ def log_config_changed(event, managed_object):
         expire=event.timestamp + datetime.timedelta(seconds=TTL_CONFIG),
         object=managed_object.id,
         user=event.vars.get("user"),
-        op=InteractionLog.OP_CONFIG_CHANGED,
+        op=Interaction.OP_CONFIG_CHANGED,
         text="Config changed",
     ).save()
