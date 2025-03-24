@@ -118,6 +118,7 @@ class SyslogCollectorService(FastAPIService):
                             "address": source_address,
                             "name": cfg.name or "",
                             "pool": config.pool,
+                            "profile": "",
                             "id": cfg.id,
                         },
                         "type": {
@@ -127,9 +128,9 @@ class SyslogCollectorService(FastAPIService):
                         },
                         "message": message,
                         "data": [
-                            {"name": "facility", "value": facility},
-                            {"name": "severity", "value": severity},
-                            {"name": "message_id", "value": message_id},
+                            {"name": "facility", "value": str(facility)},
+                            {"name": "severity", "value": str(severity)},
+                            {"name": "message_id", "value": message_id or ""},
                         ],
                     }
                 ),
