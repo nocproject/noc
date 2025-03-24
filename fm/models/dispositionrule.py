@@ -41,7 +41,7 @@ from noc.sa.models.interactionlog import Interaction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-from noc.core.model.decorator import tree
+from noc.core.model.decorator import tree, on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.fm.models.alarmclass import AlarmClass
@@ -142,6 +142,7 @@ class HandlerItem(EmbeddedDocument):
 
 
 @tree(field="replace_rule")
+@on_delete_check(check=[("fm.DispositionRule", "replace_rule")])
 @change
 @bi_sync
 class DispositionRule(Document):

@@ -64,7 +64,6 @@ class ActionSet(object):
         actions = defaultdict(list)
         logger.info("Load Disposition Rule")
         for rule in DispositionRule.objects.filter(is_active=True).order_by("preference"):
-            rule: DispositionRule
             m = rule.get_matcher()
             for ec in rule.get_event_classes():
                 for h in rule.handlers or []:
@@ -87,12 +86,14 @@ class ActionSet(object):
                             interaction=rule.object_actions.interaction_audit,
                         ),
                     ]
+                    self.add_handlers += 1
                 if rule.object_actions and rule.object_actions.run_discovery:
                     actions[ec.id] += [
                         partial(
                             self.run_discovery, interaction=rule.object_actions.interaction_audit
                         ),
                     ]
+                    self.add_handlers += 1
         self.actions = actions
         logger.info("Handlers are loaded: %s", self.add_handlers)
 
