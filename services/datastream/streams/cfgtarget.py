@@ -19,6 +19,7 @@ from noc.main.models.label import Label
 from noc.main.models.timepattern import TimePattern
 from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
 
 
 class Target(
@@ -31,10 +32,12 @@ class Target(
             "state",
             "pool",
             "fm_pool",
+            "sa_profile",
             "adm_domain",
             "adm_domain_name",
             "adm_domain_remote_system",
             "adm_domain_remote_id",
+            "mappings",
             "remote_system",
             "remote_id",
             "address",
@@ -83,7 +86,19 @@ class Target(
                     name__in=self.labels, expose_datastream=True
                 ).values_list("name")
             ],
+            "sa_profile": None,
+            "mappings": [],
         }
+        if self.sa_profile:
+            p = Profile.get_by_id(self.sa_profile)
+            r["sa_profile"] = p.name if p else None
+        for m in self.mappings:
+            rs = RemoteSystem.get_by_id(m["remote_system"])
+            if not rs:
+                continue
+            r["mappings"].append(
+                {"remote_system": {"id": str(rs.id), "name": rs.name}, "remote_id": m["remote_id"]},
+            )
         if self.remote_system:
             rs = RemoteSystem.get_by_id(self.remote_system)
             r["remote_system"] = {"id": str(rs.id), "name": rs.name}
@@ -192,10 +207,12 @@ class CfgTrapDataStream(DataStream):
             "state",
             "pool",
             "fm_pool",
+            "profile",
             "administrative_domain",
             "administrative_domain__name",
             "administrative_domain__remote_system",
             "administrative_domain__remote_id",
+            "mappings",
             "remote_system",
             "remote_id",
             "address",
@@ -232,10 +249,12 @@ class CfgTrapDataStream(DataStream):
             state,
             pool,
             fm_pool,
+            sa_profile,
             adm_domain,
             adm_domain_name,
             adm_domain_remote_system,
             adm_domain_remote_id,
+            mappings,
             remote_system,
             remote_id,
             address,

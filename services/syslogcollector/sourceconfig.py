@@ -43,6 +43,7 @@ class SourceConfig(object):
     archive_events: bool
     stream: str
     partition: int
+    sa_profile: Optional[str] = None
     name: Optional[str] = None
     effective_labels: List[str] = None
     managed_object: Optional[ManagedObjectData] = None

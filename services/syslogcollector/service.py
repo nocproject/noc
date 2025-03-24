@@ -118,6 +118,7 @@ class SyslogCollectorService(FastAPIService):
                             "address": source_address,
                             "name": cfg.name or "",
                             "pool": config.pool,
+                            "profile": cfg.sa_profile or "",
                             "id": cfg.id,
                         },
                         "type": {
@@ -127,9 +128,9 @@ class SyslogCollectorService(FastAPIService):
                         },
                         "message": message,
                         "data": [
-                            {"name": "facility", "value": facility},
-                            {"name": "severity", "value": severity},
-                            {"name": "message_id", "value": message_id},
+                            {"name": "facility", "value": str(facility)},
+                            {"name": "severity", "value": str(severity)},
+                            {"name": "message_id", "value": message_id or ""},
                         ],
                     }
                 ),
@@ -245,6 +246,7 @@ class SyslogCollectorService(FastAPIService):
             process_events=data.get("process_events", True),  # For backward compatibility
             archive_events=cfg_syslog.get("archive_events", False) if cfg_syslog else False,
             stream=f"events.{fm_pool}",
+            sa_profile=data.get("sa_profile"),
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
         )

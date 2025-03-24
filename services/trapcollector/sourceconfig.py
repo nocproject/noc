@@ -42,6 +42,7 @@ class SourceConfig(object):
     partition: int
     bi_id: Optional[int] = None
     name: Optional[str] = None
+    sa_profile: Optional[str] = None
     effective_labels: List[str] = None
     managed_object: Optional[ManagedObjectData] = None
     storm_policy: str = "D"
