@@ -191,7 +191,7 @@ class CheckResult(object):
             return CheckResult(**v)
         if "snmp_ro" in cred:
             cred = SNMPCredential(**cred)
-        elif "username" in cred:
+        elif "username" in cred and "password" not in cred:
             cred = SNMPv3Credential(**cred)
         else:
             cred = CLICredential(**cred)
