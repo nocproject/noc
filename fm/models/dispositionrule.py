@@ -25,6 +25,8 @@ from mongoengine.fields import (
     UUIDField,
     ReferenceField,
     EmbeddedDocumentListField,
+    EmbeddedDocumentField,
+    EnumField,
 )
 
 # NOC modules
@@ -35,6 +37,7 @@ from noc.main.models.handler import Handler
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
+from noc.sa.models.interactionlog import Interaction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -116,12 +119,12 @@ class AlarmRootCauseCondition(EmbeddedDocument):
 class ObjectActionItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     # Action API ? by object, move to instance ?
-    action_command: "Action" = ReferenceField(Action, required=True)
+    action_command: Optional["Action"] = ReferenceField(Action, required=False)
+    interaction_audit: Optional[Interaction] = EnumField(Interaction, required=False)
+    run_discovery: bool = BooleanField(default=False)
     # resource as context
     # Set Diagnostic
     # affected_service ?
-    # run_discovery = BooleanField()
-    # run_discovery = StringField() all -
     # Update Resource State (workflow)
     # TTL
 
@@ -202,12 +205,12 @@ class DispositionRule(Document):
     )
     replace_rule: Optional["DispositionRule"] = ReferenceField("self", required=False)
     # Actions
+    handlers: List[HandlerItem] = EmbeddedDocumentListField(HandlerItem)
     notification_group: Optional["NotificationGroup"] = ForeignKeyField(
         NotificationGroup, required=False
     )
     subject_template = StringField()
-    handlers: List[HandlerItem] = EmbeddedDocumentListField(HandlerItem)
-    object_actions: List[ObjectActionItem] = EmbeddedDocumentListField(ObjectActionItem)
+    object_actions: ObjectActionItem = EmbeddedDocumentField(ObjectActionItem)
     #
     default_action = StringField(
         choices=[
@@ -350,7 +353,7 @@ class DispositionRule(Document):
             "stop_processing": rule.stop_processing,
             "match_expr": [],
             "event_classes": [],
-            "action": "processed",
+            "action": rule.default_action,
         }
         if rule.notification_group:
             r |= {

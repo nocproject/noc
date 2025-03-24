@@ -316,6 +316,6 @@ class EventClassificationRule(Document):
                 }
                 for ll in rule.labels
             ],
-            "to_dispose": False,
+            "to_dispose": bool(rule.event_class.disposition),
         }
         return r

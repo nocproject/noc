@@ -8,18 +8,18 @@
 # Python modules
 import logging
 import enum
+import datetime
 from collections import defaultdict
 from functools import partial
 from typing import Dict, Tuple, Optional, Callable, List, Any, Iterable
 
 # NOC modules
 from noc.core.fm.event import Event
-from noc.core.handler import get_handler
 from noc.core.debug import error_report
-from noc.core.mx import MessageType
+from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID
 from noc.fm.models.dispositionrule import DispositionRule
-from noc.fm.models.eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.interactionlog import Interaction, InteractionLog
 
 logger = logging.getLogger(__name__)
 
@@ -61,36 +61,38 @@ class ActionSet(object):
         """
         Load rules from database
         """
-        logger.info("Load Handler")
-        processed = set()
         actions = defaultdict(list)
-        for ec in EventClass.objects.filter():
-            handlers = ec.handlers or []
-            if not handlers:
-                continue
-            logger.debug("    <%s>: %s", ec.name, ", ".join(handlers))
-            for h in handlers:
-                if h in processed:
-                    continue
-                processed.add((ec.id, h))
-                try:
-                    h = get_handler(h)
-                except ImportError:
-                    logger.error("Failed to load handler '%s'. Ignoring", h)
-                actions[ec.id] += [(partial(self.run_handler, handler=h), None)]
-                self.add_handlers += 1
         logger.info("Load Disposition Rule")
-        for rule in DispositionRule.objects.filter(is_active=True):
+        for rule in DispositionRule.objects.filter(is_active=True).order_by("preference"):
             rule: DispositionRule
+            m = rule.get_matcher()
             for ec in rule.get_event_classes():
                 for h in rule.handlers or []:
-                    if (ec.id, h.handler.handler) in processed:
-                        continue
                     try:
-                        actions[ec.id] += [(h.handler.get_handler(), rule.get_matcher())]
+                        actions[ec.id] += [(h.handler.get_handler(), m)]
                     except ImportError:
                         logger.error("Failed to load handler '%s'. Ignoring", h)
                     self.add_handlers += 1
+                if rule.notification_group:
+                    actions[ec.id] += [
+                        partial(
+                            self.send_notification,
+                            notification_group=str(rule.notification_group.id),
+                        ),
+                    ]
+                if rule.object_actions and rule.object_actions.interaction_audit:
+                    actions[ec.id] += [
+                        partial(
+                            self.interaction_audit,
+                            interaction=rule.object_actions.interaction_audit,
+                        ),
+                    ]
+                if rule.object_actions and rule.object_actions.run_discovery:
+                    actions[ec.id] += [
+                        partial(
+                            self.run_discovery, interaction=rule.object_actions.interaction_audit
+                        ),
+                    ]
         self.actions = actions
         logger.info("Handlers are loaded: %s", self.add_handlers)
 
@@ -113,7 +115,15 @@ class ActionSet(object):
         notification_group: Optional[str] = None,
     ):
         """Send Event Notification"""
-        managed_object.event(MessageType.EVENT.value, event.get_message_context())
+        logger.debug("Sending status change notification")
+        headers = managed_object.get_mx_message_headers(event.labels)
+        headers[MX_NOTIFICATION_GROUP_ID] = str(notification_group).encode()
+        msg = event.get_message_context(managed_object)
+        send_message(
+            data=msg,
+            message_type=MessageType.EVENT,
+            headers=headers,
+        )
 
     @staticmethod
     def run_action(
@@ -122,3 +132,45 @@ class ActionSet(object):
         action: Optional[str] = None,
     ):
         """"""
+
+    @staticmethod
+    def run_discovery(
+        event: Event,
+        managed_object: ManagedObject,
+        interaction: Interaction,
+    ):
+        """Run Discovery"""
+        if (
+            interaction == Interaction.OP_STARTED
+            and managed_object.object_profile.box_discovery_on_system_start
+        ):
+            managed_object.run_discovery(
+                delta=managed_object.object_profile.box_discovery_system_start_delay
+            )
+        elif (
+            interaction == Interaction.OP_CONFIG_CHANGED
+            and managed_object.object_profile.box_discovery_on_config_changed
+        ):
+            managed_object.run_discovery(
+                delta=managed_object.object_profile.box_discovery_config_changed_delay
+            )
+
+    @staticmethod
+    def interaction_audit(
+        event: Event,
+        managed_object: ManagedObject,
+        interaction: Interaction,
+    ):
+        """Audit interaction"""
+        if interaction == Interaction.OP_COMMAND:
+            text = event.vars.get("command")
+        else:
+            text = interaction.config.text
+        InteractionLog(
+            timestamp=event.timestamp,
+            expire=event.timestamp + datetime.timedelta(seconds=interaction.config.ttl),
+            object=managed_object.id,
+            user=event.vars.get("user"),
+            op=interaction,
+            text=text,
+        ).save()

@@ -263,8 +263,8 @@ class ClassifierService(FastAPIService):
         await self.send_message(
             message_type=MessageType.EVENT,
             data=orjson.dumps(msg),
-            sharding_key=int(event.managed_object.id),
-            headers=event.managed_object.get_mx_message_headers(),
+            sharding_key=int(mo.id),
+            headers=mo.get_mx_message_headers(),
         )
 
     def register_log(
@@ -725,7 +725,7 @@ class ClassifierService(FastAPIService):
                 event_class.id,
                 {
                     "labels": frozenset(event.labels or []),
-                    "service_group": set(mo.effective_service_groups),
+                    "service_group": frozenset(mo.effective_service_groups or []),
                     "remote_system": event.remote_system,
                 },
             ):

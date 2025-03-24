@@ -38,6 +38,7 @@ id_lock = Lock()
         ("pm.ThresholdProfile", "umbrella_filter_handler"),
         ("pm.ThresholdProfile", "value_handler"),
         ("fm.AlarmRule", "actions.handler"),
+        ("fm.DispositionRule", "handlers.handler"),
         ("main.MessageRoute", "transmute_handler"),
     ]
 )
