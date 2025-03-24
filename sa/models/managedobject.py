@@ -241,7 +241,7 @@ class Credentials(object):
             return Credentials(
                 snmp_ro=self.snmp_ro,
                 snmp_rw=self.snmp_rw,
-                snmp_security_level=self.security_level,
+                snmp_security_level=self.snmp_security_level,
                 snmp_username=self.snmp_username,
                 snmp_auth_proto=self.snmp_auth_proto,
                 snmp_auth_key=self.snmp_auth_key,
@@ -1257,18 +1257,21 @@ class ManagedObject(NOCModel):
         """
         Get FTS index
         """
-        card = f"Managed object {self.name} ({self.address})"
-        content: List[str] = [self.name, self.address]
+        card = f"Managed object {self.name} ({self.address or ''})"
+        if self.address:
+            content: List[str] = [self.name, self.address]
+        else:
+            content: List[str] = [self.name]
         if self.trap_source_ip:
             content += [self.trap_source_ip]
         platform = self.platform
         if platform:
-            content += [smart_text(platform.name)]
-            card += " [%s]" % platform.name
+            content += [platform.name]
+            card += f" [{platform.name}]"
         version = str(self.version)
         if version:
             content += [version]
-            card += " version %s" % version
+            card += f" version {version}"
         if self.description:
             content += [self.description]
         config = self.config.read()
