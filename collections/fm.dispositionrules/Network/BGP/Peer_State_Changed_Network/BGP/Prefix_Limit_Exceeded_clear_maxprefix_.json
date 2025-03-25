@@ -1,0 +1,17 @@
+{
+    "name": "Network | BGP | Peer State Changed (Network | BGP | Prefix Limit Exceeded,clear_maxprefix)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "9a7331c7-c1f9-4eab-8054-98399955987e",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | BGP | Prefix Limit Exceeded",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | BGP | Peer State Changed"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

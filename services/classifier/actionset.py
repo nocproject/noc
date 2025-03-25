@@ -74,24 +74,34 @@ class ActionSet(object):
                     self.add_handlers += 1
                 if rule.notification_group:
                     actions[ec.id] += [
-                        partial(
-                            self.send_notification,
-                            notification_group=str(rule.notification_group.id),
-                        ),
+                        (
+                            partial(
+                                self.send_notification,
+                                notification_group=str(rule.notification_group.id),
+                            ),
+                            m,
+                        )
                     ]
                 if rule.object_actions and rule.object_actions.interaction_audit:
                     actions[ec.id] += [
-                        partial(
-                            self.interaction_audit,
-                            interaction=rule.object_actions.interaction_audit,
-                        ),
+                        (
+                            partial(
+                                self.interaction_audit,
+                                interaction=rule.object_actions.interaction_audit,
+                            ),
+                            m,
+                        )
                     ]
                     self.add_handlers += 1
                 if rule.object_actions and rule.object_actions.run_discovery:
                     actions[ec.id] += [
-                        partial(
-                            self.run_discovery, interaction=rule.object_actions.interaction_audit
-                        ),
+                        (
+                            partial(
+                                self.run_discovery,
+                                interaction=rule.object_actions.interaction_audit,
+                            ),
+                            m,
+                        )
                     ]
                     self.add_handlers += 1
         self.actions = actions

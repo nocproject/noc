@@ -725,10 +725,11 @@ class ClassifierService(FastAPIService):
                 event_class.id,
                 {
                     "labels": frozenset(event.labels or []),
-                    "service_group": frozenset(mo.effective_service_groups or []),
+                    "service_groups": frozenset(mo.effective_service_groups or []),
                     "remote_system": event.remote_system,
                 },
             ):
+                self.logger.info("[%s] Run action: %s", event.id, a)
                 r = a(event, mo)
                 if not r:
                     continue

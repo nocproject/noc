@@ -1,0 +1,17 @@
+{
+    "name": "OTN | ODU | Loss of Frame Clear (OTN | ODU | Loss of Frame,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "81db3c89-22c9-42c5-9ea9-5eedcecddc1f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "OTN | ODU | Loss of Frame",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "OTN | ODU | Loss of Frame Clear"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

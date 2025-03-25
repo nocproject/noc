@@ -1,0 +1,19 @@
+{
+    "name": "Environment | Module Voltage Returned to Normal Range (Environment | Module Voltage Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "bb90a3b1-a648-4e14-9895-2b4d9122f68a",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | Module Voltage Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Environment | Module Voltage Returned to Normal Range"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Network | PIM | MSDP Peer Up (Network | PIM | MSDP Peer Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "bb2e2d32-98d1-40cb-a402-01ed1bd565f2",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | PIM | MSDP Peer Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | PIM | MSDP Peer Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

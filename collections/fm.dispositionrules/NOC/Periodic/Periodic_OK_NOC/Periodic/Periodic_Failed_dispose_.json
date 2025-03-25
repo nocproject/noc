@@ -1,0 +1,17 @@
+{
+    "name": "NOC | Periodic | Periodic OK (NOC | Periodic | Periodic Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "9894b64d-e883-4989-b61a-1b0cb0c26190",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "NOC | Periodic | Periodic Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "NOC | Periodic | Periodic OK"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

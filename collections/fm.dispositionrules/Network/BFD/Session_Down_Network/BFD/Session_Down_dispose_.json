@@ -1,0 +1,17 @@
+{
+    "name": "Network | BFD | Session Down (Network | BFD | Session Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "f660a36f-1e28-4851-a87f-00b33a94e6d7",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | BFD | Session Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | BFD | Session Down"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

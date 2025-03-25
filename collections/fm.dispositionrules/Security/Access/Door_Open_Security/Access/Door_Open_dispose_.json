@@ -1,0 +1,17 @@
+{
+    "name": "Security | Access | Door Open (Security | Access | Door Open,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "20f8100c-c0ac-4788-940a-00d2884f6a33",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Security | Access | Door Open",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Access | Door Open"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Link Flap Error Recovery (Network | Link | Err-Disable,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "17ee2d39-1713-4394-bb26-9ec1723bf84e",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | Link | Err-Disable",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Link Flap Error Recovery"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

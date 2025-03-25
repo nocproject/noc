@@ -1,0 +1,17 @@
+{
+    "name": "Network | PIM | Neighbor Down (Network | PIM | Neighbor Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "0a3fd2cb-b0e5-4f74-8530-6db88a0b8dfd",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | PIM | Neighbor Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | PIM | Neighbor Down"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

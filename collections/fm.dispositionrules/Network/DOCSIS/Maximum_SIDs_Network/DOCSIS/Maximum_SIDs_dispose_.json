@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | Maximum SIDs (Network | DOCSIS | Maximum SIDs,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "3b2fd03c-f0ff-4f77-a5e9-9ad8e3f639d4",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | DOCSIS | Maximum SIDs",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | Maximum SIDs"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

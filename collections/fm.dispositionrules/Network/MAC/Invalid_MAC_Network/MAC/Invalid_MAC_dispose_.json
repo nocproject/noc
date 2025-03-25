@@ -1,0 +1,17 @@
+{
+    "name": "Network | MAC | Invalid MAC (Network | MAC | Invalid MAC,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "07bab8d9-81cb-41c9-a91f-464e55de5ed2",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | MAC | Invalid MAC",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MAC | Invalid MAC"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}
