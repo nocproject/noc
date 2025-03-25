@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_arp import Script as BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
 rx_line = re.compile(
@@ -21,5 +21,5 @@ class Script(BaseScript):
     name = "HP.ProCurve.get_arp"
     interface = IGetARP
 
-    def execute(self):
+    def execute_cli(self):
         return self.cli("show arp", list_re=rx_line)

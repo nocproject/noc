@@ -31,10 +31,18 @@ class Script(BaseScript):
         r"\s+revision\s+(?P<version>\S+),\s+ROM\s+(?P<bootprom>\S+)",
         re.MULTILINE,
     )
+    rx_aruba_instant_on = re.compile(
+        r"^(?:Aruba Instant On)\s+(?P<platform>.+)\s+Switch(?: Stack)?\s+(\S+),"
+        r"\s+(?P<version>\S+).+,\s*(?P<bootprom>U-Boot.+)",
+        re.MULTILINE,
+    )
 
     def execute_snmp(self):
         v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
-        match = self.rx_ver.search(v)
+        if v.startswith("Aruba Instant On"):
+            match = self.rx_aruba_instant_on.search(v)
+        else:
+            match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver_new.search(v)
         return {

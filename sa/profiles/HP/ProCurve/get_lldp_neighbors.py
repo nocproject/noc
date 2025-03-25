@@ -96,6 +96,7 @@ class Script(BaseScript):
             remote_port_subtype = {
                 "interface-alias": LLDP_PORT_SUBTYPE_ALIAS,
                 "mac-address": LLDP_PORT_SUBTYPE_MAC,
+                "mac-...": LLDP_PORT_SUBTYPE_MAC,
                 "network-address": LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
                 "interface-name": LLDP_PORT_SUBTYPE_NAME,
                 "inte...": LLDP_PORT_SUBTYPE_NAME,  # Found in 2910al ver. W.14.38
