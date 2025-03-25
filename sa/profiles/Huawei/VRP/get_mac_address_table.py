@@ -45,6 +45,9 @@ class Script(BaseScript):
         ):
             mac, vlan_id, vid1, vid2 = oid.rsplit(".", 3)
             mac = ":".join("%02X" % int(x) for x in mac.split(".")[-6:])
+            if int(vlan_id) == 0:
+                self.logger.warning("[%s|%s] VLAN ids is 0", interface_mappings[port], mac)
+                continue
             r += [
                 {
                     "vlan_id": vlan_id,

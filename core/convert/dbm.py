@@ -32,7 +32,9 @@ def mw2dbm(v):
     0.0
     >>> mw2dbm(10)
     10.0
+    >>> mw2dbm(-4000)
+    0.0
     """
-    if not bool(v):
+    if not bool(v) or v < 0:
         return 0.0
     return 10 * math.log10(float(v))
