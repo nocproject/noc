@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Hardware | Hardware Port Error (Chassis | Hardware | Hardware Port Error,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5235eba3-bbc3-47cb-9157-157d40fcbc80",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Hardware | Hardware Port Error",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Hardware | Hardware Port Error"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

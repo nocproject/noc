@@ -1,0 +1,19 @@
+{
+    "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service (Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "f9087528-c5b7-4beb-be2c-6f8ef7ece3b7",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

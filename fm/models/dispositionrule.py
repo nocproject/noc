@@ -96,9 +96,9 @@ class Match(EmbeddedDocument):
         if self.labels:
             r["labels"] = {"$all": list(self.labels)}
         if self.groups:
-            r["service_groups"] = {"$all": [str(x) for x in self.groups]}
+            r["service_groups"] = {"$all": [str(x.id) for x in self.groups]}
         if self.remote_system:
-            r["remote_system"] = str(self.remote_system.id)
+            r["remote_system"] = str(self.remote_system.name)
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:
@@ -211,7 +211,9 @@ class DispositionRule(Document):
         NotificationGroup, required=False
     )
     subject_template = StringField()
-    object_actions: ObjectActionItem = EmbeddedDocumentField(ObjectActionItem)
+    object_actions: Optional["ObjectActionItem"] = EmbeddedDocumentField(
+        ObjectActionItem, required=False
+    )
     #
     default_action = StringField(
         choices=[
@@ -283,8 +285,15 @@ class DispositionRule(Document):
         if self.vars_conditions:
             r["vars_conditions"] = [m.json_data for m in self.vars_conditions]
         if self.replace_rule:
-            r["replace_rule__name"] = self.replace_rule.name
-            r["replace_rule_policy"] = self.replace_rule_policy
+            r |= {
+                "replace_rule__name": self.replace_rule.name,
+                "replace_rule_policy": self.replace_rule_policy,
+            }
+        if self.object_actions:
+            r["object_actions"] = {
+                "interaction_audit": self.object_actions.interaction_audit.value,
+                "run_discovery": self.object_actions.run_discovery,
+            }
         if self.combo_condition:
             r |= {
                 "combo_condition": self.combo_condition,
@@ -292,7 +301,10 @@ class DispositionRule(Document):
                 "combo_count": self.combo_count,
             }
         if self.alarm_disposition:
-            r["disposition__name"] = self.alarm_disposition.name
+            r |= {
+                "alarm_disposition__name": self.alarm_disposition.name,
+                "default_action": self.default_action,
+            }
         if self.handlers:
             r["handlers"] = [h.json_data for h in self.handlers]
         return r
@@ -329,11 +341,11 @@ class DispositionRule(Document):
                 r += list(EventClass.objects.filter(name=re.compile(rr.event_class_re)))
         return r
 
-    def get_matcher(self) -> Callable:
+    def get_matcher(self) -> Optional[Callable]:
         """Getting matcher for rule"""
         expr = []
         if not self.conditions:
-            return lambda x: True
+            return None
         for r in self.conditions:
             expr.append(r.get_match_expr())
         if len(expr) == 1:

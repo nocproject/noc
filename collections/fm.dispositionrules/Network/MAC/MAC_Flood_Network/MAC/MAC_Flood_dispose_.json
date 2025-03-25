@@ -1,0 +1,17 @@
+{
+    "name": "Network | MAC | MAC Flood (Network | MAC | MAC Flood,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "bc3222e5-87ed-417a-9c49-ad116f270c3a",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | MAC | MAC Flood",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MAC | MAC Flood"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

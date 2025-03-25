@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | Invalid CoS (Network | DOCSIS | Invalid CoS,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "4ab490d4-9348-48e7-bb32-0fcebf059b1f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | DOCSIS | Invalid CoS",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | Invalid CoS"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Up (Vendor | f5 | BIGIP | Network | Load Balance | Service Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "752be3d1-3f9c-4652-885e-3e91f4553f1f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Vendor | f5 | BIGIP | Network | Load Balance | Service Up"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

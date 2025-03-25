@@ -1,0 +1,17 @@
+{
+    "name": "Network | PIM | Invalid RP (Network | PIM | Invalid RP,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "89477b81-76c1-496c-bf00-69d407951ac7",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | PIM | Invalid RP",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | PIM | Invalid RP"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

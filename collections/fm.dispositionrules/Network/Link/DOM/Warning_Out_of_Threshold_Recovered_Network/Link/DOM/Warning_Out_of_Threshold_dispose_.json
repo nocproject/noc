@@ -1,0 +1,19 @@
+{
+    "name": "Network | Link | DOM | Warning: Out of Threshold Recovered (Network | Link | DOM | Warning: Out of Threshold,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "83e7f844-147d-486d-b5e1-1e0556690055",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | Link | DOM | Warning: Out of Threshold",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Network | Link | DOM | Warning: Out of Threshold Recovered"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Network | MPLS | TDP Neighbor Down (Network | MPLS | TDP Neighbor Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5736eb8e-443f-4959-8fd9-68f8f09adc91",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | MPLS | TDP Neighbor Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MPLS | TDP Neighbor Down"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

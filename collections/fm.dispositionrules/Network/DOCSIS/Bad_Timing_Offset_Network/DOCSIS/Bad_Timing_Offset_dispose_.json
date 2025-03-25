@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | Bad Timing Offset (Network | DOCSIS | Bad Timing Offset,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "8a97526c-6156-4dea-be81-bb10742eaf7f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | DOCSIS | Bad Timing Offset",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | Bad Timing Offset"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Network | MPLS | LDP Session Down (Network | MPLS | LDP Session Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ca2ca379-0154-43a1-97d9-e632aeaf524b",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | MPLS | LDP Session Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MPLS | LDP Session Down"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

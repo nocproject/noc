@@ -1,0 +1,17 @@
+{
+    "name": "Network | STP | STP Vlan Loop Cleared (Network | STP | STP Vlan Loop Detected,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "56460225-6c6e-4ca8-baa0-83817445af97",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | STP | STP Vlan Loop Detected",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | STP | STP Vlan Loop Cleared"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

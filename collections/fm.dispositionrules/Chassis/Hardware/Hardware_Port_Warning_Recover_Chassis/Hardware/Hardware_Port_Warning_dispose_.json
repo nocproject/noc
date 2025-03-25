@@ -1,0 +1,19 @@
+{
+    "name": "Chassis | Hardware | Hardware Port Warning Recover (Chassis | Hardware | Hardware Port Warning,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "8421d0a2-a78d-4f97-b62a-c7b3ac34750b",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Hardware | Hardware Port Warning",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Chassis | Hardware | Hardware Port Warning Recover"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

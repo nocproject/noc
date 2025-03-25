@@ -21,6 +21,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
         "NOC.fm.dispositionrule.LookupField",
         "NOC.main.handler.LookupField",
         "NOC.main.remotesystem.LookupField",
+        "NOC.main.notificationgroup.LookupField",
         'Ext.ux.form.JSONField',
         "Ext.ux.form.GridField",
     ],
@@ -161,6 +162,11 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                 {
                     xtype: "fieldset",
                     title: __("Replace Rule"),
+                    layout: "hbox",
+                    defaults: {
+                      labelAlign: "left",
+                      margin: 5
+                    },
                     items: [
                         {
                             name: "replace_rule",
@@ -192,7 +198,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                         {
                             text: __("Handler"),
                             dataIndex: "handler",
-                            width: 200,
+                            width: 400,
                             editor: {
                                 xtype: "main.handler.LookupField"
                             },
@@ -201,23 +207,83 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                     ]
                 },
                 {
-                    name: "alarm_disposition",
-                    xtype: "fm.alarmclass.LookupField",
-                    fieldLabel: __("Dispose Alarm"),
-                    uiStyle: 'medium',
-                    allowBlank: true
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    defaults: {
+                      margin: 5
+                    },
+                    title: __("Object Actions"),
+                    items: [
+                        {
+                            name: "run_discovery",
+                            xtype: "checkbox",
+                            boxLabel: __("Run Discovery")
+                        },
+                        {
+                            name: "interaction_audit",
+                            xtype: "combobox",
+                            fieldLabel: __("Audit"),
+                            allowBlank: true,
+                            store: [
+                                ["99", __("Run Command")],
+                                ["1", __("Login")],
+                                ["2", __("LogOut")],
+                                ["3", __("Reboot")],
+                                ["4", __("Started")],
+                                ["5", __("Halted")],
+                                ["6", __("Config Changed")]
+                            ],
+                            value: null,
+                            uiStyle: "medium"
+                        }
+                    ]
                 },
                 {
-                    name: "default_action",
-                    xtype: "combobox",
-                    fieldLabel: __("Default Action"),
-                    store: [
-                        ["R", __("Raise Alarm")],
-                        ["I", __("Ignore Disposition")],
-                        ["C", __("Clear Alarm")],
-                    ],
-                    value: "new",
-                    uiStyle: "medium"
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    defaults: {
+                      labelAlign: "top",
+                      margin: 5
+                    },
+                    title: __("Notification"),
+                    items: [
+                        {
+                            name: "notification_group",
+                            xtype: "main.notificationgroup.LookupField",
+                            fieldLabel: __("New Event Notification"),
+                            labelWidth: 200,
+                            allowBlank: true
+                        },
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    defaults: {
+                      labelAlign: "top",
+                      margin: 5
+                    },
+                    title: __("Disposition"),
+                    items: [
+                        {
+                            name: "alarm_disposition",
+                            xtype: "fm.alarmclass.LookupField",
+                            fieldLabel: __("Dispose Alarm"),
+                            uiStyle: 'medium',
+                            allowBlank: true
+                        },
+                        {
+                            name: "default_action",
+                            xtype: "combobox",
+                            fieldLabel: __("Default Action"),
+                            store: [
+                                ["R", __("Raise Alarm")],
+                                ["I", __("Ignore Disposition")],
+                                ["C", __("Clear Alarm")],
+                            ],
+                            uiStyle: "medium"
+                        }
+                    ]
                 },
                 {
                     name: "stop_processing",

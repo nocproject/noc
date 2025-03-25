@@ -1,0 +1,17 @@
+{
+    "name": "Network | Port | Loss of Signal (Network | Port | Loss of Signal,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "46c73995-e212-4bfd-aac9-d181b8329ae6",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | Port | Loss of Signal",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Port | Loss of Signal"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

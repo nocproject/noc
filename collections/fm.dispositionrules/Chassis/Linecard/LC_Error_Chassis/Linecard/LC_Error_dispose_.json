@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Linecard | LC Error (Chassis | Linecard | LC Error,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "75d88b8a-aeaa-4e9d-b370-01b1b9b4e5b0",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Linecard | LC Error",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Linecard | LC Error"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

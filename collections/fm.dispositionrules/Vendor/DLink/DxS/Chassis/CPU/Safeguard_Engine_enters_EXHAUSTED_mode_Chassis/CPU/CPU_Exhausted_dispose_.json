@@ -1,0 +1,19 @@
+{
+    "name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode (Chassis | CPU | CPU Exhausted,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "6e0c9fba-8829-4b72-aa36-c1ce76483423",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | CPU | CPU Exhausted",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

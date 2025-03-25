@@ -1,0 +1,17 @@
+{
+    "name": "NOC | SA | Leave Activator Pool (NOC | SA | Activator Pool Degraded,clear)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ec907921-2477-4d29-940e-267dfbe1150f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "NOC | SA | Activator Pool Degraded",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "NOC | SA | Leave Activator Pool"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

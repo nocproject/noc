@@ -1,0 +1,19 @@
+{
+    "name": "Chassis | Hardware | Module | Module Power Off (Chassis | Hardware | Module | Module Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "1011a359-e6bd-486f-9383-934da0a8e682",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Hardware | Module | Module Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Chassis | Hardware | Module | Module Power Off"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

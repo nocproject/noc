@@ -1,0 +1,17 @@
+{
+    "name": "Network | MAC | Duplicate MAC (Network | MAC | Duplicate MAC,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "f913042f-ae24-4258-8d01-9fb5d9954134",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | MAC | Duplicate MAC",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | MAC | Duplicate MAC"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

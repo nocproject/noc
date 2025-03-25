@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Supervisor | Supervisor Up (Chassis | Supervisor | Supervisor Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "57d47003-bbcc-4eb9-941d-649ece9c2d3c",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Supervisor | Supervisor Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Supervisor | Supervisor Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

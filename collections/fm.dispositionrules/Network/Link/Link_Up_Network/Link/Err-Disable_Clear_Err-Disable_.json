@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Link Up (Network | Link | Err-Disable,Clear Err-Disable)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5f0858e6-c139-408b-a043-2b9d41c372ce",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | Link | Err-Disable",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Link Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

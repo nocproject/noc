@@ -1,0 +1,17 @@
+{
+    "name": "OTN | ODU | AIS Clear (OTN | ODU | AIS,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "dfe7bb5a-400d-4ef2-a18d-f27dc30f54dd",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "OTN | ODU | AIS",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "OTN | ODU | AIS Clear"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

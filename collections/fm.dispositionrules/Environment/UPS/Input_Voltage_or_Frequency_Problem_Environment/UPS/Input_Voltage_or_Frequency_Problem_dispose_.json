@@ -1,0 +1,19 @@
+{
+    "name": "Environment | UPS | Input Voltage or Frequency Problem (Environment | UPS | Input Voltage or Frequency Problem,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "c77ee1d7-b834-436d-9af7-ab965aa3b7d1",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | UPS | Input Voltage or Frequency Problem",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Environment | UPS | Input Voltage or Frequency Problem"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}
