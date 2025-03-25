@@ -4,5 +4,4 @@
 # Copyright (C) 2007-2025, The NOC Project
 # ---------------------------------------------------------------------
 gufo-ping==0.5.0
-gufo-snmp==0.5.2
 gufo-traceroute==0.2.0
