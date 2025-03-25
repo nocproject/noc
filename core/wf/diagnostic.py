@@ -464,11 +464,12 @@ class DiagnosticHub(object):
             "labels": self.__object.effective_labels,
             "address": self.__object.address,
             "groups": self.__object.effective_service_groups,
-            "profile": self.__object.profile.name,
         }
         if self.__object.auth_profile:
             ctx["suggests_cli"] = self.__object.auth_profile.enable_suggest
             ctx["suggests_snmp"] = self.__object.auth_profile.enable_suggest
+        if self.__object.profile:
+            ctx["profile"] = self.__object.profile.name
         if di.config.include_credentials and self.__object.credentials:
             ctx["cred"] = self.__object.credentials.get_snmp_credential()
         for ci in di.config.diagnostic_ctx or []:
@@ -627,7 +628,7 @@ class DiagnosticHub(object):
             if d_current == d_new:
                 self.logger.debug("[%s] Diagnostic Same, next.", d_name)
                 continue
-            self.logger.info("[%s] Update object diagnostic: %s -> %s", d_name, d_current, d_new)
+            self.logger.info("[%s] Update object diagnostic", d_name)
             if d_current.state != d_new.state:
                 if (
                     d_current.state == DiagnosticState.failed
