@@ -33,6 +33,7 @@ class Script(BaseScript):
         "Huawei | OID | hwOpticalModuleInfoTable Lane": mib[
             "HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalLaneBiasCurrent"
         ],
+        "Huawei | MIB | HUAWEI-BGP-VPN-MIB": mib["HUAWEI-BGP-VPN-MIB::hwBgpPeerVrfName"],
     }
 
     CHECK_SNMP_GET = {

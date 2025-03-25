@@ -781,13 +781,18 @@ class Script(GetMetricsScript):
             iface, mc = oids[r]
             # if mc.skip_values and results[r] in mc.skip_values:
             #     continue
+            value = float(results[r])
+            if mc.metric.endswith("Power") and value < 0:
+                self.logger.warning("[%s] Unknown DOM Power value: %s", iface.labels, value)
+                continue
             self.set_metric(
                 id=(mc.metric, iface.labels),
                 metric=mc.metric,
-                value=float(results[r]),
+                value=value,
                 ts=ts,
                 labels=iface.labels,
                 multi=True,
                 scale=mc.scale,
                 units=mc.units,
+                service=iface.service,
             )
