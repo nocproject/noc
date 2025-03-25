@@ -113,6 +113,8 @@ class Script(BaseScript):
                         "sysname": "remote_system_name",
                         "system description": "remote_system_description",
                         "sysdesc": "remote_system_description",
+                        "management address type": "mgmt_address_type",
+                        "management address value": "remote_mgmt_address",
                     },
                     ndata,
                 )
@@ -132,6 +134,9 @@ class Script(BaseScript):
                     del n["remote_system_description"]
                 if n.get("remote_system_name") in ["--", "NA", "N/A"]:
                     del n["remote_system_name"]
+                if n.get("mgmt_address_type") != "ipv4":
+                    n.pop("mgmt_address_type", None)
+                    n.pop("remote_mgmt_address", None)
                 # Process capabilities
                 caps = 0
                 cs = n.get("remote_capabilities", "").replace(",", " ")
