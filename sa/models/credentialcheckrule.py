@@ -136,10 +136,14 @@ class CredentialCheckRule(Document):
 
     def get_suggest_cli(self, raise_privilege: bool = True) -> List[CLICredential]:
         r = []
+        proto = tuple(p.value for p in self.get_suggest_proto() if p.config.is_cli) or (1, 2)
         for ss in self.suggest_credential:
             r.append(
                 CLICredential(
-                    username=ss.user, password=ss.password, super_password=ss.super_password
+                    username=ss.user,
+                    password=ss.password,
+                    super_password=ss.super_password,
+                    enable_protocols=proto,
                 )
             )
         for au in self.suggest_auth_profile:
@@ -150,6 +154,7 @@ class CredentialCheckRule(Document):
                         password=au.auth_profile.password,
                         super_password=au.auth_profile.super_password,
                         raise_privilege=raise_privilege,
+                        enable_protocols=proto,
                     )
                 )
         return r
