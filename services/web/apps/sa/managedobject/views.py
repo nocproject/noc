@@ -158,7 +158,10 @@ class ManagedObjectApplication(ExtModelApplication):
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
     ]
-    clean_fields = {"id": IntParameter(), "address": ORParameter(NoneParameter(), IPParameter(required=False))}
+    clean_fields = {
+        "id": IntParameter(),
+        "address": ORParameter(NoneParameter(), IPParameter(required=False)),
+    }
 
     x_map = {
         "table_name": "interface",
