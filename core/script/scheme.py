@@ -88,7 +88,7 @@ class CLICredential(object):
     password: Optional[str] = None
     super_password: Optional[str] = None
     raise_privilege: bool = False
-    enable_protocols: Tuple[int] = (1, 2)
+    enable_protocols: Tuple[int, ...] = (1, 2)
 
     @property
     def protocol(self) -> "Protocol":
