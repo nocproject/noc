@@ -232,6 +232,16 @@ class DiagnosticItem(BaseModel):
         super().__init__(**data)
         self._config = config
 
+    def __eq__(self, other: "DiagnosticItem") -> bool:
+        if self.diagnostic != other.diagnostic:
+            return False
+        return (
+            self.state == other.state
+            and self.checks == other.checks
+            and self.reason == other.reason
+            and self.changed == other.changed
+        )
+
     @property
     def config(self):
         return self._config
@@ -454,6 +464,7 @@ class DiagnosticHub(object):
             "labels": self.__object.effective_labels,
             "address": self.__object.address,
             "groups": self.__object.effective_service_groups,
+            "profile": self.__object.profile.name,
         }
         if self.__object.auth_profile:
             ctx["suggests_cli"] = self.__object.auth_profile.enable_suggest
@@ -616,7 +627,7 @@ class DiagnosticHub(object):
             if d_current == d_new:
                 self.logger.debug("[%s] Diagnostic Same, next.", d_name)
                 continue
-            self.logger.info("[%s] Update object diagnostic", d_name)
+            self.logger.info("[%s] Update object diagnostic: %s -> %s", d_name, d_current, d_new)
             if d_current.state != d_new.state:
                 if (
                     d_current.state == DiagnosticState.failed
@@ -669,11 +680,11 @@ class DiagnosticHub(object):
         params = []
         query_set = ""
         if remove:
-            self.logger.debug("[%s] Removed diagnostics", list(remove))
+            self.logger.debug("Removed diagnostics: %s", list(remove))
             params += remove
             query_set += " - %s" * len(remove)
         if update:
-            self.logger.debug("[%s] Update diagnostics", list(update))
+            self.logger.debug("Update diagnostics: %s", [x.diagnostic for x in update])
             diags = {d.diagnostic: d.model_dump(exclude={"config"}) for d in update}
             params += [orjson.dumps(diags, default=json_default).decode("utf-8")]
             query_set += " || %s::jsonb"

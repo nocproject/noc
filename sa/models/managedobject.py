@@ -3147,7 +3147,7 @@ class ManagedObject(NOCModel):
             changed |= self.apply_credential(cred)
         # getting auth_profile
         if changed:
-            logger.info("[%s] Changed credential: %s", self.name, changed)
+            logger.debug("[%s] Changed credential: %s", self.name, changed)
             ManagedObject.objects.filter(id=self.id).update(
                 **changed,
             )
