@@ -49,6 +49,9 @@ from noc.sa.interfaces.base import (
     IntParameter,
     DictListParameter,
     DocumentParameter,
+    IPParameter,
+    NoneParameter,
+    ORParameter,
 )
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
@@ -155,7 +158,10 @@ class ManagedObjectApplication(ExtModelApplication):
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
     ]
-    clean_fields = {"id": IntParameter(), "address": StringParameter(strip_value=True)}
+    clean_fields = {
+        "id": IntParameter(),
+        "address": ORParameter(NoneParameter(), IPParameter(required=False)),
+    }
 
     x_map = {
         "table_name": "interface",
@@ -295,7 +301,7 @@ class ManagedObjectApplication(ExtModelApplication):
                     "reason": d.reason or "",
                 }
             )
-        for m in data["mappings"]:
+        for m in data.get("mappings") or []:
             rs = RemoteSystem.get_by_id(m["remote_system"])
             m |= {
                 "remote_system__label": rs.name,
