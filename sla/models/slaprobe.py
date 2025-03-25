@@ -117,7 +117,7 @@ class SLAProbe(Document):
 
     @property
     def service(self):
-        from sa.models.service import Service
+        from noc.sa.models.service import Service
 
         return Service.objects.filter(sla_probe=self).first()
 
