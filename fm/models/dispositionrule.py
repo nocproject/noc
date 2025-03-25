@@ -96,9 +96,9 @@ class Match(EmbeddedDocument):
         if self.labels:
             r["labels"] = {"$all": list(self.labels)}
         if self.groups:
-            r["service_groups"] = {"$all": [str(x) for x in self.groups]}
+            r["service_groups"] = {"$all": [str(x.id) for x in self.groups]}
         if self.remote_system:
-            r["remote_system"] = str(self.remote_system.id)
+            r["remote_system"] = str(self.remote_system.name)
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:
@@ -211,7 +211,9 @@ class DispositionRule(Document):
         NotificationGroup, required=False
     )
     subject_template = StringField()
-    object_actions: ObjectActionItem = EmbeddedDocumentField(ObjectActionItem)
+    object_actions: Optional["ObjectActionItem"] = EmbeddedDocumentField(
+        ObjectActionItem, required=False
+    )
     #
     default_action = StringField(
         choices=[

@@ -27,11 +27,19 @@ class DispositionRuleApplication(ExtDocApplication):
         if isinstance(o, DispositionRule) and o.object_actions:
             oa = r.pop("object_actions")
             r |= oa
+            if r["interaction_audit"] == 0:
+                r["interaction_audit"] = 99
+        elif isinstance(o, DispositionRule) and not o.object_actions:
+            r |= {"run_discovery": False, "interaction_audit": None}
         return r
 
     def clean(self, data):
-        data["object_actions"] = {
-            "run_discovery": bool(data.pop("run_discovery", None)),
-            "interaction_audit": data.pop("interaction_audit", None),
-        }
+        rd, ia = data.pop("run_discovery", None), data.pop("interaction_audit", None)
+        # ExtJS set zero value to default ComboBox
+        if ia == 99:
+            ia = 0
+        if not rd and ia is not None:
+            data.pop("object_actions", None)
+        else:
+            data["object_actions"] = {"run_discovery": bool(rd), "interaction_audit": ia}
         return super().clean(data)

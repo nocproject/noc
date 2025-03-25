@@ -107,7 +107,8 @@ Ext.define("NOC.fm.dispositionrule.Model", {
         },
         {
             name: "interaction_audit",
-            type: "int"
+            type: "int",
+            defaultValue: "-"
         },
         {
             name: "stop_processing",

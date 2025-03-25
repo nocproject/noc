@@ -21,6 +21,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
         "NOC.fm.dispositionrule.LookupField",
         "NOC.main.handler.LookupField",
         "NOC.main.remotesystem.LookupField",
+        "NOC.main.notificationgroup.LookupField",
         'Ext.ux.form.JSONField',
         "Ext.ux.form.GridField",
     ],
@@ -222,17 +223,37 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                             name: "interaction_audit",
                             xtype: "combobox",
                             fieldLabel: __("Audit"),
+                            allowBlank: true,
                             store: [
-                                [0, __("Run Command")],
-                                [1, __("Login")],
-                                [2, __("LogOut")],
-                                [3, __("Reboot")],
-                                [4, __("Started")],
-                                [5, __("Halted")],
-                                [6, __("Config Changed")],
+                                ["99", __("Run Command")],
+                                ["1", __("Login")],
+                                ["2", __("LogOut")],
+                                ["3", __("Reboot")],
+                                ["4", __("Started")],
+                                ["5", __("Halted")],
+                                ["6", __("Config Changed")]
                             ],
+                            value: null,
                             uiStyle: "medium"
                         }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    defaults: {
+                      labelAlign: "top",
+                      margin: 5
+                    },
+                    title: __("Notification"),
+                    items: [
+                        {
+                            name: "notification_group",
+                            xtype: "main.notificationgroup.LookupField",
+                            fieldLabel: __("New Event Notification"),
+                            labelWidth: 200,
+                            allowBlank: true
+                        },
                     ]
                 },
                 {
