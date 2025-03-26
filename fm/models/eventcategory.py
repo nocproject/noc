@@ -20,13 +20,11 @@ from mongoengine.fields import (
     BooleanField,
     EmbeddedDocumentListField,
     UUIDField,
-    EnumField,
     LongField,
 )
 from bson import ObjectId
 
 # NOC modules
-from noc.core.fm.enum import EventCategoryLevel
 from noc.core.model.decorator import on_delete_check, tree
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -34,6 +32,49 @@ from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 
 id_lock = Lock()
+
+
+class Resource(EmbeddedDocument):
+    """
+    Attributes:
+        code: Resource Code
+        required_target: Require Resolve Target Object
+        extend_path: Extend path by resolve Resource
+        update_oper_status: Update Oper Status on resource
+    """
+
+    meta = {"strict": False}
+
+    code: str = StringField(
+        required=True, choices=[("if", "Interface"), ("si", "SubInterface"), ("ip", "Address")]
+    )
+    required_target: bool = BooleanField(default=False)
+    extend_path = BooleanField(default=False)  # Append Resource Path
+    update_oper_status: BooleanField(default=False)  # set_oper_status API
+
+
+class Target(EmbeddedDocument):
+    """
+
+    Attributes:
+        scope: Target scope
+        map_method: Search object method
+            * By Profile - By Profile method
+            * By Source - By Target mappings
+        required: Mapping Is Required, if not - dropped message
+        extend_path: Add object paths to paths fields
+        update_oper_status: Update oper status on Target
+    """
+
+    meta = {"strict": False}
+
+    scope: str = StringField(choices=[("O", "Object"), ("M", "ManagedObject")])
+    # Target Scope
+    map_method: str = StringField(choices=[("P", "By Profile"), ("S", "By Sources")], default="S")
+    # If not mapped - event dropped
+    required: bool = BooleanField(default=False)
+    extend_path: str = BooleanField(default=True)
+    update_oper_status: bool = BooleanField(default=False)
 
 
 class EventCategoryVar(EmbeddedDocument):
@@ -104,9 +145,13 @@ class EventCategory(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     parent = ReferenceField("self", required=False)
-    level: "EventCategoryLevel" = EnumField(EventCategoryLevel, required=True)
+    is_unique = BooleanField(default=False)
     vars: List["EventCategoryVar"] = EmbeddedDocumentListField(EventCategoryVar)
-    # resources
+    suppression_policy: str = StringField(
+        choices=[("C", "changed"), ("D", "duplicated")], default="D"
+    )
+    resources: List["Resource"] = EmbeddedDocumentListField(Resource)
+    target: List["Target"] = EmbeddedDocumentListField(Target)
     # Object id in BI
     bi_id = LongField(unique=True)
 
