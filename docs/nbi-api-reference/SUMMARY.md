@@ -1,0 +1,8 @@
+* [Overview](index.md)
+* [config](config.md)
+* [configrevisions](configrevisions.md)
+* [getmappings](getmappings.md)
+* [objectmetrics](objectmetrics.md)
+* [objectstatus](objectstatus.md)
+* [path](path.md)
+* [telemetry](telemetry.md)
