@@ -48,33 +48,9 @@ class Resource(EmbeddedDocument):
     code: str = StringField(
         required=True, choices=[("if", "Interface"), ("si", "SubInterface"), ("ip", "Address")]
     )
-    required_target: bool = BooleanField(default=False)
+    required_target: bool = BooleanField(default=True)
     extend_path = BooleanField(default=False)  # Append Resource Path
     update_oper_status: BooleanField(default=False)  # set_oper_status API
-
-
-class Target(EmbeddedDocument):
-    """
-
-    Attributes:
-        scope: Target scope
-        map_method: Search object method
-            * By Profile - By Profile method
-            * By Source - By Target mappings
-        required: Mapping Is Required, if not - dropped message
-        extend_path: Add object paths to paths fields
-        update_oper_status: Update oper status on Target
-    """
-
-    meta = {"strict": False}
-
-    scope: str = StringField(choices=[("O", "Object"), ("M", "ManagedObject")])
-    # Target Scope
-    map_method: str = StringField(choices=[("P", "By Profile"), ("S", "By Sources")], default="S")
-    # If not mapped - event dropped
-    required: bool = BooleanField(default=False)
-    extend_path: str = BooleanField(default=True)
-    update_oper_status: bool = BooleanField(default=False)
 
 
 class EventCategoryVar(EmbeddedDocument):
@@ -134,6 +110,18 @@ class EventCategoryVar(EmbeddedDocument):
     check=[("fm.EventClassificationRule", "categories"), ("fm.EventCategory", "parent")]
 )
 class EventCategory(Document):
+    """
+
+    Attributes:
+        target_scope: Target scope
+        target_map_method: Search object method
+            * By Profile - By Profile method
+            * By Source - By Target mappings
+        required_target: Mapping Is Required, if not - dropped message
+        extend_path_targets: Add object paths to paths fields
+        update_target_status: Update oper status on Target
+    """
+
     meta = {
         "collection": "noc.eventcategories",
         "strict": False,
@@ -151,7 +139,16 @@ class EventCategory(Document):
         choices=[("C", "changed"), ("D", "duplicated")], default="D"
     )
     resources: List["Resource"] = EmbeddedDocumentListField(Resource)
-    target: List["Target"] = EmbeddedDocumentListField(Target)
+    # Target Mapping
+    target_scope: str = StringField(choices=[("O", "Object"), ("M", "ManagedObject")], default="M")
+    required_target: bool = BooleanField(default=False)
+    # Target Scope
+    target_map_method: str = StringField(
+        choices=[("P", "By Profile"), ("S", "By Sources")], default="S"
+    )
+    # If not mapped - event dropped
+    extend_path_targets: str = BooleanField(default=True)
+    update_target_status: bool = BooleanField(default=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
