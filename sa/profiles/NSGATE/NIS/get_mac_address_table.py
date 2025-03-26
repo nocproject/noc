@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Host.SNMP.get_mac_address_table
+# NSGATE.NIS.get_mac_address_table
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
@@ -12,7 +12,7 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Host.SNMP.get_mac_address_table"
+    name = "NSGATE.NIS.get_mac_address_table"
     interface = IGetMACAddressTable
 
     MAX_REPETITIONS = 1

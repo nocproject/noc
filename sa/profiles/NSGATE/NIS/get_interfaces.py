@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Host.SNMP.get_interfaces
+# NSGATE.NIS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -12,7 +12,7 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Host.SNMP.get_interfaces"
+    name = "NSGATE.NIS.get_interfaces"
     interface = IGetInterfaces
 
     # SNMP_IF_DESCR_TABLE = "IF-MIB::ifName"
