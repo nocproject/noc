@@ -13,6 +13,7 @@ class Profile(BaseProfile):
     name = "Maipu.OS"
 
     pattern_more = [
+        (rb"^---MORE---", b" "),
         (rb"^....press ENTER to next line, Q to quit, other key to next page....", b"\n"),
         (rb"Startup config in flash will be updated, are you sure", b"y"),
     ]
