@@ -85,18 +85,6 @@ Ext.define("NOC.fm.eventcategory.Application", {
                   allowBlank: true,
                 },
                 {
-                    name: "level",
-                    xtype: "combobox",
-                    fieldLabel: __("Level"),
-                    allowBlank: false,
-                    store: [
-                        [1, __("Context (Lvl. 1)")],
-                        [2, __("Object (Lvl. 2)")],
-                        [3, __("Disposition (Lvl. 3)")]
-                    ],
-                    uiStyle: "medium"
-                },
-                {
                     name: "vars",
                     xtype: "gridfield",
                     columns: [
@@ -140,6 +128,97 @@ Ext.define("NOC.fm.eventcategory.Application", {
                             dataIndex: "description",
                             flex: 1,
                             editor: "textfield"
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    defaults: {
+                      labelAlign: "top",
+                      margin: 5
+                    },
+                    title: __("Object Mapping"),
+                    items: [
+                        {
+                            name: "object_scope",
+                            xtype: "combobox",
+                            fieldLabel: __("Object Scope"),
+                            allowBlank: true,
+                            store: [
+                                ["D", __("Disable")],
+                                ["O", __("Object")],
+                                ["M", __("ManagedObject")]
+                            ],
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "object_resolver",
+                            xtype: "combobox",
+                            fieldLabel: __("Object Resolver"),
+                            allowBlank: true,
+                            store: [
+                                ["P", __("From Profile")],
+                                ["T", __("From Target")]
+                            ],
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "required_object",
+                            xtype: "checkbox",
+                            boxLabel: __("Required Object"),
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "extend_object_paths",
+                            xtype: "checkbox",
+                            boxLabel: __("Extend Object Path"),
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "set_object_status",
+                            xtype: "checkbox",
+                            boxLabel: __("Set Object Status"),
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    name: "resources",
+                    xtype: "gridfield",
+                    columns: [
+                        {
+                            text: __("Code"),
+                            dataIndex: "code",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["if", __("Interface")],
+                                    ["si", __("SubInterface")]
+                                ]
+                            }
+                        },
+                        {
+                            text: __("Required Object"),
+                            dataIndex: "required_object",
+                            width: 100,
+                            editor: "checkboxfield",
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Extend Path"),
+                            dataIndex: "extend_path",
+                            width: 100,
+                            editor: "checkboxfield",
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Set Oper Status"),
+                            dataIndex: "set_oper_status",
+                            width: 100,
+                            editor: "checkboxfield",
+                            renderer: NOC.render.Bool
                         }
                     ]
                 }

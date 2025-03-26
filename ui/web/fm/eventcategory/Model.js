@@ -42,8 +42,34 @@ Ext.define("NOC.fm.eventcategory.Model", {
             persist: false
         },
         {
-            name: "level",
-            type: "integer"
+            name: "suppression_policy",
+            type: "string",
+            defaultValue: "D"
+        },
+        {
+            name: "object_scope",
+            type: "string",
+            defaultValue: "M"
+        },
+        {
+            name: "required_object",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "object_resolver",
+            type: "string",
+            defaultValue: "T"
+        },
+        {
+            name: "extend_object_paths",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "update_object_status",
+            type: "boolean",
+            defaultValue: false
         },
         {
             name: "bi_id",
@@ -52,6 +78,10 @@ Ext.define("NOC.fm.eventcategory.Model", {
         },
         {
             name: "vars",
+            type: "auto"
+        },
+        {
+            name: "resources",
             type: "auto"
         }
     ]
