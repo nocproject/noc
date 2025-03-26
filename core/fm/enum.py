@@ -64,10 +64,3 @@ class EventSource(enum.Enum):
     INTERNAL = "internal"
     WINEVENT = "winevent"
     OTHER = "other"
-
-
-class EventCategoryLevel(enum.Enum):
-    DOMAIN = 0
-    CONTEXT = 1
-    OBJECT = 2
-    DISPOSITION = 3
