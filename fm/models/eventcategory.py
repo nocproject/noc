@@ -113,13 +113,22 @@ class EventCategory(Document):
     """
 
     Attributes:
+        is_unique: Only one category on Event (on parent)
+        vars: Variables description
+        suppression_policy: Policy that suppress received event by vars
+            * C - only changed variables
+            * D - supress by timer if equal variables
         target_scope: Target scope
+            * D - Disable Target (Info Category)
+            * O - Object
+            * M - Managed Object
         target_map_method: Search object method
             * By Profile - By Profile method
             * By Source - By Target mappings
         required_target: Mapping Is Required, if not - dropped message
         extend_path_targets: Add object paths to paths fields
         update_target_status: Update oper status on Target
+        resources: Resource Map rules
     """
 
     meta = {
@@ -140,7 +149,9 @@ class EventCategory(Document):
     )
     resources: List["Resource"] = EmbeddedDocumentListField(Resource)
     # Target Mapping
-    target_scope: str = StringField(choices=[("O", "Object"), ("M", "ManagedObject")], default="M")
+    target_scope: str = StringField(choices=[
+        ("D", "Disable"), ("O", "Object"), ("M", "ManagedObject"),
+    ], default="M")
     required_target: bool = BooleanField(default=False)
     # Target Scope
     target_map_method: str = StringField(
