@@ -21,6 +21,7 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     UUIDField,
     LongField,
+    IntField,
 )
 from bson import ObjectId
 
@@ -36,9 +37,10 @@ id_lock = Lock()
 
 class Resource(EmbeddedDocument):
     """
+    Systen Resources for Category
     Attributes:
         code: Resource Code
-        required_target: Require Resolve Target Object
+        required_object: Require Resolve Object for Resource Map
         extend_path: Extend path by resolve Resource
         update_oper_status: Update Oper Status on resource
     """
@@ -48,9 +50,9 @@ class Resource(EmbeddedDocument):
     code: str = StringField(
         required=True, choices=[("if", "Interface"), ("si", "SubInterface"), ("ip", "Address")]
     )
-    required_target: bool = BooleanField(default=True)
+    required_object: bool = BooleanField(default=True)
     extend_path = BooleanField(default=False)  # Append Resource Path
-    update_oper_status: BooleanField(default=False)  # set_oper_status API
+    set_oper_status: bool = BooleanField(default=False)  # set_oper_status API
 
 
 class EventCategoryVar(EmbeddedDocument):
@@ -118,16 +120,17 @@ class EventCategory(Document):
         suppression_policy: Policy that suppress received event by vars
             * C - only changed variables
             * D - supress by timer if equal variables
-        target_scope: Target scope
+        object_scope: Object search scope
             * D - Disable Target (Info Category)
             * O - Object
             * M - Managed Object
-        target_map_method: Search object method
+        object_resolver: How object find
+            * Disable - for information only Classes
             * By Profile - By Profile method
             * By Source - By Target mappings
-        required_target: Mapping Is Required, if not - dropped message
-        extend_path_targets: Add object paths to paths fields
-        update_target_status: Update oper status on Target
+        required_object: Mapping Is Required, if not - dropped message
+        extend_object_paths: Add object paths to paths field
+        update_object_status: Update oper status on Object
         resources: Resource Map rules
     """
 
@@ -145,21 +148,26 @@ class EventCategory(Document):
     is_unique = BooleanField(default=False)
     vars: List["EventCategoryVar"] = EmbeddedDocumentListField(EventCategoryVar)
     suppression_policy: str = StringField(
-        choices=[("C", "changed"), ("D", "duplicated")], default="D"
+        choices=[("C", "Changed"), ("D", "Duplicated")], default="D"
     )
+    suppression_window = IntField(default=0)
     resources: List["Resource"] = EmbeddedDocumentListField(Resource)
-    # Target Mapping
-    target_scope: str = StringField(choices=[
-        ("D", "Disable"), ("O", "Object"), ("M", "ManagedObject"),
-    ], default="M")
-    required_target: bool = BooleanField(default=False)
-    # Target Scope
-    target_map_method: str = StringField(
-        choices=[("P", "By Profile"), ("S", "By Sources")], default="S"
+    # Object Resolve
+    object_scope: str = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("O", "Object"),
+            ("M", "ManagedObject"),
+        ],
+        default="M",
     )
     # If not mapped - event dropped
-    extend_path_targets: str = BooleanField(default=True)
-    update_target_status: bool = BooleanField(default=False)
+    required_object: bool = BooleanField(default=True)
+    object_resolver: str = StringField(
+        choices=[("P", "By Profile"), ("T", "By Target")], default="T"
+    )
+    extend_object_paths: str = BooleanField(default=True)
+    set_object_status: bool = BooleanField(default=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
