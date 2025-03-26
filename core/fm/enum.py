@@ -83,10 +83,3 @@ class EventAction(enum.Enum):
         if self.__class__ is other.__class__:
             return self.value < other.value
         return NotImplemented
-
-
-class EventCategoryLevel(enum.Enum):
-    DOMAIN = 0
-    CONTEXT = 1
-    OBJECT = 2
-    DISPOSITION = 3
