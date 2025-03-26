@@ -20,8 +20,8 @@ class Script(BaseScript):
     cache = True
 
     rx_platform = re.compile(
-        r"Product\s+(?P<platform>\S+)\s+\S+\s*"
-        r"Version (?P<version>\S+) \(\S+ \S+\)", re.MULTILINE
+        r"Product\s+(?P<platform>\S+)\s+\S+\s*" r"Version (?P<version>\S+) \(\S+ \S+\)",
+        re.MULTILINE,
     )
 
     def execute_snmp(self):
