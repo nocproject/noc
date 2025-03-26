@@ -1,0 +1,7 @@
+* [Overview](index.md)
+* [interfacestatus](interfacestatus.md)
+* [uptime](uptime.md)
+* [alarms](alarms.md)
+* [mac](mac.md)
+* [metrics](metrics.md)
+* [cpestatus](cpestatus.md)
