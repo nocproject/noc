@@ -103,11 +103,11 @@ class MatchItem(object):
         for match in data:
             r += [
                 MatchItem(
-                    labels=match["labels"],
-                    exclude_labels=match["exclude_labels"],
-                    administrative_domain=match.get("administrative_domain"),
-                    resource_groups=match.get("resource_groups"),
-                    profile=match.get("profile"),
+                    labels=match.get(MessageMeta.LABELS.value),
+                    exclude_labels=match.get("exclude_labels"),
+                    administrative_domain=match.get(MessageMeta.ADM_DOMAIN.value),
+                    resource_groups=match.get(MessageMeta.GROUPS.value),
+                    profile=match.get(MessageMeta.PROFILE.value),
                     headers=[
                         HeaderMatchItem(header=h["header"], op=h["op"], value=h["value"])
                         for h in match["headers"]
