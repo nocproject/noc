@@ -239,10 +239,6 @@ class SLAProbe(Document):
         """
         if not sla_probe.state.is_productive:
             return {}
-        labels = []
-        for ll in sla_probe.effective_labels:
-            l_c = Label.get_by_name(ll)
-            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         source = sla_probe
         if sla_probe.profile.raise_alarm_to_target:
             source = sla_probe.get_target() or source
@@ -250,12 +246,9 @@ class SLAProbe(Document):
             "type": "sla_probe",
             "bi_id": source.bi_id,
             "fm_pool": sla_probe.managed_object.get_effective_fm_pool().name,
-            "labels": labels,
-            "metrics": [
-                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
-                for mc in sla_probe.profile.metrics
-            ],
+            "labels": sorted(sla_probe.effective_labels),
             "items": [],
+            "composed_metrics": [],
             "sharding_key": sla_probe.managed_object.bi_id if sla_probe.managed_object else None,
             "meta": sla_probe.get_message_context(),
             "rules": [ma for ma in MetricRule.iter_rules_actions(sla_probe.effective_labels)],

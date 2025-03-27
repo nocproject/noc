@@ -10,10 +10,9 @@ import logging
 from threading import Lock
 import operator
 import datetime
-from typing import Dict, Optional, Iterable, List, Union
+from typing import Dict, Optional, Iterable, List
 
 # Third-party modules
-from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -132,13 +131,13 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Sensor"]:
-        return Sensor.objects.filter(id=oid).first()
+    def get_by_id(cls, s_id):
+        return Sensor.objects.filter(id=s_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Sensor"]:
-        return Sensor.objects.filter(bi_id=bi_id).first()
+    def get_by_bi_id(cls, s_id):
+        return Sensor.objects.filter(bi_id=s_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:
@@ -284,10 +283,6 @@ class Sensor(Document):
         """
         if not sensor.state.is_productive:
             return {}
-        labels = []
-        for ll in sensor.effective_labels:
-            l_c = Label.get_by_name(ll)
-            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         return {
             "type": "sensor",
             "bi_id": sensor.bi_id,
@@ -296,12 +291,10 @@ class Sensor(Document):
                 if sensor.managed_object
                 else None
             ),
-            "labels": labels,
-            "metrics": [
-                {"name": "status", "is_stored": True},
-                {"name": "value", "is_stored": True},
-            ],
+            "labels": [],
+            "profile": sensor.profile.bi_id,
             "items": [],
+            "composed_metrics": [],
             "sharding_key": sensor.managed_object.bi_id if sensor.managed_object else None,
             "rules": [ma for ma in MetricRule.iter_rules_actions(sensor.effective_labels)],
         }

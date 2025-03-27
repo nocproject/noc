@@ -2742,24 +2742,12 @@ class ManagedObject(NOCModel):
             return {}
         icoll = Interface._get_collection()
         s_metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
-        labels = []
-        for ll in sorted(mo.effective_labels):
-            l_c = Label.get_by_name(ll)
-            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         items = []
         for iface in icoll.find(
             {"managed_object": mo.id}, {"name", "effective_labels", "profile"}
         ).sort([("name", ASCENDING)]):
             ip = InterfaceProfile.get_by_id(iface["profile"])
-            metrics = [
-                {
-                    "name": mc.metric_type.field_name,
-                    "is_stored": mc.is_stored,
-                    "is_composed": bool(mc.metric_type.compose_expression),
-                }
-                for mc in ip.metrics
-            ]
-            if not metrics:
+            if not ip.metrics:
                 continue
             items.append(
                 {
@@ -2768,22 +2756,23 @@ class ManagedObject(NOCModel):
                     "rules": [
                         ma for ma in MetricRule.iter_rules_actions(iface["effective_labels"])
                     ],
-                    "metrics": metrics,
+                    "composed_metrics": [
+                        mc.metric_type.field_name
+                        for mc in ip.metrics
+                        if bool(mc.metric_type.compose_expression)
+                    ],
                 }
             )
         return {
             "type": "managed_object",
             "bi_id": mo.bi_id,
             "fm_pool": mo.get_effective_fm_pool().name,
-            "labels": labels,
+            "labels": sorted(mo.effective_labels),
             "discovery_interval": mo.get_metric_discovery_interval(),
-            "metrics": [
-                {
-                    "name": mc.metric_type.field_name,
-                    "is_stored": mc.is_stored,
-                    "is_composed": bool(mc.metric_type.compose_expression),
-                }
+            "composed_metrics": [
+                mc.metric_type.field_name
                 for mc in s_metrics.values()
+                if bool(mc.metric_type.compose_expression)
             ],
             "rules": [ma for ma in MetricRule.iter_rules_actions(mo.effective_labels)],
             "items": items,

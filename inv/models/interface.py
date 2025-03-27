@@ -633,7 +633,10 @@ class Interface(Document):
             for si in (
                 SubInterface._get_collection()
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .find({"interface": i["_id"]}, {"name": 1, "interface": 1, "ifindex": 1})
+                .find(
+                    {"interface": i["_id"], "name": {"$ne": i["name"]}},
+                    {"name": 1, "interface": 1, "ifindex": 1},
+                )
             ):
                 ifindex = si.get("ifindex")
                 service = None
