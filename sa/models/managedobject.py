@@ -263,7 +263,7 @@ class Credentials(object):
     ) -> Iterable[Tuple[str, str]]:
         """Iterate over credentail"""
         # CLI
-        if not snmp_only:
+        if not snmp_only or cli_only:
             for f, v in [
                 ("user", self.user),
                 ("password", self.password),
@@ -3123,6 +3123,7 @@ class ManagedObject(NOCModel):
         # Effective credential
         if credential == self.credentials:
             # Credential is same
+            logger.debug("Credential is Same")
             return False
         if is_suggests and self.auth_profile and not self.auth_profile.enable_suggest:
             return False
@@ -3130,10 +3131,11 @@ class ManagedObject(NOCModel):
         cred = self.credentials.update_credential(credential)
         # Change scheme
         if isinstance(credential, CLICredential) and self.scheme != credential.protocol:
-            self.scheme = credential.protocol
+            self.scheme = credential.protocol.value
             changed["scheme"] = credential.protocol.value
         # Change AccessPreference
-        if cred == credential:
+        if cred == self.credentials:
+            logger.debug("Object credential is same new. Skipping")
             return bool(changed)
         ap = AuthProfile.get_by_credential(cred)
         if ap:
