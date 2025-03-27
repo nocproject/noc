@@ -365,7 +365,12 @@ class Service(Document):
 
     @classmethod
     def get_services_by_alarm(cls, alarm) -> List["str"]:
-        profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
+        profiles = list(
+            ServiceProfile.objects.filter(
+                alarm_affected_policy__ne="D",
+                alarm_affected_policy__exists=True,
+            ).scalar("id")
+        )
         if not profiles:
             return []
         # q = m_q(managed_object=alarm.managed_object)
@@ -388,14 +393,17 @@ class Service(Document):
         if address:
             c = Capability.get_by_name("Channel | Address")
             # managed_object=alarm.managed_object,
-            q |= m_q(caps__match={"capability": c.id, "value": address})
+            if c:
+                q |= m_q(caps__match={"capability": c.id, "value": address})
         if alarm.managed_object.effective_service_groups:
             q |= m_q(
                 managed_object=None,
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
-        if not q:
+        if not q and alarm.managed_object:
             q = m_q(managed_object=alarm.managed_object.id)
+        elif not q:
+            return []
         q = m_q(profile__in=profiles) & q
         logger.info("Get services by alarm: %s/%s", alarm, q)
         return list(Service.objects.filter(q).scalar("id"))
