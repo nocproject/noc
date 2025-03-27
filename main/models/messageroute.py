@@ -25,7 +25,7 @@ from mongoengine.fields import (
 from mongoengine.errors import ValidationError
 
 # NOC modules
-from noc.core.mx import MessageType, MESSAGE_HEADERS
+from noc.core.mx import MessageType, MESSAGE_HEADERS, MessageMeta
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField, PlainReferenceListField
 from noc.core.change.decorator import change
 from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -159,13 +159,14 @@ class MessageRoute(Document):
         for match in self.match:
             r["match"] += [
                 {
-                    "labels": match.labels,
-                    "exclude_labels": match.exclude_labels,
-                    "administrative_domain": (
+                    MessageMeta.LABELS.value: list(match.labels),
+                    "exclude_labels": list(match.exclude_labels),
+                    MessageMeta.ADM_DOMAIN.value: (
                         AdministrativeDomain.get_nested_ids(match.administrative_domain)
                         if match.administrative_domain
                         else None
                     ),
+                    MessageMeta.GROUPS.value: [str(g.id) for g in match.resource_groups],
                     "headers": [
                         {"header": m.header, "op": m.op, "value": m.value}
                         for m in match.headers_match
