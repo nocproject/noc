@@ -1,14 +1,16 @@
 # ----------------------------------------------------------------------
 # cfgmxroute
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from typing import Any, Dict
 
+# Third-party modules
 from bson import ObjectId
+
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.main.models.messageroute import MessageRoute
