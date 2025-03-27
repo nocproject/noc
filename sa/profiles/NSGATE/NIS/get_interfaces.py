@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "NSGATE.NIS.get_interfaces"
     interface = IGetInterfaces
 
-    # SNMP_IF_DESCR_TABLE = "IF-MIB::ifName"
+    SNMP_IF_DESCR_TABLE = "IF-MIB::ifName"
 
     def clean_iftype(self, ifname, ifindex):
         iftype = self.snmp.get(mib["IF-MIB::ifType", ifindex], cached=True)
