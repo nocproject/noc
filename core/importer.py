@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Custom python module importer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -150,61 +150,17 @@ class NOCCustomLoader(NOCLoader):
         return None
 
 
-class NOCSpeedupLoader(NOCLoader):
-    PREFIX = "noc.speedup"
-    ROOT = None
-
-    def _get_filename(self, fullname):
-        prefix = fullname[len(self.PREFIX) + 1 :].replace(".", os.sep)
-        for suffix in importlib.machinery.all_suffixes():
-            path = os.path.join(self.ROOT, prefix + suffix)
-            if os.path.exists(path):
-                return path
-        return None
-
-    def load_module(self, fullname):
-        mod = sys.modules.get(fullname)
-        if mod is None:
-            real_path = self._get_filename(fullname)
-            if not real_path:
-                return None
-            spec = importlib.util.spec_from_file_location(fullname, real_path)
-            mod = sys.modules.setdefault(fullname, importlib.util.module_from_spec(spec))
-            spec.loader.exec_module(mod)
-            # Set a few properties required by PEP 302
-            mod.__file__ = real_path
-        mod.__name__ = fullname
-        # mod.__path__ = self.path_entry
-        mod.__loader__ = self
-        if self.is_package(fullname):
-            mod.__package__ = fullname
-            # mod.__path__ = [self.path_entry]
-        else:
-            mod.__package__ = ".".join(fullname.split(".")[:-1])
-
-        return mod
-
-
 def _get_loader():
     # Pyrules
     loader_map = {NOCPyruleLoader.PREFIX: NOCPyruleLoader}
     # Custom
     if config.path.custom_path and os.path.exists(config.path.custom_path):
         loader_map[NOCCustomLoader.PREFIX] = NOCCustomLoader
-    # Speedup
     parts = __file__.split(os.sep)
     root = os.path.join(*parts[:-3])
     if not parts[0]:
         root = os.sep + root
     root = os.path.abspath(root)
-    alt_speedup = os.getenv("NOC_SPEEDUP_PATH")
-    if not alt_speedup:
-        alt = os.path.join(root, "nocspeedup")
-        if os.path.exists(alt):
-            alt_speedup = alt
-    if alt_speedup:
-        NOCSpeedupLoader.ROOT = alt_speedup
-        loader_map[NOCSpeedupLoader.PREFIX] = NOCSpeedupLoader
     return ImportRouter(loader_map)
 
 

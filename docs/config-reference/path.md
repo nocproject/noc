@@ -119,15 +119,6 @@ Path service configuration
 | Key-Value Path | `path/legacy_config`     |
 | Environment    | `NOC_PATH_LEGACY_CONFIG` |
 
-## cythonize
-
-|                |                      |
-| -------------- | -------------------- |
-| Default value  | `./bin/cythonize`    |
-| YAML Path      | `path.cythonize`     |
-| Key-Value Path | `path/cythonize`     |
-| Environment    | `NOC_PATH_CYTHONIZE` |
-
 ## npkg_root
 
 |                |                        |
