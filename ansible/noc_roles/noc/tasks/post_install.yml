@@ -9,20 +9,6 @@
   environment:
     NOC_CONFIG: "{{ config_order }}"
 
-- name: Compiling binary modules
-  command: ./scripts/deploy/cythonize
-  args:
-    chdir: "{{ noc_root }}"
-  register: result
-  changed_when: "'CHANGED' in result.stdout"
-  failed_when: "'ERROR' in result.stdout"
-  environment:
-    NOC_CONFIG: "{{ config_order }}"
-    PYTHONPATH: "{{ noc_root | dirname }}"
-  tags:
-    - requirements
-    - get_source
-
 - name: Cleanup hanging .pyc files
   command: ./scripts/deploy/cleanup-pyc
   args:

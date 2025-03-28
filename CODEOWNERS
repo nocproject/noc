@@ -6,9 +6,6 @@
 # Python files
 *.py @dv @aversant
 
-# Cython files
-*.pyx @dv
-
 # JS files
 *.js @d.zakharov @dv
 
