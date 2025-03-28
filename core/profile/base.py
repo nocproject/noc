@@ -466,6 +466,11 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     False - pass integers as unquoted
     """
 
+    first_stack_unit = 0
+    """
+    Default first stack unit for generate interface name
+    """
+
     config_tokenizer = None
     """
     Config tokenizer name, from noc.core.confdb.tokenizer.*
@@ -769,26 +774,26 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         Return interface path by Inventory connection name
 
         ```python
-        >>> BaseProfile().get_stack_number("Gi 1/4/15")
-        1
-        >>> BaseProfile().get_stack_number("Lo")
-        >>> BaseProfile().get_stack_number("Te 2/0/1.5")
-        1
-        >>> BaseProfile().get_stack_number("Se 0/1/0:0.10")
-        0
-        >>> BaseProfile().get_stack_number("3:2")
-        2
-        >>> BaseProfile().get_stack_number("3/2")
-        2
-        >>> BaseProfile().get_stack_number("GigabitEthernet X/0/1")
-        0/1
-        >>> BaseProfile().get_stack_number("GigabitEthernet1_sfp")
-        1
-        >>> BaseProfile().get_stack_number("Gi1_sfp")
-        1
-        >>> BaseProfile().get_stack_number("sfp 9")
-        9
-        ```
+        >>> BaseProfile().get_connection_path("Gi 1/4/15")
+        '4/15'
+        >>> BaseProfile().get_connection_path("Lo")
+        >>> BaseProfile().get_connection_path("Te 2/0/1.5")
+        '0/1'
+        >>> BaseProfile().get_connection_path("Se 0/1/0:0.10")
+        '0'
+        >>> BaseProfile().get_connection_path("3:2")
+        '2'
+        >>> BaseProfile().get_connection_path("3/2")
+        '2'
+        >>> BaseProfile().get_connection_path("GigabitEthernet X/0/1")
+        '0/1'
+        >>> BaseProfile().get_connection_path("GigabitEthernet1_sfp")
+        '1'
+        >>> BaseProfile().get_connection_path("Gi1_sfp")
+        '1'
+        >>> BaseProfile().get_connection_path("sfp 9")
+        '9'
+
         :param name: Connection Name
         :return:
         """
@@ -842,7 +847,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
             x.insert(0, self.get_connection_path(p.c_name))
         r.append("/".join(x))
         if port.stack_num is not None:
-            r.append("/".join([str(port.stack_num)] + x))
+            r.append("/".join([str(port.stack_num or self.first_stack_unit)] + x))
         protocol_prefixes = self.get_protocol_prefixes(port.protocols)
         if not protocol_prefixes:
             return r

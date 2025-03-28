@@ -465,7 +465,7 @@
                                 </a>
                                 {% if inventory %}
                                     {% for ii in inventory %}
-                                        {% if i["name"] == ii["name"] and ii["id"]%}
+                                        {% if i["name"] == ii["interface"] and ii["id"]%}
                                             <a target="_blank" class="noc-port-link"
                                                 data-toggle="tooltip" data-placement="right" title="{{ _("Open SFP") }}"
                                                 href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'sfp', 'name': '{{i["name"]}}', 'data': {{ ii }}}">

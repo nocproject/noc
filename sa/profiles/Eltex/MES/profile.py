@@ -45,6 +45,7 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(rb"\d+-\w+-\d+\s\d+:\d+:\d+\s\%\S+\:.+"), b"\r"]
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
+    first_stack_unit = 1
     config_tokenizer = "indent"
     config_tokenizer_settings = {
         "line_comment": "!",
