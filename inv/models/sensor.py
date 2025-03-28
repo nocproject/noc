@@ -10,9 +10,10 @@ import logging
 from threading import Lock
 import operator
 import datetime
-from typing import Dict, Optional, Iterable, List
+from typing import Dict, Optional, Iterable, List, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -131,13 +132,13 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, s_id):
-        return Sensor.objects.filter(id=s_id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]):
+        return Sensor.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, s_id):
-        return Sensor.objects.filter(bi_id=s_id).first()
+    def get_by_bi_id(cls, bi_id: int):
+        return Sensor.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:
