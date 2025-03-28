@@ -51,8 +51,6 @@ class ItemConfig(object):
 
     __slots__ = ("key_labels", "metric_labels", "metrics", "composed_metrics", "rules")
     key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
-    metric_labels: Optional[Tuple[str, ...]]
-    metrics: Tuple[str, ...]  # Metric Field list setting on source
     composed_metrics: Tuple[str, ...]  # Metric Field for compose metrics
     rules: Tuple[str, ...]
 
@@ -72,13 +70,12 @@ class SourceConfig(object):
     * sensor
     """
 
-    __slots__ = ("type", "bi_id", "fm_pool", "labels", "metrics", "items", "rules", "meta")
+    __slots__ = ("type", "bi_id", "fm_pool", "labels", "profile", "items", "rules", "meta", "vars")
     type: Literal["managed_object", "sla_probe", "sensor", "agent"]
     bi_id: int
     fm_pool: str
     labels: Optional[Tuple[str, ...]]
-    metrics: Tuple[str, ...]
-    items: List[ItemConfig]
+    items: Tuple[ItemConfig, ...]
     rules: List[str]
     meta: Dict[str, Any]
 

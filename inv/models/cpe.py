@@ -332,7 +332,7 @@ class CPE(Document):
                 f"local_id::{cpe.controller.local_id}",
             ]
             if cpe.controller.interface:
-                iface = cpe.controller.get_cpe_interface()
+                iface = cpe.get_cpe_interface()
                 if iface and iface.ifindex:
                     hints += [f"ifindex::{iface.ifindex}"]
             yield MetricCollectorConfig(
@@ -362,10 +362,6 @@ class CPE(Document):
             "bi_id": cpe.bi_id,
             "fm_pool": cpe.controller.managed_object.get_effective_fm_pool().name,
             "labels": labels,
-            "metrics": [
-                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
-                for mc in cpe.profile.metrics
-            ],
             "rules": [ma for ma in MetricRule.iter_rules_actions(cpe.effective_labels)],
             "sharding_key": cpe.controller.managed_object.bi_id if cpe.controller else None,
             "items": [],

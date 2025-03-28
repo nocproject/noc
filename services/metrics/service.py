@@ -534,8 +534,8 @@ class MetricsService(FastAPIService):
                 composed_metrics = list(item.composed_metrics)
             if item.rules:
                 rules = item.rules
-            if item.metric_labels:
-                metric_labels = item.metric_labels
+            # if item.metric_labels:
+            #     metric_labels = item.metric_labels
             break
         return SourceInfo(
             bi_id=source.bi_id,
@@ -712,13 +712,7 @@ class MetricsService(FastAPIService):
             items.append(
                 ItemConfig(
                     key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
-                    metric_labels=tuple(),
-                    metrics=tuple(
-                        sys.intern(m["name"]) for m in item["metrics"] if not m.get("is_composed")
-                    ),
-                    composed_metrics=tuple(
-                        sys.intern(m["name"]) for m in item["metrics"] if m.get("is_composed")
-                    ),
+                    composed_metrics=tuple(sys.intern(m["name"]) for m in item["composed_metrics"]),
                     rules=item.get("rules"),
                 )
             )
@@ -727,9 +721,6 @@ class MetricsService(FastAPIService):
             bi_id=data["bi_id"],
             fm_pool=data["fm_pool"] if data["fm_pool"] else None,
             labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
-            metrics=tuple(
-                sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
-            ),
             items=tuple(items),
             rules=data.get("rules"),
             meta=data.get("meta") if global_config.message.enable_metrics else None,
