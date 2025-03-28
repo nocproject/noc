@@ -309,6 +309,9 @@ class Config(BaseConfig):
         generate_message_id = BooleanParameter(
             default=False, help="Generate UUID for received Syslog and SNMP message"
         )
+        calculate_affected_services = BooleanParameter(
+            default=True, help="Calculate affected services for Alarm",
+        )
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")

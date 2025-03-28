@@ -526,7 +526,10 @@ class CorrelatorService(FastAPIService):
         a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
         a.total_services = a.direct_services
         a.total_subscribers = a.direct_subscribers
-        a.affected_services = Service.get_services_by_alarm(a)
+        if config.fm.calculate_affected_services:
+            a.affected_services = Service.get_services_by_alarm(a)
+        else:
+            a.affected_services = []
         # Static groups
         alarm_groups: Dict[str, GroupItem] = {}
         if groups:
