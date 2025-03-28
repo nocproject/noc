@@ -340,6 +340,9 @@ nav:
           - NSCComm:
               - Overview: profiles-reference/NSCComm/index.md
               - NSCComm.LPOS: profiles-reference/NSCComm/LPOS.md
+          - NSGATE:
+              - Overview: profiles-reference/NSGATE/index.md
+              - NSGATE.NIS: profiles-reference/NSGATE/NIS.md
           - NSN:
               - Overview: profiles-reference/NSN/index.md
               - NSN.TIMOS: profiles-reference/NSN/TIMOS.md
