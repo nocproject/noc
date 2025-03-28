@@ -350,6 +350,11 @@ class StringListParameter(ListOfParameter):
             convert=convert,
         )
 
+    def clean(self, value):
+        if isinstance(value, str):
+            raise InterfaceTypeError("Must be List")
+        return super().clean(value)
+
 
 class LabelParameter(Parameter):
     """
