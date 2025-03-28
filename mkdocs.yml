@@ -66,10 +66,7 @@ nav:
       - Backup NOC: backup-noc-howto/index.md
       - Add devices from network scan: add-from-network-scan-howto/index.md
       - Sharing Collections Howto: sharing-collections-howto/index.md
-      - Loading FIAS Data Howto:
-          - Overview: fias-loading-howto/index.md
-          - Region Codes: fias-loading-howto/fias-region-codes.md
-          - OKTMO Codes: fias-loading-howto/oktmo-region-codes.md
+      - Loading FIAS Data Howto: fias-loading-howto/
       - Custom Static Dashbord with Device Charts: custom-dev-grafana-dashboard-howto/index.md
       - How to Import MIB Files: import-mib-file-howto/index.md
       - Using Housekeeper to Collect Device Data: using-hk-to-collect-data-howto/index.md
@@ -93,9 +90,7 @@ nav:
       - Host Discovery Network: host-discovery-network/index.md
       - Fault Management: fault-management/index.md
       - Alarm Escalation: alarm-escalation-reference/index.md
-      - Performance Management:
-          - Overview: performance-management/index.md
-          - Compose Metric (Metric Action): performance-management/calculate-metrics.md
+      - Performance Management: performance-management/
       - Working with Report: reference-report-configuration/index.md
       - Peering Management: peering-management/index.md
       - Monitoring by Service Operation Status: service-status-monitoring/index.md
@@ -105,21 +100,7 @@ nav:
       - ETL: etl/index.md
       - Storm Protection: storm-protection/index.md
       - UI Guideline: ui-guideline/index.md
-      - NOC Products Highlights:
-          - Overview: highlights/index.md
-          - Vendor-Agnostic: highlights/vendor-agnostic.md
-          - Open-Source: highlights/open-source.md
-          - Microservices Architecture: highlights/microservices.md
-          - Web-Scale: highlights/webscale.md
-          - Big Data: highlights/big-data.md
-          - Discovery: highlights/discovery.md
-          - Network Automation: highlights/network-automation.md
-          - Inventory: highlights/inventory.md
-          - Configuration Management: highlights/configuration-management.md
-          - Fault Management: highlights/fault-management.md
-          - Performance Management: highlights/performance-management.md
-          - Service Activation: highlights/service-activation.md
-          - Integration: highlights/integration.md
+      - NOC Products Highlights: highlights/
   - Blog:
       - blog/index.md
   - Releases:
