@@ -26,7 +26,8 @@ class ToC(object):
         for kv in data["nav"]:
             self.add_item([], kv)
 
-    def get_summary(self, path: str) -> List[Tuple]:
+    @staticmethod
+    def get_summary(path: str) -> List[Tuple]:
         if path[-1] == "/":
             path = path[:-1]
         pp = os.path.join(DOCS_DIR, path, SUMMARY_FILENAME)
@@ -55,9 +56,9 @@ class ToC(object):
             self.items[tuple(path + [k])] = v
             s_path = os.path.join(DOCS_DIR, v)
             if os.path.isdir(s_path):
-                summary = self.get_summary(v)
-                for sk, sv in summary:
-                    self.add_item(path + [k], {sk: v + sv})
+                summary = [{sk: v + sv} for sk, sv in self.get_summary(v)]
+                if summary:
+                    self.add_item(path, {k: summary})
 
     def __contains__(self, item):
         return tuple(item) in self.items
