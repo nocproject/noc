@@ -712,7 +712,9 @@ class MetricsService(FastAPIService):
             items.append(
                 ItemConfig(
                     key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
-                    composed_metrics=tuple(sys.intern(m["name"]) for m in item["composed_metrics"]),
+                    composed_metrics=tuple(
+                        sys.intern(m) for m in item.get("composed_metrics") or []
+                    ),
                     rules=item.get("rules"),
                 )
             )
@@ -720,7 +722,9 @@ class MetricsService(FastAPIService):
             type=data["type"],
             bi_id=data["bi_id"],
             fm_pool=data["fm_pool"] if data["fm_pool"] else None,
-            labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
+            labels=tuple(
+                sys.intern(ll if isinstance(ll, str) else ll["label"]) for ll in data["labels"]
+            ),
             items=tuple(items),
             rules=data.get("rules"),
             meta=data.get("meta") if global_config.message.enable_metrics else None,
