@@ -13,7 +13,7 @@ import datetime
 from typing import Dict, Optional, Iterable, List, Union
 
 # Third-party modules
-from bson import ObjectId
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -132,7 +132,7 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: Union[str, ObjectId]):
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]):
         return Sensor.objects.filter(id=oid).first()
 
     @classmethod
