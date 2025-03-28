@@ -74,8 +74,23 @@ Ext.define("NOC.inv.capability.Application", {
                         ["bool", "Boolean"],
                         ["str", "String"],
                         ["int", "Integer"],
-                        ["float", "Float"]
+                        ["float", "Float"],
                     ]
+                },
+                {
+                    name: "allow_manual",
+                    xtype: "checkbox",
+                    boxLabel: __("Allowing Manual Editor")
+                },
+                {
+                    name: "multi",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow multiple values (List)")
+                },
+                {
+                    name: "values",
+                    xtype: "dictfield",
+                    fieldLabel: __("Values")
                 },
                 {
                     name: "card_template",

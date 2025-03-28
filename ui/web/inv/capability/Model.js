@@ -48,7 +48,24 @@ Ext.define("NOC.inv.capability.Model", {
         {
             name: "agent_param",
             type: "string"
+        },
+        {
+            name: "values",
+            type: "auto"
+        },
+        {
+            name: "enable_horizontal_transit",
+            type: "boolean"
+        },
+        {
+            name: "multi",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "allow_manual",
+            type: "boolean",
+            defaultValue: false
         }
-
     ]
 });

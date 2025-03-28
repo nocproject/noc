@@ -25,6 +25,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
     "NOC.core.InlineModelStore",
     "NOC.core.PasswordField",
     "NOC.core.StateField",
+    "NOC.core.plugins.DynamicModalEditing",
     "NOC.sa.managedobject.AttributesModel",
     "NOC.sa.managedobject.CapabilitiesModel",
     "NOC.sa.managedobject.form.FormController",
@@ -1510,6 +1511,15 @@ Ext.define("NOC.sa.managedobject.form.View", {
               itemId: "sa-managedobject-caps-inline",
               model: "NOC.sa.managedobject.CapabilitiesModel",
               readOnly: true,
+              bbar: {},
+              plugins: [
+                {
+                  ptype: "dynamicmodalediting",
+                  listeners: {
+                    canceledit: "onCancelEdit",
+                  },
+                },
+              ],
               columns: [
                 {
                   text: __("Capability"),
@@ -1519,13 +1529,16 @@ Ext.define("NOC.sa.managedobject.form.View", {
                 {
                   text: __("Value"),
                   dataIndex: "value",
-                  width: 100,
-                  renderer: function(v){
+                  // width: 100,
+                  useModalEditor: true,
+                  renderer: function(v, _, record){
+                    var value = v,
+                      iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil", 
+                      icon = `<i class='fa fa-${iconName}' style='padding-right: 4px;' title='` + __("Read only") + "'></i>";
                     if((v === true) || (v === false)){
-                      return NOC.render.Bool(v);
-                    } else{
-                      return v;
+                      value = NOC.render.Bool(v);
                     }
+                    return icon + value;
                   },
                 },
                 {
