@@ -13,7 +13,7 @@ import datetime
 from typing import Dict, Optional, Iterable, List, Union
 
 # Third-party modules
-from bson import ObjectId
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -132,7 +132,7 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Sensor"]:
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Sensor"]:
         return Sensor.objects.filter(id=oid).first()
 
     @classmethod
@@ -284,10 +284,6 @@ class Sensor(Document):
         """
         if not sensor.state.is_productive:
             return {}
-        labels = []
-        for ll in sensor.effective_labels:
-            l_c = Label.get_by_name(ll)
-            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         return {
             "type": "sensor",
             "bi_id": sensor.bi_id,
@@ -296,12 +292,10 @@ class Sensor(Document):
                 if sensor.managed_object
                 else None
             ),
-            "labels": labels,
-            "metrics": [
-                {"name": "status", "is_stored": True},
-                {"name": "value", "is_stored": True},
-            ],
+            "labels": [],
+            "profile": sensor.profile.bi_id,
             "items": [],
+            "composed_metrics": [],
             "sharding_key": sensor.managed_object.bi_id if sensor.managed_object else None,
             "rules": [ma for ma in MetricRule.iter_rules_actions(sensor.effective_labels)],
         }
