@@ -23,7 +23,6 @@ geojson==3.2.0
 geopy==2.4.1
 grpcio==1.59.3
 gufo-http==0.4.0
-lz4==4.4.3
 manhole==1.8.1
 markerlib==0.6.0
 mongoengine==0.29.0
