@@ -470,6 +470,7 @@ class ManagedObjectCard(BaseCard):
                 else:
                     cc = self.get_nested_inventory(r_object)
                     cc["name"] = n.name
+                    cc["interface"] = if_map.get(n.name) or ""
                     r["children"] += [cc]
             elif n.direction == "s":
                 r["children"] += [
