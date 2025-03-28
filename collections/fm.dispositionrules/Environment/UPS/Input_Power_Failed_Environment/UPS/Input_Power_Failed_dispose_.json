@@ -1,0 +1,17 @@
+{
+    "name": "Environment | UPS | Input Power Failed (Environment | UPS | Input Power Failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "8c24cdd1-93a7-42f3-8027-5a523ebc39da",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | UPS | Input Power Failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | UPS | Input Power Failed"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

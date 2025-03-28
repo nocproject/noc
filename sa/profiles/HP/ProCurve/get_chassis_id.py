@@ -10,7 +10,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"([0-9a-f]{6}-[0-9a-f]{6})", re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show management")
         match = self.re_search(self.rx_mac, v)
         mac = match.group(1)

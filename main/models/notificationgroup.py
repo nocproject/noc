@@ -163,6 +163,7 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("fm.AlarmTrigger", "notification_group"),
         ("fm.EventTrigger", "notification_group"),
         ("fm.AlarmRule", "actions.notification_group"),
+        ("fm.DispositionRule", "notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
         ("main.NotificationGroupUserSubscription", "notification_group"),
@@ -310,11 +311,11 @@ class NotificationGroup(NOCModel):
         for m in self.conditions:
             c = {}
             if m["resource_groups"]:
-                c[MessageMeta.GROUPS] = list(m["resource_groups"])
+                c[MessageMeta.GROUPS.value] = list(m["resource_groups"])
             if m["labels"]:
-                c[MessageMeta.LABELS] = list(m["labels"])
+                c[MessageMeta.LABELS.value] = list(m["labels"])
             if m["administrative_domain"]:
-                c[MessageMeta.ADM_DOMAIN] = m["administrative_domain"]
+                c[MessageMeta.ADM_DOMAIN.value] = m["administrative_domain"]
             if c:
                 r["match"].append(c)
         return r

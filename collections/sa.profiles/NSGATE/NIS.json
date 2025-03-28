@@ -1,0 +1,6 @@
+{
+    "name": "NSGATE.NIS",
+    "uuid": "30f50eec-daeb-4fc8-a1c6-007e199868fe",
+    "description": "NSGate profile, for switch platform",
+    "$collection": "sa.profiles"
+}

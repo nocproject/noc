@@ -184,3 +184,28 @@ class HttpClient(GufoHttpClient):
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, b"Timed out while sending request"
         return r.status, r.headers, r.content
+
+    async def put(
+        self,
+        url: str,
+        body: bytes,
+        /,
+        headers: Optional[Dict[str, bytes]] = None,
+    ) -> Tuple[int, Dict[str, Any], bytes]:
+        metrics["httpclient_requests", ("method", "put")] += 1
+        try:
+            url = await self.resolve(url)
+        except TimeoutError as e:
+            return ERR_TIMEOUT, {}, b"Cannot resolve host: %s" % str(e).encode(DEFAULT_ENCODING)
+        try:
+            r = await super().put(url, body, headers=headers)
+        except ConnectionResetError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Connection reset while sending request"
+        except (ConnectionError, HttpError) as e:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Connection error: %s" % str(e).encode(DEFAULT_ENCODING)
+        except TimeoutError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Timed out while sending request"
+        return r.status, r.headers, r.content

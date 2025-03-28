@@ -1,0 +1,17 @@
+{
+    "name": "Network | IS-IS | Adjacency Down (Network | IS-IS | Adjacency Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "1af926c9-7dde-4989-9440-aa17dab29ae4",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | IS-IS | Adjacency Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | IS-IS | Adjacency Down"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

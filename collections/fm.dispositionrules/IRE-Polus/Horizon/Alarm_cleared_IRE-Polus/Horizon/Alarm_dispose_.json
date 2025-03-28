@@ -1,0 +1,17 @@
+{
+    "name": "IRE-Polus | Horizon | Alarm cleared (IRE-Polus | Horizon | Alarm,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5a8000e1-127a-40df-88ff-40b1414c427f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "IRE-Polus | Horizon | Alarm",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "IRE-Polus | Horizon | Alarm cleared"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

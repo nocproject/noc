@@ -1,0 +1,17 @@
+{
+    "name": "Environment | UPS | Battery Power Normal (Environment | UPS | Battery Power Low,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "39a57df2-ed93-47f9-87d7-60d9afe0223d",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | UPS | Battery Power Low",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | UPS | Battery Power Normal"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

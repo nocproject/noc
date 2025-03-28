@@ -1,0 +1,8 @@
+{
+    "name": "NSGATE",
+    "uuid": "a9268140-c338-4830-9fa4-1bd97bc80955",
+    "full_name": "NSGate",
+    "code": ["NSGATE", "NIS"],
+    "site": "https://www.nsgate.ru",
+    "$collection": "inv.vendors"
+}

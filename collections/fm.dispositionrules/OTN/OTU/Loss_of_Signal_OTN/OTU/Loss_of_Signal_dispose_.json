@@ -1,0 +1,17 @@
+{
+    "name": "OTN | OTU | Loss of Signal (OTN | OTU | Loss of Signal,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "59145de9-08ae-46d9-9c43-e8b4f841d1df",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "OTN | OTU | Loss of Signal",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "OTN | OTU | Loss of Signal"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

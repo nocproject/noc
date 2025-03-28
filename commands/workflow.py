@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Workflow maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,10 +32,12 @@ class Command(BaseCommand):
         "inv.SensorProfile": "inv.Sensor",
         "pm.AgentProfile": "pm.Agent",
         "sa.ServiceProfile": "sa.Service",
+        "sa.ManagedObjectProfile": "sa.ManagedObject",
         "sla.SLAProfile": "sla.SLAProbe",
+        "peer.PeerProfile": "peer.Peer",
     }
 
-    EXPIRE_MODELS = ["vc.VLAN"]
+    EXPIRE_MODELS = ["vc.VLAN", "ip.Address"]
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
@@ -62,6 +64,7 @@ class Command(BaseCommand):
 
     def handle(self, cmd, *args, **options):
         connect()
+
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_migrate(
@@ -91,12 +94,16 @@ class Command(BaseCommand):
                 continue
             for ostate in tr:
                 for imodel in imodels:
-                    c = imodel.objects.filter(state=ostate.id, profile=pid).count()
+                    if hasattr(imodel, "object_profile"):
+                        kw = {"state": ostate.id, "object_profile": pid}
+                    else:
+                        kw = {"state": ostate.id, "profile": pid}
+                    c = imodel.objects.filter(**kw).count()
                     self.print(
                         f"  {ostate} -> {tr[ostate]}: {c} records in  model '{imodel.__name__}'"
                     )
                     if c and not dry_run:
-                        for o in imodel.objects.filter(state=ostate.id, profile=pid):
+                        for o in imodel.objects.filter(**kw):
                             o.set_state(tr[ostate])
 
     def handle_expire(self, dry_run=False, model=None, *args, **kwargs):

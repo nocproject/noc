@@ -1,0 +1,19 @@
+{
+    "name": "Security | Authentication | Login (handlers)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "7f6310d0-8e9d-4be8-9541-bc01bf27a93a",
+    "description": null,
+    "preference": 1000,
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Authentication | Login"
+    }],
+    "match": [],
+    "object_actions": {
+        "interaction_audit": 1,
+        "run_discovery": false
+    },
+    "stop_processing": false
+}

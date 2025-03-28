@@ -1,0 +1,19 @@
+{
+    "name": "Network | OAM | Client Recieved Remote Failure (Environment | Total Power Loss,Total power loss)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "b4083f57-e844-4848-98d2-3dd64a27a6ed",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | Total Power Loss",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Network | OAM | Client Recieved Remote Failure"
+        }
+    ],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

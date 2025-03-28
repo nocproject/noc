@@ -1,0 +1,19 @@
+{
+    "name": "Environment | Temperature Returned to Normal Range (Environment | Temperature Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "8d6c357a-e24e-4486-9770-7bd77386e72f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | Temperature Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Environment | Temperature Returned to Normal Range"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

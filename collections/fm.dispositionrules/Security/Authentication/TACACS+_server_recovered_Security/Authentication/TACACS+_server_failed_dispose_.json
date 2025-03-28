@@ -1,0 +1,19 @@
+{
+    "name": "Security | Authentication | TACACS+ server recovered (Security | Authentication | TACACS+ server failed,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "de07ff50-5f91-4e7f-9595-f9b52a57e7d1",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Security | Authentication | TACACS+ server failed",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Security | Authentication | TACACS+ server recovered"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

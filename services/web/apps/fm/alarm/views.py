@@ -388,6 +388,8 @@ class AlarmApplication(ExtApplication):
                 if getattr(ll, "source", None)
             ][: config.web.api_alarm_comments_limit],
         }
+        if o.escalation_profile and o.status == "C":
+            o.escalation_profile = EscalationProfile.get_by_id(o.escalation_profile)
         if o.escalation_profile:
             d["escalation_profile"] = str(o.escalation_profile.id)
             d["escalation_profile__label"] = str(o.escalation_profile.name)
@@ -729,8 +731,7 @@ class AlarmApplication(ExtApplication):
         if alarm.status == "A":
             alarm.subscribe(request.user)
             return self.get_alarm_subscribers(alarm)
-        else:
-            return []
+        return []
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/unsubscribe/", method=["POST"], api=True, access="launch")
     def api_unsubscribe(self, request, id):
@@ -740,8 +741,7 @@ class AlarmApplication(ExtApplication):
         if alarm.status == "A":
             alarm.unsubscribe(request.user)
             return self.get_alarm_subscribers(alarm)
-        else:
-            return []
+        return []
 
     @view(
         url=r"^(?P<id>[a-z0-9]{24})/clear/",

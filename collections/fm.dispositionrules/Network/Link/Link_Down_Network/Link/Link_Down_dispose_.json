@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Link Down (Network | Link | Link Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "1d68e062-5d24-418f-aa3f-986f6b892db1",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | Link | Link Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Link Down"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

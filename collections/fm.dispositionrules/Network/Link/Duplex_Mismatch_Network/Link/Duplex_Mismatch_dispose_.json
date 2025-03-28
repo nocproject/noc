@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Duplex Mismatch (Network | Link | Duplex Mismatch,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "fb0099bd-35c6-4e88-9f58-32b313f6a0fe",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | Link | Duplex Mismatch",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Duplex Mismatch"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

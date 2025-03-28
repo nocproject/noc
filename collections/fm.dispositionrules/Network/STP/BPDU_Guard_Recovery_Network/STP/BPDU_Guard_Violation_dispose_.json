@@ -1,0 +1,17 @@
+{
+    "name": "Network | STP | BPDU Guard Recovery (Network | STP | BPDU Guard Violation,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "7a485d16-fdb7-469c-810e-df64c4b8ae08",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | STP | BPDU Guard Violation",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | STP | BPDU Guard Recovery"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

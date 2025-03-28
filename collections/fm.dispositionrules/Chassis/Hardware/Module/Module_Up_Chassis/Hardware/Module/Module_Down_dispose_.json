@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Hardware | Module | Module Up (Chassis | Hardware | Module | Module Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "fb16dccf-d2a0-4510-b595-3217c284b248",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Hardware | Module | Module Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Hardware | Module | Module Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

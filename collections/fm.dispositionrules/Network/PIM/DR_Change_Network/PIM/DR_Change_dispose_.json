@@ -1,0 +1,17 @@
+{
+    "name": "Network | PIM | DR Change (Network | PIM | DR Change,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "19fc463e-baf0-4645-9a28-142dd0402389",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | PIM | DR Change",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | PIM | DR Change"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

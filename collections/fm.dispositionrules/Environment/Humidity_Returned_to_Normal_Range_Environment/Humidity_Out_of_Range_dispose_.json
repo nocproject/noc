@@ -1,0 +1,19 @@
+{
+    "name": "Environment | Humidity Returned to Normal Range (Environment | Humidity Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "effe1f80-01a8-416c-807b-27b3e3a9c157",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | Humidity Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [
+        {
+            "event_class_re": "Environment | Humidity Returned to Normal Range"
+        }
+    ],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

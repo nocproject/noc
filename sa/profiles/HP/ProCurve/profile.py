@@ -25,6 +25,7 @@ class Profile(BaseProfile):
         (rb"-- MORE --, next page: Space, next line: Enter, quit: Control-C", b" "),
     ]
     pattern_syntax_error = rb"Invalid input: "
+    pattern_operation_error = rb"Not authorized to run this command"
     command_disable_pager = "no page"
     command_super = b"enable"
     command_enter_config = "configure"

@@ -1,0 +1,17 @@
+{
+    "name": "Security | Access | Case Open (Security | Access | Case Open,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "a1c40a90-8114-4b35-936b-190087f5d7d8",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Security | Access | Case Open",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Access | Case Open"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

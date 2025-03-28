@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Hardware | Module | Invalid Module (Chassis | Hardware | Module | Invalid Module,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "6d65fb28-b3d4-4663-b921-1e15449cfa5c",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Hardware | Module | Invalid Module",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Hardware | Module | Invalid Module"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

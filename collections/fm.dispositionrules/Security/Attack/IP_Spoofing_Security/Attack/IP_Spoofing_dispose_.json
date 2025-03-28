@@ -1,0 +1,17 @@
+{
+    "name": "Security | Attack | IP Spoofing (Security | Attack | IP Spoofing,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "39fe614e-b7c0-4925-a174-c2f294ea3fbf",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Security | Attack | IP Spoofing",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Security | Attack | IP Spoofing"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

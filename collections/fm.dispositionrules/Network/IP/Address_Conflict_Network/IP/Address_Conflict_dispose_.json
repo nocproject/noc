@@ -1,0 +1,17 @@
+{
+    "name": "Network | IP | Address Conflict (Network | IP | Address Conflict,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "ace85ffd-89cb-4521-a440-e5b9b0deb14c",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | IP | Address Conflict",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | IP | Address Conflict"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

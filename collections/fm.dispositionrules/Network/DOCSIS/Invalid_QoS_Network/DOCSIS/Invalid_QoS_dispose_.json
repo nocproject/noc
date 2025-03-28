@@ -1,0 +1,17 @@
+{
+    "name": "Network | DOCSIS | Invalid QoS (Network | DOCSIS | Invalid QoS,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "be5e1977-efe7-4df7-bbc6-d76522c285a5",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | DOCSIS | Invalid QoS",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DOCSIS | Invalid QoS"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

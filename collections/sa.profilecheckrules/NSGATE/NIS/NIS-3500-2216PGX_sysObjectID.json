@@ -1,0 +1,13 @@
+{
+    "name": "NSGATE | NIS | NIS-3500-2216PGX sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "e886c78a-9806-47c0-96d7-29ac36005f3b",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.57430",
+    "action": "match",
+    "profile__name": "NSGATE.NIS"
+}

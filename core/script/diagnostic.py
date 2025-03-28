@@ -138,7 +138,7 @@ class CLISuggestsDiagnostic:
                 continue
             elif c.error and c.error.message:
                 error = c.error.message
-            if c.key not in r:
+            if c.key not in r or not r[c.key].status:
                 r[c.key] = CheckStatus.from_result(c)
             if c.status and not status:
                 status = True

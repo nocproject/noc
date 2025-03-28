@@ -1,0 +1,17 @@
+{
+    "name": "Environment | Module Voltage Out of Range (Environment | Module Voltage Out of Range,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "d1a789fd-8a22-4207-a28d-560736f4e70a",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Environment | Module Voltage Out of Range",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Environment | Module Voltage Out of Range"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

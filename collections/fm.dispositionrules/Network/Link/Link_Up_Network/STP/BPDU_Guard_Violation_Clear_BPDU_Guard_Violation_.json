@@ -1,0 +1,17 @@
+{
+    "name": "Network | Link | Link Up (Network | STP | BPDU Guard Violation,Clear BPDU Guard Violation)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "c74e8a4b-b570-418a-b3dd-6cdb2d1f5261",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | STP | BPDU Guard Violation",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | Link | Link Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

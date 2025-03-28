@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Linecard | LC Error Recover (Chassis | Linecard | LC Error,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "5c794dfe-32f1-4f17-8864-8042e0e642e7",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Linecard | LC Error",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Linecard | LC Error Recover"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

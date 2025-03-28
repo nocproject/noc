@@ -1,0 +1,17 @@
+{
+    "name": "Network | DNS | Bad Query (Network | DNS | Bad Query,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "0c5fcb75-43c7-4917-a771-1d4883cc068f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | DNS | Bad Query",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | DNS | Bad Query"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}

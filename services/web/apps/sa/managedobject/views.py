@@ -21,6 +21,7 @@ from mongoengine.queryset import Q as MQ
 # NOC modules
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.decorators.caps import capabilities_handler
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.useraccess import UserAccess
@@ -49,6 +50,9 @@ from noc.sa.interfaces.base import (
     IntParameter,
     DictListParameter,
     DocumentParameter,
+    IPParameter,
+    NoneParameter,
+    ORParameter,
 )
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
@@ -71,6 +75,7 @@ from noc.config import config
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
 
+@capabilities_handler
 @state_handler
 class ManagedObjectApplication(ExtModelApplication):
     """
@@ -155,7 +160,10 @@ class ManagedObjectApplication(ExtModelApplication):
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
     ]
-    clean_fields = {"id": IntParameter(), "address": StringParameter(strip_value=True)}
+    clean_fields = {
+        "id": IntParameter(),
+        "address": ORParameter(NoneParameter(), IPParameter(required=False)),
+    }
 
     x_map = {
         "table_name": "interface",
@@ -295,7 +303,7 @@ class ManagedObjectApplication(ExtModelApplication):
                     "reason": d.reason or "",
                 }
             )
-        for m in data["mappings"]:
+        for m in data.get("mappings") or []:
             rs = RemoteSystem.get_by_id(m["remote_system"])
             m |= {
                 "remote_system__label": rs.name,
@@ -1107,20 +1115,24 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
+        if not o.caps:
+            return []
         r = []
-        if o.caps:
-            for c in o.caps:
-                capability = Capability.get_by_id(c["capability"])
-                r += [
-                    {
-                        "capability": capability.name,
-                        "description": capability.description,
-                        "type": capability.type,
-                        "value": c["value"],
-                        "source": c["source"],
-                        "scope": c.get("scope", ""),
-                    }
-                ]
+        for c in o.caps:
+            capability = Capability.get_by_id(c["capability"])
+            r += [
+                {
+                    "capability": capability.name,
+                    "id": str(capability.id),
+                    "object": str(o.id),
+                    "description": capability.description,
+                    "type": capability.type,
+                    "value": c["value"],
+                    "source": c["source"],
+                    "scope": c.get("scope", ""),
+                    "editor": capability.get_editor(),
+                }
+            ]
         return sorted(r, key=lambda x: x["capability"])
 
     @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)

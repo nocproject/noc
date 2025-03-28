@@ -1,0 +1,17 @@
+{
+    "name": "Chassis | Stack | Stack is Raised (Chassis | Stack | Stack Degraded,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "081b8789-30e8-4de9-94f2-560087c28176",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Stack | Stack Degraded",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Chassis | Stack | Stack is Raised"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

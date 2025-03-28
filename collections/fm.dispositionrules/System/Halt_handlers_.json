@@ -1,0 +1,19 @@
+{
+    "name": "System | Halt (handlers)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "6bc70b9b-5f0d-4e61-a808-b3507f60ac15",
+    "description": null,
+    "preference": 1000,
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "System | Halt"
+    }],
+    "match": [],
+    "object_actions": {
+        "interaction_audit": 5,
+        "run_discovery": false
+    },
+    "stop_processing": false
+}

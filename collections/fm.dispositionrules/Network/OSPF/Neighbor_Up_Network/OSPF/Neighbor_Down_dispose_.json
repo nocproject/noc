@@ -1,0 +1,17 @@
+{
+    "name": "Network | OSPF | Neighbor Up (Network | OSPF | Neighbor Down,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "9a6370f4-e856-469f-b254-4a203e3b0828",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | OSPF | Neighbor Down",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | OSPF | Neighbor Up"
+    }],
+    "default_action": "C",
+    "match": [],
+    "stop_processing": false
+}

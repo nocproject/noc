@@ -1,0 +1,17 @@
+{
+    "name": "Network | IP | ARP Moved (Network | IP | ARP Moved,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "55da1331-0a36-43e5-aa30-d906c87ee534",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | IP | ARP Moved",
+    "combo_condition": "none",
+    "combo_window": 0,
+    "combo_count": 0,
+    "conditions": [{
+        "event_class_re": "Network | IP | ARP Moved"
+    }],
+    "default_action": "R",
+    "match": [],
+    "stop_processing": false
+}
