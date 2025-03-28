@@ -132,12 +132,12 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: Union[str, bson.ObjectId]):
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Sensor"]:
         return Sensor.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int):
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Sensor"]:
         return Sensor.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
