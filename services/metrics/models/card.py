@@ -34,7 +34,7 @@ class Card(object):
 
     __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules", "config")
     probes: Dict[str, BaseCDAGNode]
-    senders: Tuple[BaseCDAGNode]
+    senders: Tuple[BaseCDAGNode, ...]
     alarms: List[AlarmNode]
     affected_rules: Set[str]
     config: Optional[SourceInfo]
