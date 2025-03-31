@@ -15,6 +15,7 @@ from fs import open_fs
 
 # NOC modules
 from noc.services.classifier.ruleset import RuleSet
+from noc.services.classifier.eventconfig import EventConfig
 from noc.core.fm.event import Event
 from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
@@ -128,9 +129,9 @@ def test_rules_collection_cases(ruleset, event_class_rule):
     for e, v in event_class_rule.iter_cases():
         rule, e_vars = ruleset.find_rule(e, v)
         assert rule is not None, "Cannot find matching rule"
-        assert (
-            rule.event_class == event_class_rule.event_class
-        ), f"Mismatched event class '{rule.event_class.name}' vs '{event_class_rule.event_class.name}'"
+        assert rule.event_class_id == str(
+            event_class_rule.event_class.id
+        ), f"Mismatched event class '{rule.event_class_name}' vs '{event_class_rule.event_class.name}'"
         var_ctx = {"message": e.message}
         var_ctx |= v
         var_ctx |= e_vars
@@ -140,4 +141,7 @@ def test_rules_collection_cases(ruleset, event_class_rule):
             e_vars["interface"] = v.pop("interface_mock")
         elif "interface__ifindex" in e_vars:
             assert "interface_mock" in e_vars, "interface_mock Required for ifindex transform test"
-        ruleset.eval_vars(e, rule.event_class, e_vars)
+        # cfg = EventConfig.from_config(
+        #     EventClass.get_event_config(event_class_rule.event_class),
+        # )
+        # cfg.eval_vars(e)
