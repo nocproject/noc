@@ -1,9 +1,9 @@
 {
-    "name": "DLink | DGS | DGS-3620-28SC",
+    "name": "DLink | DGS | DGS-3000-28XS",
     "$collection": "inv.objectmodels",
-    "uuid": "2d98a84b-148b-441a-80bc-20f388aea4a5",
+    "uuid": "fee21592-ecf8-4c2f-ae3e-61a50bb60470",
     "vendor__code": "DLINK",
-    "description": "DGS-3620-28SC xStack L3 Managed Switch witch 20 ports 1000 SFP, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 4 SFP+",
+    "description": "DGS-3000-28XS L2 Stackable Managed Switch with 24 SFP ports and 4 x 10 Gbps SFP+ ports",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [
@@ -16,21 +16,16 @@
     ],
     "connections": [
         {
-            "name": "card1",
-            "description": "SD card slot",
-            "direction": "i",
-            "gender": "f",
-            "type__name": "Flash | SD"
-        },
-        {
             "name": "sfp1",
             "description": "1",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -38,10 +33,12 @@
             "description": "2",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -49,10 +46,12 @@
             "description": "3",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -60,10 +59,12 @@
             "description": "4",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -71,10 +72,12 @@
             "description": "5",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -82,10 +85,12 @@
             "description": "6",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -93,10 +98,12 @@
             "description": "7",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -104,10 +111,12 @@
             "description": "8",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -115,10 +124,12 @@
             "description": "9",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -126,10 +137,12 @@
             "description": "10",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -137,10 +150,12 @@
             "description": "11",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -148,10 +163,12 @@
             "description": "12",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -159,10 +176,12 @@
             "description": "13",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -170,10 +189,12 @@
             "description": "14",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -181,10 +202,12 @@
             "description": "15",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -192,10 +215,12 @@
             "description": "16",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -203,10 +228,12 @@
             "description": "17",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -214,10 +241,12 @@
             "description": "18",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -225,10 +254,12 @@
             "description": "19",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -236,119 +267,49 @@
             "description": "20",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "21",
-            "description": "21",
-            "direction": "s",
-            "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
+                    "protocol__code": "TransEth1G"
                 }
             ],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "name": "sfp21",
             "description": "21",
             "direction": "i",
             "gender": "f",
+            "group": "21",
             "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
                 }
             ],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "22",
-            "description": "22",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
         },
         {
             "name": "sfp22",
             "description": "22",
             "direction": "i",
             "gender": "f",
+            "group": "22",
             "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
                 }
             ],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "23",
-            "description": "23",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
         },
         {
             "name": "sfp23",
             "description": "23",
             "direction": "i",
             "gender": "f",
+            "group": "23",
             "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
@@ -357,36 +318,12 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "24",
-            "description": "24",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "name": "sfp24",
             "description": "24",
             "direction": "i",
             "gender": "f",
+            "group": "24",
             "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
@@ -451,23 +388,6 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "mgmt0",
-            "description": "Ethernet management port",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "name": "IPWR",
             "description": "Power outlet",
             "direction": "s",
@@ -505,7 +425,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["DGS-3620-28SC", "DGS-3620-28SC/A1", "DGS-3620-28SC/B1"]
+            "value": ["DGS-3000-28XS"]
         }
     ]
 }
