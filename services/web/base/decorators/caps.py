@@ -26,7 +26,7 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
             access="write",
             api=True,
             validate={
-                "value": StringListParameter()
+                "value": StringListParameter(strict=True)
                 | StringParameter()
                 | IntParameter()
                 | BooleanParameter()
