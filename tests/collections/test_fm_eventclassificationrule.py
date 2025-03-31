@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # EventClassificationRule test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ def test_rules_collection_cases(ruleset, event_class_rule):
             e_vars["interface"] = v.pop("interface_mock")
         elif "interface__ifindex" in e_vars:
             assert "interface_mock" in e_vars, "interface_mock Required for ifindex transform test"
-        # cfg = EventConfig.from_config(
-        #     EventClass.get_event_config(event_class_rule.event_class),
-        # )
-        # cfg.eval_vars(e)
+        cfg = EventConfig.from_config(
+            EventClass.get_event_config(event_class_rule.event_class),
+        )
+        cfg.eval_vars(e_vars)
