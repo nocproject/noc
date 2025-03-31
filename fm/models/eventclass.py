@@ -309,7 +309,7 @@ class EventClass(Document):
         super().save(*args, **kwargs)
 
     def iter_changed_datastream(self, changed_fields=None):
-        if config.datastream.enable_cfgeventrules:
+        if config.datastream.enable_cfgevent:
             yield "cfgevent", f"ec:{self.id}"
 
     @property
@@ -331,7 +331,7 @@ class EventClass(Document):
             vd = ["        {"]
             vd += ['            "name": "%s",' % q(v.name)]
             vd += ['            "description": "%s",' % q(v.description)]
-            vd += ['            "type": "%s",' % q(v.type)]
+            vd += ['            "type": "%s",' % q(v.type.value)]
             vd += ['            "required": %s,' % q(v.required)]
             vd += ['            "match_suppress": %s' % q(v.required)]
             vd += ["        }"]
@@ -418,9 +418,13 @@ class EventClass(Document):
             "id": str(event_class.id),
             "name": event_class.name,
             "bi_id": str(event_class.bi_id),
-            "event_class_id": str(event_class.id),
             "is_unique": True,
             "managed_object_required": True,
+            "event_class": {
+                "name": event_class.name,
+                "id": str(event_class.id),
+                "bi_id": str(event_class.bi_id),
+            },
             "vars": [],
             "filters": [],
             "object_map": {
@@ -438,7 +442,7 @@ class EventClass(Document):
             )
         if event_class.suppression_window:
             r["filters"].append(
-                {"name": "suppression", "window": event_class.suppression_window},
+                {"name": "suppress", "window": event_class.suppression_window},
             )
         if event_class.link_event:
             r["resources"].append({"resource": "if"})

@@ -54,11 +54,18 @@ class FilterConfig(BaseModel):
     window: int
 
 
+class EventClass(BaseModel):
+    id: str
+    name: str
+    bi_id: str
+
+
 class CfgEvent(BaseModel):
     id: str
     name: str
     bi_id: str
     is_unique: bool = False
+    event_class: EventClass
     managed_object_required: Optional[bool] = True
     filters: Dict[str, FilterConfig] = None
     # vars

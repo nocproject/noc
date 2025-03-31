@@ -68,3 +68,27 @@ class EventConfig:
                 )
             r[ecv.name] = v
         return r
+
+    @classmethod
+    def from_config(self, data) -> "EventConfig":
+        ec = EventConfig(
+            name=data["name"],
+            bi_id=data["bi_id"],
+            event_class=data["event_class"]["name"],
+            event_class_id=data["event_class"]["id"],
+            managed_object_required=data["managed_object_required"],
+            vars=[
+                VarItem(name=vv["name"], type=ValueType(vv["type"]), required=vv["required"])
+                for vv in data["vars"]
+            ],
+            filters={},
+            resolvers={},
+        )
+        for ff in data["filters"]:
+            ec.filters[ff["name"]] = FilterConfig(
+                window=ff["window"],
+                vars=[vv["name"] for vv in data["vars"] if vv["match_suppress"]],
+            )
+        for rr in data["resources"]:
+            ec.resolvers[rr["resource"]] = lambda x: True
+        return ec

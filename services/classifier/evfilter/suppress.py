@@ -21,9 +21,7 @@ class SuppressFilter(BaseEvFilter):
 
     @staticmethod
     def event_hash(event: Event, event_config: EventConfig, e_vars) -> int:
-        e_vars = {
-            v.name: event.vars.get(v.name, "") or "" for v in event_config.filters["suppress"].vars
-        }
+        e_vars = {v: event.vars.get(v, "") or "" for v in event_config.filters["suppress"].vars}
         var_hash = dict_hash_int(e_vars) if e_vars else 0
         return hash_int(f"{event.target.id}:{event_config.id}:{var_hash}")
 

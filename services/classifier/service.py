@@ -52,9 +52,12 @@ from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
-from noc.services.classifier.datastream import EventRuleDataStreamClient
+from noc.services.classifier.datastream import (
+    EventRuleDataStreamClient,
+    EventConfigDataStreamClient,
+)
 from noc.services.classifier.actionset import ActionSet, EventAction
-from noc.services.classifier.eventconfig import EventConfig, VarItem, FilterConfig
+from noc.services.classifier.eventconfig import EventConfig
 
 
 class EventMetrics(enum.Enum):
@@ -135,6 +138,7 @@ class ClassifierService(FastAPIService):
         #
         self.slot_number = 0
         self.total_slots = 0
+        self.add_configs = 0
         self.pool_partitions: Dict[str, int] = {}
         #
         self.cable_abduct_ecls: Optional[EventClass] = None
@@ -177,10 +181,14 @@ class ClassifierService(FastAPIService):
         MIBData.preload()
         self.slot_number, self.total_slots = await self.acquire_slot()
         # Start tracking changes
+        if config.datastream.enable_cfgevent:
+            asyncio.get_running_loop().create_task(self.get_event_config_mappings())
+            await self.on_event_config_ready.wait()
+        else:
+            await self.load_event_configs()
         if config.datastream.enable_cfgeventrules:
             asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
-            await self.on_event_config_ready.wait()
         await self.subscribe_stream(
             "events.%s" % config.pool,
             self.slot_number,
@@ -207,6 +215,23 @@ class ClassifierService(FastAPIService):
                 self.logger.info("Failed to get Event Classification Rules: %s", e)
                 await asyncio.sleep(1)
 
+    async def get_event_config_mappings(self):
+        """Subscribe and track datastream changes"""
+        # Register RPC aliases
+        client = EventConfigDataStreamClient("cfgevent", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track event configs")
+            try:
+                await client.query(
+                    limit=config.classifier.ds_limit,
+                    block=True,
+                    filter_policy="delete",
+                )
+            except NOCError as e:
+                self.logger.info("Failed to get Event Configs: %s", e)
+                await asyncio.sleep(1)
+
     def load_link_action(self):
         self.default_link_action = None
         if config.classifier.default_interface_profile:
@@ -216,6 +241,11 @@ class ClassifierService(FastAPIService):
             if p:
                 self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events
+
+    async def load_event_configs(self):
+        for ec in EventClass.objects.filter():
+            await self.update_config(EventClass.get_event_config(ec))
+        self.logger.info("Loading configs: %s", self.add_configs)
 
     async def register_mx_message(
         self,
@@ -297,9 +327,9 @@ class ClassifierService(FastAPIService):
 
     def get_event_config(self, event_class: str) -> EventConfig:
         """Getting EventConfig"""
-        if event_class not in self.event_config:
+        if str(event_class) not in self.event_config:
             return self.default_event_config
-        return self.event_config[event_class]
+        return self.event_config[str(event_class)]
 
     async def classify_event(
         self,
@@ -336,8 +366,8 @@ class ClassifierService(FastAPIService):
                 return EventAction.DROP, None, None  # Drop malformed message
             metrics[EventMetrics.CR_PREPROCESSED] += 1
             if not event.vars:
-                return EventAction.LOG, self.get_event_config(event_class), raw_vars
-            return EventAction.LOG, self.get_event_config(event_class), event.vars
+                return EventAction.LOG, self.get_event_config(event_class.name), raw_vars
+            return EventAction.LOG, self.get_event_config(event_class.name), event.vars
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
             return EventAction.DROP, None, None
@@ -357,7 +387,7 @@ class ClassifierService(FastAPIService):
                 event.target.address,
             )
             metrics[EventMetrics.CR_DELETED] += 1
-            return EventAction.DROP, self.get_event_config(rule.event_class), r_vars
+            return EventAction.DROP, self.get_event_config(rule.event_class_name), r_vars
         # Apply transform
         for t in rule.vars_transform or []:
             t.transform(r_vars, raw_vars)
@@ -388,7 +418,7 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_UNKNOWN] += 1
         else:
             metrics[EventMetrics.CR_CLASSIFIED] += 1
-        return EventAction.LOG, self.get_event_config(rule.event_class), r_vars
+        return EventAction.LOG, self.get_event_config(rule.event_class_name), r_vars
 
     async def dispose_event(self, event: Event, mo: ManagedObject):
         """
@@ -457,6 +487,8 @@ class ClassifierService(FastAPIService):
             event:
             event_config:
         """
+        if "suppress" not in event_config.filters:
+            return True
         se_id = self.suppress_filter.find(event, event_config)
         if not se_id:
             return False
@@ -913,22 +945,8 @@ class ClassifierService(FastAPIService):
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""
-        ec = EventConfig(
-            name=data["name"],
-            bi_id=data["bi_id"],
-            event_class=data["event_class"],
-            event_class_id=data["event_class_id"],
-            managed_object_required=data["managed_object_required"],
-            vars=[VarItem(**vv) for vv in data["vars"]],
-        )
-        for rr in data["resources"]:
-            ec.resolvers[rr["resource"]] = lambda x: True
-        for ff in data["filters"]:
-            ec.filters[ff["name"]] = FilterConfig(
-                window=ff["window"],
-                vars=[vv["name"] for vv in data["vars"] if vv["match_suppress"]],
-            )
-        self.event_config[data["id"]] = ec
+        self.event_config[data["event_class"]["name"]] = EventConfig.from_config(data)
+        self.add_configs += 1
 
     async def delete_config(self, ec_id: str) -> None:
         """Remove Event Config for ID"""
