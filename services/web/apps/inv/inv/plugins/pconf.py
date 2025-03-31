@@ -464,12 +464,13 @@ class PConfPlugin(InvPlugin):
         """
         # @todo: Wrap to catch errors
         mo.scripts.set_param(card=self._get_card(obj), name=name, value=value)
-        model = self.get_model_name()
+        model = self.get_model_name(obj)
         if name == "SetMode" and model == "ADM-200":
             mode_name = ADM200_VMAP.get(value)
             if mode_name is None:
                 return self.error_response(f"Unsupported mode: {mode_name}")
             obj.mode = mode_name
+            obj.save()
         return {"status": True}
 
     @classmethod
