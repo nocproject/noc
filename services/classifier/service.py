@@ -946,7 +946,7 @@ class ClassifierService(FastAPIService):
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""
-        self.event_config[data["event_class"]["name"]] = EventConfig.from_config(data)
+        self.event_config[data["id"]] = EventConfig.from_config(data)
         self.add_configs += 1
 
     async def delete_config(self, ec_id: str) -> None:

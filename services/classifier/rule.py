@@ -15,7 +15,6 @@ from types import CodeType
 # NOC modules
 from noc.core.fm.enum import EventSource
 from noc.services.classifier.exception import InvalidPatternException
-from noc.fm.models.eventclass import EventClass
 
 rx_escape = re.compile(r"\\(.)")
 rx_exact = re.compile(r"^\^?[a-zA-Z0-9%: \-_]+\$?$")
