@@ -38,6 +38,34 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
   layout: "fit",
   viewModel: {
     stores: {
+      gridStore: {
+        model: "NOC.inv.inv.plugins.pconf.PConfModel",
+        listeners: {
+          datachanged: "onDataChanged",
+        },
+        filters: [
+          {
+            property: "name",
+            value: "{searchText}",
+            anyMatch: true,
+            caseSensitive: false,
+          },
+          // {
+          // property: "table",
+          // value: "{tabType}",
+          // },
+          // {
+          //   property: "status",
+          //   value: "{status}",
+          // },
+          // {
+          // id: "groupFilter",
+          // property: "group",
+          // exactMatch: true,
+          // value: "{groupParam}",
+          // },
+        ],
+      },
       groupStore: {
         fields: ["id", "label"],
         data: [],
@@ -79,19 +107,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       },
       listeners: {
         change: function(field, newValue){
-          var grid = field.up("panel").down("gridpanel"),
-            store = grid.getStore(),
-            trigger = field.getTrigger("clear");
+          var trigger = field.getTrigger("clear");
           if(newValue){
-            store.filter({
-              property: "name",
-              value: newValue,
-              anyMatch: true,
-              caseSensitive: false,
-            });
             trigger.show();
           } else{
-            store.clearFilter();
             trigger.hide();
           }
         },
@@ -202,19 +221,10 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
       border: false,
       autoScroll: true,
       stateful: true,
-      stateId: "inv.inv-pconf-grid",
       emptyText: __("No data"),
-      store: {
-        model: "NOC.inv.inv.plugins.pconf.PConfModel",
+      bind: {
+        store: "{gridStore}",
       },
-      // filters: [
-      // {
-      // property: "name",
-      // value: "{searchText}",
-      // anyMatch: true,
-      // caseSensitive: false,
-      // },
-      // ],
       columns: [
         {
           text: __("Name"),
@@ -253,15 +263,9 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     },
   ],
   //
-  initComponent: function(){
-    this.callParent();
-    let store = this.down("grid").getStore();
-    store.on("datachanged", this.getController().onDataChanged, this);
-  },
-  //
   preview: function(data, id){
     var vm = this.getViewModel(),
-      gridStore = this.down("grid").getStore(),
+      gridStore = vm.getStore("gridStore"),
       groupStore = vm.getStore("groupStore"),
       tableStore = vm.getStore("tableStore"),
       // uniqueGroups = Ext.Array.map(Ext.Array.unique(Ext.Array.pluck(data.conf, "group")), function(obj){return {value: obj};}),
