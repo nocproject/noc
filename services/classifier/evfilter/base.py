@@ -16,7 +16,7 @@ from bson import ObjectId
 # NOC modules
 from noc.config import config
 from noc.core.fm.event import Event
-from noc.fm.models.eventclass import EventClass
+from noc.services.classifier.eventconfig import EventConfig
 
 
 class BaseEvFilter(object):
@@ -36,23 +36,19 @@ class BaseEvFilter(object):
         self.pq: List[Tuple[int, int]] = []
 
     @staticmethod
-    def event_hash(event: Event, event_class: EventClass, event_vars: Dict[str, Any]) -> int:
+    def event_hash(event: Event, event_config: EventConfig, event_vars: Dict[str, Any]) -> int:
         """
         Collapse event to a hash
         Args:
             event: Event instance
-            event_class: EventClass Instance
+            event_config: EventClass Instance
             event_vars: Variables dict
         """
         raise NotImplementedError
 
     @staticmethod
-    def get_window(event_class: EventClass) -> int:
-        """
-        Return filter window in seconds or 0, if disabled
-        :param event_class:
-        :return:
-        """
+    def get_window(event_config: EventConfig) -> int:
+        """Return filter window in seconds or 0, if disabled"""
         raise NotImplementedError
 
     @staticmethod
@@ -60,14 +56,14 @@ class BaseEvFilter(object):
         return int(event.timestamp.timestamp())
 
     def register(
-        self, event: Event, event_class: EventClass, event_vars: Optional[Dict[str, Any]] = None
+        self, event: Event, event_config: EventConfig, event_vars: Optional[Dict[str, Any]] = None
     ) -> None:
         """Register event to filter"""
-        fw = self.get_window(event_class)
+        fw = self.get_window(event_config)
         if not fw:
             return  # No deduplication for event class
         now = self._get_timestamp(event)
-        eh = self.event_hash(event, event_class, event_vars)
+        eh = self.event_hash(event, event_config, event_vars)
         r = self.events.get(eh)
         if r and r[0] > now and not self.update_deadline:
             return  # deadline is not expired still
@@ -80,10 +76,10 @@ class BaseEvFilter(object):
         self.events[eh] = (deadline, event_id)
 
     def find(
-        self, event: Event, event_class: EventClass, event_vars: Optional[Dict[str, Any]] = None
+        self, event: Event, event_config: EventConfig, event_vars: Optional[Dict[str, Any]] = None
     ) -> Optional[ObjectId]:
         """Check if event is duplicated"""
-        eh = self.event_hash(event, event_class, event_vars)
+        eh = self.event_hash(event, event_config, event_vars)
         r = self.events.get(eh)
         ts = self._get_timestamp(event)
         if r and r[0] > ts:

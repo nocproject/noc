@@ -27,16 +27,21 @@ class EventConfig:
     name: str
     bi_id: int
     event_class: str
+    event_class_id: str
     # categories: List[str]
     vars: List[VarItem]
     managed_object_required: bool = True
     filters: Optional[Dict[str, int]] = None
-    resolvers: Optional[Dict[str: Callable]] = None
+    resolvers: Optional[Dict[str:Callable]] = None
     actions: Optional[List[Callable]] = None
 
     @property
     def label(self):
         return self.event_class
+
+    @property
+    def id(self):
+        return self.event_class_id
 
     def eval_vars(self, r_vars: Dict[str, Any]):
         """Evaluate rule variables"""

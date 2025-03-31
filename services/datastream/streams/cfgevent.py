@@ -21,10 +21,11 @@ class CfgEventDataStream(DataStream):
 
     @classmethod
     def get_object(cls, oid: str) -> Dict[str, Any]:
-        if isinstance(oid, ObjectId):
-            oid = str(oid)
+        oid = str(oid)
         if oid.startswith("ec:"):
             event_class = EventClass.get_by_id(oid[3:])
+        else:
+            event_class = EventClass.get_by_id(oid)
         if not event_class:
             raise KeyError()
         r = EventClass.get_event_config(event_class)

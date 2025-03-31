@@ -418,6 +418,7 @@ class EventClass(Document):
             "id": str(event_class.id),
             "name": event_class.name,
             "bi_id": str(event_class.bi_id),
+            "event_class_id": str(event_class.id),
             "is_unique": True,
             "managed_object_required": True,
             "vars": [],
