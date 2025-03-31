@@ -90,7 +90,7 @@ class VarTransformRule:
 class Rule:
     id: str
     name: str
-    event_class: Any
+    event_class_id: str
     event_class_name: str
     source: EventSource
     profiles: Optional[FrozenSet[str]] = None
@@ -175,11 +175,10 @@ class Rule:
                 transform[name].default = value
             else:
                 transform[name] = VarTransformRule(name=name, default=value)
-        event_class = EventClass.get_by_name(data["event_class"])
         return Rule(
             id=data["id"],
             name=data["name"],
-            event_class=event_class,
+            event_class_id=data["event_class_id"],
             event_class_name=data["event_class"],
             source=source,
             profiles=frozenset(profiles),
@@ -189,7 +188,8 @@ class Rule:
             vars_transform=tuple(transform.values()),
             label_matchers=tuple(label_matchers) if label_matchers else None,
             # vars=rule_vars,
-            to_drop=event_class.action == "D",
+            # to_drop=event_class.action == "D",
+            to_drop=data["to_drop"],
         )
 
     def match(

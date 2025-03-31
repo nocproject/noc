@@ -131,7 +131,7 @@ class ClassifierService(FastAPIService):
         self.default_link_action = None
         # Sync primitives
         self.event_rules_ready_event = asyncio.Event()
-        self.on_event_config_ready = asyncio.Event()
+        self.event_config_ready = asyncio.Event()
         # Reporting
         self.last_ts: Optional[float] = None
         self.stats: Dict[EventMetrics, int] = {}
@@ -183,7 +183,7 @@ class ClassifierService(FastAPIService):
         # Start tracking changes
         if config.datastream.enable_cfgevent:
             asyncio.get_running_loop().create_task(self.get_event_config_mappings())
-            await self.on_event_config_ready.wait()
+            await self.event_config_ready.wait()
         else:
             await self.load_event_configs()
         if config.datastream.enable_cfgeventrules:
@@ -366,8 +366,8 @@ class ClassifierService(FastAPIService):
                 return EventAction.DROP, None, None  # Drop malformed message
             metrics[EventMetrics.CR_PREPROCESSED] += 1
             if not event.vars:
-                return EventAction.LOG, self.get_event_config(event_class.name), raw_vars
-            return EventAction.LOG, self.get_event_config(event_class.name), event.vars
+                return EventAction.LOG, self.get_event_config(event_class.id), raw_vars
+            return EventAction.LOG, self.get_event_config(event_class.id), event.vars
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
             return EventAction.DROP, None, None
@@ -387,7 +387,7 @@ class ClassifierService(FastAPIService):
                 event.target.address,
             )
             metrics[EventMetrics.CR_DELETED] += 1
-            return EventAction.DROP, self.get_event_config(rule.event_class_name), r_vars
+            return EventAction.DROP, self.get_event_config(rule.event_class_id), r_vars
         # Apply transform
         for t in rule.vars_transform or []:
             t.transform(r_vars, raw_vars)
@@ -409,16 +409,17 @@ class ClassifierService(FastAPIService):
         )
         # event.event_class = rule.event_class
         # message = f"Classified as '{rule.event_class.name}' by rule '{rule.name}'"
+        event_config = self.get_event_config(rule.event_class_id)
         self.register_log(
             event,
-            rule.event_class,
+            event_config,
             f"Classified as '{rule.event_class_name}' by rule '{rule.name}'",
         )
         if rule.is_unknown:
             metrics[EventMetrics.CR_UNKNOWN] += 1
         else:
             metrics[EventMetrics.CR_CLASSIFIED] += 1
-        return EventAction.LOG, self.get_event_config(rule.event_class_name), r_vars
+        return EventAction.LOG, event_config, r_vars
 
     async def dispose_event(self, event: Event, mo: ManagedObject):
         """
@@ -952,6 +953,13 @@ class ClassifierService(FastAPIService):
         """Remove Event Config for ID"""
         if ec_id in self.event_config:
             del self.event_config[ec_id]
+
+    async def on_event_config_ready(self) -> None:
+        """
+        Called when all mappings are ready.
+        """
+        self.event_config_ready.set()
+        self.logger.info("%d Event Configs has been loaded", self.add_configs)
 
 
 if __name__ == "__main__":
