@@ -343,13 +343,13 @@ class StringListParameter(ListOfParameter):
     """
 
     def __init__(self, required=True, default=None, convert=False, choices=None, strict=False):
+        self.strict = strict
         super().__init__(
             element=StringParameter(choices=choices),
             required=required,
             default=default,
             convert=convert,
         )
-        self.strict = strict
 
     def clean(self, value):
         if self.strict and isinstance(value, str):
