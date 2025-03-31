@@ -45,4 +45,4 @@ class ResolverCheck(DiscoveryCheck):
         if not self.object.fqdn:
             self.logger.info("FQDN field is empty")
             return False
-        return self.object.diagnostic[RESOLVER_DIAG] != DiagnosticState.blocked
+        return self.object.diagnostic[RESOLVER_DIAG].state != DiagnosticState.blocked
