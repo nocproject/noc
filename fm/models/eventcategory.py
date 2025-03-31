@@ -19,6 +19,7 @@ from mongoengine.fields import (
     ReferenceField,
     BooleanField,
     EmbeddedDocumentListField,
+    EnumField,
     UUIDField,
     LongField,
     IntField,
@@ -31,18 +32,18 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
+from noc.core.models.valuetype import VariableType
 
 id_lock = Lock()
 
 
 class Resource(EmbeddedDocument):
     """
-    Systen Resources for Category
+    System Resources for Category
     Attributes:
         code: Resource Code
-        required_object: Require Resolve Object for Resource Map
         extend_path: Extend path by resolve Resource
-        update_oper_status: Update Oper Status on resource
+        oper_status: Update Oper Status on resource
     """
 
     meta = {"strict": False}
@@ -50,36 +51,25 @@ class Resource(EmbeddedDocument):
     code: str = StringField(
         required=True, choices=[("if", "Interface"), ("si", "SubInterface"), ("ip", "Address")]
     )
-    required_object: bool = BooleanField(default=True)
     extend_path = BooleanField(default=False)  # Append Resource Path
-    set_oper_status: bool = BooleanField(default=False)  # set_oper_status API
+    oper_status: bool = StringField(choices=[("UP", "Up"), ("DOWN", "Down")], required=False)
+
+    @property
+    def json_data(self):
+        return {
+            "name": self.code,
+            "required": self.extend_path,
+            "match_suppress": self.oper_status,
+        }
 
 
 class EventCategoryVar(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField(required=True)
     description = StringField(required=False)
-    type = StringField(
-        required=True,
-        choices=[
-            (x, x)
-            for x in (
-                "str",
-                "int",
-                "float",
-                "ipv4_address",
-                "ipv6_address",
-                "ip_address",
-                "ipv4_prefix",
-                "ipv6_prefix",
-                "ip_prefix",
-                "mac",
-                "interface_name",
-                "oid",
-            )
-        ],
-    )
+    type: VariableType = EnumField(VariableType, required=True)
     required = BooleanField(required=True)
+    # managed_object map ?
     match_suppress = BooleanField(default=False)
 
     def __str__(self):
@@ -128,9 +118,9 @@ class EventCategory(Document):
             * Disable - for information only Classes
             * By Profile - By Profile method
             * By Source - By Target mappings
-        required_object: Mapping Is Required, if not - dropped message
-        extend_object_paths: Add object paths to paths field
-        update_object_status: Update oper status on Object
+        managed_object_required: Mapping Is Required, if not - dropped message
+        include_object_paths: Add object paths to paths field
+        oper_status: Update oper status on Object
         resources: Resource Map rules
     """
 
@@ -158,16 +148,17 @@ class EventCategory(Document):
             ("D", "Disable"),
             ("O", "Object"),
             ("M", "ManagedObject"),
+            # CPE
         ],
         default="M",
     )
     # If not mapped - event dropped
-    required_object: bool = BooleanField(default=True)
+    managed_object_required: bool = BooleanField(default=True)
     object_resolver: str = StringField(
         choices=[("P", "By Profile"), ("T", "By Target")], default="T"
     )
-    extend_object_paths: str = BooleanField(default=True)
-    set_object_status: bool = BooleanField(default=False)
+    include_object_paths: str = BooleanField(default=True)
+    oper_status: bool = StringField(choices=[("UP", "Up"), ("DOWN", "Down")], required=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
@@ -200,9 +191,19 @@ class EventCategory(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
-            "level": self.level.value,
+            "suppression_policy": self.suppression_policy,
+            "suppression_window": self.suppression_window,
+            "object_scope": self.object_scope,
+            "managed_object_required": self.managed_object_required,
+            "include_object_paths": self.include_object_paths,
+            "object_resolver": self.object_resolver,
             "vars": [vv.json_data for vv in self.vars],
+            "resources": [r.json_data for r in self.resources],
         }
+        if self.parent:
+            r["parent__name"] = self.parent.name
+        if self.oper_status:
+            r["oper_status"] = self.oper_status
         return r
 
     def to_json(self) -> str:
@@ -212,7 +213,7 @@ class EventCategory(Document):
                 "name",
                 "$collection",
                 "uuid",
-                "level",
+                "parent",
                 "description",
             ],
         )
@@ -220,3 +221,38 @@ class EventCategory(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    @classmethod
+    def get_rule_config(cls, category: "EventCategory"):
+        """Build Category Rules"""
+        from noc.fm.models.dispositionrule import DispositionRule
+
+        r = {
+            "id": str(category.id),
+            "name": category.name,
+            "bi_id": str(category.bi_id),
+            "is_unique": category.is_unique,
+            "suppression_policy": category.suppression_policy,
+            "suppression_window": category.suppression_window,
+            "vars": [],
+            "object_map": {
+                "scope": category.object_scope,
+                "managed_object_required": category.managed_object_required,
+                "include_path": category.include_object_paths,
+            },
+            "handlers": [],
+            "actions": [],
+        }
+        if category.oper_status:
+            r["object_map"]["oper_status"] = category.oper_status == "UP"
+        for vv in category.vars:
+            r["vars"].append(
+                {
+                    "name": vv.name,
+                    "type": vv.type.value,
+                    "required": vv.required,
+                    "match_suppress": vv.match_suppress,
+                }
+            )
+        r["actions"] += DispositionRule.get_category_actions(category)
+        return r

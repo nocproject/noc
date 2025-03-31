@@ -164,21 +164,20 @@ Ext.define("NOC.fm.eventcategory.Application", {
                             uiStyle: "medium"
                         },
                         {
-                            name: "required_object",
+                            name: "oper_status",
+                            xtype: "combobox",
+                            fieldLabel: __("Set Object Status"),
+                            allowBlank: true,
+                            store: [
+                                ["UP", __("Oper Up")],
+                                ["DOWN", __("Oper Down")]
+                            ],
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "managed_object_required",
                             xtype: "checkbox",
                             boxLabel: __("Required Object"),
-                            uiStyle: "medium"
-                        },
-                        {
-                            name: "extend_object_paths",
-                            xtype: "checkbox",
-                            boxLabel: __("Extend Object Path"),
-                            uiStyle: "medium"
-                        },
-                        {
-                            name: "set_object_status",
-                            xtype: "checkbox",
-                            boxLabel: __("Set Object Status"),
                             uiStyle: "medium"
                         }
                     ]
@@ -195,16 +194,10 @@ Ext.define("NOC.fm.eventcategory.Application", {
                                 xtype: "combobox",
                                 store: [
                                     ["if", __("Interface")],
-                                    ["si", __("SubInterface")]
+                                    ["si", __("SubInterface")],
+                                    ["ip", __("IP Address")]
                                 ]
                             }
-                        },
-                        {
-                            text: __("Required Object"),
-                            dataIndex: "required_object",
-                            width: 100,
-                            editor: "checkboxfield",
-                            renderer: NOC.render.Bool
                         },
                         {
                             text: __("Extend Path"),
@@ -215,10 +208,15 @@ Ext.define("NOC.fm.eventcategory.Application", {
                         },
                         {
                             text: __("Set Oper Status"),
-                            dataIndex: "set_oper_status",
+                            dataIndex: "oper_status",
                             width: 100,
-                            editor: "checkboxfield",
-                            renderer: NOC.render.Bool
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["UP", __("Up")],
+                                    ["DOWN", __("Down")]
+                                ]
+                            }
                         }
                     ]
                 }
