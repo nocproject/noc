@@ -342,7 +342,8 @@ class StringListParameter(ListOfParameter):
     Check value is list of strings
     """
 
-    def __init__(self, required=True, default=None, convert=False, choices=None):
+    def __init__(self, required=True, default=None, convert=False, choices=None, strict=False):
+        self.strict = strict
         super().__init__(
             element=StringParameter(choices=choices),
             required=required,
@@ -351,7 +352,7 @@ class StringListParameter(ListOfParameter):
         )
 
     def clean(self, value):
-        if isinstance(value, str):
+        if self.strict and isinstance(value, str):
             raise InterfaceTypeError("Must be List")
         return super().clean(value)
 
