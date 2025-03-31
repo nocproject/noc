@@ -39,7 +39,9 @@ from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.core.models.valuetype import ValueType
+from noc.config import config
 from .alarmclass import AlarmClass
 
 id_lock = Lock()
@@ -187,6 +189,7 @@ class EventClassCategory(Document):
 
 
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("fm.EventClassificationRule", "event_class"),
@@ -305,6 +308,10 @@ class EventClass(Document):
         self.category = c.id
         super().save(*args, **kwargs)
 
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgeventrules:
+            yield "cfgevent", f"ec:{self.id}"
+
     @property
     def display_action(self):
         return {"D": "Drop", "L": "Log", "A": "Log and Archive"}[self.action]
@@ -403,7 +410,7 @@ class EventClass(Document):
         return os.path.join(*p) + ".json"
 
     @classmethod
-    def get_rule_config(cls, event_class: "EventClass"):
+    def get_event_config(cls, event_class: "EventClass"):
         """Build Category Rules"""
         from noc.fm.models.dispositionrule import DispositionRule
 
@@ -412,19 +419,32 @@ class EventClass(Document):
             "name": event_class.name,
             "bi_id": str(event_class.bi_id),
             "is_unique": True,
-            "suppression_policy": "D",
-            "suppression_window": event_class.suppression_window,
+            "managed_object_required": True,
             "vars": [],
+            "filters": [],
             "object_map": {
                 "scope": "M",
                 "managed_object_required": True,
                 "include_path": True,
             },
             "handlers": [],
+            "resources": [],
             "actions": [],
         }
-        # if category.oper_status:
-        #     r["object_map"]["oper_status"] = category.oper_status == "UP"
+        if event_class.deduplication_window:
+            r["filters"].append(
+                {"name": "deduplication", "window": event_class.deduplication_window},
+            )
+        if event_class.suppression_window:
+            r["filters"].append(
+                {"name": "suppression", "window": event_class.suppression_window},
+            )
+        if event_class.link_event:
+            r["resources"].append({"resource": "if"})
+            if "noc.fm.handlers.event.link.oper_down" in event_class.handlers:
+                r["resources"][-1]["oper_status"] = False
+            elif "noc.fm.handlers.event.link.oper_up" in event_class.handlers:
+                r["resources"][-1]["oper_status"] = True
         for vv in event_class.vars:
             r["vars"].append(
                 {
@@ -434,7 +454,7 @@ class EventClass(Document):
                     "match_suppress": vv.match_suppress,
                 }
             )
-        r["actions"] += DispositionRule.get_category_actions(event_class)
+        r["actions"] += DispositionRule.get_actions(event_class)
         return r
 
 

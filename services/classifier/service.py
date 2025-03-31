@@ -115,7 +115,7 @@ class ClassifierService(FastAPIService):
         self.version: str = version.version
         self.ruleset: RuleSet = RuleSet()
         self.pattern_set: PatternSet = PatternSet()
-        self.actionset: ActionSet = ActionSet()
+        self.action_set: ActionSet = ActionSet()
         self.triggers: Dict[str, List[Trigger]] = defaultdict(
             list
         )  # event_class_id -> [trigger1, ..., triggerN]
@@ -129,7 +129,8 @@ class ClassifierService(FastAPIService):
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         # Sync primitives
-        self.event_rules_ready_event = asyncio.Event()  # Load Metric Sources
+        self.event_rules_ready_event = asyncio.Event()
+        self.on_event_config_ready = asyncio.Event()
         # Reporting
         self.last_ts: Optional[float] = None
         self.stats: Dict[EventMetrics, int] = {}
@@ -172,7 +173,7 @@ class ClassifierService(FastAPIService):
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load(skip_load_rules=config.datastream.enable_cfgeventrules)
         self.pattern_set.load()
-        self.actionset.load()
+        self.action_set.load()
         self.load_link_action()
         # Heat up MIB cache
         MIBData.preload()
@@ -181,6 +182,7 @@ class ClassifierService(FastAPIService):
         if config.datastream.enable_cfgeventrules:
             asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
+            await self.on_event_config_ready.wait()
         await self.subscribe_stream(
             "events.%s" % config.pool,
             self.slot_number,
@@ -721,7 +723,7 @@ class ClassifierService(FastAPIService):
             # Fill suppress filter
             self.suppress_filter.register(event, event_class)
             # Call Actions
-            for a in self.actionset.iter_actions(
+            for a in self.action_set.iter_actions(
                 event_class.id,
                 {
                     "labels": frozenset(event.labels or []),
@@ -908,6 +910,13 @@ class ClassifierService(FastAPIService):
     async def delete_rules(self, r_id: str) -> None:
         """Remove rules for ID"""
         self.ruleset.delete_rule(r_id)
+
+    async def update_config(self, data: Dict[str, Any]) -> None:
+        """Apply Event Config changes"""
+
+    async def delete_config(self, ec_id: str) -> None:
+        """Remove Event Config for ID"""
+        self.action_set.delete_rule(ec_id)
 
 
 if __name__ == "__main__":
