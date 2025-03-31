@@ -48,7 +48,6 @@ from noc.fm.models.mibdata import MIBData
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
-from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
@@ -56,6 +55,7 @@ from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
 from noc.services.classifier.datastream import EventRuleDataStreamClient
 from noc.services.classifier.actionset import ActionSet, EventAction
+from noc.services.classifier.eventconfig import EventConfig, VarItem
 
 
 class EventMetrics(enum.Enum):
@@ -116,9 +116,7 @@ class ClassifierService(FastAPIService):
         self.ruleset: RuleSet = RuleSet()
         self.pattern_set: PatternSet = PatternSet()
         self.action_set: ActionSet = ActionSet()
-        self.triggers: Dict[str, List[Trigger]] = defaultdict(
-            list
-        )  # event_class_id -> [trigger1, ..., triggerN]
+        self.event_config: Dict[str, EventConfig] = {}
         self.alter_handlers: List[Tuple[str, bool, Callable]] = []
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook: Dict[str, List[str]] = {}  # object id -> [<codebook>]
@@ -913,10 +911,22 @@ class ClassifierService(FastAPIService):
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""
+        ec = EventConfig(
+            name=data["name"],
+            bi_id=data["bi_id"],
+            event_class=data["name"],
+            managed_object_required=data["managed_object_required"],
+            vars=[VarItem(**vv) for vv in data["vars"]],
+            filters={ff["name"]: ff["window"] for ff in data["filters"]},
+        )
+        for rr in data["resources"]:
+            ec.resolvers[rr["resource"]] = lambda x: True
+        self.event_config[data["id"]] = ec
 
     async def delete_config(self, ec_id: str) -> None:
         """Remove Event Config for ID"""
-        self.action_set.delete_rule(ec_id)
+        if ec_id in self.event_config:
+            del self.event_config[ec_id]
 
 
 if __name__ == "__main__":

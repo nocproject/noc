@@ -433,7 +433,7 @@ class EventClass(Document):
         }
         if event_class.deduplication_window:
             r["filters"].append(
-                {"name": "deduplication", "window": event_class.deduplication_window},
+                {"name": "dedup", "window": event_class.deduplication_window},
             )
         if event_class.suppression_window:
             r["filters"].append(
