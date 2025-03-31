@@ -353,6 +353,16 @@ class DispositionRule(Document):
         return build_matcher({"$or": expr})
 
     @classmethod
+    def get_actions(cls, event_class):
+        """"""
+        r = []
+        for rule in DispositionRule.objects.filter(
+            conditions__event_class_re=event_class.name,
+        ).order_by("preference"):
+            r.append(rule)
+        return []
+
+    @classmethod
     def get_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
         """Generate Datastream Config"""
         if rule.replace_rule and rule.replace_rule_policy == "w":
