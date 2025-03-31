@@ -67,8 +67,8 @@ Ext.define("NOC.fm.eventcategory.Model", {
             defaultValue: true
         },
         {
-            name: "update_object_status",
-            type: "boolean",
+            name: "oper_status",
+            type: "string",
             defaultValue: false
         },
         {
