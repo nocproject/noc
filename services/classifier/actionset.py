@@ -9,7 +9,6 @@
 import logging
 import enum
 import datetime
-from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
 from typing import Dict, Tuple, Optional, Callable, List, Any, Iterable
@@ -18,7 +17,6 @@ from typing import Dict, Tuple, Optional, Callable, List, Any, Iterable
 from noc.core.fm.event import Event
 from noc.core.debug import error_report
 from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID
-from noc.core.models.valuetype import ValueType
 from noc.fm.models.dispositionrule import DispositionRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.interactionlog import Interaction, InteractionLog
@@ -37,40 +35,10 @@ class EventAction(enum.Enum):
         return NotImplemented
 
 
-@dataclass(frozen=True)
-class EventVar:
-    name: str
-    type: ValueType
-    required: False
-    match_suppress: False
-
-
-@dataclass(frozen=True)
-class EventConfig:
-    bi_id: int
-    vars: List[EventVar]
-    is_unique: bool = False
-    suppression_policy: str = "D"
-    suppression_window: int = 0
-    deduplication_window: int = 3
-    required_object: bool = True
-    # Path Resolver
-    resolvers: Optional[List[Callable]] = None
-    # actions
-
-    @classmethod
-    def from_config(cls, data) -> "EventConfig":
-        ec = EventConfig(
-            bi_id=int(data["bi_id"]),
-        )
-        return
-
-
 class ActionSet(object):
 
     def __init__(self):
         self.actions: Dict[str, List[Tuple[Callable, Optional[Callable]]]] = {}
-        self.configs: Dict[str, EventConfig] = {}
         self.add_handlers: int = 0
         self.add_notifications: int = 0
 
@@ -83,30 +51,11 @@ class ActionSet(object):
                 continue
             yield a
 
-    def eval_vars(
-        self,
-        event,
-        event_class: Optional[str] = None,
-        categories: Optional[List[str]] = None,
-    ) -> EventAction:
-        """
-        EventAction, filters
-        Args:
-            event:
-            event_class:
-            categories:
-        """
-        ...
-        # resolver -> Path Resolver ?
-
     def update_rule(self, data):
         """Update rule from lookup"""
 
     def delete_rule(self, rid: str):
         """Remove rule from lookup"""
-
-    def get_callable(self) -> Callable:
-        """"""
 
     def load(self, skip_load_rules: bool = False):
         """

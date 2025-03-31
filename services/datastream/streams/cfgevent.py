@@ -8,9 +8,6 @@
 # Python modules
 from typing import Any, Dict
 
-# Third-party modules
-from bson import ObjectId
-
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.fm.models.eventclass import EventClass
