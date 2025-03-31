@@ -359,8 +359,8 @@ class DispositionRule(Document):
         for rule in DispositionRule.objects.filter(
             conditions__event_class_re=event_class.name,
         ).order_by("preference"):
-            r.append(rule)
-        return []
+            r.append(DispositionRule.get_rule_config(rule))
+        return r
 
     @classmethod
     def get_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
