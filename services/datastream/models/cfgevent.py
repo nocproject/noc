@@ -71,4 +71,3 @@ class CfgEvent(BaseModel):
     handlers: List[str] = None
     actions: Optional[List[Action]] = None
     #
-
