@@ -26,4 +26,4 @@ class DedupFilter(BaseEvFilter):
     def get_window(event_config: EventConfig) -> int:
         if "dedup" not in event_config.filters:
             return 0
-        return event_config.filters["dedup"]
+        return event_config.filters["dedup"].window

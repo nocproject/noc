@@ -54,7 +54,7 @@ from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
 from noc.services.classifier.datastream import EventRuleDataStreamClient
 from noc.services.classifier.actionset import ActionSet, EventAction
-from noc.services.classifier.eventconfig import EventConfig, VarItem
+from noc.services.classifier.eventconfig import EventConfig, VarItem, FilterConfig
 
 
 class EventMetrics(enum.Enum):
@@ -920,10 +920,14 @@ class ClassifierService(FastAPIService):
             event_class_id=data["event_class_id"],
             managed_object_required=data["managed_object_required"],
             vars=[VarItem(**vv) for vv in data["vars"]],
-            filters={ff["name"]: ff["window"] for ff in data["filters"]},
         )
         for rr in data["resources"]:
             ec.resolvers[rr["resource"]] = lambda x: True
+        for ff in data["filters"]:
+            ec.filters[ff["name"]] = FilterConfig(
+                window=ff["window"],
+                vars=[vv["name"] for vv in data["vars"] if vv["match_suppress"]],
+            )
         self.event_config[data["id"]] = ec
 
     async def delete_config(self, ec_id: str) -> None:

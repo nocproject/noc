@@ -22,6 +22,12 @@ class VarItem:
     required: bool = False
 
 
+@dataclass(frozen=True, slots=True)
+class FilterConfig:
+    window: int
+    vars: Optional[List[str]] = None
+
+
 @dataclass
 class EventConfig:
     name: str
@@ -31,8 +37,8 @@ class EventConfig:
     # categories: List[str]
     vars: List[VarItem]
     managed_object_required: bool = True
-    filters: Optional[Dict[str, int]] = None
-    resolvers: Optional[Dict[str:Callable]] = None
+    filters: Optional[Dict[str, FilterConfig]] = None
+    resolvers: Optional[Dict[str, Callable]] = None
     actions: Optional[List[Callable]] = None
 
     @property
