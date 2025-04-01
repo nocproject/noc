@@ -338,7 +338,12 @@ class ClassifierService(FastAPIService):
         self,
         event: Event,
         raw_vars: Dict[str, Any],
-    ) -> Tuple[EventAction, Optional["EventConfig"], Optional[Dict[str, Any]], Optional[List["EventCategory"]]]:
+    ) -> Tuple[
+        EventAction,
+        Optional["EventConfig"],
+        Optional[Dict[str, Any]],
+        Optional[List["EventCategory"]],
+    ]:
         """
         Perform event classification.
         Classification steps are:
@@ -393,7 +398,12 @@ class ClassifierService(FastAPIService):
                 event.target.address,
             )
             metrics[EventMetrics.CR_DELETED] += 1
-            return EventAction.DROP, self.get_event_config(rule.event_class_id), r_vars, rule.categories
+            return (
+                EventAction.DROP,
+                self.get_event_config(rule.event_class_id),
+                r_vars,
+                rule.categories,
+            )
         # Apply transform
         for t in rule.vars_transform or []:
             t.transform(r_vars, raw_vars)
@@ -620,7 +630,9 @@ class ClassifierService(FastAPIService):
         # Process event
         resolved_vars = self.resolve_vars(event)
         try:
-            e_action, e_cfg, resolved_vars, categories = await self.classify_event(event, resolved_vars)
+            e_action, e_cfg, resolved_vars, categories = await self.classify_event(
+                event, resolved_vars
+            )
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s",
