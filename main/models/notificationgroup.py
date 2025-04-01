@@ -624,7 +624,7 @@ class NotificationGroupUserSubscription(NOCModel):
         verbose_name_plural = "Notification Group Users"
         app_label = "main"
         db_table = "main_notificationgroupusersubscription"
-        unique_together = [("notification_group_id", "user_id", "watch")]
+        unique_together = [("notification_group_id", "user_id")]
 
     notification_group: NotificationGroup = ForeignKey(
         NotificationGroup, verbose_name="Notification Group", on_delete=CASCADE
@@ -649,18 +649,32 @@ class NotificationGroupUserSubscription(NOCModel):
     title_tag = CharField(max_length=30, blank=True)
     expired_at = DateTimeField("Expired Subscription After", auto_now_add=False)
     suppress = BooleanField("Deactivate Subscription", default=False)
-    watch = CharField("Watch key", max_length=100, null=True, blank=True)
-    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
 
     def __str__(self):
-        if not self.watch:
-            return f"{self.user.username}@{self.notification_group.name}: {self.time_pattern.name if self.time_pattern else ''}"
-        return f"{self.user.username}@{self.notification_group.name}: ({self.watch}) {self.time_pattern.name if self.time_pattern else ''}"
+        return f"{self.user.username}@{self.notification_group.name}: {self.time_pattern.name if self.time_pattern else ''}"
+
+
+class NotificationGroupWatchSubscription(NOCModel):
+    class Meta(object):
+        verbose_name = "Notification Group Watch Subscription"
+        verbose_name_plural = "Notification Group Users"
+        app_label = "main"
+        db_table = "main_notificationgroupwatchsubscription"
+        unique_together = [("notification_group_id", "model_id", "instance_id", "remote_system")]
+
+    notification_group: NotificationGroup = ForeignKey(
+        NotificationGroup, verbose_name="Notification Group", on_delete=CASCADE
+    )
+    model_id = CharField(max_length=50)
+    instance_id = CharField(max_length=100)
+    watchers: List[str] = ArrayField(CharField(max_length=100), blank=True, null=True)
+    suppresses: List[str] = ArrayField(CharField(max_length=100), blank=True, null=True)
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
 
     def is_match(self, meta: Dict[MessageMeta, Any]):
         # time_pattern
-        if not self.watch:
+        if not self.watchers:
             return True
-        if self.watch and MessageMeta.FROM not in meta:
+        if self.watchers and MessageMeta.FROM not in meta:
             return False
-        return self.watch == meta[MessageMeta.FROM]
+        return meta[MessageMeta.FROM] in self.watchers
