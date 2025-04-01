@@ -22,6 +22,7 @@ Ext.define("NOC.sa.service.Application", {
     "NOC.inv.resourcegroup.LookupField",
     "NOC.core.label.LabelField",
     "NOC.core.combotree.ComboTree",
+    "NOC.core.plugins.DynamicModalEditing",
     "NOC.sa.service.InstancesPanel",
     "Ext.ux.form.GridField",
   ],
@@ -668,35 +669,64 @@ Ext.define("NOC.sa.service.Application", {
           ],
         },
         {
-          name: "caps",
-          xtype: "gridfield",
-          fieldLabel: __("Capabilities"),
-          allowBlank: true,
-          columns: [
+          xtype: "fieldset",
+          anchor: "100%",
+          minHeight: 130,
+          title: __("Capabilities"),
+          collapsible: true,
+          collapsed: false,
+          items: [
             {
-              text: __("Name"),
-              dataIndex: "capability",
-              renderer: NOC.render.Lookup("capability"),
-              width: 250,
-              editor: "inv.capability.LookupField",
-            },
-            {
-              text: __("Value"),
-              dataIndex: "value",
-              flex: 1,
-              editor: "textfield",
-            },
-            {
-              text: __("Source"),
-              dataIndex: "source",
-              width: 100,
-              editor: "textfield",
-            },
-            {
-              text: __("Scope"),
-              dataIndex: "scope",
-              width: 50,
-              editor: "textfield",
+              xtype: "inlinegrid",
+              itemId: "sa-service-caps-inline",
+              model: "NOC.sa.service.CapabilitiesModel",
+              readOnly: true,
+              bbar: {},
+              plugins: [
+                {
+                  ptype: "dynamicmodalediting",
+                  listeners: {
+                    canceledit: "onCancelEdit",
+                  },
+                },
+              ],
+              columns: [
+                {
+                  text: __("Capability"),
+                  dataIndex: "capability",
+                  width: 300,
+                },
+                {
+                  text: __("Value"),
+                  dataIndex: "value",
+                  // width: 100,
+                  useModalEditor: true,
+                  renderer: function(v, _, record){
+                    var value = v,
+                      iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil",
+                      icon = `<i class='fa fa-${iconName}' style='padding-right: 4px;' title='` + __("Read only") + "'></i>";
+                    if((v === true) || (v === false)){
+                      value = NOC.render.Bool(v);
+                    }
+                    return icon + value;
+                  },
+                },
+                {
+                  text: __("Scope"),
+                  dataIndex: "scope",
+                  width: 50,
+                },
+                {
+                  text: __("Source"),
+                  dataIndex: "source",
+                  width: 100,
+                },
+                {
+                  text: __("Description"),
+                  dataIndex: "description",
+                  flex: 1,
+                },
+              ],
             },
           ],
         },
