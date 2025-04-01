@@ -32,7 +32,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
-from noc.core.models.valuetype import VariableType
+from noc.core.models.valuetype import ValueType
 
 id_lock = Lock()
 
@@ -67,7 +67,7 @@ class EventCategoryVar(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField(required=True)
     description = StringField(required=False)
-    type: VariableType = EnumField(VariableType, required=True)
+    type: ValueType = EnumField(ValueType, required=True)
     required = BooleanField(required=True)
     # managed_object map ?
     match_suppress = BooleanField(default=False)
