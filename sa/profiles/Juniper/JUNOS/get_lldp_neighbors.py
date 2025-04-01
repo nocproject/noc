@@ -66,7 +66,7 @@ class Script(BaseScript):
     CHASSIS_TYPE = {
         "Mac address": LLDP_CHASSIS_SUBTYPE_MAC,
         "Network address": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-        "Locally assigned": LLDP_CHASSIS_SUBTYPE_LOCAL
+        "Locally assigned": LLDP_CHASSIS_SUBTYPE_LOCAL,
     }
     PORT_TYPE = {
         "Interface alias": LLDP_PORT_SUBTYPE_ALIAS,
