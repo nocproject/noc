@@ -301,6 +301,7 @@ class EventClassificationRule(Document):
         r = {
             "id": str(rule.id),
             "name": rule.name,
+            "event_class_id": str(rule.event_class.id),
             "event_class": rule.event_class.name,
             "sources": [s.value for s in rule.sources],
             "profiles": list(rule_profiles),
@@ -316,6 +317,7 @@ class EventClassificationRule(Document):
                 }
                 for ll in rule.labels
             ],
+            "to_drop": rule.event_class.action == "D",
             "to_dispose": bool(rule.event_class.disposition),
         }
         return r

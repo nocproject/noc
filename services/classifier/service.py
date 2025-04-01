@@ -16,7 +16,6 @@ import re
 import socket
 import struct
 import asyncio
-from collections import defaultdict
 from time import perf_counter
 from typing import Optional, Dict, List, Callable, Tuple, Any
 
@@ -48,14 +47,17 @@ from noc.fm.models.mibdata import MIBData
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
-from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
-from noc.services.classifier.datastream import EventRuleDataStreamClient
+from noc.services.classifier.datastream import (
+    EventRuleDataStreamClient,
+    EventConfigDataStreamClient,
+)
 from noc.services.classifier.actionset import ActionSet, EventAction
+from noc.services.classifier.eventconfig import EventConfig
 
 
 class EventMetrics(enum.Enum):
@@ -115,10 +117,9 @@ class ClassifierService(FastAPIService):
         self.version: str = version.version
         self.ruleset: RuleSet = RuleSet()
         self.pattern_set: PatternSet = PatternSet()
-        self.actionset: ActionSet = ActionSet()
-        self.triggers: Dict[str, List[Trigger]] = defaultdict(
-            list
-        )  # event_class_id -> [trigger1, ..., triggerN]
+        self.action_set: ActionSet = ActionSet()
+        self.event_config: Dict[str, EventConfig] = {}
+        self.default_event_config: EventConfig = None
         self.alter_handlers: List[Tuple[str, bool, Callable]] = []
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook: Dict[str, List[str]] = {}  # object id -> [<codebook>]
@@ -129,13 +130,15 @@ class ClassifierService(FastAPIService):
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         # Sync primitives
-        self.event_rules_ready_event = asyncio.Event()  # Load Metric Sources
+        self.event_rules_ready_event = asyncio.Event()
+        self.event_config_ready = asyncio.Event()
         # Reporting
         self.last_ts: Optional[float] = None
         self.stats: Dict[EventMetrics, int] = {}
         #
         self.slot_number = 0
         self.total_slots = 0
+        self.add_configs = 0
         self.pool_partitions: Dict[str, int] = {}
         #
         self.cable_abduct_ecls: Optional[EventClass] = None
@@ -172,12 +175,17 @@ class ClassifierService(FastAPIService):
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load(skip_load_rules=config.datastream.enable_cfgeventrules)
         self.pattern_set.load()
-        self.actionset.load()
+        self.action_set.load()
         self.load_link_action()
         # Heat up MIB cache
         MIBData.preload()
         self.slot_number, self.total_slots = await self.acquire_slot()
         # Start tracking changes
+        if config.datastream.enable_cfgevent:
+            asyncio.get_running_loop().create_task(self.get_event_config_mappings())
+            await self.event_config_ready.wait()
+        else:
+            await self.load_event_configs()
         if config.datastream.enable_cfgeventrules:
             asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
@@ -207,6 +215,23 @@ class ClassifierService(FastAPIService):
                 self.logger.info("Failed to get Event Classification Rules: %s", e)
                 await asyncio.sleep(1)
 
+    async def get_event_config_mappings(self):
+        """Subscribe and track datastream changes"""
+        # Register RPC aliases
+        client = EventConfigDataStreamClient("cfgevent", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track event configs")
+            try:
+                await client.query(
+                    limit=config.classifier.ds_limit,
+                    block=True,
+                    filter_policy="delete",
+                )
+            except NOCError as e:
+                self.logger.info("Failed to get Event Configs: %s", e)
+                await asyncio.sleep(1)
+
     def load_link_action(self):
         self.default_link_action = None
         if config.classifier.default_interface_profile:
@@ -217,20 +242,25 @@ class ClassifierService(FastAPIService):
                 self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events
 
+    async def load_event_configs(self):
+        for ec in EventClass.objects.filter():
+            await self.update_config(EventClass.get_event_config(ec))
+        self.logger.info("Loading configs: %s", self.add_configs)
+
     async def register_mx_message(
         self,
         event: "Event",
-        event_class: EventClass,
+        event_config: EventConfig,
         resolved_vars: Dict[str, Any],
         mo: Optional[ManagedObject],
     ):
         """
         Send event message to MX service
-        :param event:
-        :param event_class: Resolved Event Class
-        :param resolved_vars: Raw variables for 'SNMP Trap' event
-        :param mo: Managed Object instance
-        :return:
+        Args:
+            event:
+            event_config: Resolved Event Class
+            resolved_vars: Raw variables for 'SNMP Trap' event
+            mo: Managed Object instance
         """
         metrics["events_message"] += 1
         self.logger.debug(
@@ -246,7 +276,7 @@ class ClassifierService(FastAPIService):
             "collector": event.target.pool,
             "address": event.target.address,
             "managed_object": mo.get_message_context() if mo else None,
-            "event_class": {"id": str(event_class.id), "name": event_class.name},
+            "event_class": {"id": str(event_config.event_class_id), "name": event_config.name},
             "event_vars": event.vars,
         }
         if event.type.source == EventSource.SYSLOG:
@@ -270,7 +300,7 @@ class ClassifierService(FastAPIService):
     def register_log(
         self,
         event: Event,
-        event_class: EventClass,
+        event_config: EventConfig,
         message: str,
         managed_object: Optional[ManagedObject] = None,
     ):
@@ -278,7 +308,7 @@ class ClassifierService(FastAPIService):
         Register Event log
         Args:
             event: Event instance
-            event_class: Event Class instance
+            event_config: Event Config
             message: message sting
             managed_object: ManagedObject instance
         """
@@ -290,16 +320,22 @@ class ClassifierService(FastAPIService):
             "managed_object": managed_object.bi_id if managed_object else 0,
             "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
             "target_reference": event.target.reference,
-            "event_class": event_class.bi_id,
+            "event_class": event_config.bi_id,
             "message": message,
         }
         self.register_metrics("disposelog", [data])
+
+    def get_event_config(self, event_class: str) -> EventConfig:
+        """Getting EventConfig"""
+        if str(event_class) not in self.event_config:
+            return self.default_event_config
+        return self.event_config[str(event_class)]
 
     async def classify_event(
         self,
         event: Event,
         raw_vars: Dict[str, Any],
-    ) -> Tuple[Optional["EventClass"], Optional[Dict[str, Any]]]:
+    ) -> Tuple[EventAction, Optional["EventConfig"], Optional[Dict[str, Any]]]:
         """
         Perform event classification.
         Classification steps are:
@@ -327,14 +363,14 @@ class ClassifierService(FastAPIService):
                     event.type.event_class,
                 )
                 metrics[EventMetrics.CR_FAILED] += 1
-                return None, None  # Drop malformed message
+                return EventAction.DROP, None, None  # Drop malformed message
             metrics[EventMetrics.CR_PREPROCESSED] += 1
             if not event.vars:
-                return event_class, raw_vars
-            return event_class, event.vars
+                return EventAction.LOG, self.get_event_config(event_class.id), raw_vars
+            return EventAction.LOG, self.get_event_config(event_class.id), event.vars
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
-            return None, None
+            return EventAction.DROP, None, None
         rule, r_vars = self.ruleset.find_rule(event, raw_vars)
         if rule is None:
             # Something goes wrong.
@@ -351,7 +387,7 @@ class ClassifierService(FastAPIService):
                 event.target.address,
             )
             metrics[EventMetrics.CR_DELETED] += 1
-            return rule.event_class, r_vars
+            return EventAction.DROP, self.get_event_config(rule.event_class_id), r_vars
         # Apply transform
         for t in rule.vars_transform or []:
             t.transform(r_vars, raw_vars)
@@ -373,16 +409,17 @@ class ClassifierService(FastAPIService):
         )
         # event.event_class = rule.event_class
         # message = f"Classified as '{rule.event_class.name}' by rule '{rule.name}'"
+        event_config = self.get_event_config(rule.event_class_id)
         self.register_log(
             event,
-            rule.event_class,
+            event_config,
             f"Classified as '{rule.event_class_name}' by rule '{rule.name}'",
         )
         if rule.is_unknown:
             metrics[EventMetrics.CR_UNKNOWN] += 1
         else:
             metrics[EventMetrics.CR_CLASSIFIED] += 1
-        return rule.event_class, r_vars
+        return EventAction.LOG, event_config, r_vars
 
     async def dispose_event(self, event: Event, mo: ManagedObject):
         """
@@ -417,18 +454,20 @@ class ClassifierService(FastAPIService):
     def deduplicate_event(
         self,
         event: Event,
-        event_class: EventClass,
+        event_config: EventConfig,
         event_vars: Dict[str, Any],
     ) -> bool:
         """
         Deduplicate event when necessary
         Args:
             event: Event Instance
-            event_class: EventClass Instance
+            event_config: EventConfig Instance
             event_vars:
-        :return: True, if event is duplication of existent one
+        Return: True, if event is duplication of existent one
         """
-        de_id = self.dedup_filter.find(event, event_class, event_vars)
+        if "dedup" not in event_config.filters:
+            return True
+        de_id = self.dedup_filter.find(event, event_config, event_vars)
         if not de_id:
             return False
         self.logger.info(
@@ -442,14 +481,16 @@ class ClassifierService(FastAPIService):
         metrics[EventMetrics.CR_DUPLICATED] += 1
         return True
 
-    def suppress_repeats(self, event: Event, event_class: EventClass) -> bool:
+    def suppress_repeats(self, event: Event, event_config: EventConfig) -> bool:
         """
         Suppress repeated events
-        :param event:
-        :param event_class:
-        :return:
+        Args:
+            event:
+            event_config:
         """
-        se_id = self.suppress_filter.find(event, event_class)
+        if "suppress" not in event_config.filters:
+            return True
+        se_id = self.suppress_filter.find(event, event_config)
         if not se_id:
             return False
         self.logger.info(
@@ -460,7 +501,7 @@ class ClassifierService(FastAPIService):
             se_id,
         )
         # Update suppressing event, event log
-        self.register_log(event, event_class, "Event suppression")
+        self.register_log(event, event_config, "Event suppression")
         # Delete suppressed event
         metrics[EventMetrics.CR_SUPPRESSED] += 1
         return True
@@ -483,7 +524,7 @@ class ClassifierService(FastAPIService):
     async def check_link_event(
         self,
         event: Event,
-        event_class: EventClass,
+        event_config: EventConfig,
         event_vars: Dict[str, Any],
         managed_object: ManagedObject,
     ):
@@ -497,9 +538,7 @@ class ClassifierService(FastAPIService):
         :return: True - stop processing, False - continue
         """
         if_name, ifindex = event_vars.get("interface"), event_vars.pop("interface__ifindex", None)
-        if not managed_object or not event_class:
-            return
-        elif not if_name and not ifindex:
+        if not managed_object or (not if_name and not ifindex):
             return
         iface = self.get_interface(managed_object.id, if_name, ifindex)
         if iface:
@@ -523,7 +562,7 @@ class ClassifierService(FastAPIService):
             )
             profile = None
             action = self.default_link_action
-        if not event_class.link_event:
+        if "if" not in event_config.resolvers:
             return
         # Abduct detection
         # link_status = event.get_hint("link_status")
@@ -650,16 +689,6 @@ class ClassifierService(FastAPIService):
         metrics["lag_us"] = int(lag * 1000)
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event.id, event.data, lag)
         metrics[EventMetrics.CR_PROCESSED] += 1
-        # Resolve managed object
-        mo = self.resolve_object(event.target, remote_system=event.remote_system)
-        if not mo:
-            self.logger.info("[%s] Unknown managed object id %s. Skipping", event.id, event.target)
-            event.type.profile = GENERIC_PROFILE
-            metrics[EventMetrics.CR_UOBJECT] += 1
-        else:
-            self.update_diagnostic(mo, event)
-            event.type.profile = mo.profile.name
-            self.logger.info("[%s|%s|%s] Managed object found", event.id, mo.name, mo.address)
         # Ignore event by rules
         if self.pattern_set.find_ignore_rule(event):
             self.logger.debug(
@@ -672,10 +701,20 @@ class ClassifierService(FastAPIService):
             )
             metrics[EventMetrics.CR_IGNORED] += 1
             return
+        # Resolve managed object
+        mo = self.resolve_object(event.target, remote_system=event.remote_system)
+        if not mo:
+            self.logger.info("[%s] Unknown managed object id %s. Skipping", event.id, event.target)
+            event.type.profile = GENERIC_PROFILE
+            metrics[EventMetrics.CR_UOBJECT] += 1
+        else:
+            self.update_diagnostic(mo, event)
+            event.type.profile = mo.profile.name
+            self.logger.info("[%s|%s|%s] Managed object found", event.id, mo.name, mo.address)
         # Process event
         resolved_vars = self.resolve_vars(event)
         try:
-            event_class, resolved_vars = await self.classify_event(event, resolved_vars)
+            e_action, e_cfg, resolved_vars = await self.classify_event(event, resolved_vars)
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s",
@@ -687,20 +726,24 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_FAILED] += 1
             error_report()
             return
-        if not event_class:
-            # Dropped message
-            # return  # Or drop flag
-            pass
-        else:
-            event.type.event_class = event_class.name
+        if e_action == EventAction.DROP:
+            metrics[EventMetrics.CR_DELETED] += 1
+            self.logger.info(
+                "[%s|%s|%s] Dropped by Rule",
+                event.id,
+                event.target.name,
+                event.target.address,
+            )
+            return
+        event.type.event_class = e_cfg.event_class
         # Deduplication
-        if self.deduplicate_event(event, event_class, resolved_vars):
+        if self.deduplicate_event(event, e_cfg, resolved_vars):
             return
         duplicate_vars = resolved_vars.copy()
         # Additionally check link events
-        await self.check_link_event(event, event_class, resolved_vars, mo)
+        await self.check_link_event(event, e_cfg, resolved_vars, mo)
         # Calculate rule variables
-        event.vars = self.ruleset.eval_vars(event, event_class, resolved_vars)
+        event.vars = e_cfg.eval_vars(resolved_vars)
         self.logger.info(
             "[%s|%s|%s] Event processed successfully",
             event.id,
@@ -708,55 +751,47 @@ class ClassifierService(FastAPIService):
             event.target.address,
         )
         # Suppress repeats
-        if event_class and self.suppress_repeats(event, event_class):
+        if event.vars and self.suppress_repeats(event, e_cfg):
             return
-        self.register_event(event, event_class, resolved_vars, mo)
+        self.register_event(event, e_cfg, resolved_vars, mo)
         # Fill deduplication filter
-        self.dedup_filter.register(event, event_class, duplicate_vars)
+        self.dedup_filter.register(event, e_cfg, duplicate_vars)
         if config.message.enable_event:
-            await self.register_mx_message(event, event_class, resolved_vars, mo)
-        action = None
-        # action Log | Drop | Dispose
-        if event_class:
-            # Fill suppress filter
-            self.suppress_filter.register(event, event_class)
-            # Call Actions
-            for a in self.actionset.iter_actions(
-                event_class.id,
-                {
-                    "labels": frozenset(event.labels or []),
-                    "service_groups": frozenset(mo.effective_service_groups or []),
-                    "remote_system": event.remote_system,
-                },
-            ):
-                self.logger.info("[%s] Run action: %s", event.id, a)
-                r = a(event, mo)
-                if not r:
-                    continue
-                elif r == EventAction.DROP:
-                    action = r
-                    break
-                elif not action:
-                    action = r
-                elif action != EventAction.DISPOSITION:
-                    action = r
-            if action and action == EventAction.DROP:
-                self.logger.info(
-                    "[%s|%s|%s] Dropped by handler",
-                    event.id,
-                    event.target.name,
-                    event.target.address,
-                )
-                metrics[EventMetrics.CR_DELETED] += 1
-                return
+            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
+        # Fill suppress filter
+        self.suppress_filter.register(event, e_cfg)
+        # Call Actions
+        for a in self.action_set.iter_actions(
+            e_cfg.event_class_id,
+            {
+                "labels": frozenset(event.labels or []),
+                "service_groups": frozenset(mo.effective_service_groups or []),
+                "remote_system": event.remote_system,
+            },
+        ):
+            self.logger.info("[%s] Run action: %s", event.id, a)
+            r = a(event, mo)
+            if not r:
+                continue
+            elif r == EventAction.DROP:
+                e_action = r
+                break
+            elif e_action != EventAction.DISPOSITION:
+                e_action = r
+        if e_action == EventAction.DROP:
+            self.logger.info(
+                "[%s|%s|%s] Dropped by handler",
+                event.id,
+                event.target.name,
+                event.target.address,
+            )
+            metrics[EventMetrics.CR_DELETED] += 1
+            return
         if event.type.severity == EventSeverity.IGNORED:
             # Severity ignored
             return
-        if not event_class or not mo:
-            # Dispose only of detect ManagedObject
-            return
         # Finally dispose event to further processing by correlator
-        if action and action == EventAction.DISPOSITION:
+        if mo and e_action == EventAction.DISPOSITION:
             await self.dispose_event(event, mo)
 
     async def report(self):
@@ -834,17 +869,17 @@ class ClassifierService(FastAPIService):
     def register_event(
         self,
         event: Event,
-        event_class: EventClass,
+        event_config: EventConfig,
         resolved_vars: Dict[str, Any],
         mo: Optional[ManagedObject] = None,
     ):
         """
         Send Event to Clickhouse (Archive)
-        :param event: Event instance
-        :param event_class: Event Class
-        :param resolved_vars: Processed event data
-        :param mo: Managed Object mapping
-        :return:
+        Args:
+            event: Event instance
+            event_config: Event Class
+            resolved_vars: Processed event data
+            mo: Managed Object mapping
         """
         timestamp = event.timestamp
         data = {
@@ -853,7 +888,7 @@ class ClassifierService(FastAPIService):
             "start_ts": timestamp.isoformat(),
             #
             "event_id": str(event.id),
-            "event_class": event_class.bi_id if event_class else None,
+            "event_class": event_config.bi_id,
             "source": event.type.source.value,
             #
             "labels": event.labels or [],
@@ -862,7 +897,7 @@ class ClassifierService(FastAPIService):
             #
             "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
-            "vars": {k: str(v) for k, v in event.vars.items()} if event_class else {},
+            "vars": {k: str(v) for k, v in event.vars.items()} if event_config else {},
             "snmp_trap_oid": event.type.id if event.type.source == EventSource.SNMP_TRAP else "",
             #
             "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
@@ -908,6 +943,23 @@ class ClassifierService(FastAPIService):
     async def delete_rules(self, r_id: str) -> None:
         """Remove rules for ID"""
         self.ruleset.delete_rule(r_id)
+
+    async def update_config(self, data: Dict[str, Any]) -> None:
+        """Apply Event Config changes"""
+        self.event_config[data["id"]] = EventConfig.from_config(data)
+        self.add_configs += 1
+
+    async def delete_config(self, ec_id: str) -> None:
+        """Remove Event Config for ID"""
+        if ec_id in self.event_config:
+            del self.event_config[ec_id]
+
+    async def on_event_config_ready(self) -> None:
+        """
+        Called when all mappings are ready.
+        """
+        self.event_config_ready.set()
+        self.logger.info("%d Event Configs has been loaded", self.add_configs)
 
 
 if __name__ == "__main__":

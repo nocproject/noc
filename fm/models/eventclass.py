@@ -9,7 +9,7 @@
 import re
 import os
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, List
 import operator
 
 # Third-party modules
@@ -23,6 +23,8 @@ from mongoengine.fields import (
     ListField,
     DictField,
     ObjectIdField,
+    EnumField,
+    EmbeddedDocumentListField,
     EmbeddedDocumentField,
     UUIDField,
 )
@@ -37,6 +39,9 @@ from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
+from noc.core.models.valuetype import ValueType
+from noc.config import config
 from .alarmclass import AlarmClass
 
 id_lock = Lock()
@@ -47,26 +52,7 @@ class EventClassVar(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField(required=True)
     description = StringField(required=False)
-    type = StringField(
-        required=True,
-        choices=[
-            (x, x)
-            for x in (
-                "str",
-                "int",
-                "float",
-                "ipv4_address",
-                "ipv6_address",
-                "ip_address",
-                "ipv4_prefix",
-                "ipv6_prefix",
-                "ip_prefix",
-                "mac",
-                "interface_name",
-                "oid",
-            )
-        ],
-    )
+    type: ValueType = EnumField(ValueType, required=True)
     required = BooleanField(required=True)
     match_suppress = BooleanField(default=False)
 
@@ -203,6 +189,7 @@ class EventClassCategory(Document):
 
 
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("fm.EventClassificationRule", "event_class"),
@@ -233,7 +220,7 @@ class EventClass(Document):
     action = StringField(
         required=True, choices=[("D", "Drop"), ("L", "Log"), ("A", "Log & Archive")]
     )
-    vars = ListField(EmbeddedDocumentField(EventClassVar))
+    vars: List[EventClassVar] = EmbeddedDocumentListField(EventClassVar)
     # Text messages
     subject_template = StringField()
     body_template = StringField()
@@ -321,6 +308,10 @@ class EventClass(Document):
         self.category = c.id
         super().save(*args, **kwargs)
 
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgevent:
+            yield "cfgevent", f"ec:{self.id}"
+
     @property
     def display_action(self):
         return {"D": "Drop", "L": "Log", "A": "Log and Archive"}[self.action]
@@ -340,7 +331,7 @@ class EventClass(Document):
             vd = ["        {"]
             vd += ['            "name": "%s",' % q(v.name)]
             vd += ['            "description": "%s",' % q(v.description)]
-            vd += ['            "type": "%s",' % q(v.type)]
+            vd += ['            "type": "%s",' % q(v.type.value)]
             vd += ['            "required": %s,' % q(v.required)]
             vd += ['            "match_suppress": %s' % q(v.required)]
             vd += ["        }"]
@@ -417,6 +408,59 @@ class EventClass(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    @classmethod
+    def get_event_config(cls, event_class: "EventClass"):
+        """Build Category Rules"""
+        from noc.fm.models.dispositionrule import DispositionRule
+
+        r = {
+            "id": str(event_class.id),
+            "name": event_class.name,
+            "bi_id": str(event_class.bi_id),
+            "is_unique": True,
+            "managed_object_required": True,
+            "event_class": {
+                "name": event_class.name,
+                "id": str(event_class.id),
+                "bi_id": str(event_class.bi_id),
+            },
+            "vars": [],
+            "filters": [],
+            "object_map": {
+                "scope": "M",
+                "managed_object_required": True,
+                "include_path": True,
+            },
+            "handlers": [],
+            "resources": [],
+            "actions": [],
+        }
+        if event_class.deduplication_window:
+            r["filters"].append(
+                {"name": "dedup", "window": event_class.deduplication_window},
+            )
+        if event_class.suppression_window:
+            r["filters"].append(
+                {"name": "suppress", "window": event_class.suppression_window},
+            )
+        if event_class.link_event:
+            r["resources"].append({"resource": "if"})
+            if "noc.fm.handlers.event.link.oper_down" in event_class.handlers:
+                r["resources"][-1]["oper_status"] = False
+            elif "noc.fm.handlers.event.link.oper_up" in event_class.handlers:
+                r["resources"][-1]["oper_status"] = True
+        for vv in event_class.vars:
+            r["vars"].append(
+                {
+                    "name": vv.name,
+                    "type": vv.type.value,
+                    "required": vv.required,
+                    "match_suppress": vv.match_suppress,
+                }
+            )
+        r["actions"] += DispositionRule.get_actions(event_class)
+        return r
 
 
 rx_rule_name_quote = re.compile("[^a-zA-Z0-9]+")
