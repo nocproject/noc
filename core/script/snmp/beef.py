@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SNMP Beef
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,6 @@
 from typing import Tuple
 
 # NOC modules
-from noc.core.snmp.ber import BERDecoder, BEREncoder
 from noc.core.snmp.consts import (
     PDU_GET_REQUEST,
     PDU_GETNEXT_REQUEST,
@@ -45,6 +44,8 @@ class BeefSNMPSocket(object):
     async def send_and_receive(
         self, data: bytes, address: Tuple[str, int]
     ) -> Tuple[bytes, Tuple[str, int]]:
+        from noc.core.snmp.ber import BERDecoder, BEREncoder
+
         pdu = BERDecoder().parse_sequence(data)[0]
         self.logger.info("SNMP REQUEST: %r", pdu)
         version = pdu[0]
