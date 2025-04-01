@@ -37,7 +37,7 @@ class Controller(ChannelMixin, BaseOTUProfileController):
         prefix = self.get_port_prefix(name)
         xcvr = self.get_adm200_xcvr_suffix(name)
         # Set modulation
-        if modulation:
+        if modulation and not prefix.startswith("Cl_"):
             if modulation not in self.ADM200_MODULATION_MAP:
                 msg = f"Invalid client protocol: {modulation}"
                 raise ValueError(msg)
