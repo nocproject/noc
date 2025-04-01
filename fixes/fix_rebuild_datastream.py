@@ -15,6 +15,7 @@ def fix():
         "administrativedomain",
         "cfgtarget",
         "cfgeventrules",
+        "cfgevent",
         "dnszone",
         "address",
         "prefix",

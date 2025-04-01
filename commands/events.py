@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Reclassify events
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,9 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
 from noc.main.models.remotesystem import RemoteSystem
 from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.fm.models.eventclass import EventClass
 from noc.services.classifier.ruleset import RuleSet
+from noc.services.classifier.eventconfig import EventConfig
 
 
 DEFAULT_CLEAN = datetime.timedelta(weeks=4)
@@ -218,8 +220,11 @@ class Command(BaseCommand):
                         "interface_mock" in e_vars
                     ), "interface_mock Required for ifindex transform test"
                 try:
-                    vv = ruleset.eval_vars(event, rule.event_class, e_vars)
-                    self.print("End variables: ", vv)
+                    cfg = EventConfig.from_config(
+                        EventClass.get_event_config(event_class_rule.event_class),
+                    )
+                    cfg.eval_vars(e_vars)
+                    self.print("End variables: ", e_vars)
                 except Exception as e:
                     self.print(e)
                     self.print("End variables: ", var_ctx)

@@ -885,6 +885,12 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream cfgtarget records older days",
         )
+        enable_cfgevent = BooleanParameter(default=True)
+        enable_cfgevent_wait = BooleanParameter(default=True)
+        cfgevent_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream cfgtarget records older days",
+        )
         enable_dnszone = BooleanParameter(default=False)
         enable_dnszone_wait = BooleanParameter(
             default=True,
