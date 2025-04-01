@@ -34,7 +34,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       },
       success: function(response){
         var data = Ext.decode(response.responseText),
-          gridStore = vm.getStore("gridStore");
+          gridStore = this.getView().down("grid").getStore();
         if(Ext.isEmpty(gridStore)) return;
         gridStore.loadData(data.conf);
         vm.set("icon", this.generateIcon(isUpdatable, "circle", NOC.colors.yes, __("online")));
@@ -223,16 +223,16 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
 
     return result;
   },
-  removeFilter: function(){
-    var store = this.getViewModel().getStore("gridStore"),
-      filters = store.getFilters(),
-      statusFilter = filters.find("_id", "invConfigStatusFilter");
+  // removeFilter: function(){
+  //   var store = this.getViewModel().getStore("gridStore"),
+  //     filters = store.getFilters(),
+  //     statusFilter = filters.find("_id", "invConfigStatusFilter");
 
-    this.getViewModel().set("status", null);
-    if(statusFilter){
-      filters.remove(statusFilter);
-    }
-  },
+  //   this.getViewModel().set("status", null);
+  //   if(statusFilter){
+  //     filters.remove(statusFilter);
+  //   }
+  // },
   onMgmtClick: function(){
     var vm = this.getViewModel(),
       url = vm.get("mgmt_url");
