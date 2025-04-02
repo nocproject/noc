@@ -146,14 +146,15 @@ export class MonacoEditorBuilder extends BaseBuilder{
   // }
   
   private async buildWorkers(): Promise<void>{
-    await fs.ensureDir(this.workersDir);
+    const outputDir = path.join(this.options.buildDir, this.workersDir);
+    await fs.ensureDir(outputDir);
     
     for(const worker of this.workers){
       console.log(`Building worker: ${worker.name}...`);
 
       const result = await esbuild.build({
         entryPoints: [path.resolve(process.cwd(), worker.entry)],
-        outdir: path.join(this.options.buildDir, this.workersDir),
+        outdir: outputDir,
         bundle: true,
         format: "iife",
         minify: !this.options.isDev,
