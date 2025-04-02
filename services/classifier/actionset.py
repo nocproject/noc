@@ -17,6 +17,8 @@ from typing import Dict, Tuple, Optional, Callable, List, Any, Iterable
 from noc.core.fm.event import Event
 from noc.core.debug import error_report
 from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID
+from noc.core.matcher import build_matcher
+from noc.core.handler import get_handler
 from noc.fm.models.dispositionrule import DispositionRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.interactionlog import Interaction, InteractionLog
@@ -38,8 +40,10 @@ class EventAction(enum.Enum):
 class ActionSet(object):
 
     def __init__(self):
+        # EventClass
         self.actions: Dict[str, List[Tuple[Callable, Optional[Callable]]]] = {}
         self.add_handlers: int = 0
+        self.add_actions: int = 0
         self.add_notifications: int = 0
 
     def iter_actions(self, event_class: str, ctx: Dict[str, Any]) -> Iterable[Callable]:
@@ -51,11 +55,69 @@ class ActionSet(object):
                 continue
             yield a
 
-    def update_rule(self, data):
+    def update_rule(self, rid: str, data):
         """Update rule from lookup"""
+        actions = []
+        for d in data:
+            actions += self.from_config(d)
+        if rid not in self.actions:
+            self.add_actions += 1
+        else:
+            logger.info("[%s] Update event actions: %s", rid, actions)
+        self.actions[rid] = actions
 
     def delete_rule(self, rid: str):
         """Remove rule from lookup"""
+        if rid in self.actions:
+            del self.actions[rid]
+
+    def from_config(self, data: Dict[str, Any]) -> List[Tuple[Callable, Optional[Callable]]]:
+        """Create actions"""
+        r = []
+        if data["match_expr"]:
+            m = build_matcher(data["match_expr"])
+        else:
+            m = None
+        for h in data.get("handlers") or []:
+            try:
+                r += [(get_handler(h), m)]
+            except ImportError:
+                logger.error("Failed to load handler '%s'. Ignoring", h)
+            self.add_handlers += 1
+        if "notification_group" in data:
+            r += [
+                (
+                    partial(
+                        self.send_notification,
+                        notification_group=str(data["notification_group"]),
+                    ),
+                    m,
+                )
+            ]
+            self.add_notifications += 1
+        if "object_actions" in data and data["object_actions"]["interaction_audit"]:
+            r += [
+                (
+                    partial(
+                        self.interaction_audit,
+                        interaction=data["object_actions"]["interaction_audit"],
+                    ),
+                    m,
+                )
+            ]
+            self.add_handlers += 1
+        if "object_actions" in data and data["object_actions"]["run_discovery"]:
+            r += [
+                (
+                    partial(
+                        self.run_discovery,
+                        interaction=data["object_actions"]["interaction_audit"],
+                    ),
+                    m,
+                )
+            ]
+            self.add_handlers += 1
+        return r
 
     def load(self, skip_load_rules: bool = False):
         """
@@ -64,46 +126,8 @@ class ActionSet(object):
         actions = defaultdict(list)
         logger.info("Load Disposition Rule")
         for rule in DispositionRule.objects.filter(is_active=True).order_by("preference"):
-            m = rule.get_matcher()
             for ec in rule.get_event_classes():
-                for h in rule.handlers or []:
-                    try:
-                        actions[ec.id] += [(h.handler.get_handler(), m)]
-                    except ImportError:
-                        logger.error("Failed to load handler '%s'. Ignoring", h)
-                    self.add_handlers += 1
-                if rule.notification_group:
-                    actions[ec.id] += [
-                        (
-                            partial(
-                                self.send_notification,
-                                notification_group=str(rule.notification_group.id),
-                            ),
-                            m,
-                        )
-                    ]
-                if rule.object_actions and rule.object_actions.interaction_audit:
-                    actions[ec.id] += [
-                        (
-                            partial(
-                                self.interaction_audit,
-                                interaction=rule.object_actions.interaction_audit,
-                            ),
-                            m,
-                        )
-                    ]
-                    self.add_handlers += 1
-                if rule.object_actions and rule.object_actions.run_discovery:
-                    actions[ec.id] += [
-                        (
-                            partial(
-                                self.run_discovery,
-                                interaction=rule.object_actions.interaction_audit,
-                            ),
-                            m,
-                        )
-                    ]
-                    self.add_handlers += 1
+                actions[str(ec.id)] += self.from_config(DispositionRule.get_rule_config(rule))
         self.actions = actions
         logger.info("Handlers are loaded: %s", self.add_handlers)
 

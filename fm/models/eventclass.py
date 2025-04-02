@@ -459,7 +459,7 @@ class EventClass(Document):
                     "match_suppress": vv.match_suppress,
                 }
             )
-        r["actions"] += DispositionRule.get_actions(event_class)
+        r["actions"] += DispositionRule.get_actions(event_class=event_class)
         return r
 
 

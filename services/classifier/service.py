@@ -175,7 +175,6 @@ class ClassifierService(FastAPIService):
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load(skip_load_rules=config.datastream.enable_cfgeventrules)
         self.pattern_set.load()
-        self.action_set.load()
         self.load_link_action()
         # Heat up MIB cache
         MIBData.preload()
@@ -184,8 +183,10 @@ class ClassifierService(FastAPIService):
         if config.datastream.enable_cfgevent:
             asyncio.get_running_loop().create_task(self.get_event_config_mappings())
             await self.event_config_ready.wait()
+            self.logger.info("Handlers are loaded: %s", self.action_set.add_handlers)
         else:
             await self.load_event_configs()
+            self.action_set.load()
         if config.datastream.enable_cfgeventrules:
             asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
@@ -466,7 +467,7 @@ class ClassifierService(FastAPIService):
         Return: True, if event is duplication of existent one
         """
         if "dedup" not in event_config.filters:
-            return True
+            return False
         de_id = self.dedup_filter.find(event, event_config, event_vars)
         if not de_id:
             return False
@@ -489,7 +490,7 @@ class ClassifierService(FastAPIService):
             event_config:
         """
         if "suppress" not in event_config.filters:
-            return True
+            return False
         se_id = self.suppress_filter.find(event, event_config)
         if not se_id:
             return False
@@ -745,10 +746,11 @@ class ClassifierService(FastAPIService):
         # Calculate rule variables
         event.vars = e_cfg.eval_vars(resolved_vars)
         self.logger.info(
-            "[%s|%s|%s] Event processed successfully",
+            "[%s|%s|%s] Event processed successfully: %s",
             event.id,
             event.target.name,
             event.target.address,
+            e_cfg.event_class,
         )
         # Suppress repeats
         if event.vars and self.suppress_repeats(event, e_cfg):
@@ -765,7 +767,7 @@ class ClassifierService(FastAPIService):
             e_cfg.event_class_id,
             {
                 "labels": frozenset(event.labels or []),
-                "service_groups": frozenset(mo.effective_service_groups or []),
+                "service_groups": frozenset(mo.effective_service_groups or []) if mo else [],
                 "remote_system": event.remote_system,
             },
         ):
@@ -947,12 +949,15 @@ class ClassifierService(FastAPIService):
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""
         self.event_config[data["id"]] = EventConfig.from_config(data)
+        if data["actions"]:
+            self.action_set.update_rule(data["id"], data["actions"])
         self.add_configs += 1
 
     async def delete_config(self, ec_id: str) -> None:
         """Remove Event Config for ID"""
         if ec_id in self.event_config:
             del self.event_config[ec_id]
+        self.action_set.delete_rule(ec_id)
 
     async def on_event_config_ready(self) -> None:
         """
