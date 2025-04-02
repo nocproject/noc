@@ -46,8 +46,6 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.fm.models.alarmclass import AlarmClass
 
-# from .eventcategory import EventCategory
-
 
 id_lock = Lock()
 
@@ -267,7 +265,8 @@ class DispositionRule(Document):
         return DispositionRule.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
-        yield "cfgdispositionrules", self.id
+        for ec in self.get_event_classes():
+            yield "cfgevent", f"ec:{ec.id}"
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -353,11 +352,12 @@ class DispositionRule(Document):
         return build_matcher({"$or": expr})
 
     @classmethod
-    def get_actions(cls, event_class):
+    def get_actions(cls, event_class: Optional[EventClass] = None):
         """"""
         r = []
         for rule in DispositionRule.objects.filter(
             conditions__event_class_re=event_class.name,
+            is_active=True,
         ).order_by("preference"):
             r.append(DispositionRule.get_rule_config(rule))
         return r
@@ -390,9 +390,14 @@ class DispositionRule(Document):
                 "combo_count": rule.combo_count,
             }
         if rule.handlers:
-            r["handlers"] = [str(h.id) for h in rule.handlers]
+            r["handlers"] = [str(h.handler) for h in rule.handlers]
         if rule.vars_conditions:
             r["vars_match_expr"] = rule.vars_conditions[0].get_match_expr()
+        if rule.object_actions:
+            r["object_actions"] = {
+                "interaction_audit": rule.object_actions.interaction_audit.value,
+                "run_discovery": rule.object_actions.run_discovery,
+            }
         if not rule.conditions:
             return r
         elif len(rule.conditions) == 1:
