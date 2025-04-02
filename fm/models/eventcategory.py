@@ -228,7 +228,7 @@ class EventCategory(Document):
             yield "cfgevent", f"c:{self.id}"
 
     @classmethod
-    def get_rule_config(cls, category: "EventCategory"):
+    def get_event_config(cls, category: "EventCategory"):
         """Build Category Rules"""
         from noc.fm.models.dispositionrule import DispositionRule
 
@@ -244,6 +244,7 @@ class EventCategory(Document):
                 "managed_object_required": category.managed_object_required,
                 "include_path": category.include_object_paths,
             },
+            "filters": [],
             "handlers": [],
             "resources": [],
             "actions": [],
