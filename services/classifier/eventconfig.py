@@ -31,10 +31,10 @@ class FilterConfig:
 class EventConfig:
     name: str
     bi_id: int
-    event_class: str
-    event_class_id: str
     # categories: List[str]
     vars: List[VarItem]
+    event_class: Optional[str] = None
+    event_class_id: Optional[str] = None
     managed_object_required: bool = True
     filters: Optional[Dict[str, FilterConfig]] = None
     resources: Optional[Dict[str, Callable]] = None
@@ -56,8 +56,8 @@ class EventConfig:
         ec = EventConfig(
             name=data["name"],
             bi_id=data["bi_id"],
-            event_class=data["event_class"]["name"],
-            event_class_id=data["event_class"]["id"],
+            event_class=data["event_class"]["name"] if "event_class" in data else None,
+            event_class_id=data["event_class"]["id"] if "event_class" in data else None,
             managed_object_required=data["managed_object_required"],
             vars=[],
             filters={},

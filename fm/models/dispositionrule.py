@@ -13,8 +13,9 @@ from threading import Lock
 from typing import Optional, List, Union, Dict, Any, Callable
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
+from mongoengine.queryset.visitor import Q
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -37,6 +38,7 @@ from noc.main.models.handler import Handler
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventcategory import EventCategory
 from noc.sa.models.interactionlog import Interaction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
@@ -92,7 +94,7 @@ class MatchData(EmbeddedDocument):
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
-    # categories: List[EventCategory] = ListField(ReferenceField(EventCategory, required=True))
+    categories: List[EventCategory] = ListField(ReferenceField(EventCategory))
     # ex_categories: List[EventCategory] = ListField(ReferenceField(EventCategory, required=True))
     event_class_re: str = StringField()
     groups: List[ResourceGroup] = ListField(ReferenceField(ResourceGroup, required=True))
@@ -405,13 +407,18 @@ class DispositionRule(Document):
         return build_matcher({"$or": expr})
 
     @classmethod
-    def get_actions(cls, event_class: Optional[EventClass] = None, category=None):
+    def get_actions(
+        cls, event_class: Optional[EventClass] = None, category: Optional[EventCategory] = None
+    ):
         """"""
         r = []
-        for rule in DispositionRule.objects.filter(
-            conditions__event_class_re=event_class.name,
-            is_active=True,
-        ).order_by("preference"):
+        if not event_class and not category:
+            return r
+        if event_class:
+            q = Q(conditions__event_class_re=event_class.name, is_active=True)
+        elif category:
+            q = Q(conditions__categories__in=[category], is_active=True)
+        for rule in DispositionRule.objects.filter(q).order_by("preference"):
             r.append(DispositionRule.get_rule_config(rule))
         return r
 
