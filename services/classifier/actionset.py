@@ -55,14 +55,11 @@ class ActionSet(object):
         event_class: str,
         ctx: Dict[str, Any],
         e_vars: Dict[str, Any],
+        categories: Optional[List[str]] = None
     ) -> Iterable[Callable]:
         """"""
-        if event_class not in self.actions:
-            return
-        self.logger.debug(
-            "[|%s] Processed action: %s/%s", event_class, self.actions[event_class], e_vars
-        )
-        for a in self.actions[event_class]:
+        self.logger.debug("[|%s] Processed action: %s", event_class, self.actions[event_class])
+        for a in self.actions.get(event_class, []):
             if a.match and not a.match(ctx):
                 continue
             if a.event_match and not a.event_match(e_vars):
@@ -72,6 +69,17 @@ class ActionSet(object):
             yield from a.resource.values()
             if a.stop_processing:
                 break
+        for c in categories or []:
+            if c not in self.actions:
+                continue
+            for a, match in self.actions[c]:
+                if a.match and not a.match(ctx):
+                    continue
+                yield from a.event or []
+                yield from a.target or []
+                yield from a.resource.values()
+                if a.stop_processing:
+                    break
 
     def update_rule(self, rid: str, data):
         """Update rule from lookup"""
@@ -170,7 +178,7 @@ class ActionSet(object):
         target: ManagedObject,
         resources: List[Any],
         config: EventConfig,
-        categories=None,
+        categories: Optional[List[str]] = None
     ) -> EventAction:
         """Processed actions on Event"""
         ctx = {

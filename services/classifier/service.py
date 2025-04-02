@@ -341,7 +341,7 @@ class ClassifierService(FastAPIService):
         EventAction,
         Optional["EventConfig"],
         Optional[Dict[str, Any]],
-        Optional[List["EventCategory"]],
+        Optional[List[str]],
     ]:
         """
         Perform event classification.
@@ -374,7 +374,7 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_PREPROCESSED] += 1
             categories = None
             if event.type.categories:
-                categories = EventCategory.objects.filter(name__in=event.type.categories)
+                categories = [str(EventCategory.get_by_id(c).id) for c in event.type.categories]
             if not event.vars:
                 return EventAction.LOG, self.get_event_config(event_class.id), raw_vars, categories
             return EventAction.LOG, self.get_event_config(event_class.id), event.vars, categories
@@ -678,7 +678,16 @@ class ClassifierService(FastAPIService):
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
-        e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
+        e_action = (
+            self.action_set.run_actions(
+                event,
+                mo,
+                e_res,
+                categories=categories,
+                config=e_cfg,
+            )
+            or e_action
+        )
         if e_action == EventAction.DROP:
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",
@@ -792,7 +801,7 @@ class ClassifierService(FastAPIService):
             #
             "event_id": str(event.id),
             "event_class": event_config.bi_id,
-            "categories": [c.bi_id for c in categories or []],
+            "categories": [self.event_config[c].bi_id for c in categories or []],
             "source": event.type.source.value,
             #
             "labels": event.labels or [],
