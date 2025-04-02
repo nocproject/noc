@@ -341,7 +341,7 @@ class ClassifierService(FastAPIService):
         EventAction,
         Optional["EventConfig"],
         Optional[Dict[str, Any]],
-        Optional[List["EventCategory"]],
+        Optional[List[str]],
     ]:
         """
         Perform event classification.
@@ -374,7 +374,7 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_PREPROCESSED] += 1
             categories = None
             if event.type.categories:
-                categories = EventCategory.objects.filter(name__in=event.type.categories)
+                categories = [str(EventCategory.get_by_id(c).id) for c in event.type.categories]
             if not event.vars:
                 return EventAction.LOG, self.get_event_config(event_class.id), raw_vars, categories
             return EventAction.LOG, self.get_event_config(event_class.id), event.vars, categories
@@ -786,6 +786,7 @@ class ClassifierService(FastAPIService):
                 "service_groups": frozenset(mo.effective_service_groups or []) if mo else [],
                 "remote_system": event.remote_system,
             },
+            categories=categories,
         ):
             self.logger.info("[%s] Run action: %s", event.id, a)
             r = a(event, mo)
@@ -909,7 +910,7 @@ class ClassifierService(FastAPIService):
             #
             "event_id": str(event.id),
             "event_class": event_config.bi_id,
-            "categories": [c.bi_id for c in categories or []],
+            "categories": [self.event_config[c].bi_id for c in categories or []],
             "source": event.type.source.value,
             #
             "labels": event.labels or [],
