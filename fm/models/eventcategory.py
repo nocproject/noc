@@ -33,6 +33,7 @@ from noc.core.change.decorator import change
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 from noc.core.models.valuetype import ValueType
+from noc.config import config
 
 id_lock = Lock()
 
@@ -52,7 +53,7 @@ class Resource(EmbeddedDocument):
         required=True, choices=[("if", "Interface"), ("si", "SubInterface"), ("ip", "Address")]
     )
     extend_path = BooleanField(default=False)  # Append Resource Path
-    oper_status: bool = StringField(choices=[("UP", "Up"), ("DOWN", "Down")], required=False)
+    oper_status: str = StringField(choices=[("UP", "Up"), ("DOWN", "Down")], required=False)
 
     @property
     def json_data(self):
@@ -222,6 +223,10 @@ class EventCategory(Document):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgevent:
+            yield "cfgevent", f"c:{self.id}"
+
     @classmethod
     def get_rule_config(cls, category: "EventCategory"):
         """Build Category Rules"""
@@ -232,8 +237,7 @@ class EventCategory(Document):
             "name": category.name,
             "bi_id": str(category.bi_id),
             "is_unique": category.is_unique,
-            "suppression_policy": category.suppression_policy,
-            "suppression_window": category.suppression_window,
+            "managed_object_required": category.managed_object_required,
             "vars": [],
             "object_map": {
                 "scope": category.object_scope,
@@ -241,10 +245,21 @@ class EventCategory(Document):
                 "include_path": category.include_object_paths,
             },
             "handlers": [],
+            "resources": [],
             "actions": [],
         }
+        if category:
+            r["filters"].append(
+                {"name": "dedup", "window": 3},
+            )
+        if category.suppression_window:
+            r["filters"].append(
+                {"name": "suppress", "window": category.suppression_window},
+            )
         if category.oper_status:
             r["object_map"]["oper_status"] = category.oper_status == "UP"
+        for rr in category.resources:
+            r["resources"].append({"resource": rr.code, "oper_status": rr.oper_status == "UP"})
         for vv in category.vars:
             r["vars"].append(
                 {
@@ -254,5 +269,5 @@ class EventCategory(Document):
                     "match_suppress": vv.match_suppress,
                 }
             )
-        r["actions"] += DispositionRule.get_category_actions(category)
+        r["actions"] += DispositionRule.get_actions(category=category)
         return r
