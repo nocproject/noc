@@ -6,6 +6,7 @@ interface ExternalLibsPluginOptions {
   debug: boolean;
   isDev: boolean;
   outputDir: string;
+  outputFileName: string;
 }
 
 export class ExternalLibsPlugin{
@@ -72,7 +73,7 @@ export class ExternalLibsPlugin{
       ];
       
       const projectRoot = path.resolve(process.cwd());
-      const outputFile = path.join(projectRoot, this.options.outputDir, "external-libs.js");
+      const outputFile = path.join(projectRoot, this.options.outputDir, this.options.outputFileName);
       
       this.log(`Generating external libraries file: ${outputFile}`);
       
@@ -92,8 +93,8 @@ export class ExternalLibsPlugin{
           } else{
             console.warn(`Warning: File not found: ${filePath}`);
           }
-        } catch(err){
-          this.logError(err, `Error reading library file ${libPath}:`);
+        } catch(error){
+          this.logError(error as Error, `Error reading library file ${libPath}:`);
         }
       }
       

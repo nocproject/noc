@@ -3,7 +3,8 @@ import * as esbuild from "esbuild";
 import {BaseBuilder} from "./BaseBuilder.ts";
 
 export class DevBuilder extends BaseBuilder{
-  className: string = "DevBuilder";
+  readonly className: string = "DevBuilder";
+
   async start(): Promise<void>{
     try{
       await this.initialize();
@@ -18,6 +19,17 @@ export class DevBuilder extends BaseBuilder{
       await this.stop();
       process.exit(1);
     }
+  }
+
+  async clean(): Promise<void>{
+    await this.clearBuildDir();
+  }
+  
+  async stop(): Promise<void>{
+    if(this.context){
+      await this.context.dispose();
+    }
+    console.log("Dev builder stopped");
   }
 
   private async createContext(): Promise<void>{

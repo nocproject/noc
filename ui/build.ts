@@ -1,15 +1,16 @@
 import type {BuilderOptions} from "./scripts/builders/BaseBuilder.ts";
 import {BaseBuilder} from "./scripts/builders/BaseBuilder.ts";
 import {DevBuilder} from "./scripts/builders/DevBuilder.ts";
+import {MonacoEditorBuilder} from "./scripts/builders/MonacoEditorBuilder.ts";
 import {ProdBuilder} from "./scripts/builders/ProdBuilder.ts";
 import {VendorBuilder} from "./scripts/builders/VendorBuilder.ts";
 
-const mode = process.argv[2] as "prod" | "dev" | "vendor" | "vendor-dev";
-if(!mode || !["prod", "dev", "vendor", "vendor-dev"].includes(mode)){
-  throw new Error('Mode must be either "prod", "dev" or "vendor"');
+const mode = process.argv[2] as "prod" | "dev" | "vendor" | "vendor-dev" | "monaco" | "monaco-dev";
+if(!mode || !["prod", "dev", "vendor", "vendor-dev", "monaco", "monaco-dev"].includes(mode)){
+  throw new Error('Mode must be either "prod", "dev", "vendor", "vendor-dev", "monaco" or "monaco-dev"');
 }
 
-const isDev = mode === "dev" || mode === "vendor-dev";
+const isDev = ["dev", "vendor-dev", "monaco-dev"].includes(mode);
 
 const commonOptions: BuilderOptions = {
   buildDir: "dist",
@@ -99,6 +100,18 @@ switch(mode){
     builder = new VendorBuilder({
       ...commonOptions,
       entryPoint: `${commonOptions.cacheDir}/vendor.js`,
+      esbuildOptions: {
+        ...commonOptions.esbuildOptions,
+        entryNames: "external-libs.js",
+      },
+    });
+    break;
+  }
+  case "monaco":
+  case "monaco-dev": {
+    builder = new MonacoEditorBuilder({
+      ...commonOptions,
+      cssEntryPoints: [],
     });
     break;
   }

@@ -5,9 +5,11 @@ import {ExternalLibsPlugin} from "../plugins/ExternalLibsPlugin.ts";
 import {BaseBuilder} from "./BaseBuilder.ts";
 
 export class VendorBuilder extends BaseBuilder{
-  className: string = "VendorBuilder";
+  readonly className: string = "VendorBuilder";
+
   async start(): Promise<void>{
     try{
+      this.setBuildOptions();
       await this.initialize();
       await this.buildVendors();
       console.log("Vendor build completed successfully");
@@ -17,26 +19,44 @@ export class VendorBuilder extends BaseBuilder{
     }
   }
 
-  private async buildVendors(): Promise<void>{
-    const vendorDir = path.join(this.options.buildDir);
+  async clean(): Promise<void>{
+    const vendorBundlePath = path.join(this.options.buildDir, this.options.esbuildOptions.entryNames!);
+    console.log("Cleaning vendor build directory...");
+    if(await fs.pathExists(vendorBundlePath)){
+      await fs.remove(vendorBundlePath);
+      console.log(`${vendorBundlePath} removed`);
+    }
+
+  }
+
+  async stop(): Promise<void>{
+    if(this.context){
+      await this.context.dispose();
+    }
+    console.log("Vendor build stopped");
+  }
+
+  private setBuildOptions(): void{
     const externalLibsPlugin = new ExternalLibsPlugin({
       debug: this.options.pluginDebug,
       isDev: this.options.isDev,
       outputDir: this.options.buildDir,
+      outputFileName: this.options.esbuildOptions.entryNames!,
     });
-    const buildOptions: esbuild.BuildOptions = {
+    this.options.esbuildOptions = {
       ...this.getBaseBuildOptions(),
-      outdir: vendorDir,
-      entryNames: "external-libs.js",
+      outdir: path.join(this.options.buildDir),
       entryPoints: [],
       plugins: [
         externalLibsPlugin.getPlugin(),
       ],
     };
+  }
 
+  private async buildVendors(): Promise<void>{
     // await this.createVendorFile();
     try{
-      await esbuild.build(buildOptions);
+      await esbuild.build(this.options.esbuildOptions!);
       console.log(`Successfully built vendor-bundle `);
     } catch(error){
       console.error(`Failed to build vendor bundle:`, error);

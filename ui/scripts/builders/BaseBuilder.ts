@@ -18,11 +18,11 @@ export interface BuilderOptions {
   pluginDebug: boolean;
   htmlTemplate?: string;
   libDir?: string;
-  cacheDir?: string;
+  cacheDir: string;
   assetsDir: string;
   isDev: boolean;
   toReplaceMethods?: MethodReplacement[];
-  esbuildOptions?: Partial<esbuild.BuildOptions>;
+  esbuildOptions: Partial<esbuild.BuildOptions>;
   parserOptions?: espree.Options;
   generateOptions?: astring.Options;
   cssEntryPoints?: string[];
@@ -39,59 +39,35 @@ export abstract class BaseBuilder{
     this.options = options;
   }
 
-  // protected async clearBuildDir(): Promise<void>{
-  //   await fs.emptyDir(this.options.buildDir);
-  //   console.log(`Cleaned ${this.options.buildDir} directory`);
-  // }
-
+  // this method shares ProdBuilder and DevBuilder classes 
   protected async clearBuildDir(): Promise<void>{
     const entryBasename = path.basename(this.options.entryPoint, path.extname(this.options.entryPoint));
-    const entryExt = path.extname(this.options.entryPoint);
-    // const cssBasename = this.options.cssEntryPoints?.map(entry => path.basename(entry, path.extname(entry)));
-    // const cssExt = this.options.cssEntryPoints?.map(entry => path.extname(entry));
-    const pattern = this.options.esbuildOptions?.entryNames || "[name]-[hash]";
-    const searchPattern = pattern
-      .replace("[name]", entryBasename)
-      .replace("bundle", "\\w+\\" + entryExt)
-      .replace("[hash]", "\\w+\\" + entryExt);
-    const searchSourcemapPattern = searchPattern + ".map";
-    const filePattern = new RegExp(`^${searchPattern}$`);
-    const sourcemapPattern = new RegExp(`^${searchSourcemapPattern}$`);
-    const files = await fs.readdir(this.options.buildDir);
+    const filePattern = new RegExp(`^${entryBasename}*`);
     
     await fs.emptyDir(this.options.cacheDir!);
     console.log(`Cleaned ${this.options.cacheDir} directory`);
 
-    if(["DevBuilder", "ProdBuilder"].includes(this.className)){
-      const indexHtmlPath = path.join(this.options.buildDir, "index.html");
-      if(await fs.pathExists(indexHtmlPath)){
-        await fs.remove(indexHtmlPath);
-        console.log(`Removed index.html file`);
-      }
-      for(const file of files){
-        if(file.endsWith(".css") || file.endsWith(".map")){
-          const filePath = path.join(this.options.buildDir, file);
-          await fs.remove(filePath);
-          console.log(`Removed css: ${file}`);
-        }
-      }
-      await fs.remove(`${this.options.buildDir}/${this.options.assetsDir}`);
-      console.log(`Cleaned ${this.options.assetsDir} directory`);
+    const indexHtmlPath = path.join(this.options.buildDir, "index.html");
+    if(await fs.pathExists(indexHtmlPath)){
+      await fs.remove(indexHtmlPath);
+      console.log(`Removed index.html file`);
     }
+    await fs.remove(`${this.options.buildDir}/${this.options.assetsDir}`);
+    console.log(`Cleaned ${this.options.assetsDir} directory`);
 
-    for(const file of files){
-      if(filePattern.test(file) || sourcemapPattern.test(file)){
+    for(const file of await fs.readdir(this.options.buildDir)){
+      if(filePattern.test(file)){
         const filePath = path.join(this.options.buildDir, file);
         await fs.remove(filePath);
         console.log(`Removed bundle: ${file}`);
       }
     }
-    console.log(`Cleared bundle files matching pattern: '${searchPattern}' and styles in ${this.options.buildDir} directory`);
+    console.log(`Cleared bundle files matching pattern: '${filePattern}' and styles in ${this.options.buildDir} directory`);
   }
 
   protected async initialize(): Promise<void>{
     await fs.ensureDir(this.options.buildDir);
-    await this.clearBuildDir();
+    await this.clean();
   }
 
   protected getBaseBuildOptions(): esbuild.BuildOptions{
@@ -140,11 +116,15 @@ export abstract class BaseBuilder{
       plugins.push(removePlugin.getPlugin());
     }
     if(this.options.htmlTemplate){
-      const htmlPlugin = new HtmlPlugin(
-        this.options.buildDir,
-        path.join(process.cwd(), this.options.htmlTemplate || ""),
-        this.options.isDev,
-      );
+      const htmlPlugin = new HtmlPlugin({
+        buildDir: this.options.buildDir,
+        templatePath: path.join(process.cwd(), this.options.htmlTemplate),
+        isDev: this.options.isDev,
+        mode: "create",
+        patternForReplace: {
+          "app-": [".js", ".css"],
+        },
+      });
       plugins.push(htmlPlugin.getPlugin());
     }
     if(this.options.aliases){
@@ -181,10 +161,6 @@ export abstract class BaseBuilder{
   }
 
   abstract start(): Promise<void>;
-
-  async stop(): Promise<void>{
-    if(this.context){
-      await this.context.dispose();
-    }
-  }
+  abstract clean(): Promise<void>;
+  abstract stop(): Promise<void>;
 }
