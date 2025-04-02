@@ -352,7 +352,7 @@ class DispositionRule(Document):
         return build_matcher({"$or": expr})
 
     @classmethod
-    def get_actions(cls, event_class: Optional[EventClass] = None):
+    def get_actions(cls, event_class: Optional[EventClass] = None, category=None):
         """"""
         r = []
         for rule in DispositionRule.objects.filter(

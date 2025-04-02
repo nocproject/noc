@@ -46,14 +46,22 @@ class ActionSet(object):
         self.add_actions: int = 0
         self.add_notifications: int = 0
 
-    def iter_actions(self, event_class: str, ctx: Dict[str, Any]) -> Iterable[Callable]:
+    def iter_actions(
+        self, event_class: str, ctx: Dict[str, Any], categories: Optional[List[str]] = None
+    ) -> Iterable[Callable]:
         """"""
-        if event_class not in self.actions:
-            return
-        for a, match in self.actions[event_class]:
-            if match and not match(ctx):
+        if event_class in self.actions:
+            for a, match in self.actions[event_class]:
+                if match and not match(ctx):
+                    continue
+                yield a
+        for c in categories or []:
+            if c not in self.actions:
                 continue
-            yield a
+            for a, match in self.actions[c]:
+                if match and not match(ctx):
+                    continue
+                yield a
 
     def update_rule(self, rid: str, data):
         """Update rule from lookup"""
