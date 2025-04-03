@@ -10,6 +10,7 @@ Ext.define("NOC.sa.service.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.StateField",
+    "NOC.core.InlineGrid",
     "NOC.sa.service.Model",
     "NOC.sa.service.LookupField",
     "NOC.sa.service.TreeCombo",
@@ -668,65 +669,60 @@ Ext.define("NOC.sa.service.Application", {
             },
           ],
         },
+      ],
+      inlines: [
         {
-          xtype: "fieldset",
-          anchor: "100%",
-          minHeight: 130,
+          xtype: "inlinegrid",
           title: __("Capabilities"),
           collapsible: true,
           collapsed: false,
-          items: [
+          itemId: "sa-service-caps-inline",
+          model: "NOC.sa.service.CapabilitiesModel",
+          readOnly: true,
+          bbar: {},
+          plugins: [
             {
-              xtype: "inlinegrid",
-              itemId: "sa-service-caps-inline",
-              model: "NOC.sa.service.CapabilitiesModel",
-              readOnly: true,
-              bbar: {},
-              plugins: [
-                {
-                  ptype: "dynamicmodalediting",
-                  listeners: {
-                    canceledit: "onCancelEdit",
-                  },
-                },
-              ],
-              columns: [
-                {
-                  text: __("Capability"),
-                  dataIndex: "capability",
-                  width: 300,
-                },
-                {
-                  text: __("Value"),
-                  dataIndex: "value",
-                  // width: 100,
-                  useModalEditor: true,
-                  renderer: function(v, _, record){
-                    var value = v,
-                      iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil",
-                      icon = `<i class='fa fa-${iconName}' style='padding-right: 4px;' title='` + __("Read only") + "'></i>";
-                    if((v === true) || (v === false)){
-                      value = NOC.render.Bool(v);
-                    }
-                    return icon + value;
-                  },
-                },
-                {
-                  text: __("Scope"),
-                  dataIndex: "scope",
-                  width: 50,
-                },
-                {
-                  text: __("Source"),
-                  dataIndex: "source",
-                  width: 100,
-                },
-                {
-                  text: __("Description"),
-                  dataIndex: "description",
-                  flex: 1,
-                },
-              ],
+              ptype: "dynamicmodalediting",
+              listeners: {
+                canceledit: "onCancelEdit",
+              },
+            },
+          ],
+          columns: [
+            {
+              text: __("Capability"),
+              dataIndex: "capability",
+              width: 300,
+            },
+            {
+              text: __("Value"),
+              dataIndex: "value",
+              useModalEditor: true,
+              urlPrefix: "/sa/service",
+              renderer: function(v, _, record){
+                var value = v,
+                  iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil",
+                  icon = `<i class='fa fa-${iconName}' style='padding-right: 4px;' title='` + __("Read only") + "'></i>";
+                if((v === true) || (v === false)){
+                  value = NOC.render.Bool(v);
+                }
+                return icon + value;
+              },
+            },
+            {
+              text: __("Scope"),
+              dataIndex: "scope",
+              width: 50,
+            },
+            {
+              text: __("Source"),
+              dataIndex: "source",
+              width: 100,
+            },
+            {
+              text: __("Description"),
+              dataIndex: "description",
+              flex: 1,
             },
           ],
         },
