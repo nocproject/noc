@@ -14,6 +14,7 @@ from mongoengine.queryset import Q
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.decorators.caps import capabilities_handler
 from noc.sa.interfaces.base import (
     UnicodeParameter,
     ModelParameter,
@@ -37,6 +38,7 @@ from noc.core.resource import from_resource
 from noc.core.comp import smart_text
 
 
+@capabilities_handler
 @state_handler
 class ServiceApplication(ExtDocApplication):
     """
@@ -184,6 +186,30 @@ class ServiceApplication(ExtDocApplication):
                 }
             ]
         return r
+
+    @view(url=r"^(?P<sid>[0-9a-f]{24})/caps/$", method=["GET"], access="read", api=True)
+    def api_get_caps(self, request, sid):
+        o = self.get_object_or_404(Service, id=sid)
+        # if not o.has_access(request.user):
+        #    return self.response_forbidden("Access denied")
+        if not o.caps:
+            return []
+        r = []
+        for c in o.caps:
+            r += [
+                {
+                    "capability": c.capability.name,
+                    "id": str(c.capability.id),
+                    "object": str(o.id),
+                    "description": c.capability.description,
+                    "type": c.capability.type,
+                    "value": c.value,
+                    "source": c.source,
+                    "scope": c.scope or "",
+                    "editor": c.capability.get_editor(),
+                }
+            ]
+        return sorted(r, key=lambda x: x["capability"])
 
     @view(r"^(?P<sid>[0-9a-f]{24})/resource/(?P<r_type>\S+)/", access="read", api=True)
     def api_get_instance_resources(self, request, sid: str, r_type: str):

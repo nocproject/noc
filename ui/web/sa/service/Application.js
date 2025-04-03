@@ -10,6 +10,7 @@ Ext.define("NOC.sa.service.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.StateField",
+    "NOC.core.InlineGrid",
     "NOC.sa.service.Model",
     "NOC.sa.service.LookupField",
     "NOC.sa.service.TreeCombo",
@@ -22,6 +23,7 @@ Ext.define("NOC.sa.service.Application", {
     "NOC.inv.resourcegroup.LookupField",
     "NOC.core.label.LabelField",
     "NOC.core.combotree.ComboTree",
+    "NOC.core.plugins.DynamicModalEditing",
     "NOC.sa.service.InstancesPanel",
     "Ext.ux.form.GridField",
   ],
@@ -667,36 +669,60 @@ Ext.define("NOC.sa.service.Application", {
             },
           ],
         },
+      ],
+      inlines: [
         {
-          name: "caps",
-          xtype: "gridfield",
-          fieldLabel: __("Capabilities"),
-          allowBlank: true,
+          xtype: "inlinegrid",
+          title: __("Capabilities"),
+          collapsible: true,
+          collapsed: false,
+          itemId: "sa-service-caps-inline",
+          model: "NOC.sa.service.CapabilitiesModel",
+          readOnly: true,
+          bbar: {},
+          plugins: [
+            {
+              ptype: "dynamicmodalediting",
+              listeners: {
+                canceledit: "onCancelEdit",
+              },
+            },
+          ],
           columns: [
             {
-              text: __("Name"),
+              text: __("Capability"),
               dataIndex: "capability",
-              renderer: NOC.render.Lookup("capability"),
-              width: 250,
-              editor: "inv.capability.LookupField",
+              width: 300,
             },
             {
               text: __("Value"),
               dataIndex: "value",
-              flex: 1,
-              editor: "textfield",
-            },
-            {
-              text: __("Source"),
-              dataIndex: "source",
-              width: 100,
-              editor: "textfield",
+              useModalEditor: true,
+              urlPrefix: "/sa/service",
+              renderer: function(v, _, record){
+                var value = v,
+                  iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil",
+                  icon = `<i class='fa fa-${iconName}' style='padding-right: 4px;' title='` + __("Read only") + "'></i>";
+                if((v === true) || (v === false)){
+                  value = NOC.render.Bool(v);
+                }
+                return icon + value;
+              },
             },
             {
               text: __("Scope"),
               dataIndex: "scope",
               width: 50,
-              editor: "textfield",
+            },
+            {
+              text: __("Source"),
+              dataIndex: "source",
+              width: 100,
+            },
+            {
+              text: __("Description"),
+              dataIndex: "description",
+              flex: 1,
             },
           ],
         },

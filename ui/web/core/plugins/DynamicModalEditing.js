@@ -17,10 +17,11 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
   dataIndex: "value", // Field name to edit
   //
   init: function(grid){
-    this.grid = grid;        
+    this.grid = grid;
     grid.on("cellclick", function(view, cell, cellIndex, record){
       var column = grid.getColumnManager().getHeaderAtIndex(cellIndex);
       if(column && column.useModalEditor){
+        this.urlPrefix = column.urlPrefix || "urlPrefix_not_set";
         this.showEditor(record, column, view, cell);
       }
     }, this);
@@ -183,7 +184,7 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
   //
   request: function(method, button){
     var record = this.record,
-      url = Ext.String.format("/sa/managedobject/{0}/capabilities/{1}/", record.get("object"), record.get("id")),
+      url = Ext.String.format("{0}/{1}/capabilities/{2}/", this.urlPrefix, record.get("object"), record.get("id")),
       data = this.formatResult(this.formPanel.getForm().getValues()[this.dataIndex]);
     Ext.Ajax.request({
       url: url,
@@ -202,8 +203,13 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
         }
       },
       failure: function(response){
-        var result = Ext.decode(response.responseText),
-          message = Ext.isDefined(result.errors) ? result.errors : __("Request failure");
+        try{
+          var result = Ext.decode(response.responseText),
+            message = Ext.isDefined(result.errors) ? result.errors : __("Request failure");
+        } catch(e){
+          console.error(e);
+          message = __("Invalid server response");
+        }
         NOC.error(message);
       },
     });

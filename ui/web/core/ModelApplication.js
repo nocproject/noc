@@ -621,6 +621,15 @@ Ext.define("NOC.core.ModelApplication", {
             columns: inline.columns,
             store: istore,
           };
+        if(Ext.isDefined(inline.plugins)){
+          gp.plugins = inline.plugins;
+        }
+        if(Ext.isDefined(inline.bbar)){
+          gp.bbar = inline.bbar;
+        }
+        if(Ext.isDefined(inline.readOnly)){
+          gp.readOnly = inline.readOnly;
+        }
         formInlines.push({
           xtype: "fieldset",
           anchor: "100%",
