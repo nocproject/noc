@@ -92,7 +92,7 @@ class Target(
         if self.sa_profile:
             p = Profile.get_by_id(self.sa_profile)
             r["sa_profile"] = p.name if p else None
-        for m in self.mappings:
+        for m in self.mappings or []:
             rs = RemoteSystem.get_by_id(m["remote_system"])
             if not rs:
                 continue
