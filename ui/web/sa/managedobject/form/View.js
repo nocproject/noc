@@ -1530,7 +1530,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   text: __("Value"),
                   dataIndex: "value",
                   useModalEditor: true,
-                  prefixUrl: "/sa/managedobject",
+                  urlPrefix: "/sa/managedobject",
                   renderer: function(v, _, record){
                     var value = v,
                       iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil", 

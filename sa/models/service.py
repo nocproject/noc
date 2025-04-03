@@ -699,6 +699,7 @@ class Service(Document):
         else:
             # Insert new item
             self.caps += [CapsItem(capability=caps, value=value, source=source, scope=scope or "")]
+        Service.objects.filter(id=self.id).update(caps=self.caps)
 
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):
@@ -810,6 +811,9 @@ class Service(Document):
             si.refresh_managed_object(managed_object)
         if source == InputSource.ETL and si.remote_id != remote_id:
             si.remote_id = remote_id
+            changed |= True
+        if source == InputSource.ETL and si.macs and set(si.macs) != set(macs):
+            si.macs = macs
             changed |= True
         if changed:
             si.save()
