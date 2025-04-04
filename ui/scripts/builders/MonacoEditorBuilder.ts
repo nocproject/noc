@@ -154,7 +154,7 @@ export class MonacoEditorBuilder extends BaseBuilder{
 
       const result = await esbuild.build({
         entryPoints: [path.resolve(process.cwd(), worker.entry)],
-        outdir: outputDir,
+        outfile: path.join(outputDir, `${worker.name}.js`),
         bundle: true,
         format: "iife",
         minify: !this.options.isDev,
