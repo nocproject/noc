@@ -25,7 +25,7 @@ class OTNOMSCotroller(BaseController):
     Unidirectional p2p/bunch controller considering lambda.
     """
 
-    name = "optical_dwdm"
+    name = "otn_oms"
     label = "OMS"
     kind = ChannelKind.L1
     topology = ChannelTopology.UBUNCH
