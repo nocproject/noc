@@ -29,7 +29,9 @@ def fix():
             mo_id = job.get("_id")
             if mo_id:
                 mo = ManagedObject.get_by_id(mo_id)
-                if not (mo.get_status() and mo.object_profile.enable_ping and mo.state == managed_state):
+                if not (
+                    mo.get_status() and mo.object_profile.enable_ping and mo.state == managed_state
+                ):
                     continue
                 keys.append(mo_id)
 
