@@ -11,7 +11,7 @@ import logging
 import operator
 from dataclasses import dataclass
 from threading import Lock
-from typing import Tuple, Dict, Iterable, Optional, Any, Set, List, Union
+from typing import Tuple, Dict, Iterable, Optional, Any, Set, List
 
 # Third-party modules
 from django.db.models import (
