@@ -285,7 +285,7 @@ class NotificationGroup(NOCModel):
             notification_group=self,
             model_id=get_model_id(o),
             instance_id=str(o.id),
-            watchers__in=[user],
+            watchers__contains=[get_subscriber_id(user)],
         ).first()
 
     @property
@@ -495,30 +495,44 @@ class NotificationGroup(NOCModel):
     def subscribe_object(self, o: Any, user: User):
         """Subscribe User to Group"""
         us = self.get_user_subscription(o, user)
+        if us:
+            return us
+        c = get_subscriber_id(user)
+        us = NotificationGroupSubscription.objects.filter(
+            notification_group=self,
+            model_id=get_model_id(o),
+            instance_id=str(o.id),
+            remote_system=None,
+        ).first()
         if not us:
             us = NotificationGroupSubscription(
                 notification_group=self,
                 model_id=get_model_id(o),
                 instance_id=str(o.id),
-                user=user,
+                watchers=[],
             )
-            us.save()
+        us.watchers.append(c),
+        us.save()
         return us
 
     def unsubscribe_object(self, o: Any, user: User):
         """Unsubscribe User"""
         us = self.get_user_subscription(o, user)
+        c = get_subscriber_id(user)
         # RemoteSystem
-        if us:
-            us.delete()
+        if us and c in us.watchers:
+            us.watchers.remove(c)
+            NotificationGroupSubscription.objects.filter(id=us.id).update(
+                watchers=us.watchers,
+            )
 
     def supress_object(self, o: Any, user: User):
         """Supress Notification for subscription"""
         us = self.get_user_subscription(o, user)
         c = get_subscriber_id(user)
-        if us.suppresses and c in us.suppresses:
+        if us.suppresses and c not in us.suppresses:
             NotificationGroupSubscription.objects.filter(id=us.id).update(
-                suppresses=us.suppresses + [c],
+                suppresses=(us.suppresses or []) + [c],
             )
 
     @property

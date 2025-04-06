@@ -21,7 +21,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "api_object_subscriptions",
             self.api_object_subscriptions,
             method=["GET"],
-            url=r"^(?P<object_id>[^/]+)/notification_subscription/$",
+            url=r"^(?P<object_id>[^/]+)/object_subscription/$",
             access="read",
             api=True,
         )
@@ -30,7 +30,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "api_update_object_subscriptions",
             self.api_update_object_subscriptions,
             method=["POST"],
-            url=r"^(?P<object_id>[^/]+)/notification_subscription/(?P<group_id>[0-9a-f]{24})/update/$",
+            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/update/$",
             access="update_subscription",
             api=True,
             validate={
@@ -53,7 +53,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "api_add_group_subscription",
             self.api_subscribe_group,
             method=["POST"],
-            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>[0-9a-f]{24})/subscribe/$",
+            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/subscribe/$",
             access="write",
             api=True,
         )
@@ -61,7 +61,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "api_remove_group_subscription",
             self.api_unsubscribe_group,
             method=["POST"],
-            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>[0-9a-f]{24})/unsubscribe/$",
+            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/unsubscribe/$",
             access="write",
             api=True,
         )
@@ -69,13 +69,13 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "api_supress_group_subscription",
             self.api_suppress_group,
             method=["POST"],
-            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>[0-9a-f]{24})/supress/$",
+            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/supress/$",
             access="write",
             api=True,
         )
 
     @staticmethod
-    def subscription_to_dict(s, o):
+    def subscription_to_dict(s, o, user):
         r = {
             "source": "S" if not s.remote_system else str(s.remote_system.name),
             "remote_system": None if not s.remote_system else str(s.remote_system.id),
@@ -84,20 +84,18 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "notification_group__label": str(s.notification_group.name),
             "users": [],
             "crm_users": [],
-            "me_subscribe": True,
+            "me_subscribe": False,
             "me_suppress": False,
             "allow_edit": True,
             "allow_suppress": True,
         }
         for w in s.get_watchers():
+            if user == w:
+                r["me_subscribe"] = True
             if isinstance(w, User):
-                r["users"].append(
-                    {"user": str(w.id), "user__label": w.name, "suppress": False}
-                )
+                r["users"].append({"user": str(w.id), "user__label": w.username, "suppress": False})
             else:
-                r["crm_users"].append(
-                    {"user": str(w.id), "user__label": w.name, "suppress": False}
-                )
+                r["crm_users"].append({"user": str(w.id), "user__label": w.name, "suppress": False})
         return r
 
     def api_object_subscriptions(self, request, object_id):
@@ -106,8 +104,28 @@ class WatchHandlerDecorator(BaseAppDecorator):
             o = self.app.queryset(request).get(**{self.app.pk: object_id})
         except self.app.model.DoesNotExist:
             return self.app.response_not_found()
+        proccessed = set()
         for s in NotificationGroup.iter_object_subscription_settings(o):
-            r.append(self.subscription_to_dict(s, o))
+            r.append(self.subscription_to_dict(s, o, request.user))
+            proccessed.add(str(s.notification_group.id))
+        for g in NotificationGroup.objects.filter():
+            if str(g.id) in proccessed:
+                continue
+            r.append(
+                {
+                    "source": "G",
+                    "remote_system": None,
+                    "object": str(o.id),
+                    "notification_group": str(g.id),
+                    "notification_group__label": str(g.name),
+                    "users": [],
+                    "crm_users": [],
+                    "me_subscribe": False,  # User Group settings
+                    "me_suppress": False,  # User Group settings
+                    "allow_edit": False,
+                    "allow_suppress": True,
+                }
+            )
         return r
 
     def api_update_object_subscriptions(
@@ -138,7 +156,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
             elif u:
                 watchers.append(u)
         s = group.update_subscription(o, watchers=watchers, suppresses=suppresses)
-        return {"success": True, "data": self.subscription_to_dict(s, o)}
+        return {"success": True, "data": self.subscription_to_dict(s, o, request.user)}
 
     def api_subscribe_group(self, request, object_id, group_id):
         try:
