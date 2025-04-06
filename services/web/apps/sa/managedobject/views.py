@@ -741,8 +741,15 @@ class ManagedObjectApplication(ExtModelApplication):
             for iface in r[o.bi_id]:
                 ctx = {m: "--" for m in self.x_map}
                 ctx.update(r[o.bi_id][iface])
-                ctx["load_in"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_in"]))
-                ctx["load_out"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_out"]))
+
+                load_in = r[o.bi_id][iface]["load_in"]
+                load_out = r[o.bi_id][iface]["load_out"]
+
+                if load_in is not None:
+                    ctx["load_in"] = "%.2f%s" % Scale.humanize(int(load_in))
+                if load_out is not None:
+                    ctx["load_out"] = "%.2f%s" % Scale.humanize(int(load_out))
+
                 metrics[iface] = self.iface_metric_template.render(**ctx)
         # Physical interfaces
         # @todo: proper ordering
