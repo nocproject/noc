@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------------
 # Various model decorators
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from functools import partial
 
 # Third-party modules
 from django.db.models import JSONField
@@ -323,38 +326,37 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
     return decorator
 
 
-def tree(field="parent"):
-    """
-    Class decorator checking cycling.
+def tree(cls=None, *, field="parent"):
+    """Class decorator checking cycling"""
 
-    """
+    if cls is None:
+        return partial(tree, field=field)
 
-    def _before_save_handler(sender, instance=None, document=None, field=field, *args, **kwargs):
+    def tree_recursion_check_handler(
+        sender, instance=None, document=None, parent_field=field, *args, **kwargs
+    ):
         instance = instance or document
-        parent = getattr(instance, field, None)
+        parent = getattr(instance, parent_field, None)
         seen = {instance.id}
         while parent:
             parent_id = getattr(parent, "id", None)
             if parent_id in seen:
                 raise instance._ValidationError(f"[{instance}] Parent cycle link")
             seen.add(parent_id)
-            parent = getattr(parent, field, None)
+            parent = getattr(parent, parent_field, None)
 
-    def decorator(cls):
-        if hasattr(cls, field):
-            if is_document(cls):
-                from mongoengine import signals as mongo_signals
-                from mongoengine.errors import ValidationError
+    if hasattr(cls, field):
+        if is_document(cls):
+            from mongoengine import signals as mongo_signals
+            from mongoengine.errors import ValidationError
 
-                mongo_signals.pre_save.connect(_before_save_handler, sender=cls, weak=False)
-            else:
-                from django.db.models import signals as django_signals
-                from django.core.exceptions import ValidationError
+            mongo_signals.pre_save.connect(tree_recursion_check_handler, sender=cls, weak=False)
+        else:
+            from django.db.models import signals as django_signals
+            from django.core.exceptions import ValidationError
 
-                django_signals.pre_save.connect(_before_save_handler, sender=cls, weak=False)
+            django_signals.pre_save.connect(tree_recursion_check_handler, sender=cls, weak=False)
 
-            cls._ValidationError = ValidationError
+        cls._ValidationError = ValidationError
 
-        return cls
-
-    return decorator
+    return cls
