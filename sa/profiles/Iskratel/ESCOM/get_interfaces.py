@@ -119,7 +119,7 @@ class Script(BaseScript):
             interfaces[ifname] = {
                 "type": iftype,
                 "name": ifname,
-                "ifindex": iface.group("ifindex"),
+                "snmp_ifindex": iface.group("ifindex"),
                 "admin_status": iface.group("admin_status") == "up",
                 "oper_status": iface.group("oper_status") == "up",
                 "enabled_protocols": [],
