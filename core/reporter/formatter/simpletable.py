@@ -40,17 +40,25 @@ class SimpleTableFormatter(DataFormatter):
         # Column title map
         HEADER_ROW = {}
         sort_index = []
+        allow_dynamic_columns = False
         if header_format:
             for col in header_format.columns:
                 *_, col_name = col.name.rsplit(".", 1)
+                if col_name == "all":
+                    allow_dynamic_columns |= True
+                    continue
                 HEADER_ROW[col_name] = col.title
                 sort_index.append(col_name)
         if not self.root_band.has_rows:
             return
         data = self.root_band.get_rows()[0]
+        out_columns = []
+        for c in data.columns:
+            if (HEADER_ROW and c in HEADER_ROW) or allow_dynamic_columns:
+                out_columns.append(c)
+            sort_index.append(c)
         out_columns = sorted(
-            [c for c in data.columns if not HEADER_ROW or c in HEADER_ROW],
-            key=lambda x: sort_index.index(x) if x in sort_index else 200,
+            out_columns, key=lambda x: sort_index.index(x) if x in sort_index else 200
         )
         self.logger.debug("[SIMPLETABLE] Out columns: %s;;;%s", out_columns, HEADER_ROW)
         if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
