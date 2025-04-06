@@ -79,22 +79,18 @@ class NotificationGroupApplication(ExtModelApplication):
         user = request.user
         if not user:
             return self.response_not_found()
-        us = o.get_subscription_by_user(user)
         if expired_at:
             expired_at = datetime.datetime.fromisoformat(expired_at)
-        if not us:
-            us = o.subscribe(user, expired_at=expired_at)
-        if us.time_pattern != time_pattern:
-            us.time_pattern = time_pattern
-        if us.expired_at != expired_at:
-            us.expired_at = expired_at
-        if us.policy != user_policy:
-            us.policy = user_policy
-        if us.title_tag != title_tag:
-            us.title_tag = title_tag
-        if us.method != preferred_method:
-            us.method = preferred_method
-        us.save()
+        else:
+            expired_at = None
+        us = o.update_user_settings(
+            user,
+            user_policy,
+            preferred_method,
+            time_pattern,
+            title_tag=title_tag,
+            expired_at=expired_at,
+        )
         data = {
             "notification_group": str(o.id),
             "notification_group__label": o.name,

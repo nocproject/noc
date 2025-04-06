@@ -19,12 +19,15 @@ class Migration(BaseMigration):
     def migrate(self):
         self.db.delete_column("main_notificationgroupusersubscription", "watch")
         self.db.delete_column("main_notificationgroupusersubscription", "remote_system")
+        self.db.execute(
+            "ALTER TABLE main_notificationgroupusersubscription RENAME TO main_notificationgroupusersettings"
+        )
         # Model 'NotificationGroupUser'
         NotificationGroup = self.db.mock_model(
             model_name="NotificationGroup", db_table="main_notificationgroup"
         )
         self.db.create_table(
-            "main_notificationgroupwatchsubscription",
+            "main_notificationgroupsubscription",
             (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 (
@@ -59,7 +62,7 @@ class Migration(BaseMigration):
             ),
         )
         self.db.create_index(
-            "main_notificationgroupwatchsubscription",
+            "main_notificationgroupsubscription",
             [
                 "notification_group_id",
                 "model_id",
