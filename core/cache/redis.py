@@ -30,20 +30,12 @@ class RedisCache(BaseCache):
 
     @staticmethod
     def serialize(v):
-        """
-        Convert value to wire format
-        :param v:
-        :return:
-        """
+        """Convert value to wire format"""
         return dumps(v, HIGHEST_PROTOCOL)
 
     @staticmethod
     def deserialize(v):
-        """
-        Convert wire format to value
-        :param v:
-        :return:
-        """
+        """Convert wire format to value"""
         if v is None:
             return v
         return loads(v)
