@@ -275,10 +275,25 @@ class NotificationGroup(NOCModel):
             user=user,
         ).first()
 
-    def get_user_subscription(
-        self,
+    @classmethod
+    def get_object_subscriptions(
+        cls,
         o: Any,
-        user: User,
+        user: Optional[User] = None,
+    ) -> List["NotificationGroupSubscription"]:
+        if not user:
+            return NotificationGroupSubscription.objects.filter(
+                model_id=get_model_id(o),
+                instance_id=str(o.id),
+            )
+        return NotificationGroupSubscription.objects.filter(
+            model_id=get_model_id(o),
+            instance_id=str(o.id),
+            watchers__contains=[get_subscriber_id(user)],
+        )
+
+    def get_user_subscription(
+        self, o: Any, user: User
     ) -> Optional["NotificationGroupSubscription"]:
         """Getting subscription by user"""
         return NotificationGroupSubscription.objects.filter(

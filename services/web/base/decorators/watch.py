@@ -18,6 +18,14 @@ class WatchHandlerDecorator(BaseAppDecorator):
 
     def contribute_to_class(self):
         self.add_view(
+            "api_check_object_subscriptions",
+            self.api_check_object_subscriptions,
+            method=["GET"],
+            url=r"^(?P<object_id>[^/]+)/has_subscriptions/$",
+            access="read",
+            api=True,
+        )
+        self.add_view(
             "api_object_subscriptions",
             self.api_object_subscriptions,
             method=["GET"],
@@ -54,7 +62,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
             self.api_subscribe_group,
             method=["POST"],
             url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/subscribe/$",
-            access="write",
+            access="update_subscription",
             api=True,
         )
         self.add_view(
@@ -62,15 +70,15 @@ class WatchHandlerDecorator(BaseAppDecorator):
             self.api_unsubscribe_group,
             method=["POST"],
             url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/unsubscribe/$",
-            access="write",
+            access="update_subscription",
             api=True,
         )
         self.add_view(
             "api_supress_group_subscription",
             self.api_suppress_group,
             method=["POST"],
-            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/supress/$",
-            access="write",
+            url=r"^(?P<object_id>[^/]+)/object_subscription/(?P<group_id>\d+)/suppress/$",
+            access="update_subscription",
             api=True,
         )
 
@@ -86,6 +94,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "crm_users": [],
             "me_subscribe": False,
             "me_suppress": False,
+            "allow_subscribe": True,
             "allow_edit": True,
             "allow_suppress": True,
         }
@@ -98,18 +107,31 @@ class WatchHandlerDecorator(BaseAppDecorator):
                 r["crm_users"].append({"user": str(w.id), "user__label": w.name, "suppress": False})
         return r
 
+    def api_check_object_subscriptions(self, request, object_id):
+        try:
+            o = self.app.queryset(request).get(**{self.app.pk: object_id})
+        except self.app.model.DoesNotExist:
+            return self.app.response_not_found()
+        if NotificationGroup.get_object_subscriptions(o, user=request.user):
+            ss = "me"
+        elif NotificationGroup.get_object_subscriptions(o):
+            ss = "group"
+        else:
+            ss = "no"
+        return {"success": True, "subscription_to": ss}
+
     def api_object_subscriptions(self, request, object_id):
         r = []
         try:
             o = self.app.queryset(request).get(**{self.app.pk: object_id})
         except self.app.model.DoesNotExist:
             return self.app.response_not_found()
-        proccessed = set()
+        processed = set()
         for s in NotificationGroup.iter_object_subscription_settings(o):
             r.append(self.subscription_to_dict(s, o, request.user))
-            proccessed.add(str(s.notification_group.id))
+            processed.add(str(s.notification_group.id))
         for g in NotificationGroup.objects.filter():
-            if str(g.id) in proccessed:
+            if str(g.id) in processed:
                 continue
             r.append(
                 {
@@ -123,6 +145,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
                     "me_subscribe": False,  # User Group settings
                     "me_suppress": False,  # User Group settings
                     "allow_edit": False,
+                    "allow_subscribe": False,
                     "allow_suppress": True,
                 }
             )
