@@ -15,6 +15,7 @@ from mongoengine.queryset import Q
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
 from noc.services.web.base.decorators.caps import capabilities_handler
+from noc.services.web.base.decorators.watch import watch_handler
 from noc.sa.interfaces.base import (
     UnicodeParameter,
     ModelParameter,
@@ -38,6 +39,7 @@ from noc.core.resource import from_resource
 from noc.core.comp import smart_text
 
 
+@watch_handler
 @capabilities_handler
 @state_handler
 class ServiceApplication(ExtDocApplication):
@@ -112,6 +114,7 @@ class ServiceApplication(ExtDocApplication):
         if isinstance(o, Service):
             data["in_maintenance"] = o.in_maintenance
             data["service_path"] = [str(sp) for sp in data["service_path"]]
+            data["allow_subscribe"] = True
         return data
 
     @staticmethod
