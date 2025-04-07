@@ -8,7 +8,6 @@
 # NOC modules
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
-from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
 
