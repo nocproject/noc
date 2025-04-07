@@ -14,7 +14,7 @@ from noc.main.models.pool import Pool
 
 
 def fix():
-    print(f"Scanning ...")
+    print("Scanning ...")
     for p in Pool.objects.all():
         print(f"\npool [{p.name}] ...")
         sched = Scheduler("discovery", pool=p.name)
