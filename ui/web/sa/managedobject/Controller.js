@@ -557,7 +557,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
   onDownload: function(){
     var text = $($.parseHTML(this.lookupReference("saRunCommandReportPanel").html)).text(),
       blob = new Blob([text], {type: "text/plain;charset=utf-8"});
-    saveAs(blob, "result.txt");
+    NOC.saveAs(blob, "result.txt");
   },
   onGroupEdit: function(){
     var selectedModels = this.lookupReference("saManagedobjectSelectedGrid1").getStore().getData().items,

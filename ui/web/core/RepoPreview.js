@@ -598,7 +598,7 @@ Ext.define('NOC.core.RepoPreview', {
         var me = this,
             blob = new Blob([me.viewer.getValue()], {type: "text/plain;charset=utf-8"}),
             suffix = me.revCombo.getDisplayValue().split(" ")[0].replace(/-/g, "") + ".conf.txt";
-        saveAs(blob, me.fileName + "_" + suffix);
+        NOC.saveAs(blob, me.fileName + "_" + suffix);
     },
     //
     getIds: function() {

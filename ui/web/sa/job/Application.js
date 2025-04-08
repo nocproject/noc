@@ -283,13 +283,9 @@ Ext.define("NOC.sa.job.Application", {
       imageContainer = me.down("#schemeContainer"),
       image = imageContainer.getEl().dom.querySelector("svg"),
       svgData = new XMLSerializer().serializeToString(image),
-      blob = new Blob([svgData], {type: "image/svg+xml"}),
-      url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-
-    a.href = url;
-    a.download = `job-scheme-${me.currentRecord.id}.svg`;
-    a.click();
+      blob = new Blob([svgData], {type: "image/svg+xml"});
+    
+    NOC.saveAs(blob, `job-scheme-${me.currentRecord.id}.svg`);
   },
   //
   onGoToParent: function(){

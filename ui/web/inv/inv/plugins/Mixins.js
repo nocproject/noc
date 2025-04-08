@@ -24,14 +24,10 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
       imageDom = imageContainer.getEl(),
       image = imageDom.dom.querySelector("svg") || imageDom.dom.querySelector("object").contentDocument,
       svgData = new XMLSerializer().serializeToString(image),
-      blob = new Blob([svgData], {type: "image/svg+xml"}),
-      url = URL.createObjectURL(blob),
-      a = document.createElement("a");
+      blob = new Blob([svgData], {type: "image/svg+xml"});
 
-    a.href = url;
-    a.download = `${filenamePrefix}-${currentId}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
+    NOC.saveAs(blob, `${filenamePrefix}-${currentId}.svg`);
+
   },
   showBalloon: function(app, itemId, resourceData, pos){
     Ext.Ajax.request({
@@ -118,7 +114,7 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
       prefix = this.itemId.replace("Panel", "").toLowerCase(),
       filename = prefix + date + ".csv",
       grid = this.down("grid"),
-      store = this.getViewModel().getStore("gridStore"),
+      store = grid.getStore("gridStore"),
       records = store.getData().items,
       columns = grid.getColumns().map(function(column){
         return {
