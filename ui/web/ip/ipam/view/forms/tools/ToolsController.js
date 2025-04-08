@@ -22,7 +22,7 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsController", {
             method: "POST",
             success: function(response) {
                 var blob = new Blob([response.responseText], {type: "text/plain;charset=utf-8"});
-                saveAs(blob, "ips.csv");
+                NOC.saveAs(blob, "ips.csv");
             },
             failure: function(r) {
                 var msg = r.responseText || r.statusText;

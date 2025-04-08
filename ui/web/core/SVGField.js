@@ -73,14 +73,7 @@ Ext.define("NOC.core.SVGField", {
   },
 
   downloadFile: function(filename, data){
-    var blob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
-      url = URL.createObjectURL(blob),
-      link = document.createElement('a');
-    link.download = filename;
-    link.href = url;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    NOC.saveAs(new Blob([data], {type: "image/svg+xml;charset=utf-8"}), filename);
   },
 
   onFileChange: function(){
@@ -105,7 +98,7 @@ Ext.define("NOC.core.SVGField", {
 
   setValue: function(data){
     var me = this,
-      classes = ['x-item-disabled', 'x-btn-disabled'],
+      classes = ["x-item-disabled", "x-btn-disabled"],
       downloadLabel = me.el.down("label[for=" + me.getInputId() + "-fileDownloadEl]");
     if(data === ""){
       me.imageEl.addCls("x-hidden");

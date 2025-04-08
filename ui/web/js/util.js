@@ -853,3 +853,14 @@ NOC.toClipboard = function(text){
   navigator.clipboard.writeText(text)
   NOC.info(__("Copy to clipboard"));
 };
+
+NOC.saveAs = function saveFile(blob, filename){
+  var url = window.URL.createObjectURL(blob),
+    link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}
