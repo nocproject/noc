@@ -123,6 +123,6 @@ Ext.define("NOC.core.mixins.Export", {
   },
 
   downloadCsv: function(blob, filename){
-    saveAs(blob, filename);
+    NOC.saveAs(blob, filename);
   },
 });
