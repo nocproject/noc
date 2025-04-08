@@ -19,6 +19,7 @@ from mongoengine.fields import (
     ReferenceField,
     BooleanField,
     EmbeddedDocumentListField,
+    ListField,
     EnumField,
     UUIDField,
     LongField,
@@ -52,8 +53,6 @@ class Resource(EmbeddedDocument):
     code: str = StringField(
         required=True, choices=[("if", "Interface"), ("si", "SubInterface"), ("ip", "Address")]
     )
-    extend_path = BooleanField(default=False)  # Append Resource Path
-    oper_status: str = StringField(choices=[("UP", "Up"), ("DOWN", "Down")], required=False)
 
     @property
     def json_data(self):
@@ -143,23 +142,26 @@ class EventCategory(Document):
     )
     suppression_window = IntField(default=0)
     resources: List["Resource"] = EmbeddedDocumentListField(Resource)
+    # affected_resources: List[str] = ListField(
+    #     StringField(choices=[
+    #         ("si", "SubInterface"), ("if", "Interface"), ("vlan", "Vlan"), ("ip", "IP Address"),
+    #     ])
+    # )
     # Object Resolve
     object_scope: str = StringField(
         choices=[
             ("D", "Disable"),
             ("O", "Object"),
             ("M", "ManagedObject"),
-            # CPE
+            ("C", "CPE"),
         ],
         default="M",
     )
     # If not mapped - event dropped
-    managed_object_required: bool = BooleanField(default=True)
+    # managed_object_required: bool = BooleanField(default=True)
     object_resolver: str = StringField(
         choices=[("P", "By Profile"), ("T", "By Target")], default="T"
     )
-    include_object_paths: str = BooleanField(default=True)
-    oper_status: bool = StringField(choices=[("UP", "Up"), ("DOWN", "Down")], required=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
@@ -237,12 +239,12 @@ class EventCategory(Document):
             "name": category.name,
             "bi_id": str(category.bi_id),
             "is_unique": category.is_unique,
-            "managed_object_required": category.managed_object_required,
+            "managed_object_required": False,
             "vars": [],
             "object_map": {
                 "scope": category.object_scope,
-                "managed_object_required": category.managed_object_required,
-                "include_path": category.include_object_paths,
+                "managed_object_required": True,
+                "include_path": True,
             },
             "filters": [],
             "handlers": [],
@@ -257,10 +259,10 @@ class EventCategory(Document):
             r["filters"].append(
                 {"name": "suppress", "window": category.suppression_window},
             )
-        if category.oper_status:
-            r["object_map"]["oper_status"] = category.oper_status == "UP"
-        for rr in category.resources:
-            r["resources"].append({"resource": rr.code, "oper_status": rr.oper_status == "UP"})
+        # if category.oper_status:
+        #    r["object_map"]["oper_status"] = category.oper_status == "UP"
+        for rr in category.affected_resources:
+            r["resources"].append({"resource": rr})
         for vv in category.vars:
             r["vars"].append(
                 {

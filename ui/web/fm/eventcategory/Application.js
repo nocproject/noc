@@ -40,11 +40,6 @@ Ext.define("NOC.fm.eventcategory.Application", {
                     width: 100
                 },
                 {
-                    text: __("Level"),
-                    dataIndex: "level",
-                    width: 100
-                },
-                {
                     text: __("Builtin"),
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
@@ -148,7 +143,8 @@ Ext.define("NOC.fm.eventcategory.Application", {
                             store: [
                                 ["D", __("Disable")],
                                 ["O", __("Object")],
-                                ["M", __("ManagedObject")]
+                                ["M", __("ManagedObject")],
+                                ["C", __("CPE")],
                             ],
                             uiStyle: "medium"
                         },
@@ -160,17 +156,6 @@ Ext.define("NOC.fm.eventcategory.Application", {
                             store: [
                                 ["P", __("From Profile")],
                                 ["T", __("From Target")]
-                            ],
-                            uiStyle: "medium"
-                        },
-                        {
-                            name: "oper_status",
-                            xtype: "combobox",
-                            fieldLabel: __("Set Object Status"),
-                            allowBlank: true,
-                            store: [
-                                ["UP", __("Oper Up")],
-                                ["DOWN", __("Oper Down")]
                             ],
                             uiStyle: "medium"
                         },
@@ -195,29 +180,11 @@ Ext.define("NOC.fm.eventcategory.Application", {
                                 store: [
                                     ["if", __("Interface")],
                                     ["si", __("SubInterface")],
-                                    ["ip", __("IP Address")]
+                                    ["ip", __("IP Address")],
+                                    ["vlan", __("VLAN")],
                                 ]
                             }
                         },
-                        {
-                            text: __("Extend Path"),
-                            dataIndex: "extend_path",
-                            width: 100,
-                            editor: "checkboxfield",
-                            renderer: NOC.render.Bool
-                        },
-                        {
-                            text: __("Set Oper Status"),
-                            dataIndex: "oper_status",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["UP", __("Up")],
-                                    ["DOWN", __("Down")]
-                                ]
-                            }
-                        }
                     ]
                 }
             ],
