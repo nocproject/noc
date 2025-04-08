@@ -62,16 +62,6 @@ Ext.define("NOC.fm.eventcategory.Model", {
             defaultValue: "T"
         },
         {
-            name: "extend_object_paths",
-            type: "boolean",
-            defaultValue: true
-        },
-        {
-            name: "oper_status",
-            type: "string",
-            defaultValue: false
-        },
-        {
             name: "bi_id",
             type: "string",
             persist: false
