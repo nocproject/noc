@@ -429,12 +429,14 @@ Ext.define("NOC.core.ModelApplication", {
         c.listeners = {};
       }
       c.listeners.afterrender = function(){
-        Ext.create("Ext.ToolTip", {
-          target: this.getEl(),
-          anchor: "top",
-          trackMouse: true,
-          html: this.tooltip || this.text,
-        });
+        if(Ext.isEmpty(this.tooltip) && !Ext.isEmpty(this.text)){ 
+          Ext.create("Ext.ToolTip", {
+            target: this.getEl(),
+            anchor: "top",
+            trackMouse: true,
+            html: this.text,
+          });
+        }
       }
     });
     //

@@ -88,6 +88,12 @@ Ext.define("NOC.sa.service.Application", {
           },
         },
         {
+          text: "<i class='fa fa-bell'></i>",
+          tooltip: __("Subscription"),
+          dataIndex: "allow_subscribe",
+          renderer: NOC.render.Subscribe,
+        },
+        {
           text: __("Instances"),
           dataIndex: "instance_count",
           renderer: function(value, metaData){
