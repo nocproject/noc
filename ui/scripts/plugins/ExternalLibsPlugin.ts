@@ -59,7 +59,6 @@ export class ExternalLibsPlugin{
         {name: "pkg/codemirror/addon/merge/merge.js", format: "iife"},
         
         // Other libraries
-        {name: "pkg/filesaver/filesaver.min.js", format: "iife"},
         {name: "pkg/moment/moment.min.js", format: "iife"},
         {name: "pkg/moment-timezone/moment-timezone-with-data-1970-2030.min.js", format: "iife"},
         {name: "pkg/viz-js/viz-standalone.js", format: "iife"},
