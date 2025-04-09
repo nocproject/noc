@@ -1472,6 +1472,15 @@ Ext.define("NOC.core.ModelApplication", {
         me.onEditRecord(record);
       });
     }
+    if(args.length === 2){
+      var panelIndex = this.getRegisteredItemByUrl(args[1]);
+      if(panelIndex !== -1){
+        var panel = this.getRegisteredItem(panelIndex);
+        this.currentHistoryHash = Ext.History.getHash();
+        this.showItem(panelIndex);
+        panel.load(this.appId, args[0], "ITEM_GRID");
+      }
+    }
   },
   //
   onBeforeLoad: function(){
