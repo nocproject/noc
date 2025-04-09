@@ -540,15 +540,19 @@ class NotificationGroup(NOCModel):
             NotificationGroupSubscription.objects.filter(id=us.id).update(
                 watchers=us.watchers,
             )
+        return us
 
     def supress_object(self, o: Any, user: User):
         """Supress Notification for subscription"""
         us = self.get_user_subscription(o, user)
+        if not us:
+            us = self.subscribe_object(o, user=user)
         c = get_subscriber_id(user)
         if us.suppresses and c not in us.suppresses:
             NotificationGroupSubscription.objects.filter(id=us.id).update(
                 suppresses=(us.suppresses or []) + [c],
             )
+        return us
 
     @property
     def iter_subscription_settings(self) -> Iterable[SubscriptionSettingItem]:

@@ -187,8 +187,8 @@ class WatchHandlerDecorator(BaseAppDecorator):
         except self.app.model.DoesNotExist:
             return self.app.response_not_found()
         group = self.app.get_object_or_404(NotificationGroup, id=group_id)
-        group.subscribe_object(o, user=request.user)
-        return {"success": True}
+        s = group.subscribe_object(o, user=request.user)
+        return {"success": True, "data": self.subscription_to_dict(s, o, request.user)}
 
     def api_unsubscribe_group(self, request, object_id, group_id):
         try:
@@ -196,8 +196,10 @@ class WatchHandlerDecorator(BaseAppDecorator):
         except self.app.model.DoesNotExist:
             return self.app.response_not_found()
         group = self.app.get_object_or_404(NotificationGroup, id=group_id)
-        group.unsubscribe_object(o, user=request.user)
-        return {"success": True}
+        s = group.unsubscribe_object(o, user=request.user)
+        if not s:
+            return {"success": False, "message": "User not subscribe"}
+        return {"success": True, "data": self.subscription_to_dict(s, o, request.user)}
 
     def api_suppress_group(self, request, object_id, group_id):
         try:
@@ -205,8 +207,10 @@ class WatchHandlerDecorator(BaseAppDecorator):
         except self.app.model.DoesNotExist:
             return self.app.response_not_found()
         group = self.app.get_object_or_404(NotificationGroup, id=group_id)
-        group.supress_object(o, user=request.user)
-        return {"success": True}
+        s = group.supress_object(o, user=request.user)
+        if not s:
+            return {"success": False, "message": "User not subscribe"}
+        return {"success": True, "data": self.subscription_to_dict(s, o, request.user)}
 
 
 def watch_handler(cls):
