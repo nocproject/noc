@@ -185,8 +185,18 @@ Ext.define("NOC.core.SubscriptionPanel", {
   subscribe: function(action){
     var notificationGroup = this.down("grid").selection.data.notification_group,
       prefix = `object_subscription/${notificationGroup}/${action}`,
-      url = this.makeUrl(this.appId, this.currentId, prefix);
+      url = this.makeUrl(this.appId, this.currentRecordId, prefix);
     console.log("subscribe :", url);
+    this.request(
+      url,
+      "POST",
+      function(self, data){
+        // var store = self.down("grid").getStore();
+        console.log("data :", data);
+        // store.loadData(data);
+        NOC.info(__("Operation completed"));
+      },
+    );
   },
   //
   onSelectionChange: function(grid, selected){
