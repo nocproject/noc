@@ -11,6 +11,7 @@ Ext.define("NOC.sa.service.Application", {
   requires: [
     "NOC.core.StateField",
     "NOC.core.InlineGrid",
+    "NOC.core.plugins.SubscriptionModalEditing",
     "NOC.sa.service.Model",
     "NOC.sa.service.LookupField",
     "NOC.sa.service.TreeCombo",
@@ -35,6 +36,14 @@ Ext.define("NOC.sa.service.Application", {
     this.instancesPanel = Ext.create("NOC.sa.service.InstancesPanel");
     this.ITEM_INSTANCES = this.registerItem(this.instancesPanel);
     Ext.apply(this, {
+      additions_plugins: [
+        {
+          ptype: "subscriptionmodalediting",
+          listeners: {
+            canceledit: "onCancelEdit",
+          },
+        },
+      ],
       columns: [
         {
           text: __("S"),

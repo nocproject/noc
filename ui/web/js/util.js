@@ -395,7 +395,7 @@ Ext.apply(NOC.render, {
       return "<i class='fa fa-bell-slash x-action-col-icon' style='cursor: not-allowed'></i>";
     }
     if(v === "me"){
-      return "<i class='fa fa-toggle-on x-action-col-icon')'></i>";
+      return "<i class='fa fa-toggle-on x-action-col-icon'></i>";
     }
     if(v === "group"){
       return "<i class='fa fa-toggle-off x-action-col-icon'></i>";
