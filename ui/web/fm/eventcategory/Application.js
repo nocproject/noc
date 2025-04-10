@@ -82,6 +82,7 @@ Ext.define("NOC.fm.eventcategory.Application", {
                 {
                     name: "vars",
                     xtype: "gridfield",
+                    fieldLabel: __("Variables"),
                     columns: [
                         {
                             text: __("Name"),
@@ -170,6 +171,7 @@ Ext.define("NOC.fm.eventcategory.Application", {
                 {
                     name: "resources",
                     xtype: "gridfield",
+                    fieldLabel: __("Resources"),
                     columns: [
                         {
                             text: __("Code"),

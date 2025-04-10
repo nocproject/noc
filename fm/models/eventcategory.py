@@ -43,8 +43,6 @@ class Resource(EmbeddedDocument):
     System Resources for Category
     Attributes:
         code: Resource Code
-        extend_path: Extend path by resolve Resource
-        oper_status: Update Oper Status on resource
     """
 
     meta = {"strict": False}
@@ -113,13 +111,12 @@ class EventCategory(Document):
             * D - Disable Target (Info Category)
             * O - Object
             * M - Managed Object
+            * C - CPE
         object_resolver: How object find
             * Disable - for information only Classes
             * By Profile - By Profile method
             * By Source - By Target mappings
         managed_object_required: Mapping Is Required, if not - dropped message
-        include_object_paths: Add object paths to paths field
-        oper_status: Update oper status on Object
         resources: Resource Map rules
     """
 
