@@ -16,6 +16,8 @@ Ext.define("NOC.core.SubscriptionPanel", {
   viewModel: {
     data: {
       isSelected: false,
+      addDisabled: true,
+      removeDisabled: true,
     },
   },
   defaultListenerScope: true,
@@ -55,7 +57,7 @@ Ext.define("NOC.core.SubscriptionPanel", {
           text: __("Add"),
           tooltip: __("Add me to this subscription"),
           bind: {
-            disabled: "{!isSelected}",
+            disabled: "{addDisabled}",
           },
           handler: "onAddMe",
         },
@@ -63,7 +65,7 @@ Ext.define("NOC.core.SubscriptionPanel", {
           text: __("Remove"),
           tooltip: __("Remove me to this subscription"),
           bind: {
-            disabled: "{!isSelected}",
+            disabled: "{removeDisabled}",
           },
           handler: "onRemoveMe",
         },
@@ -186,21 +188,32 @@ Ext.define("NOC.core.SubscriptionPanel", {
     var notificationGroup = this.down("grid").selection.data.notification_group,
       prefix = `object_subscription/${notificationGroup}/${action}`,
       url = this.makeUrl(this.appId, this.currentRecordId, prefix);
-    console.log("subscribe :", url);
     this.request(
       url,
       "POST",
       function(self, data){
-        // var store = self.down("grid").getStore();
-        console.log("data :", data);
-        // store.loadData(data);
+        var grid = self.down("grid");
+        grid.selection.set(data);
+        grid.selection.commit();
+        self.onSelectionChange(grid, [grid.selection]);
         NOC.info(__("Operation completed"));
       },
     );
   },
   //
   onSelectionChange: function(grid, selected){
-    var vm = this.getViewModel();
-    vm.set("isSelected", selected.length > 0);
+    var vm = this.getViewModel(),
+      isSelected = selected.length > 0;
+    vm.set("isSelected", isSelected);
+    if(isSelected){
+      vm.set({
+        addDisabled: selected[0].data.me_subscribe,
+        removeDisabled: !selected[0].data.me_subscribe,
+      });
+    }
+    else{
+      vm.set("addDisabled", true);
+      vm.set("removeDisabled", true);
+    }
   },
 });
