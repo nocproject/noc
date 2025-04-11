@@ -217,6 +217,7 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
   request: function(method, button){
     var url = this.makeUrl(this.appId, this.objectId, this.record.get("notification_group")),
       data = this.getValues();
+    button.up("window").mask(__("Saving..."));
     Ext.Ajax.request({
       url: url,
       method: method,
@@ -235,6 +236,7 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
       },
       failure: function(response){
         var result = Ext.decode(response.responseText);
+        button.up("window").unmask();
         NOC.error(__("Error") + ": " + (result.errors || __("Server error occurred")));
       },
     });

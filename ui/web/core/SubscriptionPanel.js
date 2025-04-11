@@ -142,6 +142,9 @@ Ext.define("NOC.core.SubscriptionPanel", {
   },
   //
   request: function(url, method, successCallback){
+    if(this.rendered && !this.destroyed){
+      this.mask(__("Updating ..."));
+    }
     Ext.Ajax.request({
       url: url,
       method: method,
@@ -160,6 +163,11 @@ Ext.define("NOC.core.SubscriptionPanel", {
       },
       failure: function(response){
         NOC.error("Request failed: ", response);
+      },
+      callback: function(){
+        if(this.rendered && !this.destroyed){
+          this.unmask();
+        }
       },
     });
   },
