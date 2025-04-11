@@ -39,6 +39,8 @@ Ext.define("NOC.sa.service.RegisterForm", {
           editable: false,
           typeAhead: false,
           uiStyle: "medium-combo",
+          hideTriggerUpdate: true,
+          hideTriggerCreate: true,
         },
         {
           xtype: "textfield",

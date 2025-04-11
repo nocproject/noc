@@ -25,6 +25,7 @@ Ext.define("NOC.core.SubscriptionPanel", {
     {
       xtype: "grid",
       autoScroll: true,
+      forceFit: true,
       selModel: {
         allowDeselect: true,
       },
@@ -82,15 +83,19 @@ Ext.define("NOC.core.SubscriptionPanel", {
         {
           text: __("Source"),
           dataIndex: "source",
+          flex: 0.5,
         },
         {
           text: __("Notification Group"),
           dataIndex: "notification_group",
+          flex: 1,
           renderer: NOC.render.Lookup("notification_group"),
         },
         {
           text: __("Users"),
           dataIndex: "users",
+          flex: 4,
+          lookupUrl: "/aaa/user/lookup/",
           renderer: function(value){
             return value.map(function(user){
               return user.user__label;
@@ -100,6 +105,8 @@ Ext.define("NOC.core.SubscriptionPanel", {
         {
           text: __("CRM Users (Contacts)"),
           dataIndex: "crm_users",
+          flex: 4,
+          lookupUrl: "/crm/subscriber/lookup/",
           renderer: function(value){
             return value.map(function(user){
               return user.user__label;
