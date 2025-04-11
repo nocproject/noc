@@ -39,12 +39,12 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
   },
   //
   showEditor: function(record){
+    if(!record.get("allow_edit")) return;
+    this.record = record;
     var formItems = this.getFormItems(record),
       title = __("Group") + ": "
         + record.get("notification_group__label")
         + " " + (Ext.isEmpty(this.titleSuffix) ? "" : this.titleSuffix);
-    if(!record.get("allow_edit")) return;
-    this.record = record;
     this.formPanel = Ext.create("Ext.form.Panel", {
       bodyPadding: 10,
       border: false,
@@ -98,7 +98,9 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
   },
   //
   getMultiRowConfig: function(value, isLast){
-    var formField = {
+    var allow_subscribe = this.record.get("allow_subscribe"),
+      allow_suppress = this.record.get("allow_suppress"),
+      formField = {
         name: this.dataIndex,
         xtype: "core.combo",
         restUrl: this.lookupUrl, 
@@ -108,6 +110,7 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
         width: this.getEditorWidth() - 180,
         hideTriggerUpdate: true,
         hideTriggerCreate: true,
+        disabled: !allow_subscribe,
       },
       suppressField = {
         name: "suppress",
@@ -115,6 +118,7 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
         margin: "0 0 0 10",
         boxLabel: __("Suppress"),
         checked: Ext.isEmpty(value) ? false : value.suppress,
+        disabled: !allow_suppress,
       };
       
     return {
@@ -124,7 +128,7 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
         align: "end",
       },
       items: [
-        this.getButtonConfig(isLast ? "add" : "remove"),
+        this.getButtonConfig(isLast ? "add" : "remove", !allow_subscribe),
         formField,
         suppressField,
       ],
@@ -177,14 +181,14 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
     return 250;
   },
   //
-  getButtonConfig: function(type){
+  getButtonConfig: function(type, disabled){
     var tooltip = type === "add" ? __("Add User") : __("Remove User"),
       glyph = type === "add" ? NOC.glyph.plus : NOC.glyph.minus,
       config = {
         xtype: "button",
         glyph: glyph,
         tooltip: tooltip,
-        disabled: false,
+        disabled: disabled,
         scope: this,
       };
       

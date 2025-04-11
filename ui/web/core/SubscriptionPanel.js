@@ -214,9 +214,9 @@ Ext.define("NOC.core.SubscriptionPanel", {
     if(isSelected){
       var record = selected[0].data;
       vm.set({
-        isSelected: record.allow_suppress,
-        addDisabled: record.me_subscribe && record.allow_subscribe,
-        removeDisabled: !record.me_subscribe && record.allow_subscribe,
+        isSelected: record.me_suppress,
+        addDisabled: record.me_subscribe,
+        removeDisabled: !record.me_subscribe,
       });
     }
     else{
