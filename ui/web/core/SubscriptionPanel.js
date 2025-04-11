@@ -96,22 +96,14 @@ Ext.define("NOC.core.SubscriptionPanel", {
           dataIndex: "users",
           flex: 4,
           lookupUrl: "/aaa/user/lookup/",
-          renderer: function(value){
-            return value.map(function(user){
-              return user.user__label;
-            }).join(",");
-          },
+          renderer: "userRenderer",
         },
         {
           text: __("CRM Users (Contacts)"),
           dataIndex: "crm_users",
           flex: 4,
           lookupUrl: "/crm/subscriber/lookup/",
-          renderer: function(value){
-            return value.map(function(user){
-              return user.user__label;
-            }).join(",");
-          },
+          renderer: "userRenderer",
         },
         {
           text: __("Suppress"),
@@ -211,16 +203,31 @@ Ext.define("NOC.core.SubscriptionPanel", {
   onSelectionChange: function(grid, selected){
     var vm = this.getViewModel(),
       isSelected = selected.length > 0;
-    vm.set("isSelected", isSelected);
     if(isSelected){
+      var record = selected[0].data;
       vm.set({
-        addDisabled: selected[0].data.me_subscribe,
-        removeDisabled: !selected[0].data.me_subscribe,
+        isSelected: record.allow_suppress,
+        addDisabled: record.me_subscribe && record.allow_subscribe,
+        removeDisabled: !record.me_subscribe && record.allow_subscribe,
       });
     }
     else{
+      vm.set("isSelected", false);
       vm.set("addDisabled", true);
       vm.set("removeDisabled", true);
     }
+  },
+  //
+  userRenderer: function(value, metaData, record){
+    var icon = "<i class='fa fa-pencil' style='padding-right: 4px;'></i>";
+    metaData.tdStyle = "cursor: pointer;";
+    if(!record.get("allow_edit")){
+      metaData.tdStyle = "cursor: not-allowed;";
+      icon = "<i class='fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>";
+    }
+
+    return icon + value.map(function(user){
+      return user.user__label;
+    }).join(",");
   },
 });

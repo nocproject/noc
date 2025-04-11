@@ -43,6 +43,7 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
       title = __("Group") + ": "
         + record.get("notification_group__label")
         + " " + (Ext.isEmpty(this.titleSuffix) ? "" : this.titleSuffix);
+    if(!record.get("allow_edit")) return;
     this.record = record;
     this.formPanel = Ext.create("Ext.form.Panel", {
       bodyPadding: 10,
