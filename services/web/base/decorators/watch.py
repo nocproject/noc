@@ -47,12 +47,14 @@ class WatchHandlerDecorator(BaseAppDecorator):
                         "user": StringParameter(required=True),
                         "suppress": BooleanParameter(required=False),
                     },
+                    required=False,
                 ),
                 "crm_users": DictListParameter(
                     attrs={
                         "user": StringParameter(required=True),
                         "suppress": BooleanParameter(required=False),
-                    }
+                    },
+                    required=False,
                 ),
             },
         )
@@ -143,10 +145,10 @@ class WatchHandlerDecorator(BaseAppDecorator):
                     "users": [],
                     "crm_users": [],
                     "me_subscribe": False,  # User Group settings
-                    "me_suppress": False,  # User Group settings
-                    "allow_edit": False,
-                    "allow_subscribe": False,
-                    "allow_suppress": True,
+                    "me_suppress": True,  # User Group settings
+                    "allow_edit": True,
+                    "allow_subscribe": True,
+                    "allow_suppress": False,
                 }
             )
         return r
@@ -166,18 +168,20 @@ class WatchHandlerDecorator(BaseAppDecorator):
             return self.app.response_not_found()
         group = self.app.get_object_or_404(NotificationGroup, id=group_id)
         watchers, suppresses = [], []
-        for c in users or []:
-            u = User.get_by_id(int(c["user"]))
-            if u and c["suppress"]:
-                suppresses.append(u)
-            elif u:
-                watchers.append(u)
-        for c in crm_users or []:
-            u = Subscriber.get_by_id(c["user"])
-            if u and c["suppress"]:
-                suppresses.append(u)
-            elif u:
-                watchers.append(u)
+        if users is not None:
+            for c in users:
+                u = User.get_by_id(int(c["user"]))
+                if u and c["suppress"]:
+                    suppresses.append(u)
+                elif u:
+                    watchers.append(u)
+        if crm_users is not None:
+            for c in crm_users or []:
+                u = Subscriber.get_by_id(c["user"])
+                if u and c["suppress"]:
+                    suppresses.append(u)
+                elif u:
+                    watchers.append(u)
         s = group.update_subscription(o, watchers=watchers, suppresses=suppresses)
         return {"success": True, "data": self.subscription_to_dict(s, o, request.user)}
 

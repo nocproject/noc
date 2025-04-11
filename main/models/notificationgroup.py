@@ -492,7 +492,7 @@ class NotificationGroup(NOCModel):
         o: Any,
         watchers: List[Any],
         suppresses: List[Any],
-        remote_system: Optional[RemoteSystem],
+        remote_system: Optional[RemoteSystem] = None,
     ) -> "NotificationGroupSubscription":
         """Update notification subscription"""
         n = NotificationGroupSubscription.objects.get(
@@ -504,6 +504,9 @@ class NotificationGroup(NOCModel):
         # get_contact
         n.watchers = [get_subscriber_id(w) for w in watchers]
         n.suppresses = [get_subscriber_id(w) for w in suppresses]
+        for x in n.suppresses:
+            if x not in n.watchers:
+                n.watchers.append(x)
         n.save()
         return n
 
