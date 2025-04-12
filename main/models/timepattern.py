@@ -29,7 +29,7 @@ id_lock = Lock()
         ("fm.AlarmTrigger", "time_pattern"),
         ("fm.EventTrigger", "time_pattern"),
         ("main.TimePatternTerm", "time_pattern"),
-        ("main.NotificationGroupUserSubscription", "time_pattern"),
+        ("main.NotificationGroupUserSettings", "time_pattern"),
         ("maintenance.Maintenance", "time_pattern"),
         ("sa.ManagedObject", "time_pattern"),
     ]

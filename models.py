@@ -112,7 +112,7 @@ _MODELS = {
     "main.MetricStream": "noc.main.models.metricstream.MetricStream",
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
-    "main.NotificationGroupUserSubscription": "noc.main.models.notificationgroup.NotificationGroupUserSubscription",
+    "main.NotificationGroupUserSettings": "noc.main.models.notificationgroup.NotificationGroupUserSettings",
     "main.Pool": "noc.main.models.pool.Pool",
     "main.PrefixTable": "noc.main.models.prefixtable.PrefixTable",
     "main.PyRule": "noc.main.models.pyrule.PyRule",

@@ -167,7 +167,7 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("fm.DispositionRule", "notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
-        ("main.NotificationGroupUserSubscription", "notification_group"),
+        ("main.NotificationGroupUserSettings", "notification_group"),
         ("main.SystemNotification", "notification_group"),
         ("main.MessageRoute", "notification_group"),
         ("sa.ObjectNotification", "notification_group"),
