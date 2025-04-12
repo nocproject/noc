@@ -167,12 +167,15 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("fm.DispositionRule", "notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
-        ("main.NotificationGroupUserSettings", "notification_group"),
         ("main.SystemNotification", "notification_group"),
         ("main.MessageRoute", "notification_group"),
         ("sa.ObjectNotification", "notification_group"),
         ("peer.PeeringPoint", "prefix_list_notification_group"),
-    ]
+    ],
+    delete=[
+        ("main.NotificationGroupSubscription", "notification_group"),
+        ("main.NotificationGroupUserSettings", "notification_group"),
+    ],
 )
 class NotificationGroup(NOCModel):
     """

@@ -113,6 +113,7 @@ _MODELS = {
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
     "main.NotificationGroupUserSettings": "noc.main.models.notificationgroup.NotificationGroupUserSettings",
+    "main.NotificationGroupSubscription": "noc.main.models.notificationgroup.NotificationGroupSubscription",
     "main.Pool": "noc.main.models.pool.Pool",
     "main.PrefixTable": "noc.main.models.prefixtable.PrefixTable",
     "main.PyRule": "noc.main.models.pyrule.PyRule",
