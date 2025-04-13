@@ -1,0 +1,86 @@
+{
+    "name": "Unknown Models Summary",
+    "$collection": "main.reports",
+    "uuid": "14429213-7c77-4c27-84ce-910b595dd4c7",
+    "title": "Unknown Models Summary (New)",
+    "description": "Сводка по неизвестным моделям",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "unknownsummaryds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "data",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select * from Root order by count desc"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "vendor",
+                    "title": "vendor",
+                    "format_type": "string"
+                },
+                {
+                    "name": "part_no",
+                    "title": "part_no",
+                    "format_type": "string"
+                },
+                {
+                    "name": "description",
+                    "title": "description",
+                    "format_type": "string"
+                },
+                {
+                    "name": "count",
+                    "title": "count",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сводка по неизвестным моделям (Новый)"
+        },
+        "columns.vendor": {
+            "ru": "Производитель"
+        },
+        "columns.part_no": {
+            "ru": "Part No"
+        },
+        "columns.description": {
+            "ru": "Описание"
+        },
+        "columns.count": {
+            "ru": "Количество"
+        }
+    },
+    "parameters": [
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
