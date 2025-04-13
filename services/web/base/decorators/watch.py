@@ -11,6 +11,7 @@ from noc.sa.interfaces.base import BooleanParameter, DictListParameter, StringPa
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.aaa.models.user import User
 from noc.crm.models.subscriber import Subscriber
+from noc.core.mx import get_subscriber_id
 
 
 class WatchHandlerDecorator(BaseAppDecorator):
@@ -86,6 +87,8 @@ class WatchHandlerDecorator(BaseAppDecorator):
 
     @staticmethod
     def subscription_to_dict(s, o, user):
+        si = get_subscriber_id(user)
+        settings = o.get_subscription_setting(user)
         r = {
             "source": "S" if not s.remote_system else str(s.remote_system.name),
             "remote_system": None if not s.remote_system else str(s.remote_system.id),
@@ -94,15 +97,13 @@ class WatchHandlerDecorator(BaseAppDecorator):
             "notification_group__label": str(s.notification_group.name),
             "users": [],
             "crm_users": [],
-            "me_subscribe": False,
-            "me_suppress": False,
-            "allow_subscribe": True,
-            "allow_edit": True,
-            "allow_suppress": True,
+            "me_subscribe": si in s.watchers,
+            "me_suppress": si in s.suppresses,
+            "allow_subscribe": settings.allow_subscribe if settings else False,
+            "allow_edit": False,
+            "allow_suppress": settings.allow_subscribe if settings else False,
         }
         for w in s.get_watchers():
-            if user == w:
-                r["me_subscribe"] = True
             if isinstance(w, User):
                 r["users"].append({"user": str(w.id), "user__label": w.username, "suppress": False})
             else:
@@ -135,6 +136,7 @@ class WatchHandlerDecorator(BaseAppDecorator):
         for g in NotificationGroup.objects.filter():
             if str(g.id) in processed:
                 continue
+            settings = g.get_subscription_setting(request.user)
             r.append(
                 {
                     "source": "G",
@@ -145,10 +147,10 @@ class WatchHandlerDecorator(BaseAppDecorator):
                     "users": [],
                     "crm_users": [],
                     "me_subscribe": False,  # User Group settings
-                    "me_suppress": True,  # User Group settings
-                    "allow_edit": True,
-                    "allow_subscribe": True,
-                    "allow_suppress": False,
+                    "me_suppress": False,  # User Group settings
+                    "allow_edit": False,
+                    "allow_subscribe": settings.allow_subscribe if settings else False,
+                    "allow_suppress": settings.allow_subscribe if settings else False,
                 }
             )
         return r

@@ -133,7 +133,7 @@ class SubscriptionSettingItem(BaseModel):
     notify_if_subscribed: bool = False
 
     @model_validator(mode="after")
-    def check_passwords_match(self):
+    def check_user_group_match(self):
         if not self.user and not self.group:
             raise ValueError("User or Group must be set")
         return self
@@ -277,6 +277,16 @@ class NotificationGroup(NOCModel):
             notification_group=group,
             user=user,
         ).first()
+
+    def get_subscription_setting(
+        self,
+        user: User,
+    ) -> Optional["SubscriptionSettingItem"]:
+        """"""
+        for s in self.subscription_settings:
+            if s["user"] == user.id:
+                return SubscriptionSettingItem(**s)
+        return None
 
     @classmethod
     def get_object_subscriptions(

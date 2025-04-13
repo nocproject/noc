@@ -58,7 +58,7 @@ Ext.define("NOC.core.SubscriptionPanel", {
           text: __("Add"),
           tooltip: __("Add me to this subscription"),
           bind: {
-            disabled: "{addDisabled}",
+            disabled: "{!addDisabled}",
           },
           handler: "onAddMe",
         },
@@ -66,7 +66,7 @@ Ext.define("NOC.core.SubscriptionPanel", {
           text: __("Remove"),
           tooltip: __("Remove me to this subscription"),
           bind: {
-            disabled: "{removeDisabled}",
+            disabled: "{!removeDisabled}",
           },
           handler: "onRemoveMe",
         },
@@ -214,9 +214,9 @@ Ext.define("NOC.core.SubscriptionPanel", {
     if(isSelected){
       var record = selected[0].data;
       vm.set({
-        isSelected: record.me_suppress,
-        addDisabled: record.me_subscribe,
-        removeDisabled: !record.me_subscribe,
+        isSelected: record.allow_suppress,
+        addDisabled: !record.me_subscribe && record.allow_subscribe,
+        removeDisabled: record.me_subscribe && record.allow_subscribe,
       });
     }
     else{
