@@ -1,0 +1,122 @@
+{
+    "name": "Part Numbers",
+    "$collection": "main.reports",
+    "uuid": "0c6ace22-31cd-492a-b210-8e95179c933a",
+    "title": "Part Numbers (New)",
+    "description": "Модель",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "partnumbersds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select vendor from Root group by vendor order by vendor"
+            }]
+        },
+        {
+            "name": "detail",
+            "orientation": "H",
+            "parent": "master",
+            "queries": [{
+                "ds_query": "select * from Root where vendor = '{{ vendor }}' order by name"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "part_no0",
+                    "title": "0",
+                    "format_type": "string"
+                },
+                {
+                    "name": "part_no1",
+                    "title": "1",
+                    "format_type": "string"
+                },
+                {
+                    "name": "part_no2",
+                    "title": "2",
+                    "format_type": "string"
+                },
+                {
+                    "name": "part_no3",
+                    "title": "3",
+                    "format_type": "string"
+                },
+                {
+                    "name": "asset_part_no0",
+                    "title": "0",
+                    "format_type": "string"
+                },
+                {
+                    "name": "asset_part_no1",
+                    "title": "1",
+                    "format_type": "string"
+                },
+                {
+                    "name": "asset_part_no2",
+                    "title": "2",
+                    "format_type": "string"
+                },
+                {
+                    "name": "asset_part_no3",
+                    "title": "3",
+                    "format_type": "string"
+                },
+                {
+                    "name": "name",
+                    "title": "Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "description",
+                    "title": "Description",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        },
+        {
+            "name": "master",
+            "title_template": "{{vendor}}"
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Модель (Новый)"
+        },
+        "columns.name": {
+            "ru": "Имя"
+        },
+        "columns.description": {
+            "ru": "Описание"
+        }
+    },
+    "parameters": [
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
