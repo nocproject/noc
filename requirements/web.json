@@ -100,6 +100,10 @@
     {
       "name": "leaflet",
       "version": "1.9.4"
+    },
+    {
+      "name": "monaco",
+      "version": "0.52.2"
     }
   ]
 }
