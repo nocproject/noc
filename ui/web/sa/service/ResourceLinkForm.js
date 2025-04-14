@@ -28,6 +28,8 @@ Ext.define("NOC.sa.service.ResourceLinkForm", {
         allowBlank: false,
         xtype: "core.combo",
         uiStyle: "medium-combo",
+        hideTriggerUpdate: true,
+        hideTriggerCreate: true,
       },
       items: [
         {

@@ -49,7 +49,7 @@ class UserProfileApplication(ExtApplication):
                 "title_tag": None,
                 "message_types": [t["message_type"] for t in g.message_types],
             }
-            uc = g.get_subscription_by_user(user)
+            uc = NotificationGroup.get_user_settings(g, user)
             if not uc:
                 subscription_settings.append(ss)
                 continue

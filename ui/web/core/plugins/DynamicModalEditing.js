@@ -18,8 +18,8 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
   //
   init: function(grid){
     this.grid = grid;
-    grid.on("cellclick", function(view, cell, cellIndex, record){
-      var column = grid.getColumnManager().getHeaderAtIndex(cellIndex);
+    grid.on("cellclick", function(view, cell, cellIndex, record, tr, rowIndex, e){
+      var column = e.position.column;
       if(column && column.useModalEditor){
         this.urlPrefix = column.urlPrefix || "urlPrefix_not_set";
         this.showEditor(record, column, view, cell);

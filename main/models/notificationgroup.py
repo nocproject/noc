@@ -37,7 +37,7 @@ from noc.core.mx import (
     MX_TO,
     MessageType,
     MessageMeta,
-    get_subscription_id,
+    get_subscriber_id,
 )
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
@@ -49,6 +49,7 @@ from noc.main.models.systemtemplate import SystemTemplate
 from noc.main.models.template import Template
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.timepattern import TimePattern
+from noc.models import get_model_id, get_model
 from noc.config import config
 from noc.settings import LANGUAGE_CODE
 
@@ -80,8 +81,8 @@ class NotificationContact:
     def match(self, ts: datetime.datetime, watch: Optional[str] = None):
         if not self.time_pattern and not self.watch:
             return True
-        if self.time_pattern and not self.time_pattern.match(ts):
-            return False
+        # if self.time_pattern and not self.time_pattern.match(ts):
+        #     return False
         if self.watch and self.watch != watch:
             return False
         return True
@@ -132,7 +133,7 @@ class SubscriptionSettingItem(BaseModel):
     notify_if_subscribed: bool = False
 
     @model_validator(mode="after")
-    def check_passwords_match(self):
+    def check_user_group_match(self):
         if not self.user and not self.group:
             raise ValueError("User or Group must be set")
         return self
@@ -166,12 +167,15 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("fm.DispositionRule", "notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
-        ("main.NotificationGroupUserSubscription", "notification_group"),
         ("main.SystemNotification", "notification_group"),
         ("main.MessageRoute", "notification_group"),
         ("sa.ObjectNotification", "notification_group"),
         ("peer.PeeringPoint", "prefix_list_notification_group"),
-    ]
+    ],
+    delete=[
+        ("main.NotificationGroupSubscription", "notification_group"),
+        ("main.NotificationGroupUserSettings", "notification_group"),
+    ],
 )
 class NotificationGroup(NOCModel):
     """
@@ -262,21 +266,54 @@ class NotificationGroup(NOCModel):
     def get_groups_by_user(cls, user: User) -> List["NotificationGroup"]:
         return list(NotificationGroup.objects.filter())
 
-    def get_subscription_by_user(
-        self, user: User, watch: Optional[Any] = None
-    ) -> Optional["NotificationGroupUserSubscription"]:
-        """Getting subscription by user"""
-        if watch:
-            watch = get_subscription_id(watch)
-            return NotificationGroupUserSubscription.objects.filter(
-                notification_group=self,
-                user=user,
-                watch=watch,
-            ).first()
-        return NotificationGroupUserSubscription.objects.filter(
-            notification_group=self,
+    @classmethod
+    def get_user_settings(
+        cls,
+        group: "NotificationGroup",
+        user: User,
+    ) -> Optional["NotificationGroupUserSettings"]:
+        """Getting user settings for group"""
+        return NotificationGroupUserSettings.objects.filter(
+            notification_group=group,
             user=user,
-            watch=None,
+        ).first()
+
+    def get_subscription_setting(
+        self,
+        user: User,
+    ) -> Optional["SubscriptionSettingItem"]:
+        """"""
+        for s in self.subscription_settings:
+            if s["user"] == user.id:
+                return SubscriptionSettingItem(**s)
+        return None
+
+    @classmethod
+    def get_object_subscriptions(
+        cls,
+        o: Any,
+        user: Optional[User] = None,
+    ) -> List["NotificationGroupSubscription"]:
+        if not user:
+            return NotificationGroupSubscription.objects.filter(
+                model_id=get_model_id(o),
+                instance_id=str(o.id),
+            )
+        return NotificationGroupSubscription.objects.filter(
+            model_id=get_model_id(o),
+            instance_id=str(o.id),
+            watchers__contains=[get_subscriber_id(user)],
+        )
+
+    def get_user_subscription(
+        self, o: Any, user: User
+    ) -> Optional["NotificationGroupSubscription"]:
+        """Getting subscription by user"""
+        return NotificationGroupSubscription.objects.filter(
+            notification_group=self,
+            model_id=get_model_id(o),
+            instance_id=str(o.id),
+            watchers__contains=[get_subscriber_id(user)],
         ).first()
 
     @property
@@ -288,8 +325,8 @@ class NotificationGroup(NOCModel):
         if config.datastream.enable_cfgmxroute:
             yield "cfgmxroute", f"ng:{self.id}"
 
-    def on_save(self):
-        self.ensure_subscriptions()
+    # def on_save(self):
+    #    self.ensure_subscriptions()
 
     def get_route_config(self):
         """Return data for configured Router"""
@@ -322,13 +359,11 @@ class NotificationGroup(NOCModel):
 
     @property
     def members(self) -> List[NotificationContact]:
-        """
-        List of (time pattern, method, params, language)
-        """
+        """List of (time pattern, method, params, language)"""
         default_language = LANGUAGE_CODE
         m = []
         # Collect user notifications
-        for ngu in self.notificationgroupusersubscription_set.filter():
+        for ngu in self.notificationgroupusersettings_set.filter():
             if ngu.suppress:
                 continue
             lang = ngu.user.preferred_language or default_language
@@ -371,17 +406,13 @@ class NotificationGroup(NOCModel):
 
     @property
     def active_members(self) -> Set[Tuple[str, str, Optional[str]]]:
-        """
-        List of currently active members: (method, param, language)
-        """
+        """List of currently active members: (method, param, language)"""
         now = datetime.datetime.now()
         return set((c.method, c.contact, c.language) for c in self.members if c.match(now))
 
     @property
     def languages(self) -> Set[str]:
-        """
-        List of preferred languages for users
-        """
+        """List of preferred languages for users"""
         return set(x.language for x in self.members)
 
     @classmethod
@@ -402,7 +433,7 @@ class NotificationGroup(NOCModel):
     ):
         """
         Send notification message to MX service for processing
-        Attrs:
+        Args:
             method: Method for sending message: mail, tg...
             address: Address to message
             subject: Notification Subject
@@ -421,47 +452,152 @@ class NotificationGroup(NOCModel):
             attachments=attachments or [],
         )
 
-    def subscribe(
+    def update_user_settings(
         self,
         user: User,
+        policy: str,
+        method: Optional[str] = None,
+        time_pattern: Optional[TimePattern] = None,
+        title_tag: Optional[str] = None,
         expired_at: Optional[datetime.datetime] = None,
-        watch: Optional[Any] = None,
-    ):
+        suppress: Optional[bool] = None,
+    ) -> "NotificationGroupUserSettings":
+        """
+        Update User settings for NotificationGroup
+        Args:
+            user: User instance
+            policy: Notify policy:
+                * D - Disable
+                * A - Any messages
+                * W - Only object watched
+                * F ?
+            method: Notification channel: mail, tg
+            time_pattern: Time mask
+            title_tag: String added to notification title
+            expired_at: Disable send notification after timestamp
+            suppress: Suppress send notification
+        """
+        # Check permission
+        uss = self.get_user_settings(self, user)
+        if not uss:
+            uss = NotificationGroupUserSettings(notification_group=self, user=user)
+        if uss.time_pattern != time_pattern:
+            uss.time_pattern = time_pattern
+        if uss.expired_at != expired_at:
+            uss.expired_at = expired_at
+        if uss.policy != policy:
+            uss.policy = policy
+        if uss.title_tag != title_tag:
+            uss.title_tag = title_tag
+        if uss.method != method:
+            uss.method = method
+        uss.save()
+        return uss
+
+    def get_effective_subscription(self, o: Any):
+        """Getting subscription settings for Object"""
+        # Group
+        # Subscription
+        # RemoteSystem
+
+    def update_subscription(
+        self,
+        o: Any,
+        watchers: List[Any],
+        suppresses: List[Any],
+        remote_system: Optional[RemoteSystem] = None,
+    ) -> "NotificationGroupSubscription":
+        """Update notification subscription"""
+        n = NotificationGroupSubscription.objects.get(
+            notification_group=self,
+            model_id=get_model_id(o),
+            instance_id=str(o.id),
+            remote_system=remote_system,
+        )
+        # get_contact
+        n.watchers = [get_subscriber_id(w) for w in watchers]
+        n.suppresses = [get_subscriber_id(w) for w in suppresses]
+        for x in n.suppresses:
+            if x not in n.watchers:
+                n.watchers.append(x)
+        n.save()
+        return n
+
+    def subscribe_object(self, o: Any, user: User):
         """Subscribe User to Group"""
-        s = self.get_subscription_by_user(user, watch)
-        if not s:
-            s = NotificationGroupUserSubscription(notification_group=self, user=user)
-            if watch:
-                s.watch = get_subscription_id(watch)
-        if expired_at and s.expired_at != expired_at:
-            s.expired_at = expired_at
-        s.save()
-        return s
+        us = self.get_user_subscription(o, user)
+        if us:
+            return us
+        c = get_subscriber_id(user)
+        us = NotificationGroupSubscription.objects.filter(
+            notification_group=self,
+            model_id=get_model_id(o),
+            instance_id=str(o.id),
+            remote_system=None,
+        ).first()
+        if not us:
+            us = NotificationGroupSubscription(
+                notification_group=self,
+                model_id=get_model_id(o),
+                instance_id=str(o.id),
+                watchers=[],
+            )
+        us.watchers.append(c),
+        us.save()
+        return us
 
-    def unsubscribe(
-        self,
-        user: User,
-        watch: Optional[Any] = None,
-    ):
+    def unsubscribe_object(self, o: Any, user: User):
         """Unsubscribe User"""
-        s = self.get_subscription_by_user(user, watch)
-        if s:
-            s.delete()
+        us = self.get_user_subscription(o, user)
+        c = get_subscriber_id(user)
+        # RemoteSystem
+        if us and c in us.watchers:
+            us.watchers.remove(c)
+            NotificationGroupSubscription.objects.filter(id=us.id).update(
+                watchers=us.watchers,
+            )
+        return us
 
-    def supress(
-        self,
-        user: User,
-        watch: Optional[Any] = None,
-    ):
+    def supress_object(self, o: Any, user: User):
         """Supress Notification for subscription"""
-        s = self.get_subscription_by_user(user, watch)
-        if not s.suppress:
-            NotificationGroupUserSubscription.objects.filter(id=s.id).update(suppress=True)
+        us = self.get_user_subscription(o, user)
+        if not us:
+            us = self.subscribe_object(o, user=user)
+        c = get_subscriber_id(user)
+        if us.suppresses and c not in us.suppresses:
+            NotificationGroupSubscription.objects.filter(id=us.id).update(
+                suppresses=(us.suppresses or []) + [c],
+            )
+        return us
 
     @property
     def iter_subscription_settings(self) -> Iterable[SubscriptionSettingItem]:
+        """Subscription Settings"""
         for s in self.subscription_settings:
             yield SubscriptionSettingItem(**s)
+
+    @classmethod
+    def iter_object_subscription_settings(
+        cls,
+        o: Any,
+        remote_system: Optional[RemoteSystem] = None,
+    ) -> Iterable["NotificationGroupSubscription"]:
+        """
+        Object Subscription settings
+        Args:
+            o: Object
+            remote_system: RemoteSystem
+        """
+        # Group
+        # Subscription
+        # Remote
+        # allow_edit
+        # allow_suppress
+        for s in NotificationGroupSubscription.objects.filter(
+            model_id=get_model_id(o),
+            instance_id=str(o.id),
+        ):
+            yield s
 
     def is_allowed_subscription(self, user: User) -> bool:
         groups = frozenset(user.groups.values_list("id", flat=True))
@@ -472,23 +608,17 @@ class NotificationGroup(NOCModel):
                 return True
         return False
 
-    def ensure_user_subscription(self, user: User):
-        """"""
-        ng = self.get_subscription_by_user(user)
-        if not ng:
-            self.subscribe(user)
-
-    def ensure_subscriptions(self):
-        """Ensure Subscription with settings"""
-        print("Ensure Subscription")
-        for s in self.iter_subscription_settings:
-            if s.user:
-                u = User.get_by_id(s.user)
-                ng = self.get_subscription_by_user(u)
-                if s.auto_subscription and not ng:
-                    self.subscribe(u)
-                elif not s.auto_subscription and ng:
-                    self.unsubscribe(u)
+    # def ensure_subscriptions(self):
+    #     """Ensure Subscription with settings"""
+    #     print("Ensure Subscription")
+    #     for s in self.iter_subscription_settings:
+    #         if s.user:
+    #             u = User.get_by_id(s.user)
+    #             ng = self.get_subscription_by_user(u)
+    #             if s.auto_subscription and not ng:
+    #                 self.subscribe(u)
+    #             elif not s.auto_subscription and ng:
+    #                 self.unsubscribe(u)
 
     def register_message(
         self,
@@ -618,13 +748,13 @@ class NotificationGroup(NOCModel):
         return quote_safe_path(self.name.strip("*")) + ".json"
 
 
-class NotificationGroupUserSubscription(NOCModel):
+class NotificationGroupUserSettings(NOCModel):
     class Meta(object):
         verbose_name = "Notification Group User Subscription"
         verbose_name_plural = "Notification Group Users"
         app_label = "main"
-        db_table = "main_notificationgroupusersubscription"
-        unique_together = [("notification_group_id", "user_id", "watch")]
+        db_table = "main_notificationgroupusersettings"
+        unique_together = [("notification_group_id", "user_id")]
 
     notification_group: NotificationGroup = ForeignKey(
         NotificationGroup, verbose_name="Notification Group", on_delete=CASCADE
@@ -649,18 +779,45 @@ class NotificationGroupUserSubscription(NOCModel):
     title_tag = CharField(max_length=30, blank=True)
     expired_at = DateTimeField("Expired Subscription After", auto_now_add=False)
     suppress = BooleanField("Deactivate Subscription", default=False)
-    watch = CharField("Watch key", max_length=100, null=True, blank=True)
-    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
 
     def __str__(self):
-        if not self.watch:
-            return f"{self.user.username}@{self.notification_group.name}: {self.time_pattern.name if self.time_pattern else ''}"
-        return f"{self.user.username}@{self.notification_group.name}: ({self.watch}) {self.time_pattern.name if self.time_pattern else ''}"
+        return f"{self.user.username}@{self.notification_group.name}: {self.time_pattern.name if self.time_pattern else ''}"
+
+
+class NotificationGroupSubscription(NOCModel):
+    class Meta(object):
+        verbose_name = "Notification Group Watch Subscription"
+        verbose_name_plural = "Notification Group Users"
+        app_label = "main"
+        db_table = "main_notificationgroupsubscription"
+        unique_together = [("notification_group_id", "model_id", "instance_id", "remote_system")]
+
+    notification_group: NotificationGroup = ForeignKey(
+        NotificationGroup, verbose_name="Notification Group", on_delete=CASCADE
+    )
+    # On Group
+    model_id = CharField(max_length=50)
+    instance_id = CharField(max_length=100)
+    watchers: List[str] = ArrayField(CharField(max_length=100), blank=True, null=True)
+    suppresses: List[str] = ArrayField(CharField(max_length=100), blank=True, null=True)
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
 
     def is_match(self, meta: Dict[MessageMeta, Any]):
         # time_pattern
-        if not self.watch:
+        if not self.watchers:
             return True
-        if self.watch and MessageMeta.FROM not in meta:
+        if self.watchers and MessageMeta.FROM not in meta:
             return False
-        return self.watch == meta[MessageMeta.FROM]
+        return meta[MessageMeta.FROM] in self.watchers
+
+    def get_watchers(self, exclude_suppressed: bool = False):
+        r = []
+        for w in self.watchers:
+            if exclude_suppressed and w in self.suppresses:
+                continue
+            mid, oid = w.split(":")
+            model = get_model(mid)
+            w = model.get_by_id(oid)
+            if w:
+                r.append(w)
+        return r

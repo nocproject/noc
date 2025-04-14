@@ -11,6 +11,9 @@ Ext.define("NOC.sa.service.Application", {
   requires: [
     "NOC.core.StateField",
     "NOC.core.InlineGrid",
+    "NOC.core.label.LabelField",
+    "NOC.core.combotree.ComboTree",
+    "NOC.core.plugins.DynamicModalEditing",
     "NOC.sa.service.Model",
     "NOC.sa.service.LookupField",
     "NOC.sa.service.TreeCombo",
@@ -21,9 +24,6 @@ Ext.define("NOC.sa.service.Application", {
     "NOC.sa.managedobject.LookupField",
     "NOC.inv.capability.LookupField",
     "NOC.inv.resourcegroup.LookupField",
-    "NOC.core.label.LabelField",
-    "NOC.core.combotree.ComboTree",
-    "NOC.core.plugins.DynamicModalEditing",
     "NOC.sa.service.InstancesPanel",
     "Ext.ux.form.GridField",
   ],
@@ -33,7 +33,9 @@ Ext.define("NOC.sa.service.Application", {
 
   initComponent: function(){
     this.instancesPanel = Ext.create("NOC.sa.service.InstancesPanel");
+    this.subscriptionPanel = Ext.create("NOC.core.SubscriptionPanel");
     this.ITEM_INSTANCES = this.registerItem(this.instancesPanel);
+    this.ITEM_SUBSCRIPTION = this.registerItem(this.subscriptionPanel);
     Ext.apply(this, {
       columns: [
         {
@@ -86,6 +88,12 @@ Ext.define("NOC.sa.service.Application", {
 
             return "<div class='noc-object-oper-state' style='background: " + color + "'></div>";
           },
+        },
+        {
+          text: "<i class='fa fa-bell'></i>",
+          tooltip: __("Subscription"),
+          dataIndex: "allow_subscribe",
+          renderer: NOC.render.Subscribe,
         },
         {
           text: __("Instances"),
@@ -736,7 +744,7 @@ Ext.define("NOC.sa.service.Application", {
       ],
     });
     this.callParent();
-    this.getRegisteredItem(this.ITEM_GRID).addListener("cellclick", this.onCellClick, this); 
+    this.getRegisteredItem(this.ITEM_GRID).addListener("beforecellclick", this.onCellClick, this); 
   },
   //
   filters: [
@@ -799,10 +807,24 @@ Ext.define("NOC.sa.service.Application", {
   },
   onCellClick: function(self, td, cellIndex, record, tr, rowIndex, e){
     var cellName = e.position.column.dataIndex;
-    if(["instance_count"].includes(cellName)){
-      this.showItem(this.ITEM_INSTANCES);
-      Ext.History.setHash("sa.service/" + record.id);
-      this.getRegisteredItem(this.ITEM_INSTANCES).load(record, "ITEM_GRID");
+    if(["instance_count", "allow_subscribe"].includes(cellName)){
+      if(cellName === "allow_subscribe"){
+        var subscriptionPanel = this.getRegisteredItem(this.ITEM_SUBSCRIPTION),
+          subscriptionUrl = `sa.service/${record.id}/${subscriptionPanel.urlSuffix}/`;
+        Ext.History.setHash(subscriptionUrl);
+        subscriptionPanel.load(this.appId, record.get("id"), "ITEM_GRID");
+        this.showItem(this.ITEM_SUBSCRIPTION);
+        return false;
+      }
+      if(cellName === "instance_count"){
+        var instancesPanel = this.getRegisteredItem(this.ITEM_INSTANCES),
+          instancesUrl = `sa.service/${record.id}/${instancesPanel.urlSuffix}/`;
+        Ext.History.setHash(instancesUrl);
+        instancesPanel.load(this.appId, record.get("id"), "ITEM_GRID");
+        this.showItem(this.ITEM_INSTANCES);
+        return false;
+      }
     }
+    return true;
   },
 });

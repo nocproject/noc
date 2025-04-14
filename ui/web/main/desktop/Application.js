@@ -87,11 +87,10 @@ Ext.define("NOC.main.desktop.Application", {
   launchApps: function(){
     var hash = Ext.History.getHash();
     if(hash){ // Open application tab
-      var paths = hash.split("/"),
-        app = paths[0],
-        args = paths.slice(1);
-      if(args.length > 0){
-        NOC.launch(app, "history", {args: args});
+      var paths = hash.split("/").filter(Boolean),
+        app = paths.shift();
+      if(paths.length > 0){
+        NOC.launch(app, "history", {args: paths});
       } else{
         NOC.launch(app);
       }

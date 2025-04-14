@@ -178,7 +178,7 @@ Ext.define("NOC.core.ComboBox", {
   setValue: function(value, doSelect){
     var vm, params = {};
 
-    if(value === null){
+    if(Ext.isEmpty(value)){
       this.callParent([value]);
       return;
     }
