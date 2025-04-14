@@ -27,20 +27,20 @@ class ToC(object):
             self.add_item([], kv)
 
     @staticmethod
-    def get_summary(path: str) -> List[Tuple]:
+    def get_summary(path: str) -> List[Tuple[str, str]]:
         if path[-1] == "/":
             path = path[:-1]
         pp = os.path.join(DOCS_DIR, path, SUMMARY_FILENAME)
-        if os.path.exists(pp):
-            result = []
-            with open(pp, "r", encoding="utf-8") as f:
-                data = f.read().splitlines()
-            for line in data:
-                if line.strip():
-                    key, value = re.search(r"\[(.*)].*\((.*)\)", line).group(1, 2)
-                    result += [(key, value)]
-            return result
-        return []
+        if not os.path.exists(pp):
+            return []
+        result = []
+        with open(pp, "r", encoding="utf-8") as f:
+            data = f.read().splitlines()
+        for line in data:
+            if line.strip():
+                key, value = re.search(r"\[(.*)].*\((.*)\)", line).group(1, 2)
+                result.append((key, value))
+        return result
 
     def add_item(self, path, kv):
         if isinstance(kv, str):
