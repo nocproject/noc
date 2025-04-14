@@ -37,7 +37,7 @@ class RuleLookup(object):
                 continue
             rules.append(r)
         if changed:
-            self.rules = rules
+            self.rules = sorted(rules, key=operator.attrgetter("preference"))
         return changed
 
     def add_rule(self, rule):
