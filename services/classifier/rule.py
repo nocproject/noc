@@ -236,7 +236,7 @@ class Rule:
         """Create label matcher callable"""
         scope, *value = wildcard.rsplit("::", 1)
         if not value:
-            return partial(match_label, set_var=set_var, default_fail=not is_required)
+            return partial(match_label, scope, set_var=set_var, default_fail=not is_required)
         return partial(
             match_scoped_label, scope, value[0], set_var=set_var, default_fail=not is_required
         )
@@ -360,7 +360,7 @@ def match_scoped_label(
     # check scope in labels ctx
     if scope not in ctx:
         return default_fail
-    if value != ANY_VALUE and ctx[scope] != value:
+    if value != ANY_VALUE and ctx[scope] != value and f"{scope}::{value}" not in ctx:
         return default_fail
     if set_var and value:
         storage[set_var] = ctx[scope]

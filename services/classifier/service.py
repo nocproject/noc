@@ -907,8 +907,10 @@ class ClassifierService(FastAPIService):
             "target_name": event.target.name,
             "managed_object": None,
             "pool": None,
-            "ip": struct.unpack("!I", socket.inet_aton(event.target.address))[0],
+            "ip": None,
         }
+        if event.target.address:
+            data["ip"] = struct.unpack("!I", socket.inet_aton(event.target.address))[0]
         if mo:
             data.update(
                 {
