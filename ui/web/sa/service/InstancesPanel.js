@@ -18,6 +18,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     "NOC.sa.service.RegisterForm",
     "Ext.ux.form.SearchField",
   ],
+  urlSuffix: "instances",
   layout: "fit",
   defaultListenerScope: true,
   viewModel: {
@@ -262,16 +263,18 @@ Ext.define("NOC.sa.service.InstancesPanel", {
       showOnClose = this.getViewModel().get("showOnClose");
     if(showOnClose === "ITEM_GRID") Ext.History.setHash("sa.service");
     app.showItem(app[showOnClose]);
+    Ext.History.setHash(app.appId);
+    app.reloadStore();
   },
-  load: function(record, showOnClose){
+  load: function(appId, recordId, showOnClose){
     var vm = this.getViewModel();
-    vm.set("record", record);
+    vm.set("recordId", recordId);
     vm.set("showOnClose", showOnClose);
     vm.set("enableRegisterBtn", this.up().hasPermission("register_instance"));
     vm.set("enableUnregisterBtn", this.up().hasPermission("unregister_instance"));
-    this.mask(__("Loading instances..."));
+    // this.mask(__("Loading instances..."));
     Ext.Ajax.request({
-      url: "/sa/service/" + record.id + "/instance/",
+      url: "/sa/service/" + recordId + "/instance/",
       method: "GET",
       scope: this,
       success: function(response){
@@ -283,32 +286,32 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         var text = Ext.decode(response.responseText); 
         NOC.error(text.message || __("Failed to load instances"));
       },
-      callback: function(){
-        this.unmask();
-      },
+      // callback: function(){
+      // this.unmask();
+      // },
     });
   },
   open_managed_objectForm: function(record){
     var name = record.get("managed_object__label"),
       isNewLink = Ext.isEmpty(record.get("managed_object")),
       title = __("Update/Unlink") + " " + name,
-      service = this.getViewModel().get("record");
+      serviceId = this.getViewModel().get("recordId");
     if(isNewLink){
       title = __("Link Managed Object");
     }
     var form = Ext.create("NOC.sa.service.ManagedObjectLinkForm", {
       title: title,
       managed_id: record.get("managed_object"),
-      service_id: service.id,
+      service_id: serviceId,
       instance_id: record.id,
     });
     form.instanceRecord = record;
   },
   open_addressesForm: function(record){
-    var service = this.getViewModel().get("record"), 
+    var serviceId = this.getViewModel().get("recordId"), 
       form = Ext.create("NOC.sa.service.AddressesLinkForm", {
         title: __("Bind Addresses"),
-        service_id: service.id,
+        service_id: serviceId,
         instance_id: record.id,
         addresses: record.get("addresses"),
       });
@@ -320,8 +323,8 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     form.instanceRecord = record;
   },
   open_resourcesForm: function(record){
-    var service = this.getViewModel().get("record"),
-      resourceUrl = "/sa/service/" + service.id + "/resource/interface/",
+    var serviceId = this.getViewModel().get("recordId"),
+      resourceUrl = "/sa/service/" + serviceId + "/resource/interface/",
       form = Ext.create("NOC.sa.service.ResourceLinkForm", {
         title: __("Interface <Bind>"),
       }),
@@ -334,7 +337,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     }
     form.down("form").getForm().setValues({
       managed_id: managed_id,
-      service_id: service.id,
+      service_id: serviceId,
       instance_id: record.id,
     });
     resourceComboProxy.setUrl(resourceUrl);
@@ -347,10 +350,10 @@ Ext.define("NOC.sa.service.InstancesPanel", {
     form.instanceRecord = record;
   },
   open_registerForm: function(){
-    var service = this.getViewModel().get("record"),
+    var serviceId = this.getViewModel().get("recordId"),
       form = Ext.create("NOC.sa.service.RegisterForm");
     form.down("form").getForm().setValues({
-      service_id: service.id,
+      service_id: serviceId,
     });
     form.down("form [name=type]").setStore(this.getViewModel().getStore("typeStore"));
     form.instanceStore = this.getViewModel().getStore("gridStore");
@@ -375,7 +378,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
   },
   updateInstance: function(editor, context){
     var params = {}, record = context.record,
-      serviceId = this.getViewModel().get("record").id,
+      serviceId = this.getViewModel().get("recordId"),
       url = "/sa/service/" + serviceId + "/instance/" + record.id + "/";
     if(!Ext.isEmpty(record.get("name"))){
       params["name"] = record.get("name"); 
@@ -414,7 +417,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
   },
   onUnregister: function(){
     var vm = this.getViewModel(),
-      serviceId = vm.get("record").id,
+      serviceId = vm.get("recordId"),
       instanceId = vm.get("selectedInstance").id,
       url = "/sa/service/" + serviceId + "/unregister_instance/" + instanceId + "/";
     

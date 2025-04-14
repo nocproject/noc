@@ -96,6 +96,13 @@ Ext.define("NOC.core.Application", {
     return this._registeredItems[index];
   },
   //
+  getRegisteredItemByUrl: function(suffix){
+    var me = this;
+    return me._registeredItems.findIndex(function(item){
+      return item.urlSuffix === suffix;
+    });
+  },
+  //
   processCommands: function(){
     var me = this,
       cmd = me.getCmd();

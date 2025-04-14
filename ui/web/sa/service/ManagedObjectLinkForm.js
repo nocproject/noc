@@ -45,6 +45,8 @@ Ext.define("NOC.sa.service.ManagedObjectLinkForm", {
               xtype: "core.combo",
               restUrl: "/sa/managedobject/lookup/",
               uiStyle: "medium-combo",
+              hideTriggerUpdate: true,
+              hideTriggerCreate: true,
             },
           ],
           buttons: [

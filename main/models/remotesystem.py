@@ -79,7 +79,6 @@ class EnvItem(EmbeddedDocument):
         ("ip.PrefixProfile", "remote_system"),
         ("ip.Prefix", "remote_system"),
         ("main.Label", "remote_system"),
-        ("main.NotificationGroupUserSubscription", "remote_system"),
         ("sa.ManagedObject", "remote_system"),
         ("sa.AdministrativeDomain", "remote_system"),
         ("sa.ManagedObjectProfile", "remote_system"),
@@ -98,7 +97,8 @@ class EnvItem(EmbeddedDocument):
         ("wf.Transition", "remote_system"),
         ("wf.Workflow", "remote_system"),
         ("project.Project", "remote_system"),
-    ]
+    ],
+    delete=[("main.NotificationGroupSubscription", "remote_system")],
 )
 class RemoteSystem(Document):
     meta = {"collection": "noc.remotesystem", "strict": False, "auto_create_index": False}

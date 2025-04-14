@@ -203,3 +203,7 @@ def get_mx_partitions() -> int:
 
 def get_subscription_id(o) -> str:
     return f"m:{get_model_id(o)}:{o.id}"
+
+
+def get_subscriber_id(o) -> str:
+    return f"{get_model_id(o)}:{o.id}"

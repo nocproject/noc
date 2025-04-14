@@ -15,6 +15,7 @@ from mongoengine.queryset import Q
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.services.web.base.decorators.state import state_handler
 from noc.services.web.base.decorators.caps import capabilities_handler
+from noc.services.web.base.decorators.watch import watch_handler
 from noc.sa.interfaces.base import (
     UnicodeParameter,
     ModelParameter,
@@ -30,6 +31,8 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.core.middleware.tls import get_user
 from noc.core.translation import ugettext as _
 from noc.core.validators import is_objectid, is_ipv4, is_mac
 from noc.core.models.serviceinstanceconfig import InstanceType
@@ -38,6 +41,7 @@ from noc.core.resource import from_resource
 from noc.core.comp import smart_text
 
 
+@watch_handler
 @capabilities_handler
 @state_handler
 class ServiceApplication(ExtDocApplication):
@@ -112,6 +116,13 @@ class ServiceApplication(ExtDocApplication):
         if isinstance(o, Service):
             data["in_maintenance"] = o.in_maintenance
             data["service_path"] = [str(sp) for sp in data["service_path"]]
+            if NotificationGroup.get_object_subscriptions(o, user=get_user()):
+                ss = "me"
+            elif NotificationGroup.get_object_subscriptions(o):
+                ss = "group"
+            else:
+                ss = "no"
+            data["allow_subscribe"] = ss
         return data
 
     @staticmethod

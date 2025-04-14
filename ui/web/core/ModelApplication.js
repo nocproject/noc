@@ -429,12 +429,14 @@ Ext.define("NOC.core.ModelApplication", {
         c.listeners = {};
       }
       c.listeners.afterrender = function(){
-        Ext.create("Ext.ToolTip", {
-          target: this.getEl(),
-          anchor: "top",
-          trackMouse: true,
-          html: this.tooltip || this.text,
-        });
+        if(Ext.isEmpty(this.tooltip) && !Ext.isEmpty(this.text)){ 
+          Ext.create("Ext.ToolTip", {
+            target: this.getEl(),
+            anchor: "top",
+            trackMouse: true,
+            html: this.text,
+          });
+        }
       }
     });
     //
@@ -1469,6 +1471,15 @@ Ext.define("NOC.core.ModelApplication", {
       me.loadById(args[0], function(record){
         me.onEditRecord(record);
       });
+    }
+    if(args.length === 2){
+      var panelIndex = this.getRegisteredItemByUrl(args[1]);
+      if(panelIndex !== -1){
+        var panel = this.getRegisteredItem(panelIndex);
+        this.currentHistoryHash = Ext.History.getHash();
+        this.showItem(panelIndex);
+        panel.load(this.appId, args[0], "ITEM_GRID");
+      }
     }
   },
   //
