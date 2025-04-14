@@ -39,8 +39,7 @@ def all_profiles():
         vendor, profile = path.split(os.sep)[-3:-1]
         if vendor == "Generic":
             continue
-        profile = "%s.%s" % (vendor, profile)
-        r.add(profile)
+        r.add(f"{vendor}.{profile}")
     return list(r)
 
 
@@ -56,7 +55,8 @@ def test_vendor_doc_exists(vendor):
 def test_vendor_doc_toc(toc, vendor):
     if vendor in XFAIL_VENDORS:
         pytest.xfail("Excluded")
-    path = ["References", "Profiles", vendor, "Overview"]
+    print(toc.items)
+    path = ("References", "Profiles", vendor, "Overview")
     assert path in toc
     v = toc[path].split("/")
     assert v == ["profiles-reference", vendor, "index.md"]
