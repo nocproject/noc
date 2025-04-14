@@ -1,22 +1,46 @@
 # ----------------------------------------------------------------------
 # docs test fixtures
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+import os
+import re
+from typing import List, Tuple
 
 # Third-party modules
 import pytest
 import yaml
 
+DOCS_DIR = "docs"
+SUMMARY_FILENAME = "SUMMARY.md"
+
 
 class ToC(object):
     def __init__(self, path):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             data = yaml.safe_load(f.read().replace("!!python/name:", ""))
         self.items = {}
         for kv in data["nav"]:
             self.add_item([], kv)
+
+    @staticmethod
+    def get_summary(path: str) -> List[Tuple[str, str]]:
+        if path[-1] == "/":
+            path = path[:-1]
+        pp = os.path.join(DOCS_DIR, path, SUMMARY_FILENAME)
+        if not os.path.exists(pp):
+            return []
+        result = []
+        with open(pp, "r", encoding="utf-8") as f:
+            data = f.read().splitlines()
+        for line in data:
+            if line.strip():
+                key, value = re.search(r"\[(.*)].*\((.*)\)", line).group(1, 2)
+                result.append((key, value))
+        return result
 
     def add_item(self, path, kv):
         if isinstance(kv, str):
@@ -30,6 +54,11 @@ class ToC(object):
                 self.add_item(path + [k], lkv)
         else:
             self.items[tuple(path + [k])] = v
+            s_path = os.path.join(DOCS_DIR, v)
+            if os.path.isdir(s_path):
+                summary = [{sk: v + sv} for sk, sv in self.get_summary(v)]
+                if summary:
+                    self.add_item(path, {k: summary})
 
     def __contains__(self, item):
         return tuple(item) in self.items
