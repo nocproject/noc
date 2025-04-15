@@ -47,6 +47,6 @@ setproctitle==1.3.5
 uvicorn==0.34.0
 yappi==1.6.10; sys_platform == "linux" and platform_machine == "x86_64"
 gufo-liftbridge==0.1.0
-gufo-snmp==0.7.1
+gufo-snmp==0.8.0
 gufo_noc_speedup==0.1.0
 urllib3<2 # To be deleted after drop OS with openssl<1.1.1 (centos7,rhel7,deb9)
