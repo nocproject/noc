@@ -118,6 +118,14 @@ Ext.define("NOC.core.MonacoPanel", {
       },
     },
     {
+      glyph: NOC.glyph.exchange,
+      tooltip: __("Swap contents"),
+      handler: "onSwapRev",
+      bind: {
+        disabled: "{!hasChanges}",
+      },
+    },
+    {
       text: __("Download"),
       tooltip: __("Download content"),
       glyph: NOC.glyph.download,
@@ -305,7 +313,27 @@ Ext.define("NOC.core.MonacoPanel", {
       suffix = revCombo.getDisplayValue().split(" ")[0].replace(/-/g, "") + ".conf.txt";
     NOC.saveAs(blob, this.fileName + "_" + suffix);
   },
-
+  onSwapRev: function(){
+    var revCombo = this.down("#revCombo"),
+      diffCombo = this.down("#diffCombo"),
+      revValue = revCombo.getValue(),
+      diffValue = diffCombo.getValue();
+    if(!revValue || !diffValue) return;
+    revCombo.setValue(diffValue);
+    diffCombo.setValue(revValue);
+    this.swapContents();
+  },
+  swapContents: function(){
+    var editor = this.down("codeviewer").editor;
+    if(editor && Ext.isDefined(editor.getModel().modified)){ // check if in diff mode
+      var originalModel = editor.getModel().original,
+        modifiedModel = editor.getModel().modified;
+      editor.setModel({
+        original: modifiedModel,
+        modified: originalModel,
+      });
+    }
+  },
   cyclePosition: function(current, max, step){
     var newValue = current + step;
   
