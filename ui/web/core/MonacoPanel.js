@@ -182,6 +182,7 @@ Ext.define("NOC.core.MonacoPanel", {
     });
   },
   requestRevisions: function(id){
+    if(Ext.isEmpty(this.down("#revCombo"))) return;
     var currentTZ = moment.tz.guess(),
       url = (id ? Ext.String.format(this.restUrl, id) : this.rootUrl) + "revisions/";
     Ext.Ajax.request({

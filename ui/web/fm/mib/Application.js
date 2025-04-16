@@ -11,7 +11,7 @@ Ext.define("NOC.fm.mib.Application", {
   model: "NOC.fm.mib.Model",
   search: true,
   requires: [
-    "NOC.core.Preview",
+    "NOC.core.MonacoPanel",
     "NOC.fm.mib.MIBUpload",
   ],
   columns: [
@@ -28,9 +28,17 @@ Ext.define("NOC.fm.mib.Application", {
   ],
 
   preview: {
-    xtype: "NOC.core.Preview",
-    previewName: new Ext.XTemplate("MIB: {name}"),
-    restUrl: new Ext.XTemplate("/fm/mib/{id}/text/"),
+    xtype: "NOC.core.MonacoPanel",
+    tbar: [
+      {
+        itemId: "close",
+        text: __("Close"),
+        glyph: NOC.glyph.arrow_left,
+        handler: "onBack",
+      },
+    ],
+    previewName: "MIB: {0}",
+    restUrl: "/fm/mib/{0}/text/",
   },
 
   createForm: function(){
