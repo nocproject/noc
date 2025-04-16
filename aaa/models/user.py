@@ -272,6 +272,7 @@ class User(NOCModel):
             NotificationContact(
                 contact=c.params,
                 method=c.notification_method,
+                language=self.preferred_language or LANGUAGE_CODE,
                 time_pattern=c.time_pattern.time_pattern,
             )
             for c in UserContact.objects.filter(user=self)

@@ -7,7 +7,6 @@
 
 # Python modules
 import enum
-import datetime
 from typing import Any, Optional, Dict
 from threading import Lock
 from dataclasses import dataclass
