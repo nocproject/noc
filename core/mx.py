@@ -40,6 +40,7 @@ class NotificationContact:
         title_tag: Additional title string
         time_pattern: Active contact time
     """
+
     contact: str
     language: str = LANGUAGE_CODE
     method: str = "mail"
