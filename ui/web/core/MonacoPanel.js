@@ -117,6 +117,12 @@ Ext.define("NOC.core.MonacoPanel", {
         disabled: "{!hasChanges}",
       },
     },
+    {
+      text: __("Download"),
+      tooltip: __("Download content"),
+      glyph: NOC.glyph.download,
+      handler: "onDownload",
+    },
   ],
   items: [
     {
@@ -218,6 +224,7 @@ Ext.define("NOC.core.MonacoPanel", {
   },
   renderText: function(text){
     text = text || "NO DATA";
+    this.down("#diffCombo").setValue(null);
     this.down("codeviewer").exitDiffMode(text);
   },
   renderDiff: function(text){
@@ -292,6 +299,13 @@ Ext.define("NOC.core.MonacoPanel", {
   onPrevDiff: function(){
     this.setChange(-1);
   },
+  onDownload: function(){
+    var blob = new Blob([this.down("codeviewer").getValue()], {type: "text/plain;charset=utf-8"}),
+      revCombo = this.down("#revCombo"),
+      suffix = revCombo.getDisplayValue().split(" ")[0].replace(/-/g, "") + ".conf.txt";
+    NOC.saveAs(blob, this.fileName + "_" + suffix);
+  },
+
   cyclePosition: function(current, max, step){
     var newValue = current + step;
   

@@ -87,29 +87,26 @@ Ext.define("NOC.core.CodeViewer", {
     if(typeof fn === "function"){
       me.contentChanged = scope ? Ext.bind(fn, scope) : fn;
     }
-    
-    return me;
   },
 
   setValue: function(value){
-    var me = this;
-    me.value = value || "";
+    this.value = value || "";
         
-    if(me.editor){
-      me.editor.setValue(me.value);
+    if(this.editor){
+      this.editor.setValue(this.value);
     }
-        
-    return me;
   },
     
   getValue: function(){
-    var me = this;
-        
-    if(me.editor){
-      return me.editor.getValue();
+    if(this.editor && Ext.isDefined(this.editor.getModel().modified)){ // check if in diff mode
+      return this.editor.getModel().original.getValue();
+    }
+
+    if(this.editor){
+      return this.editor.getValue();
     }
         
-    return me.value;
+    return this.value;
   },
     
   setLanguage: function(language){
@@ -119,8 +116,6 @@ Ext.define("NOC.core.CodeViewer", {
     if(me.editor){
       window.monaco.editor.setModelLanguage(me.editor.getModel(), language);
     }
-        
-    return me;
   },
     
   onDestroy: function(){
@@ -188,34 +183,19 @@ Ext.define("NOC.core.CodeViewer", {
       }
     }));
     me.value = modifiedText || me.value;
-    
-    return me;
   },
   updateDiffModified: function(modifiedText){
-    var me = this;
+    var diffModel = this.editor.getModel(),
+      newModifiedModel = window.monaco.editor.createModel(modifiedText || "", this.language);
     
-    if(!me.editor || !me.editor.getModel){
-      return me;
-    }
-    
-    var diffModel = me.editor.getModel();
-    
-    if(!diffModel || !diffModel.modified){
-      return me;
-    }
-    
-    var newModifiedModel = window.monaco.editor.createModel(modifiedText || "", me.language);
-    
-    me.editor.setModel({
+    this.editor.setModel({
       original: diffModel.original,
       modified: newModifiedModel,
     });
     
     diffModel.modified.dispose();
     
-    me.value = modifiedText || "";
-    
-    return me;
+    this.value = modifiedText || "";
   },
   exitDiffMode: function(text){
     var me = this;
@@ -236,7 +216,5 @@ Ext.define("NOC.core.CodeViewer", {
     
     me.initEditor();
     me.setValue(text);
-    
-    return me;
   },
 });
