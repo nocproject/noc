@@ -315,6 +315,7 @@ class NotificationGroup(NOCModel):
         if self.message_types:
             tt = [x["message_type"] for x in self.message_types]
         r = {
+            "id": str(self.id),
             "name": self.name,
             "type": tt,
             "order": 998,
@@ -678,7 +679,7 @@ class NotificationGroup(NOCModel):
             yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
         if MessageMeta.WATCH_FOR not in meta:
             return
-        _, model_id, instance_id = meta[MessageMeta.WATCH_FOR]
+        _, model_id, instance_id = meta[MessageMeta.WATCH_FOR].split(":")
         for ngs in self.notificationgroupsubscription_set.filter(
             model_id=model_id,
             instance_id=instance_id,
@@ -772,7 +773,7 @@ class NotificationGroupUserSettings(NOCModel):
         for c in self.user.contacts:
             if self.method and c.method != self.method:
                 continue
-            contacts += c
+            contacts += [c]
         return contacts
 
 
@@ -814,7 +815,7 @@ class NotificationGroupSubscription(NOCModel):
     def get_watchers(self, exclude_suppressed: bool = False):
         r = []
         for w in self.watchers:
-            if exclude_suppressed and w in self.suppresses:
+            if exclude_suppressed and self.suppresses and w in self.suppresses:
                 continue
             mid, oid = w.split(":")
             model = get_model(mid)
