@@ -7,6 +7,7 @@
 
 # Python modules
 import enum
+import datetime
 from typing import Any, Optional, Dict
 from threading import Lock
 from dataclasses import dataclass
@@ -17,6 +18,8 @@ from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.ioloop.util import run_sync
 from noc.models import get_model_id
+from noc.core.timepattern import TimePatternList
+from noc.settings import LANGUAGE_CODE
 
 
 @dataclass
@@ -25,6 +28,23 @@ class Message(object):
     headers: Dict[str, bytes]
     timestamp: int
     key: int
+
+
+@dataclass(frozen=True)
+class NotificationContact:
+    """
+    Attributes:
+        contact: send to string
+        language: Message Language
+        method: delivery method
+        title_tag: Additional title string
+        time_pattern: Active contact time
+    """
+    contact: str
+    language: str = LANGUAGE_CODE
+    method: str = "mail"
+    title_tag: Optional[str] = None
+    time_pattern: Optional[TimePatternList] = None
 
 
 # MX stream name

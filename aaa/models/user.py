@@ -7,9 +7,9 @@
 
 # Python modules
 import datetime
-from threading import Lock
 import operator
-from typing import Optional
+from threading import Lock
+from typing import Optional, List
 
 # Third-party modules
 import cachetools
@@ -22,10 +22,11 @@ from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
-from noc.settings import LANGUAGES
+from noc.settings import LANGUAGES, LANGUAGE_CODE
 from noc.main.models.avatar import Avatar
 from noc.core.password.hasher import UNUSABLE_PASSWORD, check_password, make_password, must_change
 from noc.core.password.check import check_password_policy
+from noc.core.mx import NotificationContact
 from .group import Group
 
 id_lock = Lock()
@@ -264,25 +265,27 @@ class User(NOCModel):
         return must_change(self.password)
 
     @property
-    def contacts(self):
+    def contacts(self) -> List[NotificationContact]:
         from .usercontact import UserContact
 
         return [
-            (c.time_pattern, c.notification_method, c.params)
+            NotificationContact(
+                contact=c.params,
+                method=c.notification_method,
+                time_pattern=c.time_pattern.time_pattern,
+            )
             for c in UserContact.objects.filter(user=self)
         ]
 
     @property
-    def active_contacts(self):
+    def active_contacts(self) -> List[NotificationContact]:
         """
         Get list of currently active contacts
 
         :returns: List of (method, params)
         """
         now = datetime.datetime.now()
-        return [
-            (c.notification_method, c.params) for c in self.contacts if c.time_pattern.match(now)
-        ]
+        return [c for c in self.contacts if c.time_pattern.match(now)]
 
     def get_full_name(self):
         """
