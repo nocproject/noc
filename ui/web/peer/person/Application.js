@@ -9,7 +9,7 @@ console.debug("Defining NOC.peer.person.Application");
 Ext.define("NOC.peer.person.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.RepoPreview",
+    "NOC.core.MonacoPanel",
     "NOC.peer.person.Model",
     "NOC.peer.rir.LookupField",
   ],
@@ -115,7 +115,7 @@ Ext.define("NOC.peer.person.Application", {
     },
   ],
   preview: {
-    xtype: "NOC.core.RepoPreview",
+    xtype: "NOC.core.MonacoPanel",
     syntax: "rpsl",
     // ToDo need check nic_hdl variable in previewName
     previewName: "Person RPSL: {0}",

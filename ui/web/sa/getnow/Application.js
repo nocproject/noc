@@ -7,10 +7,11 @@ console.debug("Defining NOC.sa.getnow.Application");
 Ext.define("NOC.sa.getnow.Application", {
   extend: "NOC.core.Application",
   requires: [
-    "NOC.sa.getnow.Controller",
-    "NOC.sa.getnow.ViewModel",
     "NOC.core.filter.Filter",
+    "NOC.core.MonacoPanel",
+    "NOC.sa.getnow.Controller",
     "NOC.sa.getnow.SelectionGrid",
+    "NOC.sa.getnow.ViewModel",
   ],
 
   alias: "widget.getnow",
@@ -31,7 +32,9 @@ Ext.define("NOC.sa.getnow.Application", {
       width: "35%",
     },
     {
-      xclass: "NOC.core.RepoPreview",
+      // xclass: "NOC.core.MonacoPanel",
+      xtype: "core.monacopanel",
+      defaultListenerScope: false,
       region: "center",
       width: "65%",
       app: this,

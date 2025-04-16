@@ -9,7 +9,7 @@ console.debug("Defining NOC.peer.asset.Application");
 Ext.define("NOC.peer.asset.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.RepoPreview",
+    "NOC.core.MonacoPanel",
     "NOC.core.label.LabelField",
     "NOC.peer.asset.Model",
     "Ext.ux.form.UCField",
@@ -103,7 +103,7 @@ Ext.define("NOC.peer.asset.Application", {
     },
   ],
   preview: {
-    xtype: "NOC.core.RepoPreview",
+    xtype: "NOC.core.MonacoPanel",
     syntax: "rpsl",
     previewName: "AS-set RPSL: {0}",
     restUrl: "/peer/asset/{0}/repo/rpsl/",

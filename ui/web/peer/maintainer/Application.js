@@ -9,7 +9,7 @@ console.debug("Defining NOC.peer.maintainer.Application");
 Ext.define("NOC.peer.maintainer.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.RepoPreview",
+    "NOC.core.MonacoPanel",
     "NOC.peer.maintainer.Model",
     "NOC.peer.person.LookupField",
     "NOC.peer.person.M2MField",
@@ -80,7 +80,7 @@ Ext.define("NOC.peer.maintainer.Application", {
     },
   ],
   preview: {
-    xtype: "NOC.core.RepoPreview",
+    xtype: "NOC.core.MonacoPanel",
     syntax: "rpsl",
     previewName: "Maintainer RPSL: {0}",
     restUrl: "/peer/maintainer/{0}/repo/rpsl/",

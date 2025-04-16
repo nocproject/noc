@@ -10,7 +10,7 @@ Ext.define("NOC.peer.peer.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.StateField",
-    "NOC.core.RepoPreview",
+    "NOC.core.MonacoPanel",
     "NOC.core.label.LabelField",
     "NOC.peer.peer.Model",
     "NOC.peer.peeringpoint.LookupField",
@@ -447,7 +447,7 @@ Ext.define("NOC.peer.peer.Application", {
     me.callParent([action, op, status]);
   },
   preview: {
-    xtype: "NOC.core.RepoPreview",
+    xtype: "NOC.core.MonacoPanel",
     syntax: "rpsl",
     previewName: "Peer RPSL: {0}",
     restUrl: "/peer/peer/{0}/repo/rpsl/",
