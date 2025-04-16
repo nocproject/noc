@@ -1,3 +1,11 @@
+//---------------------------------------------------------------------
+// NOC.core.CodeViewer
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2025 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.core.CodeViewer");
+
 Ext.define("NOC.core.CodeViewer", {
   extend: "Ext.Component",
   alias: "widget.codeviewer",
@@ -127,5 +135,94 @@ Ext.define("NOC.core.CodeViewer", {
     }
         
     me.callParent(arguments);
+  },
+  showDiff: function(originalText, modifiedText){
+    var me = this;
+    
+    if(me.editor){
+      if(me.changeListeners && me.changeListeners.length){
+        Ext.Array.each(me.changeListeners, function(listener){
+          if(listener && typeof listener.dispose === "function"){
+            listener.dispose();
+          }
+        });
+        me.changeListeners = [];
+      }
+      
+      me.editor.dispose();
+      me.editor = null;
+    }
+    
+    me.editor = window.monaco.editor.createDiffEditor(me.el.dom, {
+      automaticLayout: me.automaticLayout,
+      readOnly: me.readOnly,
+      theme: me.theme,
+      renderSideBySide: true,
+    });
+    
+    var originalModel = window.monaco.editor.createModel(originalText || "", me.language),
+      modifiedModel = window.monaco.editor.createModel(modifiedText || me.value, me.language);
+    
+    me.editor.setModel({
+      original: originalModel,
+      modified: modifiedModel,
+    });
+   
+    me.changeListeners.push(me.editor.onDidUpdateDiff(() => {
+      me.changes = me.editor.getLineChanges();
+      me.currentChangeIndex = 0;
+      console.log("Differences updated:", me.changes);
+    }));
+    me.value = modifiedText || me.value;
+    
+    return me;
+  },
+  updateDiffModified: function(modifiedText){
+    var me = this;
+    
+    if(!me.editor || !me.editor.getModel){
+      return me;
+    }
+    
+    var diffModel = me.editor.getModel();
+    
+    if(!diffModel || !diffModel.modified){
+      return me;
+    }
+    
+    var newModifiedModel = window.monaco.editor.createModel(modifiedText || "", me.language);
+    
+    me.editor.setModel({
+      original: diffModel.original,
+      modified: newModifiedModel,
+    });
+    
+    diffModel.modified.dispose();
+    
+    me.value = modifiedText || "";
+    
+    return me;
+  },
+  exitDiffMode: function(text){
+    var me = this;
+    
+    if(me.editor){
+      if(me.changeListeners && me.changeListeners.length){
+        Ext.Array.each(me.changeListeners, function(listener){
+          if(listener && typeof listener.dispose === "function"){
+            listener.dispose();
+          }
+        });
+        me.changeListeners = [];
+      }
+      
+      me.editor.dispose();
+      me.editor = null;
+    }
+    
+    me.initEditor();
+    me.setValue(text);
+    
+    return me;
   },
 });
