@@ -12,6 +12,16 @@ Ext.define("NOC.core.MonacoPanel", {
   requires: [
     "NOC.core.CodeViewer",
   ],
+  viewModel: {
+    formulas: {
+      hasChanges: {
+        bind: "{codeViewer.changes}",
+        get: function(value){
+          return value.length > 0;
+        },
+      },
+    },
+  },
   defaultListenerScope: true,
   layout: "fit",
   tbar: [
@@ -94,23 +104,24 @@ Ext.define("NOC.core.MonacoPanel", {
       glyph: NOC.glyph.arrow_down,
       tooltip: __("Next change"),
       handler: "onNextDiff",
-      //   bind: {
-      // disabled: "{!hasNextChange}",
-      //   },
+      bind: {
+        disabled: "{!hasChanges}",
+      },
     },
     {
       itemId: "prevDiffBtn",
       glyph: NOC.glyph.arrow_up,
       tooltip: __("Previous change"),
       handler: "onPrevDiff",
-      //   bind: {
-      //     disabled: "{!hasPrevChange}",
-      //   },
+      bind: {
+        disabled: "{!hasChanges}",
+      },
     },
   ],
   items: [
     {
       xtype: "codeviewer",
+      reference: "codeViewer",
       // codeviewer config
       language: "python",
       readOnly: true,
@@ -256,10 +267,12 @@ Ext.define("NOC.core.MonacoPanel", {
   setChange: function(n){
     var codeViewer = this.down("codeviewer"),
       diffEditor = codeViewer.editor,
-      changes = codeViewer.changes;
+      currentChangeIndex = this.getViewModel().get("codeViewer.currentChangeIndex"),
+      changes = this.getViewModel().get("codeViewer.changes");
     if(!changes || changes.length === 0) return;
-    codeViewer.currentChangeIndex = this.cyclePosition(codeViewer.currentChangeIndex, changes.length - 1, n);
-    var change = changes[codeViewer.currentChangeIndex];
+    var index = this.cyclePosition(currentChangeIndex, changes.length - 1, n),
+      change = changes[index];
+    this.getViewModel().set("codeViewer.currentChangeIndex", index);
     diffEditor.getModifiedEditor().revealLineInCenter(change.modifiedStartLineNumber);
     diffEditor.getModifiedEditor().setPosition({
       lineNumber: change.modifiedStartLineNumber,

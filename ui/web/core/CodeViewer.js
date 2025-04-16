@@ -14,7 +14,12 @@ Ext.define("NOC.core.CodeViewer", {
     "Ext.form.Labelable",
     "Ext.form.field.Field",
   ],
- 
+
+  publishes: ["changes", "currentChangeIndex"],
+  config: {
+    changes: [],
+    currentChangeIndex: 0,
+  },
   language: "javascript",
   value: "",
   readOnly: false,
@@ -54,7 +59,8 @@ Ext.define("NOC.core.CodeViewer", {
       theme: me.theme,
       automaticLayout: me.automaticLayout,
     });
-
+    me.setChanges([]);
+    me.setCurrentChangeIndex(0);
     if(me.editor){
       var disposable = me.editor.onDidChangeModelContent(function(event){
         me.value = me.editor.getValue();
@@ -169,9 +175,17 @@ Ext.define("NOC.core.CodeViewer", {
     });
    
     me.changeListeners.push(me.editor.onDidUpdateDiff(() => {
-      me.changes = me.editor.getLineChanges();
-      me.currentChangeIndex = 0;
-      console.log("Differences updated:", me.changes);
+      var changes = me.editor.getLineChanges() || [];
+      me.setChanges(changes);
+      me.setCurrentChangeIndex(0);
+      if(changes.length > 0){
+        var change = changes[0];
+        me.editor.getModifiedEditor().revealLineInCenter(change.modifiedStartLineNumber);
+        me.editor.getModifiedEditor().setPosition({
+          lineNumber: change.modifiedStartLineNumber,
+          column: 1,
+        });
+      }
     }));
     me.value = modifiedText || me.value;
     
