@@ -95,7 +95,7 @@ Ext.define("NOC.core.MonacoPanel", {
       tooltip: __("Next change"),
       handler: "onNextDiff",
       //   bind: {
-      // disabled: "{!canNextChange}",
+      // disabled: "{!hasNextChange}",
       //   },
     },
     {
@@ -104,7 +104,7 @@ Ext.define("NOC.core.MonacoPanel", {
       tooltip: __("Previous change"),
       handler: "onPrevDiff",
       //   bind: {
-      //     disabled: "{!canPrevChange}",
+      //     disabled: "{!hasPrevChange}",
       //   },
     },
   ],
@@ -258,8 +258,7 @@ Ext.define("NOC.core.MonacoPanel", {
       diffEditor = codeViewer.editor,
       changes = codeViewer.changes;
     if(!changes || changes.length === 0) return;
-    codeViewer.currentChangeIndex = (codeViewer.currentChangeIndex + n) % changes.length;
-    if(codeViewer.currentChangeIndex < 0) return;
+    codeViewer.currentChangeIndex = this.cyclePosition(codeViewer.currentChangeIndex, changes.length - 1, n);
     var change = changes[codeViewer.currentChangeIndex];
     diffEditor.getModifiedEditor().revealLineInCenter(change.modifiedStartLineNumber);
     diffEditor.getModifiedEditor().setPosition({
@@ -279,5 +278,15 @@ Ext.define("NOC.core.MonacoPanel", {
   },
   onPrevDiff: function(){
     this.setChange(-1);
+  },
+  cyclePosition: function(current, max, step){
+    var newValue = current + step;
+  
+    if(newValue < 0){
+      return max;
+    } else if(newValue > max){
+      return 0;
+    }
+    return newValue;
   },
 });
