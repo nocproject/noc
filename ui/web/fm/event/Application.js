@@ -11,7 +11,7 @@ Ext.define("NOC.fm.event.Application", {
   requires: [
     "NOC.core.ComboBox",
     "NOC.core.combotree.ComboTree",
-    "NOC.core.JSONPreview",
+    "NOC.core.JSONPreviewII",
     "NOC.core.ModelStore",
     "NOC.sa.managedobject.LookupField",
     "NOC.inv.resourcegroup.Model",
@@ -165,10 +165,10 @@ Ext.define("NOC.fm.event.Application", {
       ],
     });
     //
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/fm/event/{id}/json/"),
-      previewName: new Ext.XTemplate("Event: {id}"),
+      restUrl: "/fm/event/{0}/json/",
+      previewName: "Event: {0}",
     });
     me.ITEM_GRID = me.registerItem(me.mainPanel);
     me.ITEM_JSON = me.registerItem(me.jsonPanel);

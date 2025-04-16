@@ -10,7 +10,7 @@ Ext.define("NOC.cm.confdbquery.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.CodeViewer",
-    "NOC.core.JSONPreview",
+    "NOC.core.JSONPreviewII",
     "NOC.cm.confdbquery.Model",
     "Ext.ux.form.GridField",
   ],
@@ -20,10 +20,10 @@ Ext.define("NOC.cm.confdbquery.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/cm/confdbquery/{id}/json/"),
-      previewName: new Ext.XTemplate("ConfDB Query: {name}"),
+      restUrl: "/cm/confdbquery/{0}/json/",
+      previewName: "ConfDB Query: {0}",
     });
 
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
@@ -169,6 +169,6 @@ Ext.define("NOC.cm.confdbquery.Application", {
   onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
   },
 });

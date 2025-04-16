@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.classificationrule.Application");
 Ext.define("NOC.fm.classificationrule.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreview",
+    "NOC.core.JSONPreviewII",
     "NOC.core.TemplatePreview",
     "NOC.core.StringListField",
     "NOC.core.tagfield.Tagfield",
@@ -61,10 +61,10 @@ Ext.define("NOC.fm.classificationrule.Application", {
 
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/fm/classificationrule/{id}/json/"),
-      previewName: new Ext.XTemplate("Classification Rule: {name}"),
+      restUrl: "/fm/classificationrule/{0}/json/",
+      previewName: "Classification Rule: {0}",
     });
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
     //
@@ -326,7 +326,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
   onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
   },
   //
   onTest: function(){
