@@ -58,6 +58,15 @@ export class ExternalLibsPlugin{
         {name: "common/diff_match_patch.js", format: "iife"},
         {name: "pkg/codemirror/addon/merge/merge.js", format: "iife"},
         
+        // JointJS
+        {name: "pkg/lodash/lodash.min.js", format: "iife"},
+        {name: "pkg/backbone/backbone.min.js", format: "iife"},
+        {name: "pkg/dagre/dagre.min.js", format: "iife"},
+        {name: "pkg/graphlib/graphlib.min.js", format: "iife"},
+        {name: "pkg/joint/joint.min.js", format: "iife"},
+        {name: "pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js", format: "iife"},
+        {name: "web/wf/workflow/js/joint.element.Tools.js", format: "iife"},
+      
         // Other libraries
         {name: "pkg/moment/moment.min.js", format: "iife"},
         {name: "pkg/moment-timezone/moment-timezone-with-data-1970-2030.min.js", format: "iife"},
