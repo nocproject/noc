@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.objectmodel.Application");
 Ext.define("NOC.inv.objectmodel.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreview",
+    "NOC.core.JSONPreviewII",
     "NOC.core.label.LabelField",
     "NOC.core.TemplatePreview",
     "NOC.inv.objectmodel.Model",
@@ -55,10 +55,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
     var me = this;
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/inv/objectmodel/{id}/json/"),
-      previewName: new Ext.XTemplate("Object Model: {name}"),
+      restUrl: "/inv/objectmodel/{0}/json/",
+      previewName: "Object Model: {0}",
     });
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
     // Test panel
@@ -717,7 +717,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
   onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
   },
   //
   onTest: function(){

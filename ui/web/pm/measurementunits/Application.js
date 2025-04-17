@@ -8,17 +8,21 @@ console.debug("Defining NOC.pm.measurementunits.Application");
 
 Ext.define("NOC.pm.measurementunits.Application", {
   extend: "NOC.core.ModelApplication",
-  requires: ["NOC.pm.measurementunits.Model", "Ext.ux.form.ColorField", "NOC.pm.measurementunits.LookupField"],
+  requires: [
+    "NOC.core.JSONPreviewII",
+    "NOC.pm.measurementunits.Model",
+    "Ext.ux.form.ColorField",
+    "NOC.pm.measurementunits.LookupField"],
   model: "NOC.pm.measurementunits.Model",
   search: true,
 
-  initComponent: function() {
+  initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/pm/measurementunits/{id}/json/"),
-      previewName: new Ext.XTemplate("Scope: {name}")
+      restUrl: "/pm/measurementunits/{0}/json/",
+      previewName: "Scope: {0}",
     });
 
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
@@ -28,23 +32,23 @@ Ext.define("NOC.pm.measurementunits.Application", {
         {
           text: __("Name"),
           dataIndex: "name",
-          width: 100
+          width: 100,
         },
         {
           text: __("Code"),
           dataIndex: "code",
-          width: 100
+          width: 100,
         },
         {
           text: __("Base"),
           dataIndex: "base_unit",
-          renderer: NOC.render.Lookup("base_unit")
+          renderer: NOC.render.Lookup("base_unit"),
         },
         {
           text: __("Description"),
           dataIndex: "description",
-          flex: 1
-        }
+          flex: 1,
+        },
       ],
       fields: [
         {
@@ -52,53 +56,53 @@ Ext.define("NOC.pm.measurementunits.Application", {
           xtype: "textfield",
           fieldLabel: __("Name"),
           allowBlank: false,
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "uuid",
           xtype: "displayfield",
           fieldLabel: __("UUID"),
-          allowBlank: true
+          allowBlank: true,
         },
         {
           name: "base_unit",
           xtype: "pm.measurementunits.LookupField",
           fieldLabel: __("Base Measurement Units"),
-          allowBlank: true
+          allowBlank: true,
         },
         {
           name: "description",
           xtype: "textarea",
           fieldLabel: __("Description"),
           allowBlank: true,
-          uiStyle: "extra"
+          uiStyle: "extra",
         },
         {
           name: "code",
           xtype: "textfield",
           fieldLabel: __("Code"),
           allowBlank: false,
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "label",
           xtype: "textfield",
           fieldLabel: __("Label"),
           allowBlank: false,
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "dashboard_label",
           xtype: "textfield",
           fieldLabel: __("Dashboard Label"),
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "dashboard_sr_color",
           xtype: "colorfield",
           fieldLabel: __("Dashboard Series Color"),
           allowBlank: true,
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "convert_from",
@@ -111,17 +115,17 @@ Ext.define("NOC.pm.measurementunits.Application", {
               dataIndex: "unit",
               width: 200,
               editor: {
-                xtype: "pm.measurementunits.LookupField"
+                xtype: "pm.measurementunits.LookupField",
               },
-              renderer: NOC.render.Lookup("unit")
+              renderer: NOC.render.Lookup("unit"),
             },
             {
               text: __("Expresseion"),
               dataIndex: "expr",
               flex: 1,
-              editor: "textfield"
-            }
-          ]
+              editor: "textfield",
+            },
+          ],
         },
         {
           name: "enum",
@@ -133,16 +137,16 @@ Ext.define("NOC.pm.measurementunits.Application", {
               text: __("Key"),
               dataIndex: "key",
               width: 150,
-              editor: "textfield"
+              editor: "textfield",
             },
             {
               text: __("Value"),
               dataIndex: "value",
               flex: 1,
-              editor: "numberfield"
-            }
-          ]
-        }
+              editor: "numberfield",
+            },
+          ],
+        },
       ],
       formToolbar: [
         {
@@ -151,16 +155,16 @@ Ext.define("NOC.pm.measurementunits.Application", {
           tooltip: __("Show JSON"),
           hasAccess: NOC.hasPermission("read"),
           scope: me,
-          handler: me.onJSON
-        }
-      ]
+          handler: me.onJSON,
+        },
+      ],
     });
     me.callParent();
   },
   //
-  onJSON: function() {
+  onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
-  }
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
+  },
 });
