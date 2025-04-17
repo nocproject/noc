@@ -108,16 +108,15 @@ Ext.define("NOC.wf.workflow.WFEditor", {
   //
   afterRender: function(){
     var me = this;
-    // Ext.require([
-    //   "/ui/pkg/lodash/lodash.min.js",
-    //   "/ui/pkg/backbone/backbone.min.js",
-    //   "/ui/pkg/dagre/dagre.min.js",
-    //   "/ui/pkg/graphlib/graphlib.min.js",
-    //   "/ui/pkg/joint/joint.min.js",
-    //   "/ui/pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js",
-    //   "/ui/web/wf/workflow/js/joint.element.Tools.js",
-    // ], me.initMap, me);
-    me.initMap();
+        new_load_scripts([
+            "/ui/pkg/lodash/lodash.min.js",
+            "/ui/pkg/backbone/backbone.min.js",
+            "/ui/pkg/dagre/dagre.min.js",
+            "/ui/pkg/graphlib/graphlib.min.js",
+            "/ui/pkg/joint/joint.min.js",
+            "/ui/pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js",
+            "/ui/web/wf/workflow/js/joint.element.Tools.js"
+        ], me, me.initMap);
     me.callParent();
   },
   // Initialize JointJS Map
