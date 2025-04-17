@@ -1,0 +1,183 @@
+{
+    "name": "Pending Links",
+    "$collection": "main.reports",
+    "uuid": "b74864b8-53a3-484d-ac8c-045567d2a859",
+    "title": "Pending Links (New)",
+    "description": "Неподтверждённые линки",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "pendinglinksds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select * from Root"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "master",
+            "column_format": [
+                {
+                    "name": "managed_object",
+                    "title": "Managed Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile",
+                    "format_type": "string"
+                },
+                {
+                    "name": "administrative_domain",
+                    "title": "Administrative domain",
+                    "format_type": "string"
+                },
+                {
+                    "name": "interface",
+                    "title": "Interface",
+                    "format_type": "string"
+                },
+                {
+                    "name": "direction",
+                    "title": "Direction",
+                    "format_type": "string"
+                },
+                {
+                    "name": "remote_interface",
+                    "title": "Remote Interface",
+                    "format_type": "string"
+                },
+                {
+                    "name": "remote_object",
+                    "title": "Remote Object",
+                    "format_type": "string"
+                },
+                {
+                    "name": "detail",
+                    "title": "Detail",
+                    "format_type": "string"
+                },
+                {
+                    "name": "remote_hostname",
+                    "title": "Remote Hostname",
+                    "format_type": "string"
+                },
+                {
+                    "name": "remote_description",
+                    "title": "Remote Description",
+                    "format_type": "string"
+                },
+                {
+                    "name": "remote_chassis",
+                    "title": "Remote Chassis",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Неподтверждённые линки (Новый)"
+        },
+        "columns.managed_object": {
+            "ru": "Объект управления"
+        },
+        "columns.address": {
+            "ru": "Адрес"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
+        },
+        "columns.administrative_domain": {
+            "ru": "З.О."
+        },
+        "columns.interface": {
+            "ru": "Интерфейс"
+        },
+        "columns.direction": {
+            "ru": "Направление проблемы"
+        },
+        "columns.remote_interface": {
+            "ru": "Соседний интерфейс"
+        },
+        "columns.remote_object": {
+            "ru": "Соседнее устройство"
+        },
+        "columns.detail": {
+            "ru": "Ссылка на детализацию"
+        },
+        "columns.remote_hostname": {
+            "ru": "Имя хоста соседа (по данным LLDP)"
+        },
+        "columns.remote_description": {
+            "ru": "Описание соседа (по данным LLDP)"
+        },
+        "columns.remote_chassis": {
+            "ru": "Соседний MAC адрес (по данным LLDP)"
+        },
+        "parameters.pool": {
+            "ru": "Пул"
+        },
+        "parameters.mo_profile": {
+            "ru": "Профиль объекта"
+        },
+        "parameters.show_already_linked": {
+            "ru": "Показать проблемы на слинкованных интерфейсах"
+        }
+    },
+    "parameters": [
+        {
+            "name": "pool",
+            "description": null,
+            "hide": false,
+            "label": "Pool",
+            "model_id": "main.Pool",
+            "required": true,
+            "type": "model"
+        },
+        {
+            "name": "mo_profile",
+            "description": null,
+            "hide": false,
+            "label": "MO Profile",
+            "model_id": "sa.ManagedObjectProfile",
+            "type": "model"
+        },
+        {
+            "name": "show_already_linked",
+            "description": null,
+            "hide": false,
+            "label": "Show problem on already linked",
+            "type": "bool"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
