@@ -9,7 +9,6 @@ console.debug("Defining NOC.pm.metrictype.Application");
 Ext.define("NOC.pm.metrictype.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.CMText",
     "NOC.core.JSONPreviewII",
     "NOC.pm.metrictype.Model",
     "NOC.core.tagfield.Tagfield",
