@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # sa.service application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -203,23 +203,40 @@ class ServiceApplication(ExtDocApplication):
         o = self.get_object_or_404(Service, id=sid)
         # if not o.has_access(request.user):
         #    return self.response_forbidden("Access denied")
-        if not o.caps:
-            return []
-        r = []
+        caps = {}
         for c in o.caps:
-            r += [
-                {
-                    "capability": c.capability.name,
-                    "id": str(c.capability.id),
+            caps[str(c.capability.id)] = {
+                "capability": c.capability.name,
+                "id": str(c.capability.id),
+                "object": str(o.id),
+                "description": c.capability.description,
+                "type": c.capability.type,
+                "value": c.value,
+                "source": c.source,
+                "scope": c.scope or "",
+                "editor": c.capability.get_editor() if c.capability.allow_manual else None,
+            }
+        r = []
+        for cp in o.profile.caps:
+            cid = str(cp.capability.id)
+            if cid in caps:
+                c = caps.pop(cid)
+                if not cp.allow_manual:
+                    c["editor"] = None
+                c["value"] = c["value"] or cp.default_value
+            else:
+                c = {
+                    "capability": cp.capability.name,
+                    "id": str(cp.capability.id),
                     "object": str(o.id),
-                    "description": c.capability.description,
-                    "type": c.capability.type,
-                    "value": c.value,
-                    "source": c.source,
-                    "scope": c.scope or "",
-                    "editor": c.capability.get_editor(),
+                    "description": cp.capability.description,
+                    "type": cp.capability.type,
+                    "value": cp.default_value,
+                    "source": "P",
+                    "scope": "",
+                    "editor": cp.capability.get_editor() if cp.allow_manual else None,
                 }
-            ]
+            r.append(c)
         return sorted(r, key=lambda x: x["capability"])
 
     @view(r"^(?P<sid>[0-9a-f]{24})/resource/(?P<r_type>\S+)/", access="read", api=True)
