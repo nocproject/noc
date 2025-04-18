@@ -114,6 +114,7 @@ class CalculatedStatusRule(EmbeddedDocument):
     5. if match - return set_status
     6. Without match - return
     """
+
     meta = {"strict": False, "auto_create_index": False}
 
     weight_function = StringField(
