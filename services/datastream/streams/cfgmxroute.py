@@ -22,14 +22,15 @@ class CfgMetricsCollectorDataStream(DataStream):
 
     @classmethod
     def get_object(cls, oid: str) -> Dict[str, Any]:
-        if isinstance(oid, ObjectId):
+        if isinstance(oid, (ObjectId, int)):
             oid = str(oid)
-        if oid.startswith("ng:"):
+        if oid.isdigit():
+            route = NotificationGroup.get_by_id(int(oid))
+        elif oid.startswith("ng:"):
             route = NotificationGroup.get_by_id(int(oid[3:]))
         else:
             route = MessageRoute.get_by_id(oid)
         if not route or not route.is_active:
             raise KeyError()
         r = route.get_route_config()
-        r["id"] = str(route.id)
         return r

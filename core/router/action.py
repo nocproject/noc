@@ -135,10 +135,7 @@ class NotificationAction(Action):
         return NotificationGroup.get_by_id(self.ng)
 
     def register_escalation(self):
-        """
-        Register Notification escalation
-        :return:
-        """
+        """Register Notification escalation"""
 
     def render_template(self, message_type: bytes, msg: Message) -> Optional[Dict[str, str]]:
         """
@@ -164,9 +161,14 @@ class NotificationAction(Action):
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         #
-        body = self.render_template(message_type, msg)
+        try:
+            body = self.render_template(message_type, msg)
+        except TypeError as e:
+            print("Cant Render Template: %s" % e)
+            return
         if not body:
             # Unknown template
+            # print("Unknown Template")
             return
         if MX_NOTIFICATION_DELAY in msg.headers:
             ...
@@ -174,10 +176,15 @@ class NotificationAction(Action):
             yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
         ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
         if not ng:
+            # print(f"Unknown Notification Group: {MX_NOTIFICATION_GROUP_ID}")
             return
         for method, headers, render_template in ng.iter_actions(
             message_type.decode(),
-            {MessageMeta.WATCH_FOR: msg.headers[MX_WATCH_FOR_ID].decode()},
+            (
+                {MessageMeta.WATCH_FOR: msg.headers[MX_WATCH_FOR_ID].decode()}
+                if MX_WATCH_FOR_ID in msg.headers
+                else {}
+            ),
         ):
             yield NOTIFICATION_METHODS[method].decode(), headers, body
 
