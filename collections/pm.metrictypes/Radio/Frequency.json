@@ -1,0 +1,12 @@
+{
+    "name": "Radio | Frequency",
+    "$collection": "pm.metrictypes",
+    "uuid": "51f86087-1e86-4f7f-b7c0-b31598d3a5d6",
+    "scope__name": "Interface",
+    "field_name": "radio_frequency",
+    "field_type": "Int32",
+    "description": "Frequency on transmitter",
+    "measure": "MHz",
+    "units__code": "hz",
+    "scale__code": "M"
+}
