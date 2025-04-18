@@ -344,6 +344,18 @@ class NotificationGroup(NOCModel):
         """List of (time pattern, method, params, language)"""
         contacts = []
         ts = datetime.datetime.now()
+        # Collect other notifications
+        for ngo in self.static_members:
+            for c in ngo["contact"].split(","):
+                contacts.append(
+                    NotificationContact(
+                        contact=c,
+                        method=ngo["notification_method"],
+                        time_pattern=ngo.get("time_pattern") or None,
+                    )
+                )
+        if not self.subscription_settings:
+            return contacts
         # Collect user notifications
         for ngu in self.notificationgroupusersettings_set.filter():
             if ngu.policy == "D" or ngu.suppress or ngu.policy == "W":
@@ -356,24 +368,6 @@ class NotificationGroup(NOCModel):
                 if c.time_pattern and not c.time_pattern.match(ts):
                     continue
                 contacts.append(c)
-        # contacts += [
-        #     NotificationContact(
-        #         contact=ngu.user.email,
-        #         language=lang,
-        #         time_pattern=ngu.time_pattern or None,
-        #     )
-        # ]
-        # Collect other notifications
-        for ngo in self.static_members:
-            for c in ngo["contact"].split(","):
-                contacts.append(
-                    NotificationContact(
-                        contact=c,
-                        method=ngo["notification_method"],
-                        time_pattern=ngo.get("time_pattern") or None,
-                    )
-                )
-        # Collect subscribed notification
         return contacts
 
     @property
@@ -687,7 +681,7 @@ class NotificationGroup(NOCModel):
             for c in ngs.contacts:
                 if c.time_pattern and not c.time_pattern.match(now):
                     continue
-                yield c
+                yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
 
     @classmethod
     def render_message(
