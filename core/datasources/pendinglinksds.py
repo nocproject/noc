@@ -9,14 +9,13 @@
 import ast
 from collections import defaultdict
 import re
-from time import perf_counter
 from typing import Any, Optional, Iterable, Tuple, AsyncIterable
 
 # Third-party modules
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
+from .base import BaseDataSource, FieldInfo, ParamInfo
 from noc.core.cache.base import cache
 from noc.core.mongo.connection import get_db
 from noc.inv.models.interface import Interface
@@ -26,7 +25,8 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.useraccess import UserAccess
+
+# from noc.sa.models.useraccess import UserAccess
 
 
 class ReportPendingLinks(object):
@@ -44,8 +44,6 @@ class ReportPendingLinks(object):
 
     @staticmethod
     def load(ids, ignore_profiles=None, filter_exists_link=False):
-        print("*** load 1")
-        print("ids type/len", type(ids), len(ids))
         problems = defaultdict(dict)  # id -> problem
         rx_nf = re.compile(r"Remote object '(.*?)' is not found")
         rg = re.compile(
@@ -158,7 +156,6 @@ class ReportPendingLinks(object):
                         }
                         # print(discovery["problems"]["lldp"])
             n += 10000
-        print("*** load 2")
         return problems
 
 
@@ -180,11 +177,8 @@ class PendingLinksDS(BaseDataSource):
         FieldInfo(name="remote_chassis"),
     ]
 
-    # label=_("Managed Objects Pools"), required=True,
-    # label=_("Managed Objects Profile"), required=False,
-    # label=_("Show problem on already linked"), required=False
     params = [
-        ParamInfo(name="pool", type="str", model="main.Pool"),  # required=True
+        ParamInfo(name="pool", type="str", model="main.Pool", required=True),
         ParamInfo(name="mo_profile", type="str", model="sa.ManagedObjectProfile"),
         ParamInfo(name="show_already_linked", type="bool", default=False),
     ]
@@ -199,8 +193,6 @@ class PendingLinksDS(BaseDataSource):
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Any]]:
-
-        t0 = perf_counter()
         rn = re.compile(
             r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
             re.IGNORECASE,
@@ -216,32 +208,20 @@ class PendingLinksDS(BaseDataSource):
         # Name, IP, count
         local_on_remote = defaultdict(int)
         # Get all managed objects
-        #pool = Pool.get_by_name("BRNL")
-        print("pool", pool, type(pool))
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool).values("id")
-        print("-------------- td1 ms", perf_counter() - t0)
-        t0 = perf_counter()
 
-        #f not request.user.is_superuser:
+        # if not request.user.is_superuser:
         #    mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if mo_profile:
             mos = mos.filter(object_profile=mo_profile)
         mos_id = {mo["id"]: mo for mo in mos}
-        print("mos_id type/len", type(mos_id), len(mos_id))
-        print("-------------- td2 ms", perf_counter() - t0)
-        t0 = perf_counter()
-
         report = ReportPendingLinks(
             list(mos_id),
             ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")),
             filter_exists_link=not show_already_linked,
         )
         problems = report.out
-        print("-------------- td3 ms", perf_counter() - t0)
-        t0 = perf_counter()
-
         for mo_id in problems:
-            #mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
             mo = ManagedObject.get_by_id(mo_id)
             for iface in problems[mo_id]:
                 data += [
@@ -266,20 +246,14 @@ class PendingLinksDS(BaseDataSource):
                         not_found[match[0]] += 1
                 elif problems[mo_id][iface]["problem"] == "Not found iface on remote":
                     local_on_remote[(mo.name, mo.address)] += 1
-        #data += [SectionRow(name="Summary information on u_object")]
-        #for c in not_found:
+        # data += [SectionRow(name="Summary information on u_object")]
+        # for c in not_found:
         #    if not_found[c] > 4:
         #        data += [c]
-        #data += [SectionRow(name="Summary information on agg")]
-        #for c in local_on_remote:
+        # data += [SectionRow(name="Summary information on agg")]
+        # for c in local_on_remote:
         #    if local_on_remote[c] > 4:
         #        data += [c]
-
-        print("-------------- td4 ms", perf_counter() - t0)
-
-        print("data type/len", type(data), len(data))
-        for i in data[:2]:
-            print("i", i, type(i))
         row_num = 0
         for o in data:
             row_num += 1

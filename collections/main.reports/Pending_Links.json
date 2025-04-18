@@ -26,7 +26,7 @@
     ],
     "bands_format": [
         {
-            "name": "master",
+            "name": "header",
             "column_format": [
                 {
                     "name": "managed_object",
