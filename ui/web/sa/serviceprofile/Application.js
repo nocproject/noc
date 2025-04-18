@@ -568,8 +568,8 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                             editor: "textfield"
                         },
                         {
-                            text: __("Allowed Manual"),
-                            dataIndex: "allowed_manual",
+                            text: __("Allow Manual"),
+                            dataIndex: "allow_manual",
                             width: 150,
                             editor: "checkbox",
                             renderer: NOC.render.Bool

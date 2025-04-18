@@ -54,6 +54,9 @@ id_lock = Lock()
 
 
 class CapsSettings(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    # Required
     capability = ReferenceField(Capability)
     default_value = DynamicField()
     allow_manual = BooleanField(default=False)
@@ -111,6 +114,7 @@ class CalculatedStatusRule(EmbeddedDocument):
     5. if match - return set_status
     6. Without match - return
     """
+    meta = {"strict": False, "auto_create_index": False}
 
     weight_function = StringField(
         choices=[

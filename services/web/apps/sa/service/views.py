@@ -205,7 +205,7 @@ class ServiceApplication(ExtDocApplication):
         #    return self.response_forbidden("Access denied")
         caps = {}
         for c in o.caps:
-            caps[str(c.id)] = {
+            caps[str(c.capability.id)] = {
                 "capability": c.capability.name,
                 "id": str(c.capability.id),
                 "object": str(o.id),
@@ -223,7 +223,7 @@ class ServiceApplication(ExtDocApplication):
                 c = caps.pop(cid)
                 if not cp.allow_manual:
                     c["editor"] = None
-                caps["value"] = caps["value"] or c.default_value
+                c["value"] = c["value"] or cp.default_value
             else:
                 c = {
                     "capability": cp.capability.name,
