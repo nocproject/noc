@@ -9,7 +9,7 @@
 import ast
 from collections import defaultdict
 import re
-from typing import Any, Optional, Iterable, Tuple, AsyncIterable
+from typing import Any, Optional, Iterable, List, Tuple, AsyncIterable
 
 # Third-party modules
 from pymongo import ReadPreference
@@ -190,9 +190,11 @@ class PendingLinksDS(BaseDataSource):
         pool: Optional[Pool] = None,
         mo_profile: Optional[ManagedObjectProfile] = None,
         show_already_linked=False,
+        admin_domain_ads: Optional[List[int]] = None,
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Any]]:
+        print("kwargs", kwargs, type(kwargs))
         rn = re.compile(
             r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
             re.IGNORECASE,
@@ -209,18 +211,16 @@ class PendingLinksDS(BaseDataSource):
         local_on_remote = defaultdict(int)
         # Get all managed objects
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool).values("id")
-
-        # if not request.user.is_superuser:
-        #    mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
+        if admin_domain_ads:
+            mos = mos.filter(administrative_domain__in=admin_domain_ads)
         if mo_profile:
             mos = mos.filter(object_profile=mo_profile)
         mos_id = {mo["id"]: mo for mo in mos}
-        report = ReportPendingLinks(
+        problems = ReportPendingLinks(
             list(mos_id),
             ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")),
             filter_exists_link=not show_already_linked,
-        )
-        problems = report.out
+        ).out
         for mo_id in problems:
             mo = ManagedObject.get_by_id(mo_id)
             for iface in problems[mo_id]:
