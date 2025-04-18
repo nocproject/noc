@@ -44,7 +44,7 @@ class Command(BaseCommand):
         "vrf": "ip.VRF",
         "prefix": "ip.Prefix",
         "address": "ip.Address",
-        "cfgmxroute": "main.MessageRoute",
+        "cfgmxroute": ("main.MessageRoute", "main.NotificationGroup"),
         "cfgmetricrules": "pm.MetricRule",
         "cfgeventrules": "fm.EventClassificationRule",
         "cfgevent": "fm.EventClass",

@@ -11,6 +11,7 @@ from typing import Optional
 
 # NOC modules
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.extapplication import PermitLogged
 from noc.core.mx import NOTIFICATION_METHODS
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -62,7 +63,7 @@ class NotificationGroupApplication(ExtModelApplication):
             "preferred_method": StringParameter(choices=list(NOTIFICATION_METHODS), required=False),
         },
         method=["POST"],
-        access="update",
+        access=PermitLogged(),
         api=True,
     )
     def api_change_user_subscription(

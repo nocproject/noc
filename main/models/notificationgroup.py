@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,6 @@
 import datetime
 import logging
 import operator
-from dataclasses import dataclass
 from threading import Lock
 from typing import Tuple, Dict, Iterable, Optional, Any, Set, List
 
@@ -30,7 +29,6 @@ import cachetools
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import PydanticField, DocumentReferenceField
-from noc.core.timepattern import TimePatternList
 from noc.core.mx import (
     send_notification,
     NOTIFICATION_METHODS,
@@ -38,6 +36,7 @@ from noc.core.mx import (
     MessageType,
     MessageMeta,
     get_subscriber_id,
+    NotificationContact,
 )
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
@@ -68,24 +67,6 @@ NOTIFICATION_DEFAULT_TEMPLATE = {
 
 NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_METHODS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
-
-
-@dataclass(frozen=True)
-class NotificationContact:
-    contact: str
-    language: str = LANGUAGE_CODE
-    method: str = "mail"
-    watch: Optional[str] = None
-    time_pattern: Optional[TimePatternList] = None
-
-    def match(self, ts: datetime.datetime, watch: Optional[str] = None):
-        if not self.time_pattern and not self.watch:
-            return True
-        # if self.time_pattern and not self.time_pattern.match(ts):
-        #     return False
-        if self.watch and self.watch != watch:
-            return False
-        return True
 
 
 class StaticMember(BaseModel):
@@ -334,6 +315,7 @@ class NotificationGroup(NOCModel):
         if self.message_types:
             tt = [x["message_type"] for x in self.message_types]
         r = {
+            "id": str(self.id),
             "name": self.name,
             "type": tt,
             "order": 998,
@@ -360,49 +342,33 @@ class NotificationGroup(NOCModel):
     @property
     def members(self) -> List[NotificationContact]:
         """List of (time pattern, method, params, language)"""
-        default_language = LANGUAGE_CODE
-        m = []
-        # Collect user notifications
-        for ngu in self.notificationgroupusersettings_set.filter():
-            if ngu.suppress:
-                continue
-            lang = ngu.user.preferred_language or default_language
-            user_contacts = ngu.user.contacts
-            if user_contacts:
-                for tp, method, params in user_contacts:
-                    if tp:
-                        tp = [tp]
-                    if ngu.time_pattern:
-                        tp.insert(ngu.time_pattern, 0)
-                    m.append(
-                        NotificationContact(
-                            contact=params,
-                            method=method,
-                            language=lang,
-                            time_pattern=TimePatternList(tp),
-                            watch=ngu.watch,
-                        )
-                    )
-            else:
-                m += [
-                    NotificationContact(
-                        contact=ngu.user.email,
-                        language=lang,
-                        watch=ngu.watch,
-                        time_pattern=ngu.time_pattern or None,
-                    )
-                ]
+        contacts = []
+        ts = datetime.datetime.now()
         # Collect other notifications
         for ngo in self.static_members:
             for c in ngo["contact"].split(","):
-                m.append(
+                contacts.append(
                     NotificationContact(
                         contact=c,
                         method=ngo["notification_method"],
                         time_pattern=ngo.get("time_pattern") or None,
                     )
                 )
-        return m
+        if not self.subscription_settings:
+            return contacts
+        # Collect user notifications
+        for ngu in self.notificationgroupusersettings_set.filter():
+            if ngu.policy == "D" or ngu.suppress or ngu.policy == "W":
+                continue
+            if ngu.expired_at and ngu.expired_at > ts:
+                continue
+            if ngu.time_pattern and not ngu.time_pattern.match(ts):
+                continue
+            for c in ngu.contacts:
+                if c.time_pattern and not c.time_pattern.match(ts):
+                    continue
+                contacts.append(c)
+        return contacts
 
     @property
     def active_members(self) -> Set[Tuple[str, str, Optional[str]]]:
@@ -703,9 +669,19 @@ class NotificationGroup(NOCModel):
         """
         now = ts or datetime.datetime.now()
         for c in self.members:
-            if not c.match(now, meta.get(MessageMeta.WATCH_FOR)):
-                continue
+            # headers!
             yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
+        if MessageMeta.WATCH_FOR not in meta:
+            return
+        _, model_id, instance_id = meta[MessageMeta.WATCH_FOR].split(":")
+        for ngs in self.notificationgroupsubscription_set.filter(
+            model_id=model_id,
+            instance_id=instance_id,
+        ):
+            for c in ngs.contacts:
+                if c.time_pattern and not c.time_pattern.match(now):
+                    continue
+                yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
 
     @classmethod
     def render_message(
@@ -769,19 +745,30 @@ class NotificationGroupUserSettings(NOCModel):
         choices=[
             ("D", "Disable"),  # Direct
             ("A", "Any"),
-            ("W", "By Types"),
-            ("W", "By Types"),
+            ("W", "Only Watch"),
+            ("F", "Favorites Only"),
         ],
         default="A",
         null=False,
         blank=False,
     )
     title_tag = CharField(max_length=30, blank=True)
-    expired_at = DateTimeField("Expired Subscription After", auto_now_add=False)
+    expired_at: Optional[datetime.datetime] = DateTimeField(
+        "Expired Subscription After", auto_now_add=False
+    )
     suppress = BooleanField("Deactivate Subscription", default=False)
 
     def __str__(self):
         return f"{self.user.username}@{self.notification_group.name}: {self.time_pattern.name if self.time_pattern else ''}"
+
+    @property
+    def contacts(self) -> List[NotificationContact]:
+        contacts = []
+        for c in self.user.contacts:
+            if self.method and c.method != self.method:
+                continue
+            contacts += [c]
+        return contacts
 
 
 class NotificationGroupSubscription(NOCModel):
@@ -804,16 +791,25 @@ class NotificationGroupSubscription(NOCModel):
 
     def is_match(self, meta: Dict[MessageMeta, Any]):
         # time_pattern
+        if f"m:{self.model_id}:{self.instance_id}" == meta[MessageMeta.WATCH_FOR]:
+            return False
         if not self.watchers:
             return True
         if self.watchers and MessageMeta.FROM not in meta:
             return False
         return meta[MessageMeta.FROM] in self.watchers
 
+    @property
+    def contacts(self) -> List[NotificationContact]:
+        contacts = []
+        for w in self.get_watchers(exclude_suppressed=True):
+            contacts += w.contacts
+        return contacts
+
     def get_watchers(self, exclude_suppressed: bool = False):
         r = []
         for w in self.watchers:
-            if exclude_suppressed and w in self.suppresses:
+            if exclude_suppressed and self.suppresses and w in self.suppresses:
                 continue
             mid, oid = w.split(":")
             model = get_model(mid)

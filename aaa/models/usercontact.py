@@ -23,7 +23,7 @@ class UserContact(NOCModel):
         app_label = "aaa"
         db_table = "aaa_usercontact"
 
-    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    user: User = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
     time_pattern = models.ForeignKey(
         TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE
     )
@@ -33,4 +33,4 @@ class UserContact(NOCModel):
     params = models.CharField("Params", max_length=256)
 
     def __str__(self):
-        return "%s %s %s" % (self.user.username, self.time_pattern.name, self.notification_method)
+        return f"{self.user.username} {self.time_pattern.name if self.time_pattern else ''} {self.notification_method}"

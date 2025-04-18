@@ -135,6 +135,7 @@ class MessageRoute(Document):
     def get_route_config(self):
         """Return data for configured Router"""
         r = {
+            "id": str(self.id),
             "name": self.name,
             "type": self.type,
             "order": self.order,
