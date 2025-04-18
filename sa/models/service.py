@@ -530,6 +530,7 @@ class Service(Document):
         effective_clients = frozenset(str(x) for x in self.effective_client_groups)
         # Matcher ?
         instances: Optional[List["ServiceInstance"]] = None
+        max_weight = 0
         # Calculate Alarm status
         for aa in ActiveAlarm.objects.filter(affected_services=self.id):
             # Match Rule
@@ -549,17 +550,17 @@ class Service(Document):
             if (
                 effective_clients
                 and aa.managed_object.effective_service_groups
-                and effective_clients.intersection(
-                    set(aa.aa.managed_object.effective_service_groups)
-                )
+                and effective_clients.intersection(set(aa.managed_object.effective_service_groups))
             ):
                 instance_status[aa.managed_object.id] = max(
                     instance_status[aa.managed_object.id], status
                 )
             if instances is None:
                 instances = [si for si in ServiceInstance.objects.filter(service=self.id)]
+                max_weight = len(instances)
             for si in instances:
                 if si.is_match_alarm(aa):
+                    # @todo Detect Alarm Status
                     instance_status[si.id] = max(instance_status[si.id], status)
             # alarm_statuses[aa] = status
         # if not instance_status:
@@ -569,9 +570,10 @@ class Service(Document):
         logger.info("[%s] Instance statuses: %s", self.id, instance_status)
         # Calculate Service Instance Status
         # Request base summary. Max Weight. Instance count, if not - set 1
-        max_weight = len(instance_status)
+        # max_weight = len(instance_status)
         if effective_clients:
-            max_weight += sum(
+            max_weight = sum(
+                # @todo Add exclude instance
                 r.resource_count
                 for r in ResourceGroup.objects.filter(id__in=list(effective_clients))
             )
@@ -583,7 +585,13 @@ class Service(Document):
                 r[status] += 1
         # self.weight
         r[alarm_status] = (max_weight or 1) - sum(r.values())
-        logger.info("[%s] Affected statuses: %s", self.id, r)
+        logger.debug(
+            "[%s] Affected statuses: %s (MaxWeight: %s, AStatus: %s)",
+            self.id,
+            r,
+            max_weight,
+            alarm_status,
+        )
         # Calculate affected status
         return self.calculate_status(r)
 
@@ -643,9 +651,12 @@ class Service(Document):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
         spr = {}
         for p, rules in ServiceProfile.get_alarm_rules():
+            if rules is None:
+                # Any alarm by instance
+                spr[p] = True
             if not rules:
-                spr[p] = rules
                 continue
+            # Check rules
             for rule in rules:
                 if rule.is_match(alarm):
                     break
@@ -654,21 +665,22 @@ class Service(Document):
             spr[p] = rule.affected_instance
         if not q and not spr:
             return []
-        logger.debug("Match Profiles: %s", spr)
-        # Rules
-        rules = [x for x in spr if spr[x]]
+        logger.info("Match Profiles: %s", spr)
+        # Alarm without affected instances
+        rules = [x for x in spr if not spr[x]]
         if rules:
             q |= m_q(profile__in=rules)
         services = set()
         # Instances
         for svc in ServiceInstance.get_services_by_alarm(alarm):
-            if svc.profile.id in spr and not spr[svc.profile.id]:
+            if svc.profile.id in spr and spr[svc.profile.id]:
                 services.add(svc.id)
         # Check dependency
-        if alarm.managed_object.effective_service_groups:
+        deps = [x for x in spr if spr[x]]
+        if alarm.managed_object.effective_service_groups and deps:
             q |= m_q(
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
-                profile__in=rules,
+                profile__in=deps,
             )
         #
         logger.debug("Requested services by query: %s", q)
@@ -785,6 +797,7 @@ class Service(Document):
         )
         # Check multiple instances
         si = ServiceInstance.objects.filter(qs).first()
+        logger.debug("[%s] Find Instance by query: %s, Result: %s", self.id, qs, si)
         changed = False
         if not si:
             si = ServiceInstance(

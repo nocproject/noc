@@ -82,11 +82,20 @@ class NetworkHostInstance(ServiceInstanceConfig):
     required_fields = ["mac"]
     only_one_object = True
 
-    def get_reference(self, service: Any, macs=None, **kwargs) -> bytes:
+    def get_reference(self, service: Any, macs=None, remote_id=None, **kwargs) -> bytes:
+        if remote_id:
+            return sha512(remote_id.encode("utf-8")).digest()[:10]
         return sha512(macs[0].encode("utf-8")).digest()[:10]
 
-    def get_queryset(self, service: str, macs=None, **kwargs):
-        return Q(type=self.type, macs__in=macs)
+    def get_queryset(self, service: str, macs=None, remote_id=None, **kwargs):
+        q = Q()
+        if macs:
+            q |= Q(type=self.type, macs__in=macs)
+        if remote_id:
+            q |= Q(service=service, type=self.type, remote_id=remote_id)
+        if q:
+            return q
+        return Q(service=service, type=self.type)
 
 
 class NetworkChannelInstance(ServiceInstanceConfig):
@@ -102,11 +111,13 @@ class NetworkChannelInstance(ServiceInstanceConfig):
             # OR
             # Remote System
             q |= Q(service=service, type=self.type, remote_id=remote_id)
-        if self.only_one_object:
+        if self.only_one_object or not managed_object:
             # self.only_one_object
-            q |= Q(service=service, type=self.type)
+            q |= Q(service=service, type=self.type, managed_object=None)
         elif managed_object:
             q |= Q(service=service, type=self.type, managed_object=managed_object)
+        if not q:
+            q = Q(service=service, type=self.type)
         return q
 
 

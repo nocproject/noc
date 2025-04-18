@@ -234,7 +234,7 @@ class ServiceInstance(Document):
 
     def is_match_alarm(self, alarm: ActiveAlarm) -> bool:
         """Check alarm applying to instance"""
-        if self.resources and alarm.is_link_alarm:
+        if self.resources and alarm.is_link_alarm and alarm.components.interface:
             return alarm.components.interface.as_resource() in self.resources
         elif self.managed_object and self.managed_object.id == alarm.managed_object.id:
             return True
@@ -259,7 +259,7 @@ class ServiceInstance(Document):
             # BGP alarms
             address = alarm.vars.get("peer")
         if address:
-            q |= Q(addresses__address=address)
+            q &= Q(addresses__address=address)
         # Name, port
         return ServiceInstance.objects.filter(q).scalar("service")
 

@@ -56,7 +56,7 @@ id_lock = Lock()
 class CapsSettings(EmbeddedDocument):
     capability = ReferenceField(Capability)
     default_value = DynamicField()
-    allowed_manual = BooleanField(default=False)
+    allow_manual = BooleanField(default=False)
 
 
 condition_map = {
@@ -174,8 +174,10 @@ class CalculatedStatusRule(EmbeddedDocument):
             return min(weights)
         elif self.weight_function == "MAX":
             return max(weights)
-        # filter by min/max status
-        return round(sum(weights) / max_weight * 100, 2)
+        elif self.weight_function == "CP":
+            # filter by min/max status
+            return round(sum(weights) / max_weight * 100, 2)
+        return round(sum(weights) / len(weights), 2)
 
     # def get_status(
     #     self, severities: List[int], max_services: Optional[int] = None
@@ -336,10 +338,10 @@ class ServiceProfile(Document):
         default="N",
     )
     instance_policy_settings: "InstancePolicySettings" = EmbeddedDocumentField(
-        InstancePolicySettings
+        InstancePolicySettings, required=False
     )
     # Capabilities
-    caps = EmbeddedDocumentListField(CapsSettings)
+    caps: List[CapsSettings] = EmbeddedDocumentListField(CapsSettings)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -388,7 +390,7 @@ class ServiceProfile(Document):
             if num > 3:
                 break
             status = Status(4 - num)
-            if s.severity <= severity and status > Status.SLIGHTLY_DEGRADED:
+            if s.severity <= severity and status >= Status.SLIGHTLY_DEGRADED:
                 return status
         return Status.UNKNOWN
 
