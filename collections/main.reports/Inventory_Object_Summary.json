@@ -10,7 +10,7 @@
             "orientation": "H",
             "queries": [
                 {
-                    "datasource": "objectsummaryds",
+                    "datasource": "objectds",
                     "json": null
                 }
             ]
@@ -20,7 +20,7 @@
             "orientation": "H",
             "parent": "Root",
             "queries": [{
-                "ds_query": "select * from Root order by count desc, model"
+                "ds_query": "select model, count(*) as count from Root group by model order by count desc, model"
             }]
         }
     ],
