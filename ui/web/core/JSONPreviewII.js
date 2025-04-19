@@ -8,6 +8,9 @@ console.debug("Defining NOC.core.JSONPreviewII");
 
 Ext.define("NOC.core.JSONPreviewII", {
   extend: "NOC.core.MonacoPanel",
+  requires: [
+    "NOC.core.ShareWizard",
+  ],
   app: null,
   restUrl: null,
   previewName: null,
@@ -18,9 +21,45 @@ Ext.define("NOC.core.JSONPreviewII", {
       glyph: NOC.glyph.arrow_left,
       handler: "onBack",
     },
+    "-",
+    {
+      itemId: "save",
+      text: __("Save"),
+      disabled: true,
+      glyph: NOC.glyph.save,
+      handler: "onSave",
+    },
+    "-",
+    {
+      text: __("Share"),
+      glyph: NOC.glyph.share,
+      handler: "onShare",
+    },
   ],
   initComponent: function(){
+    // setup editor language
     this.items[0].language = "json";
     this.callParent();
+  },
+  onShare: function(){
+    Ext.Msg.show({
+      title: __("Share item?"),
+      msg: __("Would you like to share item and contribute to Open-Source project?"),
+      buttons: Ext.Msg.YESNO,
+      modal: true,
+      scope: this,
+      fn: function(button){
+        if(button === "yes"){
+          this.doShare()
+        }
+      },
+    })
+  },
+  doShare: function(){
+    var restUrl = this.restUrl.replace("{0}", this.currentRecord.get("id")).replace("/json/", "/share_info/"),
+      wizard = Ext.create("NOC.core.ShareWizard", {
+        restUrl: restUrl,
+      });
+    wizard.startProcess();
   },
 });
