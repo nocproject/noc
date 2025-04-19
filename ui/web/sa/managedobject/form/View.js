@@ -31,7 +31,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
     "NOC.sa.managedobject.CapabilitiesModel",
     "NOC.sa.managedobject.form.FormController",
     "NOC.sa.managedobject.SchemeLookupField",
-    "NOC.sa.managedobject.RepoPreview",
     "NOC.sa.managedobject.ConfDBPanel",
     "NOC.sa.managedobject.ConsolePanel",
     "NOC.sa.managedobject.ScriptPanel",

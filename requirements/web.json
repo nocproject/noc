@@ -50,10 +50,6 @@
       "version": "4.7.0"
     },
     {
-      "name": "codemirror",
-      "version": "5.28.0"
-    },
-    {
       "name": "nocsound",
       "version": "1.0.0"
     },
