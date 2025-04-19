@@ -25,7 +25,6 @@ Ext.define("NOC.core.JSONPreviewII", {
     {
       itemId: "save",
       text: __("Save"),
-      disabled: true,
       glyph: NOC.glyph.save,
       handler: "onSave",
     },
@@ -54,6 +53,20 @@ Ext.define("NOC.core.JSONPreviewII", {
         }
       },
     })
+  },
+  onSave: function(){
+    var restUrl = this.restUrl.replace("{0}", this.currentRecord.get("id")) 
+    Ext.Ajax.request({
+      url: restUrl,
+      method: "POST",
+      scope: this,
+      success: function(){
+        NOC.info(__("JSON saved"));
+      },
+      failure: function(){
+        NOC.error(__("Failed to save JSON"))
+      },
+    });
   },
   doShare: function(){
     var restUrl = this.restUrl.replace("{0}", this.currentRecord.get("id")).replace("/json/", "/share_info/"),
