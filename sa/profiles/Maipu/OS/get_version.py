@@ -60,6 +60,14 @@ class Script(BaseScript):
         }
 
         serial = match.group("serial")
+        if not serial:
+            v = self.cli("show system module brief")
+            for m in self.profile.rx_module_info.finditer(v):
+#                print(m)
+#                print("|%s|" % m["module_name"])
+                if m.group("module_name") == "Mpu 0":
+                    serial = m.group("serial")
+
         if serial:
             res["attributes"]["Serial Number"] = serial
 

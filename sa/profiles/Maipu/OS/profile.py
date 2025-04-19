@@ -2,9 +2,11 @@
 # Vendor: Maipu
 # OS:     OS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+import re
 
 from noc.core.profile.base import BaseProfile
 
@@ -41,6 +43,11 @@ class Profile(BaseProfile):
         "null": "null",
         "loopback": "loopback",
     }
+
+    rx_module_info = re.compile(
+        r"^(?P<module_name>\S+\s\d+)\s+(?P<online>\S+)\s+(?P<state>(Start Ok|Normal))\s+(?P<part_no>[^ ,]+)\s+(?P<serial>\S+)\s+$",
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     @classmethod
     def get_interface_type(cls, name):

@@ -1,0 +1,55 @@
+{
+    "name": "Maipu | Switch",
+    "$collection": "inv.connectionrules",
+    "uuid": "70863e59-5840-4eed-b74b-7339e11cea06",
+    "description": null,
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "gi0/{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "te0/{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "25ge0/{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "100ge0/{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}
