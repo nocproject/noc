@@ -7,7 +7,4 @@
 @import "@cssWeb/ux.css";
 @import "@cssWeb/colors.css";
 @import "@cssPkg/fontawesome/css/font-awesome.min.css";
-@import "@cssPkg/codemirror/lib/codemirror.css";
-@import "@cssPkg/codemirror/addon/dialog/dialog.css";
-@import "@cssWeb/codemirror.css";
 @import "@cssPkg/joint/joint.min.css";
