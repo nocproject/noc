@@ -64,7 +64,28 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/1",
+            "name": "usb0",
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB20"
+                }
+            ],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "name": "1",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -85,7 +106,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/2",
+            "name": "2",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -106,7 +127,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/3",
+            "name": "3",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -127,7 +148,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/4",
+            "name": "4",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -148,7 +169,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/5",
+            "name": "5",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -169,7 +190,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/6",
+            "name": "6",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -190,7 +211,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/7",
+            "name": "7",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -211,7 +232,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/8",
+            "name": "8",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -232,7 +253,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/9",
+            "name": "9",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -253,7 +274,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/10",
+            "name": "10",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -274,7 +295,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/11",
+            "name": "11",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -295,7 +316,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/12",
+            "name": "12",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -316,7 +337,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/13",
+            "name": "13",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -337,7 +358,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/14",
+            "name": "14",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -358,7 +379,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/15",
+            "name": "15",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -379,7 +400,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/16",
+            "name": "16",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -400,7 +421,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/17",
+            "name": "17",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -421,7 +442,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/18",
+            "name": "18",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -442,7 +463,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/19",
+            "name": "19",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -463,7 +484,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/20",
+            "name": "20",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -484,7 +505,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/21",
+            "name": "21",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -505,7 +526,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/22",
+            "name": "22",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -526,7 +547,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/23",
+            "name": "23",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -547,7 +568,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "gigabitethernet0/24",
+            "name": "24",
             "description": null,
             "direction": "s",
             "gender": "f",
@@ -568,11 +589,10 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "tengigabitethernet0/25",
+            "name": "25",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "internal_name": "te0/25_sfp",
             "protocols": [
                 {
                     "direction": "*",
@@ -586,11 +606,10 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "tengigabitethernet0/26",
+            "name": "26",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "internal_name": "te0/26_sfp",
             "protocols": [
                 {
                     "direction": "*",
@@ -604,11 +623,10 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "tengigabitethernet0/27",
+            "name": "27",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "internal_name": "te0/27_sfp",
             "protocols": [
                 {
                     "direction": "*",
@@ -622,11 +640,10 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "tengigabitethernet0/28",
+            "name": "28",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "internal_name": "te0/28_sfp",
             "protocols": [
                 {
                     "direction": "*",
@@ -640,11 +657,10 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "tengigabitethernet0/29",
+            "name": "29",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "internal_name": "te0/29_sfp",
             "protocols": [
                 {
                     "direction": "*",
@@ -658,11 +674,10 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "tengigabitethernet0/30",
+            "name": "30",
             "description": null,
             "direction": "i",
             "gender": "f",
-            "internal_name": "te0/30_sfp",
             "protocols": [
                 {
                     "direction": "*",
